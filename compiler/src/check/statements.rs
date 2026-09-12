@@ -108,7 +108,7 @@ impl Checker {
                     self.constant(&value)
                 };
                 if !*mutable && !name.starts_with('\0') {
-                    if let Some(input) = self.integer_input(&value) {
+                    if let Some(input) = self.integer_input(&value, &ty) {
                         self.inputs.insert(id, input);
                     }
                     if let Some(input) = self.boolean_input(&value, &ty) {

@@ -49,10 +49,15 @@ impl Checker {
                         let input = self.predicate_expr(value, depth, count, &block.locals)?;
                         block.input.add(&input);
                         block.locals.booleans.insert(*id, input);
-                    } else {
+                    } else if matches!(
+                        self.locals.get(*id),
+                        Some(hir::Type::Int { .. } | hir::Type::Never)
+                    ) {
                         let input = self.input_expr(value, depth, count, &block.locals)?;
                         block.input.add(&input);
                         block.locals.integers.insert(*id, input);
+                    } else {
+                        return None;
                     }
                 }
                 hir::Stmt::Emit {

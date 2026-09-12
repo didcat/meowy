@@ -76,7 +76,7 @@ impl Checker {
         if !self.input_export(*target) || !matches!(value.ty, Type::Int { .. }) {
             return;
         }
-        if let Some(input) = self.integer_input(value) {
+        if let Some(input) = self.integer_input(value, &value.ty) {
             self.module.primary = Some((*id, input));
         }
     }
@@ -85,7 +85,7 @@ impl Checker {
         if !self.input_export(target) {
             return;
         }
-        if let Some(input) = self.integer_input(value) {
+        if let Some(input) = self.integer_input(value, &value.ty) {
             self.inputs.insert(id, input);
             self.module.inputs.insert(
                 name.into(),

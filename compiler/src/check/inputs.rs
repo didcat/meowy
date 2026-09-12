@@ -52,7 +52,10 @@ impl Checker {
             .map(|(_, input)| input)
     }
 
-    pub(crate) fn integer_input(&mut self, expr: &hir::Expr) -> Option<Input> {
+    pub(crate) fn integer_input(&mut self, expr: &hir::Expr, ty: &Type) -> Option<Input> {
+        if !matches!(ty, Type::Int { .. } | Type::Never) {
+            return None;
+        }
         self.input_expr(expr, 0, &mut 0, &Sources::default())
     }
 

@@ -123,3 +123,47 @@ pub(crate) fn initializer_scopes_keep_nested_unused_failures_in_source_order() {
     assert_eq!(error.code, "E107");
     assert_eq!(error.span.start, source.find("base+1").unwrap());
 }
+
+#[test]
+pub(crate) fn initializer_blocks_keep_first_failure_before_unavailable_tail() {
+    for body in [
+        "bad<uint8>:255+1;->4;d.print(1)",
+        "->4;bad<uint8>:255+1;d.print(1)",
+        "bad<uint8>:255+1;unused:get();->4",
+        "bad<uint8>:255+1",
+    ] {
+        let source = format!(
+            "d:@\"debug\";get<uint8>:(){{->4}};|false|{{n<uint8>:{{{body}}};<T>:{{v:n;-><int32>}}}}"
+        );
+        let error = crate::compile(&source).unwrap_err().remove(0);
+        assert_eq!(error.code, "E107", "{source}: {error:?}");
+        assert_eq!(error.span.start, source.find("255+1").unwrap());
+    }
+}
+
+#[test]
+pub(crate) fn initializer_blocks_keep_declared_noninteger_capture_and_scratch_gates() {
+    for (ty, value) in [
+        ("boolean", "true"),
+        ("string", "\"x\""),
+        ("{n<int32>}", "{->n:1}"),
+    ] {
+        let source = format!("|false|{{v<{ty}>:{{bad<uint8>:255+1;->{value}}}}}");
+        let checker = check(&source);
+        assert!(
+            checker
+                .inputs
+                .keys()
+                .all(|id| matches!(checker.locals[*id], Type::Int { .. } | Type::Never)),
+            "{source}"
+        );
+    }
+    for source in [
+        "|false|{n<uint8>:{unused<boolean>:{bad<uint8>:255+1;->true};->4};<T>:{v:n;-><int32>}}",
+        "|false|{flag<boolean>:{unused<string>:{bad<uint8>:255+1;->\"x\"};->true};row<{n<uint8>}>:{|flag|->n<uint8>:4};<T>:{v:row.n;-><int32>}}",
+        "|false|{row<{n<uint8>}>:{unused<string>:{bad<uint8>:255+1;->\"x\"};->n<uint8>:4};<T>:{v:row.n;-><int32>}}",
+    ] {
+        let error = crate::compile(source).unwrap_err().remove(0);
+        assert_eq!(error.code, "E211", "{source}: {error:?}");
+    }
+}

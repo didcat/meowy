@@ -197,9 +197,10 @@ Dependency-ordered commits:
 1. Complete: shared `Block<T>` state and extracted integer accumulation preserve
    behavior. All 737 library/738 native tests, fmt and Clippy passed. Log:
    `/tmp/meowy-integer-accumulator-tests.log`.
-2. Add first-error stopping with declared-kind gates before branch support. Early
-   failure must not classify declared boolean/string/record values as integers;
-   verify capture and scratch boundaries with retained-error regressions.
+2. Complete: integer blocks stop at the first error and preserve declared-kind
+   capture/scratch gates. All 739 library/738 native tests, fmt and Clippy passed.
+   Log: `/tmp/meowy-integer-failure-tests.log`. Known noninteger declarations stay
+   outside integer evidence; inferred `never` retains existing error-only behavior.
 3. Add integer selected-branch evaluation while retaining integer-only scratch. Cover
    widths, primary/scope gates, selected/skipped effects/errors and evaluator bounds.
 4. Add repeated-work/module/staging integration, update guides/handoffs and run

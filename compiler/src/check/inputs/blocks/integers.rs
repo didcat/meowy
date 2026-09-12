@@ -24,7 +24,7 @@ impl Checker {
             emitted: false,
         };
         self.integer_stmts(&block.stmts, depth, count, &mut result)?;
-        result.emitted.then_some(result.input)
+        (result.emitted || result.input.error.is_some()).then_some(result.input)
     }
 
     pub(crate) fn integer_stmts(
@@ -44,7 +44,13 @@ impl Checker {
             }
             block.input.work = block.input.work.saturating_add(1);
             match stmt {
-                hir::Stmt::Bind { id, value } if !self.proofs.mutable.contains(id) => {
+                hir::Stmt::Bind { id, value }
+                    if !self.proofs.mutable.contains(id)
+                        && matches!(
+                            self.locals.get(*id),
+                            Some(hir::Type::Int { .. } | hir::Type::Never)
+                        ) =>
+                {
                     let input = self.input_expr(value, depth, count, &block.locals)?;
                     block.input.add(&input);
                     block.locals.integers.insert(*id, input);
@@ -61,6 +67,10 @@ impl Checker {
                     block.emitted = true;
                 }
                 _ => return None,
+            }
+            if block.input.error.is_some() {
+                block.input.value = None;
+                return Some(());
             }
         }
         Some(())

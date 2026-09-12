@@ -72,6 +72,9 @@ impl Checker {
                         }
                         build.locals.booleans.insert(*id, input);
                     } else {
+                        if !matches!(ty, Type::Int { .. } | Type::Never) {
+                            return None;
+                        }
                         let input = self.input_expr(value, depth + 1, count, &build.locals)?;
                         build.record.input.add(&input);
                         build.locals.integers.insert(*id, input);
