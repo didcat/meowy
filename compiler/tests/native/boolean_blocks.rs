@@ -70,3 +70,95 @@ pub(crate) fn boolean_blocks_preserve_integer_block_and_required_scratch_boundar
     Case::new("d:@\"debug\";flag:{->true;d.print(\"tail\")};|flag|d.print(\"body\")")
         .runs(b"tail\nbody\n");
 }
+
+#[test]
+pub(crate) fn boolean_blocks_charge_unused_tail_work_at_every_forwarded_read() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let separate = (0..20)
+        .map(|id| format!("<T{id}>:{{n:m.width;-><int32[n]>}};"))
+        .collect::<String>();
+    let repeated = (0..20)
+        .map(|id| format!("n{id}:m.width;"))
+        .collect::<String>();
+    for heavy in [false, true] {
+        let block = if heavy {
+            format!("{{->true;v0:1;{tail}}}")
+        } else {
+            "{->true}".into()
+        };
+        let data = format!("flag:{block};alias:flag;row:{{|alias|unused:1;->width:4}};->row");
+        let files = [
+            ("data.mwy", data.as_str()),
+            ("facade.mwy", "m:@\"./data.mwy\";->m"),
+        ];
+        for profile in ["debug", "release"] {
+            let output =
+                super::file_modules::case(&format!("m:@\"./facade.mwy\";{separate}"), &files)
+                    .command("check", &["--profile", profile, "--json"]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let output = super::file_modules::case(
+                &format!("m:@\"./facade.mwy\";<T>:{{{repeated}-><int32>}}"),
+                &files,
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if heavy {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            } else {
+                assert!(output.status.success(), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn boolean_blocks_keep_imported_integer_evidence_and_silent_staging() {
+    let case = super::file_modules::case(
+        "m:@\"./facade.mwy\";d:@\"debug\";<T>:{-><int32[m.width]>};v<T>:[7];d.print(v[1])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->width<uint8>:4",
+            ),
+            (
+                "facade.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";flag:{n:m.width;ready:n==4;->ready;unused:n+1};row:{|flag|->width:4;|!flag|->width:2};->row;d.print(\"facade\")",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        for profile in ["debug", "release"] {
+            let output = case.command(action, &["--profile", profile]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stdout.is_empty());
+            assert!(output.stderr.is_empty());
+        }
+    }
+    case.runs(b"data\nfacade\n7\n");
+}
+
+#[test]
+pub(crate) fn boolean_blocks_keep_inline_predicates_and_skipped_block_effects() {
+    for condition in [
+        "{->true}",
+        "true||{d.print(99);->false}",
+        "!false||{d.print(99);->true}",
+    ] {
+        let source = format!(
+            "d:@\"debug\";row:{{|{condition}|unused:1;->n:4}};<T>:{{-><int32[row.n]>}};v<T>:[7];d.print(v[1])"
+        );
+        Case::new(&source).runs(b"7\n");
+    }
+}

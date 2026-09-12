@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean block-initializer evidence is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean block-initializer inputs are implemented.
+All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -20,6 +20,18 @@ Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
 ## Current compiler slice
+
+`inputs/blocks.rs::boolean_block` evaluates straight-line boolean initializers using
+immutable eligible integer/boolean bindings and one direct boolean primary. Nested
+blocks, aliases, comparisons and imported integer leaves reuse typed input evidence.
+Successful blocks retain every visited tail statement; the first evaluated failure
+stops evaluation and clears the result value. Integer-block eligibility is unchanged.
+
+`boolean_input` uses the declared binding type, allowing error-only `never` HIR from
+unreachable boolean blocks. Nested unreachable blocks need explicit boolean types
+when inference loses their result kind. Failures retain their original E107 span
+through boolean aliases and record/subrecord projections. Inline predicate blocks
+and skipped short-circuit block operands preserve evaluation order and work.
 
 `Input<T>` shares source-error and work accounting between integer and boolean
 values. `inputs/predicates.rs` proves literals, immutable boolean locals, negation,
@@ -72,31 +84,26 @@ B001. Other bootstrap limits remain 4096 visits, 64 resolver/validation levels a
 16384 type nodes; these are not language E220 counters. Native ownership analysis
 may exhaust its own budget before a shape reaches its input-field limit.
 
-Boolean block initializers, boolean/float/text comparisons, boolean record-field/export
-inputs, boolean required scratch, conditional module exports and integer-block branches
-remain separate, along with helper purity and full required evaluation. See
+Branches/named/outer emissions and record scratch inside boolean blocks remain gated.
+Boolean/float/text comparisons, boolean record-field/export inputs, boolean required
+scratch, conditional module exports and integer-block branches remain separate, along
+with helper purity and full required evaluation. See
 [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#conditional-record-initializers).
 
 ## Actual validation
 
-- `e6632e3`: typed input evidence and shared predicate module; 736 library/716 native
-  tests, fmt and Clippy passed. Log: `/tmp/meowy-predicate-metadata-tests.log`.
-- `6924169`: comparison inputs and failure paths; all 736 library/719 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-comparison-input-tests.log`.
-- `5fe7946`: immutable boolean bindings; all 736 library/722 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-boolean-binding-tests.log`.
-- `cd680d3`: scoped boolean scratch; 736 library/723 native tests passed, plus the
-  added branch-scope/unused-scratch group. Fmt and Clippy passed. Log:
-  `/tmp/meowy-scoped-boolean-tests.log`.
-- Focused integration passes in debug/release: transitive boolean alias work on every
-  evaluated read, skipped operands, separate roots, silent check/build, dependency
-  initialization and the boolean-export input gate. Native cases also cover uint64
-  comparisons, aliases, error paths, shadowing and effect/mutation/capture boundaries.
-- The updated guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-predicate-doc-9bzo26f6/main.mwy`.
+- `20927c1`: boolean block initialization and declared-type capture; all 736 library/
+  730 native tests, fmt and Clippy passed. Log: `/tmp/meowy-boolean-block-tests.log`.
+- All seven boolean-block native groups pass, including nested/scoped bindings,
+  retained failures before/after the primary, effects and unchanged integer/required
+  scratch gates. Debug/release integration verifies tail work charged on repeated
+  forwarded reads, independent roots, imported leaves, silent check/build, startup
+  order, inline predicates and skipped block effects.
+- The guide example prints `7` in debug/release. Extracted file:
+  `/tmp/meowy-boolean-block-doc-xmmgn5_h/main.mwy`.
 - `python3 -B tools/verify.py --compiler`: all ten checks passed, including 736
-  library/726 native Rust tests (1462 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-predicate-inputs-gate.log`.
+  library/733 native Rust tests (1469 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-boolean-block-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - The prior 256/257 field evidence boundary is checker-only; its 256-field native
@@ -168,23 +175,10 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: integer block evaluation is a small straight-line walker with narrower
-binding rules. Boolean blocks can reuse `Input<bool>`, `Sources` and the existing
-expression evaluators directly; no accumulator refactor is needed. Capture must use
-the declared boolean type so unreachable `never` HIR can retain error-only evidence.
-
-Dependency-ordered commits:
-
-1. Add boolean block evaluation in `inputs/blocks.rs`, connect predicate checking and
-   declared binding capture, and include execution/error/effect/shape regression tests.
-   Accept immutable integer/boolean bindings and a single boolean primary; retain all
-   visited tail work and the first evaluated failure without executing initialization.
-   Complete: all 736 library/730 native tests, fmt and Clippy passed. Log:
-   `/tmp/meowy-boolean-block-tests.log`. Unreachable nested blocks need their own
-   declared boolean type to preserve result identity; annotated failures retain E107.
-2. Add repeated-work/module/staging probes, document the supported slice and update
-   both handoffs. Run `python3 -B tools/verify.py --compiler` across the series.
-
-Keep branches inside scalar blocks, named/outer emissions, record scratch in boolean
-blocks, helpers, mutable scratch, boolean field/export inputs and required boolean
-scratch separate. Preserve existing integer-block eligibility. Do not push.
+1. Plan branch-aware boolean blocks in `inputs/blocks.rs`, reusing predicate evidence
+   and the scoped-branch approach in `inputs/records/build.rs`. Prove selected primary
+   uniqueness, complete tail work, scoped bindings and first-error propagation before
+   lifting the gate. Keep any accumulator refactor separate from behavior changes.
+2. Keep integer-block branches, record scratch in boolean blocks, named/outer emissions,
+   boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
+   storage separate. Record reviewable slices before implementing; do not push.

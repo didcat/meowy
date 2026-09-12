@@ -97,6 +97,47 @@ The checked result must have a concrete integer type. Unreachable blocks whose H
 result was erased to `never` can retain error-only evidence, but do not supply an
 invented integer result. Hidden arithmetic failures remain E107 at their original spans.
 
+### Boolean block initializers
+
+A boolean initializer block can bind immutable eligible integers and booleans and
+emit one direct boolean primary. Nested boolean/integer blocks, comparisons, aliases
+and imported integer leaves reuse their existing evidence. Successful evaluation
+inspects every statement after the emission too; an emission does not return early.
+
+```meowy
+debug : @"debug"
+ready : {
+    count <uint8> : 4
+    valid : count == 4
+    -> valid
+    unused : count + 1
+}
+settings : {
+    | ready | -> width : 4
+    | !ready | -> width : 2
+}
+<Items> : { -> <int32[settings.width]> }
+items <Items> : [3, 7]
+debug.print(items[2])
+```
+
+This prints `7`. Unused bindings retain work and failures, including tail statements.
+The first evaluated failure retains its original diagnostic and stops evaluation;
+no boolean value is invented. A declared boolean binding can preserve error-only
+`never` HIR on unreachable paths. Nested unreachable bindings need their own declared
+boolean type when inference loses the result kind.
+
+Blocks also work directly as record predicates or short-circuit operands. Skipped
+operands do not contribute evaluation work or effects. Runtime blocks remain in HIR,
+and checking/building never execute initialization. Every required record-field read
+charges retained boolean-block work again, including work forwarded through aliases
+and modules. Existing 64-level/4096-visit predicate bounds remain in effect.
+
+Branches, named/outer emissions, record-valued scratch, mutation and evaluated helper
+calls remain unavailable inside boolean blocks. Integer block eligibility is unchanged;
+boolean scratch inside required type blocks and boolean field/export inputs remain
+separate capabilities.
+
 ## Record-field inputs
 
 Named immutable record bindings and their aliases can supply integer leaves to copied
@@ -175,7 +216,7 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Boolean block initializers, boolean/float/text comparisons, boolean fields in eligible
+Boolean/float/text comparisons, boolean fields in eligible
 records, boolean module exports as predicate inputs, and boolean scratch inside required
 type blocks remain unavailable. Standalone expression statements in selected branches,
 loops, integer-block branches and conditional module exports are also separate.
