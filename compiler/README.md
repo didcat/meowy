@@ -47,7 +47,8 @@ logic, preserving predicate values, errors and selected work. Immutable boolean 
 is supported inside record initializers. Boolean block initializers support immutable
 scalar bindings, nested blocks, eligible branches and retained tail work/errors.
 Integer blocks also select eligible branches with exact widths, immutable integer/boolean
-scratch and first-error stopping. Boolean tails never replace the integer primary.
+scratch and first-error stopping. Both scalar initializer kinds can use bounded record
+scratch with complete ancestor evidence. Scratch values never replace the scalar primary.
 Checking never runs module initialization.
 Boolean fields/exports as predicate inputs, conditional module exports, helper calls,
 non-integer/mutable required scratch and full required evaluation remain separate.

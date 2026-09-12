@@ -81,9 +81,10 @@ shifts, mutable scratch and helper calls remain separate capabilities.
 
 ## Block initializers
 
-A supported integer block uses immutable eligible integer and boolean bindings and
-selects one integer primary emission targeting that block. Matcher branches reuse
-eligible predicate evidence, including boolean inputs from enclosing scopes and integer comparisons.
+A supported integer block uses immutable eligible integer, boolean and bounded record
+bindings and selects one integer primary emission targeting that block. Matcher branches
+reuse eligible predicate evidence, including boolean inputs from enclosing scopes and
+integer comparisons.
 Selected branches retain local scope; every visited condition and tail statement
 contributes work. Skipped bodies contribute none. Nested eligible blocks are supported.
 
@@ -124,17 +125,17 @@ nested boolean blocks. Its work and errors contribute to the integer initializer
 its boolean value never replaces the integer primary. Unused boolean tails are checked
 even after an emission, and branch-local bindings do not escape their scope.
 
-Evaluated record/string/float scratch, mutation, named/outer emissions, helper calls,
-selected standalone expression blocks and restarts remain unavailable. Checking/building
+Evaluated string/float scratch, unsupported record shapes, mutation, named/outer emissions,
+helper calls, selected standalone expression blocks and restarts remain unavailable. Checking/building
 never execute initialization; ordinary runtime values, effects and source evaluation
 order remain unchanged.
 
 ### Boolean block initializers
 
-A boolean initializer block can bind immutable eligible integers and booleans and
-select one boolean primary through eligible matcher branches. Nested boolean/integer
-blocks, comparisons, aliases and imported integer leaves reuse their existing evidence. Successful evaluation
-inspects every statement after the emission too; an emission does not return early.
+A boolean initializer block can bind immutable eligible integers, booleans and bounded
+records and select one boolean primary through eligible matcher branches. Nested
+boolean/integer blocks, comparisons, aliases and imported integer leaves reuse their
+existing evidence. Successful evaluation inspects every statement after the emission too; an emission does not return early.
 
 ```meowy
 debug : @"debug"
@@ -175,10 +176,49 @@ and modules. Branches, nested blocks and predicate operands share the existing
 64-level/4096-visit evaluation bounds. Frontend nesting limits can be reached before
 those evaluator limits; these are not full-language E220 counters.
 
-Selected standalone expression blocks, named/outer emissions, record-valued scratch,
-mutation and evaluated helper calls remain unavailable inside boolean blocks. Integer
-and boolean blocks retain independently typed primaries. Boolean scratch inside required
+Selected standalone expression blocks, named/outer emissions, mutation and evaluated
+helper calls remain unavailable inside boolean blocks. Integer and boolean blocks retain independently typed primaries. Boolean scratch inside required
 type blocks and boolean field/export inputs remain separate capabilities.
+
+### Record scratch in scalar initializers
+
+Integer and boolean initializers can bind eligible unit-primary records, copy them
+and project nested integer fields. Record scratch reuses the complete
+[record-field evidence](#record-field-inputs), including unread siblings and ancestor
+tail work. Its retained work and errors enter the scalar result; its fields never
+replace the scalar primary.
+
+```meowy
+debug : @"debug"
+capacity <uint8> : {
+    settings : {
+        -> limits : { -> width <uint8> : 4 }
+        unused : 1
+    }
+    limits : settings.limits
+    -> limits.width
+}
+<Items> : { -> <int32[capacity]> }
+items <Items> : [3, 7]
+debug.print(items[2])
+```
+
+This prints `7`. Every evaluated record binding must qualify as a whole, even when
+unused or read through one projected leaf. Unsupported or effectful siblings cannot
+be hidden by copying a subrecord. Declared record aliases preserve retained errors
+on unreachable paths; inline emissions whose HIR loses field identity remain limited.
+
+The existing 256-total-field and 32-record-level bounds apply to scratch too, sharing
+caller evaluation counters rather than starting fresh. Selected branches restore local
+record scope. Each required scalar read charges retained record work again. These
+input bounds do not qualify larger native shapes past other frontend/ownership limits.
+
+Eligible named record exports can supply scratch records. Module aliases and inline
+import identities produce no runtime binding and may read eligible named exports.
+Constructing a whole-module record still does not grant whole-record input eligibility.
+Checking/building never run initialization, and ordinary runtime copies remain intact.
+Boolean record fields, non-unit primaries, mutation, references and helper-produced
+records remain outside this input slice.
 
 ## Record-field inputs
 

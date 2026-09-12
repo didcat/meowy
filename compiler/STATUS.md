@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Bounded record scratch in scalar initializers is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Bounded record scratch in scalar initializers is implemented.
+All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,11 +21,12 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-`inputs/blocks.rs::scalar_binding` shares immutable integer/boolean binding evidence
-between `Block<i128>` and `Block<bool>`. Declared kinds select the evaluator and the
-scoped `Sources` map. Only work and errors enter the enclosing result; boolean scratch
-never replaces an integer primary. Aliases, nested blocks and unused tails retain
-complete evidence. Both true and false boolean tails contribute work when evaluated.
+`inputs/blocks.rs::scalar_binding` shares immutable integer, boolean and bounded record
+evidence between `Block<i128>` and `Block<bool>`. Declared record kinds call `record_expr`
+with existing caller depth/count counters and store whole evidence in `Sources.records`.
+Only work and errors enter the enclosing result; scratch records never replace scalar
+primaries. Aliases, projections, compositions and unused tails retain complete ancestor
+evidence. Branch-local record shadowing restores the prior scope.
 
 Typed statement traversal lives in `inputs/blocks/{integers,booleans}.rs`. Eligible
 matcher branches share primary/error/work state and restore branch-local bindings.
@@ -57,6 +58,8 @@ primaries. Local-record compositions export a checked record ID and bounded fiel
 `inputs/records/paths.rs::input_path` retains paths/work through facades. Synthetic
 module namespaces never gain whole-record eligibility. Mixed module primaries still
 need integer context in required scratch/arithmetic; ordinary aliases keep record identity.
+Identity-only module aliases/imports emit no runtime binding and may read eligible
+exports inside scalar initializers. Whole-module record construction remains gated.
 Privacy, collisions, widths, startup order and borrowed-export gates remain intact.
 
 Every required read charges retained work again; independent roots reset their budget.
@@ -64,32 +67,33 @@ Scalar blocks/predicates share 64 active levels and 4096 visits. Records retain 
 fields and 32 record/evidence levels; type traversal retains 16384 nodes. Frontend and
 ownership limits remain independent; these bootstrap limits are not language E220 counters.
 
-Record scratch, selected standalone expression blocks, named/outer emissions, mutable
-scratch and helpers remain unavailable inside scalar initializers. Boolean/float/text
+Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
+mutable scratch and helpers remain unavailable inside scalar initializers. Boolean/float/text
 comparisons, boolean record-field/export inputs, required boolean scratch and conditional
 module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `94bf4b4`: shared scalar binding extraction; all 740 library/743 native tests, fmt
-  and Clippy passed unchanged. Log: `/tmp/meowy-scalar-binding-tests.log`.
-- `ea86343`: boolean scratch in integer initializers; all 740 library/746 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-integer-boolean-tests.log`. Coverage includes
-  aliases, shadowing, unchanged integer primaries, unused tails, source error spans,
-  declared-kind gates, mutation/effects, runtime inputs/captures and required scratch.
-- Five focused boolean-scratch groups pass. Debug/release integration verifies true/
-  false unused tails, alias work, skipped tails, independent roots, imported values,
-  primary/named forwarding, silent check/build and dependency startup.
+- `2e017ef`: bounded record scratch; all 741 library/751 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-record-scratch-tests.log`. Native cases cover integer/boolean
+  results, field order, projected aliases, compositions, branch scope, unused records,
+  ancestor errors/effects and immutable supported shapes.
+- The 256/257-total-field boundary passes checker-only tests for integer and boolean
+  initializers. Frontend/evaluator/ownership limits remain independent. Unreachable
+  typed aliases preserve nested errors; erased inline field identities remain limited.
+- Five record-scratch native groups pass. Debug/release integration verifies retained
+  ancestor/projection/tail work on repeated reads, independent roots, imports, silent
+  check/build and startup. Identity-only module aliases/imports remain valid; actual
+  whole-module record construction rejects required evaluation.
 - The guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-integer-boolean-doc-umaidlfk/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 740
-  library/748 native Rust tests (1488 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-integer-boolean-gate.log`.
+  `/tmp/meowy-record-scratch-doc-l35p7qyk/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 741
+  library/753 native Rust tests (1494 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-record-scratch-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Evaluator depth remains covered by direct HIR tests; frontend and ownership limits
-  remain separate. Runtime implementation, reference fixtures and dependencies are
-  unchanged. Editor and separate runtime/sanitizer gates were not rerun; release is open.
+- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
+  and separate runtime/sanitizer gates were not rerun; full release qualification is open.
 
 ## Prior capabilities and other areas
 
@@ -156,23 +160,10 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: `Sources.records` and `record_expr` already preserve declared shapes,
-complete ancestor work/errors, selected branches and projected paths. The shared
-binding helper can use them with the existing depth/count counters; do not reset
-budgets or give synthetic module namespaces whole-record evidence.
-
-Dependency-ordered commits:
-
-1. Add bounded immutable record bindings to scalar initializers using existing record
-   evidence. Include integer/boolean execution, aliases/projections, ancestor errors,
-   mutation/effect/shape gates and checker-level field-bound regressions. Complete:
-   all 741 library/751 native tests, fmt and Clippy passed. Log:
-   `/tmp/meowy-record-scratch-tests.log`. Typed aliases preserve unreachable nested
-   failures; erased inline field identities retain their existing limitation.
-2. Add independent repeated-work/import/staging probes, update guides/handoffs and
-   run `python3 -B tools/verify.py --compiler` across the series.
-
-Keep unit-primary immutable integer/record shapes and existing record depth/field
-bounds. Preserve declared kinds, scalar primaries and first errors. Keep standalone
-expression blocks, named/outer emissions, boolean field/export inputs, required
-boolean/record scratch, helpers, packages and borrowed storage separate. Do not push.
+1. Plan boolean equality/inequality predicate evidence in `inputs/predicates.rs`.
+   Reuse typed boolean evidence; evaluate both operands in order, retaining first
+   errors and complete work. Preserve the difference from short-circuit `&&`/`||`;
+   cover evaluated runtime/effectful operands and repeated reads in reviewable slices.
+2. Keep boolean record fields/module exports, required boolean/record scratch, wider
+   comparison types, standalone expression blocks, named/outer emissions, helpers,
+   packages and borrowed storage separate. Do not push.
