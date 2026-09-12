@@ -72,6 +72,20 @@ impl Checker {
                     block.input.value = input.value;
                     block.emitted = true;
                 }
+                hir::Stmt::If {
+                    condition,
+                    then,
+                    otherwise,
+                } => {
+                    let input = self.predicate_expr(condition, depth + 1, count, &block.locals)?;
+                    block.input.add(&input);
+                    if input.error.is_none() {
+                        let locals = block.locals.clone();
+                        let branch = if input.value? { then } else { otherwise };
+                        self.boolean_stmts(branch, depth + 1, count, block)?;
+                        block.locals = locals;
+                    }
+                }
                 _ => return None,
             }
             if block.input.error.is_some() {
@@ -80,5 +94,47 @@ impl Checker {
             }
         }
         Some(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ast::Span;
+
+    #[test]
+    pub(crate) fn boolean_branches_bound_active_statement_and_predicate_depth() {
+        let value = hir::Expr {
+            kind: hir::ExprKind::Bool(true),
+            ty: hir::Type::Bool,
+            span: Span { start: 0, end: 4 },
+        };
+        for depth in [62, 63] {
+            let mut stmts = vec![hir::Stmt::Emit {
+                id: 0,
+                target: 0,
+                field: None,
+                value: value.clone(),
+            }];
+            for _ in 0..depth {
+                stmts = vec![hir::Stmt::If {
+                    condition: value.clone(),
+                    then: stmts,
+                    otherwise: Vec::new(),
+                }];
+            }
+            let block = hir::Block {
+                id: 0,
+                ty: hir::Type::Bool,
+                stmts,
+            };
+            let mut checker = Checker::new();
+            let input = checker.boolean_block(&block, 1, &mut 0, &Sources::default());
+            if depth == 62 {
+                assert_eq!(input.unwrap().value, Some(true));
+            } else {
+                assert!(input.is_none());
+            }
+        }
     }
 }

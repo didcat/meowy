@@ -33,14 +33,14 @@ pub(crate) fn boolean_blocks_retain_first_failures_before_and_after_the_primary(
 }
 
 #[test]
-pub(crate) fn boolean_blocks_keep_effects_mutation_branches_and_record_scratch_gated() {
+pub(crate) fn boolean_blocks_keep_effects_mutation_calls_and_record_scratch_gated() {
     for block in [
         "{d.print(1);->true}",
         "{->true;d.print(1)}",
         "{unused:=1;->true}",
         "{->true;unused:\"x\"}",
         "{unused:{->n:4};->true}",
-        "{|true|->true}",
+        "{|get()|unused:1;->true}",
         "{->get()}",
         "{->true;unused:get()}",
     ] {
@@ -160,5 +160,79 @@ pub(crate) fn boolean_blocks_keep_inline_predicates_and_skipped_block_effects() 
             "d:@\"debug\";row:{{|{condition}|unused:1;->n:4}};<T>:{{-><int32[row.n]>}};v<T>:[7];d.print(v[1])"
         );
         Case::new(&source).runs(b"7\n");
+    }
+}
+
+#[test]
+pub(crate) fn branching_boolean_blocks_select_one_primary_and_preserve_scope() {
+    for (pick, width) in [("true", 4), ("false", 2)] {
+        let source = format!(
+            "d:@\"debug\";pick:{pick};flag:{{|pick|->true;|!pick|->false;unused:4}};row:{{|flag|->width:4;|!flag|->width:2}};<T>:{{-><int32[row.width]>}};v<T>:[7];d.print(v[1]);d.print(row.width)"
+        );
+        Case::new(&source).runs(format!("7\n{width}\n").as_bytes());
+    }
+    Case::new("d:@\"debug\";flag:{ready:false;|true|ready:true;|ready|->false;|!ready|->true};row:{|flag|->width:4;|!flag|->width:2};<T>:{-><int32[row.width]>};v<T>:[7];d.print(v[1])").runs(b"7\n");
+    for (source, code) in [
+        ("flag:{|true|->true;|true|->false}", "E205"),
+        ("flag<boolean>:{|false|->true}", "E204"),
+        ("flag:{|true|temp:4;->temp==4}", "E201"),
+    ] {
+        assert_eq!(
+            meowy::compile(source).unwrap_err()[0].code,
+            code,
+            "{source}"
+        );
+    }
+}
+
+#[test]
+pub(crate) fn branching_boolean_blocks_skip_effects_and_failures_only_when_unselected() {
+    for block in [
+        "{|false|d.print(9);->true}",
+        "{->true;|false|d.print(9)}",
+        "{|true| |false|d.print(9);->true}",
+        "{|false|unused:=1;->true}",
+        "{|false|bad<uint8>:255+1;->true}",
+        "{|true||get()|->true}",
+    ] {
+        let source = format!(
+            "d:@\"debug\";get<boolean>:(){{d.print(9);->true}};flag:{block};row:{{|flag|unused:1;->n:4}};<T>:{{-><int32[row.n]>}};v<T>:[7];d.print(v[1])"
+        );
+        Case::new(&source).runs(b"7\n");
+    }
+    for block in [
+        "{|true|d.print(9);->true}",
+        "{->true;|true|d.print(9)}",
+        "{|true|unused:=1;->true}",
+        "{|get()|unused:1;->true}",
+        "{|true|{unused:1};->true}",
+    ] {
+        let source = format!(
+            "d:@\"debug\";get<boolean>:(){{d.print(9);->true}};flag:{block};row:{{|flag|unused:1;->n:4}};<T>:{{n:row.n;-><int32>}}"
+        );
+        let output = Case::new(&source).command("run", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E211\""), "{source}: {error}");
+    }
+}
+
+#[test]
+pub(crate) fn branching_boolean_blocks_retain_first_predicate_body_and_tail_errors() {
+    for block in [
+        "{|n+1==0|->true}",
+        "{|true|bad<uint8>:255+1;->true}",
+        "{->true;|true|bad<uint8>:255+1}",
+        "{|true| |true|bad<uint8>:255+1;->true}",
+        "{|true|->n+1==0}",
+    ] {
+        let source = format!(
+            "|false|{{n<uint8>:255;flag<boolean>:{block};row<{{part<{{n<uint8>}}>}}>:{{|flag|->part:{{->n<uint8>:4}}}};copy:row.part;<T>:{{n:copy.n;-><int32>}}}}"
+        );
+        let error = meowy::compile(&source).unwrap_err().remove(0);
+        assert_eq!(error.code, "E107", "{source}: {error:?}");
+        let start = source.find("n+1").or_else(|| source.find("255+1")).unwrap();
+        assert_eq!(error.span.start, start);
     }
 }

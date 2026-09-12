@@ -185,9 +185,11 @@ Dependency-ordered commits:
 1. Complete: boolean statement accumulation lives in `inputs/blocks/booleans.rs`.
    All 736 library/733 native tests, fmt and Clippy pass with unchanged behavior.
    Log: `/tmp/meowy-boolean-accumulator-tests.log`.
-2. Add bounded selected-branch evaluation using eligible predicates. Include accepted
-   execution, duplicate/missing primary gates, selected/skipped effects, scoped locals,
-   first errors and recursion boundaries with the implementation.
+2. Complete: selected branches share primary/error/work state and restore scoped
+   bindings. All 737 library/736 native tests, fmt and Clippy passed; log:
+   `/tmp/meowy-boolean-branch-tests.log`. Primary/scope and selected/skipped error
+   gates pass. The 62/63 evaluator-depth boundary is checker-only: the equivalent
+   source probe reaches the earlier frontend expression limit.
 3. Add independent repeated-work/module/staging probes and update guides/handoffs.
    Run `python3 -B tools/verify.py --compiler` across the series.
 
