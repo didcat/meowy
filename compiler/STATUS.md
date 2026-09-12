@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean-local and integer-comparison predicate inputs are implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean block-initializer evidence is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -168,10 +168,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan boolean block-initializer evidence in `inputs/predicates.rs` and
-   `inputs/blocks.rs`. Start with immutable eligible scalar bindings and one boolean
-   primary; retain tail work/errors and runtime staging. Reuse typed `Input` metadata
-   and separate behavior-preserving accumulator changes from new accepted behavior.
-2. Keep boolean record fields/module exports as predicate inputs, boolean required
-   scratch, boolean/float/text comparisons, integer-block branches, conditional module
-   exports, helper purity, packages and borrowed storage separate. Do not push.
+Inspection: integer block evaluation is a small straight-line walker with narrower
+binding rules. Boolean blocks can reuse `Input<bool>`, `Sources` and the existing
+expression evaluators directly; no accumulator refactor is needed. Capture must use
+the declared boolean type so unreachable `never` HIR can retain error-only evidence.
+
+Dependency-ordered commits:
+
+1. Add boolean block evaluation in `inputs/blocks.rs`, connect predicate checking and
+   declared binding capture, and include execution/error/effect/shape regression tests.
+   Accept immutable integer/boolean bindings and a single boolean primary; retain all
+   visited tail work and the first evaluated failure without executing initialization.
+   Complete: all 736 library/730 native tests, fmt and Clippy passed. Log:
+   `/tmp/meowy-boolean-block-tests.log`. Unreachable nested blocks need their own
+   declared boolean type to preserve result identity; annotated failures retain E107.
+2. Add repeated-work/module/staging probes, document the supported slice and update
+   both handoffs. Run `python3 -B tools/verify.py --compiler` across the series.
+
+Keep branches inside scalar blocks, named/outer emissions, record scratch in boolean
+blocks, helpers, mutable scratch, boolean field/export inputs and required boolean
+scratch separate. Preserve existing integer-block eligibility. Do not push.

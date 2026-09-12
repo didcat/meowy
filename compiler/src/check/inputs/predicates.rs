@@ -6,8 +6,8 @@ use crate::check::{
 use crate::hir::{Expr, ExprKind, Type};
 
 impl Checker {
-    pub(crate) fn boolean_input(&mut self, expr: &Expr) -> Option<Input<bool>> {
-        if expr.ty != Type::Bool {
+    pub(crate) fn boolean_input(&mut self, expr: &Expr, ty: &Type) -> Option<Input<bool>> {
+        if *ty != Type::Bool {
             return None;
         }
         self.predicate_expr(expr, 0, &mut 0, &Sources::default())
@@ -24,7 +24,8 @@ impl Checker {
         if *count > type_values::MAX_WORK
             || depth >= type_values::MAX_DEPTH
             || !self.flow.spend(1)
-            || expr.ty != Type::Bool
+            || !(expr.ty == Type::Bool
+                || expr.ty == Type::Never && matches!(expr.kind, ExprKind::Block(_)))
         {
             return None;
         }
@@ -83,6 +84,14 @@ impl Checker {
                         _ => unreachable!(),
                     });
                 }
+            }
+            ExprKind::Block(block) => {
+                let source = self.boolean_block(block, depth + 1, count, locals)?;
+                input.add(&source);
+                if expr.ty == Type::Never {
+                    return input.error.is_some().then_some(input);
+                }
+                input.value = source.value;
             }
             _ => return None,
         }
