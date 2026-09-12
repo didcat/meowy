@@ -54,6 +54,7 @@ pub(crate) mod guarded_references;
 pub(crate) mod header_activity;
 pub(crate) mod immutable_slots;
 pub(crate) mod imported_inputs;
+pub(crate) mod integer_blocks;
 pub(crate) mod late_published;
 pub(crate) mod leave_references;
 pub(crate) mod list_contexts;

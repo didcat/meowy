@@ -92,7 +92,7 @@ pub(crate) fn initializer_blocks_reject_every_effect_or_mutation_even_after_emis
         "d:@\"debug\";capacity:{->4;d.print(1)}",
         "capacity:{scratch:=1;->4}",
         "capacity:{scratch:=1;scratch=2;->4}",
-        "capacity:{|true|->4}",
+        "pick:=true;capacity:{|pick|->4;|!pick|->2}",
         "f<int32>:(){->4};capacity:{->f()}",
     ] {
         let checker = check(source);

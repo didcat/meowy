@@ -201,8 +201,11 @@ Dependency-ordered commits:
    capture/scratch gates. All 739 library/738 native tests, fmt and Clippy passed.
    Log: `/tmp/meowy-integer-failure-tests.log`. Known noninteger declarations stay
    outside integer evidence; inferred `never` retains existing error-only behavior.
-3. Add integer selected-branch evaluation while retaining integer-only scratch. Cover
-   widths, primary/scope gates, selected/skipped effects/errors and evaluator bounds.
+3. Complete: all 740 library/741 native tests, fmt and Clippy passed; the added
+   uint64 maximum-value scenario also passed focused debug/release execution. Log:
+   `/tmp/meowy-integer-branch-tests.log`. Widths, primary/scope and selected/skipped
+   effect/error gates pass. Evaluator depth uses direct HIR coverage; frontend limits
+   still apply independently. Integer-only scratch is preserved.
 4. Add repeated-work/module/staging integration, update guides/handoffs and run
    `python3 -B tools/verify.py --compiler` across the series.
 

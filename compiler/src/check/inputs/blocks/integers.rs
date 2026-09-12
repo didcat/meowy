@@ -66,6 +66,20 @@ impl Checker {
                     block.input.value = source.value;
                     block.emitted = true;
                 }
+                hir::Stmt::If {
+                    condition,
+                    then,
+                    otherwise,
+                } => {
+                    let input = self.predicate_expr(condition, depth + 1, count, &block.locals)?;
+                    block.input.add(&input);
+                    if input.error.is_none() {
+                        let locals = block.locals.clone();
+                        let branch = if input.value? { then } else { otherwise };
+                        self.integer_stmts(branch, depth + 1, count, block)?;
+                        block.locals = locals;
+                    }
+                }
                 _ => return None,
             }
             if block.input.error.is_some() {
@@ -74,5 +88,55 @@ impl Checker {
             }
         }
         Some(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ast::Span;
+
+    #[test]
+    pub(crate) fn integer_branches_bound_statement_and_predicate_depth() {
+        let value = hir::Expr {
+            kind: hir::ExprKind::Int(4),
+            ty: hir::Type::Int {
+                bits: 8,
+                signed: false,
+            },
+            span: Span { start: 0, end: 1 },
+        };
+        let condition = hir::Expr {
+            kind: hir::ExprKind::Bool(true),
+            ty: hir::Type::Bool,
+            span: value.span,
+        };
+        for depth in [62, 63] {
+            let mut stmts = vec![hir::Stmt::Emit {
+                id: 0,
+                target: 0,
+                field: None,
+                value: value.clone(),
+            }];
+            for _ in 0..depth {
+                stmts = vec![hir::Stmt::If {
+                    condition: condition.clone(),
+                    then: stmts,
+                    otherwise: Vec::new(),
+                }];
+            }
+            let block = hir::Block {
+                id: 0,
+                ty: value.ty.clone(),
+                stmts,
+            };
+            let mut checker = Checker::new();
+            let input = checker.input_block(&block, 1, &mut 0, &Sources::default());
+            if depth == 62 {
+                assert_eq!(input.unwrap().value, Some(4));
+            } else {
+                assert!(input.is_none());
+            }
+        }
     }
 }
