@@ -27,6 +27,11 @@ impl Checker {
             let input = self.predicate_expr(value, depth, count, &block.locals)?;
             block.input.add(&input);
             block.locals.booleans.insert(id, input);
+        } else if matches!(self.locals.get(id), Some(hir::Type::Record { .. })) {
+            let ty = self.locals[id].clone();
+            let input = self.record_expr(value, &ty, depth, count, &block.locals)?;
+            block.input.add(&input.input);
+            block.locals.records.insert(id, input);
         } else if matches!(
             self.locals.get(id),
             Some(hir::Type::Int { .. } | hir::Type::Never)

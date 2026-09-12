@@ -33,13 +33,13 @@ pub(crate) fn boolean_blocks_retain_first_failures_before_and_after_the_primary(
 }
 
 #[test]
-pub(crate) fn boolean_blocks_keep_effects_mutation_calls_and_record_scratch_gated() {
+pub(crate) fn boolean_blocks_keep_effects_mutation_calls_and_unsupported_record_scratch_gated() {
     for block in [
         "{d.print(1);->true}",
         "{->true;d.print(1)}",
         "{unused:=1;->true}",
         "{->true;unused:\"x\"}",
-        "{unused:{->n:4};->true}",
+        "{unused:{->n:=4};->true}",
         "{|get()|unused:1;->true}",
         "{->get()}",
         "{->true;unused:get()}",

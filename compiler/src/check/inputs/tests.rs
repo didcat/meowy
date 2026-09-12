@@ -167,3 +167,25 @@ pub(crate) fn initializer_blocks_keep_declared_capture_and_nonscalar_scratch_gat
         assert_eq!(error.code, "E211", "{source}: {error:?}");
     }
 }
+
+#[test]
+pub(crate) fn record_scratch_bounds_complete_field_evidence_in_scalar_blocks() {
+    for count in [256, 257] {
+        let fields = (0..count)
+            .map(|id| format!("->n{id}:1;"))
+            .collect::<String>();
+        let integer = check(&format!("n:{{row:{{{fields}}};->4}}"));
+        assert_eq!(
+            integer.inputs.values().any(|input| input.value == Some(4)),
+            count == 256
+        );
+        let boolean = check(&format!("flag:{{row:{{{fields}}};->true}}"));
+        assert_eq!(
+            boolean
+                .bool_inputs
+                .values()
+                .any(|input| input.value == Some(true)),
+            count == 256
+        );
+    }
+}

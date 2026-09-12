@@ -46,7 +46,7 @@ pub(crate) fn integer_blocks_skip_only_unselected_effects_and_keep_scalar_scratc
         "{|true|d.print(9);->4}",
         "{->4;|true|d.print(9)}",
         "{|true|unused:=1;->4}",
-        "{|true|unused:{->n:1};->4}",
+        "{|true|unused:{->n:=1};->4}",
         "{|get()|unused:1;->4}",
         "{|true|{unused:1};->4}",
     ] {
@@ -205,7 +205,7 @@ pub(crate) fn integer_boolean_scratch_preserves_mutation_effect_type_and_capture
         "->4;unused:get()",
         "ready:{d.print(9);->true};->4",
         "ready:\"x\";->4",
-        "ready:{->n:4};->4",
+        "ready:{->n:=4};->4",
         "ready:mutable;->4",
     ] {
         let source = format!(

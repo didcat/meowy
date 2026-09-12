@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean scratch in integer initializers is implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Bounded record scratch in scalar initializers is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -156,11 +156,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan bounded record scratch in scalar initializers using the shared binding path
-   and `inputs/records.rs`. Retain whole-ancestor work/errors, declared shapes and
-   record bounds before enabling field reads from local scratch records. Keep module
-   namespace eligibility distinct from ordinary record eligibility. Record reviewable
-   prerequisite/behavior/integration slices before editing.
-2. Keep selected standalone expression blocks, named/outer emissions, boolean field/
-   export inputs, required boolean scratch, helpers, packages and borrowed storage
-   separate. Do not push.
+Inspection: `Sources.records` and `record_expr` already preserve declared shapes,
+complete ancestor work/errors, selected branches and projected paths. The shared
+binding helper can use them with the existing depth/count counters; do not reset
+budgets or give synthetic module namespaces whole-record evidence.
+
+Dependency-ordered commits:
+
+1. Add bounded immutable record bindings to scalar initializers using existing record
+   evidence. Include integer/boolean execution, aliases/projections, ancestor errors,
+   mutation/effect/shape gates and checker-level field-bound regressions. Complete:
+   all 741 library/751 native tests, fmt and Clippy passed. Log:
+   `/tmp/meowy-record-scratch-tests.log`. Typed aliases preserve unreachable nested
+   failures; erased inline field identities retain their existing limitation.
+2. Add independent repeated-work/import/staging probes, update guides/handoffs and
+   run `python3 -B tools/verify.py --compiler` across the series.
+
+Keep unit-primary immutable integer/record shapes and existing record depth/field
+bounds. Preserve declared kinds, scalar primaries and first errors. Keep standalone
+expression blocks, named/outer emissions, boolean field/export inputs, required
+boolean/record scratch, helpers, packages and borrowed storage separate. Do not push.

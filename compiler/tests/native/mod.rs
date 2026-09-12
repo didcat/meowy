@@ -70,6 +70,7 @@ pub(crate) mod panics;
 pub(crate) mod primary_inputs;
 pub(crate) mod published_snapshots;
 pub(crate) mod reborrows;
+pub(crate) mod record_scratch;
 pub(crate) mod reference_blocks;
 pub(crate) mod reference_fields;
 pub(crate) mod reference_records;
