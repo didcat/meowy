@@ -131,6 +131,7 @@ pub(crate) fn initializer_blocks_keep_first_failure_before_unavailable_tail() {
         "->4;bad<uint8>:255+1;d.print(1)",
         "bad<uint8>:255+1;unused:get();->4",
         "bad<uint8>:255+1",
+        "unused<boolean>:{bad<uint8>:255+1;->true};->4",
     ] {
         let source = format!(
             "d:@\"debug\";get<uint8>:(){{->4}};|false|{{n<uint8>:{{{body}}};<T>:{{v:n;-><int32>}}}}"
@@ -142,7 +143,7 @@ pub(crate) fn initializer_blocks_keep_first_failure_before_unavailable_tail() {
 }
 
 #[test]
-pub(crate) fn initializer_blocks_keep_declared_noninteger_capture_and_scratch_gates() {
+pub(crate) fn initializer_blocks_keep_declared_capture_and_nonscalar_scratch_gates() {
     for (ty, value) in [
         ("boolean", "true"),
         ("string", "\"x\""),
@@ -159,7 +160,6 @@ pub(crate) fn initializer_blocks_keep_declared_noninteger_capture_and_scratch_ga
         );
     }
     for source in [
-        "|false|{n<uint8>:{unused<boolean>:{bad<uint8>:255+1;->true};->4};<T>:{v:n;-><int32>}}",
         "|false|{flag<boolean>:{unused<string>:{bad<uint8>:255+1;->\"x\"};->true};row<{n<uint8>}>:{|flag|->n<uint8>:4};<T>:{v:row.n;-><int32>}}",
         "|false|{row<{n<uint8>}>:{unused<string>:{bad<uint8>:255+1;->\"x\"};->n<uint8>:4};<T>:{v:row.n;-><int32>}}",
     ] {

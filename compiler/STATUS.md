@@ -210,9 +210,10 @@ Dependency-ordered commits:
 1. Complete: shared scalar binding evaluation preserves boolean-block behavior.
    All 740 library/743 native tests, fmt and Clippy pass. Log:
    `/tmp/meowy-scalar-binding-tests.log`.
-2. Use that binding path in integer blocks. Keep declared-kind/mutation gates and
-   integer primaries; test local predicates, aliases, shadowing, unused boolean tails,
-   first errors and required-type scratch boundaries.
+2. Complete: integer blocks use shared scalar binding evidence. All 740 library/746
+   native tests, fmt and Clippy pass. Log: `/tmp/meowy-integer-boolean-tests.log`.
+   Alias/scope/primary/tail/error checks and mutation/effect/type/capture gates pass;
+   required-type boolean scratch remains unavailable.
 3. Add independent repeated-work/module/staging coverage, update guides/handoffs and
    run `python3 -B tools/verify.py --compiler` across the series.
 

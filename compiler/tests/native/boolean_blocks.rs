@@ -58,7 +58,7 @@ pub(crate) fn boolean_blocks_keep_effects_mutation_calls_and_record_scratch_gate
 #[test]
 pub(crate) fn boolean_blocks_preserve_integer_block_and_required_scratch_boundaries() {
     for (source, code) in [
-        ("n:{flag:true;->4};<T>:{n:n;-><int32>}", "E211"),
+        ("n:{flag:=true;->4};<T>:{n:n;-><int32>}", "E211"),
         ("flag:{->true};<T>:{flag:flag;-><int32>}", "B001"),
     ] {
         assert_eq!(

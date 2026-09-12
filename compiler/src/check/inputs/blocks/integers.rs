@@ -44,16 +44,8 @@ impl Checker {
             }
             block.input.work = block.input.work.saturating_add(1);
             match stmt {
-                hir::Stmt::Bind { id, value }
-                    if !self.proofs.mutable.contains(id)
-                        && matches!(
-                            self.locals.get(*id),
-                            Some(hir::Type::Int { .. } | hir::Type::Never)
-                        ) =>
-                {
-                    let input = self.input_expr(value, depth, count, &block.locals)?;
-                    block.input.add(&input);
-                    block.locals.integers.insert(*id, input);
+                hir::Stmt::Bind { id, value } => {
+                    self.scalar_binding(*id, value, depth, count, block)?;
                 }
                 hir::Stmt::Emit {
                     target,

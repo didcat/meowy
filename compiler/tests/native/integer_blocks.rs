@@ -29,7 +29,7 @@ pub(crate) fn integer_blocks_select_exact_width_values_and_restore_branch_scope(
 }
 
 #[test]
-pub(crate) fn integer_blocks_skip_only_unselected_effects_and_keep_integer_scratch() {
+pub(crate) fn integer_blocks_skip_only_unselected_effects_and_keep_scalar_scratch() {
     for block in [
         "{|false|d.print(9);->4}",
         "{->4;|false|bad<uint8>:255+1}",
@@ -46,7 +46,7 @@ pub(crate) fn integer_blocks_skip_only_unselected_effects_and_keep_integer_scrat
         "{|true|d.print(9);->4}",
         "{->4;|true|d.print(9)}",
         "{|true|unused:=1;->4}",
-        "{|true|unused:true;->4}",
+        "{|true|unused:{->n:1};->4}",
         "{|get()|unused:1;->4}",
         "{|true|{unused:1};->4}",
     ] {
@@ -159,4 +159,77 @@ pub(crate) fn integer_blocks_preserve_module_staging_and_selected_primary_width(
         }
     }
     case.runs(b"data\nfacade\nentry\n7\n");
+}
+
+#[test]
+pub(crate) fn integer_boolean_scratch_keeps_aliases_scope_and_integer_primary() {
+    for body in [
+        "base<uint8>:4;ready:base==4;alias:!ready;|ready&&!alias|->base;|!(ready&&!alias)|->2",
+        "ready:true;|true|ready:false;|ready|->4;|!ready|->2",
+        "ready:{base:4;->base==4};|ready|->4;|!ready|->2",
+        "->4;unused:false",
+        "->4;unused:true",
+    ] {
+        let source = format!(
+            "d:@\"debug\";n<uint8>:{{{body}}};copy:n;<T>:{{-><int32[copy]>}};v<T>:[1,2,3,7];d.print(v[4]);d.print(n)"
+        );
+        Case::new(&source).runs(b"7\n4\n");
+    }
+}
+
+#[test]
+pub(crate) fn integer_boolean_scratch_retains_first_predicate_and_unused_tail_errors() {
+    for body in [
+        "ready:base+1==0;|ready|->4;|!ready|->2",
+        "->4;unused:base+1==0",
+        "ready<boolean>:{bad<uint8>:255+1;->true};->4",
+        "|true|ready:base+1==0;->4",
+    ] {
+        let source = format!(
+            "#é#\n|false|{{base<uint8>:255;n<uint8>:{{{body}}};copy:n;<T>:{{value:copy;-><int32>}}}}"
+        );
+        let error = meowy::compile(&source).unwrap_err().remove(0);
+        assert_eq!(error.code, "E107", "{source}: {error:?}");
+        let start = source
+            .find("base+1")
+            .or_else(|| source.find("255+1"))
+            .unwrap();
+        assert_eq!(error.span.start, start);
+    }
+}
+
+#[test]
+pub(crate) fn integer_boolean_scratch_preserves_mutation_effect_type_and_capture_gates() {
+    for body in [
+        "ready:=true;->4",
+        "->4;unused:get()",
+        "ready:{d.print(9);->true};->4",
+        "ready:\"x\";->4",
+        "ready:{->n:4};->4",
+        "ready:mutable;->4",
+    ] {
+        let source = format!(
+            "d:@\"debug\";get<boolean>:(){{d.print(9);->true}};mutable:=true;n:{{{body}}};<T>:{{value:n;-><int32>}}"
+        );
+        let output = Case::new(&source).command("run", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E211\""), "{source}: {error}");
+    }
+    for (source, code) in [
+        ("n<uint8>:{ready:true;->ready}", "E207"),
+        ("<T>:{ready:true;-><int32>}", "B001"),
+        (
+            "f<int32>:(flag<boolean>){n:{ready:flag;->4};<T>:{value:n;-><int32>};->1}",
+            "E211",
+        ),
+        ("flag:true;f<int32>:(){n:{ready:flag;->4};->n}", "B001"),
+    ] {
+        assert_eq!(
+            meowy::compile(source).unwrap_err()[0].code,
+            code,
+            "{source}"
+        );
+    }
 }
