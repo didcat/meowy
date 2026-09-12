@@ -46,8 +46,9 @@ select branches from eligible boolean locals, integer comparisons and short-circ
 logic, preserving predicate values, errors and selected work. Immutable boolean scratch
 is supported inside record initializers. Boolean block initializers support immutable
 scalar bindings, nested blocks, eligible branches and retained tail work/errors.
-Integer blocks also select eligible branches with exact widths, integer-only scratch
-and first-error stopping. Checking never runs module initialization.
+Integer blocks also select eligible branches with exact widths, immutable integer/boolean
+scratch and first-error stopping. Boolean tails never replace the integer primary.
+Checking never runs module initialization.
 Boolean fields/exports as predicate inputs, conditional module exports, helper calls,
 non-integer/mutable required scratch and full required evaluation remain separate.
 

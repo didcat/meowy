@@ -81,20 +81,20 @@ shifts, mutable scratch and helper calls remain separate capabilities.
 
 ## Block initializers
 
-A supported integer block uses immutable eligible integer bindings and selects one
-primary emission targeting that block. Matcher branches reuse eligible predicate
-evidence, including boolean inputs from enclosing scopes and integer comparisons.
+A supported integer block uses immutable eligible integer and boolean bindings and
+selects one integer primary emission targeting that block. Matcher branches reuse
+eligible predicate evidence, including boolean inputs from enclosing scopes and integer comparisons.
 Selected branches retain local scope; every visited condition and tail statement
 contributes work. Skipped bodies contribute none. Nested eligible blocks are supported.
 
 ```meowy
 debug : @"debug"
-pick : true
 capacity <uint8> : {
     base <uint8> : 4
+    pick : base == 4
     | pick | -> base
     | !pick | -> 2
-    unused : base + 1
+    unused : false
 }
 <Items> : { -> <int32[capacity]> }
 items <Items> : [3, 7]
@@ -119,10 +119,15 @@ are skipped, selected tails and cached module forwarding. Independent roots star
 fresh. Blocks and predicates share the 64-level/4096-visit evaluator bounds; other
 frontend and ownership limits remain independent.
 
-Integer blocks still require integer-only scratch. Evaluated boolean/record scratch,
-assignments, named/outer emissions, helper calls, selected standalone expression blocks
-and restarts remain unavailable. Checking/building never execute initialization;
-ordinary runtime values, effects and source evaluation order remain unchanged.
+Boolean scratch retains its own value, source error and work, including aliases and
+nested boolean blocks. Its work and errors contribute to the integer initializer;
+its boolean value never replaces the integer primary. Unused boolean tails are checked
+even after an emission, and branch-local bindings do not escape their scope.
+
+Evaluated record/string/float scratch, mutation, named/outer emissions, helper calls,
+selected standalone expression blocks and restarts remain unavailable. Checking/building
+never execute initialization; ordinary runtime values, effects and source evaluation
+order remain unchanged.
 
 ### Boolean block initializers
 
@@ -172,8 +177,8 @@ those evaluator limits; these are not full-language E220 counters.
 
 Selected standalone expression blocks, named/outer emissions, record-valued scratch,
 mutation and evaluated helper calls remain unavailable inside boolean blocks. Integer
-blocks retain integer-only scratch; boolean scratch inside required type blocks and
-boolean field/export inputs remain separate capabilities.
+and boolean blocks retain independently typed primaries. Boolean scratch inside required
+type blocks and boolean field/export inputs remain separate capabilities.
 
 ## Record-field inputs
 

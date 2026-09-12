@@ -233,3 +233,84 @@ pub(crate) fn integer_boolean_scratch_preserves_mutation_effect_type_and_capture
         );
     }
 }
+
+#[test]
+pub(crate) fn integer_boolean_scratch_charges_unused_values_and_aliases_on_every_read() {
+    let tail = (1..12)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    for (body, heavy) in [
+        (format!("->4;unused:{{v0:1;{tail}->true}}"), true),
+        (format!("->4;unused:{{v0:1;{tail}->false}}"), true),
+        (format!("->4;|false|unused:{{v0:1;{tail}->true}}"), false),
+        (
+            format!("ready:{{v0:1;{tail}->true}};alias:ready;|alias|->4;|!alias|->2"),
+            true,
+        ),
+    ] {
+        let data = format!("n<uint8>:{{{body}}};->width:n");
+        let files = [
+            ("data.mwy", data.as_str()),
+            ("facade.mwy", "m:@\"./data.mwy\";->m"),
+        ];
+        let separate = (0..20)
+            .map(|id| format!("<T{id}>:{{n:m.width;-><int32[n]>}};"))
+            .collect::<String>();
+        let repeated = (0..20)
+            .map(|id| format!("n{id}:m.width;"))
+            .collect::<String>();
+        for profile in ["debug", "release"] {
+            let output =
+                super::file_modules::case(&format!("m:@\"./facade.mwy\";{separate}"), &files)
+                    .command("check", &["--profile", profile, "--json"]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let output = super::file_modules::case(
+                &format!("m:@\"./facade.mwy\";<T>:{{{repeated}-><int32>}}"),
+                &files,
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if heavy {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            } else {
+                assert!(output.status.success(), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn integer_boolean_scratch_preserves_imported_values_and_module_staging() {
+    let case = super::file_modules::case(
+        "m:@\"./facade.mwy\";d:@\"debug\";<T>:{n<uint8>:m;-><int32[n+m.width]>};v<T>:[7];d.print(\"entry\");d.print(v[1]);d.print(m+0)",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->width<uint8>:4",
+            ),
+            (
+                "facade.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";n<uint8>:{base:m.width;ready:base==4;alias:ready;|alias|->base;|!alias|->2;unused:false};->n;->width:n;d.print(\"facade\")",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        for profile in ["debug", "release"] {
+            let output = case.command(action, &["--profile", profile]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stdout.is_empty());
+            assert!(output.stderr.is_empty());
+        }
+    }
+    case.runs(b"data\nfacade\nentry\n7\n4\n");
+}

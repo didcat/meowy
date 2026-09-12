@@ -23,26 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Integer initializers now select eligible branches with exact-width values, scoped
-bindings and retained condition/tail work. Evaluation stops at the first known failure;
-declared noninteger kinds stay outside integer evidence. Module forwarding, runtime
-HIR and ordinary flow/type/ownership checks remain unchanged.
+Integer initializers now accept eligible immutable boolean scratch through the shared
+scalar-binding evaluator. Aliases, branch scope, unused tails and first errors retain
+their evidence; boolean values never replace the integer primary. Module forwarding,
+runtime HIR and ordinary type/flow/ownership checks remain intact.
 
-Commits: `093daae` (shared state), `d6da699` (failure/type gates), `27abb0d` (branches).
-Integration checks and the supported guide are complete. Integer scratch remains
-integer-only; see [the supported slice](compiler/docs/COMPUTED_TYPES.md#block-initializers).
+Commits: `94bf4b4` (shared binding evidence), `ea86343` (integer boolean scratch).
+Integration checks and the supported guide are complete; see
+[the supported slice](compiler/docs/COMPUTED_TYPES.md#block-initializers).
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1483
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1488
   Rust tests, 20 Python tests, fmt, Clippy and build.
-- Five focused groups pass. Work, primary/named/record forwarding, check/build silence
-  and startup probes run in debug/release. The updated guide prints `7` in both profiles.
+- Five focused groups pass. Repeated work for true/false tails, aliases, skipped tails,
+  imported values and silent module staging run in debug/release. The updated guide
+  prints `7` in both profiles.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links
-  and catalog/schema checks passed. Log: `/tmp/meowy-integer-branch-gate.log`.
+  and catalog/schema checks passed. Log: `/tmp/meowy-integer-boolean-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -51,7 +52,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Integer branches retain exact values, scope, first errors and work. |
+| Compiler | Integer initializers retain typed boolean scratch, scope, errors and work. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -59,8 +60,8 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Plan eligible boolean scratch in integer initializers, preserving declared types,
-   scope and tail-work/error proofs. See the [compiler handoff](compiler/STATUS.md#next-steps).
-2. Preserve package, borrowed-export and ownership gates. Keep record scratch,
-   selected standalone expression blocks, boolean field/export inputs and required
-   boolean scratch separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.
+1. Plan bounded record scratch inside scalar initializers with whole-ancestor and
+   declared-shape proofs. See the [compiler handoff](compiler/STATUS.md#next-steps).
+2. Preserve package, borrowed-export and ownership gates. Keep selected standalone
+   expression blocks, boolean field/export inputs and required boolean scratch
+   separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.

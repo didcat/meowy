@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean scratch in integer initializers is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean scratch in integer initializers is implemented.
+All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,119 +21,75 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-`inputs/blocks.rs::Block<T>` shares typed primary/error/work state. Integer traversal
-lives in `inputs/blocks/integers.rs`; boolean traversal stays separate. Integer blocks
-now select eligible matcher branches, preserve checked widths, restore branch-local
-`Sources`, and retain condition plus selected tail work. Integer-only scratch remains.
+`inputs/blocks.rs::scalar_binding` shares immutable integer/boolean binding evidence
+between `Block<i128>` and `Block<bool>`. Declared kinds select the evaluator and the
+scoped `Sources` map. Only work and errors enter the enclosing result; boolean scratch
+never replaces an integer primary. Aliases, nested blocks and unused tails retain
+complete evidence. Both true and false boolean tails contribute work when evaluated.
 
-Integer evaluation now stops at the first known failure, including before a primary,
-and clears its value. Capture and scratch gates retain known declared kinds, so a
-failed boolean/string/record initializer cannot become integer evidence. Existing
-inferred `never` inputs retain error-only behavior. Selected failures preserve original
-E107 spans through aliases; ordinary E207/E205/E204/E201 width/primary/scope checks
-remain unchanged. Runtime HIR, initialization, flow and ownership analysis are intact.
+Typed statement traversal lives in `inputs/blocks/{integers,booleans}.rs`. Eligible
+matcher branches share primary/error/work state and restore branch-local bindings.
+Conditions retain their evaluated work even when false; skipped bodies add none.
+The first evaluated failure stops traversal, clears the value and keeps its original
+E107 span through copies and projections. E207/E205/E204/E201 type/primary/scope checks
+and ordinary runtime HIR, initialization, flow and ownership analysis are unchanged.
 
-`inputs/blocks/booleans.rs` evaluates boolean initializers using immutable eligible
-integer/boolean bindings and one selected boolean primary. Nested
-blocks, aliases, comparisons and imported integer leaves reuse typed input evidence.
-Successful blocks retain every visited tail statement; the first evaluated failure
-stops evaluation and clears the result value. Boolean blocks retain scalar scratch.
+`Input<T>` retains value, error and transitive work separately from runtime folding.
+`Checker.inputs` and `Checker.bool_inputs` retain ordinary declarations; `Sources`
+provides scoped initializer evidence. Known declared noninteger bindings never become
+integer value inputs. Inferred `never` retains existing error-only behavior; nested
+unreachable boolean blocks need explicit boolean types when inference loses their kind.
 
-`boolean_stmts` shares primary/error/work state across selected branches and restores
-branch-local `Sources`. Conditions always retain their evaluated work; skipped bodies
-add none. Predicate failures stop selection without inventing a primary; selected
-body/tail failures keep their first source error even after an earlier emission.
-Ordinary duplicate/missing primary and lexical-scope checks remain E205/E204/E201.
-Runtime HIR and ordinary flow, type and ownership checking remain unchanged.
+`inputs/predicates.rs` proves boolean literals/locals, negation, short-circuit logic and
+exact-width integer comparisons. Runtime parameters, mutable or effectful initializers
+and evaluated helpers remain unavailable. Required reads across function scopes do
+not grant ordinary runtime captures. Repeated field comparisons remain unstable flow
+atoms; an immutable boolean binding can supply complementary matcher arms.
 
-`boolean_input` uses the declared binding type, allowing error-only `never` HIR from
-unreachable boolean blocks. Nested unreachable blocks need explicit boolean types
-when inference loses their result kind. Failures retain their original E107 span
-through boolean aliases and record/subrecord projections. Inline predicate blocks
-and skipped short-circuit block operands preserve evaluation order and work.
+Record initializers retain unit primaries and immutable integer/record fields. Complete
+ancestor work/errors survive field paths, subrecord aliases and local compositions.
+`inputs/records/build.rs` accumulates selected statements; `Record::failed` keeps
+error-only paths without inventing branch values. Evaluated unsupported siblings or
+tails prevent eligibility for every selected leaf; unrelated file initialization does not.
 
-`Input<T>` shares source-error and work accounting between integer and boolean
-values. `inputs/predicates.rs` proves literals, immutable boolean locals, negation,
-short-circuit logic and exact-width integer comparisons. `Checker.bool_inputs`
-retains ordinary binding evidence; `Sources.booleans` retains scoped record scratch.
-Runtime constant folding stays separate from eligibility.
+Direct module compositions forward independently eligible named inputs and integer
+primaries. Local-record compositions export a checked record ID and bounded field path;
+`inputs/records/paths.rs::input_path` retains paths/work through facades. Synthetic
+module namespaces never gain whole-record eligibility. Mixed module primaries still
+need integer context in required scratch/arithmetic; ordinary aliases keep record identity.
+Privacy, collisions, widths, startup order and borrowed-export gates remain intact.
 
-`inputs/records/build.rs` accumulates selected statements and restores branch-local
-evidence after each branch. Predicate operands and selected unused bindings retain
-work; skipped operands/branches contribute none. An evaluated predicate failure stops
-selection, and `Record::failed` keeps error-only paths for the complete checked shape.
-Aliases and subrecord projections therefore retain the first E107 source span without
-inventing a branch value. Selected effectful or mutable inputs remain unavailable.
+Every required read charges retained work again; independent roots reset their budget.
+Scalar blocks/predicates share 64 active levels and 4096 visits. Records retain 256 total
+fields and 32 record/evidence levels; type traversal retains 16384 nodes. Frontend and
+ownership limits remain independent; these bootstrap limits are not language E220 counters.
 
-Original runtime HIR, initialization, capture gates and ordinary flow/type/ownership
-checks are unchanged. Repeated field comparisons remain unstable flow atoms; a saved
-immutable boolean can supply complementary matcher arms without changing that analysis.
-Record branches share the 32-level record-evidence recursion bound. Boolean branches,
-nested blocks and predicates share 64 active levels and 4096 visits. Nested record
-and branch evaluation shares depth with its containing evaluator.
-
-Eligible unit-primary local records now preserve computed-input evidence through
-composition, including inline sources, aliases, projected subrecords and extensions
-with named fields. `inputs/records/build.rs` recognizes the checked temporary Bind plus
-unit-primary/field projection HIR and retains complete ancestor eligibility, errors
-and work. The runtime HIR and evaluation order are unchanged.
-
-Direct top-level local-record compositions export fields through a shared checked
-record ID and a bounded field path. `exports.rs::composed_record_inputs` records the
-source evidence; `inputs/records/paths.rs::input_path` combines the retained path with
-an importer projection. Subsequent module compositions preserve that identity/path
-and add forwarding work. Every required read charges all retained work again.
-
-File-module namespace eligibility stays distinct: direct module composition forwards
-individually eligible exports and an eligible integer primary. It never grants
-whole-record eligibility to a synthetic namespace. A local record constructed from
-individual eligible exports can qualify. Mutable, effectful or unsupported siblings
-and tails evaluated inside a record prevent eligibility for all composed fields;
-unrelated file initialization does not. Privacy, exact widths, ordinary collision
-checks, startup order, runtime captures and borrowed-export gates remain intact.
-
-Required integer primary projections of scalar/mixed modules retain their prior
-context rules: explicit integer scratch/arithmetic works; unannotated mixed-module
-scratch and bare mixed-module extents remain unavailable. Required reads inside
-functions work without granting ordinary runtime captures.
-
-Nested records retain unit primaries, immutable integer/record fields, 256 total fields
-and 32 record levels. Declared record shapes preserve known E107 source spans on
-unreachable paths; unannotated unreachable shapes can lose field identity and remain
-B001. Other bootstrap limits remain 4096 visits, 64 resolver/validation levels and
-16384 type nodes; these are not language E220 counters. Native ownership analysis
-may exhaust its own budget before a shape reaches its input-field limit.
-
-Selected standalone expression blocks, named/outer emissions and record scratch
-inside boolean blocks remain gated.
-Boolean/float/text comparisons, boolean record-field/export inputs, boolean required
-scratch and conditional module exports remain separate, along
-with helper purity and full required evaluation. See
-[COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#conditional-record-initializers).
+Record scratch, selected standalone expression blocks, named/outer emissions, mutable
+scratch and helpers remain unavailable inside scalar initializers. Boolean/float/text
+comparisons, boolean record-field/export inputs, required boolean scratch and conditional
+module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `093daae`: shared state/integer accumulator extraction; 737 library/738 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-integer-accumulator-tests.log`.
-- `d6da699`: first-error stopping with declared capture/scratch kinds; 739 library/738
-  native tests, fmt and Clippy passed. Log: `/tmp/meowy-integer-failure-tests.log`.
-- `27abb0d`: integer branches; 740 library/741 native tests, fmt and Clippy passed,
-  plus the added uint64 maximum-value scenario in debug/release. Log:
-  `/tmp/meowy-integer-branch-tests.log`. Evaluator depth uses direct HIR tests;
-  frontend nesting and ownership limits remain independent of evaluator bounds.
-- Five focused integer-block groups pass. Debug/release integration covers condition
-  work even when false, selected/skipped tails, independent roots, primary/named/record
-  forwarding, silent check/build and dependency startup. Widths, scope, primary and
-  first-error diagnostics retain focused coverage.
+- `94bf4b4`: shared scalar binding extraction; all 740 library/743 native tests, fmt
+  and Clippy passed unchanged. Log: `/tmp/meowy-scalar-binding-tests.log`.
+- `ea86343`: boolean scratch in integer initializers; all 740 library/746 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-integer-boolean-tests.log`. Coverage includes
+  aliases, shadowing, unchanged integer primaries, unused tails, source error spans,
+  declared-kind gates, mutation/effects, runtime inputs/captures and required scratch.
+- Five focused boolean-scratch groups pass. Debug/release integration verifies true/
+  false unused tails, alias work, skipped tails, independent roots, imported values,
+  primary/named forwarding, silent check/build and dependency startup.
 - The guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-integer-branch-doc-lg1dfo34/main.mwy`.
+  `/tmp/meowy-integer-boolean-doc-umaidlfk/main.mwy`.
 - `python3 -B tools/verify.py --compiler`: all ten checks passed, including 740
-  library/743 native Rust tests (1483 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-integer-branch-gate.log`.
+  library/748 native Rust tests (1488 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-integer-boolean-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
-  and separate runtime/sanitizer gates were not rerun; release qualification is open.
+- Evaluator depth remains covered by direct HIR tests; frontend and ownership limits
+  remain separate. Runtime implementation, reference fixtures and dependencies are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun; release is open.
 
 ## Prior capabilities and other areas
 
@@ -200,23 +156,11 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: boolean blocks already retain typed integer/boolean binding evidence.
-Extract their binding path for reuse by `Block<i128>`; `Input::add` carries only work
-and errors, so boolean scratch cannot replace the integer primary. Existing scoped
-Sources and first-error stopping remain authoritative.
-
-Dependency-ordered commits:
-
-1. Complete: shared scalar binding evaluation preserves boolean-block behavior.
-   All 740 library/743 native tests, fmt and Clippy pass. Log:
-   `/tmp/meowy-scalar-binding-tests.log`.
-2. Complete: integer blocks use shared scalar binding evidence. All 740 library/746
-   native tests, fmt and Clippy pass. Log: `/tmp/meowy-integer-boolean-tests.log`.
-   Alias/scope/primary/tail/error checks and mutation/effect/type/capture gates pass;
-   required-type boolean scratch remains unavailable.
-3. Add independent repeated-work/module/staging coverage, update guides/handoffs and
-   run `python3 -B tools/verify.py --compiler` across the series.
-
-Keep record scratch, selected standalone expression blocks, named/outer emissions,
-boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
-storage separate. Do not push.
+1. Plan bounded record scratch in scalar initializers using the shared binding path
+   and `inputs/records.rs`. Retain whole-ancestor work/errors, declared shapes and
+   record bounds before enabling field reads from local scratch records. Keep module
+   namespace eligibility distinct from ordinary record eligibility. Record reviewable
+   prerequisite/behavior/integration slices before editing.
+2. Keep selected standalone expression blocks, named/outer emissions, boolean field/
+   export inputs, required boolean scratch, helpers, packages and borrowed storage
+   separate. Do not push.
