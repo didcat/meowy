@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Conditional integer-block evidence is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Conditional integer-block inputs are implemented.
+All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,11 +21,23 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
+`inputs/blocks.rs::Block<T>` shares typed primary/error/work state. Integer traversal
+lives in `inputs/blocks/integers.rs`; boolean traversal stays separate. Integer blocks
+now select eligible matcher branches, preserve checked widths, restore branch-local
+`Sources`, and retain condition plus selected tail work. Integer-only scratch remains.
+
+Integer evaluation now stops at the first known failure, including before a primary,
+and clears its value. Capture and scratch gates retain known declared kinds, so a
+failed boolean/string/record initializer cannot become integer evidence. Existing
+inferred `never` inputs retain error-only behavior. Selected failures preserve original
+E107 spans through aliases; ordinary E207/E205/E204/E201 width/primary/scope checks
+remain unchanged. Runtime HIR, initialization, flow and ownership analysis are intact.
+
 `inputs/blocks/booleans.rs` evaluates boolean initializers using immutable eligible
 integer/boolean bindings and one selected boolean primary. Nested
 blocks, aliases, comparisons and imported integer leaves reuse typed input evidence.
 Successful blocks retain every visited tail statement; the first evaluated failure
-stops evaluation and clears the result value. Integer-block eligibility is unchanged.
+stops evaluation and clears the result value. Boolean blocks retain scalar scratch.
 
 `boolean_stmts` shares primary/error/work state across selected branches and restores
 branch-local `Sources`. Conditions always retain their evaluated work; skipped bodies
@@ -95,28 +107,29 @@ may exhaust its own budget before a shape reaches its input-field limit.
 Selected standalone expression blocks, named/outer emissions and record scratch
 inside boolean blocks remain gated.
 Boolean/float/text comparisons, boolean record-field/export inputs, boolean required
-scratch, conditional module exports and integer-block branches remain separate, along
+scratch and conditional module exports remain separate, along
 with helper purity and full required evaluation. See
 [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#conditional-record-initializers).
 
 ## Actual validation
 
-- `2ffb238`: boolean accumulator extraction; all 736 library/733 native tests, fmt
-  and Clippy passed unchanged. Log: `/tmp/meowy-boolean-accumulator-tests.log`.
-- `c67bd12`: boolean branch evaluation; all 737 library/736 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-boolean-branch-tests.log`. Native cases cover both
-  primary choices, scope, selected/skipped effects and errors, and E205/E204/E201.
-- The 62/63 branch-depth evaluator boundary passes direct HIR tests. The equivalent
-  source probe hit the earlier frontend expression limit; it is not native support
-  at that depth. Existing record shape/ownership limits remain independent as well.
-- Five focused branch groups pass. Debug/release integration verifies condition work
-  even when false, selected versus skipped tail work, independent required roots,
-  silent check/build and dependency startup through module forwarding.
+- `093daae`: shared state/integer accumulator extraction; 737 library/738 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-integer-accumulator-tests.log`.
+- `d6da699`: first-error stopping with declared capture/scratch kinds; 739 library/738
+  native tests, fmt and Clippy passed. Log: `/tmp/meowy-integer-failure-tests.log`.
+- `27abb0d`: integer branches; 740 library/741 native tests, fmt and Clippy passed,
+  plus the added uint64 maximum-value scenario in debug/release. Log:
+  `/tmp/meowy-integer-branch-tests.log`. Evaluator depth uses direct HIR tests;
+  frontend nesting and ownership limits remain independent of evaluator bounds.
+- Five focused integer-block groups pass. Debug/release integration covers condition
+  work even when false, selected/skipped tails, independent roots, primary/named/record
+  forwarding, silent check/build and dependency startup. Widths, scope, primary and
+  first-error diagnostics retain focused coverage.
 - The guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-boolean-branch-doc-tlwju30r/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 737
-  library/738 native Rust tests (1475 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-boolean-branch-gate.log`.
+  `/tmp/meowy-integer-branch-doc-lg1dfo34/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 740
+  library/743 native Rust tests (1483 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-integer-branch-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -167,8 +180,8 @@ in `src/check.rs` carries exact types into expression hints and documentation.
 Immutable initializer evidence is in `src/check/inputs.rs`, recorded by ordinary
 binding checking in `src/check/statements.rs` and consumed by scalar required reads.
 
-Integer block evidence lives in `src/check/inputs/blocks.rs`; boolean block state and
-branch traversal live in `src/check/inputs/blocks/booleans.rs`. Required-only constant
+Shared scalar block state lives in `src/check/inputs/blocks.rs`; typed traversal lives
+in `src/check/inputs/blocks/{integers,booleans}.rs`. Required-only constant
 materialization is in `src/check/expressions.rs`. Runtime constant folding remains separate.
 
 Whole-record evidence is in `src/check/inputs/records.rs`; direct required field lookup
@@ -187,28 +200,10 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: integer blocks currently scan past retained errors and require an emission;
-boolean blocks stop at the first evaluated failure. Share only typed accumulator state
-first, preserving both behaviors. Integer branch support will then adopt first-error
-stopping and retain declared-type gates for error-only `never` HIR during capture.
-
-Dependency-ordered commits:
-
-1. Complete: shared `Block<T>` state and extracted integer accumulation preserve
-   behavior. All 737 library/738 native tests, fmt and Clippy passed. Log:
-   `/tmp/meowy-integer-accumulator-tests.log`.
-2. Complete: integer blocks stop at the first error and preserve declared-kind
-   capture/scratch gates. All 739 library/738 native tests, fmt and Clippy passed.
-   Log: `/tmp/meowy-integer-failure-tests.log`. Known noninteger declarations stay
-   outside integer evidence; inferred `never` retains existing error-only behavior.
-3. Complete: all 740 library/741 native tests, fmt and Clippy passed; the added
-   uint64 maximum-value scenario also passed focused debug/release execution. Log:
-   `/tmp/meowy-integer-branch-tests.log`. Widths, primary/scope and selected/skipped
-   effect/error gates pass. Evaluator depth uses direct HIR coverage; frontend limits
-   still apply independently. Integer-only scratch is preserved.
-4. Add repeated-work/module/staging integration, update guides/handoffs and run
-   `python3 -B tools/verify.py --compiler` across the series.
-
-Keep record/boolean scratch inside integer blocks, selected standalone expression
-blocks, named/outer emissions, boolean field/export inputs and required boolean
-scratch separate. No helper, package, ownership or runtime expansion; do not push.
+1. Plan eligible boolean scratch inside integer initializers in `inputs/blocks/integers.rs`,
+   using `Sources.booleans` and existing predicate evidence. Preserve declared-kind gates,
+   first errors, branch-local scope and complete unused/tail work. Keep the integer
+   primary and required-type scratch rules distinct; record reviewable slices first.
+2. Keep record scratch, selected standalone expression blocks, named/outer emissions,
+   boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
+   storage separate. Do not push.

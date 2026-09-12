@@ -53,7 +53,7 @@ runtime branch, and its temporary checking state is restored afterwards.
 
 Inputs may be static integers in the construction scope or immutable integer bindings
 with recorded initializer eligibility. The checker tracks separate evidence over
-checked literals, aliases, supported unary/arithmetic expressions and straight-line
+checked literals, aliases, supported unary/arithmetic expressions and eligible
 integer blocks. Nested immutable integer records also carry complete initializer evidence,
 including the [eligible predicates](#conditional-record-initializers) below.
 Every local value dependency must already have that evidence; a folded constant alone does not
@@ -63,7 +63,7 @@ Required reads can use eligible lexical inputs across function scopes. This does
 enable runtime captures or expose private names from another file. Original runtime
 bindings and application effects remain in the program; checking/building does not
 execute them. Runtime parameters, mutable state and effectful results remain unavailable
-(E211). Integer blocks with effects, mutation or control flow and helper calls remain
+(E211). Evaluated effects, mutation, unsupported control flow and helper calls remain
 unproven; unsupported folded inputs retain B001. Named imported inputs follow the
 [export eligibility rules](#imported-immutable-inputs) below.
 
@@ -81,21 +81,48 @@ shifts, mutable scratch and helper calls remain separate capabilities.
 
 ## Block initializers
 
-A supported integer block has immutable eligible integer bindings and exactly one
-primary emission targeting that block. Nested eligible blocks are supported. Every
-statement is inspected in source order, including unused bindings after the emission;
-an emission does not return early. Assignments, named/outer emissions, calls, branches,
-restarts and other runtime statements do not receive eligibility evidence.
+A supported integer block uses immutable eligible integer bindings and selects one
+primary emission targeting that block. Matcher branches reuse eligible predicate
+evidence, including boolean inputs from enclosing scopes and integer comparisons.
+Selected branches retain local scope; every visited condition and tail statement
+contributes work. Skipped bodies contribute none. Nested eligible blocks are supported.
 
-Evidence retains checked integer values after block locals leave scope, along with
-source failures and transitive work. Required reads use those proven values with their
-original widths. Ordinary runtime reads and initialization remain unchanged. Unused
-integer bindings still contribute work and failures, so they cannot hide an invalid
-operation after the result emission.
+```meowy
+debug : @"debug"
+pick : true
+capacity <uint8> : {
+    base <uint8> : 4
+    | pick | -> base
+    | !pick | -> 2
+    unused : base + 1
+}
+<Items> : { -> <int32[capacity]> }
+items <Items> : [3, 7]
+debug.print(items[2])
+```
 
-The checked result must have a concrete integer type. Unreachable blocks whose HIR
-result was erased to `never` can retain error-only evidence, but do not supply an
-invented integer result. Hidden arithmetic failures remain E107 at their original spans.
+This prints `7`. Selected values keep their exact checked widths, including through
+aliases, named/module-primary exports and record fields. Ordinary type, primary and
+scope checks still apply: branches cannot silently widen a typed value, emit twice,
+omit a required result or expose branch-local names.
+
+Successful evaluation includes unused bindings after the primary; an emission does
+not return early. The first evaluated integer failure retains E107 at its original
+span and stops evaluation, even before a primary or a later unavailable statement.
+Error-only `never` HIR retains no invented integer result. Capture and scratch checks
+preserve declared kinds so known boolean/string/record values cannot become integer
+inputs merely because their initializer failed. Existing inferred error-only inputs
+retain their supported behavior.
+
+Every required read charges retained work again, including conditions whose bodies
+are skipped, selected tails and cached module forwarding. Independent roots start
+fresh. Blocks and predicates share the 64-level/4096-visit evaluator bounds; other
+frontend and ownership limits remain independent.
+
+Integer blocks still require integer-only scratch. Evaluated boolean/record scratch,
+assignments, named/outer emissions, helper calls, selected standalone expression blocks
+and restarts remain unavailable. Checking/building never execute initialization;
+ordinary runtime values, effects and source evaluation order remain unchanged.
 
 ### Boolean block initializers
 
@@ -145,8 +172,8 @@ those evaluator limits; these are not full-language E220 counters.
 
 Selected standalone expression blocks, named/outer emissions, record-valued scratch,
 mutation and evaluated helper calls remain unavailable inside boolean blocks. Integer
-block eligibility is unchanged; boolean scratch inside required type blocks and boolean field/export inputs remain
-separate capabilities.
+blocks retain integer-only scratch; boolean scratch inside required type blocks and
+boolean field/export inputs remain separate capabilities.
 
 ## Record-field inputs
 
@@ -229,7 +256,7 @@ branches consume depth together. These bootstrap bounds do not implement E220.
 Boolean/float/text comparisons, boolean fields in eligible
 records, boolean module exports as predicate inputs, and boolean scratch inside required
 type blocks remain unavailable. Standalone expression statements in selected branches,
-loops, integer-block branches and conditional module exports are also separate.
+loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
 initializer contains branches.
 

@@ -33,7 +33,7 @@ export and parameter documentation with links through imported types/functions.
 immutable type bindings, aliases, checked integer calculations and primary emissions,
 without runtime storage. The [example](examples/computed-types.mwy) computes a local
 list capacity from an eligible immutable integer initializer and constructs record/list
-types. Eligibility is tracked separately from constant folding and includes straight-line
+types. Eligibility is tracked separately from constant folding and includes eligible
 integer blocks and bounded nested immutable integer records. Field paths and subrecord
 aliases retain complete ancestor evidence in computed scratch/extents. Eligible named
 integer/record file exports and direct integer primaries retain that evidence through
@@ -46,7 +46,8 @@ select branches from eligible boolean locals, integer comparisons and short-circ
 logic, preserving predicate values, errors and selected work. Immutable boolean scratch
 is supported inside record initializers. Boolean block initializers support immutable
 scalar bindings, nested blocks, eligible branches and retained tail work/errors.
-Checking never runs module initialization.
+Integer blocks also select eligible branches with exact widths, integer-only scratch
+and first-error stopping. Checking never runs module initialization.
 Boolean fields/exports as predicate inputs, conditional module exports, helper calls,
 non-integer/mutable required scratch and full required evaluation remain separate.
 
