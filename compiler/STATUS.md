@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Bounded record scratch in scalar initializers is implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean equality predicate evidence is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -160,10 +160,19 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan boolean equality/inequality predicate evidence in `inputs/predicates.rs`.
-   Reuse typed boolean evidence; evaluate both operands in order, retaining first
-   errors and complete work. Preserve the difference from short-circuit `&&`/`||`;
-   cover evaluated runtime/effectful operands and repeated reads in reviewable slices.
-2. Keep boolean record fields/module exports, required boolean/record scratch, wider
-   comparison types, standalone expression blocks, named/outer emissions, helpers,
-   packages and borrowed storage separate. Do not push.
+Inspection: typed boolean evidence already retains values, first errors and work.
+Equality must read both operands in order unless the left fails; a false/true value
+alone cannot skip the right operand as `&&`/`||` can. Reuse existing predicate recursion
+and counters without changing runtime HIR or ordinary typing.
+
+Dependency-ordered commits:
+
+1. Complete: boolean `==`/`!=` uses ordered typed operand evidence. All 741 library/756
+   native tests, fmt and Clippy passed. Log: `/tmp/meowy-boolean-equality-tests.log`.
+   Truth tables, nested records/blocks, first errors and eager operand gates pass.
+2. Add repeated operand-work and runtime/module-staging integration, update guides
+   and both handoffs, then run `python3 -B tools/verify.py --compiler`.
+
+Keep boolean record fields/module exports, required boolean/record scratch, float/text
+comparisons, standalone expression blocks, helpers, packages and borrowed storage
+separate. Do not push.

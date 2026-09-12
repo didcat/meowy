@@ -61,6 +61,23 @@ impl Checker {
                 input.value = right.value;
             }
             ExprKind::Binary { op, left, right }
+                if matches!(op.as_str(), "==" | "!=")
+                    && left.ty == Type::Bool
+                    && right.ty == Type::Bool =>
+            {
+                let a = self.predicate_expr(left, depth + 1, count, locals)?;
+                input.add(&a);
+                if input.error.is_some() {
+                    return Some(input);
+                }
+                let b = self.predicate_expr(right, depth + 1, count, locals)?;
+                input.add(&b);
+                if input.error.is_none() {
+                    let (a, b) = (a.value?, b.value?);
+                    input.value = Some(if op == "==" { a == b } else { a != b });
+                }
+            }
+            ExprKind::Binary { op, left, right }
                 if matches!(op.as_str(), "==" | "!=" | "<" | "<=" | ">" | ">=")
                     && matches!(left.ty, Type::Int { .. })
                     && left.ty == right.ty =>
