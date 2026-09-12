@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Conditional integer-block inputs are implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean scratch in integer initializers is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -200,10 +200,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan eligible boolean scratch inside integer initializers in `inputs/blocks/integers.rs`,
-   using `Sources.booleans` and existing predicate evidence. Preserve declared-kind gates,
-   first errors, branch-local scope and complete unused/tail work. Keep the integer
-   primary and required-type scratch rules distinct; record reviewable slices first.
-2. Keep record scratch, selected standalone expression blocks, named/outer emissions,
-   boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
-   storage separate. Do not push.
+Inspection: boolean blocks already retain typed integer/boolean binding evidence.
+Extract their binding path for reuse by `Block<i128>`; `Input::add` carries only work
+and errors, so boolean scratch cannot replace the integer primary. Existing scoped
+Sources and first-error stopping remain authoritative.
+
+Dependency-ordered commits:
+
+1. Complete: shared scalar binding evaluation preserves boolean-block behavior.
+   All 740 library/743 native tests, fmt and Clippy pass. Log:
+   `/tmp/meowy-scalar-binding-tests.log`.
+2. Use that binding path in integer blocks. Keep declared-kind/mutation gates and
+   integer primaries; test local predicates, aliases, shadowing, unused boolean tails,
+   first errors and required-type scratch boundaries.
+3. Add independent repeated-work/module/staging coverage, update guides/handoffs and
+   run `python3 -B tools/verify.py --compiler` across the series.
+
+Keep record scratch, selected standalone expression blocks, named/outer emissions,
+boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
+storage separate. Do not push.
