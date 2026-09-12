@@ -1,15 +1,9 @@
+use super::Block;
 use crate::check::{
     Checker,
     inputs::{Input, Sources},
 };
 use crate::hir;
-
-pub(crate) struct Block {
-    pub(crate) target: hir::BlockId,
-    pub(crate) locals: Sources,
-    pub(crate) input: Input<bool>,
-    pub(crate) emitted: bool,
-}
 
 impl Checker {
     pub(crate) fn boolean_block(
@@ -38,7 +32,7 @@ impl Checker {
         stmts: &[hir::Stmt],
         depth: usize,
         count: &mut usize,
-        block: &mut Block,
+        block: &mut Block<bool>,
     ) -> Option<()> {
         for stmt in stmts {
             *count += 1;

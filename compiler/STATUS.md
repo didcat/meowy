@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Branch-aware boolean initializer inputs are implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Conditional integer-block evidence is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -187,11 +187,24 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan conditional integer-block evidence in `inputs/blocks.rs`, using the proven
-   boolean branch/predicate approach. Preserve selected integer width/value, primary
-   uniqueness, tail work/errors and branch-local scope. Inspect the existing integer
-   failure path before sharing an accumulator; separate structural changes from
-   new accepted behavior and retain integer-only scratch unless separately planned.
-2. Keep selected standalone expression blocks, record scratch, named/outer emissions,
-   boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
-   storage separate. Record reviewable slices before implementing; do not push.
+Inspection: integer blocks currently scan past retained errors and require an emission;
+boolean blocks stop at the first evaluated failure. Share only typed accumulator state
+first, preserving both behaviors. Integer branch support will then adopt first-error
+stopping and retain declared-type gates for error-only `never` HIR during capture.
+
+Dependency-ordered commits:
+
+1. Complete: shared `Block<T>` state and extracted integer accumulation preserve
+   behavior. All 737 library/738 native tests, fmt and Clippy passed. Log:
+   `/tmp/meowy-integer-accumulator-tests.log`.
+2. Add first-error stopping with declared-kind gates before branch support. Early
+   failure must not classify declared boolean/string/record values as integers;
+   verify capture and scratch boundaries with retained-error regressions.
+3. Add integer selected-branch evaluation while retaining integer-only scratch. Cover
+   widths, primary/scope gates, selected/skipped effects/errors and evaluator bounds.
+4. Add repeated-work/module/staging integration, update guides/handoffs and run
+   `python3 -B tools/verify.py --compiler` across the series.
+
+Keep record/boolean scratch inside integer blocks, selected standalone expression
+blocks, named/outer emissions, boolean field/export inputs and required boolean
+scratch separate. No helper, package, ownership or runtime expansion; do not push.
