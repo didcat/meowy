@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean block-initializer inputs are implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Branch-aware boolean initializer evidence is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -175,10 +175,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan branch-aware boolean blocks in `inputs/blocks.rs`, reusing predicate evidence
-   and the scoped-branch approach in `inputs/records/build.rs`. Prove selected primary
-   uniqueness, complete tail work, scoped bindings and first-error propagation before
-   lifting the gate. Keep any accumulator refactor separate from behavior changes.
-2. Keep integer-block branches, record scratch in boolean blocks, named/outer emissions,
-   boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
-   storage separate. Record reviewable slices before implementing; do not push.
+Inspection: boolean block evaluation already retains primary state and first errors.
+A shared accumulator across selected statement lists can preserve primary uniqueness,
+while saved `Sources` restores branch-local bindings. Reuse `predicate_expr`; do not
+change ordinary flow proofs, runtime HIR or integer-block eligibility.
+
+Dependency-ordered commits:
+
+1. Complete: boolean statement accumulation lives in `inputs/blocks/booleans.rs`.
+   All 736 library/733 native tests, fmt and Clippy pass with unchanged behavior.
+   Log: `/tmp/meowy-boolean-accumulator-tests.log`.
+2. Add bounded selected-branch evaluation using eligible predicates. Include accepted
+   execution, duplicate/missing primary gates, selected/skipped effects, scoped locals,
+   first errors and recursion boundaries with the implementation.
+3. Add independent repeated-work/module/staging probes and update guides/handoffs.
+   Run `python3 -B tools/verify.py --compiler` across the series.
+
+Keep selected standalone expression blocks, integer-block branches, record scratch,
+named/outer emissions, boolean field/export inputs and required boolean scratch
+separate. No helper purity, ownership, package or runtime expansion; do not push.
