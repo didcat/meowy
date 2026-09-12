@@ -236,3 +236,80 @@ pub(crate) fn branching_boolean_blocks_retain_first_predicate_body_and_tail_erro
         assert_eq!(error.span.start, start);
     }
 }
+
+#[test]
+pub(crate) fn branching_boolean_blocks_charge_conditions_and_selected_tail_work() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let separate = (0..20)
+        .map(|id| format!("<T{id}>:{{n:m.width;-><int32[n]>}};"))
+        .collect::<String>();
+    let repeated = (0..20)
+        .map(|id| format!("n{id}:m.width;"))
+        .collect::<String>();
+    for (body, heavy) in [
+        (format!("->true;|true|unused:{{v0:1;{tail}->1}}"), true),
+        (format!("->true;|false|unused:{{v0:1;{tail}->1}}"), false),
+        (format!("->true;|{{v0:1;{tail}->false}}|unused:1"), true),
+    ] {
+        let data = format!("flag:{{{body}}};row:{{|flag|unused:1;->width:4}};->row");
+        let files = [
+            ("data.mwy", data.as_str()),
+            ("facade.mwy", "m:@\"./data.mwy\";->m"),
+        ];
+        for profile in ["debug", "release"] {
+            let output =
+                super::file_modules::case(&format!("m:@\"./facade.mwy\";{separate}"), &files)
+                    .command("check", &["--profile", profile, "--json"]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let output = super::file_modules::case(
+                &format!("m:@\"./facade.mwy\";<T>:{{{repeated}-><int32>}}"),
+                &files,
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if heavy {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            } else {
+                assert!(output.status.success(), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn branching_boolean_blocks_preserve_module_staging_and_startup_order() {
+    let case = super::file_modules::case(
+        "m:@\"./facade.mwy\";d:@\"debug\";<T>:{-><int32[m.width]>};v<T>:[7];d.print(\"entry\");d.print(v[1])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->width<uint8>:4",
+            ),
+            (
+                "facade.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";flag:{n:m.width;pick:n==4;|pick|->true;|!pick|->false;|false|d.print(\"skipped\");unused:n+1};row:{|flag|->width:4;|!flag|->width:2};->row;d.print(\"facade\")",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        for profile in ["debug", "release"] {
+            let output = case.command(action, &["--profile", profile]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stdout.is_empty());
+            assert!(output.stderr.is_empty());
+        }
+    }
+    case.runs(b"data\nfacade\nentry\n7\n");
+}

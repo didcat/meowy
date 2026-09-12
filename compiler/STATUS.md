@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Branch-aware boolean initializer evidence is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Branch-aware boolean initializer inputs are implemented.
+All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,11 +21,18 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-`inputs/blocks.rs::boolean_block` evaluates straight-line boolean initializers using
-immutable eligible integer/boolean bindings and one direct boolean primary. Nested
+`inputs/blocks/booleans.rs` evaluates boolean initializers using immutable eligible
+integer/boolean bindings and one selected boolean primary. Nested
 blocks, aliases, comparisons and imported integer leaves reuse typed input evidence.
 Successful blocks retain every visited tail statement; the first evaluated failure
 stops evaluation and clears the result value. Integer-block eligibility is unchanged.
+
+`boolean_stmts` shares primary/error/work state across selected branches and restores
+branch-local `Sources`. Conditions always retain their evaluated work; skipped bodies
+add none. Predicate failures stop selection without inventing a primary; selected
+body/tail failures keep their first source error even after an earlier emission.
+Ordinary duplicate/missing primary and lexical-scope checks remain E205/E204/E201.
+Runtime HIR and ordinary flow, type and ownership checking remain unchanged.
 
 `boolean_input` uses the declared binding type, allowing error-only `never` HIR from
 unreachable boolean blocks. Nested unreachable blocks need explicit boolean types
@@ -49,8 +56,9 @@ inventing a branch value. Selected effectful or mutable inputs remain unavailabl
 Original runtime HIR, initialization, capture gates and ordinary flow/type/ownership
 checks are unchanged. Repeated field comparisons remain unstable flow atoms; a saved
 immutable boolean can supply complementary matcher arms without changing that analysis.
-Branch traversal shares the 32-level record-evidence recursion bound; predicates share
-64 active levels and 4096 visits. Nested record/branch depths consume the bound together.
+Record branches share the 32-level record-evidence recursion bound. Boolean branches,
+nested blocks and predicates share 64 active levels and 4096 visits. Nested record
+and branch evaluation shares depth with its containing evaluator.
 
 Eligible unit-primary local records now preserve computed-input evidence through
 composition, including inline sources, aliases, projected subrecords and extensions
@@ -84,7 +92,8 @@ B001. Other bootstrap limits remain 4096 visits, 64 resolver/validation levels a
 16384 type nodes; these are not language E220 counters. Native ownership analysis
 may exhaust its own budget before a shape reaches its input-field limit.
 
-Branches/named/outer emissions and record scratch inside boolean blocks remain gated.
+Selected standalone expression blocks, named/outer emissions and record scratch
+inside boolean blocks remain gated.
 Boolean/float/text comparisons, boolean record-field/export inputs, boolean required
 scratch, conditional module exports and integer-block branches remain separate, along
 with helper purity and full required evaluation. See
@@ -92,22 +101,24 @@ with helper purity and full required evaluation. See
 
 ## Actual validation
 
-- `20927c1`: boolean block initialization and declared-type capture; all 736 library/
-  730 native tests, fmt and Clippy passed. Log: `/tmp/meowy-boolean-block-tests.log`.
-- All seven boolean-block native groups pass, including nested/scoped bindings,
-  retained failures before/after the primary, effects and unchanged integer/required
-  scratch gates. Debug/release integration verifies tail work charged on repeated
-  forwarded reads, independent roots, imported leaves, silent check/build, startup
-  order, inline predicates and skipped block effects.
+- `2ffb238`: boolean accumulator extraction; all 736 library/733 native tests, fmt
+  and Clippy passed unchanged. Log: `/tmp/meowy-boolean-accumulator-tests.log`.
+- `c67bd12`: boolean branch evaluation; all 737 library/736 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-boolean-branch-tests.log`. Native cases cover both
+  primary choices, scope, selected/skipped effects and errors, and E205/E204/E201.
+- The 62/63 branch-depth evaluator boundary passes direct HIR tests. The equivalent
+  source probe hit the earlier frontend expression limit; it is not native support
+  at that depth. Existing record shape/ownership limits remain independent as well.
+- Five focused branch groups pass. Debug/release integration verifies condition work
+  even when false, selected versus skipped tail work, independent required roots,
+  silent check/build and dependency startup through module forwarding.
 - The guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-boolean-block-doc-xmmgn5_h/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 736
-  library/733 native Rust tests (1469 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-boolean-block-gate.log`.
+  `/tmp/meowy-boolean-branch-doc-tlwju30r/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 737
+  library/738 native Rust tests (1475 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-boolean-branch-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- The prior 256/257 field evidence boundary is checker-only; its 256-field native
-  probe exhausted the borrow-origin budget. No larger native-shape claim is made.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; release qualification is open.
 
@@ -156,8 +167,9 @@ in `src/check.rs` carries exact types into expression hints and documentation.
 Immutable initializer evidence is in `src/check/inputs.rs`, recorded by ordinary
 binding checking in `src/check/statements.rs` and consumed by scalar required reads.
 
-Block evidence lives in `src/check/inputs/blocks.rs`; required-only constant materialization
-is in `src/check/expressions.rs`. Runtime constant folding remains separate.
+Integer block evidence lives in `src/check/inputs/blocks.rs`; boolean block state and
+branch traversal live in `src/check/inputs/blocks/booleans.rs`. Required-only constant
+materialization is in `src/check/expressions.rs`. Runtime constant folding remains separate.
 
 Whole-record evidence is in `src/check/inputs/records.rs`; direct required field lookup
 is in `src/check/type_values/fields.rs`. Native coverage is `tests/native/computed_fields.rs`.
@@ -175,24 +187,11 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: boolean block evaluation already retains primary state and first errors.
-A shared accumulator across selected statement lists can preserve primary uniqueness,
-while saved `Sources` restores branch-local bindings. Reuse `predicate_expr`; do not
-change ordinary flow proofs, runtime HIR or integer-block eligibility.
-
-Dependency-ordered commits:
-
-1. Complete: boolean statement accumulation lives in `inputs/blocks/booleans.rs`.
-   All 736 library/733 native tests, fmt and Clippy pass with unchanged behavior.
-   Log: `/tmp/meowy-boolean-accumulator-tests.log`.
-2. Complete: selected branches share primary/error/work state and restore scoped
-   bindings. All 737 library/736 native tests, fmt and Clippy passed; log:
-   `/tmp/meowy-boolean-branch-tests.log`. Primary/scope and selected/skipped error
-   gates pass. The 62/63 evaluator-depth boundary is checker-only: the equivalent
-   source probe reaches the earlier frontend expression limit.
-3. Add independent repeated-work/module/staging probes and update guides/handoffs.
-   Run `python3 -B tools/verify.py --compiler` across the series.
-
-Keep selected standalone expression blocks, integer-block branches, record scratch,
-named/outer emissions, boolean field/export inputs and required boolean scratch
-separate. No helper purity, ownership, package or runtime expansion; do not push.
+1. Plan conditional integer-block evidence in `inputs/blocks.rs`, using the proven
+   boolean branch/predicate approach. Preserve selected integer width/value, primary
+   uniqueness, tail work/errors and branch-local scope. Inspect the existing integer
+   failure path before sharing an accumulator; separate structural changes from
+   new accepted behavior and retain integer-only scratch unless separately planned.
+2. Keep selected standalone expression blocks, record scratch, named/outer emissions,
+   boolean field/export inputs, required boolean scratch, helpers, packages and borrowed
+   storage separate. Record reviewable slices before implementing; do not push.

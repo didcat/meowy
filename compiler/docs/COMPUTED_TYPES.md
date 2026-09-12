@@ -100,8 +100,8 @@ invented integer result. Hidden arithmetic failures remain E107 at their origina
 ### Boolean block initializers
 
 A boolean initializer block can bind immutable eligible integers and booleans and
-emit one direct boolean primary. Nested boolean/integer blocks, comparisons, aliases
-and imported integer leaves reuse their existing evidence. Successful evaluation
+select one boolean primary through eligible matcher branches. Nested boolean/integer
+blocks, comparisons, aliases and imported integer leaves reuse their existing evidence. Successful evaluation
 inspects every statement after the emission too; an emission does not return early.
 
 ```meowy
@@ -109,7 +109,8 @@ debug : @"debug"
 ready : {
     count <uint8> : 4
     valid : count == 4
-    -> valid
+    | valid | -> true
+    | !valid | -> false
     unused : count + 1
 }
 settings : {
@@ -127,15 +128,24 @@ no boolean value is invented. A declared boolean binding can preserve error-only
 `never` HIR on unreachable paths. Nested unreachable bindings need their own declared
 boolean type when inference loses the result kind.
 
+Matcher conditions reuse eligible predicate evidence. Selected statement lists share
+one primary result and retain their visited tail work; branch-local bindings do not
+escape their scope. Duplicate and missing primary diagnostics remain E205/E204.
+Skipped branches contribute no evaluation work or effects, while their conditions
+still contribute work even when false. A failed condition stops selection and keeps
+its original source error. Ordinary source and flow checks still apply.
+
 Blocks also work directly as record predicates or short-circuit operands. Skipped
 operands do not contribute evaluation work or effects. Runtime blocks remain in HIR,
 and checking/building never execute initialization. Every required record-field read
 charges retained boolean-block work again, including work forwarded through aliases
-and modules. Existing 64-level/4096-visit predicate bounds remain in effect.
+and modules. Branches, nested blocks and predicate operands share the existing
+64-level/4096-visit evaluation bounds. Frontend nesting limits can be reached before
+those evaluator limits; these are not full-language E220 counters.
 
-Branches, named/outer emissions, record-valued scratch, mutation and evaluated helper
-calls remain unavailable inside boolean blocks. Integer block eligibility is unchanged;
-boolean scratch inside required type blocks and boolean field/export inputs remain
+Selected standalone expression blocks, named/outer emissions, record-valued scratch,
+mutation and evaluated helper calls remain unavailable inside boolean blocks. Integer
+block eligibility is unchanged; boolean scratch inside required type blocks and boolean field/export inputs remain
 separate capabilities.
 
 ## Record-field inputs
