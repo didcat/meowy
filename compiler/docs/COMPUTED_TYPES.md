@@ -76,7 +76,7 @@ Direct extents outside those roots retain their existing supported profile.
 
 The [example](../examples/computed-types.mwy) calculates a capacity of four from an
 eligible immutable `uint8` record field. Scalar scratch produces no runtime locals, and documentation preserves
-its actual integer signature. Floating-point and text scratch, comparisons,
+its actual integer signature. Floating-point/text scratch and comparisons,
 shifts, mutable scratch and helper calls remain separate capabilities.
 
 ## Boolean scratch
@@ -150,7 +150,7 @@ the same cached source. A true/false left value does not skip the right operand.
 first evaluated failure stops evaluation and retains its original source span.
 Mixed-module primaries project when compared with a boolean; comparing two complete
 module records remains outside this slice. Use `!module == !module` for explicit
-primary comparisons. Integer/float/text comparisons inside required blocks remain separate.
+primary comparisons. Float/text comparisons inside required blocks remain separate.
 
 Operand-tree checking has its own 4096-node/64-level bounds, including skipped syntax,
 and consumes frontend checking work. Evaluation retains the shared required-root
@@ -158,6 +158,46 @@ work/depth bounds; skipped evaluation is not charged. Independent roots reset th
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
 Direct calls, inline boolean blocks and unsupported operators remain unavailable even
 in skipped syntax. Conditional type selection and required record scratch remain separate.
+
+### Integer comparisons
+
+Required booleans support integer `==`, `!=`, `<`, `>`, `<=` and `>=`. Operands can use
+eligible locals, record fields, module primaries and the supported integer arithmetic:
+
+```meowy
+limits : {
+    -> minimum <int8> : -3
+    -> capacity <uint8> : 4
+}
+<Flags> : {
+    enough : limits.capacity >= 4
+    ordered : limits.minimum < 0
+    same : limits.capacity + 1 == 5
+    ready : enough && ordered && same
+    -> <(ready<>)[2]>
+}
+flags <Flags> : [false, true]
+debug : @"debug"
+debug.print(flags[2])
+```
+
+This prints `true`. Declared widths and signedness remain exact; compatible operand
+contexts give literals their width without converting named values. For example,
+`1 + 2 < limits.capacity` checks the literals as `uint8`. Mixed integer widths report
+E213, unrepresentable literals E216 and invalid evaluated arithmetic E107.
+Unsigned negation remains invalid. Comparisons produce booleans, not integer extents.
+
+Operand types and literal ranges are checked before evaluation, even when a logical
+operator skips a comparison. Skipped comparisons read no initializer evidence, charge
+no evaluation work and perform no arithmetic. Evaluated operands use the existing
+required integer checks from left to right; a failing left operand stops the right
+read. Each source read retains its original error span and transitive work.
+
+Mixed-module primaries work in comparisons and arithmetic; two complete records still
+cannot be compared in required blocks. Required reads inside functions do not grant
+runtime captures. Checking/building remain silent and preserve module initialization.
+Float/text comparisons, direct calls, inline blocks and conditional type selection
+remain separate capabilities.
 
 ## Block initializers
 
@@ -420,7 +460,7 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Float/text comparisons remain unavailable; required blocks also keep integer comparisons gated.
+Float/text comparisons remain unavailable. Required blocks support the integer comparisons above.
 Standalone expression statements in selected branches, loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
 initializer contains branches.

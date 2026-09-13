@@ -238,4 +238,38 @@ mod tests {
         assert!(program.body.stmts.is_empty());
         assert!(program.locals.is_empty());
     }
+    #[test]
+    pub(crate) fn required_integer_comparisons_skip_arithmetic_and_preserve_operand_order() {
+        use crate::check::{
+            inputs::Input,
+            type_values::{MAX_WORK, Work},
+        };
+        let mut checker = checker();
+        checker.inputs.insert(
+            0,
+            Input {
+                value: Some(255),
+                error: None,
+                work: MAX_WORK,
+            },
+        );
+        checker.type_work = Some(Work::default());
+        assert!(matches!(
+            checker
+                .type_scalar(&expression("false&&(small+1==0)"), None)
+                .unwrap(),
+            Value::Static {
+                value: Constant::Bool(false),
+                ..
+            }
+        ));
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 2);
+        for (value, failed) in [("(1/0)==bad", "1/0"), ("bad!=(1/0)", "row.n+1")] {
+            let source =
+                format!("row:{{->n<uint8>:255}};bad:row.n+1;<T>:{{flag:{value};->flag<>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "E107");
+            assert_eq!(error.span.start, source.find(failed).unwrap());
+        }
+    }
 }

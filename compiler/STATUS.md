@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Required integer comparisons are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Required integer comparisons and focused integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,24 +21,24 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required type blocks support boolean `!`, `&&`, `||`, `==` and `!=` over literals,
-static scratch and eligible local/field/module inputs. `booleans/forms.rs` checks all
-supported operand names, paths and types before evaluation, including skipped syntax.
-The bounded check loads no initializer evidence and charges no evaluation visits.
-`booleans.rs::required_boolean` evaluates left-to-right and materializes `Value::Static`
-without runtime storage. Integer validation/materialization and extents stay separate.
+Required booleans support integer `==`, `!=`, `<`, `>`, `<=` and `>=`, including
+supported arithmetic, locals, fields and module primaries. `type_values/integers.rs`
+resolves operand contexts with required lexical hints and existing integer literal
+rules. Named widths remain exact; signed minima and literal ranges are checked before
+evaluation. Boolean/whole-record distinctions remain intact; float/text comparisons stay gated.
 
-Logical operators skip unnecessary right reads, including retained work/errors and
-unavailable runtime/mutable/effectful inputs. Direct calls, inline blocks and unsupported
-operators remain outside the checked syntax even when skipped. Equality charges both
-reads unless the left fails; the first evaluated error keeps its original source span.
-Mixed-module primaries project against boolean operands; whole-record equality stays gated.
+`required_integer` uses existing integer input validation and `integer_result`
+materialization. Operands are evaluated left-to-right; a failing left operand stops
+the right read. Evaluated sources retain transitive work and original failure spans.
+Short-circuited comparisons perform no arithmetic or initializer reads, while operand
+names/types/literal ranges are still checked. Integer scratch and extent paths are preserved.
 
-Each evaluated source read charges initializer/ancestor work again; static scratch
-aliases charge local reads. Evaluation shares required-root work/depth limits. Operand
-checking separately bounds all syntax to 4096 nodes/64 active levels and uses frontend
-flow work. Function-scoped required reads do not grant runtime captures or remove
-runtime initialization. Numeric comparisons and conditional type selection remain separate.
+Required `!`, `&&`, `||` and boolean equality keep their existing operand checks and
+source evidence. `form_work` shares bounded checking across boolean/integer syntax,
+separate from evaluation visits. Static scratch leaves no runtime storage. Required
+reads inside functions do not grant captures; module startup still runs normally,
+including failures hidden from a skipped required read. Conditional type selection
+and inline blocks remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -122,24 +122,25 @@ ownership limits remain independent; these bootstrap limits are not language E22
 
 Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
 mutable scratch and helpers remain unavailable inside scalar initializers. Float/text
-comparisons, numeric comparisons in required blocks and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
+comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `e637137`: operand checking and required logical operators; 750 library/786 native
-  tests, fmt and Clippy passed. Log: `/tmp/meowy-required-logic-tests.log`.
-- `0ff01b1`: required boolean equality; 752 library/787 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-required-equality-tests.log`.
-- Nine focused checker tests and 13 native groups pass, including truth values,
-  all-operand shape bounds, no runtime storage, skipped work/errors, equality read
-  costs, first-error ordering, function scopes and kind/privacy/capture gates.
-  Module integration retains original dependency spans, silent check/build, diamond
-  initialization and runtime overflow even after a successful skipped required read.
+- `0a0e600`: shared integer materialization/hints; 753 library/790 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-integer-result-tests.log`.
+- `e290793`: integer operand checking; 754 library/790 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-integer-forms-tests.log`.
+- `917dd51`: comparison evaluation; 755 library/792 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-required-comparisons-tests.log`.
+- Focused comparison integration passes: two checker tests and five native groups
+  cover values, erased scratch, arithmetic/field/module inputs, exact widths, skipped
+  work, repeated reads, independent roots, operand error order and dependency byte spans.
+  Check/build remain silent; diamonds initialize once and skipped reads retain runtime failures.
 - The guide prints `true` in debug/release:
-  `/tmp/meowy-required-operators-doc-j88p9g09/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 753
-  library/790 native Rust tests (1543 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-required-operators-gate.log`.
+  `/tmp/meowy-required-comparisons-doc-rju0518k/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 756
+  library/795 native Rust tests (1551 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-required-comparisons-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -203,7 +204,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, required numeric comparisons, helper
+Whole-record module inputs, conditional module exports, conditional type selection, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -211,27 +212,20 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: comparisons need width/literal checking without initializer reads for
-skipped operands. Reuse lexical type hints and existing integer literal/context rules.
-Evaluated operands must reuse required integer validation/materialization, preserving
-integer scratch/extents and stopping before the right operand if the left fails.
+Required integer comparisons are complete across `0a0e600` (shared materialization),
+`e290793` (operand checking) and `917dd51` (evaluation). The following integration/
+documentation slice passes the final gate and guide execution.
 
-Dependency-ordered commits:
+Next, plan conditional type selection in `src/check/type_values.rs`. Read the matcher
+and compile-time contracts before choosing skipped-branch validation. Record ordered commits:
 
-1. Complete: required hints and integer result materialization are extracted without
-   behavior changes. All 753 library/790 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-integer-result-tests.log`. Committed as `0a0e600`.
-2. Complete: exact integer operand checking passes 754 library/790 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-integer-forms-tests.log`. Arithmetic/literal/name/
-   field contexts, signed minima, width errors and evidence-free checking pass.
-   Valid integer comparisons remain gated in this prerequisite. Committed as `e290793`.
-3. Complete: integer equality/ordering passes 755 library/792 native tests, fmt
-   and Clippy. Log: `/tmp/meowy-required-comparisons-tests.log`. Truth values,
-   arithmetic/field/primary reads, widths, skipped runtime inputs and scope gates pass.
-   Commit evaluated comparisons separately from operand checking.
-4. Verify transitive work, skipped inputs, dependency spans and initialization;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
+1. Separate required statement traversal/state where needed, preserving lexical scope,
+   one primary type result, tail checking and shared work/depth/node budgets.
+2. Add bounded matcher selection using checked required booleans. Preserve evaluated
+   condition work/errors, branch-local scope and duplicate/missing primary diagnostics.
+3. Verify selected/skipped branches, nested aliases, function scopes and silent staging;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep float/text comparisons, conditional type selection, inline boolean blocks,
-whole-module records, conditional exports, required record scratch, helpers, packages
-and borrowed storage separate. Do not push.
+Keep float/text comparisons, inline boolean blocks, whole-module records, conditional
+module exports, required record scratch, helpers, packages and borrowed storage separate.
+Do not push.
