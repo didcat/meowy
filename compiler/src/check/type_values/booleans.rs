@@ -80,7 +80,28 @@ impl Checker {
                     }
                     return self.required_boolean(right);
                 }
-                ExprKind::Binary { op, left, right } if matches!(op.as_str(), "==" | "!=") => {
+                ExprKind::Binary { op, left, right }
+                    if matches!(op.as_str(), "==" | "!=" | "<" | ">" | "<=" | ">=") =>
+                {
+                    if let Some(ty) = self.integer_comparison_form(
+                        op,
+                        left,
+                        right,
+                        self.type_work.as_ref().unwrap().depth,
+                        &mut 0,
+                    )? {
+                        let left = self.required_integer(left, &ty)?;
+                        let right = self.required_integer(right, &ty)?;
+                        return Ok(match op.as_str() {
+                            "==" => left == right,
+                            "!=" => left != right,
+                            "<" => left < right,
+                            ">" => left > right,
+                            "<=" => left <= right,
+                            ">=" => left >= right,
+                            _ => unreachable!(),
+                        });
+                    }
                     let left = self.required_boolean(left)?;
                     let right = self.required_boolean(right)?;
                     return Ok(if op == "==" {

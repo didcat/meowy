@@ -224,9 +224,11 @@ Dependency-ordered commits:
 2. Complete: exact integer operand checking passes 754 library/790 native tests,
    fmt and Clippy. Log: `/tmp/meowy-integer-forms-tests.log`. Arithmetic/literal/name/
    field contexts, signed minima, width errors and evidence-free checking pass.
-   Valid integer comparisons remain gated until evaluation is connected. Commit this slice.
-3. Enable required integer equality/ordering with focused value, scope, error and
-   eligibility regressions. Preserve boolean and whole-record comparison rules.
+   Valid integer comparisons remain gated in this prerequisite. Committed as `e290793`.
+3. Complete: integer equality/ordering passes 755 library/792 native tests, fmt
+   and Clippy. Log: `/tmp/meowy-required-comparisons-tests.log`. Truth values,
+   arithmetic/field/primary reads, widths, skipped runtime inputs and scope gates pass.
+   Commit evaluated comparisons separately from operand checking.
 4. Verify transitive work, skipped inputs, dependency spans and initialization;
    update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
 

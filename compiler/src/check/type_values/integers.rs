@@ -1,9 +1,21 @@
 use crate::ast::{self, ExprKind};
-use crate::check::{Checker, Result, Value};
+use crate::check::{Checker, Constant, Result, Value};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
+    pub(crate) fn required_integer(&mut self, expr: &ast::Expr, ty: &Type) -> Result<i128> {
+        self.scalar_input(expr)?;
+        let Value::Static {
+            value: Constant::Int(value),
+            ..
+        } = self.integer_result(expr, Some(ty))?
+        else {
+            unreachable!()
+        };
+        Ok(value)
+    }
+
     pub(crate) fn integer_comparison_form(
         &mut self,
         op: &str,
@@ -200,5 +212,30 @@ mod tests {
                 .unwrap_err();
             assert_eq!(error.code, code, "{left} < {right}: {error:?}");
         }
+    }
+    #[test]
+    pub(crate) fn required_integer_comparisons_keep_values_and_erase_scratch() {
+        use crate::check::type_values::Work;
+        for (a, b) in [(-3, 4), (4, 4), (7, -2)] {
+            for (op, result) in [
+                ("==", a == b),
+                ("!=", a != b),
+                ("<", a < b),
+                (">", a > b),
+                ("<=", a <= b),
+                (">=", a >= b),
+            ] {
+                let mut checker = Checker::new();
+                checker.type_work = Some(Work::default());
+                assert!(
+                    matches!(checker.type_scalar(&expression(&format!("{a}{op}{b}")), None).unwrap(),
+                        Value::Static { value: Constant::Bool(value), .. } if value == result
+                    )
+                );
+            }
+        }
+        let program = crate::compile("<T>:{a<uint8>:3;flag:a+1==4;->flag<>}").unwrap();
+        assert!(program.body.stmts.is_empty());
+        assert!(program.locals.is_empty());
     }
 }

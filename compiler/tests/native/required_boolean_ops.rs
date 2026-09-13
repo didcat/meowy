@@ -51,7 +51,6 @@ pub(crate) fn required_boolean_equality_preserves_module_projection_and_capture_
     ).runs(b"false\ntrue\nready\n");
     for (value, code) in [
         ("m==m", "B001"),
-        ("m.width==m.width", "B001"),
         ("true==m.width", "E222"),
         ("m.label!=m.label", "B001"),
         ("false==m.bad", "E211"),

@@ -63,10 +63,7 @@ impl Checker {
                         .integer_comparison_form(op, left, right, depth + 1, count)?
                         .is_some()
                     {
-                        return Err(Diagnostic::unsupported(
-                            "required integer comparisons",
-                            expr.span,
-                        ));
+                        return Ok(Type::Bool);
                     }
                     if !matches!(op.as_str(), "==" | "!=") {
                         return Err(self.type_unavailable(expr)?);
