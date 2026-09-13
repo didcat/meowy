@@ -233,9 +233,14 @@ Dependency-ordered commit plan:
    for bindings, emissions and extents inside required roots. Contextual widths, unary
    and binary arithmetic, scopes, scalar-kind gates and native capacities pass
    797 library/830 native tests, fmt and Clippy. Log: `/tmp/meowy-integer-operands.log`.
-3. Verify exact work/depth limits, original errors, skipped work, docs and staging.
-4. Update guides/handoffs, execute the guide in both profiles, and run
-   `python3 -B tools/verify.py --compiler` across the series.
+   Committed as `918eced`.
+3. Complete: exact once-only block work, shared visit/depth limits, restored scopes,
+   left/right error order, extent bounds, skipped work, source reuse, docs and staging
+   pass 800 library/832 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-integer-operands-integration.log`.
+4. Split review: integration plus guide/handoff replacement approaches 400 lines.
+   Commit integration separately; update guides/handoffs, execute the guide in both
+   profiles and run `python3 -B tools/verify.py --compiler` across the series.
 
 Keep boolean/comparison block operands, empty/null results, scalar-primary records,
 skipped documented declarations, fallback arms, mutable/float/text/reference fields,

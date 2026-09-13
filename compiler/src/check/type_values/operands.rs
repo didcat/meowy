@@ -169,4 +169,104 @@ mod tests {
             assert_eq!(error.code, code, "{body}: {error:?}");
         }
     }
+    #[test]
+    pub(crate) fn required_integer_blocks_charge_once_and_restore_work_state() {
+        use super::*;
+        use crate::ast::StmtKind;
+        use crate::check::type_values::{MAX_DEPTH, MAX_WORK, Work};
+        let parsed = crate::parser::parse("n:({local:1;->2})+({->2})").unwrap();
+        let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(Work::default());
+        let scopes = checker.scopes.len();
+        assert!(checker.integer_blocks(value).unwrap());
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+        assert!(matches!(
+            checker.integer_arithmetic(value, None).unwrap(),
+            Value::Static {
+                value: Constant::Int(4),
+                ..
+            }
+        ));
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 13);
+        for (visits, depth, accepted) in [
+            (MAX_WORK - 13, 0, true),
+            (MAX_WORK - 12, 0, false),
+            (0, MAX_DEPTH, false),
+        ] {
+            checker.type_work = Some(Work {
+                visits,
+                depth,
+                nodes: 0,
+            });
+            let result = checker.integer_arithmetic(value, None);
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, depth);
+            assert!(!checker.required);
+            assert_eq!(
+                checker
+                    .required_value("local", value.span)
+                    .err()
+                    .unwrap()
+                    .code,
+                "E201"
+            );
+        }
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn required_integer_blocks_preserve_failure_order_and_extent_bounds() {
+        for (expr, failed) in [
+            ("({->1/0})+bad", "1/0"),
+            ("bad+({->1/0})", "raw.n+1"),
+            ("({->2;tail:1/0})+({->bad})", "1/0"),
+            ("({->bad})+({->1/0})", "raw.n+1"),
+        ] {
+            let source = format!("raw:{{->n<uint8>:255}};bad:raw.n+1;<T>:{{n:{expr};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "E107");
+            assert_eq!(error.span.start, source.find(failed).unwrap());
+        }
+        for (source, code) in [
+            ("<T>:{-><int32[({->1})-2]>}", "E104"),
+            ("<T>:{-><int32[({->65536})+1]>}", "B001"),
+            ("<T>:<int32[({->2})+2]>", "B001"),
+        ] {
+            assert_eq!(
+                crate::compile(source).unwrap_err()[0].code,
+                code,
+                "{source}"
+            );
+        }
+    }
+
+    #[test]
+    pub(crate) fn required_integer_blocks_document_scoped_values_and_preserve_skips() {
+        let source = "#| Items. |#<T>:{#| Count. |#n<uint8>:({#| Base. |#base<uint8>:2;->base})+({->2});-><int32[n]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [("base", "uint8"), ("n", "uint8"), ("T", "int32[4]")] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+        crate::compile("<T>:{n:({|false|->missing();->2})+({->2});|false|unused:({->1/0})+missing;-><int32[n]>}").unwrap();
+        let source = "<T>:{|false|n:({#| Skipped. |#local:1;->2})+2;-><int32>}";
+        assert_eq!(
+            crate::documentation::checked(source, true).unwrap_err()[0].code,
+            "B001"
+        );
+    }
 }
