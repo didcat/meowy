@@ -229,9 +229,13 @@ Dependency-ordered commits:
 2. Complete: named field construction passes 771 library/811 native tests, fmt and
    Clippy. Log: `/tmp/meowy-record-construction-tests.log`. Nested/source-copy fields,
    completed-field reads, selected matchers, initialization/kind/width errors and
-   absent runtime storage pass. Commit the behavior slice.
-3. Verify source errors, limits, documentation and module staging; update guides/handoffs
-   and run `python3 -B tools/verify.py --compiler` across the complete series.
+   absent runtime storage pass. Committed as `3fe7299`.
+3. Complete: source/tail errors, copy/read work, 256-field/32-level bounds,
+   documentation, labels and module staging pass all 773 library/814 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-record-construction-integration.log`.
+4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
+   Commit integration evidence separately, then finish guides/handoffs and run
+   `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep unannotated construction, explicit primary composition, skipped documented
 declarations, standalone branch blocks, fallback arms, mutable/float/text/reference

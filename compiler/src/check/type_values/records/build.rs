@@ -202,4 +202,99 @@ mod tests {
             assert_eq!(error.code, code, "{body}: {error:?}");
         }
     }
+    #[test]
+    pub(crate) fn required_record_construction_preserves_shape_limits_and_failed_scope() {
+        use crate::ast::{Block, Expr, Span, Stmt, StmtKind};
+        use crate::hir::Field;
+        for depth in [32, 33] {
+            let span = Span::new(0, 1);
+            let mut ty = Type::Int {
+                bits: 32,
+                signed: true,
+            };
+            let mut expr = Expr {
+                span,
+                kind: ExprKind::Int("1".into()),
+            };
+            for _ in 0..depth {
+                ty = Type::Record {
+                    primary: Box::new(Type::Null),
+                    fields: vec![Field {
+                        name: "n".into(),
+                        ty,
+                        mutable: false,
+                    }],
+                };
+                expr = Expr {
+                    span,
+                    kind: ExprKind::Block(Block {
+                        span,
+                        label: None,
+                        stmts: vec![Stmt {
+                            span,
+                            kind: StmtKind::Emit {
+                                label: None,
+                                name: Some("n".into()),
+                                ty: None,
+                                mutable: false,
+                                value: expr,
+                            },
+                        }],
+                    }),
+                };
+            }
+            let mut checker = Checker::new();
+            checker.type_work = Some(super::super::super::Work::default());
+            let scopes = checker.scopes.len();
+            let result = checker.record_block(&expr, &ty);
+            if depth == 32 {
+                assert!(matches!(result.unwrap(), Value::Record { .. }));
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(checker.locals.is_empty());
+        }
+        for count in [256, 257] {
+            let fields = (0..count)
+                .map(|id| format!("n{id}<int32>;"))
+                .collect::<String>();
+            let values = (0..count)
+                .map(|id| format!("->n{id}:1;"))
+                .collect::<String>();
+            let source = format!("<R>:<{{{fields}}}>;<T>:{{r<R>:{{{values}}};-><int32>}}");
+            let result = crate::compile(&source);
+            if count == 256 {
+                assert!(result.is_ok(), "{result:?}");
+            } else {
+                assert_eq!(result.unwrap_err()[0].code, "B001");
+            }
+        }
+    }
+
+    #[test]
+    pub(crate) fn required_record_construction_documents_completed_fields() {
+        let source = "<R>:<{width<uint8>}>;#| Items. |#<T>:{#| Record. |#r<R>:{#| Width. |#->width:4};-><int32[r.width]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        let field = model
+            .entries
+            .iter()
+            .find(|entry| {
+                entry.name == "width" && entry.kind == crate::documentation::Kind::Emission
+            })
+            .unwrap();
+        assert!(field.checked);
+        assert_eq!(field.signature, "uint8");
+        assert_eq!(
+            model
+                .entries
+                .iter()
+                .find(|entry| entry.name == "T")
+                .unwrap()
+                .signature,
+            "int32[4]"
+        );
+    }
 }

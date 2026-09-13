@@ -193,7 +193,9 @@ impl Checker {
     ) -> Result<Value> {
         if block.label.is_some() {
             return Err(Diagnostic::unsupported(
-                if expected.is_some() {
+                if expected.is_some_and(|ty| matches!(ty, Type::Record { .. })) {
+                    "labeled required record blocks"
+                } else if expected.is_some() {
                     "labeled required scalar blocks"
                 } else {
                     "labeled computed type blocks"
