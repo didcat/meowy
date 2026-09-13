@@ -59,7 +59,10 @@ pub(crate) fn boolean_fields_keep_ancestor_errors_and_effects_in_predicate_reads
 pub(crate) fn boolean_fields_keep_integer_and_conditional_module_input_gates() {
     for (source, code) in [
         ("row:{->enabled:true};n<uint8>:{->row.enabled}", "E207"),
-        ("row:{->enabled:true};<T>:{v:row.enabled;-><int32>}", "B001"),
+        (
+            "row:{->enabled:true};<T>:{v:=row.enabled;-><int32>}",
+            "B001",
+        ),
         ("row:{->enabled:true};f<boolean>:(){->row.enabled}", "B001"),
     ] {
         assert_eq!(

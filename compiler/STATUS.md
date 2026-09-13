@@ -207,10 +207,14 @@ Dependency-ordered commits:
    All 747 library/777 native tests, fmt and Clippy pass. Log:
    `/tmp/meowy-required-booleans-local.log`. False values, lexical names, kind/scope,
    retained errors, cached work and no-runtime-storage probes pass. Obsolete native
-   gates now cover mutable scratch. Commit this slice.
-3. Integrate boolean record fields and module named/primary reads, with function-scoped
-   required reads and focused native regressions. Keep runtime captures gated.
-4. Verify transitive work, errors and silent staging; update guides/handoffs and run
+   gates now cover mutable scratch. Committed as `ab37924`.
+3. Complete: field/named-export reads pass 747 library/780 native tests, fmt and
+   Clippy. Log: `/tmp/meowy-required-boolean-fields-tests.log`. Scope, kind, privacy
+   and unproved-input rejections pass. Split review separated primary reads to keep
+   each commit within eight files; obsolete fixtures retain mutable-scratch gates.
+4. Enable boolean module primary reads with their focused tests and unchanged runtime
+   capture/whole-module identity gates; validate and commit separately.
+5. Verify transitive work, errors and silent staging; update guides/handoffs and run
    `python3 -B tools/verify.py --compiler` across the series.
 
 Keep boolean operators, conditional type selection, whole-module record inputs,

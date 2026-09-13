@@ -1,5 +1,8 @@
 use crate::ast::{self, ExprKind};
-use crate::check::{Checker, Constant, Result, Value, inputs::Input};
+use crate::check::{
+    Checker, Constant, Result, Value,
+    inputs::{Input, Sources},
+};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
@@ -52,6 +55,16 @@ impl Checker {
                     } => self.bool_inputs.get(&id).cloned(),
                     _ => None,
                 },
+                ExprKind::Field { .. } => {
+                    let (id, ty, path) = self.required_path(expr)?;
+                    if ty != Type::Bool {
+                        return Err(Diagnostic::unsupported(
+                            "computed field without a boolean leaf",
+                            expr.span,
+                        ));
+                    }
+                    self.boolean_field_input(id, &path, &Sources::default())
+                }
                 ExprKind::Group(value) => return self.required_boolean(value),
                 _ => return Err(self.type_unavailable(expr)?),
             }

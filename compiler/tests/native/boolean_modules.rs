@@ -60,7 +60,7 @@ pub(crate) fn boolean_modules_preserve_initializer_and_module_boundaries() {
             "E211",
         ),
         (
-            "m:@\"./data.mwy\";<T>:{flag:m.enabled;-><int32>}",
+            "m:@\"./data.mwy\";<T>:{flag:=m.enabled;-><int32>}",
             "->enabled:true",
             "B001",
         ),
