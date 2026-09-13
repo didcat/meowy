@@ -220,10 +220,11 @@ Dependency-ordered commits:
 
 1. Complete: required hints and integer result materialization are extracted without
    behavior changes. All 753 library/790 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-integer-result-tests.log`. Commit the prerequisite.
-2. Check integer operand shapes with exact contexts, including arithmetic, literals,
-   fields and module primaries. Keep comparisons gated until evaluation is connected;
-   validate width/sign/literal diagnostics and bounded skipped-operand checking.
+   Log: `/tmp/meowy-integer-result-tests.log`. Committed as `0a0e600`.
+2. Complete: exact integer operand checking passes 754 library/790 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-integer-forms-tests.log`. Arithmetic/literal/name/
+   field contexts, signed minima, width errors and evidence-free checking pass.
+   Valid integer comparisons remain gated until evaluation is connected. Commit this slice.
 3. Enable required integer equality/ordering with focused value, scope, error and
    eligibility regressions. Preserve boolean and whole-record comparison rules.
 4. Verify transitive work, skipped inputs, dependency spans and initialization;

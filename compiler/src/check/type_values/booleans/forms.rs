@@ -7,16 +7,26 @@ use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
+    pub(crate) fn form_work(
+        &mut self,
+        expr: &ast::Expr,
+        depth: usize,
+        count: &mut usize,
+    ) -> Result<()> {
+        *count += 1;
+        if depth >= MAX_DEPTH || *count > MAX_WORK || !self.flow.spend(1) {
+            return Err(Work::budget(expr.span));
+        }
+        Ok(())
+    }
+
     pub(crate) fn boolean_form(
         &mut self,
         expr: &ast::Expr,
         depth: usize,
         count: &mut usize,
     ) -> Result<Type> {
-        *count += 1;
-        if depth >= MAX_DEPTH || *count > MAX_WORK || !self.flow.spend(1) {
-            return Err(Work::budget(expr.span));
-        }
+        self.form_work(expr, depth, count)?;
         match &expr.kind {
             ExprKind::Name(name) => match self.required_value(name, expr.span)? {
                 Value::Local { ty, .. }
@@ -43,8 +53,25 @@ impl Checker {
                 Ok(Type::Bool)
             }
             ExprKind::Binary { op, left, right }
-                if matches!(op.as_str(), "&&" | "||" | "==" | "!=") =>
+                if matches!(
+                    op.as_str(),
+                    "&&" | "||" | "==" | "!=" | "<" | ">" | "<=" | ">="
+                ) =>
             {
+                if matches!(op.as_str(), "==" | "!=" | "<" | ">" | "<=" | ">=") {
+                    if self
+                        .integer_comparison_form(op, left, right, depth + 1, count)?
+                        .is_some()
+                    {
+                        return Err(Diagnostic::unsupported(
+                            "required integer comparisons",
+                            expr.span,
+                        ));
+                    }
+                    if !matches!(op.as_str(), "==" | "!=") {
+                        return Err(self.type_unavailable(expr)?);
+                    }
+                }
                 let left = self.boolean_form(left, depth + 1, count)?;
                 let right = self.boolean_form(right, depth + 1, count)?;
                 if matches!(op.as_str(), "==" | "!=")

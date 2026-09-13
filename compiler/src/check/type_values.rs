@@ -1,5 +1,6 @@
 mod booleans;
 mod fields;
+mod integers;
 mod scalars;
 
 use super::{Checker, Result, Scope, Spec, Value, inputs::Input};
