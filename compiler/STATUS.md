@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required integer block operands are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required integer block operands and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,30 +21,33 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Unannotated immutable required block bindings now infer integer/boolean results as
-well as types and unit-primary records. General block/result handling lives in
-`type_values/inferred.rs`; record field/slot inference stays in `records/inferred.rs`.
-`inferred_primary` reuses `type_binding` to classify and materialize checked values.
+Required integer arithmetic now evaluates block operands once in source order.
+`type_values/operands.rs` detects block-containing arithmetic with bounded structural
+work, materializes scoped integer HIR, and reuses ordinary `unary_value`/`binary_values`
+completion. Block-free arithmetic retains its previous input/checking path.
 
-Selected scalar results retain exact integer widths or boolean kinds. Bare integer
-literals keep default widths; explicit annotations and directly emitted nested blocks
-retain existing expected-type behavior. Groups and nested inferred primaries share the
-same required scope/work. Scalar blocks may initialize inferred record fields without
-creating runtime locals or HIR statements.
+Bindings, scalar emissions and list extents inside active required roots use this path.
+Blocks receive the ordinary expected integer context when available, otherwise infer
+their result. Typed values retain exact widths. Groups, unary negation/complement and
+all eight binary integer arithmetic/bitwise operators are supported. Boolean/type/record
+block results remain rejected; boolean/comparison operand blocks stay gated.
 
-Two selected primaries remain E205. Empty inferred results remain E211; type aliases
-still require type results. Mixing named fields with scalar primaries stays gated.
-Range failures remain E216 and arithmetic errors retain E107 with original spans.
-Skipped sources do not run or charge evaluation work; structural and skipped-doc gates
-are preserved. Type-producing blocks and record composition retain their contracts.
+Selected blocks include their local declarations, matcher conditions and tails. Scope
+ends before the next operand; left failures stop right evaluation. Original arithmetic
+and ancestor source spans are preserved. Operator validation is shared with runtime
+checking, including overflow, division and unsigned-negation rules.
 
-All inferred results share required work/depth/node budgets. Materialized aliases reuse
-checked values; original sources retain complete work/errors and independent roots
-reset budgets. Check/build remain silent, module initialization runs normally, and
-function-scoped required reads do not grant runtime captures.
+Detection does not execute blocks or charge evaluation visits. Operand traversal,
+source reads and block execution share work/depth/node budgets. Materialized aliases
+reuse values; independent roots reset budgets. Failed evaluation restores scope,
+required mode and depth. No runtime locals or HIR statements are created.
 
-Empty/null/float/text results, scalar-primary records, direct block operands, mutable
-scratch, whole-module namespaces, fallback arms and helpers remain separate.
+Negative extents retain E104 and capacity limits remain bounded. Extents containing
+blocks outside an active required root remain gated. Module startup, function capture
+restrictions, type identities and skipped-documentation gates are unchanged.
+
+Boolean/comparison block operands, empty/null/float/text results, scalar-primary records,
+mutable scratch, whole-module namespaces, fallback arms and helpers remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -132,23 +135,24 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `d31c39a`: inferred-result module move; 790 library/825 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-inferred-results-refactor.log`.
-- `d40aaf3`: scalar inference; 792 library/826 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-inferred-scalars.log`.
-- `e331775`: integration; 795 library/829 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-inferred-scalars-integration.log`.
-- Five scalar-inference checker tests and four native groups cover selected widths,
-  nested/grouped results, type/record boundaries, work/node/depth limits, source costs,
-  alias reuse, skipped paths, original spans, docs and module/function staging.
-- Inferred-scalar guide prints `7` in debug/release:
-  `/tmp/meowy-inferred-scalars-doc-7ps8edvv/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 795
-  library/829 native Rust tests (1624 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-inferred-scalars-gate.log`.
+- `b646355`: shared checked operator completion; 795 library/829 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-operand-helpers.log`.
+- `918eced`: integer block operands; 797 library/830 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-integer-operands.log`.
+- `593f163`: integration; 800 library/832 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-integer-operands-integration.log`.
+- Five operand checker tests and three native groups cover contextual widths, all
+  operators, exact work, restored state, source-order failures, extent bounds,
+  skipped work, alias reuse, documentation and module/function staging.
+- Integer-operand guide prints `7` in debug/release:
+  `/tmp/meowy-integer-operands-doc-8au6qh_m/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 800
+  library/832 native Rust tests (1632 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-integer-operands-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
+- Runtime behavior, reference fixtures and dependencies are unchanged. Runtime checker
+  operator completion was refactored and passed existing Rust/native tests. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator/record bounds are not native support guarantees.
 
@@ -209,7 +213,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, direct required block operands, helper
+Whole-record module inputs, conditional module exports, required comparison block operands, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -217,31 +221,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: integer eligibility currently traverses inputs before normal HIR constant
-checking. Evaluating blocks in both passes would duplicate their work and declarations.
-Materialize block-containing arithmetic once into checked integer HIR, using ordinary
-operator completion helpers. Keep the block-free path unchanged. Context follows normal
-left/right hints and expected types; no block is evaluated early to discover a width.
-Boolean/comparison block operands remain gated in their structural-form checks.
+Integer block operands are complete across `b646355` (operator helpers), `918eced`
+(operands) and `593f163` (integration). The guide and full compiler gate pass.
 
-Dependency-ordered commit plan:
+Next, investigate integer block operands in required comparisons. Trace
+`integer_comparison_form`, `integer_form`, `boolean_form` and `required_integer`.
+Structural checking must not execute a skipped block merely to discover its width;
+selected comparisons must reuse materialized operands without repeating block work.
+Record dependency-ordered commits after identifying that boundary:
 
-1. Complete: binary/unary completion accepts checked HIR operands. All 795 library/829
-   native tests, fmt and Clippy pass; runtime checking, projections and diagnostics
-   remain unchanged. Log: `/tmp/meowy-operand-helpers.log`. Committed as `b646355`.
-2. Complete: bounded detection and operand materialization reuse checked operators
-   for bindings, emissions and extents inside required roots. Contextual widths, unary
-   and binary arithmetic, scopes, scalar-kind gates and native capacities pass
-   797 library/830 native tests, fmt and Clippy. Log: `/tmp/meowy-integer-operands.log`.
-   Committed as `918eced`.
-3. Complete: exact once-only block work, shared visit/depth limits, restored scopes,
-   left/right error order, extent bounds, skipped work, source reuse, docs and staging
-   pass 800 library/832 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-integer-operands-integration.log`.
-4. Split review: integration plus guide/handoff replacement approaches 400 lines.
-   Commit integration separately; update guides/handoffs, execute the guide in both
-   profiles and run `python3 -B tools/verify.py --compiler` across the series.
+1. Separate bounded comparison operand validation from required operand execution,
+   preserving exact kinds/widths and existing source/error checks.
+2. Support selected integer block comparisons with focused accepted/rejected tests;
+   preserve left/right order and boolean short-circuit behavior.
+3. Verify skipped blocks, budgets, source spans, documentation and module staging;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
 
-Keep boolean/comparison block operands, empty/null results, scalar-primary records,
+Keep boolean-result block operands, empty/null results, scalar-primary records,
 skipped documented declarations, fallback arms, mutable/float/text/reference fields,
-whole-module records, helpers and borrowed storage separate. Commit slices; do not push.
+whole-module records, helpers and borrowed storage separate. Do not push.

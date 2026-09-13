@@ -140,7 +140,7 @@ documentation retains the declared widths and resulting constructed type signatu
 Eligible local/field/module inputs work in function-scoped required blocks without
 allowing runtime captures. Checking/building remain silent and preserve eager module
 initialization, including failures behind skipped required reads. Float/text results,
-mutable scratch and blocks used directly as operator operands remain unsupported.
+mutable scratch and boolean/comparison block operands remain unsupported.
 Scalar result blocks do not accept named field emissions.
 
 ## Inferred scalar blocks
@@ -178,12 +178,53 @@ Type-producing blocks retain type values, and type aliases still require a type 
 Named fields can infer a unit-primary record; records with integer/boolean primaries
 remain gated. A nested unannotated block may also supply an inferred scalar record field.
 Float/text/null results, mutable scratch, fallback arms, skipped documented declarations
-and block expressions used directly as operator operands remain separate.
+and boolean/comparison block operands remain separate.
 
 Inference shares the existing required scopes, source eligibility and work/depth/node
 budgets. Original source reads retain their work and errors, while aliases of materialized
 results reuse checked values. Independent roots reset budgets. No runtime locals are
 created; function capture restrictions and ordinary module startup are preserved.
+
+## Integer block operands
+
+Integer blocks can be operands of required arithmetic and bitwise expressions:
+
+```meowy
+<Items> : {
+    count <uint8> : ({
+        base <uint8> : 2
+        -> base
+    }) + { -> 2 }
+    -> <int32[count + ({ -> 0 })]>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Supported operators are unary `-`/`~` and binary `+`, `-`, `*`, `/`,
+`%`, `&`, `|`, `^`. Operand blocks use the surrounding expected integer width when
+available; otherwise their result is inferred. Already typed operands retain their
+widths. Context follows ordinary operand hints and left-to-right evaluation; a block
+is never evaluated early to discover its type.
+
+Each selected block executes once during required evaluation, including its local
+bindings, matcher conditions and tail statements. Its scope ends before the next
+operand is evaluated. A failure in the left operand prevents evaluating the right;
+arithmetic and ancestor initializer failures retain their original spans. Checked
+operator rules, literal range checks and unsigned-negation restrictions are shared
+with ordinary scalar checking.
+
+Blocks and operators share the existing required work/depth/node budgets. Repeated
+reads of an original source retain its work; materialized aliases reuse values.
+Skipped required matcher bodies remain unevaluated, with existing structural and
+skipped-documentation gates. No runtime locals or statements are introduced.
+
+The same expressions can supply list extents inside an active required root, as in
+the computed type block above. Negative extents remain E104 and bootstrap capacity
+limits still apply. This does not enable block extents in a direct type annotation
+outside such a root. Boolean/comparison operand blocks, noninteger block results,
+helpers, mutable scratch and records with scalar primaries remain separate.
 
 ## Annotated record construction
 
@@ -431,7 +472,8 @@ its namespace as a record.
 Local integer bindings retain their checked width and signedness through aliases,
 subsequent calculations and type queries. Supported expressions are integer literals,
 eligible names, parentheses, unary `-`/`~` and binary `+`, `-`, `*`, `/`, `%`, `&`, `|`,
-`^`. They reuse the scalar checker and constant evaluator. Incompatible widths use
+`^`, plus [integer block operands](#integer-block-operands) inside required evaluation.
+They reuse the scalar checker and constant evaluator. Incompatible widths use
 E213, literal overflow E216 and invalid arithmetic E107. Negative or unrepresentable
 list capacities retain E104. Required arithmetic is checked even inside an unreachable
 runtime branch, and its temporary checking state is restored afterwards.
@@ -581,7 +623,8 @@ read. Each source read retains its original error span and transitive work.
 Mixed-module primaries work in comparisons and arithmetic; two complete records still
 cannot be compared in required blocks. Required reads inside functions do not grant
 runtime captures. Checking/building remain silent and preserve module initialization.
-Float/text comparisons, direct calls and inline operand blocks remain separate capabilities.
+Float/text comparisons, direct calls and inline comparison operand blocks remain separate
+capabilities.
 
 ## Block initializers
 
