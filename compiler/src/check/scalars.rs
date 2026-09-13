@@ -166,6 +166,58 @@ impl Checker {
         }
     }
 
+    pub(crate) fn unary_value(
+        &mut self,
+        op: &str,
+        mut value: hir::Expr,
+        span: Span,
+    ) -> Result<hir::Expr> {
+        if value.ty == Type::Never {
+            return Ok(value);
+        }
+        if matches!(value.ty, Type::Record { .. }) {
+            value = Self::project(value);
+        }
+        let valid = match op {
+            "-" => matches!(
+                value.ty,
+                Type::Int { signed: true, .. } | Type::Float { .. }
+            ),
+            "!" => value.ty == Type::Bool,
+            "~" => matches!(value.ty, Type::Int { .. }),
+            _ => false,
+        };
+        if !valid {
+            return Err(Self::error(
+                "E222",
+                format!("operator `{op}` is not defined for {:?}", value.ty),
+                span,
+            ));
+        }
+        if op == "-"
+            && self.reach != FALSE
+            && let Some(Constant::Int(number)) = self.constant(&value)
+            && number
+                .checked_neg()
+                .is_none_or(|number| !Self::in_range(number, &value.ty))
+        {
+            return Err(Self::error(
+                "E107",
+                format!("negating {number} overflows {:?}", value.ty),
+                span,
+            ));
+        }
+        let ty = value.ty.clone();
+        Ok(hir::Expr {
+            kind: hir::ExprKind::Unary {
+                op: op.into(),
+                value: Box::new(value),
+            },
+            ty,
+            span,
+        })
+    }
+
     pub(crate) fn binary(
         &mut self,
         op: &str,
@@ -206,7 +258,7 @@ impl Checker {
                     }
                 })
         };
-        let mut left = if equality && matches!(context, Some(Type::Record { .. })) {
+        let left = if equality && matches!(context, Some(Type::Record { .. })) {
             let record = context.clone().expect("record context");
             let primary = Self::primary_type(&record);
             self.composed(left, record, Some(&primary))?
@@ -232,7 +284,7 @@ impl Checker {
         } else {
             Self::primary_type(&left.ty)
         };
-        let mut right = if equality && matches!(right_context, Type::Record { .. }) {
+        let right = if equality && matches!(right_context, Type::Record { .. }) {
             let primary = Self::primary_type(&right_context);
             self.composed(right, right_context, Some(&primary))?
         } else {
@@ -241,6 +293,18 @@ impl Checker {
         if boolean {
             self.reach = self.flow.or(self.reach, skipped);
         }
+        self.binary_values(op, left, right, span)
+    }
+
+    pub(crate) fn binary_values(
+        &mut self,
+        op: &str,
+        mut left: hir::Expr,
+        mut right: hir::Expr,
+        span: Span,
+    ) -> Result<hir::Expr> {
+        let boolean = ["&&", "||"].contains(&op);
+        let compare = ["==", "!=", "<", ">", "<=", ">="].contains(&op);
         if !["==", "!="].contains(&op)
             || !matches!(
                 (&left.ty, &right.ty),

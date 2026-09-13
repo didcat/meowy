@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Inferred required scalar blocks and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required integer block operands are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -217,21 +217,25 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inferred scalar blocks are complete across `d31c39a` (result modules), `d40aaf3`
-(scalar results) and `e331775` (integration). The guide and full compiler gate pass.
+Inspection: integer eligibility currently traverses inputs before normal HIR constant
+checking. Evaluating blocks in both passes would duplicate their work and declarations.
+Materialize block-containing arithmetic once into checked integer HIR, using ordinary
+operator completion helpers. Keep the block-free path unchanged. Context follows normal
+left/right hints and expected types; no block is evaluated early to discover a width.
+Boolean/comparison block operands remain gated in their structural-form checks.
 
-Next, investigate integer block expressions as required arithmetic operands. Trace
-`scalar_input`, `integer_form` and `integer_result` before choosing a materialization
-seam; operand validation must not evaluate a block twice or reset its root budget.
-Record dependency-ordered commits after the investigation:
+Dependency-ordered commit plan:
 
-1. Share checked integer operand materialization with exact contextual widths and
-   existing source/error evidence; keep representation changes behavior-preserving.
-2. Support integer blocks inside required arithmetic with focused execution/rejection
-   tests. Preserve source order, nested lexical scope and E107/E207 diagnostics.
-3. Verify budgets, skipped paths and module/function staging; update guides/handoffs
-   and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: binary/unary completion accepts checked HIR operands. All 795 library/829
+   native tests, fmt and Clippy pass; runtime checking, projections and diagnostics
+   remain unchanged. Log: `/tmp/meowy-operand-helpers.log`.
+2. Add bounded block detection and required integer operand materialization, with
+   source-order evaluation, inherited widths, scoped blocks and shared budgets. Wire
+   required scalar bindings/emissions and integer extents; include focused tests.
+3. Verify exact work/depth limits, original errors, skipped work, docs and staging.
+4. Update guides/handoffs, execute the guide in both profiles, and run
+   `python3 -B tools/verify.py --compiler` across the series.
 
-Keep boolean block operands, empty/null results, scalar-primary records, skipped
-documented declarations, fallback arms, mutable/float/text/reference fields, whole-module
-records, helpers and borrowed storage separate. Do not push.
+Keep boolean/comparison block operands, empty/null results, scalar-primary records,
+skipped documented declarations, fallback arms, mutable/float/text/reference fields,
+whole-module records, helpers and borrowed storage separate. Commit slices; do not push.

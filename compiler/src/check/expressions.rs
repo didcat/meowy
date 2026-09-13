@@ -1,4 +1,4 @@
-use super::{Checker, Constant, Result, Value};
+use super::{Checker, Result, Value};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
 use crate::flow::FALSE;
@@ -235,50 +235,8 @@ impl Checker {
                     return Err(Diagnostic::unsupported(format!("unary `{op}`"), expr.span));
                 }
                 let context = self.unary_context(op, value, expected)?;
-                let mut value = self.expr(value, context.as_ref())?;
-                if value.ty == Type::Never {
-                    return Ok(value);
-                }
-                if matches!(value.ty, Type::Record { .. }) {
-                    value = Self::project(value);
-                }
-                let valid = match op.as_str() {
-                    "-" => matches!(
-                        value.ty,
-                        Type::Int { signed: true, .. } | Type::Float { .. }
-                    ),
-                    "!" => value.ty == Type::Bool,
-                    "~" => matches!(value.ty, Type::Int { .. }),
-                    _ => false,
-                };
-                if !valid {
-                    return Err(Self::error(
-                        "E222",
-                        format!("operator `{op}` is not defined for {:?}", value.ty),
-                        expr.span,
-                    ));
-                }
-                if op == "-"
-                    && self.reach != FALSE
-                    && let Some(Constant::Int(number)) = self.constant(&value)
-                    && number
-                        .checked_neg()
-                        .is_none_or(|number| !Self::in_range(number, &value.ty))
-                {
-                    return Err(Self::error(
-                        "E107",
-                        format!("negating {number} overflows {:?}", value.ty),
-                        expr.span,
-                    ));
-                }
-                let ty = value.ty.clone();
-                (
-                    hir::ExprKind::Unary {
-                        op: op.clone(),
-                        value: Box::new(value),
-                    },
-                    ty,
-                )
+                let value = self.expr(value, context.as_ref())?;
+                return self.unary_value(op, value, expr.span);
             }
             ExprKind::Binary { op, left, right } => {
                 return self.binary(op, left, right, expected, expr.span);
