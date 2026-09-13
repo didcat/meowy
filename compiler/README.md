@@ -60,8 +60,8 @@ operand types and work charged only for evaluated inputs. Required integer compa
 preserve exact widths, literal ranges, arithmetic failures and skipped input work.
 Independent boolean matchers select required types with scoped bodies, shared budgets
 and no runtime storage. Skipped bodies retain structural checks without evaluating
-initializers or constructing types. Explicitly annotated integer/boolean block bindings
-reuse this traversal with expected result kinds, nested emissions and tail checks.
+initializers or constructing types. Integer/boolean block bindings reuse this traversal
+with inferred or explicitly expected result kinds, nested emissions and tail checks.
 Required record scratch materializes eligible immutable records and subrecords, keeping
 leaf kinds and ancestor evidence without runtime locals. Copies retain bounded type
 shapes; later field reads reuse the materialized value. Explicit record annotations
@@ -71,9 +71,10 @@ composed through the primary slot, preserving expected field types, source work 
 lexical scope. The completed outer record still requires every field. Unannotated
 required bindings infer immutable records from named fields and composition, while
 type-only blocks retain type-valued results. Integer widths, nested shapes, sorted field
-paths and scope remain checked. Float/text comparisons, unannotated scalar blocks,
-empty composition sources, mutable scratch, whole-module records and helpers remain
-separate.
+paths and scope remain checked. Unannotated scalar blocks retain the selected integer
+width or boolean kind without runtime storage. Float/text comparisons, blocks used
+directly as operator operands, empty composition sources, mutable scratch, whole-module
+records and helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

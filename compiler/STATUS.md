@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Inferred required scalar blocks are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Inferred required scalar blocks and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,31 +21,30 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Unannotated immutable required bindings now infer record results from named fields and
-eligible record composition. `records/inferred.rs` reuses scoped `Output` evaluation;
-type-only block bindings retain `Value::Type`, and type aliases keep their type-only
-entry point. Classification follows checked values and emitted fields, not spelling.
+Unannotated immutable required block bindings now infer integer/boolean results as
+well as types and unit-primary records. General block/result handling lives in
+`type_values/inferred.rs`; record field/slot inference stays in `records/inferred.rs`.
+`inferred_primary` reuses `type_binding` to classify and materialize checked values.
 
-`inferred_slot` adds fields in canonical name order and shifts existing value slots,
-preserving nested leaf paths and exact integer/boolean kinds. Explicit field annotations
-reuse expected-field initialization. Named emissions declare scoped locals after their
-initializers; forwarded fields never introduce local bindings. Inferred values create
-no runtime locals or HIR statements.
+Selected scalar results retain exact integer widths or boolean kinds. Bare integer
+literals keep default widths; explicit annotations and directly emitted nested blocks
+retain existing expected-type behavior. Groups and nested inferred primaries share the
+same required scope/work. Scalar blocks may initialize inferred record fields without
+creating runtime locals or HIR statements.
 
-Composition from local/exported records or nested inline blocks uses shared forwarding.
-Primary/field collisions remain E205. Type-valued primaries mixed with record fields
-and type-valued fields report E211. Only selected required paths contribute inferred
-fields; skipped values remain unevaluated and omitted fields remain absent. Existing
-skipped-documentation and structural gates are retained.
+Two selected primaries remain E205. Empty inferred results remain E211; type aliases
+still require type results. Mixing named fields with scalar primaries stays gated.
+Range failures remain E216 and arithmetic errors retain E107 with original spans.
+Skipped sources do not run or charge evaluation work; structural and skipped-doc gates
+are preserved. Type-producing blocks and record composition retain their contracts.
 
-Shape checks preserve 256 fields and 32 nested records; all constructors share required
-work/depth/node budgets. Original source work and ancestor error spans are retained,
-materialized aliases reuse values, and independent roots reset budgets. Check/build
-remain silent, normal module startup is retained, and function-scoped required reads
-do not grant captures.
+All inferred results share required work/depth/node budgets. Materialized aliases reuse
+checked values; original sources retain complete work/errors and independent roots
+reset budgets. Check/build remain silent, module initialization runs normally, and
+function-scoped required reads do not grant runtime captures.
 
-Scalar/empty/nonrecord primaries, mutable or unsupported field kinds, whole-module
-namespaces, fallback arms and helpers remain separate.
+Empty/null/float/text results, scalar-primary records, direct block operands, mutable
+scratch, whole-module namespaces, fallback arms and helpers remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -133,22 +132,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `fb8912f`: shared output/field evaluation; 784 library/821 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-inferred-prerequisites.log`.
-- `9062e5a`: inferred named fields; 786 library/822 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-inferred-fields.log`.
-- `c8d2a84`: inferred composition; 787 library/823 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-inferred-composition.log`.
-- `4b3efa9`: integration; 790 library/825 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-inferred-integration.log`.
-- Six inferred-record checker tests and four native groups cover widths, sorted/nested
-  paths, type results, scopes, composition, collisions, shape/work bounds, source costs,
-  alias reuse, skipped paths, original spans, documentation and module/function staging.
-- Inferred-record guide prints `7` in debug/release:
-  `/tmp/meowy-inferred-record-doc-v07rghub/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 790
-  library/825 native Rust tests (1615 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-inferred-gate.log`.
+- `d31c39a`: inferred-result module move; 790 library/825 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-inferred-results-refactor.log`.
+- `d40aaf3`: scalar inference; 792 library/826 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-inferred-scalars.log`.
+- `e331775`: integration; 795 library/829 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-inferred-scalars-integration.log`.
+- Five scalar-inference checker tests and four native groups cover selected widths,
+  nested/grouped results, type/record boundaries, work/node/depth limits, source costs,
+  alias reuse, skipped paths, original spans, docs and module/function staging.
+- Inferred-scalar guide prints `7` in debug/release:
+  `/tmp/meowy-inferred-scalars-doc-7ps8edvv/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 795
+  library/829 native Rust tests (1624 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-inferred-scalars-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -212,7 +209,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, unannotated required scalar blocks, helper
+Whole-record module inputs, conditional module exports, direct required block operands, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -220,30 +217,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: `type_binding` already classifies checked integer/boolean, record and type
-values without executing runtime code. Inferred primaries currently use a separate
-record/type-only path. Reuse binding evaluation for primaries; preserve unit-primary
-record gates, type-only aliases, one selected primary and existing annotations.
-Unannotated literals retain default integer widths; named inputs retain exact types.
+Inferred scalar blocks are complete across `d31c39a` (result modules), `d40aaf3`
+(scalar results) and `e331775` (integration). The guide and full compiler gate pass.
 
-Dependency-ordered commit plan:
+Next, investigate integer block expressions as required arithmetic operands. Trace
+`scalar_input`, `integer_form` and `integer_result` before choosing a materialization
+seam; operand validation must not evaluate a block twice or reset its root budget.
+Record dependency-ordered commits after the investigation:
 
-1. Complete: general inferred block/result handling moved to `type_values/inferred.rs`;
-   record field/slot inference stays in `records/inferred.rs`. All 790 library/825
-   native tests, fmt and Clippy pass. Log: `/tmp/meowy-inferred-results-refactor.log`.
-   Committed as `d31c39a`.
-2. Complete: inferred primaries reuse `type_binding` for checked scalar/type/record
-   results. Scalar-primary records remain gated. Widths, nested results, duplicates,
-   scope, type identities and native capacities pass 792 library/826 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-inferred-scalars.log`. Committed as `d40aaf3`.
-3. Complete: selected widths, work/node bounds, 63/64 nested scalar primaries, type
-   identities, source work/alias reuse, skipped paths, original spans and staging pass
-   795 library/829 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-inferred-scalars-integration.log`.
-4. Split review: integration plus guide/handoff changes would exceed 400 lines.
-   Commit integration separately, then update guides/handoffs, execute the guide in
-   both profiles and run `python3 -B tools/verify.py --compiler` across the series.
+1. Share checked integer operand materialization with exact contextual widths and
+   existing source/error evidence; keep representation changes behavior-preserving.
+2. Support integer blocks inside required arithmetic with focused execution/rejection
+   tests. Preserve source order, nested lexical scope and E107/E207 diagnostics.
+3. Verify budgets, skipped paths and module/function staging; update guides/handoffs
+   and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep empty results, mixed scalar-primary records, skipped documented declarations,
-fallback arms, mutable/float/text/reference fields, whole-module records, helpers and
-borrowed storage separate. Commit validated slices; do not push.
+Keep boolean block operands, empty/null results, scalar-primary records, skipped
+documented declarations, fallback arms, mutable/float/text/reference fields, whole-module
+records, helpers and borrowed storage separate. Do not push.

@@ -14,10 +14,11 @@ settings : { -> limits : { -> base <uint8> : { offset <uint8> : 1; -> offset + 1
 values <Counts> : [3, 7]
 ```
 
-Local immutable, unannotated bindings hold supported type values and inferred records.
+Local immutable, unannotated bindings hold supported type values, integers, booleans
+and records.
 Immutable integer bindings may have an explicit integer annotation, such as
-`base <uint8> : 2`. Local type aliases such as `<Count> : <int32>` use the separate type namespace. Nested blocks may produce
-types for these bindings or for computed annotations. Parenthesized expressions and
+`base <uint8> : 2`. Local type aliases such as `<Count> : <int32>` use the separate
+type namespace. Nested blocks may produce types for these bindings or for computed annotations. Parenthesized expressions and
 supported type queries retain their existing behavior. Symbolic type members such as
 `core.int32`, foundation type aliases and imported types preserve their identities.
 
@@ -120,11 +121,10 @@ silently converted. A missing scalar primary reports E204, a second selected pri
 E205, an incompatible scalar kind/width E207, literal overflow E216 and invalid
 arithmetic E107. Boolean results retain true/false values without integer encoding.
 
-Unannotated blocks that emit only a type retain type-valued results; named fields
-can instead construct an inferred record, as described below. Nested scalar bindings
-still need their own annotations, while directly emitted nested blocks inherit the
-containing scalar result kind. Grouping retains the same behavior. Local type aliases
-and immutable integer/boolean scratch remain available inside scalar blocks.
+Unannotated blocks infer their selected scalar, type or record result, as described
+below. Directly emitted nested blocks inside an annotated scalar block inherit that
+block's expected kind and width. A separately bound unannotated block infers its own
+result. Local type aliases and immutable scratch remain available inside scalar blocks.
 
 Scalar and type blocks share lexical scopes, matcher selection and root budgets.
 An emission does not exit the block: selected tail statements still contribute work
@@ -140,8 +140,50 @@ documentation retains the declared widths and resulting constructed type signatu
 Eligible local/field/module inputs work in function-scoped required blocks without
 allowing runtime captures. Checking/building remain silent and preserve eager module
 initialization, including failures behind skipped required reads. Float/text results,
-mutable scratch, unannotated scalar blocks and blocks used directly as operator operands
-remain unsupported. Scalar result blocks do not accept named field emissions.
+mutable scratch and blocks used directly as operator operands remain unsupported.
+Scalar result blocks do not accept named field emissions.
+
+## Inferred scalar blocks
+
+An unannotated immutable block binding in required evaluation can produce an integer
+or boolean from its selected primary:
+
+```meowy
+<Items> : {
+    ready : { -> true }
+    count : {
+        base <uint8> : 2
+        | ready | -> { -> base * 2 }
+        | !ready | -> 2
+    }
+    -> <int32[count]>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Here `ready` is boolean and `count` retains the selected `uint8`
+value. A bare integer literal without an expected type uses its ordinary default width.
+Already typed inputs keep their widths; assigning the result to another width does not
+silently convert it. Nested primary blocks and groups retain the same inference rules.
+
+Exactly one selected primary supplies the result. Two selected primaries report E205,
+including conflicting kinds. Skipped expressions do not supply a result or charge their
+evaluation work. A block with no selected result remains unsupported and reports E211;
+explicitly annotated scalar blocks retain their E204 missing-result check. Literal range
+errors remain E216 and evaluated arithmetic failures retain E107 and original spans.
+
+Type-producing blocks retain type values, and type aliases still require a type result.
+Named fields can infer a unit-primary record; records with integer/boolean primaries
+remain gated. A nested unannotated block may also supply an inferred scalar record field.
+Float/text/null results, mutable scratch, fallback arms, skipped documented declarations
+and block expressions used directly as operator operands remain separate.
+
+Inference shares the existing required scopes, source eligibility and work/depth/node
+budgets. Original source reads retain their work and errors, while aliases of materialized
+results reuse checked values. Independent roots reset budgets. No runtime locals are
+created; function capture restrictions and ordinary module startup are preserved.
 
 ## Annotated record construction
 
@@ -321,8 +363,8 @@ retain their source names without declaring them in the receiving scope.
 Only selected required matcher paths contribute fields. Skipped initializers and nested
 sources are not evaluated. A field present only in a skipped branch is absent from
 this required result, and reading it reports E201. Duplicate selected fields or primary
-compositions report E205. Empty results, scalar primaries, mutable fields, unsupported
-field kinds, fallback arms and skipped documented declarations remain gated.
+compositions report E205. Empty results, records with scalar primaries, mutable fields,
+unsupported field kinds, fallback arms and skipped documented declarations remain gated.
 
 Nested records, grouped blocks, existing record sources and inline composition share
 the same scope and evaluation budgets. Materialized aliases reuse checked values while
