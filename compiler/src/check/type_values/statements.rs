@@ -1,27 +1,17 @@
+use super::Output;
 use crate::ast::{Stmt, StmtKind};
 use crate::check::{Checker, Result, Spec, Value};
 use crate::diagnostic::Diagnostic;
-use crate::hir::Type;
 
 impl Checker {
-    pub(crate) fn type_statements(
-        &mut self,
-        stmts: &[Stmt],
-        expected: Option<&Type>,
-        result: &mut Option<Value>,
-    ) -> Result<()> {
+    pub(crate) fn type_statements(&mut self, stmts: &[Stmt], output: &mut Output) -> Result<()> {
         for stmt in stmts {
-            self.type_statement(stmt, expected, result)?;
+            self.type_statement(stmt, output)?;
         }
         Ok(())
     }
 
-    pub(crate) fn type_statement(
-        &mut self,
-        stmt: &Stmt,
-        expected: Option<&Type>,
-        result: &mut Option<Value>,
-    ) -> Result<()> {
+    pub(crate) fn type_statement(&mut self, stmt: &Stmt, output: &mut Output) -> Result<()> {
         self.type_work.as_mut().unwrap().spend(stmt.span)?;
         match &stmt.kind {
             StmtKind::Bind {
@@ -57,14 +47,14 @@ impl Checker {
                 mutable: false,
                 value,
             } => {
-                let value = match expected {
+                let value = match output.ty.as_ref() {
                     Some(ty) => self.scalar_emission(value, ty)?,
                     None => Value::Type(self.type_value(value)?),
                 };
-                if result.replace(value).is_some() {
+                if output.value.replace(value).is_some() {
                     return Err(Self::error(
                         "E205",
-                        if expected.is_some() {
+                        if output.ty.is_some() {
                             "required scalar primary may be emitted twice"
                         } else {
                             "computed type primary may be emitted twice"
@@ -73,11 +63,11 @@ impl Checker {
                     ));
                 }
             }
-            StmtKind::Match { arms } => self.type_match(arms, stmt.span, expected, result)?,
+            StmtKind::Match { arms } => self.type_match(arms, stmt.span, output)?,
             StmtKind::Expr(value) => return Err(self.type_unavailable(value)?),
             _ => {
                 return Err(Diagnostic::unsupported(
-                    if expected.is_some() {
+                    if output.ty.is_some() {
                         "required scalar block statement"
                     } else {
                         "computed type block statement"

@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required record scratch and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Annotated required record construction is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -214,20 +214,24 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Required record scratch is complete across `83cf6e3` (source lookup), `978b40e`
-(materialization) and `02fdfa5` (integration). The guide and full compiler gate pass.
+Inspection: required traversal currently carries separate expected-type and primary
+arguments. Wrap those in result state, then add checked field slots for explicitly
+annotated immutable unit-primary records. Reuse scalar/record readers for field values,
+introduce each emitted name only after its initializer completes, and require every
+field exactly once. Keep implicit unit primaries; explicit primary composition remains
+separate. Reuse existing 256-field/32-level shapes and required root budgets.
 
-Next, plan explicitly annotated required record construction. Reuse `Value::Record`,
-record shape/leaf evidence and required statement/matcher traversal. Keep unannotated
-blocks type-producing. Record dependency-ordered commits before implementation:
+Dependency-ordered commits:
 
-1. Add bounded record result state for an expected immutable unit-primary record shape,
-   preserving existing scalar/type result behavior and scope/budget handling.
-2. Check named field emissions against that shape, preserving exact leaf kinds/widths,
-   initialization and duplicate-field diagnostics. Construct only compile-time values.
-3. Add nested record/source-copy, matcher, budget and staging regressions; update guides/
-   handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: required result state is consolidated without behavior changes. All
+   769 library/810 native tests, fmt and Clippy pass. Log:
+   `/tmp/meowy-required-output-tests.log`. Commit the prerequisite.
+2. Add record-shaped result state, named field checking and compile-time construction,
+   including nested records/source copies and matcher-selected emissions. Keep focused
+   kind/width/initialization/scope/no-runtime-storage regressions with the behavior.
+3. Verify source errors, limits, documentation and module staging; update guides/handoffs
+   and run `python3 -B tools/verify.py --compiler` across the complete series.
 
-Keep unannotated record/scalar construction, skipped documented declarations, standalone
-branch blocks, fallback arms, float/text/reference fields, whole-module namespaces,
-conditional exports, helpers, packages and borrowed storage separate. Do not push.
+Keep unannotated construction, explicit primary composition, skipped documented
+declarations, standalone branch blocks, fallback arms, mutable/float/text/reference
+fields, whole-module namespaces, helpers and borrowed storage separate. Do not push.

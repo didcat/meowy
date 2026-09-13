@@ -1,6 +1,6 @@
-use super::{MAX_DEPTH, MAX_WORK, Work};
+use super::{MAX_DEPTH, MAX_WORK, Output, Work};
 use crate::ast::{Expr, Span, Stmt, StmtKind};
-use crate::check::{Checker, Result, Scope, Value};
+use crate::check::{Checker, Result, Scope};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
@@ -50,8 +50,7 @@ impl Checker {
         &mut self,
         arms: &[(Option<Expr>, Box<Stmt>)],
         span: Span,
-        expected: Option<&Type>,
-        primary: &mut Option<Value>,
+        output: &mut Output,
     ) -> Result<()> {
         let work = self.type_work.as_mut().unwrap();
         if work.depth >= MAX_DEPTH {
@@ -78,7 +77,7 @@ impl Checker {
                 }
                 if self.required_boolean(condition)? {
                     self.scopes.push(Scope::default());
-                    let result = self.type_statement(body, expected, primary);
+                    let result = self.type_statement(body, output);
                     self.scopes.pop();
                     result?;
                 }

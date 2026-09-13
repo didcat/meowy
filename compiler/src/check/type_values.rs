@@ -17,6 +17,12 @@ pub(crate) const MAX_DEPTH: usize = 64;
 pub(crate) const MAX_NODES: usize = 16384;
 
 #[derive(Default)]
+pub(crate) struct Output {
+    pub(crate) ty: Option<Type>,
+    pub(crate) value: Option<Value>,
+}
+
+#[derive(Default)]
 pub(crate) struct Work {
     pub(crate) visits: usize,
     pub(crate) depth: usize,
@@ -189,11 +195,14 @@ impl Checker {
             ));
         }
         self.scopes.push(Scope::default());
-        let mut primary = None;
-        let result = self.type_statements(&block.stmts, expected, &mut primary);
+        let mut output = Output {
+            ty: expected.cloned(),
+            value: None,
+        };
+        let result = self.type_statements(&block.stmts, &mut output);
         self.scopes.pop();
         result?;
-        primary.ok_or_else(|| {
+        output.value.ok_or_else(|| {
             Self::error(
                 if expected.is_some() { "E204" } else { "E211" },
                 if expected.is_some() {
