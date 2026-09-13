@@ -39,7 +39,7 @@ impl Work {
         Ok(())
     }
 
-    pub(crate) fn input(&mut self, input: &Input, span: Span) -> Result<()> {
+    pub(crate) fn input<T>(&mut self, input: &Input<T>, span: Span) -> Result<()> {
         self.visits = self.visits.saturating_add(input.work);
         if self.visits > MAX_WORK {
             return Err(Self::budget(span));

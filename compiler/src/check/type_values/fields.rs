@@ -7,7 +7,7 @@ use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
-    pub(crate) fn required_field(&mut self, expr: &ast::Expr) -> Result<(Type, Input)> {
+    pub(crate) fn required_path(&mut self, expr: &ast::Expr) -> Result<(usize, Type, Vec<usize>)> {
         let mut root = expr;
         let mut names = Vec::new();
         loop {
@@ -69,7 +69,12 @@ impl Checker {
             path.push(index);
             current = &field.ty;
         }
-        if !matches!(current, Type::Int { .. }) {
+        Ok((id, current.clone(), path))
+    }
+
+    pub(crate) fn required_field(&mut self, expr: &ast::Expr) -> Result<(Type, Input)> {
+        let (id, ty, path) = self.required_path(expr)?;
+        if !matches!(ty, Type::Int { .. }) {
             return Err(Diagnostic::unsupported(
                 "computed record paths without an integer leaf",
                 expr.span,
@@ -84,6 +89,6 @@ impl Checker {
                     expr.span,
                 )
             })?;
-        Ok((current.clone(), input))
+        Ok((ty, input))
     }
 }

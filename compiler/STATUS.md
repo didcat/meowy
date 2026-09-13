@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean module primary inputs and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Required boolean scratch is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -192,23 +192,24 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Boolean module primary evidence and integration are complete: `39aacdd` introduces
-explicit primary storage, `77ca671` adds boolean capture/lookup/forwarding, and the
-following integration/documentation slice passes the final compiler gate above.
+Inspection: `scalar_input` also validates list extents, so it must remain integer-only.
+Boolean scratch can materialize `Value::Static` directly from checked boolean evidence;
+it does not need runtime expression materialization or capture exceptions. Limit this
+slice to named literals, eligible local/field/module reads and aliases. Operators and
+conditional type selection remain later work.
 
-Next, plan immutable boolean scratch in required type blocks as a prerequisite for
-conditional type selection. Inspect `src/check/type_values/{scalars,fields}.rs`,
-`src/check/type_values.rs` and required materialization in `src/check/expressions.rs`.
-Record dependency-ordered commits before implementation:
+Dependency-ordered commits:
 
-1. Separate typed required scalar validation/materialization where needed, preserving
-   integer widths, diagnostic spans and the shared root work/depth counters.
-2. Add boolean literals, eligible local/field/module inputs and boolean scratch aliases
-   in required blocks with focused kind, scope, error and repeated-work regressions.
-   Required reads must not grant runtime captures or whole-module record evidence.
-3. Verify function-scoped required reads and silent staging in both profiles; update
-   guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: checked field paths are separate from integer leaf loading; retained
+   work charging accepts `Input<T>`. All 744 library/777 native tests, fmt and Clippy
+   pass unchanged. Log: `/tmp/meowy-required-paths-tests.log`. Commit prerequisite.
+2. Add local boolean scratch and aliases through a separate required boolean reader,
+   with kind/scope/error/work and no-runtime-storage checks. Preserve integer extents.
+3. Integrate boolean record fields and module named/primary reads, with function-scoped
+   required reads and focused native regressions. Keep runtime captures gated.
+4. Verify transitive work, errors and silent staging; update guides/handoffs and run
+   `python3 -B tools/verify.py --compiler` across the series.
 
-Keep conditional type selection as a later slice after typed scratch. Whole-module
-record inputs, conditional exports, required record scratch, wider comparisons, helpers,
-packages and borrowed storage remain separate. Do not push.
+Keep boolean operators, conditional type selection, whole-module record inputs,
+conditional exports, required record scratch, helpers, packages and borrowed storage
+separate. Do not push.
