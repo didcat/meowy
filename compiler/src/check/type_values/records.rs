@@ -1,4 +1,5 @@
 mod build;
+mod compose;
 
 use crate::ast::{self, ExprKind};
 use crate::check::{Checker, Result, Value, inputs::Record};

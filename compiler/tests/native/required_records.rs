@@ -301,3 +301,14 @@ pub(crate) fn required_record_construction_exports_types_and_keeps_checks_silent
     case.runs(b"data\ntypes\nentry\n7\n");
     super::file_modules::case("m:@\"./data.mwy\";f<int32>:(){<T>:{r<{width<uint8>}>:{->width:m.width};-><int32[r.width]>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())", &[("data.mwy", "->width<uint8>:4")]).runs(b"9\n");
 }
+
+#[test]
+pub(crate) fn required_composition_supports_full_records_aliases_and_selected_sources() {
+    for (flag, count) in [("true", 4), ("false", 2)] {
+        let source = format!(
+            "a:{{->width<uint8>:4;->enabled:true}};b:{{->width<uint8>:2;->enabled:false}};<R>:<{{enabled<boolean>;width<uint8>}}>;<T>:{{flag:{flag};copy:a;r<R>:{{|flag|->copy;|!flag|->b}};n<uint8>:r.width;|r.enabled==flag|-><int32[n]>;|r.enabled!=flag|-><string>}};v<T>:[3,7];d:@\"debug\";d.print(v[2]);expected<int32[{count}]>:v"
+        );
+        case(&source, &[]).runs(b"7\n");
+    }
+    case("m:@\"./data.mwy\";<R>:<{part<{width<uint8>}>;enabled<boolean>}>;<T>:{r<R>:{->m.row};|r.enabled|-><string>;|!r.enabled|-><int32[r.part.width]>};v<T>:[9];d:@\"debug\";d.print(v[1])", &[("data.mwy", "->row:{->enabled:false;->part:{->width<uint8>:4}}")]).runs(b"9\n");
+}

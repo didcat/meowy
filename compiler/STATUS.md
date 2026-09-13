@@ -225,9 +225,11 @@ Dependency-ordered commits:
 
 1. Complete: slot lookup/insertion are shared; named initializer validation and spans
    remain unchanged. All 773 library/814 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-record-slots-tests.log`. Commit the prerequisite.
-2. Add bounded `-> source` composition from eligible existing records, including nested
-   record fields and selected matcher arms. Keep primary-slot and namespace gates.
+   Log: `/tmp/meowy-record-slots-tests.log`. Committed as `4824d57`.
+2. Complete: primary composition passes 775 library/815 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-required-composition-tests.log`. Partial/full/nested forwarding,
+   selected sources, checked lookup, collisions and no forwarded local names pass.
+   A second selected composition rejects with E205 even for disjoint sources. Commit.
 3. Verify source/forwarding work, aliases, collisions, module/function use and staging;
    update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 

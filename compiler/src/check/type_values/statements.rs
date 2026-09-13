@@ -57,25 +57,23 @@ impl Checker {
                 value,
             } => {
                 if output.record() {
-                    return Err(Diagnostic::unsupported(
-                        "required record primary emissions",
-                        stmt.span,
-                    ));
-                }
-                let value = match output.ty.as_ref() {
-                    Some(ty) => self.scalar_emission(value, ty)?,
-                    None => Value::Type(self.type_value(value)?),
-                };
-                if output.value.replace(value).is_some() {
-                    return Err(Self::error(
-                        "E205",
-                        if output.ty.is_some() {
-                            "required scalar primary may be emitted twice"
-                        } else {
-                            "computed type primary may be emitted twice"
-                        },
-                        stmt.span,
-                    ));
+                    self.compose_required_record(value, stmt.span, output)?;
+                } else {
+                    let value = match output.ty.as_ref() {
+                        Some(ty) => self.scalar_emission(value, ty)?,
+                        None => Value::Type(self.type_value(value)?),
+                    };
+                    if output.value.replace(value).is_some() {
+                        return Err(Self::error(
+                            "E205",
+                            if output.ty.is_some() {
+                                "required scalar primary may be emitted twice"
+                            } else {
+                                "computed type primary may be emitted twice"
+                            },
+                            stmt.span,
+                        ));
+                    }
                 }
             }
             StmtKind::Match { arms } => self.type_match(arms, stmt.span, output)?,

@@ -27,7 +27,11 @@ impl Checker {
                 ty,
                 mutable: false,
                 ..
-            } if record && name.is_some() || !record && name.is_none() && ty.is_none() => Ok(()),
+            } if record && (name.is_some() || ty.is_none())
+                || !record && name.is_none() && ty.is_none() =>
+            {
+                Ok(())
+            }
             StmtKind::Match { arms } => {
                 for (condition, body) in arms {
                     if condition.is_none() {
