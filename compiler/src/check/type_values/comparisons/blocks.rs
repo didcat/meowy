@@ -165,4 +165,147 @@ mod tests {
             assert_eq!(error.code, code, "{body}: {error:?}");
         }
     }
+    #[test]
+    pub(crate) fn block_comparisons_charge_only_selected_operands_once() {
+        use super::*;
+        use crate::ast::StmtKind;
+        use crate::check::{
+            Constant, Value,
+            type_values::{MAX_WORK, Work},
+        };
+        let parsed = crate::parser::parse("flag:({local:1;->2})==({->2})").unwrap();
+        let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(Work::default());
+        let scopes = checker.scopes.len();
+        assert_eq!(checker.boolean_form(value, 0, &mut 0).unwrap(), Type::Bool);
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(matches!(
+            checker.type_boolean(value, None).unwrap(),
+            Value::Static {
+                value: Constant::Bool(true),
+                ..
+            }
+        ));
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 13);
+        for (visits, accepted) in [(MAX_WORK - 13, true), (MAX_WORK - 12, false)] {
+            checker.type_work = Some(Work {
+                visits,
+                ..Work::default()
+            });
+            let result = checker.type_boolean(value, None);
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(!checker.required);
+        }
+        let parsed =
+            crate::parser::parse("flag:false&&(({v<Missing>:unknown();->v})==65536)").unwrap();
+        let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        checker.type_work = Some(Work::default());
+        assert!(matches!(
+            checker.type_boolean(value, None).unwrap(),
+            Value::Static {
+                value: Constant::Bool(false),
+                ..
+            }
+        ));
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 2);
+        assert_eq!(checker.type_work.as_ref().unwrap().nodes, 0);
+        assert_eq!(
+            checker
+                .required_value("local", value.span)
+                .err()
+                .unwrap()
+                .code,
+            "E201"
+        );
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn block_comparison_forms_bound_skipped_statements_and_depth() {
+        use super::*;
+        use crate::ast::StmtKind;
+        use crate::check::type_values::Work;
+        let parsed = crate::parser::parse("value:{local:4;->local}").unwrap();
+        let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        for count in [4094, 4096] {
+            let mut expr = value.clone();
+            let ExprKind::Block(block) = &mut expr.kind else {
+                panic!("block")
+            };
+            block.stmts = vec![block.stmts[0].clone(); count];
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let result = checker.block_integer_form(&expr, None, 0, &mut 0);
+            if count == 4094 {
+                assert!(result.is_ok(), "{result:?}");
+            } else {
+                assert_eq!(result.unwrap_err().code, "B001");
+            }
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+        }
+        for groups in [62, 63] {
+            let mut expr = value.clone();
+            for _ in 0..groups {
+                expr = Expr {
+                    span: expr.span,
+                    kind: ExprKind::Group(Box::new(expr)),
+                };
+            }
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let result = checker.block_integer_form(&expr, None, 0, &mut 0);
+            if groups == 62 {
+                assert!(result.is_ok(), "{result:?}");
+            } else {
+                assert_eq!(result.unwrap_err().code, "B001");
+            }
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+        }
+    }
+
+    #[test]
+    pub(crate) fn block_comparisons_preserve_error_order_and_document_selected_values() {
+        for (expr, failed) in [
+            ("({->1/0})==bad", "1/0"),
+            ("bad==({->1/0})", "raw.n+1"),
+            ("({->4;tail:1/0})!=({->bad})", "1/0"),
+        ] {
+            let source =
+                format!("raw:{{->n<uint8>:255}};bad:raw.n+1;<T>:{{flag:{expr};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "E107");
+            assert_eq!(error.span.start, source.find(failed).unwrap());
+        }
+        let source = "#| Items. |#<T>:{#| Ready. |#flag:({#| Base. |#base<uint8>:4;->base})==4;|flag|-><int32[4]>;|!flag|-><string>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [("base", "uint8"), ("flag", "boolean"), ("T", "int32[4]")] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+        let source = "<T>:{flag:false&&(({#| Skipped. |#local:4;->local})==4);-><int32>}";
+        assert_eq!(
+            crate::documentation::checked(source, true).unwrap_err()[0].code,
+            "B001"
+        );
+    }
 }

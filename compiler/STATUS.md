@@ -238,10 +238,14 @@ Dependency-ordered commit plan:
 2. Complete: deferred operand forms validate supported block statements and known
    outer kinds without evaluating local initializers. All six selected comparisons,
    widths and short circuits pass 802 library/833 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-block-comparisons.log`.
-3. Verify exact work, deferred widths, statement gates, source errors, skipped paths,
-   documentation and module/function staging.
-4. Update guides/handoffs, run the guide in both profiles and run the full compiler gate.
+   Log: `/tmp/meowy-block-comparisons.log`. Committed as `00f68eb`.
+3. Complete: exact selected/skipped work, structural count/depth limits, restored state,
+   deferred widths, original errors, source reuse, docs and module/function staging
+   pass 805 library/835 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-block-comparisons-integration.log`.
+4. Split review: integration plus guides/handoff replacement would exceed 400 lines.
+   Commit integration separately, update guides/handoffs, run the guide in both
+   profiles and run `python3 -B tools/verify.py --compiler` across the series.
 
 Keep selected boolean-result block operands, empty/null results, scalar-primary records,
 skipped documented declarations, fallback arms, mutable/float/text/reference fields,

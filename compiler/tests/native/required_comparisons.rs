@@ -195,3 +195,96 @@ pub(crate) fn integer_block_comparisons_execute_selected_and_short_circuited_res
         assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E103\""));
     }
 }
+
+#[test]
+pub(crate) fn integer_block_comparisons_preserve_source_costs_and_short_circuiting() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data = format!("private:{{->4;v0:1;{tail}}};->width:private");
+    let repeated = (0..20)
+        .map(|id| format!("f{id}:({{->m.width}})==4;"))
+        .collect::<String>();
+    let aliases = (0..20)
+        .map(|id| format!("f{id}:({{->copy}})==4;"))
+        .collect::<String>();
+    let skipped = (0..20)
+        .map(|id| format!("f{id}:false&&(({{->m.width}})==({{->missing()}}));"))
+        .collect::<String>();
+    let separate = (0..20)
+        .map(|id| format!("<T{id}>:{{flag:({{->m.width}})==4;-><int32>}};"))
+        .collect::<String>();
+    for profile in ["debug", "release"] {
+        for (body, accepted) in [
+            (format!("<T>:{{{repeated}-><int32>}}"), false),
+            (format!("<T>:{{copy:m.width;{aliases}-><int32>}}"), true),
+            (format!("<T>:{{{skipped}-><int32>}}"), true),
+            (separate.clone(), true),
+        ] {
+            let output = case(
+                &format!("m:@\"./data.mwy\";{body}"),
+                &[("data.mwy", data.as_str())],
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if accepted {
+                assert!(output.status.success(), "{error}");
+            } else {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn integer_block_comparisons_preserve_module_staging_and_original_spans() {
+    let case = case(
+        "m:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");v<m.Items>:[3,7];d.print(v[2])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->width<uint8>:4",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";d.print(\"types\");-><Items>:{flag:({->m.width})==4;|flag|-><int32[4]>;|!flag|-><string>}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        let output = case.command(action, &[]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty());
+    }
+    case.runs(b"data\ntypes\nentry\n7\n");
+    super::file_modules::case("m:@\"./data.mwy\";f<int32>:(){<T>:{flag:({->m.width})==4;|flag|-><int32[4]>;|!flag|-><string>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())",&[("data.mwy","->width<uint8>:4")]).runs(b"9\n");
+    let data = "#é🙂#\nraw:{->n<uint8>:255};->bad:raw.n+1";
+    let case = super::file_modules::case(
+        "m:@\"./data.mwy\";<T>:{flag:({->m.bad})==4;-><int32>}",
+        &[("data.mwy", data)],
+    );
+    for profile in ["debug", "release"] {
+        let output = case.command("check", &["--profile", profile, "--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E107\""), "{error}");
+        assert!(
+            error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+            "{error}"
+        );
+        assert!(
+            error.contains(&format!(
+                "\"path\":\"{}\"",
+                case.path.join("data.mwy").display()
+            )),
+            "{error}"
+        );
+    }
+}
