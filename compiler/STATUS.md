@@ -228,10 +228,11 @@ Dependency-ordered commit plan:
 
 1. Complete: binary/unary completion accepts checked HIR operands. All 795 library/829
    native tests, fmt and Clippy pass; runtime checking, projections and diagnostics
-   remain unchanged. Log: `/tmp/meowy-operand-helpers.log`.
-2. Add bounded block detection and required integer operand materialization, with
-   source-order evaluation, inherited widths, scoped blocks and shared budgets. Wire
-   required scalar bindings/emissions and integer extents; include focused tests.
+   remain unchanged. Log: `/tmp/meowy-operand-helpers.log`. Committed as `b646355`.
+2. Complete: bounded detection and operand materialization reuse checked operators
+   for bindings, emissions and extents inside required roots. Contextual widths, unary
+   and binary arithmetic, scopes, scalar-kind gates and native capacities pass
+   797 library/830 native tests, fmt and Clippy. Log: `/tmp/meowy-integer-operands.log`.
 3. Verify exact work/depth limits, original errors, skipped work, docs and staging.
 4. Update guides/handoffs, execute the guide in both profiles, and run
    `python3 -B tools/verify.py --compiler` across the series.

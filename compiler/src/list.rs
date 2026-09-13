@@ -27,6 +27,22 @@ impl Checker {
     }
 
     pub(crate) fn list_extent(&mut self, expr: &ast::Expr) -> Result<usize> {
+        if self.type_work.is_some() && self.integer_blocks(expr)? {
+            let Value::Static {
+                value: Constant::Int(value),
+                ..
+            } = self.integer_arithmetic(expr, None)?
+            else {
+                unreachable!()
+            };
+            return usize::try_from(value).map_err(|_| {
+                Self::error(
+                    "E104",
+                    "list extent must be a non-negative target-sized constant integer",
+                    expr.span,
+                )
+            });
+        }
         if self.type_work.is_some() {
             self.scalar_input(expr)?;
         }

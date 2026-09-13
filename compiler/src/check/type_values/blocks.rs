@@ -33,6 +33,9 @@ impl Checker {
             }
             return Ok(value);
         }
+        if self.integer_blocks(expr)? {
+            return self.integer_arithmetic(expr, Some(ty));
+        }
         self.scalar_input(expr)?;
         self.integer_result(expr, Some(ty))
     }

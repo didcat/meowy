@@ -290,3 +290,28 @@ pub(crate) fn inferred_scalar_blocks_preserve_module_staging_and_function_reads(
     case.runs(b"data\ntypes\nentry\n7\n");
     super::file_modules::case("m:@\"./data.mwy\";f<int32>:(){<T>:{n:{->m.width};flag:{->m.flag};|flag|-><int32[n]>;|!flag|-><string>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())",&[("data.mwy","->width<uint8>:4;->flag:true")]).runs(b"9\n");
 }
+
+#[test]
+pub(crate) fn required_integer_block_operands_execute_arithmetic_and_extents() {
+    case("<T>:{n<uint8>:({->2})*({->2});r:{->width<uint8>:({->n})+0};-><int32[({->r.width})+0]>};v<T>:[3,7];d:@\"debug\";d.print(v[2])",&[]).runs(b"7\n");
+    for (op, value) in [
+        ("+", 9),
+        ("-", 3),
+        ("*", 18),
+        ("/", 2),
+        ("%", 0),
+        ("&", 2),
+        ("|", 7),
+        ("^", 5),
+    ] {
+        let source = format!(
+            "<T>:{{n:({{->6}}){op}({{->3}});-><int32[n+1]>}};v<T>:[7];d:@\"debug\";d.print(v[1])"
+        );
+        case(&source, &[]).runs(b"7\n");
+        let values = vec!["1"; value + 2].join(",");
+        let output =
+            case(&format!("{source};extra<T>:[{values}]"), &[]).command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E103\""));
+    }
+}

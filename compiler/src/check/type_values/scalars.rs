@@ -104,6 +104,10 @@ impl Checker {
         if self.boolean_scalar(expr) {
             return self.type_boolean(expr, annotation);
         }
+        if self.integer_blocks(expr)? {
+            let expected = annotation.map(|ty| self.ty(ty)).transpose()?;
+            return self.integer_arithmetic(expr, expected.as_ref());
+        }
         self.scalar_input(expr)?;
         let expected = annotation.map(|ty| self.ty(ty)).transpose()?;
         if expected

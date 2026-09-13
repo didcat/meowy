@@ -4,6 +4,7 @@ mod fields;
 mod inferred;
 mod integers;
 mod matches;
+mod operands;
 mod records;
 mod scalars;
 mod statements;
