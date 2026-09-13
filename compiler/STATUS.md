@@ -220,9 +220,11 @@ Dependency-ordered commits:
 1. Complete: bounded operand checking plus `!`, `&&` and `||` pass 750 library/786
    native tests, fmt and Clippy. Log: `/tmp/meowy-required-logic-tests.log`. Truth
    values, no runtime storage, skipped errors/work, name/type checks and scope pass.
-   Commit the logical-operator slice.
-2. Add boolean `==`/`!=` with left-to-right reads, first-error retention and record
-   identity gates. Keep numeric comparisons separate and validate focused regressions.
+   Committed as `e637137`.
+2. Complete: boolean `==`/`!=` pass 752 library/787 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-required-equality-tests.log`. Truth values, both-read work,
+   first-error ordering, mixed-module projection and record/numeric gates pass.
+   Commit equality separately from logical operators.
 3. Verify repeated/skipped work, original dependency errors and silent initialization;
    update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 

@@ -80,6 +80,15 @@ impl Checker {
                     }
                     return self.required_boolean(right);
                 }
+                ExprKind::Binary { op, left, right } if matches!(op.as_str(), "==" | "!=") => {
+                    let left = self.required_boolean(left)?;
+                    let right = self.required_boolean(right)?;
+                    return Ok(if op == "==" {
+                        left == right
+                    } else {
+                        left != right
+                    });
+                }
                 _ => return Err(self.type_unavailable(expr)?),
             }
             .ok_or_else(|| {
@@ -176,7 +185,7 @@ mod tests {
                 "B001",
             ),
             ("<T>:{flag:-true;-><int32>}", "B001"),
-            ("<T>:{flag:true==false;-><int32>}", "B001"),
+            ("<T>:{flag:true<false;-><int32>}", "B001"),
             ("<T>:{flag:true;|flag|-><int32>}", "B001"),
         ] {
             let error = crate::compile(source).unwrap_err().remove(0);
@@ -299,5 +308,51 @@ mod tests {
         let error = crate::compile(source).unwrap_err().remove(0);
         assert_eq!(error.code, "E107");
         assert_eq!(error.span.start, source.find("row.n+1").unwrap());
+    }
+    #[test]
+    pub(crate) fn required_boolean_equality_keeps_values_and_charges_both_reads() {
+        for a in [false, true] {
+            for b in [false, true] {
+                for (op, value) in [("==", a == b), ("!=", a != b)] {
+                    let mut checker = Checker::new();
+                    checker.type_work = Some(Work::default());
+                    assert!(
+                        matches!(checker.type_scalar(&expression(&format!("{a}{op}{b}")), None).unwrap(),
+                            Value::Static { value: Constant::Bool(found), .. } if found == value
+                        )
+                    );
+                }
+            }
+        }
+        let mut checker = checker();
+        let cost = checker.bool_inputs.values().last().unwrap().work;
+        checker.type_work = Some(Work::default());
+        assert!(matches!(
+            checker
+                .type_scalar(&expression("flag==flag"), None)
+                .unwrap(),
+            Value::Static {
+                value: Constant::Bool(true),
+                ..
+            }
+        ));
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 3 + 2 * cost);
+    }
+
+    #[test]
+    pub(crate) fn required_boolean_equality_retains_the_first_evaluated_error() {
+        for (value, failed) in [
+            ("a==b", "row.a+1"),
+            ("b!=a", "row.b+2"),
+            ("false==a", "row.a+1"),
+            ("true!=b", "row.b+2"),
+        ] {
+            let source = format!(
+                "row:{{->a<uint8>:255;->b<uint8>:254}};a:row.a+1==0;b:row.b+2==0;<T>:{{flag:{value};->flag<>}}"
+            );
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "E107");
+            assert_eq!(error.span.start, source.find(failed).unwrap(), "{value}");
+        }
     }
 }

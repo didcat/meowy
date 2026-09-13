@@ -3,6 +3,7 @@ use crate::check::{
     Checker, Result, Value,
     type_values::{MAX_DEPTH, MAX_WORK, Work},
 };
+use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
@@ -41,9 +42,21 @@ impl Checker {
                 }
                 Ok(Type::Bool)
             }
-            ExprKind::Binary { op, left, right } if matches!(op.as_str(), "&&" | "||") => {
+            ExprKind::Binary { op, left, right }
+                if matches!(op.as_str(), "&&" | "||" | "==" | "!=") =>
+            {
                 let left = self.boolean_form(left, depth + 1, count)?;
                 let right = self.boolean_form(right, depth + 1, count)?;
+                if matches!(op.as_str(), "==" | "!=")
+                    && (matches!((&left, &right), (Type::Record { .. }, Type::Record { .. }))
+                        || Self::primary_type(&left) != Type::Bool
+                            && Self::primary_type(&right) != Type::Bool)
+                {
+                    return Err(Diagnostic::unsupported(
+                        "required comparisons outside boolean operands",
+                        expr.span,
+                    ));
+                }
                 if Self::primary_type(&left) != Type::Bool
                     || Self::primary_type(&right) != Type::Bool
                 {
