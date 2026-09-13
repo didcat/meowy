@@ -42,3 +42,125 @@ pub(crate) fn required_records_keep_privacy_capture_and_namespace_gates() {
         );
     }
 }
+
+#[test]
+pub(crate) fn required_records_charge_source_materialization_once_per_binding() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data =
+        format!("heavy:{{->4;v0:1;{tail}}};->row:{{->part:{{->width<uint8>:4}};->unused:heavy}}");
+    let files = [
+        ("data.mwy", data.as_str()),
+        ("facade.mwy", "m:@\"./data.mwy\";->m"),
+    ];
+    for value in ["m.row", "m.row.part"] {
+        let separate = (0..20)
+            .map(|id| format!("<T{id}>:{{r:{value};-><int32>}};"))
+            .collect::<String>();
+        let repeated = (0..20)
+            .map(|id| format!("r{id}:{value};"))
+            .collect::<String>();
+        let aliases = (0..20).map(|id| format!("r{id}:copy;")).collect::<String>();
+        for profile in ["debug", "release"] {
+            for body in [
+                separate.clone(),
+                format!("<T>:{{copy:{value};{aliases}-><int32>}}"),
+            ] {
+                let output = case(&format!("m:@\"./facade.mwy\";{body}"), &files)
+                    .command("check", &["--profile", profile, "--json"]);
+                assert!(
+                    output.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+            }
+            let output = case(
+                &format!("m:@\"./facade.mwy\";<T>:{{{repeated}-><int32>}}"),
+                &files,
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"B001\""), "{error}");
+            assert!(error.contains("computed type bootstrap budget"), "{error}");
+        }
+    }
+}
+
+#[test]
+pub(crate) fn required_records_keep_ancestor_error_spans_and_runtime_failures() {
+    let data = "#é🙂#\nd:@\"debug\";d.print(\"init\");raw:{->n<uint8>:255};->row:{->part:{->width:4};->bad:raw.n+1}";
+    let files = [("data.mwy", data), ("facade.mwy", "m:@\"./data.mwy\";->m")];
+    for value in ["m.row", "m.row.part"] {
+        let source = format!("m:@\"./facade.mwy\";<T>:{{r:{value};-><int32>}}");
+        let case = case(&source, &files);
+        for action in ["check", "build", "run"] {
+            for profile in ["debug", "release"] {
+                let output = case.command(action, &["--profile", profile, "--json"]);
+                assert_eq!(output.status.code(), Some(1));
+                assert!(output.stdout.is_empty());
+                let error = String::from_utf8_lossy(&output.stderr);
+                assert!(error.contains("\"code\":\"E107\""), "{error}");
+                assert!(
+                    error.contains(&format!(
+                        "\"path\":\"{}\"",
+                        case.path.join("data.mwy").display()
+                    )),
+                    "{error}"
+                );
+                assert!(
+                    error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                    "{error}"
+                );
+            }
+        }
+    }
+    let case = case(
+        "m:@\"./facade.mwy\";<T>:{|false|copy:m.row.part;-><int32>}",
+        &files,
+    );
+    for profile in ["debug", "release"] {
+        let output = case.command("check", &["--profile", profile]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        let output = case.command("run", &["--profile", profile]);
+        assert_eq!(output.status.code(), Some(1));
+        assert_eq!(output.stdout, b"init\n");
+        assert!(String::from_utf8_lossy(&output.stderr).starts_with("panic[P002]"));
+    }
+}
+
+#[test]
+pub(crate) fn required_records_preserve_annotations_and_silent_module_startup() {
+    let case = case(
+        "m:@\"./types.mwy\";v<m.Items>:[3,7];d:@\"debug\";d.print(\"entry\");d.print(v[2])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->row:{->enabled:true;->part:{->width<uint8>:4}};->bad:{d.print(\"bad\");->false}",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";d.print(\"types\");-><Items>:{r<(m.row<>)>:m.row;part:r.part;|r.enabled|-><int32[part.width]>;|!r.enabled|-><string>}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        for profile in ["debug", "release"] {
+            let output = case.command(action, &["--profile", profile]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stdout.is_empty());
+            assert!(output.stderr.is_empty());
+        }
+    }
+    case.runs(b"data\nbad\ntypes\nentry\n7\n");
+}

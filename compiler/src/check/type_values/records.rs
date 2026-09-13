@@ -149,4 +149,83 @@ mod tests {
         assert_eq!(error.code, "E107");
         assert_eq!(error.span.start, source.find("row.n+1").unwrap());
     }
+    #[test]
+    pub(crate) fn required_records_preserve_field_limits_and_bound_materialized_shapes() {
+        use super::super::{MAX_NODES, Work};
+        for count in [256, 257] {
+            let fields = (0..count)
+                .map(|id| format!("->n{id}:1;"))
+                .collect::<String>();
+            let mut checker = crate::check::inputs::tests::check(&format!("source:{{{fields}}}"));
+            let id = checker.locals.len() - 1;
+            let ty = checker.locals[id].clone();
+            checker
+                .declare(
+                    "source",
+                    Value::Local {
+                        id,
+                        ty,
+                        mutable: false,
+                        owner: 0,
+                        constant: None,
+                    },
+                    ast::Span::new(0, 6),
+                )
+                .unwrap();
+            checker.type_work = Some(Work::default());
+            let expr = ast::Expr {
+                span: ast::Span::new(0, 6),
+                kind: ExprKind::Name("source".into()),
+            };
+            let result = checker.type_record(&expr, None);
+            if count == 256 {
+                let value = result.unwrap();
+                checker.declare("copy", value, expr.span).unwrap();
+                let expr = ast::Expr {
+                    span: expr.span,
+                    kind: ExprKind::Name("copy".into()),
+                };
+                checker.type_work = Some(Work {
+                    nodes: MAX_NODES - 258,
+                    ..Work::default()
+                });
+                assert!(checker.type_record(&expr, None).is_ok());
+                assert_eq!(checker.type_work.as_ref().unwrap().nodes, MAX_NODES);
+                assert_eq!(checker.type_record(&expr, None).err().unwrap().code, "B001");
+            } else {
+                assert_eq!(result.err().unwrap().code, "E211");
+            }
+        }
+    }
+
+    #[test]
+    pub(crate) fn required_records_document_shapes_and_keep_scope_shadowing() {
+        let source = "#| Source. |#source:{->width<uint8>:4};#| Items. |#<T>:{#| Copy. |#copy:source;-><int32[copy.width]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        let source = model
+            .entries
+            .iter()
+            .find(|entry| entry.name == "source")
+            .unwrap();
+        let copy = model
+            .entries
+            .iter()
+            .find(|entry| entry.name == "copy")
+            .unwrap();
+        assert!(copy.checked);
+        assert_eq!(source.signature, copy.signature);
+        assert!(!copy.signature.is_empty());
+        assert_eq!(
+            model
+                .entries
+                .iter()
+                .find(|entry| entry.name == "T")
+                .unwrap()
+                .signature,
+            "int32[4]"
+        );
+        crate::compile("a:{->n:4};b:{->n:2};<T>:{r:a;|true|r:b;-><int32[r.n]>};v<T>:[1,2,3,4]")
+            .unwrap();
+    }
 }

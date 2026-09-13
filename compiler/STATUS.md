@@ -230,9 +230,14 @@ Dependency-ordered commits:
 2. Complete: scoped record bindings/aliases/projections pass 767 library/807 native
    tests, fmt and Clippy. Log: `/tmp/meowy-required-records-tests.log`. Materialization
    checks complete source evidence, clears initializer work and charges retained type
-   shapes; leaf values, ancestor errors, scopes and no runtime storage pass. Commit.
-3. Verify copy/read budgets, module/function use, diagnostics and silent staging;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+   shapes; leaf values, ancestor errors, scopes and no runtime storage pass.
+   Committed as `978b40e`.
+3. Complete: copy/read and type-node budgets, field limits, ancestor spans, startup,
+   annotations, shadowing and documentation pass all 769 library/810 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-required-records-integration-all.log`.
+4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
+   Commit integration evidence separately, then finish the guide/handoffs and run
+   `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep inline record construction, unannotated scalar blocks, skipped documented declarations,
 standalone branch blocks, fallback arms, float/text results, whole-module records,
