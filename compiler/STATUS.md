@@ -231,9 +231,14 @@ Dependency-ordered commits:
 2. Complete: matcher selection passes 759 library/797 native tests, fmt and Clippy.
    Log: `/tmp/meowy-conditional-types-tests.log`. Different selected types, nested
    construction, skipped expressions, primary/scope errors and recovery pass.
-   Commit branch behavior with its focused tests.
-3. Add module/function, budget, source-span and staging integration; update guides and
-   both handoffs, then run `python3 -B tools/verify.py --compiler` across the series.
+   Committed as `b180fcc`.
+3. Five checker tests and five native groups pass: module/type export integration,
+   work/depth, source spans, startup and documentation. Skipped documented declarations
+   retain the existing unanalyzed-declaration gate. All 761 library/800 native tests,
+   fmt and Clippy pass. Log: `/tmp/meowy-conditional-types-integration-all.log`.
+4. Split review: integration tests plus guides/handoffs would exceed 400 changed lines.
+   Commit integration evidence separately, then publish the supported guide and final
+   handoffs. Run `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep float/text comparisons, inline boolean blocks, standalone branch blocks, fallback
 arms, whole-module records, conditional module exports, required record scratch, helpers,

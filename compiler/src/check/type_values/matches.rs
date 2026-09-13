@@ -157,4 +157,92 @@ mod tests {
             }
         );
     }
+    #[test]
+    pub(crate) fn conditional_types_bound_matcher_depth_and_restore_failed_roots() {
+        use crate::ast::{Block, ExprKind, TypeExpr, TypeKind};
+        for depth in [62, 63] {
+            let span = Span::new(0, 1);
+            let value = Expr {
+                span,
+                kind: ExprKind::TypeValue(TypeExpr {
+                    span,
+                    kind: TypeKind::Name("int32".into()),
+                }),
+            };
+            let mut stmt = Stmt {
+                span,
+                kind: StmtKind::Emit {
+                    label: None,
+                    name: None,
+                    ty: None,
+                    mutable: false,
+                    value,
+                },
+            };
+            for _ in 0..depth {
+                stmt = Stmt {
+                    span,
+                    kind: StmtKind::Match {
+                        arms: vec![(
+                            Some(Expr {
+                                span,
+                                kind: ExprKind::Name("true".into()),
+                            }),
+                            Box::new(stmt),
+                        )],
+                    },
+                };
+            }
+            let expr = Expr {
+                span,
+                kind: ExprKind::Block(Block {
+                    span,
+                    label: None,
+                    stmts: vec![stmt],
+                }),
+            };
+            let mut checker = Checker::new();
+            let scopes = checker.scopes.len();
+            let result = checker.type_value(&expr);
+            if depth == 62 {
+                assert!(result.is_ok(), "{result:?}");
+            } else {
+                assert_eq!(result.unwrap_err().code, "B001");
+            }
+            assert!(checker.type_work.is_none());
+            assert_eq!(checker.scopes.len(), scopes);
+        }
+    }
+
+    #[test]
+    pub(crate) fn conditional_types_document_selected_declarations_without_claiming_skipped_checks()
+    {
+        let source =
+            "#| Choice. |#<T>:{|true|->{#| Number. |#<Local>:<int32>;-><Local>};|false|-><string>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        assert_eq!(
+            model
+                .entries
+                .iter()
+                .find(|entry| entry.name == "T")
+                .unwrap()
+                .signature,
+            "int32"
+        );
+        assert!(
+            model
+                .entries
+                .iter()
+                .find(|entry| entry.name == "Local")
+                .unwrap()
+                .checked
+        );
+        let source = "<T>:{|false|->{#| Skipped. |#<Local>:<int32>;-><Local>};-><int32>}";
+        let error = crate::documentation::checked(source, true)
+            .unwrap_err()
+            .remove(0);
+        assert_eq!(error.code, "B001");
+        assert!(error.message.contains("unanalyzed declaration"));
+    }
 }
