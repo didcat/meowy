@@ -227,9 +227,11 @@ Dependency-ordered commits:
 
 1. Complete: statement traversal is extracted and shares a primary-result accumulator.
    All 756 library/795 native tests, fmt and Clippy pass unchanged. Log:
-   `/tmp/meowy-type-statements-tests.log`. Commit the prerequisite.
-2. Add bounded matcher selection, branch scope and structural guards. Test selection,
-   nested construction, skipped evaluation, primary diagnostics and error recovery.
+   `/tmp/meowy-type-statements-tests.log`. Committed as `12f4799`.
+2. Complete: matcher selection passes 759 library/797 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-conditional-types-tests.log`. Different selected types, nested
+   construction, skipped expressions, primary/scope errors and recovery pass.
+   Commit branch behavior with its focused tests.
 3. Add module/function, budget, source-span and staging integration; update guides and
    both handoffs, then run `python3 -B tools/verify.py --compiler` across the series.
 

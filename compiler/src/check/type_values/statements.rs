@@ -60,6 +60,7 @@ impl Checker {
                     ));
                 }
             }
+            StmtKind::Match { arms } => self.type_match(arms, stmt.span, result)?,
             StmtKind::Expr(value) => return Err(self.type_unavailable(value)?),
             _ => {
                 return Err(Diagnostic::unsupported(

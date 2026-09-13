@@ -22,6 +22,7 @@ pub(crate) mod composed_inputs;
 pub(crate) mod computed_fields;
 pub(crate) mod computed_types;
 pub(crate) mod conditional_inputs;
+pub(crate) mod conditional_types;
 pub(crate) mod control;
 pub(crate) mod discarded_aliases;
 pub(crate) mod dispatch;

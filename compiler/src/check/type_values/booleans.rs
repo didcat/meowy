@@ -207,7 +207,7 @@ mod tests {
             ),
             ("<T>:{flag:-true;-><int32>}", "B001"),
             ("<T>:{flag:true<false;-><int32>}", "B001"),
-            ("<T>:{flag:true;|flag|-><int32>}", "B001"),
+            ("<T>:{flag:true;|flag|{-><int32>}}", "B001"),
         ] {
             let error = crate::compile(source).unwrap_err().remove(0);
             assert_eq!(error.code, code, "{source}: {error:?}");

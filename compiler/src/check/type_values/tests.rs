@@ -122,7 +122,7 @@ pub(crate) fn computed_types_blocks_reject_effects_after_emissions_and_unsupport
     }
     for source in [
         "<T>:{t:=<int32>;->t}",
-        "<T>:{|true|-><int32>;|_|-><string>}",
+        "<T>:{|true|{-><int32>}}",
         "f<int32>:(){->1};<T>:{->f()}",
         "d:@\"debug\";print<int32>:(){->1};<T>:{->print()}",
         "<T>:{->named:<int32>}",
