@@ -85,20 +85,23 @@ impl Checker {
         result
     }
 
+    pub(crate) fn boolean_scalar(&mut self, expr: &ast::Expr) -> bool {
+        let mut form = expr;
+        while let ExprKind::Group(value) = &form.kind {
+            form = value;
+        }
+        matches!(&form.kind, ExprKind::Unary { op, .. } if op == "!")
+            || self
+                .required_hint(expr)
+                .is_some_and(|ty| Self::primary_type(&ty) == Type::Bool)
+    }
+
     pub(crate) fn type_scalar(
         &mut self,
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
-        let mut form = expr;
-        while let ExprKind::Group(value) = &form.kind {
-            form = value;
-        }
-        let boolean = matches!(&form.kind, ExprKind::Unary { op, .. } if op == "!")
-            || self
-                .required_hint(expr)
-                .is_some_and(|ty| Self::primary_type(&ty) == Type::Bool);
-        if boolean {
+        if self.boolean_scalar(expr) {
             return self.type_boolean(expr, annotation);
         }
         self.scalar_input(expr)?;

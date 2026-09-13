@@ -1,20 +1,27 @@
 use crate::ast::{Stmt, StmtKind};
 use crate::check::{Checker, Result, Spec, Value};
 use crate::diagnostic::Diagnostic;
+use crate::hir::Type;
 
 impl Checker {
     pub(crate) fn type_statements(
         &mut self,
         stmts: &[Stmt],
+        expected: Option<&Type>,
         result: &mut Option<Value>,
     ) -> Result<()> {
         for stmt in stmts {
-            self.type_statement(stmt, result)?;
+            self.type_statement(stmt, expected, result)?;
         }
         Ok(())
     }
 
-    pub(crate) fn type_statement(&mut self, stmt: &Stmt, result: &mut Option<Value>) -> Result<()> {
+    pub(crate) fn type_statement(
+        &mut self,
+        stmt: &Stmt,
+        expected: Option<&Type>,
+        result: &mut Option<Value>,
+    ) -> Result<()> {
         self.type_work.as_mut().unwrap().spend(stmt.span)?;
         match &stmt.kind {
             StmtKind::Bind {
@@ -50,20 +57,31 @@ impl Checker {
                 mutable: false,
                 value,
             } => {
-                let ty = self.type_value(value)?;
-                if result.replace(Value::Type(ty)).is_some() {
+                let value = match expected {
+                    Some(ty) => self.scalar_emission(value, ty)?,
+                    None => Value::Type(self.type_value(value)?),
+                };
+                if result.replace(value).is_some() {
                     return Err(Self::error(
                         "E205",
-                        "computed type primary may be emitted twice",
+                        if expected.is_some() {
+                            "required scalar primary may be emitted twice"
+                        } else {
+                            "computed type primary may be emitted twice"
+                        },
                         stmt.span,
                     ));
                 }
             }
-            StmtKind::Match { arms } => self.type_match(arms, stmt.span, result)?,
+            StmtKind::Match { arms } => self.type_match(arms, stmt.span, expected, result)?,
             StmtKind::Expr(value) => return Err(self.type_unavailable(value)?),
             _ => {
                 return Err(Diagnostic::unsupported(
-                    "computed type block statement",
+                    if expected.is_some() {
+                        "required scalar block statement"
+                    } else {
+                        "computed type block statement"
+                    },
                     stmt.span,
                 ));
             }

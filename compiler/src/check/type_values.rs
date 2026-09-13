@@ -1,3 +1,4 @@
+mod blocks;
 mod booleans;
 mod fields;
 mod integers;
@@ -165,28 +166,40 @@ impl Checker {
     }
 
     pub(crate) fn type_block(&mut self, block: &ast::Block) -> Result<Type> {
-        let Value::Type(ty) = self.required_block(block)? else {
+        let Value::Type(ty) = self.required_block(block, None)? else {
             unreachable!()
         };
         Ok(ty)
     }
 
-    pub(crate) fn required_block(&mut self, block: &ast::Block) -> Result<Value> {
+    pub(crate) fn required_block(
+        &mut self,
+        block: &ast::Block,
+        expected: Option<&Type>,
+    ) -> Result<Value> {
         if block.label.is_some() {
             return Err(Diagnostic::unsupported(
-                "labeled computed type blocks",
+                if expected.is_some() {
+                    "labeled required scalar blocks"
+                } else {
+                    "labeled computed type blocks"
+                },
                 block.span,
             ));
         }
         self.scopes.push(Scope::default());
         let mut primary = None;
-        let result = self.type_statements(&block.stmts, &mut primary);
+        let result = self.type_statements(&block.stmts, expected, &mut primary);
         self.scopes.pop();
         result?;
         primary.ok_or_else(|| {
             Self::error(
-                "E211",
-                "computed block does not emit a compile-time type",
+                if expected.is_some() { "E204" } else { "E211" },
+                if expected.is_some() {
+                    "required scalar block does not initialize its primary"
+                } else {
+                    "computed block does not emit a compile-time type"
+                },
                 block.span,
             )
         })
@@ -200,6 +213,18 @@ impl Checker {
         let mut form = expr;
         while let ExprKind::Group(value) = &form.kind {
             form = value;
+        }
+        if matches!(form.kind, ExprKind::Block(_))
+            && let Some(annotation) = annotation
+        {
+            let ty = self.ty(annotation)?;
+            if !matches!(ty, Type::Int { .. } | Type::Bool) {
+                return Err(Diagnostic::unsupported(
+                    "required block results outside integers and booleans",
+                    expr.span,
+                ));
+            }
+            return self.scalar_block(expr, &ty);
         }
         let scalar = match &form.kind {
             ExprKind::Int(_)

@@ -226,9 +226,11 @@ Dependency-ordered commits:
 
 1. Complete: required block results use checked `Value` storage; type-only behavior
    is unchanged. All 761 library/800 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-required-values-tests.log`. Commit the prerequisite.
-2. Add annotated scalar block dispatch and expected-kind emissions, reusing matcher
-   traversal. Test kinds/widths, nested blocks, tail failures, scope and no runtime storage.
+   Log: `/tmp/meowy-required-values-tests.log`. Committed as `b62a736`.
+2. Complete: annotated block dispatch and expected-kind emissions pass 763 library/
+   802 native tests, fmt and Clippy. Log: `/tmp/meowy-required-scalar-blocks-tests.log`.
+   Values/widths, nested construction, primary/tail errors, scope and absent runtime
+   storage pass. Commit the behavior slice.
 3. Verify source evidence, budgets, functions/modules and staging; update the supported
    guide and handoffs, then run `python3 -B tools/verify.py --compiler` across the series.
 

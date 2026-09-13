@@ -50,6 +50,7 @@ impl Checker {
         &mut self,
         arms: &[(Option<Expr>, Box<Stmt>)],
         span: Span,
+        expected: Option<&Type>,
         primary: &mut Option<Value>,
     ) -> Result<()> {
         let work = self.type_work.as_mut().unwrap();
@@ -77,7 +78,7 @@ impl Checker {
                 }
                 if self.required_boolean(condition)? {
                     self.scopes.push(Scope::default());
-                    let result = self.type_statement(body, primary);
+                    let result = self.type_statement(body, expected, primary);
                     self.scopes.pop();
                     result?;
                 }
