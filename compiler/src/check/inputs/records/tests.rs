@@ -252,6 +252,8 @@ pub(crate) fn record_boolean_leaves_keep_their_kind_and_ancestor_errors() {
     let checker = check("row:{->flag:true;->width<uint8>:4}");
     let record = checker.record_inputs.values().last().unwrap();
     assert_eq!(record.values[&vec![0]], Leaf::Bool(Some(true)));
+    assert_eq!(record.boolean(&[0]).unwrap().value, Some(true));
+    assert!(record.boolean(&[1]).is_none());
     assert!(record.field(&[0]).is_none());
     assert_eq!(record.field(&[1]).unwrap().value, Some(4));
     let checker = check(
@@ -259,6 +261,8 @@ pub(crate) fn record_boolean_leaves_keep_their_kind_and_ancestor_errors() {
     );
     let record = checker.record_inputs.values().last().unwrap();
     assert_eq!(record.values[&vec![0]], Leaf::Bool(None));
+    assert_eq!(record.boolean(&[0]).unwrap().error.unwrap().code, "E107");
+    assert!(record.boolean(&[0]).unwrap().value.is_none());
     assert_eq!(record.values[&vec![1]], Leaf::Int(None));
     assert!(record.field(&[0]).is_none());
     assert_eq!(record.field(&[1]).unwrap().error.unwrap().code, "E107");

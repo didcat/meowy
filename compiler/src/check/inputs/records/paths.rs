@@ -48,6 +48,20 @@ impl Checker {
         Some(input)
     }
 
+    pub(crate) fn boolean_field_input(
+        &mut self,
+        id: usize,
+        path: &[usize],
+        locals: &Sources,
+    ) -> Option<Input<bool>> {
+        let source = self.input_path(id, path)?;
+        let mut input = self
+            .source_record(source.id, locals)?
+            .boolean(&source.path)?;
+        input.work = input.work.saturating_add(source.work);
+        Some(input)
+    }
+
     pub(crate) fn field_input(
         &mut self,
         id: usize,

@@ -49,6 +49,21 @@ impl Record {
         Some(())
     }
 
+    pub(crate) fn boolean(&self, path: &[usize]) -> Option<Input<bool>> {
+        let Leaf::Bool(value) = *self.values.get(path)? else {
+            return None;
+        };
+        Some(Input {
+            work: self.input.work.saturating_add(path.len()),
+            error: self.input.error.clone(),
+            value: if self.input.error.is_none() {
+                value
+            } else {
+                None
+            },
+        })
+    }
+
     pub(crate) fn field(&self, path: &[usize]) -> Option<Input> {
         let Leaf::Int(value) = *self.values.get(path)? else {
             return None;

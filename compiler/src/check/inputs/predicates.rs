@@ -102,6 +102,12 @@ impl Checker {
                     });
                 }
             }
+            ExprKind::Field { .. } => {
+                let (id, path) = self.record_path(expr)?;
+                let source = self.boolean_field_input(id, &path, locals)?;
+                input.add(&source);
+                input.value = source.value;
+            }
             ExprKind::Block(block) => {
                 let source = self.boolean_block(block, depth + 1, count, locals)?;
                 input.add(&source);

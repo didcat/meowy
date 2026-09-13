@@ -176,8 +176,10 @@ Dependency-ordered commits:
    ancestor work. Integer access rejects boolean leaves. All 742 library/760 native
    tests, fmt and Clippy pass; log: `/tmp/meowy-boolean-record-evidence-tests.log`.
    Mixed-record integer reads and the 256/257 boolean-field evidence boundary pass.
-3. Add predicate lookup for boolean record paths, including copies and exported records.
-   Keep direct boolean module exports and required-type boolean scratch gated.
+3. Complete: typed boolean paths feed predicates, copies, scalar scratch and exported
+   records. All 742 library/763 native tests, fmt and Clippy passed; log:
+   `/tmp/meowy-boolean-field-path-tests.log`. Integer/kind, ancestor-error/effect,
+   capture and direct scalar boolean-export gates remain intact.
 4. Add independent work/staging integration and guides; run the complete compiler gate
    and update both handoffs. Preserve unit primaries, bounds, privacy and ownership gates.
 
