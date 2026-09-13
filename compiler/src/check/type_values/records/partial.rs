@@ -78,4 +78,140 @@ mod tests {
         let source = "<R>:<{part<{a<uint8>;b<uint8>}>}>;<T>:{r<R>:{->{->part:{->a:4}}};-><int32>}";
         assert_eq!(crate::compile(source).unwrap_err()[0].code, "E204");
     }
+    #[test]
+    pub(crate) fn inline_composition_bounds_partial_shapes_and_shared_work() {
+        use super::*;
+        use crate::ast::StmtKind;
+        use crate::check::type_values::{MAX_NODES, MAX_WORK, Work};
+        let parsed = crate::parser::parse("r<{a<boolean>;width<uint8>}>:{->width:4}").unwrap();
+        let StmtKind::Bind { value, ty, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        let ty = checker.ty(ty.as_ref().unwrap()).unwrap();
+        let scopes = checker.scopes.len();
+        checker.type_work = Some(Work::default());
+        let Value::Record { ty: part, input } = checker.partial_record(value, &ty).unwrap() else {
+            panic!("record")
+        };
+        let Type::Record { fields, .. } = part else {
+            panic!("shape")
+        };
+        assert_eq!(fields.len(), 1);
+        assert_eq!(fields[0].name, "width");
+        assert_eq!(input.field(&[0]).unwrap().value, Some(4));
+        assert_eq!(input.input.work, 0);
+        let work = checker.type_work.as_ref().unwrap();
+        assert_eq!(work.nodes, 3);
+        let cost = work.visits;
+        for (visits, nodes, accepted) in [
+            (MAX_WORK - cost, MAX_NODES - 3, true),
+            (MAX_WORK - cost + 1, 0, false),
+            (0, MAX_NODES - 2, false),
+        ] {
+            checker.type_work = Some(Work {
+                visits,
+                nodes,
+                depth: 0,
+            });
+            let result = checker.partial_record(value, &ty);
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert_eq!(
+                checker
+                    .required_value("width", value.span)
+                    .err()
+                    .unwrap()
+                    .code,
+                "E201"
+            );
+        }
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn inline_composition_bounds_nested_sources_and_restores_failure_state() {
+        use super::*;
+        use crate::ast::{Block, Stmt, StmtKind};
+        use crate::check::type_values::Work;
+        use crate::hir::Field;
+        let ty = Type::Record {
+            primary: Box::new(Type::Null),
+            fields: vec![Field {
+                name: "width".into(),
+                ty: Type::Int {
+                    bits: 8,
+                    signed: false,
+                },
+                mutable: false,
+            }],
+        };
+        for depth in [63, 64] {
+            let parsed = crate::parser::parse("r:{->width:4}").unwrap();
+            let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+                panic!("binding")
+            };
+            let mut expr = value.clone();
+            for _ in 1..depth {
+                expr = Expr {
+                    span: expr.span,
+                    kind: ExprKind::Block(Block {
+                        label: None,
+                        span: expr.span,
+                        stmts: vec![Stmt {
+                            span: expr.span,
+                            kind: StmtKind::Emit {
+                                label: None,
+                                name: None,
+                                ty: None,
+                                mutable: false,
+                                value: expr,
+                            },
+                        }],
+                    }),
+                };
+            }
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let scopes = checker.scopes.len();
+            let result = checker.partial_record(&expr, &ty);
+            if depth == 63 {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(checker.locals.is_empty());
+        }
+        for count in [256, 257] {
+            let fields = (0..count)
+                .map(|id| format!("n{id}<uint8>;"))
+                .collect::<String>();
+            let source = format!("<R>:<{{{fields}}}>;<T>:{{r<R>:{{->{{->n0:4}}}};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, if count == 256 { "E204" } else { "B001" });
+        }
+    }
+
+    #[test]
+    pub(crate) fn inline_composition_documents_source_fields_and_completed_types() {
+        let source = "<R>:<{enabled<boolean>;width<uint8>}>;#| Items. |#<T>:{r<R>:{->{#| Width. |#->width:4};->enabled:true};-><int32[r.width]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [("width", "uint8"), ("T", "int32[4]")] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+    }
 }

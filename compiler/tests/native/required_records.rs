@@ -446,3 +446,93 @@ pub(crate) fn inline_required_composition_executes_partial_and_nested_sources() 
         assert!(error.contains("\"code\":\"E103\""), "{error}");
     }
 }
+
+#[test]
+pub(crate) fn inline_required_composition_keeps_skipped_work_and_original_errors() {
+    let data = "#é🙂#\nd:@\"debug\";d.print(\"init\");raw:{->n<uint8>:255};->row:{->width<uint8>:4;->bad:raw.n+1}";
+    for (body, code) in [
+        ("->{->width:m.row.width};->enabled:true", "E107"),
+        ("->{->width:4;unused:m.row.width};->enabled:true", "E107"),
+        (
+            "|false|->{->width:m.row.width};->{->width:4};->enabled:true",
+            "",
+        ),
+        (
+            "->{|false|->width:missing();|true|->width:4};->enabled:true",
+            "",
+        ),
+        (
+            "->{->width:4;|false|->enabled:missing()};->enabled:true",
+            "",
+        ),
+        (
+            "|false|->{#| Skipped. |#->width:4};->{->width:4};->enabled:true",
+            "B001",
+        ),
+    ] {
+        let case = case(
+            &format!(
+                "m:@\"./data.mwy\";<R>:<{{enabled<boolean>;width<uint8>}}>;<T>:{{r<R>:{{{body}}};-><int32[r.width]>}}"
+            ),
+            &[("data.mwy", data)],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            if code.is_empty() {
+                assert!(output.status.success(), "{body}: {error}");
+            } else {
+                assert_eq!(output.status.code(), Some(1), "{body}");
+                assert!(
+                    error.contains(&format!("\"code\":\"{code}\"")),
+                    "{body}: {error}"
+                );
+                if code == "E107" {
+                    assert!(
+                        error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                        "{error}"
+                    );
+                    assert!(
+                        error.contains(&format!(
+                            "\"path\":\"{}\"",
+                            case.path.join("data.mwy").display()
+                        )),
+                        "{error}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn inline_required_composition_preserves_module_staging_and_function_scope() {
+    let case = case(
+        "m:@\"./types.mwy\";v<m.Items>:[3,7];d:@\"debug\";d.print(\"entry\");d.print(v[2])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->row:{->width<uint8>:4}",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";d.print(\"types\");<R>:<{enabled<boolean>;width<uint8>}>;-><Items>:{r<R>:{->{->m.row};->enabled:true};-><int32[r.width]>}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        for profile in ["debug", "release"] {
+            let output = case.command(action, &["--profile", profile]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stdout.is_empty());
+            assert!(output.stderr.is_empty());
+        }
+    }
+    case.runs(b"data\ntypes\nentry\n7\n");
+    super::file_modules::case("source:{->width<uint8>:4};f<int32>:(){<T>:{r<{part<{width<uint8>}>}>:{->{->part:{->{->source}}}};-><int32[r.part.width]>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())", &[]).runs(b"9\n");
+}

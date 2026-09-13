@@ -230,10 +230,14 @@ Dependency-ordered commit plan:
    their paths; block/group sources reuse composition forwarding. Scope, expected
    widths, nested completeness, empty-source gates and capacity execution pass
    781 library/819 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-inline-composition-tests.log`.
-3. Verify nested/conditional sources, skipped work, depth/shape budgets, errors and
-   module staging. Update guides and handoffs separately if the slice grows too large.
-4. Run `python3 -B tools/verify.py --compiler` across the complete series.
+   Log: `/tmp/meowy-inline-composition-tests.log`. Committed as `df90790`.
+3. Complete: nested/conditional sources, exact node/work bounds, 63/64 nested-source
+   depth, expected 256/257-field limits, source spans, skipped documentation gates,
+   function scopes and silent module staging pass 784 library/821 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-inline-composition-integration.log`.
+4. Split review: integration tests plus guide/handoff replacement approach 400 changed
+   lines. Commit the integration evidence separately, then update guides/handoffs
+   and run `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep general unannotated constructors, empty/nonrecord primaries, skipped documented
 declarations, fallback arms, mutable/float/text/reference fields, whole-module records,
