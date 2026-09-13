@@ -42,11 +42,26 @@ impl Checker {
             }
             StmtKind::Emit {
                 label: None,
+                name: Some(name),
+                ty,
+                mutable: false,
+                value,
+            } if output.record() => {
+                self.required_record_field(name, ty.as_ref(), value, stmt.span, output)?;
+            }
+            StmtKind::Emit {
+                label: None,
                 name: None,
                 ty: None,
                 mutable: false,
                 value,
             } => {
+                if output.record() {
+                    return Err(Diagnostic::unsupported(
+                        "required record primary emissions",
+                        stmt.span,
+                    ));
+                }
                 let value = match output.ty.as_ref() {
                     Some(ty) => self.scalar_emission(value, ty)?,
                     None => Value::Type(self.type_value(value)?),
@@ -67,7 +82,9 @@ impl Checker {
             StmtKind::Expr(value) => return Err(self.type_unavailable(value)?),
             _ => {
                 return Err(Diagnostic::unsupported(
-                    if output.ty.is_some() {
+                    if output.record() {
+                        "required record block statement"
+                    } else if output.ty.is_some() {
                         "required scalar block statement"
                     } else {
                         "computed type block statement"

@@ -8,6 +8,7 @@ impl Checker {
     pub(crate) fn type_branch_form(
         &mut self,
         stmt: &Stmt,
+        record: bool,
         depth: usize,
         count: &mut usize,
     ) -> Result<()> {
@@ -19,14 +20,14 @@ impl Checker {
             StmtKind::Bind { mutable: false, .. }
             | StmtKind::TypeAlias {
                 exported: false, ..
-            }
-            | StmtKind::Emit {
+            } => Ok(()),
+            StmtKind::Emit {
                 label: None,
-                name: None,
-                ty: None,
+                name,
+                ty,
                 mutable: false,
                 ..
-            } => Ok(()),
+            } if record && name.is_some() || !record && name.is_none() && ty.is_none() => Ok(()),
             StmtKind::Match { arms } => {
                 for (condition, body) in arms {
                     if condition.is_none() {
@@ -35,7 +36,7 @@ impl Checker {
                             stmt.span,
                         ));
                     }
-                    self.type_branch_form(body, depth + 1, count)?;
+                    self.type_branch_form(body, record, depth + 1, count)?;
                 }
                 Ok(())
             }
@@ -66,7 +67,7 @@ impl Checker {
                     ));
                 };
                 let depth = self.type_work.as_ref().unwrap().depth;
-                self.type_branch_form(body, depth, &mut 0)?;
+                self.type_branch_form(body, output.record(), depth, &mut 0)?;
                 let ty = self.boolean_form(condition, depth, &mut 0)?;
                 if ty != Type::Bool {
                     return Err(Self::error(

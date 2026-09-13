@@ -225,10 +225,11 @@ Dependency-ordered commits:
 
 1. Complete: required result state is consolidated without behavior changes. All
    769 library/810 native tests, fmt and Clippy pass. Log:
-   `/tmp/meowy-required-output-tests.log`. Commit the prerequisite.
-2. Add record-shaped result state, named field checking and compile-time construction,
-   including nested records/source copies and matcher-selected emissions. Keep focused
-   kind/width/initialization/scope/no-runtime-storage regressions with the behavior.
+   `/tmp/meowy-required-output-tests.log`. Committed as `66bd7c1`.
+2. Complete: named field construction passes 771 library/811 native tests, fmt and
+   Clippy. Log: `/tmp/meowy-record-construction-tests.log`. Nested/source-copy fields,
+   completed-field reads, selected matchers, initialization/kind/width errors and
+   absent runtime storage pass. Commit the behavior slice.
 3. Verify source errors, limits, documentation and module staging; update guides/handoffs
    and run `python3 -B tools/verify.py --compiler` across the complete series.
 

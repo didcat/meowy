@@ -164,3 +164,15 @@ pub(crate) fn required_records_preserve_annotations_and_silent_module_startup() 
     }
     case.runs(b"data\nbad\ntypes\nentry\n7\n");
 }
+
+#[test]
+pub(crate) fn required_record_construction_supports_nested_fields_copies_and_matchers() {
+    case(
+        "source:{->width<uint8>:4};<R>:<{enabled<boolean>;part<{width<uint8>}>}>;<Items>:{r<R>:{->part:source;|part.width>=4|->enabled:true;|part.width<4|->enabled:false};copy:r.part;-><int32[copy.width]>};v<Items>:[3,7];d:@\"debug\";d.print(v[2])",
+        &[],
+    ).runs(b"7\n");
+    case(
+        "<R>:<{enabled<boolean>;part<{width<uint8>}>}>;<T>:{r<R>:{->part:{->width:{->4}};->enabled:false};copy:r;|copy.enabled|-><string>;|!copy.enabled|-><int32[copy.part.width]>};v<T>:[9];d:@\"debug\";d.print(v[1])",
+        &[],
+    ).runs(b"9\n");
+}

@@ -2,7 +2,7 @@ mod blocks;
 mod predicates;
 mod records;
 
-pub(crate) use records::{MAX_DEPTH as MAX_RECORD_DEPTH, Record};
+pub(crate) use records::{Leaf, MAX_DEPTH as MAX_RECORD_DEPTH, Record};
 
 use super::{Checker, Constant, exports::Primary};
 use crate::diagnostic::Diagnostic;

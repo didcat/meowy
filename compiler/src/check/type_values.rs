@@ -20,6 +20,13 @@ pub(crate) const MAX_NODES: usize = 16384;
 pub(crate) struct Output {
     pub(crate) ty: Option<Type>,
     pub(crate) value: Option<Value>,
+    pub(crate) fields: std::collections::BTreeMap<usize, Value>,
+}
+
+impl Output {
+    pub(crate) fn record(&self) -> bool {
+        matches!(self.ty, Some(Type::Record { .. }))
+    }
 }
 
 #[derive(Default)]
@@ -197,11 +204,14 @@ impl Checker {
         self.scopes.push(Scope::default());
         let mut output = Output {
             ty: expected.cloned(),
-            value: None,
+            ..Output::default()
         };
         let result = self.type_statements(&block.stmts, &mut output);
         self.scopes.pop();
         result?;
+        if output.record() {
+            return self.finish_required_record(output, block.span);
+        }
         output.value.ok_or_else(|| {
             Self::error(
                 if expected.is_some() { "E204" } else { "E211" },
@@ -228,6 +238,9 @@ impl Checker {
             && let Some(annotation) = annotation
         {
             let ty = self.ty(annotation)?;
+            if matches!(ty, Type::Record { .. }) {
+                return self.record_block(expr, &ty);
+            }
             if !matches!(ty, Type::Int { .. } | Type::Bool) {
                 return Err(Diagnostic::unsupported(
                     "required block results outside integers and booleans",

@@ -1,3 +1,5 @@
+mod build;
+
 use crate::ast::{self, ExprKind};
 use crate::check::{Checker, Result, Value, inputs::Record};
 use crate::hir::Type;
