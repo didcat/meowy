@@ -231,9 +231,11 @@ Dependency-ordered commit plan:
 1. Complete: general inferred block/result handling moved to `type_values/inferred.rs`;
    record field/slot inference stays in `records/inferred.rs`. All 790 library/825
    native tests, fmt and Clippy pass. Log: `/tmp/meowy-inferred-results-refactor.log`.
-2. Route inferred primaries through `type_binding`, allow checked integer/boolean
-   results and keep scalar-primary records gated. Include focused accepted/rejected
-   checker/native tests and remove only superseded unsupported fixtures.
+   Committed as `d31c39a`.
+2. Complete: inferred primaries reuse `type_binding` for checked scalar/type/record
+   results. Scalar-primary records remain gated. Widths, nested results, duplicates,
+   scope, type identities and native capacities pass 792 library/826 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-inferred-scalars.log`.
 3. Verify conditional kinds, exact widths, source work/errors, skipped paths, budgets,
    type identities and module/function staging with focused integration tests.
 4. Update guides/handoffs, execute the guide in both profiles, and run

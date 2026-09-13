@@ -161,3 +161,19 @@ pub(crate) fn required_scalar_blocks_export_types_without_executing_module_effec
     )
     .runs(b"-128\n");
 }
+
+#[test]
+pub(crate) fn inferred_scalar_blocks_execute_selected_integer_and_boolean_results() {
+    for (flag, capacity) in [("true", 4), ("false", 2)] {
+        let source = format!(
+            "<T>:{{flag:{{->{flag}}};n:{{|flag|->{{base<uint8>:4;->base}};|!flag|->2}};r:{{->width:{{->n}}}};-><int32[r.width]>}};v<T>:[3,7];d:@\"debug\";d.print(v[2])"
+        );
+        case(&source, &[]).runs(b"7\n");
+        let values = vec!["1"; capacity + 1].join(",");
+        let output =
+            case(&format!("{source};extra<T>:[{values}]"), &[]).command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E103\""), "{error}");
+    }
+}

@@ -102,7 +102,6 @@ mod tests {
             ("n<boolean>:{|false|->true}", "E204"),
             ("n<uint8>:{->1;unused:1/0}", "E107"),
             ("n<uint8>:{private<uint8>:4;->private};copy:private", "E201"),
-            ("n:{->4}", "B001"),
             ("n<float32>:{->1.0}", "B001"),
             ("n<uint8>:{v:=1;->v}", "B001"),
             ("n<uint8>:{|true|{->4}}", "B001"),

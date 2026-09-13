@@ -1,6 +1,6 @@
 use crate::ast::{Expr, ExprKind, Span};
 use crate::check::{Checker, Result, Value, type_values::Output};
-use crate::hir::Type;
+use crate::diagnostic::Diagnostic;
 
 impl Checker {
     pub(crate) fn inferred_block(&mut self, expr: &Expr) -> Result<Value> {
@@ -47,23 +47,17 @@ impl Checker {
         span: Span,
         output: &mut Output,
     ) -> Result<()> {
-        let mut form = expr;
-        while let ExprKind::Group(value) = &form.kind {
-            form = value;
-        }
-        let value = if matches!(form.kind, ExprKind::Block(_)) {
-            self.inferred_block(expr)?
-        } else if matches!(form.kind, ExprKind::Name(_) | ExprKind::Field { .. })
-            && matches!(self.required_hint(expr), Some(Type::Record { .. }))
-        {
-            self.type_record(expr, None)?
-        } else {
-            Value::Type(self.type_value(expr)?)
-        };
+        let value = self.type_binding(expr, None)?;
         if matches!(value, Value::Record { .. }) {
             return self.forward_required_record(value, span, output);
         }
         if output.record() {
+            if matches!(value, Value::Static { .. }) {
+                return Err(Diagnostic::unsupported(
+                    "required records with scalar primaries",
+                    span,
+                ));
+            }
             return Err(Self::error(
                 "E211",
                 "a compile-time type cannot be a record primary",
@@ -73,10 +67,55 @@ impl Checker {
         if output.value.replace(value).is_some() {
             return Err(Self::error(
                 "E205",
-                "computed type primary may be emitted twice",
+                "inferred required primary may be emitted twice",
                 span,
             ));
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    pub(crate) fn inferred_scalars_keep_widths_nested_blocks_and_type_results() {
+        let source = "<T>:{kind:{-><uint8>};n:({base<(kind)>:2;->{->base*2}});flag:{->n==4};copy:{->flag};|copy|-><int32[n]>;|!copy|-><string>}";
+        let program = crate::compile(source).unwrap();
+        assert!(program.locals.is_empty());
+        assert!(program.body.stmts.is_empty());
+        assert!(program.functions.is_empty());
+        crate::compile(&format!("{source};v<T>:[1,2,3,4]")).unwrap();
+        crate::compile("<T>:{r:{->n:{->4};->flag:{->true}};-><int32[r.n]>}").unwrap();
+    }
+
+    #[test]
+    pub(crate) fn inferred_scalars_preserve_primary_scope_and_record_boundaries() {
+        for (body, code) in [
+            ("n:{->1;->false}", "E205"),
+            ("n:{-><int32>;->4}", "E205"),
+            ("n:{->1/0}", "E107"),
+            ("n:{->4;tail:1/0}", "E107"),
+            ("n:{base<uint8>:255;->base+1}", "E107"),
+            ("n:{->2147483648}", "E216"),
+            ("n:{private:4;->private};copy:private", "E201"),
+            ("n:{|false|->4}", "E211"),
+            ("n:{->x:4;->1}", "B001"),
+            ("n:{->1;->x:4}", "B001"),
+            ("n:{->true;->{->x:4}}", "E205"),
+            ("n:{->{->x:4};->true}", "B001"),
+            ("n:{->1.0}", "B001"),
+            ("n:{->null}", "B001"),
+            ("n:{->\"text\"}", "B001"),
+            ("n:{x:=4;->x}", "B001"),
+            ("n:{->4};wrong<uint8>:n", "E207"),
+        ] {
+            let source = format!("<T>:{{{body};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, code, "{body}: {error:?}");
+        }
+        assert_eq!(
+            crate::compile("<T>:{n:{->4};->n}").unwrap_err()[0].code,
+            "E211"
+        );
     }
 }

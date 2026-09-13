@@ -48,6 +48,12 @@ impl Checker {
                 span,
             ));
         }
+        if matches!(output.value, Some(Value::Static { .. })) {
+            return Err(Diagnostic::unsupported(
+                "required records with scalar primaries",
+                span,
+            ));
+        }
         let shape = output.ty.get_or_insert_with(|| Type::Record {
             primary: Box::new(Type::Null),
             fields: Vec::new(),
@@ -107,7 +113,6 @@ mod tests {
             ("-><int32>;->x:4", "E211"),
             ("->x:4;unused:1/0", "E107"),
             ("|true|->x:4;->y:x", "E201"),
-            ("->4", "B001"),
             ("", "E211"),
         ] {
             let source = format!("<T>:{{r:{{{body}}};-><int32>}}");
