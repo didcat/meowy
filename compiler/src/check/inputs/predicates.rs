@@ -40,7 +40,16 @@ impl Checker {
                 let source = locals
                     .booleans
                     .get(id)
-                    .or_else(|| self.bool_inputs.get(id))?;
+                    .or_else(|| self.bool_inputs.get(id))
+                    .or_else(|| self.module_boolean(*id))?;
+                input.add(source);
+                input.value = source.value;
+            }
+            ExprKind::Primary(value) => {
+                let ExprKind::Local(id) = value.kind else {
+                    return None;
+                };
+                let source = self.module_boolean(id)?;
                 input.add(source);
                 input.value = source.value;
             }

@@ -51,7 +51,7 @@ pub(crate) fn boolean_modules_preserve_initializer_and_module_boundaries() {
         ),
         (
             "m:@\"./data.mwy\";n:{unused:!m;->4};<T>:{v:n;-><int32>}",
-            "->true",
+            "|true|->true",
             "E211",
         ),
         (

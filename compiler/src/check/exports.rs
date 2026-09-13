@@ -17,12 +17,14 @@ pub(crate) struct Module {
 #[derive(Clone, Debug)]
 pub(crate) enum Primary {
     Int(super::inputs::Input),
+    Bool(super::inputs::Input<bool>),
 }
 
 impl Primary {
     pub(crate) fn forward(&mut self) {
         match self {
             Self::Int(input) => input.work = input.work.saturating_add(2),
+            Self::Bool(input) => input.work = input.work.saturating_add(2),
         }
     }
 }
@@ -86,11 +88,16 @@ impl Checker {
         else {
             return;
         };
-        if !self.input_export(*target) || !matches!(value.ty, Type::Int { .. }) {
+        if !self.input_export(*target) {
             return;
         }
-        if let Some(input) = self.integer_input(value, &value.ty) {
-            self.module.primary = Some((*id, Primary::Int(input)));
+        let input = match value.ty {
+            Type::Int { .. } => self.integer_input(value, &value.ty).map(Primary::Int),
+            Type::Bool => self.boolean_input(value, &value.ty).map(Primary::Bool),
+            _ => None,
+        };
+        if let Some(input) = input {
+            self.module.primary = Some((*id, input));
         }
     }
 
@@ -169,7 +176,7 @@ impl Checker {
                     input.work = input.work.saturating_add(2);
                     self.module.inputs.insert(name.clone(), input);
                 }
-            } else if matches!(value.ty, Type::Int { .. })
+            } else if matches!(value.ty, Type::Int { .. } | Type::Bool)
                 && let Some((_, input)) = &source.primary
             {
                 let mut input = input.clone();

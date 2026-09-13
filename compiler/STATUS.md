@@ -192,10 +192,13 @@ Dependency-ordered commits:
 
 1. Complete: explicit `Primary::Int` evidence keeps integer capture, lookup, emission
    identity and forwarding work unchanged. All 743 library/770 native tests, fmt and
-   Clippy pass. Log: `/tmp/meowy-primary-kinds-tests.log`. Commit the prerequisite.
-2. Add the boolean evidence variant, capture, predicate lookup and composition forwarding.
-   Keep focused acceptance/rejection and original-source error tests with the change;
-   validate integer compatibility and debug/release boolean execution.
+   Clippy pass. Log: `/tmp/meowy-primary-kinds-tests.log`. Committed as `39aacdd`.
+2. Complete: `Primary::Bool` capture/forwarding and Local/Primary predicate lookup
+   pass 744 library/773 native tests, fmt and Clippy. Log:
+   `/tmp/meowy-boolean-primary-tests.log`. False values, mixed-module projections,
+   aliases/type queries, re-exports, source errors and existing gates pass. Ordinary
+   annotated module aliases remain unavailable; boolean operations project primaries.
+   Commit this behavior with its focused tests.
 3. Add repeated-work and initialization integration, update the supported guide and
    both handoffs, and run `python3 -B tools/verify.py --compiler` across the series.
 

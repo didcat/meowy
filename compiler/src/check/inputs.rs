@@ -45,7 +45,19 @@ impl Checker {
         if !matches!(Self::primary_type(self.locals.get(id)?), Type::Int { .. }) {
             return None;
         }
-        let (_, Primary::Int(input)) = self.exports.get(&id)?.primary.as_ref()?;
+        let (_, Primary::Int(input)) = self.exports.get(&id)?.primary.as_ref()? else {
+            return None;
+        };
+        Some(input)
+    }
+
+    pub(crate) fn module_boolean(&self, id: usize) -> Option<&Input<bool>> {
+        if Self::primary_type(self.locals.get(id)?) != Type::Bool {
+            return None;
+        }
+        let (_, Primary::Bool(input)) = self.exports.get(&id)?.primary.as_ref()? else {
+            return None;
+        };
         Some(input)
     }
 

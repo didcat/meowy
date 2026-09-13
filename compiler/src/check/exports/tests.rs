@@ -44,7 +44,9 @@ pub(crate) fn primary_inputs_preserve_checked_identity_width_and_runtime_express
     let parsed = crate::parser::parse_documented("base<uint8>:2;->base+2").unwrap();
     let mut checker = crate::check::Checker::new();
     let block = checker.block(&parsed.block, None, None).unwrap();
-    let (id, Primary::Int(input)) = checker.module.primary.unwrap();
+    let (id, Primary::Int(input)) = checker.module.primary.unwrap() else {
+        panic!("integer primary")
+    };
     assert_eq!(input.value, Some(4));
     assert_eq!(block.stmts.len(), 2);
     assert!(
@@ -58,7 +60,9 @@ pub(crate) fn primary_inputs_preserve_checked_identity_width_and_runtime_express
 pub(crate) fn primary_inputs_keep_private_dependencies_tail_work_and_file_effects() {
     let checker =
         check("d:@\"debug\";d.print(1);base:2;->{->base*2;unused:3};d.print(2);->named:7");
-    let (_, Primary::Int(input)) = checker.module.primary.unwrap();
+    let (_, Primary::Int(input)) = checker.module.primary.unwrap() else {
+        panic!("integer primary")
+    };
     assert_eq!(input.value, Some(4));
     assert!(input.work > 6);
     assert_eq!(checker.module.inputs.len(), 1);
@@ -69,14 +73,13 @@ pub(crate) fn primary_inputs_keep_private_dependencies_tail_work_and_file_effect
 }
 
 #[test]
-pub(crate) fn primary_inputs_exclude_effects_mutable_sources_conditionals_and_nonintegers() {
+pub(crate) fn primary_inputs_exclude_effects_mutable_sources_conditionals_and_other_kinds() {
     for source in [
         "d:@\"debug\";->{->4;d.print(1)}",
         "value:=4;->value",
         "|true|->4",
         "|false|->4",
         "->{->n:4}",
-        "->true",
         "->4.0",
         "f<int32>:(){->4};->f()",
     ] {
@@ -107,7 +110,9 @@ pub(crate) fn composed_inputs_keep_source_ids_without_changing_runtime_emissions
         .unwrap();
     let width = source.inputs["width"].clone();
     let row = source.inputs["row"].clone();
-    let Primary::Int(primary) = source.primary.as_ref().unwrap().1.clone();
+    let Primary::Int(primary) = source.primary.as_ref().unwrap().1.clone() else {
+        panic!("integer primary")
+    };
     let id = checker.local(value.ty.clone());
     checker.exports.insert(id, source);
     checker
@@ -132,7 +137,9 @@ pub(crate) fn composed_inputs_keep_source_ids_without_changing_runtime_emissions
     assert!(!checker.inputs.contains_key(&id));
     assert!(!checker.record_inputs.contains_key(&id));
     assert!(!checker.record_inputs.contains_key(&locals));
-    let (emitted, Primary::Int(input)) = exports.primary.unwrap();
+    let (emitted, Primary::Int(input)) = exports.primary.unwrap() else {
+        panic!("integer primary")
+    };
     assert_eq!(input.value, primary.value);
     assert_eq!(input.work, primary.work + 2);
     let hir::ExprKind::Block(body) = facade.kind else {
@@ -251,4 +258,42 @@ pub(crate) fn boolean_exports_retain_source_ids_private_inputs_and_errors() {
     let error = input.error.as_ref().unwrap();
     assert_eq!(error.code, "E107");
     assert_eq!(error.span.start, source.find("record.width+1").unwrap());
+}
+
+#[test]
+pub(crate) fn boolean_primaries_preserve_emission_identity_tail_work_and_errors() {
+    use crate::hir::{ExprKind, Stmt, Type};
+    let parsed = crate::parser::parse_documented(
+        "d:@\"debug\";d.print(1);private:false;->{->private;unused:2};->named:true",
+    )
+    .unwrap();
+    let mut checker = crate::check::Checker::new();
+    let block = checker.block(&parsed.block, None, None).unwrap();
+    let (id, Primary::Bool(input)) = checker.module.primary.unwrap() else {
+        panic!("boolean primary")
+    };
+    assert_eq!(input.value, Some(false));
+    assert!(input.work > 5);
+    assert!(input.error.is_none());
+    assert!(block.stmts.iter().any(|stmt| matches!(stmt,
+        Stmt::Emit { id: found, field: None, value, .. }
+        if *found == id && value.ty == Type::Bool && matches!(value.kind, ExprKind::Block(_))
+    )));
+    let source = "row:{->width<uint8>:255};->row.width+1==0";
+    let checker = check(source);
+    let (_, Primary::Bool(input)) = checker.module.primary.unwrap() else {
+        panic!("boolean primary")
+    };
+    assert!(input.value.is_none());
+    let error = input.error.unwrap();
+    assert_eq!(error.code, "E107");
+    assert_eq!(error.span.start, source.find("row.width+1").unwrap());
+    for source in [
+        "value:=true;->value",
+        "|true|->true",
+        "d:@\"debug\";->{->false;d.print(1)}",
+        "get<boolean>:(){->true};->get()",
+    ] {
+        assert!(check(source).module.primary.is_none(), "{source}");
+    }
 }
