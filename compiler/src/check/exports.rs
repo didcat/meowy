@@ -11,7 +11,20 @@ pub(crate) struct Module {
     pub(crate) values: BTreeMap<String, Value>,
     pub(crate) types: BTreeMap<String, Spec>,
     pub(crate) inputs: BTreeMap<String, Input>,
-    pub(crate) primary: Option<(hir::EmitId, super::inputs::Input)>,
+    pub(crate) primary: Option<(hir::EmitId, Primary)>,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) enum Primary {
+    Int(super::inputs::Input),
+}
+
+impl Primary {
+    pub(crate) fn forward(&mut self) {
+        match self {
+            Self::Int(input) => input.work = input.work.saturating_add(2),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -77,7 +90,7 @@ impl Checker {
             return;
         }
         if let Some(input) = self.integer_input(value, &value.ty) {
-            self.module.primary = Some((*id, input));
+            self.module.primary = Some((*id, Primary::Int(input)));
         }
     }
 
@@ -160,7 +173,7 @@ impl Checker {
                 && let Some((_, input)) = &source.primary
             {
                 let mut input = input.clone();
-                input.work = input.work.saturating_add(2);
+                input.forward();
                 self.module.primary = Some((*id, input));
             }
         }

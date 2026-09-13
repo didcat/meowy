@@ -1,3 +1,4 @@
+use super::Primary;
 use crate::check::inputs::tests::check;
 
 #[test]
@@ -43,7 +44,7 @@ pub(crate) fn primary_inputs_preserve_checked_identity_width_and_runtime_express
     let parsed = crate::parser::parse_documented("base<uint8>:2;->base+2").unwrap();
     let mut checker = crate::check::Checker::new();
     let block = checker.block(&parsed.block, None, None).unwrap();
-    let (id, input) = checker.module.primary.unwrap();
+    let (id, Primary::Int(input)) = checker.module.primary.unwrap();
     assert_eq!(input.value, Some(4));
     assert_eq!(block.stmts.len(), 2);
     assert!(
@@ -57,7 +58,7 @@ pub(crate) fn primary_inputs_preserve_checked_identity_width_and_runtime_express
 pub(crate) fn primary_inputs_keep_private_dependencies_tail_work_and_file_effects() {
     let checker =
         check("d:@\"debug\";d.print(1);base:2;->{->base*2;unused:3};d.print(2);->named:7");
-    let (_, input) = checker.module.primary.unwrap();
+    let (_, Primary::Int(input)) = checker.module.primary.unwrap();
     assert_eq!(input.value, Some(4));
     assert!(input.work > 6);
     assert_eq!(checker.module.inputs.len(), 1);
@@ -106,7 +107,7 @@ pub(crate) fn composed_inputs_keep_source_ids_without_changing_runtime_emissions
         .unwrap();
     let width = source.inputs["width"].clone();
     let row = source.inputs["row"].clone();
-    let primary = source.primary.as_ref().unwrap().1.clone();
+    let Primary::Int(primary) = source.primary.as_ref().unwrap().1.clone();
     let id = checker.local(value.ty.clone());
     checker.exports.insert(id, source);
     checker
@@ -131,7 +132,7 @@ pub(crate) fn composed_inputs_keep_source_ids_without_changing_runtime_emissions
     assert!(!checker.inputs.contains_key(&id));
     assert!(!checker.record_inputs.contains_key(&id));
     assert!(!checker.record_inputs.contains_key(&locals));
-    let (emitted, input) = exports.primary.unwrap();
+    let (emitted, Primary::Int(input)) = exports.primary.unwrap();
     assert_eq!(input.value, primary.value);
     assert_eq!(input.work, primary.work + 2);
     let hir::ExprKind::Block(body) = facade.kind else {

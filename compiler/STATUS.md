@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Direct named boolean module-input evidence and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean module primary inputs are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -183,22 +183,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Direct named boolean inputs and forwarding/staging integration are complete.
-`722558d` contains capture/path lookup and focused regressions; the following
-integration/documentation slice is validated by the final gate above.
+Inspection: integer evidence has two consumers (`Local` and projected `Primary`) and
+composition adds two visits per forwarded primary. Boolean predicates need the same
+paths, without granting boolean scratch in required type blocks or runtime captures.
+The existing HIR already projects mixed-module primaries in boolean contexts.
 
-Next, inspect boolean module primary evidence in `src/check/exports.rs` and its
-consumers. `Module.primary` currently stores integer `Input<i128>`; keep integer
-contexts and mixed-module record identity intact when introducing typed evidence.
-Record a dependency-ordered commit plan before implementation:
+Dependency-ordered commits:
 
-1. Separate typed primary storage/lookup from behavior changes if a buildable,
-   behavior-preserving prerequisite is needed; retain the existing integer regressions.
-2. Add eligible boolean primary capture and predicate reads with focused true/false,
-   scope, retained-error, purity and forwarding-work regressions. Test actual primary
-   consumption, since identity-only module aliases/imports are intentionally erased.
-3. Verify independent initialization and silent staging in debug/release, update the
-   supported guide and both handoffs, and run `python3 -B tools/verify.py --compiler`.
+1. Complete: explicit `Primary::Int` evidence keeps integer capture, lookup, emission
+   identity and forwarding work unchanged. All 743 library/770 native tests, fmt and
+   Clippy pass. Log: `/tmp/meowy-primary-kinds-tests.log`. Commit the prerequisite.
+2. Add the boolean evidence variant, capture, predicate lookup and composition forwarding.
+   Keep focused acceptance/rejection and original-source error tests with the change;
+   validate integer compatibility and debug/release boolean execution.
+3. Add repeated-work and initialization integration, update the supported guide and
+   both handoffs, and run `python3 -B tools/verify.py --compiler` across the series.
 
 Keep whole-module record inputs, conditional exports, required boolean/record scratch,
 wider comparisons, helpers, packages and borrowed storage separate. Do not push.

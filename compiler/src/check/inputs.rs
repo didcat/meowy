@@ -4,7 +4,7 @@ mod records;
 
 pub(crate) use records::{MAX_DEPTH as MAX_RECORD_DEPTH, Record};
 
-use super::{Checker, Constant};
+use super::{Checker, Constant, exports::Primary};
 use crate::diagnostic::Diagnostic;
 use crate::hir::{self, ExprKind, Type};
 use std::collections::BTreeMap;
@@ -45,11 +45,8 @@ impl Checker {
         if !matches!(Self::primary_type(self.locals.get(id)?), Type::Int { .. }) {
             return None;
         }
-        self.exports
-            .get(&id)?
-            .primary
-            .as_ref()
-            .map(|(_, input)| input)
+        let (_, Primary::Int(input)) = self.exports.get(&id)?.primary.as_ref()?;
+        Some(input)
     }
 
     pub(crate) fn integer_input(&mut self, expr: &hir::Expr, ty: &Type) -> Option<Input> {
