@@ -225,9 +225,12 @@ Dependency-ordered commit plan:
 1. Complete: extracted scoped `required_output` traversal from completion in
    `type_values.rs`. Scope restoration and completion checks pass 779 library/818
    native tests, fmt and Clippy. Log: `/tmp/meowy-required-output-scope-tests.log`.
-2. Add partial inline record materialization and route block/group sources through it
-   in `records/compose.rs`, keeping exact expected fields, primary/collision checks,
-   budgets and focused accepted/rejected execution tests together.
+   Committed as `d8b5a36`.
+2. Complete: `records/partial.rs` materializes only emitted slots and reindexes
+   their paths; block/group sources reuse composition forwarding. Scope, expected
+   widths, nested completeness, empty-source gates and capacity execution pass
+   781 library/819 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-inline-composition-tests.log`.
 3. Verify nested/conditional sources, skipped work, depth/shape budgets, errors and
    module staging. Update guides and handoffs separately if the slice grows too large.
 4. Run `python3 -B tools/verify.py --compiler` across the complete series.

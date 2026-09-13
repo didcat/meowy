@@ -430,3 +430,19 @@ pub(crate) fn required_composition_exports_types_and_preserves_silent_startup() 
     case.runs(b"data\nbad\ntypes\nentry\n7\n");
     super::file_modules::case("source:{->width<uint8>:4};f<int32>:(){<T>:{r<{part<{width<uint8>}>}>:{->part:{->source}};-><int32[r.part.width]>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())", &[]).runs(b"9\n");
 }
+
+#[test]
+pub(crate) fn inline_required_composition_executes_partial_and_nested_sources() {
+    for (flag, capacity) in [("true", 4), ("false", 2)] {
+        let source = format!(
+            "<R>:<{{enabled<boolean>;part<{{width<uint8>}}>}}>;<T>:{{flag:{flag};r<R>:{{|flag|->({{->{{->part:{{->width:4}}}}}});|!flag|->{{->part:{{->width:2}}}};->enabled:true}};-><int32[r.part.width]>}};v<T>:[3,7];d:@\"debug\";d.print(v[2])"
+        );
+        case(&source, &[]).runs(b"7\n");
+        let values = vec!["1"; capacity + 1].join(",");
+        let output =
+            case(&format!("{source};extra<T>:[{values}]"), &[]).command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E103\""), "{error}");
+    }
+}

@@ -14,18 +14,23 @@ impl Checker {
         while let ExprKind::Group(value) = &form.kind {
             form = value;
         }
-        let ty = match &form.kind {
-            ExprKind::Name(name) => self.required_value(name, form.span)?.data_type(),
-            ExprKind::Field { .. } => Some(self.required_path(form)?.1),
-            _ => None,
+        let value = if matches!(form.kind, ExprKind::Block(_)) {
+            self.partial_record(expr, output.ty.as_ref().unwrap())?
+        } else {
+            let ty = match &form.kind {
+                ExprKind::Name(name) => self.required_value(name, form.span)?.data_type(),
+                ExprKind::Field { .. } => Some(self.required_path(form)?.1),
+                _ => None,
+            };
+            if !matches!(ty, Some(Type::Record { .. })) {
+                return Err(Diagnostic::unsupported(
+                    "required primary composition outside eligible records",
+                    span,
+                ));
+            }
+            self.type_record(expr, None)?
         };
-        if !matches!(ty, Some(Type::Record { .. })) {
-            return Err(Diagnostic::unsupported(
-                "required primary composition outside existing records",
-                span,
-            ));
-        }
-        let Value::Record { ty, input } = self.type_record(expr, None)? else {
+        let Value::Record { ty, input } = value else {
             unreachable!()
         };
         if output
@@ -118,7 +123,6 @@ mod tests {
             ("->part;->other", "E205"),
             ("->extra;->enabled:true", "E207"),
             ("->wide;->enabled:true", "E207"),
-            ("->{->width:4};->enabled:true", "B001"),
         ] {
             let source = format!(
                 "part:{{->width<uint8>:4}};other:{{->enabled:true}};extra:{{->absent:4}};wide:{{->width<uint16>:4}};<R>:<{{enabled<boolean>;width<uint8>}}>;<T>:{{r<R>:{{{body}}};-><int32>}}"
