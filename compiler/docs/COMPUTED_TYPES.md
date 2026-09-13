@@ -178,7 +178,7 @@ those evaluator limits; these are not full-language E220 counters.
 
 Selected standalone expression blocks, named/outer emissions, mutation and evaluated
 helper calls remain unavailable inside boolean blocks. Integer and boolean blocks retain independently typed primaries. Boolean scratch inside required
-type blocks and direct scalar boolean export inputs remain separate capabilities.
+type blocks and boolean module primary inputs remain separate capabilities.
 
 ### Record scratch in scalar initializers
 
@@ -279,7 +279,7 @@ tail, or a mutable descendant. Each read charges retained ancestor work again.
 The existing 256-total-field and 32-record-level bounds include boolean fields.
 
 Named exported records and record-derived composed exports retain boolean leaf paths
-through facades. Direct scalar boolean exports still lack input evidence. Required
+through facades. Direct named boolean exports retain scalar source identities and work. Required
 type-block boolean scratch and ordinary runtime captures remain unavailable; boolean
 leaves become predicate inputs without becoming integer extents.
 
@@ -339,7 +339,7 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Float/text comparisons, direct scalar boolean module exports as predicate inputs,
+Float/text comparisons, boolean module primaries as predicate inputs,
 and boolean scratch inside required type blocks remain unavailable. Standalone expression
 statements in selected branches, loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
@@ -348,8 +348,9 @@ initializer contains branches.
 ## Imported immutable inputs
 
 Direct immutable named file exports retain the checked local identity of their eligible
-integer or record initializer. Required reads such as `m.width` and `m.row.nested.n`
-resolve the public field to that identity. Module aliases, copied integers, projected
+integer, boolean or record initializer. Required integer reads such as `m.width` and
+`m.row.nested.n`, and predicate reads such as `m.enabled`, resolve the public field
+to that identity. Module aliases, copied scalars, projected
 subrecords and named re-exports preserve the original integer widths and complete
 ancestor evidence. Private dependencies can supply an exported initializer without
 making their names public. Synthetic module bindings do not receive record evidence.
@@ -365,6 +366,43 @@ Eligible imported leaves can supply required types inside functions without enab
 ordinary runtime module-data captures. Existing module export shape/initialization/
 privacy checks still apply; mutable or borrowed exports, package resolution and helper
 purity remain separate capabilities.
+
+### Named boolean exports
+
+A direct immutable named boolean export can supply an eligible predicate. For example,
+`flags.mwy` can use a private dependency without exposing it:
+
+```meowy
+debug : @"debug"
+debug.print("flags")
+ready : true
+-> enabled : ready
+```
+
+Its importer can choose an integer capacity in an ordinary scalar initializer:
+
+```meowy
+flags : @"./flags.mwy"
+capacity <uint8> : {
+    enabled : flags.enabled
+    | enabled | -> 4
+    | !enabled | -> 2
+}
+<Items> : { -> <int32[capacity]> }
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+Running this prints `flags` and then `7`. Checking and building remain silent.
+Aliases, named re-exports and module compositions retain true/false values, original
+initializer errors and transitive work. Every evaluated read charges that work again;
+short-circuited operands contribute none. An unrelated effectful export does not
+invalidate an independently eligible boolean export.
+
+Boolean module primaries, whole-module record inputs, conditional module exports and
+boolean scratch inside required type blocks remain unavailable. Ordinary runtime
+module-data captures and private-field access remain rejected.
 
 ### Scalar primary imports
 
@@ -424,7 +462,8 @@ source dependency order, and failures stop dependent and entry execution.
 ### Module composition
 
 A direct top-level composition can forward a file module's eligible integer primary
-and eligible named inputs, including boolean fields derived from record composition.
+and eligible named inputs, including direct booleans and boolean fields derived from
+record composition.
 For example, `facade.mwy` can compose the `capacity.mwy` above:
 
 ```meowy

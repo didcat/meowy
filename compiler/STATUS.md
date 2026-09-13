@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Direct named boolean module-input evidence is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Direct named boolean module-input evidence and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -20,6 +20,16 @@ Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
 ## Current compiler slice
+
+Direct immutable named boolean exports retain their checked local IDs in `Module.inputs`
+and value/error/work evidence in `Checker.bool_inputs`. `exports.rs::export_input`
+records only eligible unconditional exports. In `inputs/records/paths.rs`,
+`boolean_field_input` resolves empty paths from scalar boolean evidence and nonempty
+paths from typed record evidence. Composition forwarding preserves the source identity,
+path and work; named re-exports retain their checked declaration and inherited errors.
+Private dependencies remain private, and eligibility is per exported initializer.
+Runtime HIR, initialization and ordinary scope/ownership checks are unchanged.
+
 
 `inputs/blocks.rs::scalar_binding` shares immutable integer, boolean and bounded record
 evidence between `Block<i128>` and `Block<bool>`. Declared record kinds call `record_expr`
@@ -58,7 +68,7 @@ error-only paths. `Record::field` and `Record::boolean` reject the wrong leaf ki
 boolean leaves are never encoded as integers. Record accumulation preserves these
 kinds through copies, subrecord projection, composition and failed initialization.
 `boolean_field_input` resolves boolean record paths with complete ancestor work/errors.
-It supports local records and record-derived exported paths, not direct scalar boolean
+It supports local records, record-derived exported paths and direct named boolean
 module exports. Scalar scratch and equality/branch predicates reuse that evidence.
 
 Record initializers retain unit primaries and immutable integer/boolean/record fields. Complete
@@ -83,32 +93,30 @@ ownership limits remain independent; these bootstrap limits are not language E22
 
 Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
 mutable scratch and helpers remain unavailable inside scalar initializers. Float/text
-comparisons, direct scalar boolean export inputs, required boolean scratch and conditional
+comparisons, boolean module primary inputs, required boolean scratch and conditional
 module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `bed0554`: typed integer leaf storage; 741 library/758 native tests, fmt and Clippy
-  passed unchanged. Log: `/tmp/meowy-typed-record-leaves-tests.log`.
-- `631ede0`: boolean leaf eligibility/accumulation; 742 library/760 native tests, fmt
-  and Clippy passed. Log: `/tmp/meowy-boolean-record-evidence-tests.log`.
-- `998f029`: typed boolean path lookup; 742 library/763 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-boolean-field-path-tests.log`. Kind/error-only checks,
-  mixed-record integer reads and the checker-only 256/257 boolean-field bound pass.
-- Seven boolean-field groups pass. Debug/release integration covers projected/composed
-  ancestor work, separate roots, true/false values, copied scratch, record-derived
-  exports, silent check/build and startup. Private dependencies and direct scalar
-  boolean-export gates remain intact; primitive integer conversion stays rejected.
-- The guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-boolean-fields-doc-5fs8al6v/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 742
-  library/765 native Rust tests (1507 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-boolean-fields-gate.log`.
+- `722558d`: direct named boolean capture/path lookup; 743 library/767 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-boolean-module-tests.log`.
+- All five boolean-module groups pass. Debug/release integration covers true/false
+  values, aliases, named re-exports, scalar/record forwarding work, independent roots,
+  short circuiting, independent export eligibility and silent check/build staging.
+  Retained E107 errors point to the original dependency byte span without running
+  initialization. Privacy, mutable/conditional/helper/capture gates remain intact.
+- Boolean primary rejection uses an evaluated operand. Identity-only module aliases
+  are erased and do not consume the primary; their acceptance is intentional.
+- The two-file guide prints `flags` then `7` in debug/release. Extracted files:
+  `/tmp/meowy-boolean-modules-doc-0zost3iq/{flags,main}.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 743
+  library/770 native Rust tests (1513 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-boolean-module-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Existing bounds remain checker/HIR-level evidence; frontend and native ownership
-  limits are independent. Runtime implementation, reference fixtures and dependencies
-  are unchanged. Editor and separate runtime/sanitizer gates were not rerun; release is open.
+- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
+  and separate runtime/sanitizer gates were not rerun; full release qualification
+  remains open. Evaluator/record bounds are not native support guarantees.
 
 ## Prior capabilities and other areas
 
@@ -167,7 +175,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, direct scalar boolean module inputs, helper
+Whole-record module inputs, conditional module exports, boolean module primary inputs, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -175,20 +183,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: export IDs/path/work already distinguish scalar exports from record-derived
-leaves. Capture eligible booleans in `bool_inputs` and resolve empty boolean export
-paths there; nonempty paths keep whole-record evidence. Existing composition forwarding
-can retain both without runtime HIR changes. Boolean module primaries stay gated.
+Direct named boolean inputs and forwarding/staging integration are complete.
+`722558d` contains capture/path lookup and focused regressions; the following
+integration/documentation slice is validated by the final gate above.
 
-Dependency-ordered commits:
+Next, inspect boolean module primary evidence in `src/check/exports.rs` and its
+consumers. `Module.primary` currently stores integer `Input<i128>`; keep integer
+contexts and mixed-module record identity intact when introducing typed evidence.
+Record a dependency-ordered commit plan before implementation:
 
-1. Complete: boolean capture and scalar-path lookup pass all 743 library/767 native
-   tests, fmt and Clippy. Log: `/tmp/meowy-boolean-module-tests.log`. Source IDs,
-   retained errors, false values, aliases, re-exports and module gates pass. Boolean
-   primary rejection is tested with an evaluated operand, not an erased identity alias.
-2. Add repeated-work and module-staging integration, update guides/handoffs, and run
-   `python3 -B tools/verify.py --compiler` across the series.
+1. Separate typed primary storage/lookup from behavior changes if a buildable,
+   behavior-preserving prerequisite is needed; retain the existing integer regressions.
+2. Add eligible boolean primary capture and predicate reads with focused true/false,
+   scope, retained-error, purity and forwarding-work regressions. Test actual primary
+   consumption, since identity-only module aliases/imports are intentionally erased.
+3. Verify independent initialization and silent staging in debug/release, update the
+   supported guide and both handoffs, and run `python3 -B tools/verify.py --compiler`.
 
-Keep whole-module record inputs, boolean module primaries, conditional exports,
-required boolean/record scratch, wider comparisons, helpers, packages and borrowed
-storage separate. Do not push.
+Keep whole-module record inputs, conditional exports, required boolean/record scratch,
+wider comparisons, helpers, packages and borrowed storage separate. Do not push.

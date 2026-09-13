@@ -23,27 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Eligible records now retain typed boolean leaves alongside integer leaves. Predicate
-field reads preserve complete ancestor work/errors through aliases, scratch records,
-projections and record-derived exports. Integer access refuses boolean leaves; runtime
-HIR, shape bounds, privacy and ordinary ownership checks remain intact.
+Direct immutable named boolean module exports now supply eligible predicates with
+retained source identities, values, errors and work. Aliases, named re-exports and
+module compositions preserve evidence; each evaluated read charges its work again.
+Private dependencies, independent export eligibility and runtime startup remain intact.
 
-Commits: `bed0554` (typed storage), `631ede0` (boolean leaves), `998f029` (field lookup).
-Integration checks and the supported guide are complete; see
-[the supported slice](compiler/docs/COMPUTED_TYPES.md#typed-boolean-record-fields).
+`722558d` implements capture/path lookup with focused regressions. The following
+integration/documentation slice verifies work, staging and dependency diagnostics;
+see the [supported guide](compiler/docs/COMPUTED_TYPES.md#named-boolean-exports).
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1507
-  Rust tests, 20 Python tests, fmt, Clippy and build.
-- Seven boolean-field groups pass. Debug/release integration checks ancestor work,
-  true/false values, record-derived exports and silent staging. Private dependencies
-  and direct scalar boolean-export gates pass. The guide prints `7` in both profiles.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1513
+  Rust tests (743 library/770 native), 20 Python tests, fmt, Clippy and build.
+- Five boolean-module groups pass. Debug/release integration checks true/false
+  inputs, forwarding work, independent roots/exports, silent staging and dependency
+  error spans. The two-file guide prints `flags` then `7` in both profiles.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links
-  and catalog/schema checks passed. Log: `/tmp/meowy-boolean-fields-gate.log`.
+  and catalog/schema checks passed. Log: `/tmp/meowy-boolean-module-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -52,7 +52,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Typed boolean record leaves retain ancestor evidence through predicates. |
+| Compiler | Direct named boolean module inputs retain source evidence through predicates. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -60,8 +60,9 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Plan direct immutable named boolean module inputs with retained source IDs,
-   initializer evidence and forwarding work. See the [compiler handoff](compiler/STATUS.md#next-steps).
-2. Preserve package, borrowed-export and ownership gates. Keep boolean module primaries,
-   whole-module inputs, required boolean/record scratch and wider comparison types
+1. Plan boolean module primary inputs with typed primary evidence, retained errors
+   and forwarding work. Preserve integer contexts and mixed-module record identity.
+   See the [compiler handoff](compiler/STATUS.md#next-steps).
+2. Preserve package, borrowed-export and ownership gates. Keep whole-module inputs,
+   conditional exports, required boolean/record scratch and wider comparison types
    separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.
