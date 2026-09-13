@@ -60,8 +60,10 @@ operand types and work charged only for evaluated inputs. Required integer compa
 preserve exact widths, literal ranges, arithmetic failures and skipped input work.
 Independent boolean matchers select required types with scoped bodies, shared budgets
 and no runtime storage. Skipped bodies retain structural checks without evaluating
-initializers or constructing types. Float/text comparisons, conditional module exports,
-mutable/record scratch, inline scalar blocks and helpers remain separate.
+initializers or constructing types. Explicitly annotated integer/boolean block bindings
+reuse this traversal with expected result kinds, nested emissions and tail checks.
+Float/text comparisons, conditional module exports, mutable/record scratch, unannotated
+scalar blocks and helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

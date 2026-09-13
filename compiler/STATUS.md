@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Annotated required scalar blocks are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Annotated required scalar blocks and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,28 +21,28 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required type blocks now select types with independent boolean matchers.
-`type_values/statements.rs` shares a primary-result accumulator across selected
-statements; `matches.rs` validates reached conditions, selects bodies and restores
-branch scope/depth after success or failure. Emissions do not exit the block. Two
-selected primaries remain E205; missing selected type results remain E211.
+Required bindings with explicit integer/boolean annotations now evaluate scalar blocks.
+`type_binding` uses the annotation to select the result kind; unannotated blocks remain
+type-producing. `type_values/blocks.rs` carries expected kinds through nested emitted
+blocks, uses existing scalar readers and materializes `Value::Static` without runtime
+HIR, locals or functions. Already typed values retain their original widths.
 
-Reached conditions use existing typed boolean/integer evaluation and require boolean
-results (E215). Selected bodies may bind immutable scratch, declare local types, emit
-a type or nest matchers. Use `| condition | -> { ... }` for nested type construction;
-standalone branch blocks do not emit into their parent and remain gated.
+`required_block`, statement traversal and matchers share checked `Value` primary state
+and lexical scope. Type emissions store `Value::Type`; scalar emissions check the
+expected kind/width. Missing scalar primaries report E204, duplicate selected primaries
+E205 and incompatible emitted values E207. Missing type results remain E211. Emissions
+do not exit: evaluated tails retain work/errors, including after nested emissions.
 
-Skipped bodies retain structural statement checks but their initializer/type expressions
-and nested conditions are not resolved/evaluated. They add no evaluation work or type
-nodes. Reached false conditions still retain work. Structural checks and selected
-traversal are bounded; independent required roots reset their budgets. Selected
-signatures/links are checked, while documented skipped declarations remain B001 as
-unanalyzed declarations. No runtime HIR/storage is added by type selection.
+Matcher selection and skipped-body structural guards are unchanged. Nested scalar
+bindings need annotations; directly emitted nested blocks inherit the containing kind.
+Groups/blocks/matchers share root budgets and restore scope/depth after failure.
+Selected documentation preserves scalar widths and constructed type signatures;
+skipped documented declarations remain gated.
 
-Integer/boolean operators retain exact widths, literal checks, transitive source work
-and original error spans. Function-scoped required reads do not grant runtime captures.
-File discovery and eager module initialization are unchanged; skipped required reads
-still preserve runtime failures. Inline scalar blocks remain separate.
+Source reads preserve transitive work and original dependency spans. Required reads
+inside functions do not grant runtime captures. Checking/building remain silent and
+preserve module initialization, including failures behind skipped required reads.
+Unannotated scalar blocks, operand blocks and required record scratch remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -130,20 +130,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `12f4799`: shared type statement traversal/state; 756 library/795 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-type-statements-tests.log`.
-- `b180fcc`: matcher selection; 759 library/797 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-conditional-types-tests.log`.
-- `161489e`: integration boundaries; 761 library/800 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-conditional-types-integration-all.log`.
-- Five checker tests and five native groups cover selected scalar/record/list types,
-  nested construction, scope recovery, skipped expressions, condition/body/tail errors,
-  root/depth limits, module exports, documentation gates and silent initialization.
+- `b62a736`: shared checked block results; 761 library/800 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-required-values-tests.log`.
+- `069b499`: annotated scalar blocks; 763 library/802 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-required-scalar-blocks-tests.log`.
+- `0badc04`: integration; 765 library/805 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-required-scalar-blocks-integration-all.log`.
+- Four checker tests and five native groups cover values/kinds, signed minima,
+  nested blocks, no runtime storage, scope/depth recovery, source/tail work, dependency
+  spans, module/function reads, selected documentation and silent startup.
 - The guide prints `7` in debug/release:
-  `/tmp/meowy-conditional-types-doc-2arqt85p/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 761
-  library/800 native Rust tests (1561 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-conditional-types-gate.log`.
+  `/tmp/meowy-required-scalar-blocks-doc-77tpdbwa/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 765
+  library/805 native Rust tests (1570 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-required-scalar-blocks-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -207,7 +207,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, inline required scalar blocks, helper
+Whole-record module inputs, conditional module exports, unannotated required scalar blocks, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -215,29 +215,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: required statement/matcher traversal already shares scope, primary state
-and budgets. Generalize the accumulator to checked `Value` results, keeping type blocks
-as `Value::Type`. An explicit integer/boolean binding annotation selects scalar block
-evaluation; unannotated blocks remain type-producing. Reuse scalar readers for emitted
-values, propagate the expected kind through nested emitted blocks, and keep runtime
-HIR/storage out of required evaluation.
+Annotated scalar blocks are complete across `b62a736` (checked results), `069b499`
+(evaluation) and `0badc04` (integration). The guide and full compiler gate pass.
 
-Dependency-ordered commits:
+Next, plan required record scratch from already eligible immutable records and exported
+subrecords. Inspect `Value`, `inputs/records.rs`, `inputs/records/paths.rs`, `required_path`
+and `type_binding`. Record dependency-ordered commits before implementation:
 
-1. Complete: required block results use checked `Value` storage; type-only behavior
-   is unchanged. All 761 library/800 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-required-values-tests.log`. Committed as `b62a736`.
-2. Complete: annotated block dispatch and expected-kind emissions pass 763 library/
-   802 native tests, fmt and Clippy. Log: `/tmp/meowy-required-scalar-blocks-tests.log`.
-   Values/widths, nested construction, primary/tail errors, scope and absent runtime
-   storage pass. Committed as `069b499`.
-3. Complete: source/tail evidence, depth/scope recovery, module staging, signed minima
-   and documentation pass all 765 library/805 native tests, fmt and Clippy. Log:
-   `/tmp/meowy-required-scalar-blocks-integration-all.log`.
-4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
-   Commit integration evidence separately, then finish the guide/handoffs and run
-   `python3 -B tools/verify.py --compiler` across the complete series.
+1. Represent scoped required record evidence without allocating runtime locals; preserve
+   leaf kinds, complete ancestor failures and existing record depth/field limits.
+2. Add record aliases/projections and scalar field reads in required scopes. Define/test
+   alias and source-read charging against existing scalar/record rules; retain privacy,
+   function capture and whole-module namespace gates.
+3. Verify nested aliases, budgets, diagnostics and silent staging; update guides/handoffs
+   and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep unannotated scalar blocks, skipped documented declarations, standalone branch
-blocks, fallback arms, float/text/record results, whole-module records, conditional
-exports, helpers, packages and borrowed storage separate. Do not push.
+Keep inline record construction, unannotated scalar blocks, skipped documented declarations,
+standalone branch blocks, fallback arms, float/text results, whole-module records,
+conditional exports, helpers, packages and borrowed storage separate. Do not push.

@@ -93,6 +93,55 @@ required blocks. Runtime capture rules, file graph discovery and eager module
 initialization remain unchanged. Checking/building never run application initializers,
 and a skipped required branch does not remove a runtime startup failure.
 
+## Annotated scalar blocks
+
+An explicit integer or `boolean` annotation makes a block binding inside required
+evaluation produce that scalar kind:
+
+```meowy
+<Items> : {
+    ready <boolean> : { -> true }
+    count <uint8> : {
+        base <uint8> : { -> 2 }
+        | ready | -> { -> base * 2 }
+        | !ready | -> 2
+        unused : 7
+    }
+    -> <int32[count]>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. The annotation supplies the result kind and integer width. Emitted
+literals use that context; already typed values keep their own width and cannot be
+silently converted. A missing scalar primary reports E204, a second selected primary
+E205, an incompatible scalar kind/width E207, literal overflow E216 and invalid
+arithmetic E107. Boolean results retain true/false values without integer encoding.
+
+Unannotated block bindings remain type-producing. Nested scalar bindings need their
+own annotations, while directly emitted nested blocks inherit the containing scalar
+result kind. Grouping retains the same behavior. Local type aliases and immutable
+integer/boolean scratch remain available inside scalar blocks.
+
+Scalar and type blocks share lexical scopes, matcher selection and root budgets.
+An emission does not exit the block: selected tail statements still contribute work
+and failures. Skipped matcher expressions are not evaluated, with the same structural
+statement restrictions as conditional type selection. Standalone branch blocks do not
+emit into their parent. Bindings and local type aliases do not escape the block.
+
+Each evaluated initializer source retains transitive work and original errors, including
+reads in unused tails and nested blocks. Independent roots reset their budgets. Results
+are compile-time values with no runtime locals, HIR statements or functions. Selected
+documentation retains the declared widths and resulting constructed type signatures.
+
+Eligible local/field/module inputs work in function-scoped required blocks without
+allowing runtime captures. Checking/building remain silent and preserve eager module
+initialization, including failures behind skipped required reads. Float/text/record
+block results, mutable scratch, labeled/named/annotated emissions, unannotated scalar
+blocks and blocks used directly as operator operands remain unsupported.
+
 ## Integer calculations
 
 Local integer bindings retain their checked width and signedness through aliases,
@@ -208,7 +257,7 @@ Operand-tree checking has its own 4096-node/64-level bounds, including skipped s
 and consumes frontend checking work. Evaluation retains the shared required-root
 work/depth bounds; skipped evaluation is not charged. Independent roots reset their
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
-Direct calls, inline boolean blocks and unsupported operators remain unavailable even
+Direct calls, inline operand blocks and unsupported operators remain unavailable even
 in skipped expression syntax. Required record scratch remains separate.
 
 ### Integer comparisons
@@ -248,7 +297,7 @@ read. Each source read retains its original error span and transitive work.
 Mixed-module primaries work in comparisons and arithmetic; two complete records still
 cannot be compared in required blocks. Required reads inside functions do not grant
 runtime captures. Checking/building remain silent and preserve module initialization.
-Float/text comparisons, direct calls and inline scalar blocks remain separate capabilities.
+Float/text comparisons, direct calls and inline operand blocks remain separate capabilities.
 
 ## Block initializers
 
@@ -350,7 +399,8 @@ those evaluator limits; these are not full-language E220 counters.
 Selected standalone expression blocks, named/outer emissions, mutation and evaluated
 helper calls remain unavailable inside boolean blocks. Integer and boolean blocks
 retain independently typed primaries. Required type blocks can read the resulting
-booleans as immutable scratch; inline boolean block evaluation there remains separate.
+booleans as immutable scratch and evaluate explicitly annotated boolean block bindings.
+Unannotated operand blocks remain separate.
 
 ### Record scratch in scalar initializers
 
