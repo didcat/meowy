@@ -129,4 +129,84 @@ mod tests {
         let ordinary = "a:{->x:1};b:{->y:2};r<{x<int32>;y<int32>}>:{->a;->b}";
         assert_eq!(crate::compile(ordinary).unwrap_err()[0].code, "E205");
     }
+    #[test]
+    pub(crate) fn required_composition_charges_one_source_and_each_forwarded_field() {
+        use super::*;
+        use crate::check::type_values::Work;
+        let mut checker = crate::check::inputs::tests::check("->source:{->a<uint8>:4;->b:false}");
+        let id = checker.module.inputs["source"].id;
+        let ty = checker.locals[id].clone();
+        let cost = checker.record_inputs[&id].input.work;
+        let locals = checker.locals.len();
+        let span = Span::new(0, 6);
+        checker
+            .declare(
+                "source",
+                Value::Local {
+                    id,
+                    ty: ty.clone(),
+                    mutable: false,
+                    owner: 0,
+                    constant: None,
+                },
+                span,
+            )
+            .unwrap();
+        checker.type_work = Some(Work::default());
+        let mut output = Output {
+            ty: Some(ty),
+            ..Output::default()
+        };
+        checker
+            .compose_required_record(
+                &Expr {
+                    span,
+                    kind: ExprKind::Name("source".into()),
+                },
+                span,
+                &mut output,
+            )
+            .unwrap();
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, cost + 3);
+        assert_eq!(checker.record_inputs[&id].input.work, cost);
+        assert_eq!(checker.locals.len(), locals);
+        assert!(matches!(
+            output.value,
+            Some(Value::Constant(Constant::Null))
+        ));
+        assert!(matches!(
+            output.fields.get(&1),
+            Some(Value::Static {
+                value: Constant::Bool(false),
+                ..
+            })
+        ));
+        assert_eq!(
+            checker.required_value("a", span).err().unwrap().code,
+            "E201"
+        );
+    }
+
+    #[test]
+    pub(crate) fn required_composition_documents_result_shapes_without_inventing_bindings() {
+        let source = "base:{->width<uint8>:4};<R>:<{width<uint8>;enabled<boolean>}>;#| Items. |#<T>:{#| Settings. |#r<R>:{->base;->enabled:true};-><int32[r.width]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        assert_eq!(
+            model
+                .entries
+                .iter()
+                .find(|entry| entry.name == "T")
+                .unwrap()
+                .signature,
+            "int32[4]"
+        );
+        let record = model
+            .entries
+            .iter()
+            .find(|entry| entry.name == "r")
+            .unwrap();
+        assert!(record.checked);
+        assert!(record.signature.contains("width<uint8>"));
+    }
 }

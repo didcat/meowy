@@ -229,9 +229,14 @@ Dependency-ordered commits:
 2. Complete: primary composition passes 775 library/815 native tests, fmt and Clippy.
    Log: `/tmp/meowy-required-composition-tests.log`. Partial/full/nested forwarding,
    selected sources, checked lookup, collisions and no forwarded local names pass.
-   A second selected composition rejects with E205 even for disjoint sources. Commit.
-3. Verify source/forwarding work, aliases, collisions, module/function use and staging;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+   A second selected composition rejects with E205 even for disjoint sources.
+   Committed as `3db3cf1`.
+3. Complete: source/forwarding work, alias reuse, ancestor spans, namespace/privacy,
+   nested function use, documentation and staging pass all 777 library/818 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-required-composition-integration.log`.
+4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
+   Commit integration evidence separately, then update guides/handoffs and run
+   `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep inline partial composition, unannotated constructors, explicit nonrecord primaries,
 skipped documented declarations, fallback arms, mutable/float/text/reference fields,
