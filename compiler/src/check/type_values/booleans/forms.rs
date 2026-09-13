@@ -1,6 +1,6 @@
 use crate::ast::{self, ExprKind};
 use crate::check::{
-    Checker, Result, Value,
+    Checker, Result,
     type_values::{MAX_DEPTH, MAX_WORK, Work},
 };
 use crate::diagnostic::Diagnostic;
@@ -28,17 +28,16 @@ impl Checker {
     ) -> Result<Type> {
         self.form_work(expr, depth, count)?;
         match &expr.kind {
-            ExprKind::Name(name) => match self.required_value(name, expr.span)? {
-                Value::Local { ty, .. }
-                | Value::Static { ty, .. }
-                | Value::FileModule { ty, .. } => Ok(ty),
-                Value::Constant(value) => Ok(Self::constant_expr(value, expr.span).ty),
-                _ => Err(Self::error(
-                    "E222",
-                    "required boolean operand is not a scalar value",
-                    expr.span,
-                )),
-            },
+            ExprKind::Name(name) => self
+                .required_value(name, expr.span)?
+                .data_type()
+                .ok_or_else(|| {
+                    Self::error(
+                        "E222",
+                        "required boolean operand is not a scalar value",
+                        expr.span,
+                    )
+                }),
             ExprKind::Field { .. } => self.required_path(expr).map(|(_, ty, _)| ty),
             ExprKind::Group(value) => self.boolean_form(value, depth + 1, count),
             ExprKind::Unary { op, value } if op == "!" => {
@@ -109,7 +108,7 @@ impl Checker {
 mod tests {
     use super::*;
     use crate::ast::{Expr, Span};
-    use crate::check::Constant;
+    use crate::check::{Constant, Value};
 
     pub(crate) fn tree(leaves: usize) -> Expr {
         Expr {

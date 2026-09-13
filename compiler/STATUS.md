@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Annotated required scalar blocks and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required record scratch is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -215,20 +215,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Annotated scalar blocks are complete across `b62a736` (checked results), `069b499`
-(evaluation) and `0badc04` (integration). The guide and full compiler gate pass.
+Inspection: existing `Record` evidence has typed integer/boolean leaves and complete
+ancestor work/errors. Required bindings can validate a source once, then store a scoped
+materialized record with cleared initializer work. Alias/projection reads charge their
+own traversal; original-source reads charge transitive work. Charge retained type shapes
+to the existing node budget to bound materialized record copies. No runtime local IDs
+are allocated. Whole-module namespaces and inline record construction remain gated.
 
-Next, plan required record scratch from already eligible immutable records and exported
-subrecords. Inspect `Value`, `inputs/records.rs`, `inputs/records/paths.rs`, `required_path`
-and `type_binding`. Record dependency-ordered commits before implementation:
+Dependency-ordered commits:
 
-1. Represent scoped required record evidence without allocating runtime locals; preserve
-   leaf kinds, complete ancestor failures and existing record depth/field limits.
-2. Add record aliases/projections and scalar field reads in required scopes. Define/test
-   alias and source-read charging against existing scalar/record rules; retain privacy,
-   function capture and whole-module namespace gates.
-3. Verify nested aliases, budgets, diagnostics and silent staging; update guides/handoffs
-   and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: field sources are separated from runtime IDs and data-type lookup is
+   centralized. All 765 library/805 native tests, fmt and Clippy pass unchanged.
+   Log: `/tmp/meowy-required-sources-tests.log`. Commit the prerequisite.
+2. Add scoped record values, eligible source bindings, aliases/projections and scalar
+   field reads. Test kinds, complete ancestor errors, scope, privacy and no runtime storage.
+3. Verify copy/read budgets, module/function use, diagnostics and silent staging;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
 Keep inline record construction, unannotated scalar blocks, skipped documented declarations,
 standalone branch blocks, fallback arms, float/text results, whole-module records,

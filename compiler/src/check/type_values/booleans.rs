@@ -1,10 +1,7 @@
 mod forms;
 
 use crate::ast::{self, ExprKind};
-use crate::check::{
-    Checker, Constant, Result, Value,
-    inputs::{Input, Sources},
-};
+use crate::check::{Checker, Constant, Result, Value, inputs::Input};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
@@ -67,7 +64,7 @@ impl Checker {
                             expr.span,
                         ));
                     }
-                    self.boolean_field_input(id, &path, &Sources::default())
+                    id.boolean(self, &path)
                 }
                 ExprKind::Group(value) => return self.required_boolean(value),
                 ExprKind::Unary { op, value } if op == "!" => {

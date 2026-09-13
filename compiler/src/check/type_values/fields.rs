@@ -6,8 +6,26 @@ use crate::check::{
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
+pub(crate) enum Source {
+    Local(usize),
+}
+
+impl Source {
+    pub(crate) fn integer(&self, checker: &mut Checker, path: &[usize]) -> Option<Input> {
+        match self {
+            Self::Local(id) => checker.field_input(*id, path, &Sources::default()),
+        }
+    }
+
+    pub(crate) fn boolean(&self, checker: &mut Checker, path: &[usize]) -> Option<Input<bool>> {
+        match self {
+            Self::Local(id) => checker.boolean_field_input(*id, path, &Sources::default()),
+        }
+    }
+}
+
 impl Checker {
-    pub(crate) fn required_path(&mut self, expr: &ast::Expr) -> Result<(usize, Type, Vec<usize>)> {
+    pub(crate) fn required_path(&mut self, expr: &ast::Expr) -> Result<(Source, Type, Vec<usize>)> {
         let mut root = expr;
         let mut names = Vec::new();
         loop {
@@ -69,7 +87,7 @@ impl Checker {
             path.push(index);
             current = &field.ty;
         }
-        Ok((id, current.clone(), path))
+        Ok((Source::Local(id), current.clone(), path))
     }
 
     pub(crate) fn required_field(&mut self, expr: &ast::Expr) -> Result<(Type, Input)> {
@@ -80,15 +98,13 @@ impl Checker {
                 expr.span,
             ));
         }
-        let input = self
-            .field_input(id, &path, &Sources::default())
-            .ok_or_else(|| {
-                Self::error(
-                    "E211",
-                    "record initializer is unavailable during required type evaluation",
-                    expr.span,
-                )
-            })?;
+        let input = id.integer(self, &path).ok_or_else(|| {
+            Self::error(
+                "E211",
+                "record initializer is unavailable during required type evaluation",
+                expr.span,
+            )
+        })?;
         Ok((ty, input))
     }
 }

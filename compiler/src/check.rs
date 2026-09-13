@@ -70,6 +70,20 @@ pub(crate) enum Value {
     Type(Type),
 }
 
+impl Value {
+    pub(crate) fn data_type(&self) -> Option<Type> {
+        match self {
+            Self::Local { ty, .. } | Self::Static { ty, .. } | Self::FileModule { ty, .. } => {
+                Some(ty.clone())
+            }
+            Self::Constant(value) => {
+                Some(Checker::constant_expr(value.clone(), crate::ast::Span::new(0, 0)).ty)
+            }
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone)]
 pub(crate) enum Spec {
     Data(Type),

@@ -75,19 +75,18 @@ impl Checker {
         self.form_work(expr, depth, count)?;
         let ty = match &expr.kind {
             ExprKind::Int(text) => self.integer(text, false, expected, expr.span)?.ty,
-            ExprKind::Name(name) => match self.required_value(name, expr.span)? {
-                Value::Local { ty, .. }
-                | Value::Static { ty, .. }
-                | Value::FileModule { ty, .. } => Self::primary_type(&ty),
-                Value::Constant(value) => Self::constant_expr(value, expr.span).ty,
-                _ => {
-                    return Err(Self::error(
-                        "E222",
-                        "required integer operand is not a scalar value",
-                        expr.span,
-                    ));
-                }
-            },
+            ExprKind::Name(name) => Self::primary_type(
+                &self
+                    .required_value(name, expr.span)?
+                    .data_type()
+                    .ok_or_else(|| {
+                        Self::error(
+                            "E222",
+                            "required integer operand is not a scalar value",
+                            expr.span,
+                        )
+                    })?,
+            ),
             ExprKind::Field { .. } => Self::primary_type(&self.required_path(expr)?.1),
             ExprKind::Group(value) => return self.integer_form(value, expected, depth + 1, count),
             ExprKind::Unary { op, value } if matches!(op.as_str(), "-" | "~") => {

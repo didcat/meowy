@@ -479,9 +479,7 @@ impl Checker {
             }
             ExprKind::Name(name) => match self.value(name, expr.span).ok()? {
                 Value::Local { id, ty, .. } => Some(self.refined((id, Vec::new()), &ty)),
-                Value::Constant(value) => Some(Self::constant_expr(value, expr.span).ty),
-                Value::Static { ty, .. } | Value::FileModule { ty, .. } => Some(ty),
-                _ => None,
+                value => value.data_type(),
             },
             ExprKind::Group(value) => self.hint(value),
             ExprKind::Unary { op, value } if op == "&" => self
