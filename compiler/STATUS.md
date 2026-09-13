@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean equality predicate evidence is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean equality predicate inputs are implemented.
+All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -41,11 +41,17 @@ provides scoped initializer evidence. Known declared noninteger bindings never b
 integer value inputs. Inferred `never` retains existing error-only behavior; nested
 unreachable boolean blocks need explicit boolean types when inference loses their kind.
 
-`inputs/predicates.rs` proves boolean literals/locals, negation, short-circuit logic and
-exact-width integer comparisons. Runtime parameters, mutable or effectful initializers
+`inputs/predicates.rs` proves boolean literals/locals, negation, short-circuit logic,
+boolean equality/inequality and exact-width integer comparisons. Runtime parameters, mutable or effectful initializers
 and evaluated helpers remain unavailable. Required reads across function scopes do
 not grant ordinary runtime captures. Repeated field comparisons remain unstable flow
 atoms; an immutable boolean binding can supply complementary matcher arms.
+
+Boolean `==`/`!=` evaluates eligible operands left-to-right and adds each operand's
+complete work, even for identical cached sources. Only a failing left operand stops
+the right read; a true/false value does not. Logical `&&`/`||` retain short circuiting.
+The first error keeps its source span without inventing a result. Boolean inputs in
+scalar/record initializers reuse this proof; ordinary runtime HIR and typing are unchanged.
 
 Record initializers retain unit primaries and immutable integer/record fields. Complete
 ancestor work/errors survive field paths, subrecord aliases and local compositions.
@@ -68,32 +74,30 @@ fields and 32 record/evidence levels; type traversal retains 16384 nodes. Fronte
 ownership limits remain independent; these bootstrap limits are not language E220 counters.
 
 Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
-mutable scratch and helpers remain unavailable inside scalar initializers. Boolean/float/text
+mutable scratch and helpers remain unavailable inside scalar initializers. Float/text
 comparisons, boolean record-field/export inputs, required boolean scratch and conditional
 module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `2e017ef`: bounded record scratch; all 741 library/751 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-record-scratch-tests.log`. Native cases cover integer/boolean
-  results, field order, projected aliases, compositions, branch scope, unused records,
-  ancestor errors/effects and immutable supported shapes.
-- The 256/257-total-field boundary passes checker-only tests for integer and boolean
-  initializers. Frontend/evaluator/ownership limits remain independent. Unreachable
-  typed aliases preserve nested errors; erased inline field identities remain limited.
-- Five record-scratch native groups pass. Debug/release integration verifies retained
-  ancestor/projection/tail work on repeated reads, independent roots, imports, silent
-  check/build and startup. Identity-only module aliases/imports remain valid; actual
-  whole-module record construction rejects required evaluation.
+- `41430a1`: boolean equality/inequality evidence; all 741 library/756 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-boolean-equality-tests.log`. Native coverage
+  includes all boolean values, nested comparisons/blocks/records, first-operand versus
+  second-operand failures and eager runtime/effect/mutation eligibility checks.
+- Five equality groups pass. Debug/release integration verifies two charged reads for
+  identical cached operands, single-read thresholds, independent roots versus repeated reads,
+  unchanged logical short circuiting, left-to-right runtime calls and silent module staging.
 - The guide example prints `7` in debug/release. Extracted file:
-  `/tmp/meowy-record-scratch-doc-l35p7qyk/main.mwy`.
+  `/tmp/meowy-boolean-equality-doc-7wzg2c1k/main.mwy`.
 - `python3 -B tools/verify.py --compiler`: all ten checks passed, including 741
-  library/753 native Rust tests (1494 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-record-scratch-gate.log`.
+  library/758 native Rust tests (1499 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-boolean-equality-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
-  and separate runtime/sanitizer gates were not rerun; full release qualification is open.
+- Existing record-field and evaluator-depth boundaries remain checker/HIR-level proof;
+  frontend and native ownership limits remain independent. Runtime implementation,
+  reference fixtures and dependencies are unchanged. Editor and separate runtime/
+  sanitizer gates were not rerun; full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -160,19 +164,11 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: typed boolean evidence already retains values, first errors and work.
-Equality must read both operands in order unless the left fails; a false/true value
-alone cannot skip the right operand as `&&`/`||` can. Reuse existing predicate recursion
-and counters without changing runtime HIR or ordinary typing.
-
-Dependency-ordered commits:
-
-1. Complete: boolean `==`/`!=` uses ordered typed operand evidence. All 741 library/756
-   native tests, fmt and Clippy passed. Log: `/tmp/meowy-boolean-equality-tests.log`.
-   Truth tables, nested records/blocks, first errors and eager operand gates pass.
-2. Add repeated operand-work and runtime/module-staging integration, update guides
-   and both handoffs, then run `python3 -B tools/verify.py --compiler`.
-
-Keep boolean record fields/module exports, required boolean/record scratch, float/text
-comparisons, standalone expression blocks, helpers, packages and borrowed storage
-separate. Do not push.
+1. Plan typed boolean record-leaf evidence in `inputs/records.rs`, record accumulation
+   and predicate field lookup. Start with a behavior-preserving typed leaf representation;
+   do not encode boolean leaves as integer values. Preserve whole-ancestor work/errors,
+   integer widths, record bounds and typed field access before admitting boolean fields.
+   Split representation, eligibility/lookup behavior and integration into reviewable slices.
+2. Keep direct boolean module exports, required boolean/record scratch, float/text
+   comparisons, standalone expression blocks, helpers, packages and borrowed storage
+   separate. Do not push.

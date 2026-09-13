@@ -42,9 +42,9 @@ integer-annotated required reads while aliases and type queries keep their recor
 identity. Direct top-level module compositions forward eligible primary and named
 inputs through facades while retaining source identity, ancestor evidence and work.
 Eligible local-record compositions retain that evidence too. Record initializers can
-select branches from eligible boolean locals, integer comparisons and short-circuit
-logic, preserving predicate values, errors and selected work. Immutable boolean scratch
-is supported inside record initializers. Boolean block initializers support immutable
+select branches from eligible boolean locals, boolean equality, integer comparisons
+and short-circuit logic, preserving predicate values, errors and selected work.
+Immutable boolean scratch is supported inside record initializers. Boolean block initializers support immutable
 scalar bindings, nested blocks, eligible branches and retained tail work/errors.
 Integer blocks also select eligible branches with exact widths, immutable integer/boolean
 scratch and first-error stopping. Both scalar initializer kinds can use bounded record

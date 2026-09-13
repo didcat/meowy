@@ -253,9 +253,10 @@ record reads and runtime initialization remain unchanged.
 ### Conditional record initializers
 
 Record evidence can select matcher branches using eligible immutable boolean locals,
-checked boolean literals, `!`, `&&`, `||` and integer comparisons (`==`, `!=`, `<`,
-`<=`, `>` and `>=`). Comparison operands retain their checked integer widths and
-complete initializer evidence, including integer fields imported through modules.
+checked boolean literals, `!`, `&&`, `||`, boolean equality/inequality (`==`, `!=`)
+and integer comparisons (`==`, `!=`, `<`, `<=`, `>` and `>=`). Integer operands retain
+their checked widths. Both forms retain complete initializer evidence, including
+integer fields imported through modules.
 Logical operands retain short-circuit order. Optimizer folding alone does not prove
 eligibility; evaluated mutable/runtime inputs and helper calls remain unavailable.
 
@@ -264,7 +265,7 @@ debug : @"debug"
 limit <uint8> : 4
 enabled : limit >= 4
 settings : {
-    selected : enabled && !false
+    selected : (enabled == true) && (false != true)
     | selected | -> width <uint8> : limit
     | !selected | -> width <uint8> : 2
 }
@@ -283,6 +284,13 @@ and statements after emissions. An effect or invalid sibling in a selected branc
 cannot be hidden by reading another field. Proven skipped branches and short-circuited
 operands contribute no evaluation work or effects; ordinary source checks still apply.
 
+Boolean equality evaluates both operands from left to right and charges both reads,
+including repeated reads of the same cached value. A true or false left value still
+requires eligible right-operand evidence. Evaluation stops at the first error, retaining
+its original span. Logical `&&`/`||` keep their existing short-circuit behavior. This
+applies to ordinary boolean bindings, scalar initializer scratch and record predicates;
+it does not add boolean scratch to required type blocks.
+
 Failed evaluated comparisons or boolean aliases retain the original E107 span,
 including through a later subrecord projection. No branch value is invented after a
 predicate failure. Evaluated operands are inspected in order; skipped operands do
@@ -298,7 +306,7 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Boolean/float/text comparisons, boolean fields in eligible
+Float/text comparisons, boolean fields in eligible
 records, boolean module exports as predicate inputs, and boolean scratch inside required
 type blocks remain unavailable. Standalone expression statements in selected branches,
 loops and conditional module exports are also separate.
