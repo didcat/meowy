@@ -562,3 +562,100 @@ pub(crate) fn inferred_required_composition_reuses_exported_and_inline_records()
         assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
     }
 }
+
+#[test]
+pub(crate) fn inferred_required_records_charge_sources_and_reuse_materialized_aliases() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data = format!("heavy:{{->4;v0:1;{tail}}};->part:{{->width<uint8>:4;->unused:heavy}}");
+    let files = [("data.mwy", data.as_str())];
+    let repeated = (0..20)
+        .map(|id| format!("r{id}:{{->m.part}};"))
+        .collect::<String>();
+    let aliases = (0..20)
+        .map(|id| format!("r{id}:{{->copy}};"))
+        .collect::<String>();
+    let separate = (0..20)
+        .map(|id| format!("<T{id}>:{{r:{{->m.part}};-><int32>}};"))
+        .collect::<String>();
+    for profile in ["debug", "release"] {
+        for (body, accepted) in [
+            (format!("<T>:{{{repeated}-><int32>}}"), false),
+            (
+                format!("<T>:{{copy:{{->m.part}};{aliases}-><int32>}}"),
+                true,
+            ),
+            (separate.clone(), true),
+        ] {
+            let output = case(&format!("m:@\"./data.mwy\";{body}"), &files)
+                .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if accepted {
+                assert!(output.status.success(), "{error}");
+            } else {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn inferred_required_records_preserve_dependency_errors_and_staging() {
+    let data = "#é🙂#\nd:@\"debug\";d.print(\"data\");raw:{->n<uint8>:255};->row:{->width<uint8>:4;->bad:raw.n+1}";
+    for body in [
+        "->m.row",
+        "->width:m.row.width",
+        "->width:4;unused:m.row.width",
+    ] {
+        let case = case(
+            &format!("m:@\"./data.mwy\";<T>:{{r:{{{body}}};-><int32>}}"),
+            &[("data.mwy", data)],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+        }
+    }
+    let case = case(
+        "m:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");v<m.Items>:[3,7];d.print(v[2])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->row:{->width<uint8>:4}",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";d.print(\"types\");-><Items>:{r:{->m.row;->active:true};-><int32[r.width]>}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        let output = case.command(action, &[]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty());
+    }
+    case.runs(b"data\ntypes\nentry\n7\n");
+    super::file_modules::case("source:{->width<uint8>:4};f<int32>:(){<T>:{r:{->source};-><int32[r.width]>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())", &[]).runs(b"9\n");
+}

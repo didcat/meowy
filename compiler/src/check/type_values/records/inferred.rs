@@ -219,4 +219,134 @@ mod tests {
             assert_eq!(error.code, code, "{body}: {error:?}");
         }
     }
+    #[test]
+    pub(crate) fn inferred_records_bound_work_and_restore_scope_after_failures() {
+        use super::*;
+        use crate::ast::StmtKind;
+        use crate::check::type_values::{MAX_NODES, MAX_WORK};
+        let parsed = crate::parser::parse("r:{local<uint8>:4;->z:local;->a:false}").unwrap();
+        let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(Work::default());
+        let scopes = checker.scopes.len();
+        let Value::Record { input, .. } = checker.inferred_block(value).unwrap() else {
+            panic!("record")
+        };
+        assert_eq!(input.boolean(&[0]).unwrap().value, Some(false));
+        assert_eq!(input.field(&[1]).unwrap().value, Some(4));
+        assert_eq!(input.input.work, 0);
+        let work = checker.type_work.as_ref().unwrap();
+        let cost = work.visits;
+        let nodes = work.nodes;
+        for (visits, nodes, accepted) in [
+            (MAX_WORK - cost, MAX_NODES - nodes, true),
+            (MAX_WORK - cost + 1, 0, false),
+            (0, MAX_NODES - nodes + 1, false),
+        ] {
+            checker.type_work = Some(Work {
+                visits,
+                nodes,
+                depth: 0,
+            });
+            let result = checker.inferred_block(value);
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            for name in ["local", "a", "z"] {
+                assert_eq!(
+                    checker.required_value(name, value.span).err().unwrap().code,
+                    "E201"
+                );
+            }
+        }
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn inferred_records_bound_fields_and_nested_shapes() {
+        use super::*;
+        use crate::ast::{Block, Stmt, StmtKind};
+        for count in [256, 257] {
+            let fields = (0..count)
+                .rev()
+                .map(|id| format!("->n{id}:1;"))
+                .collect::<String>();
+            let source = format!("<T>:{{r:{{{fields}}};-><int32[r.n0]>}}");
+            let result = crate::compile(&source);
+            if count == 256 {
+                assert!(result.is_ok(), "{result:?}");
+            } else {
+                assert_eq!(result.unwrap_err()[0].code, "B001");
+            }
+        }
+        for depth in [32, 33] {
+            let span = Span::new(0, 1);
+            let mut expr = Expr {
+                span,
+                kind: ExprKind::Int("4".into()),
+            };
+            for _ in 0..depth {
+                expr = Expr {
+                    span,
+                    kind: ExprKind::Block(Block {
+                        span,
+                        label: None,
+                        stmts: vec![Stmt {
+                            span,
+                            kind: StmtKind::Emit {
+                                label: None,
+                                name: Some("n".into()),
+                                ty: None,
+                                mutable: false,
+                                value: expr,
+                            },
+                        }],
+                    }),
+                };
+            }
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let scopes = checker.scopes.len();
+            let result = checker.inferred_block(&expr);
+            if depth == 32 {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(checker.locals.is_empty());
+        }
+    }
+
+    #[test]
+    pub(crate) fn inferred_records_document_selected_fields_and_preserve_skipped_gates() {
+        let source = "#| Items. |#<T>:{kind:{|false|->missing;-><uint8>};r:{#| Width. |#->z<(kind)>:4;|false|->absent:missing();->a:false};-><int32[r.z]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [("z", "uint8"), ("T", "int32[4]")] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+        for (body, code) in [
+            ("r:{|false|->absent:missing();->n:4};v:r.absent", "E201"),
+            ("r:{|false|->{#| Skipped. |#->n:4};->n:4}", "B001"),
+            ("r:{|false|->n:=4;->m:4}", "B001"),
+        ] {
+            let source = format!("<T>:{{{body};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, code, "{body}: {error:?}");
+        }
+    }
 }

@@ -237,9 +237,14 @@ Dependency-ordered commit plan:
 3. Complete: existing/inline/exported record sources use shared forwarding into
    inferred sorted slots. Nested records, primary/field collisions, mixed type/data
    rejection and source-local scope pass 787 library/823 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-inferred-composition.log`.
-4. Verify conditional results, skipped work, errors, bounds and documentation/staging;
-   update guides/handoffs in a separate slice if needed. Run the final compiler gate.
+   Log: `/tmp/meowy-inferred-composition.log`. Committed as `c8d2a84`.
+4. Complete: work/node bounds, sorted leaf paths, 256/257 fields, 32/33 nested record
+   levels, skipped declarations, source charging/alias reuse, original spans, docs,
+   module startup and function scopes pass 790 library/825 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-inferred-integration.log`.
+5. Split review: integration evidence plus guide/handoff replacement would exceed
+   400 lines. Commit integration first, then update guides/handoffs, run the guide
+   example and `python3 -B tools/verify.py --compiler`, and commit documentation.
 
 Keep scalar/empty/nonrecord primaries, skipped documented declarations, fallback arms,
 mutable/float/text/reference fields, whole-module records, helpers and borrowed storage
