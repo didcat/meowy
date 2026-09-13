@@ -178,7 +178,7 @@ those evaluator limits; these are not full-language E220 counters.
 
 Selected standalone expression blocks, named/outer emissions, mutation and evaluated
 helper calls remain unavailable inside boolean blocks. Integer and boolean blocks retain independently typed primaries. Boolean scratch inside required
-type blocks and boolean module primary inputs remain separate capabilities.
+type blocks remains a separate capability.
 
 ### Record scratch in scalar initializers
 
@@ -339,9 +339,8 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Float/text comparisons, boolean module primaries as predicate inputs,
-and boolean scratch inside required type blocks remain unavailable. Standalone expression
-statements in selected branches, loops and conditional module exports are also separate.
+Float/text comparisons and boolean scratch inside required type blocks remain unavailable.
+Standalone expression statements in selected branches, loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
 initializer contains branches.
 
@@ -400,7 +399,7 @@ initializer errors and transitive work. Every evaluated read charges that work a
 short-circuited operands contribute none. An unrelated effectful export does not
 invalidate an independently eligible boolean export.
 
-Boolean module primaries, whole-module record inputs, conditional module exports and
+Whole-module record inputs, conditional module exports and
 boolean scratch inside required type blocks remain unavailable. Ordinary runtime
 module-data captures and private-field access remain rejected.
 
@@ -459,10 +458,59 @@ the primary initializer does, even through copies or re-exports. Checking/buildi
 never run either initializer. At runtime, every module still initializes once in
 source dependency order, and failures stop dependent and entry execution.
 
+### Boolean primary imports
+
+A file can supply an eligible boolean primary, including when it also has named exports.
+For example, `flags.mwy`:
+
+```meowy
+debug : @"debug"
+debug.print("flags")
+ready : true
+-> ready
+-> label : "ready"
+```
+
+Boolean operations project the primary while ordinary aliases preserve the module's
+complete identity. Its importer can choose an integer capacity:
+
+```meowy
+flags : @"./flags.mwy"
+alias : flags
+capacity : {
+    enabled : alias && true
+    | enabled | -> 4
+    | !enabled | -> 2
+}
+<Items> : { -> <int32[capacity]> }
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+debug.print(alias.label)
+```
+
+Running this prints `flags`, `7` and `ready`. Checking/building remain silent.
+Negation, short-circuit logic and boolean equality use the retained primary evidence.
+Copies, primary/named re-exports and direct module compositions preserve true/false
+values, original initializer errors and complete work. Every evaluated read charges
+that work again; independent required roots reset their budgets.
+
+Unrelated file effects or named initializer effects do not invalidate an eligible
+primary. Effects inside the primary initializer prevent eligibility, including unused
+tails. Required evaluation neither runs nor removes runtime initialization; a startup
+failure still stops dependent and entry execution.
+
+Ordinary module aliases and type queries retain named fields. Annotated ordinary
+module-identity bindings remain unavailable; use a boolean operation to make a scalar
+copy. Comparing two complete module records does not project their primaries;
+use explicit boolean operands when a primary comparison is intended. Boolean scratch
+inside required type blocks and ordinary runtime module-data captures remain separate. A previously checked integer initializer that used the
+primary can supply required types inside functions without enabling such captures.
+
 ### Module composition
 
-A direct top-level composition can forward a file module's eligible integer primary
-and eligible named inputs, including direct booleans and boolean fields derived from
+A direct top-level composition can forward a file module's eligible integer or boolean
+primary and eligible named inputs, including direct booleans and boolean fields derived from
 record composition.
 For example, `facade.mwy` can compose the `capacity.mwy` above:
 

@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean module primary inputs are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Boolean module primary inputs and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,15 +21,25 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Direct immutable named boolean exports retain their checked local IDs in `Module.inputs`
-and value/error/work evidence in `Checker.bool_inputs`. `exports.rs::export_input`
-records only eligible unconditional exports. In `inputs/records/paths.rs`,
-`boolean_field_input` resolves empty paths from scalar boolean evidence and nonempty
-paths from typed record evidence. Composition forwarding preserves the source identity,
-path and work; named re-exports retain their checked declaration and inherited errors.
-Private dependencies remain private, and eligibility is per exported initializer.
-Runtime HIR, initialization and ordinary scope/ownership checks are unchanged.
+`Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
+evidence. `primary_input` captures eligible direct unconditional emissions;
+`Primary::forward` adds two visits for each module composition. Integer and boolean
+lookups enforce the checked primary kind. Predicate traversal reads scalar module
+locals and projected mixed-module primaries, preserving value/error/work evidence.
+Integer required contexts, runtime HIR and ordinary scope/ownership rules are unchanged.
 
+Boolean operations project mixed-module primaries. Identity aliases/type queries keep
+named fields; comparing two complete module records does not project their primaries.
+Annotated ordinary identity bindings remain gated. Boolean copies and primary/named
+re-exports retain source errors and work. A checked outer integer initializer may
+supply required types inside functions; this does not enable runtime module captures.
+
+Direct named boolean exports retain checked local IDs in `Module.inputs` and evidence
+in `Checker.bool_inputs`. `boolean_field_input` resolves empty paths from scalar
+boolean evidence and nonempty paths from typed record evidence. Eligibility remains
+per initializer: unrelated file/named-export effects do not invalidate a pure primary.
+Private dependencies remain private; runtime initialization is neither run nor removed
+by checking. Initializer failures still stop dependent and entry execution.
 
 `inputs/blocks.rs::scalar_binding` shares immutable integer, boolean and bounded record
 evidence between `Block<i128>` and `Block<bool>`. Declared record kinds call `record_expr`
@@ -77,11 +87,11 @@ ancestor work/errors survive field paths, subrecord aliases and local compositio
 error-only paths without inventing branch values. Evaluated unsupported siblings or
 tails prevent eligibility for every selected leaf; unrelated file initialization does not.
 
-Direct module compositions forward independently eligible named inputs and integer
+Direct module compositions forward independently eligible named inputs and integer/boolean
 primaries. Local-record compositions export a checked record ID and bounded field path;
 `inputs/records/paths.rs::input_path` retains paths/work through facades. Synthetic
-module namespaces never gain whole-record eligibility. Mixed module primaries still
-need integer context in required scratch/arithmetic; ordinary aliases keep record identity.
+module namespaces never gain whole-record eligibility. Mixed integer primaries need
+integer context in required scratch/arithmetic; ordinary aliases keep record identity.
 Identity-only module aliases/imports emit no runtime binding and may read eligible
 exports inside scalar initializers. Whole-module record construction remains gated.
 Privacy, collisions, widths, startup order and borrowed-export gates remain intact.
@@ -93,25 +103,24 @@ ownership limits remain independent; these bootstrap limits are not language E22
 
 Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
 mutable scratch and helpers remain unavailable inside scalar initializers. Float/text
-comparisons, boolean module primary inputs, required boolean scratch and conditional
-module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
+comparisons, required boolean scratch and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `722558d`: direct named boolean capture/path lookup; 743 library/767 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-boolean-module-tests.log`.
-- All five boolean-module groups pass. Debug/release integration covers true/false
-  values, aliases, named re-exports, scalar/record forwarding work, independent roots,
-  short circuiting, independent export eligibility and silent check/build staging.
-  Retained E107 errors point to the original dependency byte span without running
-  initialization. Privacy, mutable/conditional/helper/capture gates remain intact.
-- Boolean primary rejection uses an evaluated operand. Identity-only module aliases
-  are erased and do not consume the primary; their acceptance is intentional.
-- The two-file guide prints `flags` then `7` in debug/release. Extracted files:
-  `/tmp/meowy-boolean-modules-doc-0zost3iq/{flags,main}.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 743
-  library/770 native Rust tests (1513 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-boolean-module-gate.log`.
+- `39aacdd`: explicit primary evidence storage; 743 library/770 native tests, fmt
+  and Clippy passed. Log: `/tmp/meowy-primary-kinds-tests.log`.
+- `77ca671`: boolean primary capture/lookup/forwarding; 744 library/773 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-boolean-primary-tests.log`.
+- Seven boolean-primary groups pass. Debug/release integration covers true/false,
+  aliases, scalar copies, mixed-module identity, primary/named re-exports, retained
+  work on every read, independent roots, short circuiting and original dependency
+  E107 byte spans. Check/build remain silent; diamonds initialize once, and runtime
+  initialization failure still stops entry. Privacy, purity, kind and scope gates pass.
+- The guide prints `flags`, `7`, `ready` in debug/release. Extracted files:
+  `/tmp/meowy-boolean-primary-doc-2ps49c8a/{flags,main}.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 744
+  library/777 native Rust tests (1521 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-boolean-primary-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -175,7 +184,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, boolean module primary inputs, helper
+Whole-record module inputs, conditional module exports, required boolean scratch, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -183,24 +192,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: integer evidence has two consumers (`Local` and projected `Primary`) and
-composition adds two visits per forwarded primary. Boolean predicates need the same
-paths, without granting boolean scratch in required type blocks or runtime captures.
-The existing HIR already projects mixed-module primaries in boolean contexts.
+Boolean module primary evidence and integration are complete: `39aacdd` introduces
+explicit primary storage, `77ca671` adds boolean capture/lookup/forwarding, and the
+following integration/documentation slice passes the final compiler gate above.
 
-Dependency-ordered commits:
+Next, plan immutable boolean scratch in required type blocks as a prerequisite for
+conditional type selection. Inspect `src/check/type_values/{scalars,fields}.rs`,
+`src/check/type_values.rs` and required materialization in `src/check/expressions.rs`.
+Record dependency-ordered commits before implementation:
 
-1. Complete: explicit `Primary::Int` evidence keeps integer capture, lookup, emission
-   identity and forwarding work unchanged. All 743 library/770 native tests, fmt and
-   Clippy pass. Log: `/tmp/meowy-primary-kinds-tests.log`. Committed as `39aacdd`.
-2. Complete: `Primary::Bool` capture/forwarding and Local/Primary predicate lookup
-   pass 744 library/773 native tests, fmt and Clippy. Log:
-   `/tmp/meowy-boolean-primary-tests.log`. False values, mixed-module projections,
-   aliases/type queries, re-exports, source errors and existing gates pass. Ordinary
-   annotated module aliases remain unavailable; boolean operations project primaries.
-   Commit this behavior with its focused tests.
-3. Add repeated-work and initialization integration, update the supported guide and
-   both handoffs, and run `python3 -B tools/verify.py --compiler` across the series.
+1. Separate typed required scalar validation/materialization where needed, preserving
+   integer widths, diagnostic spans and the shared root work/depth counters.
+2. Add boolean literals, eligible local/field/module inputs and boolean scratch aliases
+   in required blocks with focused kind, scope, error and repeated-work regressions.
+   Required reads must not grant runtime captures or whole-module record evidence.
+3. Verify function-scoped required reads and silent staging in both profiles; update
+   guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep whole-module record inputs, conditional exports, required boolean/record scratch,
-wider comparisons, helpers, packages and borrowed storage separate. Do not push.
+Keep conditional type selection as a later slice after typed scratch. Whole-module
+record inputs, conditional exports, required record scratch, wider comparisons, helpers,
+packages and borrowed storage remain separate. Do not push.

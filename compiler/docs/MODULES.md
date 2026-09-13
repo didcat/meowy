@@ -173,7 +173,7 @@ avoid claiming module resource cleanup or borrowed static exports. The
 [diamond example](../examples/modules/main.mwy) prints shared, left, right, entry, 17;
 the shared module initializes once in both profiles.
 
-## Required integer inputs
+## Required initializer inputs
 
 Eligible immutable named data exports can supply computed-type scratch and extents.
 Public field lookup retains the original checked initializer identity, exact integer
@@ -190,9 +190,15 @@ queries preserve their complete record type; named initializer effects remain se
 from primary eligibility. Direct top-level compositions such as `-> source` preserve
 each eligible runtime export's original evidence through facade chains. Each hop
 adds retained work; projected records keep complete ancestor evidence. Function/type
-exports still require explicit re-exports. Whole-record inputs, nonmodule compositions
-and conditional export inputs remain separate. See
-[the supported input rules](COMPUTED_TYPES.md#imported-immutable-inputs).
+exports still require explicit re-exports. Whole-module record inputs and conditional
+export inputs remain separate.
+
+Eligible named boolean exports, boolean record leaves and direct boolean primaries
+can supply predicates in ordinary scalar/record initializers. Boolean operations
+project a mixed module's primary; identity aliases and type queries keep its named
+fields. Copies and facade forwarding retain values, failures and evaluation work.
+Required boolean scratch and ordinary runtime module-data captures remain unavailable.
+See [the supported input rules](COMPUTED_TYPES.md#imported-immutable-inputs).
 
 ## Source identity and output protection
 

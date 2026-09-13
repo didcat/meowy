@@ -36,8 +36,8 @@ list capacity from an eligible immutable integer initializer and constructs reco
 types. Eligibility is tracked separately from constant folding and includes eligible
 integer blocks and bounded nested immutable integer records. Field paths and subrecord
 aliases retain complete ancestor evidence in computed scratch/extents. Eligible named
-integer/boolean/record file exports and direct integer primaries retain that evidence through
-imports, copies and scalar re-exports. Mixed modules support arithmetic and
+integer/boolean/record file exports and direct integer/boolean primaries retain evidence
+through imports, copies and scalar re-exports. Mixed modules support arithmetic and
 integer-annotated required reads while aliases and type queries keep their record
 identity. Direct top-level module compositions forward eligible primary and named
 inputs through facades while retaining source identity, ancestor evidence and work.
@@ -52,7 +52,8 @@ scratch with complete ancestor evidence. Scratch values never replace the scalar
 Typed boolean record fields retain ancestor evidence through predicates, copies and
 record-derived exports. Direct named boolean inputs retain source identities, errors
 and work through aliases and facades. Checking never runs module initialization.
-Boolean module primaries, conditional module exports, helper calls,
+Boolean primary predicates preserve mixed-module identity and startup effects.
+Conditional module exports, helper calls,
 non-integer/mutable required scratch and full required evaluation remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
