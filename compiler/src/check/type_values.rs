@@ -191,6 +191,28 @@ impl Checker {
         block: &ast::Block,
         expected: Option<&Type>,
     ) -> Result<Value> {
+        let output = self.required_output(block, expected)?;
+        if output.record() {
+            return self.finish_required_record(output, block.span);
+        }
+        output.value.ok_or_else(|| {
+            Self::error(
+                if expected.is_some() { "E204" } else { "E211" },
+                if expected.is_some() {
+                    "required scalar block does not initialize its primary"
+                } else {
+                    "computed block does not emit a compile-time type"
+                },
+                block.span,
+            )
+        })
+    }
+
+    pub(crate) fn required_output(
+        &mut self,
+        block: &ast::Block,
+        expected: Option<&Type>,
+    ) -> Result<Output> {
         if block.label.is_some() {
             return Err(Diagnostic::unsupported(
                 if expected.is_some_and(|ty| matches!(ty, Type::Record { .. })) {
@@ -211,20 +233,7 @@ impl Checker {
         let result = self.type_statements(&block.stmts, &mut output);
         self.scopes.pop();
         result?;
-        if output.record() {
-            return self.finish_required_record(output, block.span);
-        }
-        output.value.ok_or_else(|| {
-            Self::error(
-                if expected.is_some() { "E204" } else { "E211" },
-                if expected.is_some() {
-                    "required scalar block does not initialize its primary"
-                } else {
-                    "computed block does not emit a compile-time type"
-                },
-                block.span,
-            )
-        })
+        Ok(output)
     }
 
     pub(crate) fn type_binding(

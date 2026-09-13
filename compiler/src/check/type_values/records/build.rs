@@ -182,6 +182,79 @@ mod tests {
     use super::*;
 
     #[test]
+    pub(crate) fn required_output_restores_scope_before_record_completion() {
+        let parsed = crate::parser::parse(
+            "r<{enabled<boolean>;width<uint8>}>:{local<uint8>:4;->width:local}",
+        )
+        .unwrap();
+        let ast::StmtKind::Bind { value, ty, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let ExprKind::Block(block) = &value.kind else {
+            panic!("block")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(super::super::super::Work::default());
+        let ty = checker.ty(ty.as_ref().unwrap()).unwrap();
+        let scopes = checker.scopes.len();
+        let output = checker.required_output(block, Some(&ty)).unwrap();
+        assert_eq!(output.ty, Some(ty));
+        assert_eq!(output.fields.len(), 1);
+        assert!(matches!(
+            output.fields.get(&1),
+            Some(Value::Static {
+                value: Constant::Int(4),
+                ..
+            })
+        ));
+        assert_eq!(checker.scopes.len(), scopes);
+        for name in ["local", "width"] {
+            assert_eq!(
+                checker.required_value(name, block.span).err().unwrap().code,
+                "E201"
+            );
+        }
+        assert_eq!(
+            checker
+                .finish_required_record(output, block.span)
+                .err()
+                .unwrap()
+                .code,
+            "E204"
+        );
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn required_output_restores_scope_after_field_failure() {
+        let parsed =
+            crate::parser::parse("r<{width<uint8>}>:{local<uint8>:4;->width:local;unused:1/0}")
+                .unwrap();
+        let ast::StmtKind::Bind { value, ty, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let ExprKind::Block(block) = &value.kind else {
+            panic!("block")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(super::super::super::Work::default());
+        let ty = checker.ty(ty.as_ref().unwrap()).unwrap();
+        let scopes = checker.scopes.len();
+        let error = checker.required_output(block, Some(&ty)).err().unwrap();
+        assert_eq!(error.code, "E107");
+        assert_eq!(checker.scopes.len(), scopes);
+        assert_eq!(
+            checker
+                .required_value("width", block.span)
+                .err()
+                .unwrap()
+                .code,
+            "E201"
+        );
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
     pub(crate) fn required_record_construction_preserves_leaf_kinds_without_runtime_storage() {
         let source = "<R>:<{enabled<boolean>;width<uint8>}>;<T>:{r<R>:{->width:4;->enabled:width>0};-><int32[r.width]>}";
         let program = crate::compile(source).unwrap();

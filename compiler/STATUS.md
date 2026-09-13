@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required record composition and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Inline partial required composition is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -214,19 +214,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Required record composition is complete across `4824d57` (slot helpers), `3db3cf1`
-(composition) and `3ae320e` (integration). The guide and full compiler gate pass.
+Inspection: ordinary `composed` checks inline blocks against the expected record with
+partial completion. Required traversal already owns scoped field slots. Reuse that
+output, compact only emitted fields into a temporary record, then reuse existing
+composition forwarding. Nested named record fields must still be complete; forwarded
+names stay source-local. Empty/nonrecord sources remain gated.
 
-Next, plan inline partial record sources in required primary composition. Read ordinary
-`composed`/partial-block behavior and reuse expected field contexts in `records/build.rs`.
-Record dependency-ordered commits before implementation:
+Dependency-ordered commit plan:
 
-1. Represent partial constructor results without requiring every target field inside
-   the temporary source; preserve final target initialization and source-local scope.
-2. Add `-> { ... }` composition using the surrounding expected shape for field typing,
-   preserving primary-slot rules, field collisions and no forwarded local names.
-3. Verify nested/conditional partial sources, skipped work, bounds and staging; update
-   guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: extracted scoped `required_output` traversal from completion in
+   `type_values.rs`. Scope restoration and completion checks pass 779 library/818
+   native tests, fmt and Clippy. Log: `/tmp/meowy-required-output-scope-tests.log`.
+2. Add partial inline record materialization and route block/group sources through it
+   in `records/compose.rs`, keeping exact expected fields, primary/collision checks,
+   budgets and focused accepted/rejected execution tests together.
+3. Verify nested/conditional sources, skipped work, depth/shape budgets, errors and
+   module staging. Update guides and handoffs separately if the slice grows too large.
+4. Run `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep general unannotated constructors, empty/nonrecord primaries, skipped documented
 declarations, fallback arms, mutable/float/text/reference fields, whole-module records,
