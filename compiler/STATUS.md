@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required record scratch is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required record scratch and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,28 +21,27 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required bindings with explicit integer/boolean annotations now evaluate scalar blocks.
-`type_binding` uses the annotation to select the result kind; unannotated blocks remain
-type-producing. `type_values/blocks.rs` carries expected kinds through nested emitted
-blocks, uses existing scalar readers and materializes `Value::Static` without runtime
-HIR, locals or functions. Already typed values retain their original widths.
+Required scopes now materialize eligible immutable records and exported subrecords as
+`Value::Record`, preserving integer/boolean leaf kinds and nested type shapes without
+runtime local IDs. `Value::data_type` shares type lookup; required field `Source` values
+distinguish original local/module inputs from materialized record values.
 
-`required_block`, statement traversal and matchers share checked `Value` primary state
-and lexical scope. Type emissions store `Value::Type`; scalar emissions check the
-expected kind/width. Missing scalar primaries report E204, duplicate selected primaries
-E205 and incompatible emitted values E207. Missing type results remain E211. Emissions
-do not exit: evaluated tails retain work/errors, including after nested emissions.
+`type_values/records.rs` checks complete source evidence before creating a scoped value.
+Projection cannot hide ancestor errors, effectful tails or unsupported siblings. After
+a successful read, initializer work is cleared in the materialized value: aliases and
+field reads charge their own read/path work, while binding an original source again
+charges its transitive work again. Each record binding charges its type shape to the
+shared node budget. Existing 256-field/32-level eligibility bounds remain intact.
 
-Matcher selection and skipped-body structural guards are unchanged. Nested scalar
-bindings need annotations; directly emitted nested blocks inherit the containing kind.
-Groups/blocks/matchers share root budgets and restore scope/depth after failure.
-Selected documentation preserves scalar widths and constructed type signatures;
-skipped documented declarations remain gated.
+Annotations must match the complete record type. Queries, projections, scalar field
+reads, annotated scalar blocks and matcher scopes reuse that shape. Documentation keeps
+record signatures and exact leaf widths. Whole records cannot become integer extents
+or type values, and whole-record equality/whole-module namespace capture remain gated.
 
-Source reads preserve transitive work and original dependency spans. Required reads
-inside functions do not grant runtime captures. Checking/building remain silent and
-preserve module initialization, including failures behind skipped required reads.
-Unannotated scalar blocks, operand blocks and required record scratch remain separate.
+Required statement/matcher traversal still preserves expected scalar kinds, primary
+rules, tail errors, scope and root budgets. Function-scoped reads do not grant runtime
+captures. Checking/building remain silent and preserve module initialization, including
+failures behind skipped required reads. Inline record construction remains separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -130,20 +129,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `b62a736`: shared checked block results; 761 library/800 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-required-values-tests.log`.
-- `069b499`: annotated scalar blocks; 763 library/802 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-required-scalar-blocks-tests.log`.
-- `0badc04`: integration; 765 library/805 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-scalar-blocks-integration-all.log`.
-- Four checker tests and five native groups cover values/kinds, signed minima,
-  nested blocks, no runtime storage, scope/depth recovery, source/tail work, dependency
-  spans, module/function reads, selected documentation and silent startup.
+- `83cf6e3`: shared type/source lookup; 765 library/805 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-required-sources-tests.log`.
+- `978b40e`: required record materialization; 767 library/807 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-required-records-tests.log`.
+- `02fdfa5`: integration; 769 library/810 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-required-records-integration-all.log`.
+- Four checker tests and five native groups cover leaf values, no runtime locals,
+  ancestor failures, record/type-node bounds, source versus alias work, shadowing,
+  documentation, annotations, module/function reads and silent initialization.
 - The guide prints `7` in debug/release:
-  `/tmp/meowy-required-scalar-blocks-doc-77tpdbwa/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 765
-  library/805 native Rust tests (1570 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-required-scalar-blocks-gate.log`.
+  `/tmp/meowy-required-records-doc-yg41kpky/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 769
+  library/810 native Rust tests (1579 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-required-records-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -215,30 +214,20 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: existing `Record` evidence has typed integer/boolean leaves and complete
-ancestor work/errors. Required bindings can validate a source once, then store a scoped
-materialized record with cleared initializer work. Alias/projection reads charge their
-own traversal; original-source reads charge transitive work. Charge retained type shapes
-to the existing node budget to bound materialized record copies. No runtime local IDs
-are allocated. Whole-module namespaces and inline record construction remain gated.
+Required record scratch is complete across `83cf6e3` (source lookup), `978b40e`
+(materialization) and `02fdfa5` (integration). The guide and full compiler gate pass.
 
-Dependency-ordered commits:
+Next, plan explicitly annotated required record construction. Reuse `Value::Record`,
+record shape/leaf evidence and required statement/matcher traversal. Keep unannotated
+blocks type-producing. Record dependency-ordered commits before implementation:
 
-1. Complete: field sources are separated from runtime IDs and data-type lookup is
-   centralized. All 765 library/805 native tests, fmt and Clippy pass unchanged.
-   Log: `/tmp/meowy-required-sources-tests.log`. Committed as `83cf6e3`.
-2. Complete: scoped record bindings/aliases/projections pass 767 library/807 native
-   tests, fmt and Clippy. Log: `/tmp/meowy-required-records-tests.log`. Materialization
-   checks complete source evidence, clears initializer work and charges retained type
-   shapes; leaf values, ancestor errors, scopes and no runtime storage pass.
-   Committed as `978b40e`.
-3. Complete: copy/read and type-node budgets, field limits, ancestor spans, startup,
-   annotations, shadowing and documentation pass all 769 library/810 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-required-records-integration-all.log`.
-4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
-   Commit integration evidence separately, then finish the guide/handoffs and run
-   `python3 -B tools/verify.py --compiler` across the complete series.
+1. Add bounded record result state for an expected immutable unit-primary record shape,
+   preserving existing scalar/type result behavior and scope/budget handling.
+2. Check named field emissions against that shape, preserving exact leaf kinds/widths,
+   initialization and duplicate-field diagnostics. Construct only compile-time values.
+3. Add nested record/source-copy, matcher, budget and staging regressions; update guides/
+   handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep inline record construction, unannotated scalar blocks, skipped documented declarations,
-standalone branch blocks, fallback arms, float/text results, whole-module records,
+Keep unannotated record/scalar construction, skipped documented declarations, standalone
+branch blocks, fallback arms, float/text/reference fields, whole-module namespaces,
 conditional exports, helpers, packages and borrowed storage separate. Do not push.

@@ -199,7 +199,9 @@ project a mixed module's primary; identity aliases and type queries keep its nam
 fields. Copies and facade forwarding retain values, failures and evaluation work.
 Required boolean scratch supports these inputs, including across function scopes.
 Mixed-module primaries need a boolean annotation; ordinary runtime module-data
-captures remain unavailable.
+captures remain unavailable. Eligible named record exports can also be materialized
+as required record scratch; ancestor errors/work are checked before aliases or field
+reads reuse that value. Whole-module namespaces retain their gate.
 See [the supported input rules](COMPUTED_TYPES.md#imported-immutable-inputs).
 
 ## Source identity and output protection

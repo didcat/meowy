@@ -142,6 +142,60 @@ initialization, including failures behind skipped required reads. Float/text/rec
 block results, mutable scratch, labeled/named/annotated emissions, unannotated scalar
 blocks and blocks used directly as operator operands remain unsupported.
 
+## Required record scratch
+
+Required scopes can bind already eligible immutable records and exported subrecords,
+then copy or project them without runtime storage:
+
+```meowy
+settings : {
+    -> enabled : true
+    -> limits : { -> capacity <uint8> : 4 }
+}
+<Items> : {
+    copy : settings
+    limits : copy.limits
+    alias : limits
+    capacity <uint8> : {
+        record : alias
+        -> record.capacity
+    }
+    | copy.enabled | -> <int32[capacity]>
+    | !copy.enabled | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Integer widths, boolean values and nested field shapes are preserved.
+Optional annotations must match the record's complete type (E207 otherwise). Type
+queries inspect the retained shape. A record value itself is neither a type nor an
+integer extent, and whole-record equality remains outside required evaluation.
+
+Binding an original source checks its complete initializer evidence, including ancestor
+work/errors outside a projected subrecord. Mutable descendants, unsupported siblings
+and effectful tails prevent eligibility; a valid leaf cannot hide them. Original
+failures retain their source spans. Unrelated module initialization effects do not
+disqualify a separately eligible exported record.
+
+A successful binding materializes the record in the required scope. Later aliases and
+field reads charge their own read/path work without reevaluating that initializer.
+Binding the original source again charges its retained work again. Every record binding
+also charges its retained type shape to the existing 16384-node budget, including copies;
+independent roots reset their budgets. Existing 256-total-field and 32-record-level
+limits remain. These bootstrap checks do not qualify the full-language E220 counters.
+
+Record scratch works inside nested type/scalar blocks, matcher bodies and function-scoped
+required reads. Normal lexical shadowing and scope exit apply. Documentation retains the
+record shape and scalar widths. Required aliases do not enable ordinary runtime captures,
+and checking/building never execute initialization or remove runtime startup failures.
+
+Inline record construction, mutable scratch, borrowed fields, whole-module namespace
+records and record-valued block results remain separate. Use an eligible named record
+export such as `module.settings`; copying the module identity itself does not materialize
+its namespace as a record.
+
 ## Integer calculations
 
 Local integer bindings retain their checked width and signedness through aliases,
@@ -258,7 +312,7 @@ and consumes frontend checking work. Evaluation retains the shared required-root
 work/depth bounds; skipped evaluation is not charged. Independent roots reset their
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
 Direct calls, inline operand blocks and unsupported operators remain unavailable even
-in skipped expression syntax. Required record scratch remains separate.
+in skipped expression syntax. Inline required record construction remains separate.
 
 ### Integer comparisons
 
@@ -672,7 +726,8 @@ charges the original initializer work again; independent required roots reset it
 Unannotated ordinary aliases and `capacity<>` preserve the complete record type.
 A mixed module is not itself integer scratch: use an integer annotation or arithmetic.
 Likewise, use `<int32[capacity + 0]>` inside a computed root instead of a bare
-mixed-module extent. Whole-record computed scratch remains unavailable.
+mixed-module extent. Whole-module record scratch remains unavailable; eligible named
+record exports can be materialized separately.
 
 Named initializer effects do not disqualify a separate pure primary. An effect inside
 the primary initializer does, even through copies or re-exports. Checking/building
