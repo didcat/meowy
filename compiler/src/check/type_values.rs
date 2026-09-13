@@ -1,6 +1,7 @@
 mod blocks;
 mod booleans;
 mod fields;
+mod inferred;
 mod integers;
 mod matches;
 mod records;

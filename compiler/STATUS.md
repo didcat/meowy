@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Inferred required record construction and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Inferred required scalar blocks are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -220,22 +220,25 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inferred required records are implemented across `fb8912f` (shared evaluation),
-`9062e5a` (named fields), `c8d2a84` (composition) and `4b3efa9` (integration).
-The guide and full compiler gate pass.
+Inspection: `type_binding` already classifies checked integer/boolean, record and type
+values without executing runtime code. Inferred primaries currently use a separate
+record/type-only path. Reuse binding evaluation for primaries; preserve unit-primary
+record gates, type-only aliases, one selected primary and existing annotations.
+Unannotated literals retain default integer widths; named inputs retain exact types.
 
-Next, investigate inferred integer/boolean block bindings in required scopes. Trace
-`inferred_primary`, `type_scalar` and existing annotated `scalar_block` behavior before
-extending result classification. Preserve type-valued blocks, exact widths, scalar/record
-separation and the one-primary rule. Record dependency-ordered commits:
+Dependency-ordered commit plan:
 
-1. Share scalar result inference with existing checked integer/boolean materialization,
-   preserving source eligibility, contextual widths and error spans.
-2. Support unannotated scalar block bindings and nested primary blocks with focused
-   accepted/rejected execution tests. Keep records with non-unit primaries separate.
-3. Verify conditional kinds, shared budgets, skipped work, type identities and staging;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
+1. Complete: general inferred block/result handling moved to `type_values/inferred.rs`;
+   record field/slot inference stays in `records/inferred.rs`. All 790 library/825
+   native tests, fmt and Clippy pass. Log: `/tmp/meowy-inferred-results-refactor.log`.
+2. Route inferred primaries through `type_binding`, allow checked integer/boolean
+   results and keep scalar-primary records gated. Include focused accepted/rejected
+   checker/native tests and remove only superseded unsupported fixtures.
+3. Verify conditional kinds, exact widths, source work/errors, skipped paths, budgets,
+   type identities and module/function staging with focused integration tests.
+4. Update guides/handoffs, execute the guide in both profiles, and run
+   `python3 -B tools/verify.py --compiler` across the series.
 
 Keep empty results, mixed scalar-primary records, skipped documented declarations,
 fallback arms, mutable/float/text/reference fields, whole-module records, helpers and
-borrowed storage separate. Do not push.
+borrowed storage separate. Commit validated slices; do not push.
