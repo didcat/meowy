@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Annotated required record construction and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required record composition is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -215,21 +215,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Annotated record construction is complete across `66bd7c1` (output state), `3fe7299`
-(construction) and `345f98b` (integration). The guide and full compiler gate pass.
+Inspection: ordinary composition writes the source primary and forwards named fields
+without declaring their names locally. Even unit-primary composition consumes the one
+primary slot; a second selected composition must report E205, including disjoint sources.
+Read/materialize eligible source evidence once, then map fields by name into expected
+slots. Preserve field kinds/widths, missing fields, collisions and source error spans.
 
-Next, plan primary record composition from existing eligible records inside annotated
-required constructors. Read ordinary composition rules and reuse `records/build.rs`,
-required record sources and checked field slots. Record ordered commits first:
+Dependency-ordered commits:
 
-1. Share field-slot insertion/type checking where useful, preserving explicit named
-   emission bindings, duplicate/init diagnostics and existing scalar/type behavior.
-2. Support `-> source` for eligible immutable record values, mapping their field names
-   into the expected shape and charging source evidence once before forwarding fields.
-   Preserve ordinary composition's lexical-binding rules and whole-module namespace gates.
-3. Verify partial/full composition, nested records, collisions, budgets and staging;
+1. Complete: slot lookup/insertion are shared; named initializer validation and spans
+   remain unchanged. All 773 library/814 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-record-slots-tests.log`. Commit the prerequisite.
+2. Add bounded `-> source` composition from eligible existing records, including nested
+   record fields and selected matcher arms. Keep primary-slot and namespace gates.
+3. Verify source/forwarding work, aliases, collisions, module/function use and staging;
    update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep unannotated constructors, inline partial composition, explicit nonrecord primaries,
+Keep inline partial composition, unannotated constructors, explicit nonrecord primaries,
 skipped documented declarations, fallback arms, mutable/float/text/reference fields,
-whole-module records, helpers and borrowed storage separate. Do not push.
+whole-module namespaces, helpers and borrowed storage separate. Do not push.

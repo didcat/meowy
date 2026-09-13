@@ -34,24 +34,7 @@ impl Checker {
         span: ast::Span,
         output: &mut Output,
     ) -> Result<()> {
-        let Some(Type::Record { fields, .. }) = &output.ty else {
-            unreachable!()
-        };
-        if !self.flow.spend(fields.len() + name.len() + 1) {
-            return Err(super::super::Work::budget(span));
-        }
-        let (index, field) = fields
-            .iter()
-            .enumerate()
-            .find(|(_, field)| field.name == name)
-            .ok_or_else(|| {
-                Self::error(
-                    "E207",
-                    format!("field `{name}` is not in the expected record"),
-                    span,
-                )
-            })?;
-        let ty = field.ty.clone();
+        let (index, ty) = self.required_record_slot(name, span, output)?;
         if let Some(annotation) = annotation
             && self.ty(annotation)? != ty
         {
@@ -82,6 +65,44 @@ impl Checker {
         } else {
             self.scalar_emission(expr, &ty)?
         };
+        self.insert_required_field(name, index, value, true, span, output)
+    }
+
+    pub(crate) fn required_record_slot(
+        &mut self,
+        name: &str,
+        span: ast::Span,
+        output: &Output,
+    ) -> Result<(usize, Type)> {
+        let Some(Type::Record { fields, .. }) = &output.ty else {
+            unreachable!()
+        };
+        if !self.flow.spend(fields.len() + name.len() + 1) {
+            return Err(super::super::Work::budget(span));
+        }
+        let (index, field) = fields
+            .iter()
+            .enumerate()
+            .find(|(_, field)| field.name == name)
+            .ok_or_else(|| {
+                Self::error(
+                    "E207",
+                    format!("field `{name}` is not in the expected record"),
+                    span,
+                )
+            })?;
+        Ok((index, field.ty.clone()))
+    }
+
+    pub(crate) fn insert_required_field(
+        &mut self,
+        name: &str,
+        index: usize,
+        value: Value,
+        bind: bool,
+        span: ast::Span,
+        output: &mut Output,
+    ) -> Result<()> {
         if output.fields.contains_key(&index) {
             return Err(Self::error(
                 "E205",
@@ -89,7 +110,9 @@ impl Checker {
                 span,
             ));
         }
-        self.declare(name, value.clone(), span)?;
+        if bind {
+            self.declare(name, value.clone(), span)?;
+        }
         output.fields.insert(index, value);
         Ok(())
     }
