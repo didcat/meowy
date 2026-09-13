@@ -112,4 +112,84 @@ mod tests {
             assert_eq!(error.code, code, "{source}: {error:?}");
         }
     }
+    #[test]
+    pub(crate) fn required_scalar_blocks_restore_depth_scope_and_results_after_failures() {
+        use super::super::Work;
+        use crate::ast::{Block, Expr, Span, Stmt, StmtKind};
+        for depth in [63, 64] {
+            let span = Span::new(0, 1);
+            let mut expr = Expr {
+                span,
+                kind: ExprKind::Int("1".into()),
+            };
+            for _ in 0..depth {
+                expr = Expr {
+                    span,
+                    kind: ExprKind::Block(Block {
+                        span,
+                        label: None,
+                        stmts: vec![Stmt {
+                            span,
+                            kind: StmtKind::Emit {
+                                label: None,
+                                name: None,
+                                ty: None,
+                                mutable: false,
+                                value: expr,
+                            },
+                        }],
+                    }),
+                };
+            }
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let scopes = checker.scopes.len();
+            let result = checker.scalar_block(
+                &expr,
+                &Type::Int {
+                    bits: 8,
+                    signed: false,
+                },
+            );
+            if depth == 63 {
+                assert!(matches!(
+                    result.unwrap(),
+                    Value::Static {
+                        value: Constant::Int(1),
+                        ..
+                    }
+                ));
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(checker.locals.is_empty());
+            assert!(matches!(
+                checker
+                    .scalar_block(&expression("{->false}"), &Type::Bool)
+                    .unwrap(),
+                Value::Static {
+                    value: Constant::Bool(false),
+                    ..
+                }
+            ));
+        }
+    }
+
+    #[test]
+    pub(crate) fn required_scalar_blocks_document_checked_widths_and_constructed_types() {
+        let source = "#| Items. |#<T>:{#| Count. |#n<uint8>:{#| Base. |#base<uint8>:2;->base*2};-><int32[n]>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [("T", "int32[4]"), ("n", "uint8"), ("base", "uint8")] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+    }
 }

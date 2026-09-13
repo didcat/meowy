@@ -230,9 +230,13 @@ Dependency-ordered commits:
 2. Complete: annotated block dispatch and expected-kind emissions pass 763 library/
    802 native tests, fmt and Clippy. Log: `/tmp/meowy-required-scalar-blocks-tests.log`.
    Values/widths, nested construction, primary/tail errors, scope and absent runtime
-   storage pass. Commit the behavior slice.
-3. Verify source evidence, budgets, functions/modules and staging; update the supported
-   guide and handoffs, then run `python3 -B tools/verify.py --compiler` across the series.
+   storage pass. Committed as `069b499`.
+3. Complete: source/tail evidence, depth/scope recovery, module staging, signed minima
+   and documentation pass all 765 library/805 native tests, fmt and Clippy. Log:
+   `/tmp/meowy-required-scalar-blocks-integration-all.log`.
+4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
+   Commit integration evidence separately, then finish the guide/handoffs and run
+   `python3 -B tools/verify.py --compiler` across the complete series.
 
 Keep unannotated scalar blocks, skipped documented declarations, standalone branch
 blocks, fallback arms, float/text/record results, whole-module records, conditional
