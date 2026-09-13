@@ -172,8 +172,8 @@ Selected named emissions must match expected fields. Unknown fields or incompati
 field annotations/values report E207; literals inherit the field width, preserving
 E216 for unrepresentable values and E107 for evaluated arithmetic failures. A second
 selected emission into a field reports E205. Every expected field must be initialized
-when the block finishes (E204 otherwise). Explicit primary emissions and primary
-composition remain gated; the unit primary is implicit.
+when the block finishes (E204 otherwise). The unit primary is implicit unless an
+eligible record is composed through the primary slot, as described below.
 
 A field name becomes a local binding after its initializer completes, so later fields
 can read it. Ordinary lexical scope still applies: a name emitted inside a matcher
@@ -194,6 +194,53 @@ shared node budget; evaluated fields and source copies retain required work/erro
 Documentation derives completed field widths and constructed type signatures. Required
 function-scoped reads keep runtime capture gates, and checking/building never run or
 remove module initialization, including failures behind skipped required reads.
+
+### Primary record composition
+
+An annotated required constructor can compose an existing eligible record by name or
+field path, including aliases and exported subrecords:
+
+```meowy
+base : { -> width <uint8> : 4 }
+<Settings> : <{ enabled <boolean>; width <uint8> }>
+<Items> : {
+    copy : base
+    settings <Settings> : {
+        -> copy
+        -> enabled : true
+    }
+    | settings.enabled | -> <int32[settings.width]>
+    | !settings.enabled | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Source fields map by name into the expected shape, with exact types
+and widths. A source may initialize some or all fields; remaining fields still need
+named emissions. Unknown or incompatible fields report E207, duplicate fields E205
+and fields missing at completion E204. Nested record fields retain their complete shape.
+
+Composition also initializes the unit primary. A second selected composition reports
+E205 even if its fields are disjoint. Complementary matcher branches can select one
+source; nested constructors have independent primary slots. Emission still does not
+exit the block, so selected tails retain their work and errors.
+
+Forwarded field names do not become local bindings. Inside the constructor, read
+`copy.width` in this example; after construction, read `settings.width`. Explicit named
+emissions still introduce their own local bindings after initialization.
+
+The source's complete evidence is checked and materialized once before forwarding.
+Ancestor failures cannot be hidden by partial composition. Each forwarded field adds
+one evaluation step; copied nested records also charge their type shape. The source
+and final record retain the existing materialization budgets. Reusing a required record
+alias does not reevaluate its original initializer; independent roots reset budgets.
+
+Composition creates no runtime locals and works in function-scoped required evaluation.
+Checking/building preserve silent staging and normal module initialization. Inline primary
+block expressions, annotated primary emissions, nonrecord primaries and whole-module
+namespaces remain unsupported; use eligible named record exports instead.
 
 ## Required record scratch
 
