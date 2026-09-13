@@ -165,6 +165,13 @@ impl Checker {
     }
 
     pub(crate) fn type_block(&mut self, block: &ast::Block) -> Result<Type> {
+        let Value::Type(ty) = self.required_block(block)? else {
+            unreachable!()
+        };
+        Ok(ty)
+    }
+
+    pub(crate) fn required_block(&mut self, block: &ast::Block) -> Result<Value> {
         if block.label.is_some() {
             return Err(Diagnostic::unsupported(
                 "labeled computed type blocks",

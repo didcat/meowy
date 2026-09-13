@@ -1,13 +1,12 @@
 use crate::ast::{Stmt, StmtKind};
-use crate::check::{Checker, Result, Spec};
+use crate::check::{Checker, Result, Spec, Value};
 use crate::diagnostic::Diagnostic;
-use crate::hir::Type;
 
 impl Checker {
     pub(crate) fn type_statements(
         &mut self,
         stmts: &[Stmt],
-        result: &mut Option<Type>,
+        result: &mut Option<Value>,
     ) -> Result<()> {
         for stmt in stmts {
             self.type_statement(stmt, result)?;
@@ -15,7 +14,7 @@ impl Checker {
         Ok(())
     }
 
-    pub(crate) fn type_statement(&mut self, stmt: &Stmt, result: &mut Option<Type>) -> Result<()> {
+    pub(crate) fn type_statement(&mut self, stmt: &Stmt, result: &mut Option<Value>) -> Result<()> {
         self.type_work.as_mut().unwrap().spend(stmt.span)?;
         match &stmt.kind {
             StmtKind::Bind {
@@ -52,7 +51,7 @@ impl Checker {
                 value,
             } => {
                 let ty = self.type_value(value)?;
-                if result.replace(ty).is_some() {
+                if result.replace(Value::Type(ty)).is_some() {
                     return Err(Self::error(
                         "E205",
                         "computed type primary may be emitted twice",

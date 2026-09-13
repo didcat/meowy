@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Conditional type selection and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Annotated required scalar blocks are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -215,21 +215,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Conditional type selection is complete across `12f4799` (statement state), `b180fcc`
-(selection) and `161489e` (integration). The guide and full compiler gate pass.
+Inspection: required statement/matcher traversal already shares scope, primary state
+and budgets. Generalize the accumulator to checked `Value` results, keeping type blocks
+as `Value::Type`. An explicit integer/boolean binding annotation selects scalar block
+evaluation; unannotated blocks remain type-producing. Reuse scalar readers for emitted
+values, propagate the expected kind through nested emitted blocks, and keep runtime
+HIR/storage out of required evaluation.
 
-Next, plan explicitly annotated integer/boolean blocks in required type bindings.
-Inspect `type_binding`, `statements.rs`, `matches.rs` and the scalar readers. Keep
-unannotated blocks type-producing; use the annotation to choose the scalar result kind.
-Record dependency-ordered commits before implementation:
+Dependency-ordered commits:
 
-1. Share required statement/result handling where useful without changing existing
-   type-block emissions, lexical scope or matcher behavior.
-2. Evaluate annotated scalar blocks with expected widths/kinds, immutable scratch,
-   selected matcher emissions and tail errors, leaving no runtime HIR or storage.
-3. Verify source evidence, nested blocks, budgets and function scopes; update guides/
-   handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: required block results use checked `Value` storage; type-only behavior
+   is unchanged. All 761 library/800 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-required-values-tests.log`. Commit the prerequisite.
+2. Add annotated scalar block dispatch and expected-kind emissions, reusing matcher
+   traversal. Test kinds/widths, nested blocks, tail failures, scope and no runtime storage.
+3. Verify source evidence, budgets, functions/modules and staging; update the supported
+   guide and handoffs, then run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep skipped documented declarations, standalone branch blocks, fallback arms,
-float/text comparisons, whole-module records, conditional exports, required record
-scratch, helpers, packages and borrowed storage separate. Do not push.
+Keep unannotated scalar blocks, skipped documented declarations, standalone branch
+blocks, fallback arms, float/text/record results, whole-module records, conditional
+exports, helpers, packages and borrowed storage separate. Do not push.
