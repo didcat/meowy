@@ -23,26 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Boolean equality/inequality predicates now retain typed operand evidence. Both operands
-are read left-to-right and charged independently, including cached repeated values;
-first errors retain their source spans. Logical short-circuiting, runtime HIR and
-ordinary type/ownership checks remain unchanged.
+Eligible records now retain typed boolean leaves alongside integer leaves. Predicate
+field reads preserve complete ancestor work/errors through aliases, scratch records,
+projections and record-derived exports. Integer access refuses boolean leaves; runtime
+HIR, shape bounds, privacy and ordinary ownership checks remain intact.
 
-Implementation: `41430a1`. Integration checks and the supported guide are complete;
-see [the supported slice](compiler/docs/COMPUTED_TYPES.md#conditional-record-initializers).
+Commits: `bed0554` (typed storage), `631ede0` (boolean leaves), `998f029` (field lookup).
+Integration checks and the supported guide are complete; see
+[the supported slice](compiler/docs/COMPUTED_TYPES.md#typed-boolean-record-fields).
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1499
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1507
   Rust tests, 20 Python tests, fmt, Clippy and build.
-- Five equality groups pass. Debug/release probes cover repeated operand work,
-  logical short circuiting, runtime call order and silent module staging. The updated
-  guide prints `7` in both profiles.
+- Seven boolean-field groups pass. Debug/release integration checks ancestor work,
+  true/false values, record-derived exports and silent staging. Private dependencies
+  and direct scalar boolean-export gates pass. The guide prints `7` in both profiles.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links
-  and catalog/schema checks passed. Log: `/tmp/meowy-boolean-equality-gate.log`.
+  and catalog/schema checks passed. Log: `/tmp/meowy-boolean-fields-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -51,7 +52,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Boolean equality retains ordered operand values, errors and work. |
+| Compiler | Typed boolean record leaves retain ancestor evidence through predicates. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -59,8 +60,8 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Plan typed boolean record leaves with complete ancestor evidence and bounded,
-   typed field lookup. See the [compiler handoff](compiler/STATUS.md#next-steps).
-2. Preserve package, borrowed-export and ownership gates. Keep direct boolean module
-   inputs, required boolean/record scratch, wider comparison types and standalone
-   expression blocks separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.
+1. Plan direct immutable named boolean module inputs with retained source IDs,
+   initializer evidence and forwarding work. See the [compiler handoff](compiler/STATUS.md#next-steps).
+2. Preserve package, borrowed-export and ownership gates. Keep boolean module primaries,
+   whole-module inputs, required boolean/record scratch and wider comparison types
+   separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.

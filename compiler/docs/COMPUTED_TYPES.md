@@ -178,12 +178,12 @@ those evaluator limits; these are not full-language E220 counters.
 
 Selected standalone expression blocks, named/outer emissions, mutation and evaluated
 helper calls remain unavailable inside boolean blocks. Integer and boolean blocks retain independently typed primaries. Boolean scratch inside required
-type blocks and boolean field/export inputs remain separate capabilities.
+type blocks and direct scalar boolean export inputs remain separate capabilities.
 
 ### Record scratch in scalar initializers
 
 Integer and boolean initializers can bind eligible unit-primary records, copy them
-and project nested integer fields. Record scratch reuses the complete
+and project nested integer or boolean fields. Record scratch reuses the complete
 [record-field evidence](#record-field-inputs), including unread siblings and ancestor
 tail work. Its retained work and errors enter the scalar result; its fields never
 replace the scalar primary.
@@ -217,15 +217,16 @@ Eligible named record exports can supply scratch records. Module aliases and inl
 import identities produce no runtime binding and may read eligible named exports.
 Constructing a whole-module record still does not grant whole-record input eligibility.
 Checking/building never run initialization, and ordinary runtime copies remain intact.
-Boolean record fields, non-unit primaries, mutation, references and helper-produced
-records remain outside this input slice.
+Non-unit primaries, mutation, references and helper-produced records remain outside
+this input slice.
 
 ## Record-field inputs
 
-Named immutable record bindings and their aliases can supply integer leaves to copied
-integer bindings, computed scratch and list extents. Every record has a unit primary
-and nonempty immutable fields containing integers or records of the same kind. A shape
-is bounded to 256 total fields across all descendants and 32 record levels; unused
+Named immutable record bindings and their aliases supply integer leaves to integer
+bindings, computed scratch and list extents, and boolean leaves to predicate inputs
+and boolean aliases. Every record has a unit primary and nonempty immutable fields
+containing integers, booleans or records of the same kind. A shape is bounded to 256
+total fields across all descendants and 32 record levels; unused
 local records must also have supported shapes. Checked field-index paths retain exact
 widths independently of source declaration order.
 
@@ -246,9 +247,41 @@ Nested paths and copied subrecords preserve checked type/member identity. Eligib
 may be used inside functions without enabling ordinary runtime captures. Qualified
 type identities such as `core.int32` retain their separate behavior.
 
-Reference projections, inline roots, non-integer leaves, empty records and non-unit
+Reference projections, inline roots, other leaf kinds, empty records and non-unit
 primaries remain outside this record slice. Checking never runs initializers; ordinary
 record reads and runtime initialization remain unchanged.
+
+### Typed boolean record fields
+
+Boolean fields retain their own typed leaf values, including error-only leaves.
+Integer lookup cannot read them as zero or one. Predicate lookup carries the complete
+ancestor error and work through copies, subrecord projections and compositions.
+
+```meowy
+debug : @"debug"
+settings : {
+    -> enabled : true
+    -> limits : { -> width <uint8> : 4 }
+}
+capacity <uint8> : {
+    limits : settings.limits
+    ready : settings.enabled
+    | ready | -> limits.width
+    | !ready | -> 2
+}
+<Items> : { -> <int32[capacity]> }
+items <Items> : [3, 7]
+debug.print(items[2])
+```
+
+This prints `7`. Boolean reads cannot hide a failing or effectful sibling, an unused
+tail, or a mutable descendant. Each read charges retained ancestor work again.
+The existing 256-total-field and 32-record-level bounds include boolean fields.
+
+Named exported records and record-derived composed exports retain boolean leaf paths
+through facades. Direct scalar boolean exports still lack input evidence. Required
+type-block boolean scratch and ordinary runtime captures remain unavailable; boolean
+leaves become predicate inputs without becoming integer extents.
 
 ### Conditional record initializers
 
@@ -306,10 +339,9 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Float/text comparisons, boolean fields in eligible
-records, boolean module exports as predicate inputs, and boolean scratch inside required
-type blocks remain unavailable. Standalone expression statements in selected branches,
-loops and conditional module exports are also separate.
+Float/text comparisons, direct scalar boolean module exports as predicate inputs,
+and boolean scratch inside required type blocks remain unavailable. Standalone expression
+statements in selected branches, loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
 initializer contains branches.
 
@@ -392,8 +424,8 @@ source dependency order, and failures stop dependent and entry execution.
 ### Module composition
 
 A direct top-level composition can forward a file module's eligible integer primary
-and named integer/record inputs. For example, `facade.mwy` can compose the
-`capacity.mwy` above:
+and eligible named inputs, including boolean fields derived from record composition.
+For example, `facade.mwy` can compose the `capacity.mwy` above:
 
 ```meowy
 source : @"./capacity.mwy"

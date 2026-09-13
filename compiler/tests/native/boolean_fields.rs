@@ -76,3 +76,77 @@ pub(crate) fn boolean_fields_keep_integer_and_direct_module_input_gates() {
     assert_eq!(output.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E211\""));
 }
+
+#[test]
+pub(crate) fn boolean_fields_charge_ancestor_work_through_projected_and_composed_exports() {
+    let tail = (1..12)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let nested = format!("->row:{{->part:{{->enabled:true}};->width:4;v0:1;{tail}}}");
+    let composed = format!("row:{{->enabled:true;->width:4;v0:1;{tail}}};->row");
+    for (data, prefix, value) in [
+        (nested.as_str(), "", "m.row.part.enabled"),
+        (nested.as_str(), "part:m.row.part;", "part.enabled"),
+        (composed.as_str(), "", "m.enabled"),
+    ] {
+        let files = [("data.mwy", data), ("facade.mwy", "m:@\"./data.mwy\";->m")];
+        let root = format!("m:@\"./facade.mwy\";{prefix}n:{{unused:{value};->4}};");
+        let separate = (0..20)
+            .map(|id| format!("<T{id}>:{{v:n;-><int32[v]>}};"))
+            .collect::<String>();
+        let repeated = (0..20).map(|id| format!("v{id}:n;")).collect::<String>();
+        for profile in ["debug", "release"] {
+            let output = super::file_modules::case(&format!("{root}{separate}"), &files)
+                .command("check", &["--profile", profile, "--json"]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let output =
+                super::file_modules::case(&format!("{root}<T>:{{{repeated}-><int32>}}"), &files)
+                    .command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"B001\""), "{error}");
+            assert!(error.contains("computed type bootstrap budget"), "{error}");
+        }
+    }
+}
+
+#[test]
+pub(crate) fn boolean_fields_keep_false_values_and_silent_module_staging() {
+    for enabled in [false, true] {
+        let data = format!(
+            "d:@\"debug\";d.print(\"data\");private:{enabled};row:{{->enabled:private;->width<uint8>:4}};->row"
+        );
+        let case = super::file_modules::case(
+            "m:@\"./facade.mwy\";d:@\"debug\";ready:m.enabled;n<uint8>:{|ready|->m.width;|!ready|->2};<T>:{-><int32[n]>};v<T>:[7];d.print(\"entry\");d.print(n);d.print(v[1])",
+            &[
+                ("data.mwy", &data),
+                (
+                    "facade.mwy",
+                    "m:@\"./data.mwy\";d:@\"debug\";->m;d.print(\"facade\")",
+                ),
+            ],
+        );
+        for action in ["check", "build"] {
+            for profile in ["debug", "release"] {
+                let output = case.command(action, &["--profile", profile]);
+                assert!(
+                    output.status.success(),
+                    "{}",
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                assert!(output.stdout.is_empty());
+                assert!(output.stderr.is_empty());
+            }
+        }
+        case.runs(format!("data\nfacade\nentry\n{}\n7\n", if enabled { 4 } else { 2 }).as_bytes());
+        let output =
+            super::file_modules::case("m:@\"./data.mwy\";flag:m.private", &[("data.mwy", &data)])
+                .command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E201\""));
+    }
+}

@@ -49,8 +49,9 @@ scalar bindings, nested blocks, eligible branches and retained tail work/errors.
 Integer blocks also select eligible branches with exact widths, immutable integer/boolean
 scratch and first-error stopping. Both scalar initializer kinds can use bounded record
 scratch with complete ancestor evidence. Scratch values never replace the scalar primary.
-Checking never runs module initialization.
-Boolean fields/exports as predicate inputs, conditional module exports, helper calls,
+Typed boolean record fields retain ancestor evidence through predicates, copies and
+record-derived exports. Checking never runs module initialization.
+Direct scalar boolean exports as inputs, conditional module exports, helper calls,
 non-integer/mutable required scratch and full required evaluation remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
