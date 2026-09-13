@@ -1,3 +1,5 @@
+mod forms;
+
 use crate::ast::{self, ExprKind};
 use crate::check::{
     Checker, Constant, Result, Value,
@@ -12,6 +14,7 @@ impl Checker {
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
+        self.boolean_form(expr, self.type_work.as_ref().unwrap().depth, &mut 0)?;
         let value = self.required_boolean(expr)?;
         if let Some(annotation) = annotation {
             let ty = self.ty(annotation)?;
@@ -67,6 +70,16 @@ impl Checker {
                     self.boolean_field_input(id, &path, &Sources::default())
                 }
                 ExprKind::Group(value) => return self.required_boolean(value),
+                ExprKind::Unary { op, value } if op == "!" => {
+                    return self.required_boolean(value).map(|value| !value);
+                }
+                ExprKind::Binary { op, left, right } if matches!(op.as_str(), "&&" | "||") => {
+                    let left = self.required_boolean(left)?;
+                    if left == (op == "||") {
+                        return Ok(left);
+                    }
+                    return self.required_boolean(right);
+                }
                 _ => return Err(self.type_unavailable(expr)?),
             }
             .ok_or_else(|| {
@@ -162,8 +175,8 @@ mod tests {
                 "flag:true;f<boolean>:(){<T>:{copy:flag;->copy<>};->flag}",
                 "B001",
             ),
-            ("<T>:{flag:!true;-><int32>}", "B001"),
-            ("<T>:{flag:true&&false;-><int32>}", "B001"),
+            ("<T>:{flag:-true;-><int32>}", "B001"),
+            ("<T>:{flag:true==false;-><int32>}", "B001"),
             ("<T>:{flag:true;|flag|-><int32>}", "B001"),
         ] {
             let error = crate::compile(source).unwrap_err().remove(0);
@@ -226,5 +239,65 @@ mod tests {
             assert!(!checker.required);
             assert!(!checker.required_boolean(&literal).unwrap());
         }
+    }
+    pub(crate) fn expression(source: &str) -> Expr {
+        let block = crate::parser::parse(&format!("value:{source}")).unwrap();
+        let crate::ast::StmtKind::Bind { value, .. } = &block.stmts[0].kind else {
+            panic!("binding")
+        };
+        value.clone()
+    }
+
+    #[test]
+    pub(crate) fn required_boolean_logic_keeps_truth_values_and_no_runtime_storage() {
+        for a in [false, true] {
+            for b in [false, true] {
+                for (source, value) in [
+                    (format!("!{a}"), !a),
+                    (format!("{a}&&{b}"), a && b),
+                    (format!("{a}||{b}"), a || b),
+                    (format!("!({a}&&(!{b}||{a}))"), !(a && (!b || a))),
+                ] {
+                    let mut checker = Checker::new();
+                    checker.type_work = Some(Work::default());
+                    assert!(
+                        matches!(checker.type_scalar(&expression(&source), None).unwrap(),
+                            Value::Static { value: Constant::Bool(found), ty: Type::Bool } if found == value
+                        ),
+                        "{source}"
+                    );
+                }
+            }
+        }
+        let program =
+            crate::compile("<T>:{true:false;flag:!true;copy:flag&&true;->copy<>}").unwrap();
+        assert!(program.body.stmts.is_empty());
+        assert!(program.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn required_boolean_logic_skips_retained_errors_and_source_work() {
+        for (source, value) in [("false&&flag", false), ("true||flag", true)] {
+            let mut checker = checker();
+            let input = checker.bool_inputs.values_mut().last().unwrap();
+            input.error = Some(Checker::error(
+                "E107",
+                "retained error",
+                Span::new(100, 104),
+            ));
+            input.value = None;
+            input.work = MAX_WORK;
+            checker.type_work = Some(Work::default());
+            assert!(
+                matches!(checker.type_scalar(&expression(source), None).unwrap(),
+                    Value::Static { value: Constant::Bool(found), .. } if found == value
+                )
+            );
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 2);
+        }
+        let source = "row:{->n<uint8>:255};flag:row.n+1==0;<T>:{copy:true&&flag;->copy<>}";
+        let error = crate::compile(source).unwrap_err().remove(0);
+        assert_eq!(error.code, "E107");
+        assert_eq!(error.span.start, source.find("row.n+1").unwrap());
     }
 }

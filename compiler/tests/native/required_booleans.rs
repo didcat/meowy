@@ -55,7 +55,7 @@ pub(crate) fn required_booleans_preserve_kind_privacy_identity_and_capture_gates
         ("<T>:{flag:m.flag;->flag}", "E211"),
         ("f<boolean>:(){<T>:{flag:m.flag;->flag<>};->m.flag}", "B001"),
         ("f<boolean>:(){<T>:{flag<boolean>:m;->flag<>};->!m}", "B001"),
-        ("<T>:{flag:m.flag;other:!flag;-><int32>}", "B001"),
+        ("<T>:{flag:m.flag;other:-flag;-><int32>}", "B001"),
     ] {
         let source = format!("m:@\"./data.mwy\";{body}");
         let output = case(

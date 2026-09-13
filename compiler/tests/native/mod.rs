@@ -83,6 +83,7 @@ pub(crate) mod reference_slots;
 pub(crate) mod reference_temporaries;
 pub(crate) mod reference_unions;
 pub(crate) mod references;
+pub(crate) mod required_boolean_ops;
 pub(crate) mod required_booleans;
 pub(crate) mod restart_references;
 pub(crate) mod scalars;

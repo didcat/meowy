@@ -59,7 +59,7 @@ pub(crate) fn boolean_primaries_keep_kind_scope_and_record_boundaries() {
             "E211",
         ),
         ("<T>:{flag<boolean>:=m;-><int32>}", "->true", "B001"),
-        ("<T>:{flag:m&&true;-><int32>}", "->true", "B001"),
+        ("<T>:{flag:m<true;-><int32>}", "->true", "B001"),
         ("<T>:{-><int32[m]>}", "->true", "B001"),
         ("f<boolean>:(){->!m}", "->true", "B001"),
         ("copy:!!m;f<boolean>:(){->copy}", "->true", "B001"),

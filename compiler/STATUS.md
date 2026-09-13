@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Required boolean scratch and focused integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Required boolean operators are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -209,20 +209,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Required boolean scratch is complete across `1e997b0` (paths/work), `ab37924` (locals),
-`a9bd0dc` (fields) and `27bca1f` (primaries). The following integration/documentation
-slice passes the final compiler gate and guide execution.
+Inspection: required booleans currently read atoms directly without a full operand
+check. Before short-circuit evaluation, check the supported operand tree for names,
+field paths and boolean types, without loading initializer evidence. Bound that check
+with existing depth/work limits and frontend flow accounting; it does not charge
+skipped evaluation work. Direct calls/blocks remain unsupported even when skipped.
 
-Next, plan boolean operators within required type blocks. The reader in
-`src/check/type_values/booleans.rs` currently accepts names, fields and groups only.
-Keep integer extent validation in `scalars.rs` separate. Record the ordered plan first:
+Dependency-ordered commits:
 
-1. Add checked negation and short-circuit logical operators, preserving lexical name
-   resolution, operand typing, skipped work/effects and root work/depth accounting.
-2. Add boolean equality/inequality with left-to-right reads and first-error retention;
-   verify repeated cached reads, scope restrictions and unchanged integer behavior.
-3. Add focused native staging/error/budget probes, update both handoffs and guides,
-   and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: bounded operand checking plus `!`, `&&` and `||` pass 750 library/786
+   native tests, fmt and Clippy. Log: `/tmp/meowy-required-logic-tests.log`. Truth
+   values, no runtime storage, skipped errors/work, name/type checks and scope pass.
+   Commit the logical-operator slice.
+2. Add boolean `==`/`!=` with left-to-right reads, first-error retention and record
+   identity gates. Keep numeric comparisons separate and validate focused regressions.
+3. Verify repeated/skipped work, original dependency errors and silent initialization;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
 Keep integer/float/text comparisons inside required blocks, conditional type selection,
 inline boolean blocks, whole-module record inputs, conditional exports, required record

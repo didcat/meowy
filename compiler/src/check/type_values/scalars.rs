@@ -84,9 +84,14 @@ impl Checker {
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
         let saved = std::mem::replace(&mut self.required, true);
-        let boolean = self
-            .hint(expr)
-            .is_some_and(|ty| Self::primary_type(&ty) == Type::Bool);
+        let mut form = expr;
+        while let ExprKind::Group(value) = &form.kind {
+            form = value;
+        }
+        let boolean = matches!(&form.kind, ExprKind::Unary { op, .. } if op == "!")
+            || self
+                .hint(expr)
+                .is_some_and(|ty| Self::primary_type(&ty) == Type::Bool);
         self.required = saved;
         if boolean {
             return self.type_boolean(expr, annotation);
