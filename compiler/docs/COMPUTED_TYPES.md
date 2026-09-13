@@ -238,9 +238,53 @@ and final record retain the existing materialization budgets. Reusing a required
 alias does not reevaluate its original initializer; independent roots reset budgets.
 
 Composition creates no runtime locals and works in function-scoped required evaluation.
-Checking/building preserve silent staging and normal module initialization. Inline primary
-block expressions, annotated primary emissions, nonrecord primaries and whole-module
-namespaces remain unsupported; use eligible named record exports instead.
+Checking/building preserve silent staging and normal module initialization. Annotated
+primary emissions, nonrecord primaries and whole-module namespaces remain unsupported;
+use eligible named record exports instead.
+
+### Inline partial composition
+
+An inline block can supply part of an annotated required record. Its fields inherit
+the surrounding expected types, including integer widths:
+
+```meowy
+<Settings> : <{ enabled <boolean>; width <uint8> }>
+<Items> : {
+    settings <Settings> : {
+        -> {
+            base <uint8> : 2
+            -> width : base * 2
+        }
+        -> enabled : true
+    }
+    | settings.enabled | -> <int32[settings.width]>
+    | !settings.enabled | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. The inline source contains only its emitted fields; `enabled` is
+required when the outer constructor completes. Nested named record fields must still
+initialize their complete expected shape. Unknown fields, incompatible annotations,
+range errors and duplicate fields retain the same checks as direct named emissions.
+
+Groups and nested composition are supported, including an inline source that composes
+an existing record. Each block has its own primary slot; two selected compositions in
+one block still report E205. Local bindings and emitted field names are visible inside
+their source scope, but forwarding does not declare them in the receiving scope.
+
+Selected matcher bodies contribute their emitted fields. Skipped sources and field
+initializers do not run or charge evaluation work; existing structural and skipped
+documentation gates still apply. A source with no selected named fields remains gated,
+even if the outer record could otherwise be completed.
+
+Source construction and forwarding share the enclosing evaluation budget. Temporary
+records charge only their actual field shape, while the completed outer record charges
+its full shape. Nested sources share depth limits; partial construction cannot bypass
+the expected record's field-count or shape limits. General unannotated required record
+bindings remain separate.
 
 ## Required record scratch
 

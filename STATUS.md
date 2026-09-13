@@ -23,27 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Annotated required constructors now compose existing eligible records through their
-primary slot. Fields map by name with exact type and initialization checks; source
-evidence is charged once before forwarding. Forwarded names stay out of local scope,
-and a second selected composition fails even when its fields are disjoint.
+Annotated required constructors now compose inline partial records through `-> { ... }`.
+Fields inherit expected types; temporary sources contain only emitted fields while the
+completed outer record still requires its full shape. Scope, primary collisions, source
+errors and evaluation budgets remain checked without runtime storage.
 
-Commits: `4824d57` (slot helpers), `3db3cf1` (composition), `3ae320e` (integration).
-The [supported guide](compiler/docs/COMPUTED_TYPES.md#primary-record-composition)
-covers partial sources, primary rules, source work and lexical scope.
+Commits: `d8b5a36` (scoped output), `df90790` (composition), `17de2db` (integration).
+The [supported guide](compiler/docs/COMPUTED_TYPES.md#inline-partial-composition)
+covers expected fields, nested sources, scope and remaining boundaries.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1595
-  Rust tests (777 library/818 native), 20 Python tests, fmt, Clippy and build.
-- Four composition checker tests and four native groups pass, covering nested/partial
-  records, collisions, scope, source work, alias reuse, errors, documentation and startup.
-- The guide prints `7` in debug/release. Conformance: 10 passed, 13 unsupported,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1605
+  Rust tests (784 library/821 native), 20 Python tests, fmt, Clippy and build.
+- Five inline checker tests and three native groups cover partial/nested records,
+  collisions, scope, budgets, source errors, skipped paths, documentation and startup.
+- Inline guide prints `7` in debug/release. Conformance: 10 passed, 13 unsupported,
   0 failed in both profiles. Local links and catalog/schema checks pass.
-  Log: `/tmp/meowy-required-composition-gate.log`.
+  Log: `/tmp/meowy-inline-composition-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -52,7 +52,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Required record composition preserves field checks, source work and lexical scope. |
+| Compiler | Inline partial required composition preserves expected fields, scope and budgets. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -60,9 +60,8 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Plan inline partial record sources for required composition, preserving expected field
-   types, final initialization, primary rules and lexical scope. See the
+1. Investigate inferred immutable record bindings in required scopes, preserving
+   type-producing block behavior and existing scalar gates. See the
    [compiler handoff](compiler/STATUS.md#next-steps).
-2. Keep general unannotated constructors, whole-module records, skipped documented
-   declarations, fallback arms and helpers separate. Commit validated slices using
-   [AGENTS.md](AGENTS.md); do not push.
+2. Keep whole-module records, skipped documented declarations, fallback arms and helpers
+   separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.

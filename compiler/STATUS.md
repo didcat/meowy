@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Inline partial required composition is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Inline partial required composition and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,27 +21,31 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Annotated required constructors now compose eligible existing records through
-`-> source`. `records/compose.rs` performs checked name/path lookup, materializes
-complete source evidence once, maps fields by name and reuses checked slot insertion.
-Integer/boolean leaves and nested record shapes retain their exact types.
+Annotated required constructors now compose inline partial records with `-> { ... }`.
+`required_output` owns scoped evaluation without requiring completion;
+`records/partial.rs` keeps only emitted expected slots, reindexes their paths and
+materializes the temporary source before reusing existing composition forwarding.
 
-Composition initializes the unit primary once. A second selected composition reports
-E205 even for disjoint source fields. Explicit/composed field collisions remain E205,
-unknown/incompatible fields E207 and fields missing at completion E204. Partial sources
-can be completed by named emissions; matcher arms may select one source.
+Inline fields inherit exact expected types and widths. Missing outer fields remain
+E204, primary/field collisions E205, unknown/incompatible fields E207 and integer
+range errors E216. Nested named record fields require full initialization. Groups,
+nested composition and existing sources inside inline blocks are supported.
 
-Forwarded fields do not introduce local names. Explicit named emissions retain their
-existing declaration behavior. Composition creates no runtime locals and works inside
-nested record constructors and function-scoped required blocks without granting captures.
-Source failures retain original spans before field forwarding, including ancestor errors.
+Only selected fields contribute to the partial shape. Skipped expressions retain their
+existing work/diagnostic rules; skipped documented declarations remain gated. Empty
+sources remain B001, including a source whose named emissions are all skipped.
+Source-local bindings and explicit emitted names remain private to their lexical scope;
+forwarding introduces no local bindings and creates no runtime storage.
 
-Each forwarded field adds one evaluation step; nested copies charge their type shape.
-Original source reads retain transitive work, while materialized required aliases reuse
-their values. Independent roots reset budgets. Documentation preserves completed record
-types, and check/build remain silent while normal module startup effects are retained.
-Inline primary blocks, annotated/nonrecord primary emissions and whole-module namespaces
-remain gated.
+Each temporary source materializes its actual type shape; forwarding and final record
+completion retain their existing charges. All nested sources share work/depth/node
+budgets, and partial shapes cannot bypass limits on the full expected record. Source
+failures retain original dependency spans before completion, including unused tails.
+Function-scoped evaluation does not grant captures; check/build remain silent and
+normal module startup effects are retained.
+
+General unannotated required record bindings, annotated/nonrecord primary emissions,
+empty sources and whole-module namespaces remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -129,20 +133,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `4824d57`: shared slot lookup/insertion; 773 library/814 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-record-slots-tests.log`.
-- `3db3cf1`: required composition; 775 library/815 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-composition-tests.log`.
-- `3ae320e`: integration; 777 library/818 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-composition-integration.log`.
-- Four composition checker tests and four native groups cover partial/full/nested
-  forwarding, primary/field collisions, lexical scope, exact source/forwarding costs,
-  alias reuse, original source errors, privacy, documentation and module/function staging.
-- The guide prints `7` in debug/release:
-  `/tmp/meowy-required-composition-doc-ys__xwlu/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 777
-  library/818 native Rust tests (1595 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-required-composition-gate.log`.
+- `d8b5a36`: scoped output/completion separation; 779 library/818 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-required-output-scope-tests.log`.
+- `df90790`: inline partial composition; 781 library/819 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-inline-composition-tests.log`.
+- `17de2db`: integration; 784 library/821 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-inline-composition-integration.log`.
+- Five inline checker tests and three native groups cover partial/nested sources,
+  exact fields, scope, collisions, empty sources, node/work/depth/shape limits,
+  skipped expressions/documentation, dependency spans, function scopes and staging.
+- Inline guide prints `7` in debug/release:
+  `/tmp/meowy-inline-composition-doc-x3wrto8l/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 784
+  library/821 native Rust tests (1605 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-inline-composition-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -214,31 +218,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: ordinary `composed` checks inline blocks against the expected record with
-partial completion. Required traversal already owns scoped field slots. Reuse that
-output, compact only emitted fields into a temporary record, then reuse existing
-composition forwarding. Nested named record fields must still be complete; forwarded
-names stay source-local. Empty/nonrecord sources remain gated.
+Inline partial composition is complete across `d8b5a36` (scoped output), `df90790`
+(composition) and `17de2db` (integration). The guide and full compiler gate pass.
 
-Dependency-ordered commit plan:
+Next, investigate unannotated immutable record bindings in required scopes. Trace
+`type_binding` and ordinary inferred record emissions before choosing the supported
+classification rule. Preserve existing unannotated type-producing blocks and scalar
+gates; do not classify by identifier spelling. Record dependency-ordered commits:
 
-1. Complete: extracted scoped `required_output` traversal from completion in
-   `type_values.rs`. Scope restoration and completion checks pass 779 library/818
-   native tests, fmt and Clippy. Log: `/tmp/meowy-required-output-scope-tests.log`.
-   Committed as `d8b5a36`.
-2. Complete: `records/partial.rs` materializes only emitted slots and reindexes
-   their paths; block/group sources reuse composition forwarding. Scope, expected
-   widths, nested completeness, empty-source gates and capacity execution pass
-   781 library/819 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-inline-composition-tests.log`. Committed as `df90790`.
-3. Complete: nested/conditional sources, exact node/work bounds, 63/64 nested-source
-   depth, expected 256/257-field limits, source spans, skipped documentation gates,
-   function scopes and silent module staging pass 784 library/821 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-inline-composition-integration.log`.
-4. Split review: integration tests plus guide/handoff replacement approach 400 changed
-   lines. Commit the integration evidence separately, then update guides/handoffs
-   and run `python3 -B tools/verify.py --compiler` across the complete series.
+1. Establish bounded result classification and inferred field types using the existing
+   checker contracts; distinguish record results from type-valued block results.
+2. Add inferred required record construction with scoped field declarations, exact
+   leaf kinds and initialization/collision checks; keep focused tests with behavior.
+3. Verify nested/conditional records, budgets, source errors and documentation/staging;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
 
-Keep general unannotated constructors, empty/nonrecord primaries, skipped documented
-declarations, fallback arms, mutable/float/text/reference fields, whole-module records,
-helpers and borrowed storage separate. Do not push.
+Keep empty/nonrecord primaries, skipped documented declarations, fallback arms,
+mutable/float/text/reference fields, whole-module records, helpers and borrowed
+storage separate. Do not push.

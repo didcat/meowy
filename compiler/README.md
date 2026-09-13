@@ -66,10 +66,11 @@ Required record scratch materializes eligible immutable records and subrecords, 
 leaf kinds and ancestor evidence without runtime locals. Copies retain bounded type
 shapes; later field reads reuse the materialized value. Explicit record annotations
 also support required construction through typed named fields, nested records and
-matcher-selected emissions. Existing eligible records can be composed through the
-primary slot, preserving field checks and source work without introducing forwarded
-local names. Float/text comparisons, unannotated construction, inline composition,
-mutable scratch, whole-module records and helpers remain separate.
+matcher-selected emissions. Existing eligible records and inline partial blocks can be
+composed through the primary slot, preserving expected field types, source work and
+lexical scope. The completed outer record still requires every field. Float/text
+comparisons, general unannotated construction, empty composition sources, mutable
+scratch, whole-module records and helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the
