@@ -233,9 +233,11 @@ Dependency-ordered commit plan:
 2. Complete: named-field inference retains sorted slots, scoped declarations, exact
    field widths and type-producing blocks. 786 library/822 native tests, fmt and
    Clippy pass. Log: `/tmp/meowy-inferred-fields.log`. Inferred composition remains
-   gated in this slice.
-3. Integrate composition into inferred records through existing forwarding, with tests
-   for nested records, collisions and source-local scope.
+   gated in this slice. Committed as `9062e5a`.
+3. Complete: existing/inline/exported record sources use shared forwarding into
+   inferred sorted slots. Nested records, primary/field collisions, mixed type/data
+   rejection and source-local scope pass 787 library/823 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-inferred-composition.log`.
 4. Verify conditional results, skipped work, errors, bounds and documentation/staging;
    update guides/handoffs in a separate slice if needed. Run the final compiler gate.
 

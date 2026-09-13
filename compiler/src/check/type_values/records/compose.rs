@@ -30,6 +30,22 @@ impl Checker {
             }
             self.type_record(expr, None)?
         };
+        self.forward_required_record(value, span, output)
+    }
+
+    pub(crate) fn forward_required_record(
+        &mut self,
+        value: Value,
+        span: Span,
+        output: &mut Output,
+    ) -> Result<()> {
+        if matches!(output.value, Some(Value::Type(_))) {
+            return Err(Self::error(
+                "E211",
+                "a compile-time type cannot be a record primary",
+                span,
+            ));
+        }
         let Value::Record { ty, input } = value else {
             unreachable!()
         };
@@ -48,17 +64,22 @@ impl Checker {
             unreachable!()
         };
         for (index, field) in fields.into_iter().enumerate() {
-            let (slot, expected) = self.required_record_slot(&field.name, span, output)?;
-            if expected != field.ty {
-                return Err(Self::error(
-                    "E207",
-                    format!(
-                        "composed field `{}` has type {:?}, expected {expected:?}",
-                        field.name, field.ty
-                    ),
-                    span,
-                ));
-            }
+            let slot = if output.infer {
+                self.inferred_slot(&field.name, field.ty.clone(), span, output)?
+            } else {
+                let (slot, expected) = self.required_record_slot(&field.name, span, output)?;
+                if expected != field.ty {
+                    return Err(Self::error(
+                        "E207",
+                        format!(
+                            "composed field `{}` has type {:?}, expected {expected:?}",
+                            field.name, field.ty
+                        ),
+                        span,
+                    ));
+                }
+                slot
+            };
             self.type_work.as_mut().unwrap().spend(span)?;
             let missing = || Self::error("E211", "composed field has no checked value", span);
             let value = match &field.ty {

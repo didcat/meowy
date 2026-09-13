@@ -546,3 +546,19 @@ pub(crate) fn inferred_required_records_keep_nested_values_and_selected_shapes()
         case(&source, &[]).runs(b"7\n");
     }
 }
+
+#[test]
+pub(crate) fn inferred_required_composition_reuses_exported_and_inline_records() {
+    case("m:@\"./data.mwy\";<T>:{r:{->({->m.row});->active:true};copy:r;-><int32[copy.part.width]>};v<T>:[3,7];d:@\"debug\";d.print(v[2])", &[("data.mwy", "->row:{->z:9;->part:{->width<uint8>:4}}")]).runs(b"7\n");
+    for body in ["->m", "->m.private"] {
+        let output = case(
+            &format!("m:@\"./data.mwy\";<T>:{{r:{{{body}}};-><int32>}}"),
+            &[("data.mwy", "private:{->n:4};->row:{->n:4}")],
+        )
+        .command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        let error = String::from_utf8_lossy(&output.stderr);
+        let code = if body == "->m" { "E211" } else { "E201" };
+        assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
+    }
+}

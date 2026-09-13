@@ -60,13 +60,9 @@ impl Checker {
                 mutable: false,
                 value,
             } => {
-                if output.record() {
-                    if output.infer {
-                        return Err(Diagnostic::unsupported(
-                            "inferred required composition",
-                            stmt.span,
-                        ));
-                    }
+                if output.infer {
+                    self.inferred_primary(value, stmt.span, output)?;
+                } else if output.record() {
                     self.compose_required_record(value, stmt.span, output)?;
                 } else {
                     let value = match output.ty.as_ref() {

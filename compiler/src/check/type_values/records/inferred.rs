@@ -45,6 +45,45 @@ impl Checker {
         Ok(value)
     }
 
+    pub(crate) fn inferred_primary(
+        &mut self,
+        expr: &Expr,
+        span: Span,
+        output: &mut Output,
+    ) -> Result<()> {
+        let mut form = expr;
+        while let ExprKind::Group(value) = &form.kind {
+            form = value;
+        }
+        let value = if matches!(form.kind, ExprKind::Block(_)) {
+            self.inferred_block(expr)?
+        } else if matches!(form.kind, ExprKind::Name(_) | ExprKind::Field { .. })
+            && matches!(self.required_hint(expr), Some(Type::Record { .. }))
+        {
+            self.type_record(expr, None)?
+        } else {
+            Value::Type(self.type_value(expr)?)
+        };
+        if matches!(value, Value::Record { .. }) {
+            return self.forward_required_record(value, span, output);
+        }
+        if output.record() {
+            return Err(Self::error(
+                "E211",
+                "a compile-time type cannot be a record primary",
+                span,
+            ));
+        }
+        if output.value.replace(value).is_some() {
+            return Err(Self::error(
+                "E205",
+                "computed type primary may be emitted twice",
+                span,
+            ));
+        }
+        Ok(())
+    }
+
     pub(crate) fn inferred_field(
         &mut self,
         name: &str,
@@ -157,5 +196,27 @@ mod tests {
             crate::compile("<T>:{r:{->x:4};n:x;-><int32>}").unwrap_err()[0].code,
             "E201"
         );
+    }
+    #[test]
+    pub(crate) fn inferred_composition_maps_nested_sources_without_forwarded_bindings() {
+        let source = "<T>:{base:{->z<uint8>:4;->part:{->width:z}};r:{->base;->a:false};copy:{->({->r})};|!copy.a|-><int32[copy.part.width]>;|copy.a|-><string>}";
+        let program = crate::compile(source).unwrap();
+        assert!(program.locals.is_empty());
+        assert!(program.body.stmts.is_empty());
+        crate::compile(&format!("{source};v<T>:[1,2,3,4]")).unwrap();
+        for (body, code) in [
+            ("->base;->z:4", "E205"),
+            ("->z:4;->base", "E205"),
+            ("->base;->{->a:true}", "E205"),
+            ("->base;->a:z>0", "E201"),
+            ("->base;-><int32>", "E211"),
+            ("-><int32>;->base", "E211"),
+            ("->{->a:4;unused:1/0}", "E107"),
+            ("->missing", "E201"),
+        ] {
+            let source = format!("<T>:{{base:{{->z<uint8>:4}};r:{{{body}}};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, code, "{body}: {error:?}");
+        }
     }
 }
