@@ -23,27 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Annotated required constructors now compose inline partial records through `-> { ... }`.
-Fields inherit expected types; temporary sources contain only emitted fields while the
-completed outer record still requires its full shape. Scope, primary collisions, source
-errors and evaluation budgets remain checked without runtime storage.
+Unannotated required bindings now infer immutable records from named fields and
+composition. Type-only block bindings still produce types. Field widths, canonical
+paths, source evidence, scope and evaluation budgets remain checked without runtime
+storage; skipped required paths do not contribute fields.
 
-Commits: `d8b5a36` (scoped output), `df90790` (composition), `17de2db` (integration).
-The [supported guide](compiler/docs/COMPUTED_TYPES.md#inline-partial-composition)
-covers expected fields, nested sources, scope and remaining boundaries.
+Commits: `fb8912f` (shared evaluation), `9062e5a` (fields), `c8d2a84` (composition),
+`4b3efa9` (integration). The [supported guide](compiler/docs/COMPUTED_TYPES.md#inferred-record-construction)
+covers inferred shapes, type values, scopes and remaining boundaries.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1605
-  Rust tests (784 library/821 native), 20 Python tests, fmt, Clippy and build.
-- Five inline checker tests and three native groups cover partial/nested records,
-  collisions, scope, budgets, source errors, skipped paths, documentation and startup.
-- Inline guide prints `7` in debug/release. Conformance: 10 passed, 13 unsupported,
-  0 failed in both profiles. Local links and catalog/schema checks pass.
-  Log: `/tmp/meowy-inline-composition-gate.log`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1615
+  Rust tests (790 library/825 native), 20 Python tests, fmt, Clippy and build.
+- Six inferred-record checker tests and four native groups cover widths, scopes,
+  sorted/nested paths, type results, composition, bounds, source errors and staging.
+- Inferred-record guide prints `7` in debug/release. Conformance: 10 passed,
+  13 unsupported, 0 failed in both profiles. Local links and catalog/schema checks pass.
+  Log: `/tmp/meowy-inferred-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -52,7 +52,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Inline partial required composition preserves expected fields, scope and budgets. |
+| Compiler | Inferred required records preserve field kinds, type results, scope and budgets. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -60,8 +60,8 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Investigate inferred immutable record bindings in required scopes, preserving
-   type-producing block behavior and existing scalar gates. See the
+1. Investigate inferred integer/boolean block bindings in required scopes, preserving
+   type-valued blocks and scalar/record separation. See the
    [compiler handoff](compiler/STATUS.md#next-steps).
 2. Keep whole-module records, skipped documented declarations, fallback arms and helpers
    separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.

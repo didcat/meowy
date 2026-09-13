@@ -68,9 +68,12 @@ shapes; later field reads reuse the materialized value. Explicit record annotati
 also support required construction through typed named fields, nested records and
 matcher-selected emissions. Existing eligible records and inline partial blocks can be
 composed through the primary slot, preserving expected field types, source work and
-lexical scope. The completed outer record still requires every field. Float/text
-comparisons, general unannotated construction, empty composition sources, mutable
-scratch, whole-module records and helpers remain separate.
+lexical scope. The completed outer record still requires every field. Unannotated
+required bindings infer immutable records from named fields and composition, while
+type-only blocks retain type-valued results. Integer widths, nested shapes, sorted field
+paths and scope remain checked. Float/text comparisons, unannotated scalar blocks,
+empty composition sources, mutable scratch, whole-module records and helpers remain
+separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

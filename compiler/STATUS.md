@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Inferred required record construction is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Inferred required record construction and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,31 +21,31 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Annotated required constructors now compose inline partial records with `-> { ... }`.
-`required_output` owns scoped evaluation without requiring completion;
-`records/partial.rs` keeps only emitted expected slots, reindexes their paths and
-materializes the temporary source before reusing existing composition forwarding.
+Unannotated immutable required bindings now infer record results from named fields and
+eligible record composition. `records/inferred.rs` reuses scoped `Output` evaluation;
+type-only block bindings retain `Value::Type`, and type aliases keep their type-only
+entry point. Classification follows checked values and emitted fields, not spelling.
 
-Inline fields inherit exact expected types and widths. Missing outer fields remain
-E204, primary/field collisions E205, unknown/incompatible fields E207 and integer
-range errors E216. Nested named record fields require full initialization. Groups,
-nested composition and existing sources inside inline blocks are supported.
+`inferred_slot` adds fields in canonical name order and shifts existing value slots,
+preserving nested leaf paths and exact integer/boolean kinds. Explicit field annotations
+reuse expected-field initialization. Named emissions declare scoped locals after their
+initializers; forwarded fields never introduce local bindings. Inferred values create
+no runtime locals or HIR statements.
 
-Only selected fields contribute to the partial shape. Skipped expressions retain their
-existing work/diagnostic rules; skipped documented declarations remain gated. Empty
-sources remain B001, including a source whose named emissions are all skipped.
-Source-local bindings and explicit emitted names remain private to their lexical scope;
-forwarding introduces no local bindings and creates no runtime storage.
+Composition from local/exported records or nested inline blocks uses shared forwarding.
+Primary/field collisions remain E205. Type-valued primaries mixed with record fields
+and type-valued fields report E211. Only selected required paths contribute inferred
+fields; skipped values remain unevaluated and omitted fields remain absent. Existing
+skipped-documentation and structural gates are retained.
 
-Each temporary source materializes its actual type shape; forwarding and final record
-completion retain their existing charges. All nested sources share work/depth/node
-budgets, and partial shapes cannot bypass limits on the full expected record. Source
-failures retain original dependency spans before completion, including unused tails.
-Function-scoped evaluation does not grant captures; check/build remain silent and
-normal module startup effects are retained.
+Shape checks preserve 256 fields and 32 nested records; all constructors share required
+work/depth/node budgets. Original source work and ancestor error spans are retained,
+materialized aliases reuse values, and independent roots reset budgets. Check/build
+remain silent, normal module startup is retained, and function-scoped required reads
+do not grant captures.
 
-General unannotated required record bindings, annotated/nonrecord primary emissions,
-empty sources and whole-module namespaces remain separate.
+Scalar/empty/nonrecord primaries, mutable or unsupported field kinds, whole-module
+namespaces, fallback arms and helpers remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -133,20 +133,22 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `d8b5a36`: scoped output/completion separation; 779 library/818 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-required-output-scope-tests.log`.
-- `df90790`: inline partial composition; 781 library/819 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-inline-composition-tests.log`.
-- `17de2db`: integration; 784 library/821 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-inline-composition-integration.log`.
-- Five inline checker tests and three native groups cover partial/nested sources,
-  exact fields, scope, collisions, empty sources, node/work/depth/shape limits,
-  skipped expressions/documentation, dependency spans, function scopes and staging.
-- Inline guide prints `7` in debug/release:
-  `/tmp/meowy-inline-composition-doc-x3wrto8l/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 784
-  library/821 native Rust tests (1605 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-inline-composition-gate.log`.
+- `fb8912f`: shared output/field evaluation; 784 library/821 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-inferred-prerequisites.log`.
+- `9062e5a`: inferred named fields; 786 library/822 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-inferred-fields.log`.
+- `c8d2a84`: inferred composition; 787 library/823 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-inferred-composition.log`.
+- `4b3efa9`: integration; 790 library/825 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-inferred-integration.log`.
+- Six inferred-record checker tests and four native groups cover widths, sorted/nested
+  paths, type results, scopes, composition, collisions, shape/work bounds, source costs,
+  alias reuse, skipped paths, original spans, documentation and module/function staging.
+- Inferred-record guide prints `7` in debug/release:
+  `/tmp/meowy-inferred-record-doc-v07rghub/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 790
+  library/825 native Rust tests (1615 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-inferred-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -218,34 +220,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: required unannotated bindings currently route every block to `type_value`.
-Infer the result while executing the existing scoped traversal: named fields create a
-record, while a type-only primary preserves a type value. Never infer from identifier
-spelling or evaluate initializers twice. Only selected required paths contribute fields;
-integer/boolean/nested records remain the supported immutable shape. Type aliases keep
-their type-only entry point and unannotated scalar primaries remain gated.
+Inferred required records are implemented across `fb8912f` (shared evaluation),
+`9062e5a` (named fields), `c8d2a84` (composition) and `4b3efa9` (integration).
+The guide and full compiler gate pass.
 
-Dependency-ordered commit plan:
+Next, investigate inferred integer/boolean block bindings in required scopes. Trace
+`inferred_primary`, `type_scalar` and existing annotated `scalar_block` behavior before
+extending result classification. Preserve type-valued blocks, exact widths, scalar/record
+separation and the one-primary rule. Record dependency-ordered commits:
 
-1. Complete: scoped evaluation accepts supplied `Output` state and expected-field
-   initialization is shared. All 784 library/821 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-inferred-prerequisites.log`. Committed as `fb8912f`.
-2. Complete: named-field inference retains sorted slots, scoped declarations, exact
-   field widths and type-producing blocks. 786 library/822 native tests, fmt and
-   Clippy pass. Log: `/tmp/meowy-inferred-fields.log`. Inferred composition remains
-   gated in this slice. Committed as `9062e5a`.
-3. Complete: existing/inline/exported record sources use shared forwarding into
-   inferred sorted slots. Nested records, primary/field collisions, mixed type/data
-   rejection and source-local scope pass 787 library/823 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-inferred-composition.log`. Committed as `c8d2a84`.
-4. Complete: work/node bounds, sorted leaf paths, 256/257 fields, 32/33 nested record
-   levels, skipped declarations, source charging/alias reuse, original spans, docs,
-   module startup and function scopes pass 790 library/825 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-inferred-integration.log`.
-5. Split review: integration evidence plus guide/handoff replacement would exceed
-   400 lines. Commit integration first, then update guides/handoffs, run the guide
-   example and `python3 -B tools/verify.py --compiler`, and commit documentation.
+1. Share scalar result inference with existing checked integer/boolean materialization,
+   preserving source eligibility, contextual widths and error spans.
+2. Support unannotated scalar block bindings and nested primary blocks with focused
+   accepted/rejected execution tests. Keep records with non-unit primaries separate.
+3. Verify conditional kinds, shared budgets, skipped work, type identities and staging;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
 
-Keep scalar/empty/nonrecord primaries, skipped documented declarations, fallback arms,
-mutable/float/text/reference fields, whole-module records, helpers and borrowed storage
-separate. Commit validated slices; do not push.
+Keep empty results, mixed scalar-primary records, skipped documented declarations,
+fallback arms, mutable/float/text/reference fields, whole-module records, helpers and
+borrowed storage separate. Do not push.

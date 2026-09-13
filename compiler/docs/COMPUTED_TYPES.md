@@ -14,10 +14,9 @@ settings : { -> limits : { -> base <uint8> : { offset <uint8> : 1; -> offset + 1
 values <Counts> : [3, 7]
 ```
 
-Local immutable, unannotated bindings hold supported type values. Immutable integer
-bindings may have an explicit integer annotation, such as `base <uint8> : 2`.
-Local type aliases
-such as `<Count> : <int32>` use the separate type namespace. Nested blocks may produce
+Local immutable, unannotated bindings hold supported type values and inferred records.
+Immutable integer bindings may have an explicit integer annotation, such as
+`base <uint8> : 2`. Local type aliases such as `<Count> : <int32>` use the separate type namespace. Nested blocks may produce
 types for these bindings or for computed annotations. Parenthesized expressions and
 supported type queries retain their existing behavior. Symbolic type members such as
 `core.int32`, foundation type aliases and imported types preserve their identities.
@@ -121,10 +120,11 @@ silently converted. A missing scalar primary reports E204, a second selected pri
 E205, an incompatible scalar kind/width E207, literal overflow E216 and invalid
 arithmetic E107. Boolean results retain true/false values without integer encoding.
 
-Unannotated block bindings remain type-producing. Nested scalar bindings need their
-own annotations, while directly emitted nested blocks inherit the containing scalar
-result kind. Grouping retains the same behavior. Local type aliases and immutable
-integer/boolean scratch remain available inside scalar blocks.
+Unannotated blocks that emit only a type retain type-valued results; named fields
+can instead construct an inferred record, as described below. Nested scalar bindings
+still need their own annotations, while directly emitted nested blocks inherit the
+containing scalar result kind. Grouping retains the same behavior. Local type aliases
+and immutable integer/boolean scratch remain available inside scalar blocks.
 
 Scalar and type blocks share lexical scopes, matcher selection and root budgets.
 An emission does not exit the block: selected tail statements still contribute work
@@ -283,8 +283,52 @@ even if the outer record could otherwise be completed.
 Source construction and forwarding share the enclosing evaluation budget. Temporary
 records charge only their actual field shape, while the completed outer record charges
 its full shape. Nested sources share depth limits; partial construction cannot bypass
-the expected record's field-count or shape limits. General unannotated required record
-bindings remain separate.
+the expected record's field-count or shape limits.
+
+## Inferred record construction
+
+An unannotated immutable binding inside required evaluation can construct a record
+from named emissions or compose an eligible record source:
+
+```meowy
+<Items> : {
+    kind : { -> <uint8> }
+    base : { -> width <(kind)> : 4 }
+    settings : {
+        -> base
+        -> enabled : true
+    }
+    | settings.enabled | -> <int32[settings.width]>
+    | !settings.enabled | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. `kind` remains a type value, used through the computed annotation
+`<(kind)>`. `base` and `settings` are records with implicit unit primaries. Type aliases
+such as `<Items>` retain their type-only result contract. Mixing a type-valued primary
+with record fields reports E211; a type value cannot become a record field either.
+
+Fields keep their inferred integer widths, boolean kinds and nested record shapes.
+A field annotation supplies the expected type, including for nested scalar/record
+blocks. Without one, integer literals use their ordinary default type; inference does
+not widen already typed values. Field order does not change record identity or values.
+Explicit named emissions declare local names after initialization; composed fields
+retain their source names without declaring them in the receiving scope.
+
+Only selected required matcher paths contribute fields. Skipped initializers and nested
+sources are not evaluated. A field present only in a skipped branch is absent from
+this required result, and reading it reports E201. Duplicate selected fields or primary
+compositions report E205. Empty results, scalar primaries, mutable fields, unsupported
+field kinds, fallback arms and skipped documented declarations remain gated.
+
+Nested records, grouped blocks, existing record sources and inline composition share
+the same scope and evaluation budgets. Materialized aliases reuse checked values while
+new reads of an original source retain its complete work and errors. The existing
+256-field/32-level shape limits still apply. No runtime storage is introduced, and
+checking/building preserve module startup behavior and function capture restrictions.
 
 ## Required record scratch
 
