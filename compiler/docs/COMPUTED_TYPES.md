@@ -1,7 +1,7 @@
 # Computed type blocks
 
-The bootstrap supports straight-line blocks in required type expressions, using
-existing type construction and lexical scopes from the checker:
+The bootstrap supports required type blocks with immutable bindings and bounded
+boolean matchers, using existing type construction and lexical scopes:
 
 ```meowy
 settings : { -> limits : { -> base <uint8> : { offset <uint8> : 1; -> offset + 1 } } }
@@ -40,6 +40,58 @@ Known `debug.print` and `debug.panic` calls in evaluated positions report E219,
 including calls through resolved aliases and calls after a primary emission.
 The checker does not execute them. This is a narrow effect check; source helper
 purity and transitive call analysis are not implemented by this slice.
+
+## Conditional type selection
+
+Independent boolean matchers can select a type inside a required block:
+
+```meowy
+capacity <uint8> : 4
+<Items> : {
+    | capacity >= 4 | -> {
+        <Element> : <{ n <int32> }>
+        -> <Element[capacity]>
+    }
+    | capacity < 4 | -> <int32[2]>
+}
+items <Items> : [{ -> n : 3 }, { -> n : 7 }]
+debug : @"debug"
+debug.print(items[2].n)
+```
+
+This prints `7`. Only the selected type is constructed; different branches need not
+produce the same type or a union. Reached conditions must be boolean (E215 otherwise)
+and use the supported required boolean/integer operators and eligible inputs.
+Every matcher is independent: an emission does not suppress later conditions or tail
+statements. Two selected primary emissions report E205; no selected type emission
+reports E211. The first evaluated condition/body failure retains its original span.
+
+Each selected matcher body gets a lexical scope. Its declarations cannot escape or
+replace outer bindings. Use `| condition | -> { ... }` to emit a scoped nested type
+construction, as above. A standalone `| condition | { ... }` is not a transparent
+parent emission and remains unsupported in this slice.
+
+Skipped bodies are checked for supported statement forms, but their initializer and
+type expressions are not resolved or evaluated. Consequently, a skipped type name
+need not resolve, and a skipped nested matcher condition is not read. Supported body
+forms are immutable bindings, local type aliases, primary type emissions and nested
+matchers. Assignment, mutable bindings, standalone expression statements, labeled/named/
+annotated emissions and fallback arms remain gated, including in skipped bodies.
+
+Reached conditions retain their work even when false. Selected statements and nested
+type construction share the enclosing work/depth/node budgets; skipped bodies add no
+evaluation work. Structural matcher checks have bounded depth/work and consume frontend
+checking work. Independent roots reset their evaluation budgets. These bootstrap
+limits report B001, not full-language E220.
+
+Selected declarations retain checked documentation and derived signatures. Documented
+declarations in skipped bodies remain unsupported with B001 for an unanalyzed declaration;
+the compiler does not claim their signatures or links were checked.
+
+Selected types can be exported and used through module facades or in function-local
+required blocks. Runtime capture rules, file graph discovery and eager module
+initialization remain unchanged. Checking/building never run application initializers,
+and a skipped required branch does not remove a runtime startup failure.
 
 ## Integer calculations
 
@@ -157,7 +209,7 @@ and consumes frontend checking work. Evaluation retains the shared required-root
 work/depth bounds; skipped evaluation is not charged. Independent roots reset their
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
 Direct calls, inline boolean blocks and unsupported operators remain unavailable even
-in skipped syntax. Conditional type selection and required record scratch remain separate.
+in skipped expression syntax. Required record scratch remains separate.
 
 ### Integer comparisons
 
@@ -196,8 +248,7 @@ read. Each source read retains its original error span and transitive work.
 Mixed-module primaries work in comparisons and arithmetic; two complete records still
 cannot be compared in required blocks. Required reads inside functions do not grant
 runtime captures. Checking/building remain silent and preserve module initialization.
-Float/text comparisons, direct calls, inline blocks and conditional type selection
-remain separate capabilities.
+Float/text comparisons, direct calls and inline scalar blocks remain separate capabilities.
 
 ## Block initializers
 
@@ -716,7 +767,7 @@ Exhaustion reports B001. Nested blocks share the counters; independent roots res
 them. Existing parser, type/layout and proof limits still apply. These limits qualify
 bootstrap support only; they do not implement the language's logical E220 counters.
 
-Scalar scratch beyond integers/booleans, mutable scratch, branches/restarts, labeled blocks,
+Scalar scratch beyond integers/booleans, mutable scratch, restarts, labeled blocks,
 annotated or named emissions, general expression statements and source/helper calls
 remain unsupported in type blocks. `core.Type` parameter/result annotations, generic
 specialization, type equality, full purity analysis, intrinsic descriptions and the

@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-12. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-13. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -23,28 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Required type blocks now support integer equality and ordering, including arithmetic,
-field and module-primary operands. Exact widths and literal ranges are checked even
-when comparisons are skipped; evaluated reads preserve work and source failures.
-Runtime capture restrictions and normal initialization remain intact.
+Required type blocks now select scalar, record and list types with boolean matchers.
+Selected branches share the primary result and keep local scope; skipped expressions
+are not evaluated. Condition work, tail checks and original source errors are retained.
+Module initialization and runtime capture restrictions remain intact.
 
-Commits: `0a0e600` (shared integer materialization), `e290793` (operand checks),
-`917dd51` (evaluation). Integration tests and the
-[supported guide](compiler/docs/COMPUTED_TYPES.md#integer-comparisons) cover budgets,
-skipped arithmetic, dependency errors and silent staging.
+Commits: `12f4799` (statement state), `b180fcc` (selection), `161489e` (integration).
+The [supported guide](compiler/docs/COMPUTED_TYPES.md#conditional-type-selection)
+covers nested construction, skipped-branch rules and documentation boundaries.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1551
-  Rust tests (756 library/795 native), 20 Python tests, fmt, Clippy and build.
-- Focused comparison integration passes: two checker tests and five native groups
-  cover exact widths, arithmetic, source work, operand error order and initialization.
-- The guide prints `true` in debug/release. Conformance: 10 passed, 13 unsupported,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1561
+  Rust tests (761 library/800 native), 20 Python tests, fmt, Clippy and build.
+- Five checker tests and five native groups pass, covering selection, scope, budgets,
+  skipped expressions, dependency errors, exported types and silent initialization.
+- The guide prints `7` in debug/release. Conformance: 10 passed, 13 unsupported,
   0 failed in both profiles. Local links and catalog/schema checks pass.
-  Log: `/tmp/meowy-required-comparisons-gate.log`.
+  Log: `/tmp/meowy-conditional-types-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -53,7 +52,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Required integer comparisons retain exact widths and evaluated source work. |
+| Compiler | Boolean matchers select required types with scoped bodies and shared budgets. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -61,9 +60,9 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Plan conditional type selection with checked boolean predicates, scoped branches,
-   primary-result rules and shared budgets. See the
+1. Plan explicitly annotated integer/boolean blocks in required type bindings,
+   preserving result kinds, lexical scope, tail checks and shared budgets. See the
    [compiler handoff](compiler/STATUS.md#next-steps).
-2. Keep float/text comparisons, inline boolean blocks, whole-module records, conditional
-   module exports, required record scratch and helpers separate. Commit validated slices
-   using [AGENTS.md](AGENTS.md); do not push.
+2. Keep skipped documented declarations, standalone branch blocks, fallback arms,
+   float/text comparisons, required record scratch and helpers separate. Commit
+   validated slices using [AGENTS.md](AGENTS.md); do not push.

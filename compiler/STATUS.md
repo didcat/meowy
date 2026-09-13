@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Conditional type selection is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Conditional type selection and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,24 +21,28 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required booleans support integer `==`, `!=`, `<`, `>`, `<=` and `>=`, including
-supported arithmetic, locals, fields and module primaries. `type_values/integers.rs`
-resolves operand contexts with required lexical hints and existing integer literal
-rules. Named widths remain exact; signed minima and literal ranges are checked before
-evaluation. Boolean/whole-record distinctions remain intact; float/text comparisons stay gated.
+Required type blocks now select types with independent boolean matchers.
+`type_values/statements.rs` shares a primary-result accumulator across selected
+statements; `matches.rs` validates reached conditions, selects bodies and restores
+branch scope/depth after success or failure. Emissions do not exit the block. Two
+selected primaries remain E205; missing selected type results remain E211.
 
-`required_integer` uses existing integer input validation and `integer_result`
-materialization. Operands are evaluated left-to-right; a failing left operand stops
-the right read. Evaluated sources retain transitive work and original failure spans.
-Short-circuited comparisons perform no arithmetic or initializer reads, while operand
-names/types/literal ranges are still checked. Integer scratch and extent paths are preserved.
+Reached conditions use existing typed boolean/integer evaluation and require boolean
+results (E215). Selected bodies may bind immutable scratch, declare local types, emit
+a type or nest matchers. Use `| condition | -> { ... }` for nested type construction;
+standalone branch blocks do not emit into their parent and remain gated.
 
-Required `!`, `&&`, `||` and boolean equality keep their existing operand checks and
-source evidence. `form_work` shares bounded checking across boolean/integer syntax,
-separate from evaluation visits. Static scratch leaves no runtime storage. Required
-reads inside functions do not grant captures; module startup still runs normally,
-including failures hidden from a skipped required read. Conditional type selection
-and inline blocks remain separate.
+Skipped bodies retain structural statement checks but their initializer/type expressions
+and nested conditions are not resolved/evaluated. They add no evaluation work or type
+nodes. Reached false conditions still retain work. Structural checks and selected
+traversal are bounded; independent required roots reset their budgets. Selected
+signatures/links are checked, while documented skipped declarations remain B001 as
+unanalyzed declarations. No runtime HIR/storage is added by type selection.
+
+Integer/boolean operators retain exact widths, literal checks, transitive source work
+and original error spans. Function-scoped required reads do not grant runtime captures.
+File discovery and eager module initialization are unchanged; skipped required reads
+still preserve runtime failures. Inline scalar blocks remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -126,21 +130,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `0a0e600`: shared integer materialization/hints; 753 library/790 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-integer-result-tests.log`.
-- `e290793`: integer operand checking; 754 library/790 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-integer-forms-tests.log`.
-- `917dd51`: comparison evaluation; 755 library/792 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-required-comparisons-tests.log`.
-- Focused comparison integration passes: two checker tests and five native groups
-  cover values, erased scratch, arithmetic/field/module inputs, exact widths, skipped
-  work, repeated reads, independent roots, operand error order and dependency byte spans.
-  Check/build remain silent; diamonds initialize once and skipped reads retain runtime failures.
-- The guide prints `true` in debug/release:
-  `/tmp/meowy-required-comparisons-doc-rju0518k/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 756
-  library/795 native Rust tests (1551 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-required-comparisons-gate.log`.
+- `12f4799`: shared type statement traversal/state; 756 library/795 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-type-statements-tests.log`.
+- `b180fcc`: matcher selection; 759 library/797 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-conditional-types-tests.log`.
+- `161489e`: integration boundaries; 761 library/800 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-conditional-types-integration-all.log`.
+- Five checker tests and five native groups cover selected scalar/record/list types,
+  nested construction, scope recovery, skipped expressions, condition/body/tail errors,
+  root/depth limits, module exports, documentation gates and silent initialization.
+- The guide prints `7` in debug/release:
+  `/tmp/meowy-conditional-types-doc-2arqt85p/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 761
+  library/800 native Rust tests (1561 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-conditional-types-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -204,7 +207,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, conditional type selection, helper
+Whole-record module inputs, conditional module exports, inline required scalar blocks, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -212,34 +215,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Contract inspection: matchers are independent; emissions do not exit a block and nested
-unnamed emissions stay inside that block. Support direct conditional type emissions
-and `| condition | -> { ... }` for scoped nested construction. Standalone branch blocks
-remain gated rather than becoming transparent parent emissions.
+Conditional type selection is complete across `12f4799` (statement state), `b180fcc`
+(selection) and `161489e` (integration). The guide and full compiler gate pass.
 
-Skipped bodies are structurally checked for supported statement forms; their initializer
-and type expressions are not resolved/evaluated. This bounded selection follows the
-required-evaluation rule that unevaluated branches contribute no evaluation work. Reached
-conditions use existing typed boolean checking/evidence; skipped nested conditions are
-not evaluated. Document this boundary and test it explicitly.
+Next, plan explicitly annotated integer/boolean blocks in required type bindings.
+Inspect `type_binding`, `statements.rs`, `matches.rs` and the scalar readers. Keep
+unannotated blocks type-producing; use the annotation to choose the scalar result kind.
+Record dependency-ordered commits before implementation:
 
-Dependency-ordered commits:
+1. Share required statement/result handling where useful without changing existing
+   type-block emissions, lexical scope or matcher behavior.
+2. Evaluate annotated scalar blocks with expected widths/kinds, immutable scratch,
+   selected matcher emissions and tail errors, leaving no runtime HIR or storage.
+3. Verify source evidence, nested blocks, budgets and function scopes; update guides/
+   handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-1. Complete: statement traversal is extracted and shares a primary-result accumulator.
-   All 756 library/795 native tests, fmt and Clippy pass unchanged. Log:
-   `/tmp/meowy-type-statements-tests.log`. Committed as `12f4799`.
-2. Complete: matcher selection passes 759 library/797 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-conditional-types-tests.log`. Different selected types, nested
-   construction, skipped expressions, primary/scope errors and recovery pass.
-   Committed as `b180fcc`.
-3. Five checker tests and five native groups pass: module/type export integration,
-   work/depth, source spans, startup and documentation. Skipped documented declarations
-   retain the existing unanalyzed-declaration gate. All 761 library/800 native tests,
-   fmt and Clippy pass. Log: `/tmp/meowy-conditional-types-integration-all.log`.
-4. Split review: integration tests plus guides/handoffs would exceed 400 changed lines.
-   Commit integration evidence separately, then publish the supported guide and final
-   handoffs. Run `python3 -B tools/verify.py --compiler` across the complete series.
-
-Keep float/text comparisons, inline boolean blocks, standalone branch blocks, fallback
-arms, whole-module records, conditional module exports, required record scratch, helpers,
-packages and borrowed storage separate. Do not push.
+Keep skipped documented declarations, standalone branch blocks, fallback arms,
+float/text comparisons, whole-module records, conditional exports, required record
+scratch, helpers, packages and borrowed storage separate. Do not push.

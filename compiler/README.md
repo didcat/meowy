@@ -58,8 +58,10 @@ fields and module primaries, with retained errors/work and no runtime storage.
 Required booleans support negation, short-circuit logic and equality, with checked
 operand types and work charged only for evaluated inputs. Required integer comparisons
 preserve exact widths, literal ranges, arithmetic failures and skipped input work.
-Float/text comparisons, conditional type selection, conditional module exports,
-mutable/record scratch, helpers and full required evaluation remain separate.
+Independent boolean matchers select required types with scoped bodies, shared budgets
+and no runtime storage. Skipped bodies retain structural checks without evaluating
+initializers or constructing types. Float/text comparisons, conditional module exports,
+mutable/record scratch, inline scalar blocks and helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the
