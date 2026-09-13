@@ -213,11 +213,25 @@ impl Checker {
         block: &ast::Block,
         expected: Option<&Type>,
     ) -> Result<Output> {
+        self.scoped_output(
+            block,
+            Output {
+                ty: expected.cloned(),
+                ..Output::default()
+            },
+        )
+    }
+
+    pub(crate) fn scoped_output(
+        &mut self,
+        block: &ast::Block,
+        mut output: Output,
+    ) -> Result<Output> {
         if block.label.is_some() {
             return Err(Diagnostic::unsupported(
-                if expected.is_some_and(|ty| matches!(ty, Type::Record { .. })) {
+                if output.record() {
                     "labeled required record blocks"
-                } else if expected.is_some() {
+                } else if output.ty.is_some() {
                     "labeled required scalar blocks"
                 } else {
                     "labeled computed type blocks"
@@ -226,10 +240,6 @@ impl Checker {
             ));
         }
         self.scopes.push(Scope::default());
-        let mut output = Output {
-            ty: expected.cloned(),
-            ..Output::default()
-        };
         let result = self.type_statements(&block.stmts, &mut output);
         self.scopes.pop();
         result?;

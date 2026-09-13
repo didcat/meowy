@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Inline partial required composition and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Inferred required record construction is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -218,21 +218,26 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inline partial composition is complete across `d8b5a36` (scoped output), `df90790`
-(composition) and `17de2db` (integration). The guide and full compiler gate pass.
+Inspection: required unannotated bindings currently route every block to `type_value`.
+Infer the result while executing the existing scoped traversal: named fields create a
+record, while a type-only primary preserves a type value. Never infer from identifier
+spelling or evaluate initializers twice. Only selected required paths contribute fields;
+integer/boolean/nested records remain the supported immutable shape. Type aliases keep
+their type-only entry point and unannotated scalar primaries remain gated.
 
-Next, investigate unannotated immutable record bindings in required scopes. Trace
-`type_binding` and ordinary inferred record emissions before choosing the supported
-classification rule. Preserve existing unannotated type-producing blocks and scalar
-gates; do not classify by identifier spelling. Record dependency-ordered commits:
+Dependency-ordered commit plan:
 
-1. Establish bounded result classification and inferred field types using the existing
-   checker contracts; distinguish record results from type-valued block results.
-2. Add inferred required record construction with scoped field declarations, exact
-   leaf kinds and initialization/collision checks; keep focused tests with behavior.
-3. Verify nested/conditional records, budgets, source errors and documentation/staging;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
+1. Complete: scoped evaluation accepts supplied `Output` state and expected-field
+   initialization is shared. All 784 library/821 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-inferred-prerequisites.log`.
+2. Add unannotated binding result inference and named record fields, preserving sorted
+   field paths, exact widths, local declarations, shape/work bounds and type results.
+   Include focused checker/native tests; keep inferred composition gated in this slice.
+3. Integrate composition into inferred records through existing forwarding, with tests
+   for nested records, collisions and source-local scope.
+4. Verify conditional results, skipped work, errors, bounds and documentation/staging;
+   update guides/handoffs in a separate slice if needed. Run the final compiler gate.
 
-Keep empty/nonrecord primaries, skipped documented declarations, fallback arms,
-mutable/float/text/reference fields, whole-module records, helpers and borrowed
-storage separate. Do not push.
+Keep scalar/empty/nonrecord primaries, skipped documented declarations, fallback arms,
+mutable/float/text/reference fields, whole-module records, helpers and borrowed storage
+separate. Commit validated slices; do not push.

@@ -44,13 +44,18 @@ impl Checker {
                 span,
             ));
         }
-        let value = if matches!(ty, Type::Record { .. }) {
+        let value = self.required_field_value(expr, &ty)?;
+        self.insert_required_field(name, index, value, true, span, output)
+    }
+
+    pub(crate) fn required_field_value(&mut self, expr: &ast::Expr, ty: &Type) -> Result<Value> {
+        if matches!(ty, Type::Record { .. }) {
             let mut form = expr;
             while let ExprKind::Group(value) = &form.kind {
                 form = value;
             }
             let value = if matches!(form.kind, ExprKind::Block(_)) {
-                self.record_block(expr, &ty)?
+                self.record_block(expr, ty)?
             } else {
                 self.type_record(expr, None)?
             };
@@ -61,11 +66,10 @@ impl Checker {
                     expr.span,
                 ));
             }
-            value
+            Ok(value)
         } else {
-            self.scalar_emission(expr, &ty)?
-        };
-        self.insert_required_field(name, index, value, true, span, output)
+            self.scalar_emission(expr, ty)
+        }
     }
 
     pub(crate) fn required_record_slot(
