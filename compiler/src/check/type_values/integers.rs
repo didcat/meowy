@@ -16,37 +16,6 @@ impl Checker {
         Ok(value)
     }
 
-    pub(crate) fn integer_comparison_form(
-        &mut self,
-        op: &str,
-        left: &ast::Expr,
-        right: &ast::Expr,
-        depth: usize,
-        count: &mut usize,
-    ) -> Result<Option<Type>> {
-        let a = self.required_hint(left);
-        let b = self.required_hint(right);
-        if matches!(op, "==" | "!=")
-            && matches!(
-                (&a, &b),
-                (Some(Type::Record { .. }), Some(Type::Record { .. }))
-            )
-        {
-            return Ok(None);
-        }
-        let context = a.or(b).map(|ty| Self::primary_type(&ty));
-        if context
-            .as_ref()
-            .is_some_and(|ty| !matches!(ty, Type::Int { .. }))
-        {
-            return Ok(None);
-        }
-        let a = self.integer_form(left, context.as_ref(), depth, count)?;
-        let b = self.integer_form(right, Some(&a), depth, count)?;
-        Self::integer_operands(op, &a, &b, ast::Span::new(left.span.start, right.span.end))?;
-        Ok(Some(a))
-    }
-
     pub(crate) fn integer_operands(
         op: &str,
         left: &Type,

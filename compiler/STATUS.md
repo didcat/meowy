@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required integer block operands and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required integer block comparisons are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -221,22 +221,25 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Integer block operands are complete across `b646355` (operator helpers), `918eced`
-(operands) and `593f163` (integration). The guide and full compiler gate pass.
+Inspection: boolean validation currently resolves every integer operand type before
+short-circuit evaluation. Block results may require executing local declarations to
+know their width. Add a bounded structural form for block-containing comparisons:
+check supported block statements without resolving their initializers; retain checks
+on known outer operands and defer unresolved block/literal widths until evaluation.
+Selected operands materialize once left-to-right using existing integer arithmetic.
+Block-free comparisons retain their existing validation and work accounting.
 
-Next, investigate integer block operands in required comparisons. Trace
-`integer_comparison_form`, `integer_form`, `boolean_form` and `required_integer`.
-Structural checking must not execute a skipped block merely to discover its width;
-selected comparisons must reuse materialized operands without repeating block work.
-Record dependency-ordered commits after identifying that boundary:
+Dependency-ordered commit plan:
 
-1. Separate bounded comparison operand validation from required operand execution,
-   preserving exact kinds/widths and existing source/error checks.
-2. Support selected integer block comparisons with focused accepted/rejected tests;
-   preserve left/right order and boolean short-circuit behavior.
-3. Verify skipped blocks, budgets, source spans, documentation and module staging;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
+1. Complete: integer comparison validation/execution lives in `comparisons.rs`;
+   diagnostics, boolean fallback and evaluation costs are preserved. 800 library/832
+   native tests, fmt and Clippy pass. Log: `/tmp/meowy-comparison-refactor.log`.
+2. Add bounded deferred operand forms and selected integer block comparisons, keeping
+   short-circuited blocks unevaluated. Include focused acceptance/rejection tests.
+3. Verify exact work, deferred widths, statement gates, source errors, skipped paths,
+   documentation and module/function staging.
+4. Update guides/handoffs, run the guide in both profiles and run the full compiler gate.
 
-Keep boolean-result block operands, empty/null results, scalar-primary records,
+Keep selected boolean-result block operands, empty/null results, scalar-primary records,
 skipped documented declarations, fallback arms, mutable/float/text/reference fields,
-whole-module records, helpers and borrowed storage separate. Do not push.
+whole-module records, helpers and borrowed storage separate. Commit slices; do not push.
