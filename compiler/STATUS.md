@@ -235,11 +235,14 @@ Dependency-ordered commit plan:
 2. Complete: inferred primaries reuse `type_binding` for checked scalar/type/record
    results. Scalar-primary records remain gated. Widths, nested results, duplicates,
    scope, type identities and native capacities pass 792 library/826 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-inferred-scalars.log`.
-3. Verify conditional kinds, exact widths, source work/errors, skipped paths, budgets,
-   type identities and module/function staging with focused integration tests.
-4. Update guides/handoffs, execute the guide in both profiles, and run
-   `python3 -B tools/verify.py --compiler` across the series.
+   fmt and Clippy. Log: `/tmp/meowy-inferred-scalars.log`. Committed as `d40aaf3`.
+3. Complete: selected widths, work/node bounds, 63/64 nested scalar primaries, type
+   identities, source work/alias reuse, skipped paths, original spans and staging pass
+   795 library/829 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-inferred-scalars-integration.log`.
+4. Split review: integration plus guide/handoff changes would exceed 400 lines.
+   Commit integration separately, then update guides/handoffs, execute the guide in
+   both profiles and run `python3 -B tools/verify.py --compiler` across the series.
 
 Keep empty results, mixed scalar-primary records, skipped documented declarations,
 fallback arms, mutable/float/text/reference fields, whole-module records, helpers and

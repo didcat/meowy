@@ -118,4 +118,137 @@ mod tests {
             "E211"
         );
     }
+    #[test]
+    pub(crate) fn inferred_scalars_share_work_nodes_and_restore_failed_scopes() {
+        use super::*;
+        use crate::ast::StmtKind;
+        use crate::check::Constant;
+        use crate::check::type_values::{MAX_NODES, MAX_WORK, Work};
+        use crate::hir::Type;
+        let parsed = crate::parser::parse("n:{<Byte>:<uint8>;base<Byte>:4;->base}").unwrap();
+        let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(Work::default());
+        let scopes = checker.scopes.len();
+        assert!(matches!(
+            checker.inferred_block(value).unwrap(),
+            Value::Static {
+                value: Constant::Int(4),
+                ty: Type::Int {
+                    bits: 8,
+                    signed: false
+                },
+            }
+        ));
+        let work = checker.type_work.as_ref().unwrap();
+        let cost = work.visits;
+        let nodes = work.nodes;
+        for (visits, nodes, accepted) in [
+            (MAX_WORK - cost, MAX_NODES - nodes, true),
+            (MAX_WORK - cost + 1, 0, false),
+            (0, MAX_NODES - nodes + 1, false),
+        ] {
+            checker.type_work = Some(Work {
+                visits,
+                nodes,
+                depth: 0,
+            });
+            let result = checker.inferred_block(value);
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert_eq!(
+                checker
+                    .required_value("base", value.span)
+                    .err()
+                    .unwrap()
+                    .code,
+                "E201"
+            );
+        }
+        assert!(checker.locals.is_empty());
+    }
+
+    #[test]
+    pub(crate) fn inferred_scalars_bound_nested_primaries_and_keep_type_roots_separate() {
+        use super::*;
+        use crate::ast::{Block, Stmt, StmtKind};
+        use crate::check::type_values::Work;
+        for leaf in ["4", "true"] {
+            for depth in [63, 64] {
+                let span = Span::new(0, 1);
+                let mut expr = Expr {
+                    span,
+                    kind: if leaf == "4" {
+                        ExprKind::Int(leaf.into())
+                    } else {
+                        ExprKind::Name(leaf.into())
+                    },
+                };
+                for _ in 0..depth {
+                    expr = Expr {
+                        span,
+                        kind: ExprKind::Block(Block {
+                            span,
+                            label: None,
+                            stmts: vec![Stmt {
+                                span,
+                                kind: StmtKind::Emit {
+                                    label: None,
+                                    name: None,
+                                    ty: None,
+                                    mutable: false,
+                                    value: expr,
+                                },
+                            }],
+                        }),
+                    };
+                }
+                let mut checker = Checker::new();
+                checker.type_work = Some(Work::default());
+                let scopes = checker.scopes.len();
+                let result = checker.inferred_block(&expr);
+                if depth == 63 {
+                    assert!(result.is_ok(), "{:?}", result.err());
+                } else {
+                    assert_eq!(result.err().unwrap().code, "B001");
+                }
+                assert_eq!(checker.scopes.len(), scopes);
+                assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+                assert!(checker.locals.is_empty());
+            }
+        }
+        for (source, code) in [("<T>:{->4}", "B001"), ("<T>:{->true}", "E211")] {
+            assert_eq!(crate::compile(source).unwrap_err()[0].code, code);
+        }
+    }
+
+    #[test]
+    pub(crate) fn inferred_scalars_document_selected_kinds_and_checked_widths() {
+        for (flag, signature) in [("true", "uint8"), ("false", "int32")] {
+            let source = format!(
+                "#| Items. |#<T>:{{flag:{{->{flag}}};#| Count. |#n:{{|flag|->{{base<uint8>:4;->base}};|!flag|->2}};-><int32[n]>}}"
+            );
+            let (_, model) = crate::documentation::checked(&source, true).unwrap();
+            let model = model.unwrap();
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == "n")
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+        let source = "<T>:{n:{|false|->{#| Skipped. |#base:4;->base};->4};-><int32[n]>}";
+        assert_eq!(
+            crate::documentation::checked(source, true).unwrap_err()[0].code,
+            "B001"
+        );
+    }
 }

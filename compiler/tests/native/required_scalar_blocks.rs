@@ -177,3 +177,116 @@ pub(crate) fn inferred_scalar_blocks_execute_selected_integer_and_boolean_result
         assert!(error.contains("\"code\":\"E103\""), "{error}");
     }
 }
+
+#[test]
+pub(crate) fn inferred_scalar_blocks_preserve_source_work_alias_reuse_and_skips() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data = format!("private:{{->4;v0:1;{tail}}};->width:private;->flag:private>0");
+    let files = [("data.mwy", data.as_str())];
+    for value in ["m.width", "m.flag"] {
+        let repeated = (0..20)
+            .map(|id| format!("n{id}:{{->{value}}};"))
+            .collect::<String>();
+        let aliases = (0..20)
+            .map(|id| format!("n{id}:{{->copy}};"))
+            .collect::<String>();
+        let skipped = (0..20)
+            .map(|id| format!("n{id}:{{|false|->{value};|false|->missing();->4}};"))
+            .collect::<String>();
+        let separate = (0..20)
+            .map(|id| format!("<T{id}>:{{n:{{->{value}}};-><int32>}};"))
+            .collect::<String>();
+        for profile in ["debug", "release"] {
+            for (body, accepted) in [
+                (format!("<T>:{{{repeated}-><int32>}}"), false),
+                (
+                    format!("<T>:{{copy:{{->{value}}};{aliases}-><int32>}}"),
+                    true,
+                ),
+                (format!("<T>:{{{skipped}-><int32>}}"), true),
+                (separate.clone(), true),
+            ] {
+                let output = case(&format!("m:@\"./data.mwy\";{body}"), &files)
+                    .command("check", &["--profile", profile, "--json"]);
+                let error = String::from_utf8_lossy(&output.stderr);
+                if accepted {
+                    assert!(output.status.success(), "{error}");
+                } else {
+                    assert_eq!(output.status.code(), Some(1));
+                    assert!(error.contains("\"code\":\"B001\""), "{error}");
+                    assert!(error.contains("computed type bootstrap budget"), "{error}");
+                }
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn inferred_scalar_blocks_keep_dependency_spans_and_runtime_capture_gates() {
+    let data =
+        "#é🙂#\nd:@\"debug\";d.print(\"init\");raw:{->n<uint8>:255};->bad:raw.n+1;->flag:bad>0";
+    for value in ["m.bad", "m.flag"] {
+        let case = case(
+            &format!("m:@\"./data.mwy\";<T>:{{n:{{->{value}}};-><int32>}}"),
+            &[("data.mwy", data)],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+        }
+    }
+    for source in [
+        "f<int32>:(v<uint8>){<T>:{n:{->v};-><int32[n]>};->1}",
+        "v:=true;<T>:{n:{->v};->n<>}",
+    ] {
+        let output = case(source, &[]).command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E211\""), "{error}");
+    }
+}
+
+#[test]
+pub(crate) fn inferred_scalar_blocks_preserve_module_staging_and_function_reads() {
+    let case = case(
+        "m:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");v<m.Items>:[3,7];d.print(v[2])",
+        &[
+            (
+                "data.mwy",
+                "d:@\"debug\";d.print(\"data\");->width<uint8>:4;->flag:true",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";d.print(\"types\");-><Items>:{n:{->m.width};flag:{->m.flag};|flag|-><int32[n]>;|!flag|-><string>}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        let output = case.command(action, &[]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty());
+    }
+    case.runs(b"data\ntypes\nentry\n7\n");
+    super::file_modules::case("m:@\"./data.mwy\";f<int32>:(){<T>:{n:{->m.width};flag:{->m.flag};|flag|-><int32[n]>;|!flag|-><string>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())",&[("data.mwy","->width<uint8>:4;->flag:true")]).runs(b"9\n");
+}
