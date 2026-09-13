@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required integer block comparisons are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required integer block comparisons and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,33 +21,30 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required integer arithmetic now evaluates block operands once in source order.
-`type_values/operands.rs` detects block-containing arithmetic with bounded structural
-work, materializes scoped integer HIR, and reuses ordinary `unary_value`/`binary_values`
-completion. Block-free arithmetic retains its previous input/checking path.
+Required integer comparisons now accept inline blocks and arithmetic containing them.
+`comparisons.rs` owns integer comparison validation/execution; `comparisons/blocks.rs`
+validates deferred operand forms without evaluating block-local initializers. Existing
+block-free comparisons retain their original eager form checks and evaluation costs.
 
-Bindings, scalar emissions and list extents inside active required roots use this path.
-Blocks receive the ordinary expected integer context when available, otherwise infer
-their result. Typed values retain exact widths. Groups, unary negation/complement and
-all eight binary integer arithmetic/bitwise operators are supported. Boolean/type/record
-block results remain rejected; boolean/comparison operand blocks stay gated.
+Known outer names/types and supported block statement forms are checked before logical
+short-circuiting. Unresolved block-local values, annotations and dependent literal widths
+wait until the comparison runs. Selected operands use `integer_arithmetic` once, left
+to right, preserving exact widths and source errors. All six integer relations work.
 
-Selected blocks include their local declarations, matcher conditions and tails. Scope
-ends before the next operand; left failures stop right evaluation. Original arithmetic
-and ancestor source spans are preserved. Operator validation is shared with runtime
-checking, including overflow, division and unsigned-negation rules.
+Short-circuited blocks charge no evaluation visits or constructed type nodes. Structural
+validation remains bounded by the existing form count/depth limits. Selected blocks
+retain scope, work/depth/node budgets, tail errors and original dependency spans.
+Known incompatible widths remain E213; evaluated block width mismatches remain E207
+and deferred literal range errors remain E216.
 
-Detection does not execute blocks or charge evaluation visits. Operand traversal,
-source reads and block execution share work/depth/node budgets. Materialized aliases
-reuse values; independent roots reset budgets. Failed evaluation restores scope,
-required mode and depth. No runtime locals or HIR statements are created.
+Block-local declarations do not escape to the other operand. Materialized aliases reuse
+values, original sources retain complete work, and independent roots reset budgets.
+Required comparisons produce no runtime locals or HIR statements. Check/build remain
+silent and normal module startup and function capture restrictions are preserved.
 
-Negative extents retain E104 and capacity limits remain bounded. Extents containing
-blocks outside an active required root remain gated. Module startup, function capture
-restrictions, type identities and skipped-documentation gates are unchanged.
-
-Boolean/comparison block operands, empty/null/float/text results, scalar-primary records,
-mutable scratch, whole-module namespaces, fallback arms and helpers remain separate.
+Selected boolean-result block operands, empty/null/float/text results, scalar-primary
+records, mutable scratch, whole-module namespaces, fallback arms and helpers remain
+separate. Skipped documentation retains its existing unanalyzed-declaration gate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -135,24 +132,23 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `b646355`: shared checked operator completion; 795 library/829 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-operand-helpers.log`.
-- `918eced`: integer block operands; 797 library/830 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-integer-operands.log`.
-- `593f163`: integration; 800 library/832 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-integer-operands-integration.log`.
-- Five operand checker tests and three native groups cover contextual widths, all
-  operators, exact work, restored state, source-order failures, extent bounds,
-  skipped work, alias reuse, documentation and module/function staging.
-- Integer-operand guide prints `7` in debug/release:
-  `/tmp/meowy-integer-operands-doc-8au6qh_m/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 800
-  library/832 native Rust tests (1632 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-integer-operands-gate.log`.
+- `803eda8`: comparison extraction; 800 library/832 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-comparison-refactor.log`.
+- `00f68eb`: deferred block comparisons; 802 library/833 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-block-comparisons.log`.
+- `287459d`: integration; 805 library/835 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-block-comparisons-integration.log`.
+- Five block-comparison checker tests and three native groups cover all relations,
+  deferred/known widths, exact work, structural bounds, scope, source costs/errors,
+  skipped values/types, documentation and module/function staging.
+- Block-comparison guide prints `7` in debug/release:
+  `/tmp/meowy-block-comparisons-doc-c7rut46c/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 805
+  library/835 native Rust tests (1640 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-block-comparisons-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Runtime behavior, reference fixtures and dependencies are unchanged. Runtime checker
-  operator completion was refactored and passed existing Rust/native tests. Editor
+- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator/record bounds are not native support guarantees.
 
@@ -213,7 +209,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, required comparison block operands, helper
+Whole-record module inputs, conditional module exports, required boolean-result block operands, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -221,32 +217,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: boolean validation currently resolves every integer operand type before
-short-circuit evaluation. Block results may require executing local declarations to
-know their width. Add a bounded structural form for block-containing comparisons:
-check supported block statements without resolving their initializers; retain checks
-on known outer operands and defer unresolved block/literal widths until evaluation.
-Selected operands materialize once left-to-right using existing integer arithmetic.
-Block-free comparisons retain their existing validation and work accounting.
+Integer block comparisons are complete across `803eda8` (comparison extraction),
+`00f68eb` (deferred forms/execution) and `287459d` (integration). The guide and full
+compiler gate pass.
 
-Dependency-ordered commit plan:
+Next, investigate boolean-result blocks as operands of required `!`, `&&` and `||`.
+Trace `boolean_form`, `required_boolean`, `scalar_block` and the new structural block
+checks. Keep skipped blocks unevaluated and validate selected results as booleans.
+Record dependency-ordered commits:
 
-1. Complete: integer comparison validation/execution lives in `comparisons.rs`;
-   diagnostics, boolean fallback and evaluation costs are preserved. 800 library/832
-   native tests, fmt and Clippy pass. Log: `/tmp/meowy-comparison-refactor.log`.
-   Committed as `803eda8`.
-2. Complete: deferred operand forms validate supported block statements and known
-   outer kinds without evaluating local initializers. All six selected comparisons,
-   widths and short circuits pass 802 library/833 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-block-comparisons.log`. Committed as `00f68eb`.
-3. Complete: exact selected/skipped work, structural count/depth limits, restored state,
-   deferred widths, original errors, source reuse, docs and module/function staging
-   pass 805 library/835 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-block-comparisons-integration.log`.
-4. Split review: integration plus guides/handoff replacement would exceed 400 lines.
-   Commit integration separately, update guides/handoffs, run the guide in both
-   profiles and run `python3 -B tools/verify.py --compiler` across the series.
+1. Share bounded required block statement-form validation where integer comparisons
+   and boolean logical operands need the same structural gate.
+2. Add selected boolean block execution for logical operators, preserving short circuits,
+   scalar/type/record boundaries, scope and exact evaluation work; include focused tests.
+3. Verify errors, budgets, documentation and module/function staging; update handoffs
+   and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep selected boolean-result block operands, empty/null results, scalar-primary records,
-skipped documented declarations, fallback arms, mutable/float/text/reference fields,
-whole-module records, helpers and borrowed storage separate. Commit slices; do not push.
+Keep boolean block equality/comparison disambiguation separate until its result-kind
+contract is explicit. Empty/null results, scalar-primary records, skipped documented
+declarations, fallback arms, mutable/float/text/reference fields, whole-module records,
+helpers and borrowed storage remain separate. Do not push.

@@ -74,9 +74,11 @@ type-only blocks retain type-valued results. Integer widths, nested shapes, sort
 paths and scope remain checked. Unannotated scalar blocks retain the selected integer
 width or boolean kind without runtime storage. Required integer arithmetic can evaluate
 block operands once in source order, with contextual widths and shared checked operators;
-active required roots also accept those operands in list extents. Boolean/comparison
-block operands, float/text comparisons, empty composition sources, mutable scratch,
-whole-module records and helpers remain separate.
+active required roots also accept those operands in list extents. Integer comparisons
+accept block operands with bounded structural validation and deferred local values/widths;
+short-circuited blocks do no evaluation work. Boolean-result block operands, float/text
+comparisons, empty composition sources, mutable scratch, whole-module records and helpers
+remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

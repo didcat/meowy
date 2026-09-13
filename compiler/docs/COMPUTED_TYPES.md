@@ -140,7 +140,7 @@ documentation retains the declared widths and resulting constructed type signatu
 Eligible local/field/module inputs work in function-scoped required blocks without
 allowing runtime captures. Checking/building remain silent and preserve eager module
 initialization, including failures behind skipped required reads. Float/text results,
-mutable scratch and boolean/comparison block operands remain unsupported.
+mutable scratch and boolean-result block operands remain unsupported.
 Scalar result blocks do not accept named field emissions.
 
 ## Inferred scalar blocks
@@ -178,7 +178,7 @@ Type-producing blocks retain type values, and type aliases still require a type 
 Named fields can infer a unit-primary record; records with integer/boolean primaries
 remain gated. A nested unannotated block may also supply an inferred scalar record field.
 Float/text/null results, mutable scratch, fallback arms, skipped documented declarations
-and boolean/comparison block operands remain separate.
+and boolean-result block operands remain separate.
 
 Inference shares the existing required scopes, source eligibility and work/depth/node
 budgets. Original source reads retain their work and errors, while aliases of materialized
@@ -223,7 +223,7 @@ skipped-documentation gates. No runtime locals or statements are introduced.
 The same expressions can supply list extents inside an active required root, as in
 the computed type block above. Negative extents remain E104 and bootstrap capacity
 limits still apply. This does not enable block extents in a direct type annotation
-outside such a root. Boolean/comparison operand blocks, noninteger block results,
+outside such a root. Boolean-result operand blocks, noninteger block results,
 helpers, mutable scratch and records with scalar primaries remain separate.
 
 ## Annotated record construction
@@ -583,8 +583,8 @@ Operand-tree checking has its own 4096-node/64-level bounds, including skipped s
 and consumes frontend checking work. Evaluation retains the shared required-root
 work/depth bounds; skipped evaluation is not charged. Independent roots reset their
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
-Direct calls, inline operand blocks and unsupported operators remain unavailable even
-in skipped expression syntax. Required record construction needs an explicit expected shape.
+Direct calls and unsupported operators remain unavailable as outer operands even
+in skipped expression syntax. Boolean-result operand blocks remain separate.
 
 ### Integer comparisons
 
@@ -614,17 +614,60 @@ contexts give literals their width without converting named values. For example,
 E213, unrepresentable literals E216 and invalid evaluated arithmetic E107.
 Unsigned negation remains invalid. Comparisons produce booleans, not integer extents.
 
-Operand types and literal ranges are checked before evaluation, even when a logical
-operator skips a comparison. Skipped comparisons read no initializer evidence, charge
-no evaluation work and perform no arithmetic. Evaluated operands use the existing
+For comparisons without inline block operands, operand types and literal ranges are
+checked before evaluation, even when a logical operator skips a comparison. Skipped
+comparisons read no initializer evidence, charge no evaluation work and perform no
+arithmetic. Evaluated operands use the existing
 required integer checks from left to right; a failing left operand stops the right
 read. Each source read retains its original error span and transitive work.
 
 Mixed-module primaries work in comparisons and arithmetic; two complete records still
 cannot be compared in required blocks. Required reads inside functions do not grant
 runtime captures. Checking/building remain silent and preserve module initialization.
-Float/text comparisons, direct calls and inline comparison operand blocks remain separate
-capabilities.
+Float/text comparisons and direct calls remain separate capabilities. Integer block
+operands use the deferred checks described below.
+
+### Integer block comparisons
+
+Required integer comparisons accept inline blocks and arithmetic containing them:
+
+```meowy
+<Items> : {
+    ready : ({
+        base <uint8> : 4
+        -> base
+    }) >= 4
+    skipped : false && (({ -> 1 / 0 }) == 0)
+    | ready | -> <int32[4]>
+    | !ready | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`; the skipped division is not evaluated. All six integer relations
+(`==`, `!=`, `<`, `>`, `<=`, `>=`) retain boolean results. Each selected operand is
+materialized once, left to right. A failing left operand prevents evaluating the right,
+and block-local bindings leave scope before the next operand.
+
+Before evaluation, bounded structural checks validate known outer operands and the
+supported statement forms of each inline block. Block-local initializers, annotations
+and emitted values are resolved only when the comparison runs. If a block's width is
+not yet known, dependent literal range checks also wait. A known outer name or type
+error is still diagnosed even when the comparison is short-circuited.
+
+For example, skipping a comparison against a block that computes a `uint16` result
+also skips a literal range check that depends on discovering that width. Evaluating
+that comparison against `65536` reports E216. Already known incompatible widths remain
+E213; an evaluated block that cannot satisfy its expected width reports E207. No value
+is widened to make a comparison fit.
+
+Skipped blocks contribute no evaluation visits or constructed type nodes. Selected
+blocks retain source work, tail errors, shared budgets and original diagnostic spans.
+Unsupported statement forms, fallback arms and skipped documented declarations retain
+their gates. Selected block operands must produce integers; boolean-result block
+comparisons, whole-module records and helper evaluation remain separate.
 
 ## Block initializers
 
@@ -727,7 +770,7 @@ Selected standalone expression blocks, named/outer emissions, mutation and evalu
 helper calls remain unavailable inside boolean blocks. Integer and boolean blocks
 retain independently typed primaries. Required type blocks can read the resulting
 booleans as immutable scratch and evaluate explicitly annotated boolean block bindings.
-Unannotated operand blocks remain separate.
+Unannotated boolean operand blocks remain separate.
 
 ### Record scratch in scalar initializers
 
