@@ -53,6 +53,7 @@ impl Checker {
                         mutable: false,
                         ..
                     } => self.bool_inputs.get(&id).cloned(),
+                    Value::FileModule { id, .. } => self.module_boolean(id).cloned(),
                     _ => None,
                 },
                 ExprKind::Field { .. } => {

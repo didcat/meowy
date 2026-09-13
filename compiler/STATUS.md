@@ -212,8 +212,10 @@ Dependency-ordered commits:
    Clippy. Log: `/tmp/meowy-required-boolean-fields-tests.log`. Scope, kind, privacy
    and unproved-input rejections pass. Split review separated primary reads to keep
    each commit within eight files; obsolete fixtures retain mutable-scratch gates.
-4. Enable boolean module primary reads with their focused tests and unchanged runtime
-   capture/whole-module identity gates; validate and commit separately.
+   Committed as `a9bd0dc`.
+4. Complete: scalar/mixed boolean primary reads pass 747 library/781 native tests,
+   fmt and Clippy. Log: `/tmp/meowy-required-boolean-primary-tests.log`. Annotation,
+   function scope, facade and unproved-input tests pass. Commit primary support.
 5. Verify transitive work, errors and silent staging; update guides/handoffs and run
    `python3 -B tools/verify.py --compiler` across the series.
 

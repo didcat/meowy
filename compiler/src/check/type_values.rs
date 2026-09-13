@@ -191,9 +191,9 @@ impl Checker {
             ExprKind::Name(name) => match self.required_value(name, form.span)? {
                 Value::Static { .. } | Value::Local { .. } | Value::Constant(_) => true,
                 Value::FileModule { ty, .. } => {
-                    matches!(ty, Type::Int { .. })
+                    matches!(ty, Type::Int { .. } | Type::Bool)
                         || annotation.is_some()
-                            && matches!(Self::primary_type(&ty), Type::Int { .. })
+                            && matches!(Self::primary_type(&ty), Type::Int { .. } | Type::Bool)
                 }
                 _ => false,
             },

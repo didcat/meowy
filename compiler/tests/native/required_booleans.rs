@@ -18,14 +18,14 @@ pub(crate) fn required_booleans_read_fields_exports_and_scoped_imports() {
 }
 
 #[test]
-pub(crate) fn required_booleans_reject_unproved_field_inputs() {
+pub(crate) fn required_booleans_reject_unproved_field_and_primary_inputs() {
     for data in [
         "d:@\"debug\";value:{->true;d.print(9)};->value;->flag:value;->row:{->flag:value}",
         "value:=true;->value;->flag:value;->row:{->flag:value}",
         "get<boolean>:(){->true};value:get();->value;->flag:value;->row:{->flag:value}",
         "|true|->true;|true|->flag:true;|true|->row:{->flag:true}",
     ] {
-        for binding in ["flag:m.flag", "flag:m.row.flag"] {
+        for binding in ["flag<boolean>:m", "flag:m.flag", "flag:m.row.flag"] {
             let source = format!("m:@\"./facade.mwy\";<T>:{{{binding};-><int32>}}");
             let case = case(
                 &source,
@@ -46,6 +46,7 @@ pub(crate) fn required_booleans_reject_unproved_field_inputs() {
 pub(crate) fn required_booleans_preserve_kind_privacy_identity_and_capture_gates() {
     for (body, code) in [
         ("<T>:{flag<int32>:m.flag;-><int32>}", "E207"),
+        ("<T>:{flag<int32>:m;-><int32>}", "E207"),
         ("<T>:{flag<boolean>:m.width;-><int32>}", "E207"),
         ("<T>:{flag:m.flag;-><int32[flag]>}", "B001"),
         ("<T>:{-><int32[m.flag]>}", "B001"),
@@ -53,7 +54,7 @@ pub(crate) fn required_booleans_preserve_kind_privacy_identity_and_capture_gates
         ("<T>:{flag:m;-><int32>}", "E211"),
         ("<T>:{flag:m.flag;->flag}", "E211"),
         ("f<boolean>:(){<T>:{flag:m.flag;->flag<>};->m.flag}", "B001"),
-        ("f<boolean>:(){<T>:{flag:m.flag;->flag<>};->!m}", "B001"),
+        ("f<boolean>:(){<T>:{flag<boolean>:m;->flag<>};->!m}", "B001"),
         ("<T>:{flag:m.flag;other:!flag;-><int32>}", "B001"),
     ] {
         let source = format!("m:@\"./data.mwy\";{body}");
@@ -71,5 +72,20 @@ pub(crate) fn required_booleans_preserve_kind_privacy_identity_and_capture_gates
             error.contains(&format!("\"code\":\"{code}\"")),
             "{body}: {error}"
         );
+    }
+}
+
+#[test]
+pub(crate) fn required_booleans_read_scalar_and_mixed_module_primaries() {
+    for value in [false, true] {
+        let data = format!("private:{value};->private;->label:\"ready\"");
+        case(
+            "m:@\"./facade.mwy\";alias:m;p:@\"./primary.mwy\";<T>:{a<boolean>:(alias);b:p;copy:a;->copy<>};v<T>:false;f<boolean>:(){<U>:{a<boolean>:m;->a<>};v<U>:true;->v};g<boolean>:(){m:@\"./facade.mwy\";<U>:{a<boolean>:m;->a<>};v<U>:false;->v};<Row>:{->alias<>};row<Row>:{->false;->label:\"copy\"};d:@\"debug\";d.print(v);d.print(f());d.print(g());d.print(row.label);d.print(alias.label)",
+            &[
+                ("data.mwy", &data),
+                ("facade.mwy", "m:@\"./data.mwy\";->m"),
+                ("primary.mwy", "m:@\"./data.mwy\";->!!m"),
+            ],
+        ).runs(b"false\ntrue\nfalse\ncopy\nready\n");
     }
 }
