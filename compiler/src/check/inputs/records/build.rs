@@ -116,6 +116,13 @@ impl Checker {
                             target.extend(path);
                             build.record.values.insert(target, *value);
                         }
+                    } else if build.fields[index].ty == Type::Bool {
+                        let input = self.predicate_expr(value, depth + 1, count, &build.locals)?;
+                        build.record.input.add(&input);
+                        build
+                            .record
+                            .values
+                            .insert(vec![index], Leaf::Bool(input.value));
                     } else {
                         let input = self.input_expr(value, depth + 1, count, &build.locals)?;
                         build.record.input.add(&input);

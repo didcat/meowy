@@ -31,7 +31,7 @@ pub(crate) fn record_scratch_requires_complete_eligible_immutable_shapes() {
         "->4;unused:{->n:1;d.print(9)}",
         "row:={->n:4};->row.n",
         "row:{->n:=4};->row.n",
-        "row:{->n:4;->flag:true};->row.n",
+        "row:{->n:4;->flag:=true};->row.n",
         "row:{->1;->n:4};->row.n",
         "row:{};->4",
         "row:get();->row.n",

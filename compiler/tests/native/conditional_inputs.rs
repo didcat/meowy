@@ -262,7 +262,7 @@ pub(crate) fn boolean_record_inputs_keep_mutable_effectful_and_capture_boundarie
             "row:{flag:=true;|flag|unused:1;->n:4};<T>:{n:row.n;-><int32>}",
             "E211",
         ),
-        ("row:{->flag:true;->n:4};<T>:{n:row.n;-><int32>}", "E211"),
+        ("row:{->flag:=true;->n:4};<T>:{n:row.n;-><int32>}", "E211"),
         ("flag:true;<T>:{value:flag;-><int32>}", "B001"),
     ] {
         assert_eq!(

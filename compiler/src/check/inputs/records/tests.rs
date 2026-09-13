@@ -246,3 +246,29 @@ pub(crate) fn nested_record_paths_keep_missing_fields_references_and_captures_ga
         );
     }
 }
+
+#[test]
+pub(crate) fn record_boolean_leaves_keep_their_kind_and_ancestor_errors() {
+    let checker = check("row:{->flag:true;->width<uint8>:4}");
+    let record = checker.record_inputs.values().last().unwrap();
+    assert_eq!(record.values[&vec![0]], Leaf::Bool(Some(true)));
+    assert!(record.field(&[0]).is_none());
+    assert_eq!(record.field(&[1]).unwrap().value, Some(4));
+    let checker = check(
+        "|false|{row<{flag<boolean>;width<uint8>}>:{base<uint8>:255;bad:base+1==0;->flag:true;->width<uint8>:4}}",
+    );
+    let record = checker.record_inputs.values().last().unwrap();
+    assert_eq!(record.values[&vec![0]], Leaf::Bool(None));
+    assert_eq!(record.values[&vec![1]], Leaf::Int(None));
+    assert!(record.field(&[0]).is_none());
+    assert_eq!(record.field(&[1]).unwrap().error.unwrap().code, "E107");
+    for count in [256, 257] {
+        let fields = (0..count)
+            .map(|id| format!("->f{id}:true;"))
+            .collect::<String>();
+        assert_eq!(
+            check(&format!("row:{{{fields}}}")).record_inputs.is_empty(),
+            count == 257
+        );
+    }
+}

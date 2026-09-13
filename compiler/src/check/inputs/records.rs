@@ -11,6 +11,7 @@ pub(crate) const MAX_DEPTH: usize = 32;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Leaf {
     Int(Option<i128>),
+    Bool(Option<bool>),
 }
 
 #[derive(Clone, Debug)]
@@ -32,6 +33,9 @@ impl Record {
                 Type::Int { .. } => {
                     self.values.insert(path, Leaf::Int(None));
                 }
+                Type::Bool => {
+                    self.values.insert(path, Leaf::Bool(None));
+                }
                 Type::Record { fields, .. } => {
                     for (index, field) in fields.iter().enumerate() {
                         let mut path = path.clone();
@@ -46,7 +50,9 @@ impl Record {
     }
 
     pub(crate) fn field(&self, path: &[usize]) -> Option<Input> {
-        let Leaf::Int(value) = *self.values.get(path)?;
+        let Leaf::Int(value) = *self.values.get(path)? else {
+            return None;
+        };
         let mut input = self.input.clone();
         input.work = input.work.saturating_add(path.len());
         input.value = if input.error.is_none() { value } else { None };
@@ -74,7 +80,7 @@ impl Checker {
                 return false;
             }
             match ty {
-                Type::Int { .. } => {}
+                Type::Int { .. } | Type::Bool => {}
                 Type::Record { primary, fields } => {
                     count += fields.len();
                     if **primary != Type::Null

@@ -172,8 +172,10 @@ Dependency-ordered commits:
 
 1. Complete: typed integer leaf storage preserves eligibility/access. All 741 library/
    758 native tests, fmt and Clippy passed. Log: `/tmp/meowy-typed-record-leaves-tests.log`.
-2. Admit immutable boolean record fields and retain their typed values/errors/work.
-   Keep integer access typed; test mixed records, ancestor failures and shape bounds.
+2. Complete: immutable boolean fields retain typed values/error-only leaves and whole
+   ancestor work. Integer access rejects boolean leaves. All 742 library/760 native
+   tests, fmt and Clippy pass; log: `/tmp/meowy-boolean-record-evidence-tests.log`.
+   Mixed-record integer reads and the 256/257 boolean-field evidence boundary pass.
 3. Add predicate lookup for boolean record paths, including copies and exported records.
    Keep direct boolean module exports and required-type boolean scratch gated.
 4. Add independent work/staging integration and guides; run the complete compiler gate
