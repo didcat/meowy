@@ -76,8 +76,52 @@ Direct extents outside those roots retain their existing supported profile.
 
 The [example](../examples/computed-types.mwy) calculates a capacity of four from an
 eligible immutable `uint8` record field. Scalar scratch produces no runtime locals, and documentation preserves
-its actual integer signature. Floating-point, boolean and text scratch, comparisons,
+its actual integer signature. Floating-point and text scratch, comparisons,
 shifts, mutable scratch and helper calls remain separate capabilities.
+
+## Boolean scratch
+
+Required type blocks can bind immutable booleans from lexical literals, previously
+checked eligible locals, record fields, named module exports and module primaries.
+Bindings may use a `boolean` annotation; aliases and type queries retain their kind.
+
+```meowy
+settings : {
+    -> enabled : { -> false; unused : 2 }
+    -> capacity <uint8> : 4
+}
+<Flags> : {
+    enabled <boolean> : settings.enabled
+    copy : enabled
+    capacity : settings.capacity
+    -> <(copy<>)[capacity]>
+}
+flags <Flags> : [true, false]
+debug : @"debug"
+debug.print(flags[2])
+```
+
+This prints `false`. The scratch binding holds the checked boolean value, and its type
+query supplies the list element type. Boolean values cannot become integer extents or
+be emitted as types. Scratch leaves no runtime storage and does not escape its scope.
+
+Every source read charges retained initializer and ancestor work, including unused
+bindings after the type emission. Reading a scratch alias charges a local read; it
+does not reevaluate the source already materialized in that root. Independent roots
+reset their budgets. Errors retain their original source span, and nested groups share
+the active depth limit. A folded runtime constant alone does not establish eligibility.
+
+A boolean-only module can be read by name. A module with named fields needs a boolean
+annotation in required scratch, for example `enabled <boolean> : flags`. Unannotated
+module aliases and type queries preserve the complete module identity. Eligible reads
+work across function scopes and through function-local imports without permitting
+ordinary runtime captures. Checking/building never execute module initialization.
+
+Boolean operators, comparisons, inline boolean block expressions and conditional type
+selection inside required blocks remain separate. Compute eligible predicates in an
+ordinary initializer and read the resulting boolean here. Mutable scratch, runtime
+parameters, effectful inputs and helper calls remain unavailable. Names such as `true`
+and `false` follow ordinary lexical lookup and may be shadowed.
 
 ## Block initializers
 
@@ -177,8 +221,9 @@ and modules. Branches, nested blocks and predicate operands share the existing
 those evaluator limits; these are not full-language E220 counters.
 
 Selected standalone expression blocks, named/outer emissions, mutation and evaluated
-helper calls remain unavailable inside boolean blocks. Integer and boolean blocks retain independently typed primaries. Boolean scratch inside required
-type blocks remains a separate capability.
+helper calls remain unavailable inside boolean blocks. Integer and boolean blocks
+retain independently typed primaries. Required type blocks can read the resulting
+booleans as immutable scratch; inline boolean block evaluation there remains separate.
 
 ### Record scratch in scalar initializers
 
@@ -279,9 +324,9 @@ tail, or a mutable descendant. Each read charges retained ancestor work again.
 The existing 256-total-field and 32-record-level bounds include boolean fields.
 
 Named exported records and record-derived composed exports retain boolean leaf paths
-through facades. Direct named boolean exports retain scalar source identities and work. Required
-type-block boolean scratch and ordinary runtime captures remain unavailable; boolean
-leaves become predicate inputs without becoming integer extents.
+through facades. Direct named boolean exports retain scalar source identities and work.
+Required boolean scratch can read these leaves without making them integer extents.
+Ordinary runtime captures remain unavailable.
 
 ### Conditional record initializers
 
@@ -322,7 +367,8 @@ including repeated reads of the same cached value. A true or false left value st
 requires eligible right-operand evidence. Evaluation stops at the first error, retaining
 its original span. Logical `&&`/`||` keep their existing short-circuit behavior. This
 applies to ordinary boolean bindings, scalar initializer scratch and record predicates;
-it does not add boolean scratch to required type blocks.
+required boolean scratch can read the results, while equality within required type
+blocks remains separate.
 
 Failed evaluated comparisons or boolean aliases retain the original E107 span,
 including through a later subrecord projection. No branch value is invented after a
@@ -339,7 +385,7 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Float/text comparisons and boolean scratch inside required type blocks remain unavailable.
+Float/text comparisons and predicate operations inside required type blocks remain unavailable.
 Standalone expression statements in selected branches, loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
 initializer contains branches.
@@ -399,8 +445,7 @@ initializer errors and transitive work. Every evaluated read charges that work a
 short-circuited operands contribute none. An unrelated effectful export does not
 invalidate an independently eligible boolean export.
 
-Whole-module record inputs, conditional module exports and
-boolean scratch inside required type blocks remain unavailable. Ordinary runtime
+Whole-module record inputs and conditional module exports remain unavailable. Ordinary runtime
 module-data captures and private-field access remain rejected.
 
 ### Scalar primary imports
@@ -503,9 +548,9 @@ failure still stops dependent and entry execution.
 Ordinary module aliases and type queries retain named fields. Annotated ordinary
 module-identity bindings remain unavailable; use a boolean operation to make a scalar
 copy. Comparing two complete module records does not project their primaries;
-use explicit boolean operands when a primary comparison is intended. Boolean scratch
-inside required type blocks and ordinary runtime module-data captures remain separate. A previously checked integer initializer that used the
-primary can supply required types inside functions without enabling such captures.
+use explicit boolean operands when a primary comparison is intended. Required boolean
+scratch can read a mixed primary with a `boolean` annotation. Ordinary runtime
+module-data captures remain unavailable, including after a successful required read.
 
 ### Module composition
 
@@ -596,7 +641,7 @@ Exhaustion reports B001. Nested blocks share the counters; independent roots res
 them. Existing parser, type/layout and proof limits still apply. These limits qualify
 bootstrap support only; they do not implement the language's logical E220 counters.
 
-Non-integer scalar scratch, mutable scratch, branches/restarts, labeled blocks,
+Scalar scratch beyond integers/booleans, mutable scratch, branches/restarts, labeled blocks,
 annotated or named emissions, general expression statements and source/helper calls
 remain unsupported in type blocks. `core.Type` parameter/result annotations, generic
 specialization, type equality, full purity analysis, intrinsic descriptions and the

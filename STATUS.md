@@ -23,27 +23,28 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Eligible boolean module primaries now supply predicates alongside named boolean inputs.
-Typed evidence retains values, source errors and work through scalar copies and facade
-chains. Boolean operations project mixed-module primaries; aliases and type queries
-keep named fields. Privacy, runtime capture gates and initialization remain intact.
+Required type blocks now accept immutable boolean scratch from literals, eligible
+locals, record fields and module named/primary inputs. Static aliases retain values
+without runtime storage; source reads preserve work and original errors. Function-scoped
+required reads retain the existing runtime capture and initialization rules.
 
-Commits: `39aacdd` (typed evidence storage), `77ca671` (boolean primary inputs).
-Integration tests and the [supported guide](compiler/docs/COMPUTED_TYPES.md#boolean-primary-imports)
-cover repeated reads, independent roots, dependency errors and startup behavior.
+Commits: `1e997b0` (paths/work), `ab37924` (local scratch), `a9bd0dc` (fields),
+`27bca1f` (primaries). Integration tests and the
+[supported guide](compiler/docs/COMPUTED_TYPES.md#boolean-scratch) cover aliases,
+root budgets, dependency errors and silent staging.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1521
-  Rust tests (744 library/777 native), 20 Python tests, fmt, Clippy and build.
-- Seven boolean-primary groups pass in debug/release, including independent exports,
-  repeated work, silent staging, diamond initialization and runtime startup failure.
-  The guide prints `flags`, `7`, `ready` in both profiles.
-- Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links
-  and catalog/schema checks passed. Log: `/tmp/meowy-boolean-primary-gate.log`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1532
+  Rust tests (748 library/784 native), 20 Python tests, fmt, Clippy and build.
+- Four focused checker tests and seven native groups pass, including work/depth,
+  static-alias reuse, function scopes, dependency errors and silent diamond startup.
+- The guide prints `false` in debug/release. Conformance: 10 passed, 13 unsupported,
+  0 failed in both profiles. Local links and catalog/schema checks pass.
+  Log: `/tmp/meowy-required-booleans-gate.log`.
 - Runtime implementation, reference fixtures and dependencies are unchanged.
   Editor and separate runtime/sanitizer gates were not rerun; full release qualification
   remains open. Evaluator and record-shape bounds are not native support guarantees.
@@ -52,7 +53,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Named and primary boolean module inputs retain source evidence through predicates. |
+| Compiler | Required boolean scratch retains source evidence without runtime storage. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
@@ -60,9 +61,9 @@ release qualification remains incomplete.
 
 ## Next steps
 
-1. Plan immutable boolean scratch in required type blocks, preserving typed input
-   evidence, source errors and root budgets. This precedes conditional type selection.
-   See the [compiler handoff](compiler/STATUS.md#next-steps).
-2. Preserve package, borrowed-export and ownership gates. Keep whole-module inputs,
-   conditional exports, required record scratch and wider comparison types separate.
-   Commit validated slices using [AGENTS.md](AGENTS.md); do not push.
+1. Plan boolean operators in required type blocks, preserving operand typing, source
+   errors, short-circuit behavior and shared root budgets. See the
+   [compiler handoff](compiler/STATUS.md#next-steps).
+2. Keep conditional type selection, wider comparisons, inline boolean blocks, required
+   record scratch, whole-module inputs, conditional exports, helpers and borrowed storage
+   separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.

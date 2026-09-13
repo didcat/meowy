@@ -193,4 +193,38 @@ mod tests {
         assert_eq!(error.code, "E107");
         assert_eq!(error.span.start, source.find("row.n+1").unwrap());
     }
+    #[test]
+    pub(crate) fn required_boolean_groups_restore_depth_after_failure() {
+        use crate::check::type_values::MAX_DEPTH;
+        for groups in [MAX_DEPTH - 1, MAX_DEPTH] {
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let literal = Expr {
+                kind: ExprKind::Name("false".into()),
+                span: Span::new(0, 5),
+            };
+            let mut expr = literal.clone();
+            for _ in 0..groups {
+                expr = Expr {
+                    span: expr.span,
+                    kind: ExprKind::Group(Box::new(expr)),
+                };
+            }
+            let result = checker.type_scalar(&expr, None);
+            if groups == MAX_DEPTH - 1 {
+                assert!(matches!(
+                    result.unwrap(),
+                    Value::Static {
+                        value: Constant::Bool(false),
+                        ..
+                    }
+                ));
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(!checker.required);
+            assert!(!checker.required_boolean(&literal).unwrap());
+        }
+    }
 }

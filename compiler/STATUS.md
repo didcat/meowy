@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Required boolean scratch is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Required boolean scratch and focused integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -20,6 +20,21 @@ Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
 ## Current compiler slice
+
+Required type blocks support immutable boolean literals, eligible local/field/module
+reads, annotations and aliases. `type_values/booleans.rs` reads checked evidence and
+materializes `Value::Static` directly, creating no runtime storage. Scalar dispatch
+uses checked type hints; integer validation/materialization and list extents retain
+their separate path. `required_path` shares checked field lookup across leaf kinds.
+`Work::input<T>` charges retained work/errors for both integers and booleans.
+
+Boolean-only module primaries can be read by name; mixed modules require a boolean
+annotation in required scratch. Type queries/identity aliases keep named fields.
+Function-scoped required reads do not grant runtime captures. Each source read charges
+initializer/ancestor work again; reading static scratch charges a local read without
+reevaluating its source. Groups share depth limits and restore depth after failure.
+Boolean operators, inline boolean blocks and conditional type selection within required
+blocks remain separate. Existing ordinary initializers can compute predicates first.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -103,24 +118,26 @@ ownership limits remain independent; these bootstrap limits are not language E22
 
 Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
 mutable scratch and helpers remain unavailable inside scalar initializers. Float/text
-comparisons, required boolean scratch and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
+comparisons, boolean operators in required blocks and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `39aacdd`: explicit primary evidence storage; 743 library/770 native tests, fmt
-  and Clippy passed. Log: `/tmp/meowy-primary-kinds-tests.log`.
-- `77ca671`: boolean primary capture/lookup/forwarding; 744 library/773 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-boolean-primary-tests.log`.
-- Seven boolean-primary groups pass. Debug/release integration covers true/false,
-  aliases, scalar copies, mixed-module identity, primary/named re-exports, retained
-  work on every read, independent roots, short circuiting and original dependency
-  E107 byte spans. Check/build remain silent; diamonds initialize once, and runtime
-  initialization failure still stops entry. Privacy, purity, kind and scope gates pass.
-- The guide prints `flags`, `7`, `ready` in debug/release. Extracted files:
-  `/tmp/meowy-boolean-primary-doc-2ps49c8a/{flags,main}.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 744
-  library/777 native Rust tests (1521 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-boolean-primary-gate.log`.
+- `1e997b0`: shared required field paths/work charging; 744 library/777 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-required-paths-tests.log`.
+- `ab37924`: local boolean scratch; 747 library/777 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-required-booleans-local.log`.
+- `a9bd0dc`: boolean field reads; 747 library/780 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-required-boolean-fields-tests.log`.
+- `27bca1f`: boolean primary reads; 747 library/781 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-required-boolean-primary-tests.log`.
+- Four focused checker tests and seven native groups pass: false values, lexical
+  shadowing, no runtime storage, work/depth limits, static-alias reuse, function scope,
+  kind/privacy/capture gates, original dependency errors and silent diamond startup.
+- The guide prints `false` in debug/release:
+  `/tmp/meowy-required-booleans-doc-pisq05eg/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 748
+  library/784 native Rust tests (1532 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-required-booleans-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -184,7 +201,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, required boolean scratch, helper
+Whole-record module inputs, conditional module exports, required boolean operators, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -192,33 +209,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: `scalar_input` also validates list extents, so it must remain integer-only.
-Boolean scratch can materialize `Value::Static` directly from checked boolean evidence;
-it does not need runtime expression materialization or capture exceptions. Limit this
-slice to named literals, eligible local/field/module reads and aliases. Operators and
-conditional type selection remain later work.
+Required boolean scratch is complete across `1e997b0` (paths/work), `ab37924` (locals),
+`a9bd0dc` (fields) and `27bca1f` (primaries). The following integration/documentation
+slice passes the final compiler gate and guide execution.
 
-Dependency-ordered commits:
+Next, plan boolean operators within required type blocks. The reader in
+`src/check/type_values/booleans.rs` currently accepts names, fields and groups only.
+Keep integer extent validation in `scalars.rs` separate. Record the ordered plan first:
 
-1. Complete: checked field paths are separate from integer leaf loading; retained
-   work charging accepts `Input<T>`. All 744 library/777 native tests, fmt and Clippy
-   pass unchanged. Log: `/tmp/meowy-required-paths-tests.log`. Committed as `1e997b0`.
-2. Complete: local boolean scratch/aliases materialize directly as `Value::Static`.
-   All 747 library/777 native tests, fmt and Clippy pass. Log:
-   `/tmp/meowy-required-booleans-local.log`. False values, lexical names, kind/scope,
-   retained errors, cached work and no-runtime-storage probes pass. Obsolete native
-   gates now cover mutable scratch. Committed as `ab37924`.
-3. Complete: field/named-export reads pass 747 library/780 native tests, fmt and
-   Clippy. Log: `/tmp/meowy-required-boolean-fields-tests.log`. Scope, kind, privacy
-   and unproved-input rejections pass. Split review separated primary reads to keep
-   each commit within eight files; obsolete fixtures retain mutable-scratch gates.
-   Committed as `a9bd0dc`.
-4. Complete: scalar/mixed boolean primary reads pass 747 library/781 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-required-boolean-primary-tests.log`. Annotation,
-   function scope, facade and unproved-input tests pass. Commit primary support.
-5. Verify transitive work, errors and silent staging; update guides/handoffs and run
-   `python3 -B tools/verify.py --compiler` across the series.
+1. Add checked negation and short-circuit logical operators, preserving lexical name
+   resolution, operand typing, skipped work/effects and root work/depth accounting.
+2. Add boolean equality/inequality with left-to-right reads and first-error retention;
+   verify repeated cached reads, scope restrictions and unchanged integer behavior.
+3. Add focused native staging/error/budget probes, update both handoffs and guides,
+   and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep boolean operators, conditional type selection, whole-module record inputs,
-conditional exports, required record scratch, helpers, packages and borrowed storage
-separate. Do not push.
+Keep integer/float/text comparisons inside required blocks, conditional type selection,
+inline boolean blocks, whole-module record inputs, conditional exports, required record
+scratch, helpers, packages and borrowed storage separate. Do not push.

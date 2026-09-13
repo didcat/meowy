@@ -197,7 +197,9 @@ Eligible named boolean exports, boolean record leaves and direct boolean primari
 can supply predicates in ordinary scalar/record initializers. Boolean operations
 project a mixed module's primary; identity aliases and type queries keep its named
 fields. Copies and facade forwarding retain values, failures and evaluation work.
-Required boolean scratch and ordinary runtime module-data captures remain unavailable.
+Required boolean scratch supports these inputs, including across function scopes.
+Mixed-module primaries need a boolean annotation; ordinary runtime module-data
+captures remain unavailable.
 See [the supported input rules](COMPUTED_TYPES.md#imported-immutable-inputs).
 
 ## Source identity and output protection
