@@ -49,6 +49,10 @@ pub(crate) enum Value {
         value: Constant,
         ty: Type,
     },
+    Record {
+        ty: Type,
+        input: Box<inputs::Record>,
+    },
     Module(crate::foundation::Module),
     FileModule {
         id: usize,
@@ -73,9 +77,10 @@ pub(crate) enum Value {
 impl Value {
     pub(crate) fn data_type(&self) -> Option<Type> {
         match self {
-            Self::Local { ty, .. } | Self::Static { ty, .. } | Self::FileModule { ty, .. } => {
-                Some(ty.clone())
-            }
+            Self::Local { ty, .. }
+            | Self::Static { ty, .. }
+            | Self::FileModule { ty, .. }
+            | Self::Record { ty, .. } => Some(ty.clone()),
             Self::Constant(value) => {
                 Some(Checker::constant_expr(value.clone(), crate::ast::Span::new(0, 0)).ty)
             }

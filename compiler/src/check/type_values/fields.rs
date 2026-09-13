@@ -1,25 +1,42 @@
 use crate::ast::{self, ExprKind};
 use crate::check::{
     Checker, Result, Value,
-    inputs::{Input, MAX_RECORD_DEPTH, Sources},
+    inputs::{Input, MAX_RECORD_DEPTH, Record, Sources},
 };
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 pub(crate) enum Source {
     Local(usize),
+    Record(Box<Record>),
 }
 
 impl Source {
     pub(crate) fn integer(&self, checker: &mut Checker, path: &[usize]) -> Option<Input> {
         match self {
             Self::Local(id) => checker.field_input(*id, path, &Sources::default()),
+            Self::Record(input) => input.field(path),
         }
     }
 
     pub(crate) fn boolean(&self, checker: &mut Checker, path: &[usize]) -> Option<Input<bool>> {
         match self {
             Self::Local(id) => checker.boolean_field_input(*id, path, &Sources::default()),
+            Self::Record(input) => input.boolean(path),
+        }
+    }
+    pub(crate) fn record(&self, checker: &mut Checker, path: &[usize]) -> Option<Record> {
+        match self {
+            Self::Local(id) => {
+                let source = checker.input_path(*id, path)?;
+                let mut input = checker
+                    .record_inputs
+                    .get(&source.id)?
+                    .project(&source.path)?;
+                input.input.work = input.input.work.saturating_add(source.work);
+                Some(input)
+            }
+            Self::Record(input) => input.project(path),
         }
     }
 }
@@ -53,8 +70,9 @@ impl Checker {
                 ty,
                 mutable: false,
                 ..
-            } => (id, ty, MAX_RECORD_DEPTH),
-            Value::FileModule { id, ty } => (id, ty, MAX_RECORD_DEPTH + 1),
+            } => (Source::Local(id), ty, MAX_RECORD_DEPTH),
+            Value::FileModule { id, ty } => (Source::Local(id), ty, MAX_RECORD_DEPTH + 1),
+            Value::Record { ty, input } => (Source::Record(input), ty, MAX_RECORD_DEPTH),
             _ => {
                 return Err(Diagnostic::unsupported(
                     "computed fields outside immutable local records or file exports",
@@ -87,7 +105,7 @@ impl Checker {
             path.push(index);
             current = &field.ty;
         }
-        Ok((Source::Local(id), current.clone(), path))
+        Ok((id, current.clone(), path))
     }
 
     pub(crate) fn required_field(&mut self, expr: &ast::Expr) -> Result<(Type, Input)> {

@@ -88,9 +88,10 @@ impl Checker {
     }
     pub(crate) fn doc_value_name(&self, value: &Value) -> String {
         match value {
-            Value::Local { ty, .. } | Value::Static { ty, .. } | Value::Type(ty) => {
-                crate::documentation::model::type_name(ty)
-            }
+            Value::Local { ty, .. }
+            | Value::Static { ty, .. }
+            | Value::Record { ty, .. }
+            | Value::Type(ty) => crate::documentation::model::type_name(ty),
             Value::Function { id, params, result } => {
                 let result = result.as_ref().or_else(|| {
                     self.functions

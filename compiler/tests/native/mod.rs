@@ -87,6 +87,7 @@ pub(crate) mod references;
 pub(crate) mod required_boolean_ops;
 pub(crate) mod required_booleans;
 pub(crate) mod required_comparisons;
+pub(crate) mod required_records;
 pub(crate) mod required_scalar_blocks;
 pub(crate) mod restart_references;
 pub(crate) mod scalars;

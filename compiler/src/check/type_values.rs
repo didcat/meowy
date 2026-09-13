@@ -3,6 +3,7 @@ mod booleans;
 mod fields;
 mod integers;
 mod matches;
+mod records;
 mod scalars;
 mod statements;
 
@@ -225,6 +226,21 @@ impl Checker {
                 ));
             }
             return self.scalar_block(expr, &ty);
+        }
+        if matches!(form.kind, ExprKind::Name(_) | ExprKind::Field { .. })
+            && matches!(self.required_hint(expr), Some(Type::Record { .. }))
+        {
+            let module = if let ExprKind::Name(name) = &form.kind {
+                matches!(
+                    self.required_value(name, form.span)?,
+                    Value::FileModule { .. }
+                )
+            } else {
+                false
+            };
+            if !module {
+                return self.type_record(expr, annotation);
+            }
         }
         let scalar = match &form.kind {
             ExprKind::Int(_)

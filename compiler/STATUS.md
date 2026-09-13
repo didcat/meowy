@@ -226,9 +226,11 @@ Dependency-ordered commits:
 
 1. Complete: field sources are separated from runtime IDs and data-type lookup is
    centralized. All 765 library/805 native tests, fmt and Clippy pass unchanged.
-   Log: `/tmp/meowy-required-sources-tests.log`. Commit the prerequisite.
-2. Add scoped record values, eligible source bindings, aliases/projections and scalar
-   field reads. Test kinds, complete ancestor errors, scope, privacy and no runtime storage.
+   Log: `/tmp/meowy-required-sources-tests.log`. Committed as `83cf6e3`.
+2. Complete: scoped record bindings/aliases/projections pass 767 library/807 native
+   tests, fmt and Clippy. Log: `/tmp/meowy-required-records-tests.log`. Materialization
+   checks complete source evidence, clears initializer work and charges retained type
+   shapes; leaf values, ancestor errors, scopes and no runtime storage pass. Commit.
 3. Verify copy/read budgets, module/function use, diagnostics and silent staging;
    update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
