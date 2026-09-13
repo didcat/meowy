@@ -55,9 +55,16 @@ impl Checker {
         locals: &Sources,
     ) -> Option<Input<bool>> {
         let source = self.input_path(id, path)?;
-        let mut input = self
-            .source_record(source.id, locals)?
-            .boolean(&source.path)?;
+        let mut input = if source.path.is_empty() {
+            locals
+                .booleans
+                .get(&source.id)
+                .or_else(|| self.bool_inputs.get(&source.id))?
+                .clone()
+        } else {
+            self.source_record(source.id, locals)?
+                .boolean(&source.path)?
+        };
         input.work = input.work.saturating_add(source.work);
         Some(input)
     }

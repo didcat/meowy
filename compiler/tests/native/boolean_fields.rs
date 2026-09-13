@@ -56,7 +56,7 @@ pub(crate) fn boolean_fields_keep_ancestor_errors_and_effects_in_predicate_reads
 }
 
 #[test]
-pub(crate) fn boolean_fields_keep_integer_and_direct_module_input_gates() {
+pub(crate) fn boolean_fields_keep_integer_and_conditional_module_input_gates() {
     for (source, code) in [
         ("row:{->enabled:true};n<uint8>:{->row.enabled}", "E207"),
         ("row:{->enabled:true};<T>:{v:row.enabled;-><int32>}", "B001"),
@@ -70,7 +70,7 @@ pub(crate) fn boolean_fields_keep_integer_and_direct_module_input_gates() {
     }
     let output = super::file_modules::case(
         "m:@\"./data.mwy\";n:{flag:m.enabled;|flag|->4;|!flag|->2};<T>:{v:n;-><int32>}",
-        &[("data.mwy", "->enabled:true")],
+        &[("data.mwy", "|true|->enabled:true")],
     )
     .command("check", &["--json"]);
     assert_eq!(output.status.code(), Some(1));

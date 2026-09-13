@@ -369,7 +369,7 @@ pub(crate) fn predicate_record_inputs_keep_module_staging_and_boolean_export_gat
     case.runs(b"data\nfacade\n7\n");
     let output = super::file_modules::case(
         "m:@\"./data.mwy\";flag:m.flag;row:{|flag|unused:1;->width:4};<T>:{n:row.width;-><int32>}",
-        &[("data.mwy", "->flag:true")],
+        &[("data.mwy", "|true|->flag:true")],
     )
     .command("check", &["--json"]);
     assert_eq!(output.status.code(), Some(1));

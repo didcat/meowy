@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Typed boolean record-leaf inputs are implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Direct named boolean module-input evidence is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -175,10 +175,20 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan direct immutable named boolean module inputs in `exports.rs` and boolean field
-   lookup. Reuse export source IDs, `bool_inputs` and forwarding work; distinguish empty
-   scalar export paths from record-derived paths. Preserve initializer eligibility,
-   first errors, repeated work, privacy and silent staging in separate validated slices.
-2. Keep boolean module primaries, whole-module records, conditional exports, required
-   boolean/record scratch, float/text comparisons, helpers, packages and borrowed
-   storage separate. Do not push.
+Inspection: export IDs/path/work already distinguish scalar exports from record-derived
+leaves. Capture eligible booleans in `bool_inputs` and resolve empty boolean export
+paths there; nonempty paths keep whole-record evidence. Existing composition forwarding
+can retain both without runtime HIR changes. Boolean module primaries stay gated.
+
+Dependency-ordered commits:
+
+1. Complete: boolean capture and scalar-path lookup pass all 743 library/767 native
+   tests, fmt and Clippy. Log: `/tmp/meowy-boolean-module-tests.log`. Source IDs,
+   retained errors, false values, aliases, re-exports and module gates pass. Boolean
+   primary rejection is tested with an evaluated operand, not an erased identity alias.
+2. Add repeated-work and module-staging integration, update guides/handoffs, and run
+   `python3 -B tools/verify.py --compiler` across the series.
+
+Keep whole-module record inputs, boolean module primaries, conditional exports,
+required boolean/record scratch, wider comparisons, helpers, packages and borrowed
+storage separate. Do not push.

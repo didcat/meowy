@@ -227,3 +227,27 @@ pub(crate) fn composed_record_exports_bound_retained_field_paths() {
         }
     }
 }
+
+#[test]
+pub(crate) fn boolean_exports_retain_source_ids_private_inputs_and_errors() {
+    let parsed = crate::parser::parse_documented("private:true;->enabled:private").unwrap();
+    let mut checker = crate::check::Checker::new();
+    let block = checker.block(&parsed.block, None, None).unwrap();
+    let input = &checker.module.inputs["enabled"];
+    assert!(input.path.is_empty());
+    assert_eq!(input.work, 0);
+    assert_eq!(checker.bool_inputs[&input.id].value, Some(true));
+    assert!(!checker.inputs.contains_key(&input.id));
+    assert!(!checker.module.inputs.contains_key("private"));
+    assert!(
+        matches!(&block.stmts[1], crate::hir::Stmt::Bind { id, value } if *id == input.id && matches!(value.kind, crate::hir::ExprKind::Local(_)))
+    );
+    let source = "record:{->width<uint8>:255};->bad:record.width+1==0";
+    let checker = check(source);
+    let id = checker.module.inputs["bad"].id;
+    let input = &checker.bool_inputs[&id];
+    assert!(input.value.is_none());
+    let error = input.error.as_ref().unwrap();
+    assert_eq!(error.code, "E107");
+    assert_eq!(error.span.start, source.find("record.width+1").unwrap());
+}

@@ -96,6 +96,17 @@ impl Checker {
                 },
             );
         }
+        if let Some(input) = self.boolean_input(value, &value.ty) {
+            self.bool_inputs.insert(id, input);
+            self.module.inputs.insert(
+                name.into(),
+                Input {
+                    id,
+                    path: Vec::new(),
+                    work: 0,
+                },
+            );
+        }
         if let Some(input) = self.record_input(value, &value.ty) {
             self.record_inputs.insert(id, input);
             self.module.inputs.insert(

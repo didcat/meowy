@@ -6,6 +6,7 @@ pub(crate) mod binding_fields;
 pub(crate) mod boolean_blocks;
 pub(crate) mod boolean_equality;
 pub(crate) mod boolean_fields;
+pub(crate) mod boolean_modules;
 pub(crate) mod borrow_syntax;
 pub(crate) mod carried_borrows;
 pub(crate) mod carried_list_borrows;
