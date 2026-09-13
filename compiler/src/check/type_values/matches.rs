@@ -71,7 +71,7 @@ impl Checker {
                     ));
                 };
                 let depth = self.type_work.as_ref().unwrap().depth;
-                self.type_branch_form(body, output.record(), depth, &mut 0)?;
+                self.type_branch_form(body, output.record() || output.infer, depth, &mut 0)?;
                 let ty = self.boolean_form(condition, depth, &mut 0)?;
                 if ty != Type::Bool {
                     return Err(Self::error(

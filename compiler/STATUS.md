@@ -229,10 +229,11 @@ Dependency-ordered commit plan:
 
 1. Complete: scoped evaluation accepts supplied `Output` state and expected-field
    initialization is shared. All 784 library/821 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-inferred-prerequisites.log`.
-2. Add unannotated binding result inference and named record fields, preserving sorted
-   field paths, exact widths, local declarations, shape/work bounds and type results.
-   Include focused checker/native tests; keep inferred composition gated in this slice.
+   Log: `/tmp/meowy-inferred-prerequisites.log`. Committed as `fb8912f`.
+2. Complete: named-field inference retains sorted slots, scoped declarations, exact
+   field widths and type-producing blocks. 786 library/822 native tests, fmt and
+   Clippy pass. Log: `/tmp/meowy-inferred-fields.log`. Inferred composition remains
+   gated in this slice.
 3. Integrate composition into inferred records through existing forwarding, with tests
    for nested records, collisions and source-local scope.
 4. Verify conditional results, skipped work, errors, bounds and documentation/staging;

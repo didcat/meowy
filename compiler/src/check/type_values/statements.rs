@@ -46,8 +46,12 @@ impl Checker {
                 ty,
                 mutable: false,
                 value,
-            } if output.record() => {
-                self.required_record_field(name, ty.as_ref(), value, stmt.span, output)?;
+            } if output.record() || output.infer => {
+                if output.infer {
+                    self.inferred_field(name, ty.as_ref(), value, stmt.span, output)?;
+                } else {
+                    self.required_record_field(name, ty.as_ref(), value, stmt.span, output)?;
+                }
             }
             StmtKind::Emit {
                 label: None,
@@ -57,6 +61,12 @@ impl Checker {
                 value,
             } => {
                 if output.record() {
+                    if output.infer {
+                        return Err(Diagnostic::unsupported(
+                            "inferred required composition",
+                            stmt.span,
+                        ));
+                    }
                     self.compose_required_record(value, stmt.span, output)?;
                 } else {
                     let value = match output.ty.as_ref() {

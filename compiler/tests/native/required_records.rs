@@ -536,3 +536,13 @@ pub(crate) fn inline_required_composition_preserves_module_staging_and_function_
     case.runs(b"data\ntypes\nentry\n7\n");
     super::file_modules::case("source:{->width<uint8>:4};f<int32>:(){<T>:{r<{part<{width<uint8>}>}>:{->{->part:{->{->source}}}};-><int32[r.part.width]>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())", &[]).runs(b"9\n");
 }
+
+#[test]
+pub(crate) fn inferred_required_records_keep_nested_values_and_selected_shapes() {
+    for flag in ["true", "false"] {
+        let source = format!(
+            "<T>:{{flag:{flag};r:{{->z<uint8>:4;->part:{{->width:z}};|flag|->yes:true;|!flag|->no:false}};-><int32[r.part.width]>}};v<T>:[3,7];d:@\"debug\";d.print(v[2])"
+        );
+        case(&source, &[]).runs(b"7\n");
+    }
+}

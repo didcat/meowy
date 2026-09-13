@@ -1,5 +1,6 @@
 mod build;
 mod compose;
+mod inferred;
 mod partial;
 
 use crate::ast::{self, ExprKind};

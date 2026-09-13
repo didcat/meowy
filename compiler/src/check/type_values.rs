@@ -18,6 +18,7 @@ pub(crate) const MAX_NODES: usize = 16384;
 
 #[derive(Default)]
 pub(crate) struct Output {
+    pub(crate) infer: bool,
     pub(crate) ty: Option<Type>,
     pub(crate) value: Option<Value>,
     pub(crate) fields: std::collections::BTreeMap<usize, Value>,
@@ -269,6 +270,9 @@ impl Checker {
                 ));
             }
             return self.scalar_block(expr, &ty);
+        }
+        if matches!(form.kind, ExprKind::Block(_)) {
+            return self.inferred_block(expr);
         }
         if matches!(form.kind, ExprKind::Name(_) | ExprKind::Field { .. })
             && matches!(self.required_hint(expr), Some(Type::Record { .. }))
