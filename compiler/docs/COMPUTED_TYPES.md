@@ -75,8 +75,9 @@ Skipped bodies are checked for supported statement forms, but their initializer 
 type expressions are not resolved or evaluated. Consequently, a skipped type name
 need not resolve, and a skipped nested matcher condition is not read. Supported body
 forms are immutable bindings, local type aliases, primary type emissions and nested
-matchers. Assignment, mutable bindings, standalone expression statements, labeled/named/
-annotated emissions and fallback arms remain gated, including in skipped bodies.
+matchers. In type/scalar result blocks, labeled/named/annotated emissions remain gated.
+Assignment, mutable bindings, standalone expression statements and fallback arms remain
+gated in all required blocks, including skipped bodies.
 
 Reached conditions retain their work even when false. Selected statements and nested
 type construction share the enclosing work/depth/node budgets; skipped bodies add no
@@ -138,9 +139,61 @@ documentation retains the declared widths and resulting constructed type signatu
 
 Eligible local/field/module inputs work in function-scoped required blocks without
 allowing runtime captures. Checking/building remain silent and preserve eager module
-initialization, including failures behind skipped required reads. Float/text/record
-block results, mutable scratch, labeled/named/annotated emissions, unannotated scalar
-blocks and blocks used directly as operator operands remain unsupported.
+initialization, including failures behind skipped required reads. Float/text results,
+mutable scratch, unannotated scalar blocks and blocks used directly as operator operands
+remain unsupported. Scalar result blocks do not accept named field emissions.
+
+## Annotated record construction
+
+A record annotation supplies the complete immutable shape for a required constructor:
+
+```meowy
+<Settings> : <{ enabled <boolean>; part <{ capacity <uint8> }> }>
+<Items> : {
+    settings <Settings> : {
+        -> part : { -> capacity : 4 }
+        | part.capacity >= 4 | -> enabled : true
+        | part.capacity < 4 | -> enabled : false
+    }
+    | settings.enabled | -> <int32[settings.part.capacity]>
+    | !settings.enabled | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Supported shapes are nonempty, have an implicit unit primary, and
+contain only immutable integer, boolean or nested record fields. The existing
+256-total-field and 32-record-level bounds apply. Empty, mutable, nullable, float,
+text, list and reference-bearing shapes remain outside this slice.
+
+Selected named emissions must match expected fields. Unknown fields or incompatible
+field annotations/values report E207; literals inherit the field width, preserving
+E216 for unrepresentable values and E107 for evaluated arithmetic failures. A second
+selected emission into a field reports E205. Every expected field must be initialized
+when the block finishes (E204 otherwise). Explicit primary emissions and primary
+composition remain gated; the unit primary is implicit.
+
+A field name becomes a local binding after its initializer completes, so later fields
+can read it. Ordinary lexical scope still applies: a name emitted inside a matcher
+stays in that matcher's scope. Constructor fields remain recorded across selected
+branches, and completed records expose all fields through normal field selection.
+Nested record/scalar field blocks inherit their field's expected type. An existing
+eligible record or required record alias can initialize a nested record field when
+its complete type matches.
+
+Emissions do not exit the block. Selected tail statements retain their work/errors;
+skipped matcher initializers and annotations are not resolved or evaluated. Skipped
+emissions do not initialize fields. Structural matcher guards still reject mutable,
+labeled and unsupported statement forms. Unannotated block bindings remain type-producing.
+
+Construction produces only a compile-time record, without runtime locals,
+statements or functions. Every record construction/copy charges its type shape to the
+shared node budget; evaluated fields and source copies retain required work/error rules.
+Documentation derives completed field widths and constructed type signatures. Required
+function-scoped reads keep runtime capture gates, and checking/building never run or
+remove module initialization, including failures behind skipped required reads.
 
 ## Required record scratch
 
@@ -191,8 +244,8 @@ required reads. Normal lexical shadowing and scope exit apply. Documentation ret
 record shape and scalar widths. Required aliases do not enable ordinary runtime captures,
 and checking/building never execute initialization or remove runtime startup failures.
 
-Inline record construction, mutable scratch, borrowed fields, whole-module namespace
-records and record-valued block results remain separate. Use an eligible named record
+Unannotated record construction, mutable scratch, borrowed fields and whole-module
+namespace records remain separate. Use an eligible named record
 export such as `module.settings`; copying the module identity itself does not materialize
 its namespace as a record.
 
@@ -312,7 +365,7 @@ and consumes frontend checking work. Evaluation retains the shared required-root
 work/depth bounds; skipped evaluation is not charged. Independent roots reset their
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
 Direct calls, inline operand blocks and unsupported operators remain unavailable even
-in skipped expression syntax. Inline required record construction remains separate.
+in skipped expression syntax. Required record construction needs an explicit expected shape.
 
 ### Integer comparisons
 

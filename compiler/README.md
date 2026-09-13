@@ -64,8 +64,10 @@ initializers or constructing types. Explicitly annotated integer/boolean block b
 reuse this traversal with expected result kinds, nested emissions and tail checks.
 Required record scratch materializes eligible immutable records and subrecords, keeping
 leaf kinds and ancestor evidence without runtime locals. Copies retain bounded type
-shapes; later field reads reuse the materialized value. Float/text comparisons, inline
-record construction, mutable scratch, whole-module records and helpers remain separate.
+shapes; later field reads reuse the materialized value. Explicit record annotations
+also support required construction through typed named fields, nested records and
+matcher-selected emissions. Float/text comparisons, unannotated construction, explicit
+primary composition, mutable scratch, whole-module records and helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

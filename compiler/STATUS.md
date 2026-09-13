@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Annotated required record construction is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Annotated required record construction and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,27 +21,28 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required scopes now materialize eligible immutable records and exported subrecords as
-`Value::Record`, preserving integer/boolean leaf kinds and nested type shapes without
-runtime local IDs. `Value::data_type` shares type lookup; required field `Source` values
-distinguish original local/module inputs from materialized record values.
+Explicit record annotations now construct bounded immutable records during required
+evaluation. `Output` carries expected type, primary value and completed field slots;
+`type_values/records/build.rs` checks named emissions, builds typed leaf paths and
+publishes a `Value::Record` only after every expected field is initialized.
 
-`type_values/records.rs` checks complete source evidence before creating a scoped value.
-Projection cannot hide ancestor errors, effectful tails or unsupported siblings. After
-a successful read, initializer work is cleared in the materialized value: aliases and
-field reads charge their own read/path work, while binding an original source again
-charges its transitive work again. Each record binding charges its type shape to the
-shared node budget. Existing 256-field/32-level eligibility bounds remain intact.
+Selected fields retain exact kinds/widths and optional matching annotations. Missing
+fields report E204, duplicates E205, unknown/incompatible fields E207 and literal
+range errors E216. Each emitted name enters the current lexical scope only after its
+initializer completes; matcher-local names do not escape. Nested record/scalar field
+blocks inherit expected types, and eligible record values can initialize record fields.
 
-Annotations must match the complete record type. Queries, projections, scalar field
-reads, annotated scalar blocks and matcher scopes reuse that shape. Documentation keeps
-record signatures and exact leaf widths. Whole records cannot become integer extents
-or type values, and whole-record equality/whole-module namespace capture remain gated.
+Record shapes keep implicit unit primaries, immutable integer/boolean/nested fields,
+256 total fields and 32 record levels. Explicit primary emissions/composition, empty/
+nullable/mutable/float/text/reference shapes and unannotated construction remain gated.
+Selected tails retain work/errors; skipped matcher expressions are not evaluated.
+All required contexts retain shared scope/work/depth/node budgets and no runtime locals.
 
-Required statement/matcher traversal still preserves expected scalar kinds, primary
-rules, tail errors, scope and root budgets. Function-scoped reads do not grant runtime
-captures. Checking/building remain silent and preserve module initialization, including
-failures behind skipped required reads. Inline record construction remains separate.
+Existing source materialization preserves complete ancestor errors/work before field
+copies, and record construction/copies charge retained type shapes. Documentation
+keeps completed field widths and resulting type signatures. Function-scoped required
+reads do not grant captures, and check/build retain silent eager module initialization,
+including failures behind skipped field reads.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -129,20 +130,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `83cf6e3`: shared type/source lookup; 765 library/805 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-required-sources-tests.log`.
-- `978b40e`: required record materialization; 767 library/807 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-required-records-tests.log`.
-- `02fdfa5`: integration; 769 library/810 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-records-integration-all.log`.
-- Four checker tests and five native groups cover leaf values, no runtime locals,
-  ancestor failures, record/type-node bounds, source versus alias work, shadowing,
-  documentation, annotations, module/function reads and silent initialization.
+- `66bd7c1`: consolidated output state; 769 library/810 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-required-output-tests.log`.
+- `3fe7299`: record construction; 771 library/811 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-record-construction-tests.log`.
+- `345f98b`: integration; 773 library/814 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-record-construction-integration.log`.
+- Four constructor checker tests and four native groups cover leaf kinds, no runtime
+  storage, field/annotation/init errors, completed-field scope, nested/source copies,
+  256-field/32-level boundaries, source/tail work, source spans, docs and module startup.
 - The guide prints `7` in debug/release:
-  `/tmp/meowy-required-records-doc-yg41kpky/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 769
-  library/810 native Rust tests (1579 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-required-records-gate.log`.
+  `/tmp/meowy-record-construction-doc-_d1o3ak4/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 773
+  library/814 native Rust tests (1587 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-record-construction-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -214,29 +215,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: required traversal currently carries separate expected-type and primary
-arguments. Wrap those in result state, then add checked field slots for explicitly
-annotated immutable unit-primary records. Reuse scalar/record readers for field values,
-introduce each emitted name only after its initializer completes, and require every
-field exactly once. Keep implicit unit primaries; explicit primary composition remains
-separate. Reuse existing 256-field/32-level shapes and required root budgets.
+Annotated record construction is complete across `66bd7c1` (output state), `3fe7299`
+(construction) and `345f98b` (integration). The guide and full compiler gate pass.
 
-Dependency-ordered commits:
+Next, plan primary record composition from existing eligible records inside annotated
+required constructors. Read ordinary composition rules and reuse `records/build.rs`,
+required record sources and checked field slots. Record ordered commits first:
 
-1. Complete: required result state is consolidated without behavior changes. All
-   769 library/810 native tests, fmt and Clippy pass. Log:
-   `/tmp/meowy-required-output-tests.log`. Committed as `66bd7c1`.
-2. Complete: named field construction passes 771 library/811 native tests, fmt and
-   Clippy. Log: `/tmp/meowy-record-construction-tests.log`. Nested/source-copy fields,
-   completed-field reads, selected matchers, initialization/kind/width errors and
-   absent runtime storage pass. Committed as `3fe7299`.
-3. Complete: source/tail errors, copy/read work, 256-field/32-level bounds,
-   documentation, labels and module staging pass all 773 library/814 native tests,
-   fmt and Clippy. Log: `/tmp/meowy-record-construction-integration.log`.
-4. Split review: integration plus guides/handoffs would exceed 400 changed lines.
-   Commit integration evidence separately, then finish guides/handoffs and run
-   `python3 -B tools/verify.py --compiler` across the complete series.
+1. Share field-slot insertion/type checking where useful, preserving explicit named
+   emission bindings, duplicate/init diagnostics and existing scalar/type behavior.
+2. Support `-> source` for eligible immutable record values, mapping their field names
+   into the expected shape and charging source evidence once before forwarding fields.
+   Preserve ordinary composition's lexical-binding rules and whole-module namespace gates.
+3. Verify partial/full composition, nested records, collisions, budgets and staging;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep unannotated construction, explicit primary composition, skipped documented
-declarations, standalone branch blocks, fallback arms, mutable/float/text/reference
-fields, whole-module namespaces, helpers and borrowed storage separate. Do not push.
+Keep unannotated constructors, inline partial composition, explicit nonrecord primaries,
+skipped documented declarations, fallback arms, mutable/float/text/reference fields,
+whole-module records, helpers and borrowed storage separate. Do not push.
