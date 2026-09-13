@@ -219,7 +219,7 @@ pub(crate) fn integer_boolean_scratch_preserves_mutation_effect_type_and_capture
     }
     for (source, code) in [
         ("n<uint8>:{ready:true;->ready}", "E207"),
-        ("<T>:{ready:true;-><int32>}", "B001"),
+        ("<T>:{ready:=true;-><int32>}", "B001"),
         (
             "f<int32>:(flag<boolean>){n:{ready:flag;->4};<T>:{value:n;-><int32>};->1}",
             "E211",

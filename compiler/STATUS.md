@@ -202,9 +202,12 @@ Dependency-ordered commits:
 
 1. Complete: checked field paths are separate from integer leaf loading; retained
    work charging accepts `Input<T>`. All 744 library/777 native tests, fmt and Clippy
-   pass unchanged. Log: `/tmp/meowy-required-paths-tests.log`. Commit prerequisite.
-2. Add local boolean scratch and aliases through a separate required boolean reader,
-   with kind/scope/error/work and no-runtime-storage checks. Preserve integer extents.
+   pass unchanged. Log: `/tmp/meowy-required-paths-tests.log`. Committed as `1e997b0`.
+2. Complete: local boolean scratch/aliases materialize directly as `Value::Static`.
+   All 747 library/777 native tests, fmt and Clippy pass. Log:
+   `/tmp/meowy-required-booleans-local.log`. False values, lexical names, kind/scope,
+   retained errors, cached work and no-runtime-storage probes pass. Obsolete native
+   gates now cover mutable scratch. Commit this slice.
 3. Integrate boolean record fields and module named/primary reads, with function-scoped
    required reads and focused native regressions. Keep runtime captures gated.
 4. Verify transitive work, errors and silent staging; update guides/handoffs and run

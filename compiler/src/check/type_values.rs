@@ -1,3 +1,4 @@
+mod booleans;
 mod fields;
 mod scalars;
 

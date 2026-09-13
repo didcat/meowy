@@ -83,11 +83,17 @@ impl Checker {
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
+        let saved = std::mem::replace(&mut self.required, true);
+        let boolean = self.hint(expr) == Some(Type::Bool);
+        self.required = saved;
+        if boolean {
+            return self.type_boolean(expr, annotation);
+        }
         self.scalar_input(expr)?;
         let expected = annotation.map(|ty| self.ty(ty)).transpose()?;
         if expected
             .as_ref()
-            .is_some_and(|ty| !matches!(ty, Type::Int { .. }))
+            .is_some_and(|ty| !matches!(ty, Type::Int { .. } | Type::Bool))
         {
             return Err(Diagnostic::unsupported(
                 "non-integer computed scalar bindings",

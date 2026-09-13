@@ -263,7 +263,7 @@ pub(crate) fn boolean_record_inputs_keep_mutable_effectful_and_capture_boundarie
             "E211",
         ),
         ("row:{->flag:=true;->n:4};<T>:{n:row.n;-><int32>}", "E211"),
-        ("flag:true;<T>:{value:flag;-><int32>}", "B001"),
+        ("flag:true;<T>:{value:=flag;-><int32>}", "B001"),
     ] {
         assert_eq!(
             meowy::compile(source).unwrap_err()[0].code,

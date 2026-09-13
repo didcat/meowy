@@ -59,7 +59,7 @@ pub(crate) fn boolean_blocks_keep_effects_mutation_calls_and_unsupported_record_
 pub(crate) fn boolean_blocks_preserve_integer_block_and_required_scratch_boundaries() {
     for (source, code) in [
         ("n:{flag:=true;->4};<T>:{n:n;-><int32>}", "E211"),
-        ("flag:{->true};<T>:{flag:flag;-><int32>}", "B001"),
+        ("flag:{->true};<T>:{flag:=flag;-><int32>}", "B001"),
     ] {
         assert_eq!(
             meowy::compile(source).unwrap_err()[0].code,

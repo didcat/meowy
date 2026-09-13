@@ -250,7 +250,7 @@ pub(crate) fn computed_integers_reject_runtime_inputs_effects_and_unsupported_sc
         ),
         ("f<int32>:(){->1};<T>:{capacity:1+f();-><int32>}", "B001"),
         ("<T>:{n<float32>:1.0;-><int32>}", "B001"),
-        ("<T>:{n:true;-><int32>}", "B001"),
+        ("<T>:{n:=true;-><int32>}", "B001"),
         ("<T>:{n:1<2;-><int32>}", "B001"),
         ("<T>:{n:=3;-><int32>}", "B001"),
     ] {
