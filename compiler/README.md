@@ -55,8 +55,10 @@ and work through aliases and facades. Checking never runs module initialization.
 Boolean primary predicates preserve mixed-module identity and startup effects.
 Required blocks support immutable boolean scratch from literals, eligible locals,
 fields and module primaries, with retained errors/work and no runtime storage.
-Boolean operators within required blocks, conditional type selection, conditional
-module exports, mutable/record scratch, helpers and full required evaluation remain separate.
+Required booleans support negation, short-circuit logic and equality, with checked
+operand types and work charged only for evaluated inputs. Numeric comparisons,
+conditional type selection, conditional module exports, mutable/record scratch, helpers
+and full required evaluation remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

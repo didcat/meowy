@@ -80,3 +80,56 @@ impl Checker {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ast::{Expr, Span};
+    use crate::check::Constant;
+
+    pub(crate) fn tree(leaves: usize) -> Expr {
+        Expr {
+            span: Span::new(0, 1),
+            kind: if leaves == 1 {
+                ExprKind::Name("false".into())
+            } else {
+                ExprKind::Binary {
+                    op: "||".into(),
+                    left: Box::new(tree(leaves / 2)),
+                    right: Box::new(tree(leaves - leaves / 2)),
+                }
+            },
+        }
+    }
+
+    #[test]
+    pub(crate) fn required_boolean_forms_bound_skipped_trees_without_charging_evaluation() {
+        for leaves in [2047, 2048] {
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let expr = Expr {
+                span: Span::new(0, 1),
+                kind: ExprKind::Binary {
+                    op: "&&".into(),
+                    left: Box::new(tree(1)),
+                    right: Box::new(tree(leaves)),
+                },
+            };
+            let result = checker.type_scalar(&expr, None);
+            if leaves == 2047 {
+                assert!(matches!(
+                    result.unwrap(),
+                    Value::Static {
+                        value: Constant::Bool(false),
+                        ..
+                    }
+                ));
+                assert_eq!(checker.type_work.as_ref().unwrap().visits, 2);
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+                assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+            }
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+        }
+    }
+}

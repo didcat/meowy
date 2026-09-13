@@ -117,11 +117,47 @@ module aliases and type queries preserve the complete module identity. Eligible 
 work across function scopes and through function-local imports without permitting
 ordinary runtime captures. Checking/building never execute module initialization.
 
-Boolean operators, comparisons, inline boolean block expressions and conditional type
-selection inside required blocks remain separate. Compute eligible predicates in an
-ordinary initializer and read the resulting boolean here. Mutable scratch, runtime
-parameters, effectful inputs and helper calls remain unavailable. Names such as `true`
-and `false` follow ordinary lexical lookup and may be shadowed.
+Evaluated runtime parameters and effectful inputs remain unavailable. Mutable scratch
+and helper calls remain separate. Names such as `true` and `false` follow ordinary
+lexical lookup and may be shadowed.
+
+### Boolean operators
+
+Required boolean scratch supports `!`, `&&`, `||`, `==` and `!=` with boolean operands:
+
+```meowy
+settings : { -> enabled : false }
+<Flags> : {
+    enabled : !settings.enabled
+    same : enabled == (settings.enabled || true)
+    skipped : false && settings.enabled
+    -> <(same<>)[2]>
+}
+flags <Flags> : [false, true]
+debug : @"debug"
+debug.print(flags[2])
+```
+
+This prints `true`. All supported operand names, field paths and types are checked
+before evaluation, including skipped operands. Unknown/private names and incompatible
+operand kinds still fail. Logical operators evaluate left-to-right and skip unnecessary
+right operands. Skipped inputs need no initializer evidence and contribute no evaluation
+work or retained errors. An evaluated runtime, mutable or effectful source remains
+unavailable. Module initialization still runs normally, even when a required read is skipped.
+
+Equality evaluates both operands and charges both reads, including repeated reads of
+the same cached source. A true/false left value does not skip the right operand. The
+first evaluated failure stops evaluation and retains its original source span.
+Mixed-module primaries project when compared with a boolean; comparing two complete
+module records remains outside this slice. Use `!module == !module` for explicit
+primary comparisons. Integer/float/text comparisons inside required blocks remain separate.
+
+Operand-tree checking has its own 4096-node/64-level bounds, including skipped syntax,
+and consumes frontend checking work. Evaluation retains the shared required-root
+work/depth bounds; skipped evaluation is not charged. Independent roots reset their
+budgets. These bootstrap limits report B001 and do not implement full-language E220.
+Direct calls, inline boolean blocks and unsupported operators remain unavailable even
+in skipped syntax. Conditional type selection and required record scratch remain separate.
 
 ## Block initializers
 
@@ -367,8 +403,7 @@ including repeated reads of the same cached value. A true or false left value st
 requires eligible right-operand evidence. Evaluation stops at the first error, retaining
 its original span. Logical `&&`/`||` keep their existing short-circuit behavior. This
 applies to ordinary boolean bindings, scalar initializer scratch and record predicates;
-required boolean scratch can read the results, while equality within required type
-blocks remains separate.
+required boolean scratch uses the same evaluation order for boolean equality.
 
 Failed evaluated comparisons or boolean aliases retain the original E107 span,
 including through a later subrecord projection. No branch value is invented after a
@@ -385,7 +420,7 @@ building remain silent, and ordinary runtime conditions and effects are preserve
 Selected branch traversal shares the existing 32-level record-evidence recursion
 bound; predicate traversal shares the 64-level/4096-visit limits. Nested records and
 branches consume depth together. These bootstrap bounds do not implement E220.
-Float/text comparisons and predicate operations inside required type blocks remain unavailable.
+Float/text comparisons remain unavailable; required blocks also keep integer comparisons gated.
 Standalone expression statements in selected branches, loops and conditional module exports are also separate.
 A top-level unconditional export may still forward an eligible record whose own
 initializer contains branches.

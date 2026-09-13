@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Required boolean operators are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Required boolean operators and focused integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,20 +21,24 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required type blocks support immutable boolean literals, eligible local/field/module
-reads, annotations and aliases. `type_values/booleans.rs` reads checked evidence and
-materializes `Value::Static` directly, creating no runtime storage. Scalar dispatch
-uses checked type hints; integer validation/materialization and list extents retain
-their separate path. `required_path` shares checked field lookup across leaf kinds.
-`Work::input<T>` charges retained work/errors for both integers and booleans.
+Required type blocks support boolean `!`, `&&`, `||`, `==` and `!=` over literals,
+static scratch and eligible local/field/module inputs. `booleans/forms.rs` checks all
+supported operand names, paths and types before evaluation, including skipped syntax.
+The bounded check loads no initializer evidence and charges no evaluation visits.
+`booleans.rs::required_boolean` evaluates left-to-right and materializes `Value::Static`
+without runtime storage. Integer validation/materialization and extents stay separate.
 
-Boolean-only module primaries can be read by name; mixed modules require a boolean
-annotation in required scratch. Type queries/identity aliases keep named fields.
-Function-scoped required reads do not grant runtime captures. Each source read charges
-initializer/ancestor work again; reading static scratch charges a local read without
-reevaluating its source. Groups share depth limits and restore depth after failure.
-Boolean operators, inline boolean blocks and conditional type selection within required
-blocks remain separate. Existing ordinary initializers can compute predicates first.
+Logical operators skip unnecessary right reads, including retained work/errors and
+unavailable runtime/mutable/effectful inputs. Direct calls, inline blocks and unsupported
+operators remain outside the checked syntax even when skipped. Equality charges both
+reads unless the left fails; the first evaluated error keeps its original source span.
+Mixed-module primaries project against boolean operands; whole-record equality stays gated.
+
+Each evaluated source read charges initializer/ancestor work again; static scratch
+aliases charge local reads. Evaluation shares required-root work/depth limits. Operand
+checking separately bounds all syntax to 4096 nodes/64 active levels and uses frontend
+flow work. Function-scoped required reads do not grant runtime captures or remove
+runtime initialization. Numeric comparisons and conditional type selection remain separate.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -118,26 +122,24 @@ ownership limits remain independent; these bootstrap limits are not language E22
 
 Unsupported record shapes, selected standalone expression blocks, named/outer emissions,
 mutable scratch and helpers remain unavailable inside scalar initializers. Float/text
-comparisons, boolean operators in required blocks and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
+comparisons, numeric comparisons in required blocks and conditional module exports remain separate. See [COMPUTED_TYPES.md](docs/COMPUTED_TYPES.md#block-initializers).
 
 ## Actual validation
 
-- `1e997b0`: shared required field paths/work charging; 744 library/777 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-required-paths-tests.log`.
-- `ab37924`: local boolean scratch; 747 library/777 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-booleans-local.log`.
-- `a9bd0dc`: boolean field reads; 747 library/780 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-boolean-fields-tests.log`.
-- `27bca1f`: boolean primary reads; 747 library/781 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-required-boolean-primary-tests.log`.
-- Four focused checker tests and seven native groups pass: false values, lexical
-  shadowing, no runtime storage, work/depth limits, static-alias reuse, function scope,
-  kind/privacy/capture gates, original dependency errors and silent diamond startup.
-- The guide prints `false` in debug/release:
-  `/tmp/meowy-required-booleans-doc-pisq05eg/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 748
-  library/784 native Rust tests (1532 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-required-booleans-gate.log`.
+- `e637137`: operand checking and required logical operators; 750 library/786 native
+  tests, fmt and Clippy passed. Log: `/tmp/meowy-required-logic-tests.log`.
+- `0ff01b1`: required boolean equality; 752 library/787 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-required-equality-tests.log`.
+- Nine focused checker tests and 13 native groups pass, including truth values,
+  all-operand shape bounds, no runtime storage, skipped work/errors, equality read
+  costs, first-error ordering, function scopes and kind/privacy/capture gates.
+  Module integration retains original dependency spans, silent check/build, diamond
+  initialization and runtime overflow even after a successful skipped required read.
+- The guide prints `true` in debug/release:
+  `/tmp/meowy-required-operators-doc-j88p9g09/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 753
+  library/790 native Rust tests (1543 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-required-operators-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
@@ -201,7 +203,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, required boolean operators, helper
+Whole-record module inputs, conditional module exports, required numeric comparisons, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -209,25 +211,18 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: required booleans currently read atoms directly without a full operand
-check. Before short-circuit evaluation, check the supported operand tree for names,
-field paths and boolean types, without loading initializer evidence. Bound that check
-with existing depth/work limits and frontend flow accounting; it does not charge
-skipped evaluation work. Direct calls/blocks remain unsupported even when skipped.
+Required boolean operators are complete: `e637137` adds operand checks/logical operators,
+`0ff01b1` adds equality, and the following integration/documentation slice passes the gate.
 
-Dependency-ordered commits:
+Next, plan integer comparisons in required type blocks using `booleans/forms.rs`,
+`type_values/scalars.rs` and existing integer operand context rules. Record ordered commits:
 
-1. Complete: bounded operand checking plus `!`, `&&` and `||` pass 750 library/786
-   native tests, fmt and Clippy. Log: `/tmp/meowy-required-logic-tests.log`. Truth
-   values, no runtime storage, skipped errors/work, name/type checks and scope pass.
-   Committed as `e637137`.
-2. Complete: boolean `==`/`!=` pass 752 library/787 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-required-equality-tests.log`. Truth values, both-read work,
-   first-error ordering, mixed-module projection and record/numeric gates pass.
-   Commit equality separately from logical operators.
-3. Verify repeated/skipped work, original dependency errors and silent initialization;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+1. Resolve exact integer operand widths before evaluation, including literals, fields
+   and module primaries. Preserve E213/E216/E107 and the integer extent path.
+2. Add required integer equality/ordering with left-to-right evidence reads and root
+   budgets; test skipped operands, source failures and function-scoped required reads.
+3. Update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep integer/float/text comparisons inside required blocks, conditional type selection,
-inline boolean blocks, whole-module record inputs, conditional exports, required record
-scratch, helpers, packages and borrowed storage separate. Do not push.
+Keep float/text comparisons, conditional type selection, inline boolean blocks,
+whole-module records, conditional exports, required record scratch, helpers, packages
+and borrowed storage separate. Do not push.
