@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Boolean equality predicate inputs are implemented.
-All ten compiler gate checks passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Typed boolean record-leaf evidence is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -164,11 +164,20 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-1. Plan typed boolean record-leaf evidence in `inputs/records.rs`, record accumulation
-   and predicate field lookup. Start with a behavior-preserving typed leaf representation;
-   do not encode boolean leaves as integer values. Preserve whole-ancestor work/errors,
-   integer widths, record bounds and typed field access before admitting boolean fields.
-   Split representation, eligibility/lookup behavior and integration into reviewable slices.
-2. Keep direct boolean module exports, required boolean/record scratch, float/text
-   comparisons, standalone expression blocks, helpers, packages and borrowed storage
-   separate. Do not push.
+Inspection: record values currently store untyped optional integers. Preserve explicit
+leaf kinds through copies, projections and error-only paths before admitting booleans.
+Reuse whole-record evidence and existing counters; never reinterpret booleans as integers.
+
+Dependency-ordered commits:
+
+1. Complete: typed integer leaf storage preserves eligibility/access. All 741 library/
+   758 native tests, fmt and Clippy passed. Log: `/tmp/meowy-typed-record-leaves-tests.log`.
+2. Admit immutable boolean record fields and retain their typed values/errors/work.
+   Keep integer access typed; test mixed records, ancestor failures and shape bounds.
+3. Add predicate lookup for boolean record paths, including copies and exported records.
+   Keep direct boolean module exports and required-type boolean scratch gated.
+4. Add independent work/staging integration and guides; run the complete compiler gate
+   and update both handoffs. Preserve unit primaries, bounds, privacy and ownership gates.
+
+No float/text comparison, helper purity, package, borrowed-storage or runtime expansion.
+Commit validated slices and do not push.

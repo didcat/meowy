@@ -1,4 +1,4 @@
-use super::{Checker, Record, Sources};
+use super::{Checker, Leaf, Record, Sources};
 use crate::hir::{self, ExprKind, Type};
 use std::collections::BTreeMap;
 
@@ -119,7 +119,10 @@ impl Checker {
                     } else {
                         let input = self.input_expr(value, depth + 1, count, &build.locals)?;
                         build.record.input.add(&input);
-                        build.record.values.insert(vec![index], input.value);
+                        build
+                            .record
+                            .values
+                            .insert(vec![index], Leaf::Int(input.value));
                     }
                 }
                 hir::Stmt::Emit {

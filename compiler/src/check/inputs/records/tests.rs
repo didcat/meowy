@@ -1,3 +1,4 @@
+use super::Leaf;
 use crate::check::inputs::tests::check;
 
 #[test]
@@ -7,7 +8,7 @@ pub(crate) fn record_inputs_preserve_field_order_aliases_and_local_emission_depe
     for record in checker.record_inputs.values() {
         assert_eq!(
             record.values.values().copied().collect::<Vec<_>>(),
-            [Some(4), Some(3)]
+            [Leaf::Int(Some(4)), Leaf::Int(Some(3))]
         );
         assert!(record.input.error.is_none());
     }
@@ -37,7 +38,7 @@ pub(crate) fn record_inputs_retain_whole_initializer_errors_and_field_limits() {
     assert_eq!(record.input.error.as_ref().unwrap().code, "E107");
     assert_eq!(
         record.values.values().copied().collect::<Vec<_>>(),
-        [None, Some(4)]
+        [Leaf::Int(None), Leaf::Int(Some(4))]
     );
     let fields = (0..257).map(|id| format!("->n{id}:1;")).collect::<String>();
     assert!(check(&format!("row:{{{fields}}}")).record_inputs.is_empty());
@@ -116,8 +117,8 @@ pub(crate) fn record_fields_require_whole_record_purity_and_retain_error_spans()
 pub(crate) fn nested_record_evidence_keeps_paths_and_scoped_record_aliases() {
     let checker = check("row:{->z:{->width<uint8>:3};copy:z;->a:copy}");
     let record = checker.record_inputs.values().last().unwrap();
-    assert_eq!(record.values.get(&vec![0, 0]), Some(&Some(3)));
-    assert_eq!(record.values.get(&vec![1, 0]), Some(&Some(3)));
+    assert_eq!(record.values.get(&vec![0, 0]), Some(&Leaf::Int(Some(3))));
+    assert_eq!(record.values.get(&vec![1, 0]), Some(&Leaf::Int(Some(3))));
     assert!(record.input.error.is_none());
 }
 

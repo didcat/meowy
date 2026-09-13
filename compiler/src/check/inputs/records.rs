@@ -8,10 +8,15 @@ use std::collections::BTreeMap;
 pub(crate) const MAX_FIELDS: usize = 256;
 pub(crate) const MAX_DEPTH: usize = 32;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Leaf {
+    Int(Option<i128>),
+}
+
 #[derive(Clone, Debug)]
 pub(crate) struct Record {
     pub(crate) input: Input,
-    pub(crate) values: BTreeMap<Vec<usize>, Option<i128>>,
+    pub(crate) values: BTreeMap<Vec<usize>, Leaf>,
 }
 
 impl Record {
@@ -25,7 +30,7 @@ impl Record {
         while let Some((path, ty)) = pending.pop() {
             match ty {
                 Type::Int { .. } => {
-                    self.values.insert(path, None);
+                    self.values.insert(path, Leaf::Int(None));
                 }
                 Type::Record { fields, .. } => {
                     for (index, field) in fields.iter().enumerate() {
@@ -41,7 +46,7 @@ impl Record {
     }
 
     pub(crate) fn field(&self, path: &[usize]) -> Option<Input> {
-        let value = *self.values.get(path)?;
+        let Leaf::Int(value) = *self.values.get(path)?;
         let mut input = self.input.clone();
         input.work = input.work.saturating_add(path.len());
         input.value = if input.error.is_none() { value } else { None };
