@@ -2,9 +2,10 @@ mod booleans;
 mod fields;
 mod integers;
 mod scalars;
+mod statements;
 
-use super::{Checker, Result, Scope, Spec, Value, inputs::Input};
-use crate::ast::{self, ExprKind, Span, StmtKind};
+use super::{Checker, Result, Scope, Value, inputs::Input};
+use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
@@ -170,9 +171,17 @@ impl Checker {
             ));
         }
         self.scopes.push(Scope::default());
-        let result = self.type_statements(block);
+        let mut primary = None;
+        let result = self.type_statements(&block.stmts, &mut primary);
         self.scopes.pop();
-        result
+        result?;
+        primary.ok_or_else(|| {
+            Self::error(
+                "E211",
+                "computed block does not emit a compile-time type",
+                block.span,
+            )
+        })
     }
 
     pub(crate) fn type_binding(
@@ -219,72 +228,6 @@ impl Checker {
             return self.type_value(expr).map(Value::Type);
         }
         self.type_scalar(expr, annotation)
-    }
-
-    pub(crate) fn type_statements(&mut self, block: &ast::Block) -> Result<Type> {
-        let mut result = None;
-        for stmt in &block.stmts {
-            self.type_work.as_mut().unwrap().spend(stmt.span)?;
-            match &stmt.kind {
-                StmtKind::Bind {
-                    name,
-                    ty,
-                    mutable: false,
-                    value,
-                } => {
-                    let value = self.type_binding(value, ty.as_ref())?;
-                    self.declare(name, value, stmt.span)?;
-                }
-                StmtKind::TypeAlias {
-                    name,
-                    ty,
-                    exported: false,
-                } => {
-                    self.declare_type(name, ty, false, stmt.span)?;
-                    let spec = &self.scopes.last().unwrap().types[name];
-                    let work = self.type_work.as_mut().unwrap();
-                    match spec {
-                        Spec::Data(ty) => work.materialize(ty, stmt.span)?,
-                        Spec::Function { params, result } => {
-                            for ty in params.iter().chain(std::iter::once(result)) {
-                                work.materialize(ty, stmt.span)?;
-                            }
-                        }
-                    }
-                }
-                StmtKind::Emit {
-                    label: None,
-                    name: None,
-                    ty: None,
-                    mutable: false,
-                    value,
-                } => {
-                    let ty = self.type_value(value)?;
-                    if result.replace(ty).is_some() {
-                        return Err(Self::error(
-                            "E205",
-                            "computed type primary may be emitted twice",
-                            stmt.span,
-                        ));
-                    }
-                }
-                StmtKind::Expr(value) => return Err(self.type_unavailable(value)?),
-                _ => {
-                    return Err(Diagnostic::unsupported(
-                        "computed type block statement",
-                        stmt.span,
-                    ));
-                }
-            }
-            self.doc_stage(stmt.span.start)?;
-        }
-        result.ok_or_else(|| {
-            Self::error(
-                "E211",
-                "computed block does not emit a compile-time type",
-                block.span,
-            )
-        })
     }
 }
 

@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Required integer comparisons and focused integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Conditional type selection is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -212,20 +212,27 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Required integer comparisons are complete across `0a0e600` (shared materialization),
-`e290793` (operand checking) and `917dd51` (evaluation). The following integration/
-documentation slice passes the final gate and guide execution.
+Contract inspection: matchers are independent; emissions do not exit a block and nested
+unnamed emissions stay inside that block. Support direct conditional type emissions
+and `| condition | -> { ... }` for scoped nested construction. Standalone branch blocks
+remain gated rather than becoming transparent parent emissions.
 
-Next, plan conditional type selection in `src/check/type_values.rs`. Read the matcher
-and compile-time contracts before choosing skipped-branch validation. Record ordered commits:
+Skipped bodies are structurally checked for supported statement forms; their initializer
+and type expressions are not resolved/evaluated. This bounded selection follows the
+required-evaluation rule that unevaluated branches contribute no evaluation work. Reached
+conditions use existing typed boolean checking/evidence; skipped nested conditions are
+not evaluated. Document this boundary and test it explicitly.
 
-1. Separate required statement traversal/state where needed, preserving lexical scope,
-   one primary type result, tail checking and shared work/depth/node budgets.
-2. Add bounded matcher selection using checked required booleans. Preserve evaluated
-   condition work/errors, branch-local scope and duplicate/missing primary diagnostics.
-3. Verify selected/skipped branches, nested aliases, function scopes and silent staging;
-   update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+Dependency-ordered commits:
 
-Keep float/text comparisons, inline boolean blocks, whole-module records, conditional
-module exports, required record scratch, helpers, packages and borrowed storage separate.
-Do not push.
+1. Complete: statement traversal is extracted and shares a primary-result accumulator.
+   All 756 library/795 native tests, fmt and Clippy pass unchanged. Log:
+   `/tmp/meowy-type-statements-tests.log`. Commit the prerequisite.
+2. Add bounded matcher selection, branch scope and structural guards. Test selection,
+   nested construction, skipped evaluation, primary diagnostics and error recovery.
+3. Add module/function, budget, source-span and staging integration; update guides and
+   both handoffs, then run `python3 -B tools/verify.py --compiler` across the series.
+
+Keep float/text comparisons, inline boolean blocks, standalone branch blocks, fallback
+arms, whole-module records, conditional module exports, required record scratch, helpers,
+packages and borrowed storage separate. Do not push.
