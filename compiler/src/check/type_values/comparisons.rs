@@ -1,5 +1,7 @@
+mod blocks;
+
 use crate::ast;
-use crate::check::{Checker, Result};
+use crate::check::{Checker, Constant, Result, Value};
 use crate::hir::Type;
 
 impl Checker {
@@ -40,6 +42,30 @@ impl Checker {
         left: &ast::Expr,
         right: &ast::Expr,
     ) -> Result<Option<bool>> {
+        if self.integer_blocks(left)? || self.integer_blocks(right)? {
+            let context = self.block_comparison_form(
+                op,
+                left,
+                right,
+                self.type_work.as_ref().unwrap().depth,
+                &mut 0,
+            )?;
+            let Value::Static {
+                value: Constant::Int(a),
+                ty,
+            } = self.integer_arithmetic(left, context.as_ref())?
+            else {
+                unreachable!()
+            };
+            let Value::Static {
+                value: Constant::Int(b),
+                ..
+            } = self.integer_arithmetic(right, Some(&ty))?
+            else {
+                unreachable!()
+            };
+            return Ok(Some(Self::compare_integers(op, a, b)));
+        }
         let Some(ty) = self.integer_comparison_form(
             op,
             left,

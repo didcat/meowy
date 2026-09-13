@@ -234,8 +234,11 @@ Dependency-ordered commit plan:
 1. Complete: integer comparison validation/execution lives in `comparisons.rs`;
    diagnostics, boolean fallback and evaluation costs are preserved. 800 library/832
    native tests, fmt and Clippy pass. Log: `/tmp/meowy-comparison-refactor.log`.
-2. Add bounded deferred operand forms and selected integer block comparisons, keeping
-   short-circuited blocks unevaluated. Include focused acceptance/rejection tests.
+   Committed as `803eda8`.
+2. Complete: deferred operand forms validate supported block statements and known
+   outer kinds without evaluating local initializers. All six selected comparisons,
+   widths and short circuits pass 802 library/833 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-block-comparisons.log`.
 3. Verify exact work, deferred widths, statement gates, source errors, skipped paths,
    documentation and module/function staging.
 4. Update guides/handoffs, run the guide in both profiles and run the full compiler gate.

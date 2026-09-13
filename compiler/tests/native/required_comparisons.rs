@@ -173,3 +173,25 @@ pub(crate) fn required_comparisons_check_silently_and_keep_diamond_startup() {
     }
     case.runs(b"data\nbad\na\nb\nentry\nfalse\n");
 }
+
+#[test]
+pub(crate) fn integer_block_comparisons_execute_selected_and_short_circuited_results() {
+    for (op, capacity) in [
+        ("==", 2),
+        ("!=", 4),
+        ("<", 4),
+        (">", 2),
+        ("<=", 4),
+        (">=", 2),
+    ] {
+        let source = format!(
+            "<T>:{{flag:({{->2}}){op}({{->3}});skip:false&&(({{->missing()}})==({{->1/0}}));|flag|-><int32[4]>;|!flag|-><int32[2]>}};v<T>:[3,7];d:@\"debug\";d.print(v[2])"
+        );
+        case(&source, &[]).runs(b"7\n");
+        let values = vec!["1"; capacity + 1].join(",");
+        let output =
+            case(&format!("{source};extra<T>:[{values}]"), &[]).command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E103\""));
+    }
+}
