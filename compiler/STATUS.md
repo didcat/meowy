@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-12. Required boolean operators and focused integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-12. Required integer comparisons are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -211,17 +211,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Required boolean operators are complete: `e637137` adds operand checks/logical operators,
-`0ff01b1` adds equality, and the following integration/documentation slice passes the gate.
+Inspection: comparisons need width/literal checking without initializer reads for
+skipped operands. Reuse lexical type hints and existing integer literal/context rules.
+Evaluated operands must reuse required integer validation/materialization, preserving
+integer scratch/extents and stopping before the right operand if the left fails.
 
-Next, plan integer comparisons in required type blocks using `booleans/forms.rs`,
-`type_values/scalars.rs` and existing integer operand context rules. Record ordered commits:
+Dependency-ordered commits:
 
-1. Resolve exact integer operand widths before evaluation, including literals, fields
-   and module primaries. Preserve E213/E216/E107 and the integer extent path.
-2. Add required integer equality/ordering with left-to-right evidence reads and root
-   budgets; test skipped operands, source failures and function-scoped required reads.
-3. Update guides/handoffs and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: required hints and integer result materialization are extracted without
+   behavior changes. All 753 library/790 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-integer-result-tests.log`. Commit the prerequisite.
+2. Check integer operand shapes with exact contexts, including arithmetic, literals,
+   fields and module primaries. Keep comparisons gated until evaluation is connected;
+   validate width/sign/literal diagnostics and bounded skipped-operand checking.
+3. Enable required integer equality/ordering with focused value, scope, error and
+   eligibility regressions. Preserve boolean and whole-record comparison rules.
+4. Verify transitive work, skipped inputs, dependency spans and initialization;
+   update guides/handoffs and run `python3 -B tools/verify.py --compiler`.
 
 Keep float/text comparisons, conditional type selection, inline boolean blocks,
 whole-module records, conditional exports, required record scratch, helpers, packages

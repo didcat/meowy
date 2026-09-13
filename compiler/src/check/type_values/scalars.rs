@@ -11,6 +11,13 @@ impl Checker {
         result
     }
 
+    pub(crate) fn required_hint(&mut self, expr: &ast::Expr) -> Option<Type> {
+        let saved = std::mem::replace(&mut self.required, true);
+        let ty = self.hint(expr);
+        self.required = saved;
+        ty
+    }
+
     pub(crate) fn required_primary(&self, id: usize, span: Span) -> Result<Input> {
         self.module_integer(id).cloned().ok_or_else(|| {
             Self::error(
@@ -83,16 +90,14 @@ impl Checker {
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
-        let saved = std::mem::replace(&mut self.required, true);
         let mut form = expr;
         while let ExprKind::Group(value) = &form.kind {
             form = value;
         }
         let boolean = matches!(&form.kind, ExprKind::Unary { op, .. } if op == "!")
             || self
-                .hint(expr)
+                .required_hint(expr)
                 .is_some_and(|ty| Self::primary_type(&ty) == Type::Bool);
-        self.required = saved;
         if boolean {
             return self.type_boolean(expr, annotation);
         }
@@ -107,9 +112,17 @@ impl Checker {
                 expr.span,
             ));
         }
+        self.integer_result(expr, expected.as_ref())
+    }
+
+    pub(crate) fn integer_result(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<Value> {
         let reach = std::mem::replace(&mut self.reach, crate::flow::TRUE);
         let required = std::mem::replace(&mut self.required, true);
-        let result = self.expr(expr, expected.as_ref());
+        let result = self.expr(expr, expected);
         self.reach = reach;
         self.required = required;
         let expr = result?;
