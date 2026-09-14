@@ -87,7 +87,7 @@ copies add no entries. These are B001 bootstrap limits, not E220 logical account
 Query evaluation, scalar projections, assertions, place queries, required-block
 query construction and general generic specialization remain unavailable.
 
-## Logical type materialization accounting
+## Logical required-evaluation accounting
 
 Existing required type roots now carry an independent logical ledger. Each
 materialized type node charges one evaluation step and one constructed type node,
@@ -100,8 +100,15 @@ Charges are atomic and checked for integer overflow. E220 identifies the root an
 exhausted counter; a caught failure remains fatal for that root and prevents later
 nested evaluation. Root state is cleared on completion or failure.
 
-This is partial accounting: steps currently cover type materialization only.
-General expression/statement and retained-input charges, aggregate slots, text,
+Evaluated required statements and blocks each add one logical step. Boolean
+operators and value reads add one step per evaluated outer expression node.
+Parentheses, form checks and skipped operands/bodies add no evaluation charges.
+Delegated boolean blocks are charged at block execution, so wrapper paths do not
+count them again. Repeated boolean reads are separate steps; retained bootstrap
+initializer visits are not copied into the logical ledger.
+
+This remains partial accounting. Integer and other type-expression evaluation,
+projection ancestors and retained initializer work, aggregate slots, text,
 source-helper depth and deferred-query budget retention remain unimplemented.
 The lower existing bootstrap limits still fail with B001 first; their counters are
 not treated as language work. Logical-limit boundaries are tested internally,

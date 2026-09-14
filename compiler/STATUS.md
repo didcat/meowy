@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-14. Required roots now track logical type materialization separately.
+Updated: 2026-09-14. Logical charges now cover required statements, blocks and boolean evaluation.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -59,8 +59,9 @@ outcome is constructed. The reference remains authoritative.
   Existing constant folding or `inputs` evidence cannot provide this guarantee.
 - `type_values/work.rs::Work` retains bootstrap limits (4096 visits, 64 levels,
   16384 nodes), with B001 failures. Its separate `required::Budget` currently charges
-  type materialization only. Other step sources, aggregate/text/helper counters and
-  pending-query budget retention remain prerequisites. Never relabel B001 as E220.
+  type materialization, required statements/blocks and outer boolean evaluation.
+  Integer/projection/input work, aggregate/text/helper counters and pending-query
+  budget retention remain prerequisites. Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
   explicitly Never, but `Type::is_copy` currently returns true for `Type::Never`;
@@ -72,30 +73,30 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Statement and boolean charging plan
+### Statement and boolean logical charges
 
-Charge ownership from the trace:
-- `type_statement` owns one charge per evaluated required statement. Structural
-  `type_branch_form` checks and skipped matcher bodies contribute no such charge.
-- `scoped_output` owns the evaluated block node for type, scalar and record blocks;
-  `scalar_block`/`inferred_block`/group wrappers must not charge it again.
-- `required_boolean` owns evaluated non-group/non-block boolean expression nodes.
-  Recursive dispatch follows short-circuit selection; delegated block execution
-  owns its node. Form checks and legacy retained Input.work remain separate.
-- Integer evaluation, type-expression dispatch beyond materialization, projection
-  ancestors and retained initializer accounting need separate ownership work.
+`92a0dfc` charges one logical step in `type_statement` for each evaluated required
+statement and in `scoped_output` for each evaluated type/scalar/record block.
+Structural branch checks and skipped bodies do not spend these charges. Delegating
+wrappers such as `scalar_block` and `inferred_block` do not count blocks again.
 
-Commit order: (1) statement/block charges and boundary/skip/error tests;
-(2) boolean node charges, grouping, short-circuit and read tests;
-(3) integration documentation/handoffs and the complete compiler gate. Keep all
-bootstrap counters unchanged and proof evaluation gated. Statement/block charging
-now passes all 119 required-evaluation tests, including three new accounting groups.
-Log: `/tmp/meowy-statement-charges.log`. No outstanding failures; next is boolean
-expression charging. Statement/block commit: `92a0dfc`. The boolean hook now
-charges non-group/non-block nodes in its actual evaluator; blocks remain owned
-by scoped_output. All 123 required-evaluation tests pass, including four focused
-boolean accounting groups. Log: `/tmp/meowy-boolean-charges.log`. No outstanding
-failures. Next: integration tests/docs and the full compiler gate.
+`5f0cace` charges evaluated non-group/non-block outer nodes in `required_boolean`.
+Short-circuit selection determines which operands spend work. Block execution
+owns its own charge; parentheses and form validation spend no logical steps.
+Boolean equality reads each operand separately, and an input failure retains its
+original span. Legacy Input.work still enforces bootstrap eligibility/bounds and
+is not copied into logical step counters.
+
+All 119 required-evaluation tests passed after statements; all 123 passed after
+booleans. Nine accounting groups now cover exact counts, selected/skipped paths,
+grouping, repeated reads, primitive/block equality, logical step limits, nested
+failure cleanup and independent roots. Logs: `/tmp/meowy-statement-charges.log`,
+`/tmp/meowy-boolean-charges.log`, `/tmp/meowy-charge-integration.log`.
+The complete compiler gate passes. No outstanding failures remain.
+
+Remaining domains: integer evaluation, type-expression dispatch beyond type
+materialization, projection ancestors and retained initializer work, aggregate/text
+and helper charges, and pending-query budget retention. Proof evaluation stays gated.
 
 ### Logical type accounting
 
@@ -122,10 +123,10 @@ logical tests pass after integration. Logs: `/tmp/meowy-logical-type-ledger.log`
 no outstanding failures remain. Span is now imported directly by the legacy test
 module that uses it, so production and test lint checks both pass.
 
-Next: define and wire the remaining logical charging domains without copying
-bootstrap traversal counts. General expression/statement and retained-input work,
-aggregate/text/helper counters and pending-query budget retention are not yet
-implemented. Preserve B001 infrastructure limits and keep proof evaluation gated.
+Statement/block and boolean charging now extend this ledger. Remaining logical
+domains must not copy bootstrap traversal counts; integer/type-expression dispatch,
+projection/input work, aggregate/text/helper counters and pending-query budget
+retention are still open. Preserve B001 infrastructure limits and keep proof evaluation gated.
 
 ### Deferred copy-query integration
 
@@ -442,21 +443,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 868
-  library/878 native tests (1746 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 877
+  library/878 native tests (1755 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-logical-type-gate.log`.
-- Root extraction passed the same 111 baseline required-evaluation tests plus a
-  nested-sharing/cleanup regression. The ledger passed 223 checker tests before
-  source integration. Logs: `/tmp/meowy-required-root-before.log`,
-  `/tmp/meowy-required-root-after.log`, `/tmp/meowy-logical-type-ledger.log`.
-- Six focused ledger/integration tests verify logical boundaries, overflow and
-  atomic charges, sticky failures, shared root spans, repeated materialization,
-  real metatype bindings, skipped constructors and original failure cleanup.
-  Log: `/tmp/meowy-logical-root-integration.log` (ten selected tests total).
+  debug/release. Log: `/tmp/meowy-statement-boolean-gate.log`.
+- Statement/block charging passed 119 required-evaluation tests; boolean charging
+  passed 123. Logs: `/tmp/meowy-statement-charges.log`,
+  `/tmp/meowy-boolean-charges.log`.
+- Nine accounting integration groups pass: exact counts, grouping, skipped and
+  selected paths, repeated reads, block equality, nested budget failures, scope/depth
+  cleanup, independent roots and original input errors. Log:
+  `/tmp/meowy-charge-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Full accounting and proof evaluation remain
-  incomplete. No unsupported query counts as successful conformance.
+  lower B001 bootstrap limits first. Integer and other charging domains and proof
+  evaluation remain incomplete. No unsupported query counts as conformance success.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -530,14 +530,15 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Extend the partial ledger in `check/required.rs` and `type_values/work.rs`:
-   first trace logical expression/statement charges through `type_values/{scalars,
-   booleans,statements}.rs` and retained evidence in `inputs.rs`. Record charge
-   ownership before changing counters; grouping/skipped work must not be charged
-   as evaluated expressions. Add focused repeated-input, short-circuit, nested-root
-   and failure tests with each domain. Aggregate/text/helper counters and retaining
-   a query's consumed root budget are subsequent slices. Keep proof outcomes gated
-   until complete accounting and dependency tracking are connected.
+1. Trace integer charge ownership through `type_values/scalars.rs::scalar_input`,
+   `integer_result`, `integers.rs`, `operands.rs`, `list.rs` and runtime expression
+   folding before adding logical hooks. Avoid charging eligibility walks as
+   evaluation or charging delegated block nodes twice. Keep retained Input.work
+   separate from logical reads/materialization. Record the next commit slices and
+   test grouping, first-error order, repeated operands and skipped comparisons.
+   Projection ancestors, other type-expression dispatch, aggregate/text/helper
+   counters and pending-query budget retention remain subsequent work. Keep proof
+   outcomes gated until complete accounting and dependency tracking are connected.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.

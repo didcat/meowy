@@ -19,9 +19,10 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
-Required type materialization now has a separate logical ledger with shared nested
-roots, original root spans and sticky budget failures. Other accounting domains
-and proof evaluation remain incomplete; bootstrap limits still report B001.
+The logical ledger now charges type materialization, evaluated required statements
+and blocks, and selected boolean evaluation. Nested roots retain original spans
+and sticky failures; grouping, form checks and skipped branches spend no evaluation
+steps. Other accounting domains and proof evaluation remain incomplete.
 
 The partial proof package now exposes typed revision metadata and opaque descriptor
 type aliases through local bindings and file facades. Type-only copy queries now
@@ -57,26 +58,24 @@ direct required reads pass focused checker/native tests and the full compiler ga
 Proof evaluation remains unimplemented. Opaque descriptor type aliases now preserve nominal identities
 and reject runtime storage; the final compiler gate passes.
 Pending query copies retain source origins without runtime storage. The next
-prerequisite is completing logical charges beyond type materialization; query
-outcomes remain gated.
+prerequisite is integer and remaining logical charging; query outcomes remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 868
-  library/878 native tests (1746 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 877
+  library/878 native tests (1755 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-logical-type-gate.log`.
-- Root extraction passed the same 111 baseline required-evaluation tests plus a
-  nested-sharing/cleanup regression. The ledger passed 223 checker tests before
-  source integration. Logs: `/tmp/meowy-required-root-before.log`,
-  `/tmp/meowy-required-root-after.log`, `/tmp/meowy-logical-type-ledger.log`.
-- Six focused ledger/integration tests verify logical boundaries, overflow and
-  atomic charges, sticky failures, shared root spans, repeated materialization,
-  real metatype bindings, skipped constructors and original failure cleanup.
-  Log: `/tmp/meowy-logical-root-integration.log` (ten selected tests total).
+  debug/release. Log: `/tmp/meowy-statement-boolean-gate.log`.
+- Statement/block charging passed 119 required-evaluation tests; boolean charging
+  passed 123. Logs: `/tmp/meowy-statement-charges.log`,
+  `/tmp/meowy-boolean-charges.log`.
+- Nine accounting integration groups pass: exact counts, grouping, skipped and
+  selected paths, repeated reads, block equality, nested budget failures, scope/depth
+  cleanup, independent roots and original input errors. Log:
+  `/tmp/meowy-charge-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Full accounting and proof evaluation remain
-  incomplete. No unsupported query counts as successful conformance.
+  lower B001 bootstrap limits first. Integer and other charging domains and proof
+  evaluation remain incomplete. No unsupported query counts as conformance success.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -85,7 +84,7 @@ outcomes remain gated.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Required roots track logical type materialization separately from bootstrap work; proof evaluation remains gated. |
+| Compiler | Logical charges cover type materialization, required statements/blocks and boolean evaluation; proof evaluation remains gated. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -121,8 +120,8 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Extend the logical type ledger to expression/statement and retained-input work,
-   then aggregate/text/helper counters and deferred-query budgets. Keep bootstrap
+1. Extend logical charging to integer evaluation and retained-input work, then
+   projection/type-expression details, aggregate/text/helper counters and query budgets. Keep bootstrap
    guards separate. Pending query identities and the post-ownership B001 gate are
    implemented; outcomes and flags remain gated. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered

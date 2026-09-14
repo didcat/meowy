@@ -193,3 +193,46 @@ pub(crate) fn logical_boolean_reads_do_not_reuse_bootstrap_initializer_counts() 
         assert_eq!(error.span, Span::new(17, 20));
     }
 }
+
+#[test]
+pub(crate) fn logical_control_and_boolean_blocks_combine_without_duplicate_charges() {
+    assert_eq!(cost("flag:true;|flag|x:1;->7"), (7, 0));
+    assert_eq!(cost("flag:false;|flag|x:1;->7"), (6, 0));
+    assert_eq!(cost("flag:{->true};|flag|x:1;->7"), (9, 0));
+    assert_eq!(cost("flag:(({->true}));|flag|x:1;->7"), (9, 0));
+    assert_eq!(
+        boolean_cost("({->true})==({->false})", &mut Checker::new()).unwrap(),
+        7
+    );
+    assert_eq!(
+        boolean_cost("!(({->false}))", &mut Checker::new()).unwrap(),
+        4
+    );
+}
+
+#[test]
+pub(crate) fn logical_nested_boolean_failures_keep_outer_root_and_block_scope() {
+    let block = crate::parser::parse("flag:!({->true});->7").unwrap();
+    let root = Span::new(200, 240);
+    let mut checker = Checker::new();
+    let scopes = checker.scopes.len();
+    let error = checker
+        .required_root(root, |checker| {
+            checker.type_work.as_mut().unwrap().logical.steps = MAX_STEPS - 4;
+            checker
+                .required_block(
+                    &block,
+                    Some(&Type::Int {
+                        bits: 32,
+                        signed: true,
+                    }),
+                )
+                .map(|_| ())
+        })
+        .unwrap_err();
+    assert_eq!(error.code, "E220");
+    assert_eq!(error.span, root);
+    assert_eq!(checker.scopes.len(), scopes);
+    assert!(checker.type_work.is_none());
+    assert_eq!(boolean_cost("!({->true})", &mut checker).unwrap(), 4);
+}
