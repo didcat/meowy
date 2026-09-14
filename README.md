@@ -110,7 +110,7 @@ CLI that converts dates between six calendar systems, including Chinese.
 - [Vim and Neovim support](editor/nvim/README.md) provides syntax highlighting,
   file detection, and buffer settings.
 
-Inspired by Smalltalk, OCaml, Rust, Zig, Go, and Lisp.
+Inspired by Smalltalk, OCaml, Rust, Zig, Go, Lisp, and my cat.
 
 ## License
 
