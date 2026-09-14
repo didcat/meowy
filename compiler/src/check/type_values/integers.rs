@@ -56,7 +56,10 @@ impl Checker {
                         )
                     })?,
             ),
-            ExprKind::Field { .. } => Self::primary_type(&self.required_path(expr)?.1),
+            ExprKind::Field { .. } => match self.static_integer(expr)? {
+                Some((ty, _)) => ty,
+                None => Self::primary_type(&self.required_path(expr)?.1),
+            },
             ExprKind::Group(value) => return self.integer_form(value, expected, depth + 1, count),
             ExprKind::Unary { op, value } if matches!(op.as_str(), "-" | "~") => {
                 if op == "-"

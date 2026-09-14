@@ -503,3 +503,15 @@ pub(crate) fn proof_revision_materializes_uint32_without_package_startup() {
     assert!(program.functions.is_empty());
     assert!(program.locals.is_empty());
 }
+
+#[test]
+pub(crate) fn proof_revision_required_reads_preserve_facades_and_widths() {
+    Case::new(r#"p:@"proof";d:@"debug";<T>:{ok:p.revision==1;kind:p.revision<> == <uint32>;|ok&&kind|-><uint8[p.revision+1]>};x<T>:[7,8];d.print(x[2]);f<uint32>:(){<U>:{n:p.revision;-><uint32[n]>};x<U>:[9];->x[1]};d.print(f())"#).runs(b"8\n9\n");
+    case(
+        r#"m:@"./facade.mwy";d:@"debug";<T>:{same:m.revision<> == <uint32>;|same|-><uint8[m.revision]>};x<T>:[7];d.print(x[1])"#,
+        &[
+            ("data.mwy", r#"p:@"proof";d:@"debug";d.print("data");->revision:p.revision"#),
+            ("facade.mwy", r#"m:@"./data.mwy";d:@"debug";d.print("facade");->revision:m.revision"#),
+        ],
+    ).runs(b"data\nfacade\n7\n");
+}

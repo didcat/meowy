@@ -42,36 +42,33 @@ release qualification remains incomplete.
 
 The first executable proof series is now planned: bounded type-only copy queries,
 static descriptors and assertions. Phase/dependency tracking and logical root
-accounting must precede query execution. Partial module/revision metadata passes
-focused checker/native tests, but proof queries remain unimplemented. Direct
-required member reads and the final compiler gate are next.
+accounting must precede query execution. Partial module/revision metadata and
+direct required reads pass focused checker/native tests and the full compiler gate. Proof queries remain
+unimplemented; descriptor representation is the next implementation slice.
 
 ## Actual validation
 
-- Proof planning: source/reference inspection and all four default
-  `python3 -B tools/verify.py` checks pass, including 16 tooling tests.
-  Log: `/tmp/meowy-proof-plan-checks.log`. No compiler or runtime execution was
-  rerun for this documentation slice; the following evidence is from subtraction.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 847
-  library/871 native tests (1718 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 850
+  library/873 native tests (1723 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-subtraction-gate.log`.
-- Three parser/four checker/five native subtraction groups cover suffix spans and
-  bounds, normalized sets, queries, kinds, runtime-value rejection, operand scope,
-  skipped construction, original errors, import discovery/startup/privacy, retained
-  input work, independent roots and restored budget state.
-  Focused log: `/tmp/meowy-subtraction-integration.log`.
-- The subtraction guide prints `7` in debug/release.
-  Extracted source: `/tmp/meowy-subtraction-guide.mwy`.
-- Runtime implementation, reference fixtures, dependencies and release versions are
-  unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open; proof examples remain unimplemented/unexecuted.
+  debug/release. Log: `/tmp/meowy-proof-metadata-gate.log`.
+- Three proof metadata checker groups and two native groups cover alias/shadowing
+  behavior, uint32 identity, runtime scalar materialization, zero-HIR unused
+  aliases, direct required reads, skipped diagnostics and facade startup order.
+  Focused log: `/tmp/meowy-proof-required-tests.log`.
+- The foundation guide example prints `1` and `7` in debug/release.
+  Extracted source: `/tmp/meowy-proof-revision-guide.mwy`. Documentation links
+  were rechecked after the guide update: 1190 links, zero failures.
+- Proof queries/descriptors are unimplemented; no proof analysis fixture passed.
+  Runtime implementation, reference fixtures, dependencies and versions are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
+  Full v0.0.1 release qualification remains incomplete.
 
 ## Area handoff
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Bounded type subtraction retains normalized identity, source evidence and work. |
+| Compiler | Typed proof revision metadata supports static aliases and required reads; queries remain gated. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -89,7 +86,7 @@ a qualification matrix. E223/E224/E225 are registered in the diagnostic catalog.
 Commits: `12d21df` (results/value APIs), `415f7c4` (ownership/canonical analysis),
 `947c56b` (testing, work accounting, qualification and cross-links).
 The docs, library index, compile-time rules, testing and memory APIs link the contract.
-Default repository verification and whitespace checks pass. The package, observation
+Default repository verification and whitespace checks pass. The query APIs, observation
 parameter mode, proof-only descriptor unions and executable proof fixtures are not
 implemented; no runtime/compile-time execution of proof examples was claimed.
 
@@ -107,8 +104,8 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Complete direct required reads of the typed proof revision constant and run
-   the final compiler gate; module/static alias metadata passes focused checks. The
+1. Implement internal proof descriptor identity and fixed signatures, retaining
+   origins and preventing runtime storage. Revision metadata is implemented. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered
    descriptor, accounting, phase/dependency and type-only query slices.
 2. Broaden subtraction only after its remaining syntax/representation prerequisites

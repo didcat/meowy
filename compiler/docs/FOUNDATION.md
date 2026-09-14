@@ -1,9 +1,41 @@
 # Foundation values and ownership gates
 
-The bootstrap resolves `@"core"`, `@"debug"`, `@"memory"` and `@"strings"` to
+The bootstrap resolves `@"core"`, `@"debug"`, `@"memory"`, `@"strings"` and `@"proof"` to
 explicit module identities through ordinary lexical lookup. Local names do not
 create intrinsics. Module, item and type aliases preserve the resolved identity;
-unmodeled members of the partial memory/strings modules remain B001.
+unmodeled members of the partial memory/strings/proof modules remain B001.
+
+## Proof revision metadata
+
+`proof.revision` is the static `uint32` constant `1`. Module/member aliases preserve
+its identity and width; importing the package has no initialization effects.
+Immutable unannotated aliases need no runtime storage. Scalar uses and explicitly
+annotated or mutable bindings can materialize the value normally.
+
+```meowy
+proof : @"proof"
+debug : @"debug"
+revision : proof.revision
+
+<Items> : {
+    count : proof.revision
+    -> <uint8[count]>
+}
+
+items <Items> : [7]
+debug.print(revision)
+debug.print(items[1])
+```
+
+This prints `1` and `7`. Within required blocks, direct member reads and aliases
+support ordinary integer arithmetic, comparisons and type queries with checked
+widths and existing bootstrap budgets. The fixed revision is not a proof answer
+and may determine a type extent. General extents outside an active required block
+retain their existing syntax restrictions.
+
+The [proof reference](../../docs/reference/stdlib/proof.md) defines a larger contract.
+Queries, descriptors, flags and assertions remain B001; this metadata slice does
+not implement or qualify executable proof analysis.
 
 ## Nominal types
 

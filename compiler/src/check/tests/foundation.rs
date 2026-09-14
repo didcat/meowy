@@ -126,3 +126,31 @@ pub(crate) fn proof_queries_and_descriptor_types_remain_unsupported() {
         rejects(source, "B001");
     }
 }
+
+#[test]
+pub(crate) fn proof_revision_supports_direct_required_reads_and_skipped_checks() {
+    accepts(
+        r#"p:@"proof";<T>:{n:p.revision;ok:p.revision==1;kind:p.revision<> == <uint32>;|ok&&kind|-><uint8[n+p.revision]>};x<T>:[7,8]"#,
+    );
+    accepts(
+        r#"p:@"proof";alias:p;f:(){<T>:{n:(alias).revision;-><uint8[n]>};x<T>:[7]};<U>:{n:(@"proof").revision;-><uint8[n]>}"#,
+    );
+    accepts(r#"p:@"proof";<T>:{ok:true||(p.revision/0==1);|ok|-><uint8>};x<T>:7"#);
+    accepts(
+        r#"p:{->revision<uint32>:2};<T>:{ok:p.revision==2;|ok|-><uint8[p.revision]>};x<T>:[7,8]"#,
+    );
+    rejects(r#"p:@"proof";<T>:{n:p.revision/0;-><uint8[n]>}"#, "E107");
+    rejects(r#"p:@"proof";<T>:{n<int32>:p.revision;-><uint8>}"#, "E207");
+    rejects(
+        r#"p:@"proof";<T>:{ok:true||(p.revision==4294967296);-><uint8>}"#,
+        "E216",
+    );
+    rejects(
+        r#"p:@"proof";<T>:{ok:true||(missing.revision==1);-><uint8>}"#,
+        "E201",
+    );
+    rejects(
+        r#"p:@"proof";<T>:{ok:true||(p.missing==1);-><uint8>}"#,
+        "B001",
+    );
+}

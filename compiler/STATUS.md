@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. The first executable proof series is planned below.
-Subtraction remains validated; proof remains unimplemented. Full v0.0.1 is incomplete.
+Updated: 2026-09-13. Proof revision metadata is implemented and validated.
+Proof queries remain unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -28,12 +28,12 @@ analysis, bounds, composition helpers and static descriptor exports. This is a
 partial package milestone, not revision 1 qualification. Only module/revision
 metadata is implemented so far. The reference remains authoritative.
 
-### Prerequisites found in the current implementation
+### Prerequisites and current integration
 
-- `src/foundation.rs` resolves four built-in modules; `proof` is absent.
-  `check/names.rs::symbol` resolves imports and members through lexical identities,
-  while `spec` resolves type names. Extend these paths together; aliases must retain
-  identity and same-spelling user bindings must remain ordinary bindings.
+- `src/foundation.rs` now includes partial `proof` module identity;
+  `check/names.rs::symbol` provides typed revision metadata. Module/member aliases
+  retain identity and same-spelling user bindings remain ordinary bindings.
+  Descriptor type names and query dispatch remain unimplemented.
 - `check.rs::Value` separates static scalars, records and types, but has no opaque
   descriptor or deferred proof value. `Spec::Meta` represents `core.Type`, not
   proof metadata. Results need a fixed declared `proof.Result` type distinct from
@@ -111,21 +111,26 @@ correct phase/dependency/budget behavior and no runtime query effects. Broader
 profile 1 value/ownership analysis requires its own frozen graph and canonical
 transfer plan; existing optimizer or borrow answers are not substitutes.
 
-Step 1 is split into two reviewable commits: module/static scalar identity with
-runtime and alias-based required reads, then direct required member reads and
-structural checks. Direct member reads remain explicitly gated in the first slice.
-The planning commit is `a57699a`. Module/static identity now passes two checker
-groups and one native group in debug/release (`cargo test ... proof_`). Immutable
-unannotated aliases remain static, while annotated/mutable scalar bindings can
-materialize runtime values. HIR assertions verify aliases create no statements,
-functions or locals. Query members/types remain B001. No outstanding test failures.
-Log: `/tmp/meowy-proof-metadata-tests.log`. Next: direct required member reads;
-the final compiler gate is pending until that integration slice is complete.
+Step 1 metadata is complete in two slices: `9ddefca` adds module/static scalar
+identity; the current integration adds direct required member reads and structural
+checks. Immutable unannotated aliases remain static; annotated/mutable scalar
+bindings can materialize runtime values. HIR tests verify unused aliases create no
+statements, functions or locals. Query members/types remain B001.
+
+Three checker groups and two native groups pass, including debug/release, exact
+widths, skipped failures, lexical shadowing, function-local required reads and
+facade startup order. Static reads carry no initializer work beyond the existing
+expression visit. No outstanding focused failures. Logs:
+`/tmp/meowy-proof-metadata-tests.log`, `/tmp/meowy-proof-required-tests.log`.
+The full compiler gate passes. The [foundation guide](docs/FOUNDATION.md#proof-revision-metadata)
+documents the subset; its example prints `1` and `7` in debug/release.
+Next: internal descriptor identity; proof queries remain gated.
 
 Planning validation: source/reference inspection and all four default
 `python3 -B tools/verify.py` checks pass (16 tooling tests, local links, catalog and
 schemas). Log: `/tmp/meowy-proof-plan-checks.log`. No proof example was executed;
-the compiler/runtime gates below are retained subtraction evidence, not new runs.
+this planning-only run did not execute compiler/runtime behavior. The later
+metadata implementation has its own compiler gate evidence below.
 
 ## Type subtraction series
 
@@ -143,7 +148,7 @@ Dependency-ordered slices:
 Seven library/five native focused groups, fmt and Clippy pass. No implementation
 failures remain. Logs: `/tmp/meowy-subtraction-parser.log`,
 `/tmp/meowy-subtraction-evaluator.log`, `/tmp/meowy-subtraction-integration.log`.
-No outstanding failures. Next: implement the proof metadata prerequisite above.
+No outstanding failures. Proof revision metadata follows this completed series.
 
 ## Current compiler slice
 
@@ -224,7 +229,7 @@ Ordinary immutable metatype bindings also work at module/function scope. They re
 private without explicit exports and have no runtime storage. Runtime branch
 reachability does not skip required roots; skipped required matcher bodies keep their
 prior semantics. First-class metatype values, runtime type containers and type-producing
-helpers remain separate. Proof remains specification-only.
+helpers remain separate. Proof queries remain specification-only.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -312,20 +317,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 847
-  library/871 native tests (1718 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 850
+  library/873 native tests (1723 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-subtraction-gate.log`.
-- Three parser/four checker/five native subtraction groups cover suffix spans and
-  bounds, normalized sets, queries, kinds, runtime-value rejection, operand scope,
-  skipped construction, original errors, import discovery/startup/privacy, retained
-  input work, independent roots and restored budget state.
-  Focused log: `/tmp/meowy-subtraction-integration.log`.
-- The subtraction guide prints `7` in debug/release.
-  Extracted source: `/tmp/meowy-subtraction-guide.mwy`.
-- Runtime implementation, reference fixtures, dependencies and release versions are
-  unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open; proof examples remain unimplemented/unexecuted.
+  debug/release. Log: `/tmp/meowy-proof-metadata-gate.log`.
+- Three proof metadata checker groups and two native groups cover alias/shadowing
+  behavior, uint32 identity, runtime scalar materialization, zero-HIR unused
+  aliases, direct required reads, skipped diagnostics and facade startup order.
+  Focused log: `/tmp/meowy-proof-required-tests.log`.
+- The foundation guide example prints `1` and `7` in debug/release.
+  Extracted source: `/tmp/meowy-proof-revision-guide.mwy`. Documentation links
+  were rechecked after the guide update: 1190 links, zero failures.
+- Proof queries/descriptors are unimplemented; no proof analysis fixture passed.
+  Runtime implementation, reference fixtures, dependencies and versions are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
+  Full v0.0.1 release qualification remains incomplete.
 
 ## Prior capabilities and other areas
 
@@ -395,13 +401,12 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Implement step 1 of the [proof series](#dependency-ordered-commit-series) in
-   `src/foundation.rs` and `src/check/names.rs`, with checker/native regressions:
-   direct required revision-member reads and structural checks. Module identity,
-   static aliases, runtime materialization and unsupported queries now pass focused
-   tests; integrate member reads with required field/form resolution next.
-   Then proceed to descriptor representation; do not enable queries before the
-   deferred-obligation, dependency and logical-accounting prerequisites are ready.
+1. Implement step 2 of the [proof series](#dependency-ordered-commit-series):
+   internal nominal descriptor identity, fixed signatures and retained origins.
+   Trace `check.rs::Value`/`Spec`, `check/names.rs::spec` and metadata bindings before
+   editing. Keep runtime HIR/storage separate; test active alternative versus
+   declared Result, copies, forgery and escape gates. Do not enable source queries
+   before deferred obligations, dependency tracking and logical accounting exist.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.

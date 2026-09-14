@@ -1,6 +1,6 @@
 use crate::ast::{self, ExprKind};
 use crate::check::{
-    Checker, Result, Value,
+    Checker, Constant, Result, Value,
     inputs::{Input, MAX_RECORD_DEPTH, Record, Sources},
 };
 use crate::diagnostic::Diagnostic;
@@ -108,7 +108,30 @@ impl Checker {
         Ok((id, current.clone(), path))
     }
 
+    pub(crate) fn static_integer(&mut self, expr: &ast::Expr) -> Result<Option<(Type, i128)>> {
+        let saved = std::mem::replace(&mut self.required, true);
+        let value = self.symbol(expr);
+        self.required = saved;
+        Ok(match value? {
+            Some(Value::Static {
+                value: Constant::Int(value),
+                ty,
+            }) => Some((ty, value)),
+            _ => None,
+        })
+    }
+
     pub(crate) fn required_field(&mut self, expr: &ast::Expr) -> Result<(Type, Input)> {
+        if let Some((ty, value)) = self.static_integer(expr)? {
+            return Ok((
+                ty,
+                Input {
+                    work: 0,
+                    error: None,
+                    value: Some(value),
+                },
+            ));
+        }
         let (id, ty, path) = self.required_path(expr)?;
         if !matches!(ty, Type::Int { .. }) {
             return Err(Diagnostic::unsupported(
