@@ -91,7 +91,11 @@ Commit order: (1) statement/block charges and boundary/skip/error tests;
 bootstrap counters unchanged and proof evaluation gated. Statement/block charging
 now passes all 119 required-evaluation tests, including three new accounting groups.
 Log: `/tmp/meowy-statement-charges.log`. No outstanding failures; next is boolean
-expression charging.
+expression charging. Statement/block commit: `92a0dfc`. The boolean hook now
+charges non-group/non-block nodes in its actual evaluator; blocks remain owned
+by scoped_output. All 123 required-evaluation tests pass, including four focused
+boolean accounting groups. Log: `/tmp/meowy-boolean-charges.log`. No outstanding
+failures. Next: integration tests/docs and the full compiler gate.
 
 ### Logical type accounting
 
