@@ -68,11 +68,8 @@ impl Checker {
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| match &expr.kind {
             ExprKind::Block(_) => {
-                let value = if let Some(ty @ Type::Int { .. }) = expected {
-                    self.scalar_block(expr, ty)?
-                } else {
-                    self.inferred_block(expr)?
-                };
+                let value =
+                    self.operand_block(expr, expected.filter(|ty| matches!(ty, Type::Int { .. })))?;
                 match value {
                     Value::Static {
                         value: Constant::Int(value),

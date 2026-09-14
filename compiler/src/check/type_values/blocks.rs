@@ -23,6 +23,21 @@ impl Checker {
         Ok(())
     }
 
+    pub(crate) fn operand_block(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<Value> {
+        match expected {
+            Some(ty @ (Type::Int { .. } | Type::Bool)) => self.scalar_block(expr, ty),
+            None => self.inferred_block(expr),
+            _ => Err(Diagnostic::unsupported(
+                "required operand block result kind",
+                expr.span,
+            )),
+        }
+    }
+
     pub(crate) fn scalar_block(&mut self, expr: &ast::Expr, ty: &Type) -> Result<Value> {
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = match &expr.kind {
@@ -72,6 +87,37 @@ mod tests {
             panic!("binding")
         };
         value.clone()
+    }
+
+    #[test]
+    pub(crate) fn operand_blocks_keep_contextual_and_inferred_scalar_kinds() {
+        let mut checker = Checker::new();
+        checker.type_work = Some(super::super::Work::default());
+        let byte = Type::Int {
+            bits: 8,
+            signed: false,
+        };
+        let scopes = checker.scopes.len();
+        for (source, expected, ty) in [
+            ("{->4}", Some(&byte), byte.clone()),
+            ("{->true}", Some(&Type::Bool), Type::Bool),
+            (
+                "{->4}",
+                None,
+                Type::Int {
+                    bits: 32,
+                    signed: true,
+                },
+            ),
+        ] {
+            let value = checker
+                .operand_block(&expression(source), expected)
+                .unwrap();
+            assert_eq!(value.data_type(), Some(ty));
+            assert_eq!(checker.scopes.len(), scopes);
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+        }
+        assert!(checker.locals.is_empty());
     }
 
     #[test]

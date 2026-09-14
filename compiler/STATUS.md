@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required boolean logical block operands and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required boolean block equality is in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -215,23 +215,26 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Boolean logical blocks are complete across `705c2dc` (shared forms), `d5f51db`
-(execution) and `321502a` (integration). The final compiler gate passes; detailed
-guide changes remain deferred while the user edits documentation.
+The user finished documentation formatting (`f93c84d`); normal guide updates may resume.
+The working tree was clean at the start of this slice. Preserve the formatting.
 
-Next, investigate direct boolean block equality (`==` and `!=`). Trace
-`block_comparison_form`, `required_comparison`, `boolean_form` and `required_boolean`.
-A comparison with unresolved block kinds must not guess integer or execute a skipped
-operand for its type. Preserve known outer type checks and exact scalar matching.
-Record dependency-ordered commits:
+Inspection: direct operand blocks currently choose the integer comparison path even
+for equality. Add a separate deferred scalar-equality path, using known outer kinds
+without executing blocks. Selected operands infer or inherit an integer/boolean kind,
+materialize once left-to-right, and must match exactly. Ordered comparisons remain
+integer-only; block-free comparison behavior and work must remain unchanged.
 
-1. Share deferred comparison operand validation for integer/boolean contexts, keeping
-   arithmetic integer-only and ordered comparisons restricted to their supported kinds.
-2. Materialize selected equality operands once, choose integer/boolean equality from
-   checked kinds and preserve source order, short circuits and mismatch diagnostics.
-3. Verify budgets, scopes, errors and staging; update compiler handoffs and run the
-   full compiler gate. Keep detailed guide edits deferred while the user edits docs.
+Dependency-ordered commit plan:
+
+1. Complete: shared operand-block materialization retains inferred/contextual scalar
+   kinds and existing integer work. 811 library/838 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-equality-operands-refactor.log`.
+2. Add deferred equality operand forms and selected integer/boolean equality with
+   focused accepted/rejected tests. Keep comparisons and arithmetic domains separate.
+3. Verify short circuits, mixed kinds, exact work, scopes, source errors and staging.
+4. Update the equality guide and previously deferred logical-block guide, run their
+   examples in both profiles, update handoffs and run the final compiler gate.
 
 Keep empty/null results, scalar-primary records, skipped documented declarations,
 fallback arms, mutable/float/text/reference fields, whole-module records and helpers
-separate. Proof implementation requires its own plan. Do not push or touch `docs/`.
+separate. Proof implementation requires its own plan. Do not push.
