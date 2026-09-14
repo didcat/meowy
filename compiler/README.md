@@ -85,6 +85,12 @@ equality from checked operand kinds; both operands execute even when the left va
 is false. Ordered comparisons remain integer-only. Float/text comparisons, empty
 composition sources, mutable scratch, whole-module records and helpers remain separate.
 
+The [type subtraction suffix](docs/COMPUTED_TYPES.md#type-subtraction) `!<U>` removes
+supported normalized alternatives in annotations and required type values. Static
+queries, aliases, imports and bare type blocks retain source errors and bounded work.
+Use a named union to remove several members; mixed adjacent union suffixes, literal
+subtypes and broad error bases remain gated. Subtraction does not validate runtime values.
+
 Required `==`/`!=` compares normalized concrete type identity for literals, supported
 queries, aliases and exported type values. Unions and record field order normalize;
 widths, mutability, capacities and nominal identities remain distinct. Both operands

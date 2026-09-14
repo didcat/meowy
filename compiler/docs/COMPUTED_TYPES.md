@@ -41,6 +41,57 @@ including calls through resolved aliases and calls after a primary emission.
 The checker does not execute them. This is a narrow effect check; source helper
 purity and transitive call analysis are not implemented by this slice.
 
+## Type subtraction
+
+The suffix `!<U>` removes supported concrete alternatives from a compile-time type:
+
+```meowy
+<Remove> : <null><boolean>
+kind <Type> : <int32><null><boolean>
+element <Type> : kind !<Remove>
+<Items> : {
+    reduced : ({ -> <int32><null> }) !<null>
+    same : reduced == element
+    | same | -> <(element)[4]>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Subtraction works in annotations, type aliases, metatype bindings
+and required type blocks. Supported operands include literals, lexical/imported type
+values, static type queries and bare type-producing blocks. For example,
+`<int32><null> !<null>` and `value<> !<null>` construct the remaining type set.
+An empty result is `never`; removing an absent alternative preserves the source set.
+Normalized record identity, mutability, widths, list capacities, reference modes and
+nominal foundation identities determine which supported alternatives are removed.
+
+Each suffix takes one explicit bracket. A named union such as `<Remove>` above, or
+`!<(<null><boolean>)>`, removes several alternatives. Repeated suffixes evaluate from
+left to right. Adjacent union suffixes after subtraction, such as
+`<int32> !<null><boolean>`, remain B001 in this bootstrap; use an explicit union
+operand. Annotation chains allow at most 64 subtraction operations, while existing
+syntax and evaluator depth limits may be reached earlier.
+
+Both operands resolve in source order, including when the source is already `never`.
+The first failure retains its original diagnostic and source span through facades.
+Each operand and resulting type charges the shared node budget; constructor inputs
+retain their work on every read. Independent roots reset budgets. An enclosing
+short-circuit comparison skips constructor work while preserving supported form and
+outer-name checks. Imports inside either operand retain normal graph discovery and
+runtime initialization order.
+
+Known non-type operands report E222; an evaluated bare block producing a scalar
+reports E207. Broad bases such as `core.error`, literal subtypes and unrepresentable
+literal exclusions remain outside this compiler. The supported subset does not
+implement the full E209 representability rules. Type-producing helpers and runtime
+type-value storage remain gated.
+
+Subtraction changes a type set only. Annotating a nullable runtime value with
+`<(value<> !<null>)>` does not validate that value; an initializer which may still be
+null is rejected with E207. Ordinary predicates must establish any runtime narrowing.
+
 ## Type-value equality
 
 Inside required evaluation, `==` and `!=` compare normalized concrete type identity:

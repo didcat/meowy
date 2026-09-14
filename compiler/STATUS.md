@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Bare type-block equality is implemented.
+Updated: 2026-09-13. Bounded concrete type subtraction is implemented.
 The final compiler gate and guide execution pass. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -19,50 +19,50 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
-## Active plan: bounded type subtraction
+## Type subtraction series
 
-The contract defines `!<U>` on compile-time type sets. `hir::Type::subtract`
-already handles the supported normalized concrete alternatives; literal subtypes
-and broad bases such as `error` remain unsupported. Reuse `ExprKind::Binary` with
-operator `!`, wrapped by `TypeKind::Computed` in annotations. Existing graph/docs
-visitors then retain both operands and original spans without new AST variants.
+Dependency-ordered slices:
 
-Dependency-ordered commits:
-1. Parse subtraction suffixes in annotations and value expressions; preserve unary
-   `!`/`!=`, bound chains and test spans/shape. Evaluation remains gated in this slice.
-2. Evaluate supported concrete operands left-to-right with shared work/node budgets;
-   integrate required bindings and equality forms, with focused checker/native tests.
-3. Verify imports, original errors, repeated work, skipped constructors, scope and
-   runtime value preservation with integration regressions.
-4. Document supported syntax/boundaries, execute the guide, update both handoffs and
-   run the full compiler gate. Commit each validated slice.
+1. `bc3030c`: suffix parsing for annotations/expressions, original spans, chain bounds
+   and existing unary/operator behavior. Evaluation remained gated in that commit.
+2. `ae68e3b`: normalized concrete subtraction, required binding/equality integration
+   and checker/native kind, query, empty-set and runtime-value regressions.
+3. `e5579d3`: imports, source order, repeated work, skips, budgets, scope, startup
+   and runtime/helper boundary coverage.
+4. This documentation commit integrates the guide/README and both handoffs. Guide
+   execution and the full `python3 -B tools/verify.py --compiler` gate pass.
 
-The first bounded grammar accepts one explicit bracket per subtraction suffix;
-use a named union or computed type inside that bracket to remove multiple members.
-Unparenthesized union suffixes after subtraction remain gated rather than assigning
-an unconfirmed mixed union/subtraction precedence. Repeated subtraction is left-to-right.
-Parser slice validation: 843 library/866 native tests, fmt and Clippy pass.
-Three new parser groups cover query/literal/annotation forms, Unicode-offset spans,
-left-to-right chains, unchanged unary `!`/`!=`, chain limits and the mixed-union gate.
-Annotation lookahead now retains subtraction budget diagnostics. Evaluation remains
-B001 until the next slice. Log: `/tmp/meowy-subtraction-parser.log`.
-Parser committed as `bc3030c`. The evaluator reuses bounded type operands and
-normalized `Type::subtract`, including bare type blocks. Required bindings and
-equality forms recognize subtraction. Two checker/one native groups cover normalized
-sets, widths, mutability, references, capacities, empty results, queries and runtime
-value rejection. Broad bases/literal subtypes retain their existing gates.
-
-All 845 library/867 native tests, fmt and Clippy pass.
-Log: `/tmp/meowy-subtraction-evaluator.log`. No outstanding failures.
-Evaluator committed as `ae68e3b`. Integration tests now cover form-only skips,
-work/node/depth boundaries and state restoration, facade identity/privacy, removed
-operand import discovery/startup, source failure order and repeated input/root costs.
-All seven library/five native focused groups, fmt and Clippy pass, including
-selected operand scope and runtime/helper boundaries. Log:
-`/tmp/meowy-subtraction-integration.log`. No outstanding failures. Next: commit
-integration, document the supported subset and run the final compiler gate.
+Seven library/five native focused groups, fmt and Clippy pass. No implementation
+failures remain. Logs: `/tmp/meowy-subtraction-parser.log`,
+`/tmp/meowy-subtraction-evaluator.log`, `/tmp/meowy-subtraction-integration.log`.
+No outstanding failures. Next: plan the first executable proof slice.
 
 ## Current compiler slice
+
+`!<U>` subtracts normalized supported alternatives in annotations, aliases, metatype
+bindings and required expressions. `parser/types.rs` reuses `ExprKind::Binary("!")`,
+wrapped by `TypeKind::Computed` in annotations; existing AST visitors retain imports,
+documentation traversal and original spans. Expression suffixes bind before equality;
+repeated subtraction is left-to-right. Unary `!`, `!=` and existing context rules stay
+intact. Each suffix takes one bracketed type. Named/computed union operands work;
+adjacent union suffixes after subtraction remain B001 pending a mixed-precedence
+contract. Annotation chains cap at 64 operations; evaluator depth can stop them earlier.
+
+`type_values/subtraction.rs` checks bounded operand forms and infers bare type blocks.
+`type_value_inner` evaluates operands once in source order and uses `Type::subtract`.
+Empty left sets still evaluate the right; absent removals preserve identity. Known
+non-type operands report E222, inferred scalar block results E207. Each operand/result
+materializes against the node budget; repeated constructor inputs retain full work.
+A primitive lexical-type subtraction costs three visits/three nodes. Failed budgets
+restore state; independent roots reset counters. Short-circuits skip construction
+while preserving known operand/form checks. Operand-local declarations do not escape.
+
+Imports in removed operands remain discovered and initialized, even for an empty
+source set. Facades retain privacy/identity and source failures keep original paths
+and spans. Subtraction cannot validate or convert nullable runtime data; ordinary
+assignment checks still reject unproven narrowing. Literal subtypes, broad bases
+such as `core.error`, full E209 representability, helpers and runtime type storage
+remain outside this subset.
 
 Required `==`/`!=` accepts bare type-producing blocks, including grouped forms and
 block/type-value pairs in either order. `type_comparison_form` defers such pairs to
@@ -204,17 +204,17 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 840
-  library/866 native tests (1706 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 847
+  library/871 native tests (1718 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-blocks-gate.log`.
-- Five checker/five native block-equality groups cover inferred type identity,
-  contextual scalar kinds, E207 type emissions, skipped structure/values, source
-  order, imported privacy/startup, repeated input costs, independent roots and
-  work/node/depth failures with restored state. Focused logs:
-  `/tmp/meowy-type-blocks-slice1.log`, `/tmp/meowy-type-blocks-slice2.log`.
-- The type-producing block equality guide prints `7` in debug/release.
-  Extracted source: `/tmp/meowy-type-blocks-guide.mwy`.
+  debug/release. Log: `/tmp/meowy-subtraction-gate.log`.
+- Three parser/four checker/five native subtraction groups cover suffix spans and
+  bounds, normalized sets, queries, kinds, runtime-value rejection, operand scope,
+  skipped construction, original errors, import discovery/startup/privacy, retained
+  input work, independent roots and restored budget state.
+  Focused log: `/tmp/meowy-subtraction-integration.log`.
+- The subtraction guide prints `7` in debug/release.
+  Extracted source: `/tmp/meowy-subtraction-guide.mwy`.
 - Runtime implementation, reference fixtures, dependencies and release versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
   qualification remains open; proof examples remain unimplemented/unexecuted.
@@ -284,15 +284,16 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-The bare type-block equality series is complete; no outstanding failures remain.
+The bounded subtraction series is complete; its syntax/representation limits remain
+explicitly documented. No outstanding failures remain.
 
-1. Investigate bounded type subtraction against `docs/reference/types.md` and
-   `docs/reference/compile-time.md`. Trace `parser/types.rs` (currently unsupported),
-   expression parsing, `type_values.rs` and `hir::Type::subtract`; plan syntax/AST,
-   required evaluation and integration as separate reviewable slices. Preserve
-   normalized identity, left-to-right source/work evidence and short-circuit behavior.
-2. Implement proof only with a separate dependency-ordered plan against its
-   qualification contract. Keep first-class metatype values, type-of-type queries,
-   runtime type containers and type-producing/generic helpers separate.
+1. Plan the first executable proof slice against `docs/reference/stdlib/proof.md`,
+   especially phase ordering, diagnostic rules, work accounting and qualification.
+   Trace `foundation.rs`, `check/names.rs` and the required evaluator. Identify the
+   needed static result/observation prerequisites before changing dispatch or checks;
+   record dependency-ordered slices and meaningful acceptance/rejection tests.
+2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
+   parked until their language/representation prerequisites are established. Keep
+   first-class metatypes, runtime type containers and type-producing helpers separate.
 
 Do not push or bump release versions here.

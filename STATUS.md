@@ -19,20 +19,18 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
-Bounded type subtraction is implemented in `bc3030c` (parser) and `ae68e3b`
-(evaluator). Seven library/five native focused groups, fmt and Clippy pass; the
-full documentation/compiler gate is next. See the compiler handoff for its subset.
+Bounded `!<U>` subtraction now constructs normalized concrete type sets in annotations,
+aliases and required expressions. Static queries, imported values and bare type blocks
+retain identity, original failures and work. Removing all members produces `never`;
+both operands are still evaluated. Subtraction does not validate nullable runtime data.
 
-Required `==`/`!=` now accepts bare type-producing blocks on either side of another
-block or known type value. Selected blocks retain normalized identity, scoped locals,
-source errors and work budgets. Scalar contexts preserve widths; mixed evaluated
-type/scalar results report E207. Short-circuiting checks block structure without
-resolving local initializers or result kinds. No runtime type storage is created.
+Commits: `bc3030c` (parser), `ae68e3b` (evaluator), `e5579d3` (integration).
+The [guide](compiler/docs/COMPUTED_TYPES.md#type-subtraction) covers syntax, budgets
+and remaining limits. Its example prints `7` in debug/release. The full compiler gate
+passes. Mixed adjacent union suffixes, literal subtypes and broad bases remain gated.
 
-Commits: `f2a1962` (block inference), `055d8cf` (integration evidence).
-The [guide](compiler/docs/COMPUTED_TYPES.md#type-producing-block-operands) covers syntax,
-result kinds and evaluation boundaries. Its example prints `7` in debug/release.
-The full compiler gate passes.
+Required type equality, including bare type blocks, remains supported with scoped
+inference and scalar-context checks. No runtime type storage is created.
 
 Named immutable `core.Type` exports continue to retain concrete payloads through
 explicit facades. Private names, separate namespaces and module startup stay intact.
@@ -44,17 +42,17 @@ release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 840
-  library/866 native tests (1706 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 847
+  library/871 native tests (1718 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-blocks-gate.log`.
-- Five checker/five native block-equality groups cover inferred type identity,
-  contextual scalar kinds, E207 type emissions, skipped structure/values, source
-  order, imported privacy/startup, repeated input costs, independent roots and
-  work/node/depth failures with restored state. Focused logs:
-  `/tmp/meowy-type-blocks-slice1.log`, `/tmp/meowy-type-blocks-slice2.log`.
-- The type-producing block equality guide prints `7` in debug/release.
-  Extracted source: `/tmp/meowy-type-blocks-guide.mwy`.
+  debug/release. Log: `/tmp/meowy-subtraction-gate.log`.
+- Three parser/four checker/five native subtraction groups cover suffix spans and
+  bounds, normalized sets, queries, kinds, runtime-value rejection, operand scope,
+  skipped construction, original errors, import discovery/startup/privacy, retained
+  input work, independent roots and restored budget state.
+  Focused log: `/tmp/meowy-subtraction-integration.log`.
+- The subtraction guide prints `7` in debug/release.
+  Extracted source: `/tmp/meowy-subtraction-guide.mwy`.
 - Runtime implementation, reference fixtures, dependencies and release versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
   qualification remains open; proof examples remain unimplemented/unexecuted.
@@ -63,7 +61,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Bare type-block equality preserves inferred identity, scalar context and bounded work. |
+| Compiler | Bounded type subtraction retains normalized identity, source evidence and work. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -99,7 +97,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Investigate bounded type subtraction syntax and required evaluation;
+1. Plan the first executable proof slice against its qualification contract;
    see the [compiler handoff](compiler/STATUS.md#next-steps).
-2. Implement proof only in separately planned slices against its qualification contract.
-   Do not push, bump versions automatically or claim full release qualification.
+2. Broaden subtraction only after its remaining syntax/representation prerequisites
+   are established. Do not push, bump versions or claim full release qualification.
