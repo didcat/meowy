@@ -161,7 +161,6 @@ mod tests {
             ("n:({-><int32>})+1", "E207"),
             ("n:({->x:4})+1", "E207"),
             ("n:({->1;tail:1/0})+1", "E107"),
-            ("n:false&&({->true})", "B001"),
         ] {
             let source = format!("<T>:{{{body};-><int32>}}");
             let error = crate::compile(&source).unwrap_err().remove(0);

@@ -39,6 +39,10 @@ impl Checker {
                     )
                 }),
             ExprKind::Field { .. } => self.required_path(expr).map(|(_, ty, _)| ty),
+            ExprKind::Block(block) => {
+                self.required_block_form(block, "boolean operand", depth, count)?;
+                Ok(Type::Bool)
+            }
             ExprKind::Group(value) => self.boolean_form(value, depth + 1, count),
             ExprKind::Unary { op, value } if op == "!" => {
                 let ty = self.boolean_form(value, depth + 1, count)?;

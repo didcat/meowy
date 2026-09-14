@@ -227,11 +227,14 @@ Dependency-ordered commit plan:
 
 1. Complete: common operand-block statement validation preserves comparison diagnostics
    and structural accounting. 806 library/835 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-boolean-block-form.log`.
-2. Add boolean block forms and selected execution for `!`, `&&`, `||` and required
-   matcher conditions; keep focused acceptance/rejection tests with this behavior.
+   Log: `/tmp/meowy-boolean-block-form.log`. Committed as `705c2dc`.
+2. Complete: boolean block forms/execution support `!`, `&&`, `||` and required
+   matcher conditions. 808 library/836 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-logical-blocks.log`.
 3. Verify exact work, skipped initializers, bounds, scope, source errors and staging.
-4. Update guides/handoffs and run the final compiler gate across the series.
+4. Update compiler README/handoffs and run the final compiler gate across the series.
+   The user is editing `docs/`; leave all docs directories untouched this turn.
+   Record any detailed guide update for a later documentation pass.
 
 Keep direct boolean block equality/comparison disambiguation, empty/null results,
 scalar-primary records, skipped documented declarations, fallback arms, mutable/

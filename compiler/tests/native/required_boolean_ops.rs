@@ -206,3 +206,14 @@ pub(crate) fn required_boolean_operators_check_silently_and_keep_initialization_
     }
     case.runs(b"data\nbad\na\nb\nentry\nfalse\n");
 }
+
+#[test]
+pub(crate) fn required_logical_block_operands_execute_nested_boolean_results() {
+    for flag in ["true", "false"] {
+        let source = format!(
+            "<T>:{{ready:({{local:{flag};->local}})&&!({{->false}});result:ready||({{->true}});|({{->result}})|-><int32[4]>}};v<T>:[3,7];d:@\"debug\";d.print(v[2])"
+        );
+        case(&source, &[]).runs(b"7\n");
+    }
+    case("<T>:{flag:!({->false})&&({|true|->true;tail:4});r:{->flag:flag};|r.flag|-><int32[2]>};v<T>:[3,7];d:@\"debug\";d.print(v[2])",&[]).runs(b"7\n");
+}

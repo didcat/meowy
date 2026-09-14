@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod blocks;
 mod forms;
 
 use crate::ast::{self, ExprKind};
@@ -65,6 +67,16 @@ impl Checker {
                         ));
                     }
                     id.boolean(self, &path)
+                }
+                ExprKind::Block(_) => {
+                    let Value::Static {
+                        value: Constant::Bool(value),
+                        ..
+                    } = self.scalar_block(expr, &Type::Bool)?
+                    else {
+                        unreachable!()
+                    };
+                    return Ok(value);
                 }
                 ExprKind::Group(value) => return self.required_boolean(value),
                 ExprKind::Unary { op, value } if op == "!" => {
