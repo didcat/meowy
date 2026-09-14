@@ -68,10 +68,11 @@ Dependency-ordered documentation commits:
 1. Complete: `docs/reference/stdlib/proof.md` defines staging, result types, inspection,
    assertions/expected-status tests, composition and value/bounds APIs. E223/E224 are
    registered with their owning contracts. Local links and whitespace checks pass;
-   the proof API has not been compiled or executed.
-2. Define type/place capability queries, snapshot validity, a deterministic revision-1
-   analysis profile and phase/cycle rules. Keep proof answers independent of optimization
-   and prevent queries from granting ownership or weakening generic constraints.
+   the proof API has not been compiled or executed. Committed as `12d21df`.
+2. Complete: type/place query contracts, snapshot invalidation, fixed abstract domains,
+   transfers/joins/loop handling, outcome rules and phase ordering are specified. E225
+   rejects backward proof dependencies. Local links and whitespace checks pass.
+   Remaining: testing workflows, budgets, diagnostic precedence and qualification.
 3. Complete budgets, diagnostics, examples and qualification obligations; register codes,
    connect library/reference indexes and the compile-time contract, and run the default
    repository verifier. Report documentation validation separately from implementation.

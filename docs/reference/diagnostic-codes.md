@@ -146,6 +146,7 @@ See [types](types.md) and [values and blocks](values-and-blocks.md).
 | `E222` | Operator is not defined for these operands              | Show the operation and complete operand types; use a supported comparison or explicit library operation.                                          |
 | `E223` | Invalid proof observation or descriptor | Show the resolved query, unsupported subject/domain, unavailable place, malformed static metadata, or illegal descriptor use; follow the [proof contract](stdlib/proof.md). |
 | `E224` | Compile-time proof expectation failed | Show the assertion and original observation, required outcome and actual Always/Never/Indeterminable result; strengthen ordinary evidence or correct the expectation. |
+| `E225` | Proof query has a forbidden backward dependency | Show the dependency from a proof answer into another observation, its availability, type formation, specialization, or ownership acceptance; remove the cycle or use ordinary declared facts. |
 
 `E207` covers initialization as well as later assignment. Changing `"twenty"` to
 `20` is not a type conversion defined by the language. `E208` concerns a value
