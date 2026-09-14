@@ -101,3 +101,28 @@ pub(crate) fn allocator_result_signatures_use_lifetime_analysis() {
         accepts(source);
     }
 }
+
+#[test]
+pub(crate) fn proof_revision_retains_uint32_identity_and_static_aliases() {
+    accepts(
+        r#"p:@"proof";alias:p;r:alias.revision;again:r;<T>:{n<uint32>:again;-><uint8[n]>};x<T>:[7];f<uint32>:(){->again};v<uint32>:p.revision;w:=p.revision;w=2"#,
+    );
+    accepts(r#"p:@"proof";r:p.revision;<T>:{same:r<> == <uint32>;|same|-><uint8>};v<T>:7"#);
+    rejects(r#"p:@"proof";v<int32>:p.revision"#, "E207");
+    rejects(r#"p:@"proof";v:p.revision+4294967296"#, "E216");
+    accepts(
+        r#"p:@"proof";r:p.revision;{p:{->revision:7};v:p.revision};proof:@"debug";proof.print(r)"#,
+    );
+}
+
+#[test]
+pub(crate) fn proof_queries_and_descriptor_types_remain_unsupported() {
+    for source in [
+        r#"p:@"proof";p.can_copy<uint32>()"#,
+        r#"p:@"proof";alias:p;query:alias.is"#,
+        r#"p:@"proof";<R>:<p.Result>"#,
+        r#"p:@"proof";p.assert(true)"#,
+    ] {
+        rejects(source, "B001");
+    }
+}

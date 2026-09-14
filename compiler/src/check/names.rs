@@ -335,6 +335,13 @@ impl Checker {
                                 expr.span,
                             ));
                         }
+                        (Module::Proof, "revision") => Value::Static {
+                            value: Constant::Int(1),
+                            ty: Type::Int {
+                                bits: 32,
+                                signed: false,
+                            },
+                        },
                         (Module::Core, "true") => Value::Constant(Constant::Bool(true)),
                         (Module::Core, "false") => Value::Constant(Constant::Bool(false)),
                         (Module::Core, "null") => Value::Constant(Constant::Null),

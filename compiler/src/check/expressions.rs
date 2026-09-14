@@ -294,6 +294,11 @@ impl Checker {
                             format!("runtime use of `{}`", item.name()),
                             expr.span,
                         )),
+                        Value::Static { value, ty } => {
+                            let mut value = Self::constant_expr(value, expr.span);
+                            value.ty = ty;
+                            Ok(value)
+                        }
                         Value::Constant(value) => Ok(Self::constant_expr(value, expr.span)),
                         _ => Err(Diagnostic::unsupported(
                             "runtime use of intrinsic operation values",
@@ -459,6 +464,9 @@ impl Checker {
             }
             ExprKind::String(_) => Some(Type::String),
             ExprKind::Field { value, name } => {
+                if let Some(Value::Static { ty, .. }) = self.symbol(expr).ok().flatten() {
+                    return Some(ty);
+                }
                 let ty = self.hint(value).map(|ty| match ty {
                     Type::Reference(ty) => *ty,
                     ty => ty,

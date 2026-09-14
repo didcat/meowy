@@ -64,6 +64,7 @@ impl Checker {
                             | Value::Constant(_)
                             | Value::Foundation(crate::foundation::Item::Heap)
                     )
+                    && !(matches!(symbol, Value::Static { .. }) && (*mutable || ty.is_some()))
                 {
                     if *mutable || ty.is_some() {
                         return Err(Diagnostic::unsupported(

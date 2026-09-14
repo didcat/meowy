@@ -42,7 +42,9 @@ release qualification remains incomplete.
 
 The first executable proof series is now planned: bounded type-only copy queries,
 static descriptors and assertions. Phase/dependency tracking and logical root
-accounting must precede query execution. Proof remains specification-only.
+accounting must precede query execution. Partial module/revision metadata passes
+focused checker/native tests, but proof queries remain unimplemented. Direct
+required member reads and the final compiler gate are next.
 
 ## Actual validation
 
@@ -105,8 +107,8 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Implement the planned proof metadata prerequisite: partial module identity and
-   typed revision constant, with queries still gated. The
+1. Complete direct required reads of the typed proof revision constant and run
+   the final compiler gate; module/static alias metadata passes focused checks. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered
    descriptor, accounting, phase/dependency and type-only query slices.
 2. Broaden subtraction only after its remaining syntax/representation prerequisites

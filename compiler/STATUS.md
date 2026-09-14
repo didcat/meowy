@@ -25,8 +25,8 @@ The next milestone is bounded type-only `proof.can_copy<T>()`, with opaque stati
 results, direct flags, `assert` and `expect<S>`. Begin with concrete types already
 represented by the bootstrap; defer value observations, place probes, generic
 analysis, bounds, composition helpers and static descriptor exports. This is a
-partial package milestone, not revision 1 qualification. No dispatch changes have
-been made. The reference remains authoritative for supported operations.
+partial package milestone, not revision 1 qualification. Only module/revision
+metadata is implemented so far. The reference remains authoritative.
 
 ### Prerequisites found in the current implementation
 
@@ -110,6 +110,17 @@ Stop condition: type-only copy queries can be checked, inspected and asserted wi
 correct phase/dependency/budget behavior and no runtime query effects. Broader
 profile 1 value/ownership analysis requires its own frozen graph and canonical
 transfer plan; existing optimizer or borrow answers are not substitutes.
+
+Step 1 is split into two reviewable commits: module/static scalar identity with
+runtime and alias-based required reads, then direct required member reads and
+structural checks. Direct member reads remain explicitly gated in the first slice.
+The planning commit is `a57699a`. Module/static identity now passes two checker
+groups and one native group in debug/release (`cargo test ... proof_`). Immutable
+unannotated aliases remain static, while annotated/mutable scalar bindings can
+materialize runtime values. HIR assertions verify aliases create no statements,
+functions or locals. Query members/types remain B001. No outstanding test failures.
+Log: `/tmp/meowy-proof-metadata-tests.log`. Next: direct required member reads;
+the final compiler gate is pending until that integration slice is complete.
 
 Planning validation: source/reference inspection and all four default
 `python3 -B tools/verify.py` checks pass (16 tooling tests, local links, catalog and
@@ -386,8 +397,9 @@ explicitly documented. No outstanding failures remain.
 
 1. Implement step 1 of the [proof series](#dependency-ordered-commit-series) in
    `src/foundation.rs` and `src/check/names.rs`, with checker/native regressions:
-   partial import identity and typed revision metadata only. Verify aliases,
-   shadowing, required reads, uint32 identity and unsupported query diagnostics.
+   direct required revision-member reads and structural checks. Module identity,
+   static aliases, runtime materialization and unsupported queries now pass focused
+   tests; integrate member reads with required field/form resolution next.
    Then proceed to descriptor representation; do not enable queries before the
    deferred-obligation, dependency and logical-accounting prerequisites are ready.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction

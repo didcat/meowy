@@ -494,3 +494,12 @@ pub(crate) fn named_type_exports_construct_imported_runtime_data() {
     )
     .runs(b"7\n9\n");
 }
+
+#[test]
+pub(crate) fn proof_revision_materializes_uint32_without_package_startup() {
+    Case::new("p:@\"proof\";alias:p;r:alias.revision;again:r;d:@\"debug\";d.print(p.revision);f<uint32>:(){->again};d.print(f());v<uint32>:p.revision;w:=p.revision;w=2;d.print(v);d.print(w);<T>:{n<uint32>:r;-><uint8[n]>};x<T>:[7];d.print(x[1])").runs(b"1\n1\n1\n2\n7\n");
+    let program = meowy::compile(r#"p:@"proof";alias:p;r:alias.revision;again:r"#).unwrap();
+    assert!(program.body.stmts.is_empty());
+    assert!(program.functions.is_empty());
+    assert!(program.locals.is_empty());
+}

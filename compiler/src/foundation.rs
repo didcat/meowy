@@ -6,6 +6,7 @@ pub(crate) enum Module {
     Debug,
     Memory,
     Strings,
+    Proof,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -22,6 +23,7 @@ impl Module {
             "debug" => Some(Self::Debug),
             "memory" => Some(Self::Memory),
             "strings" => Some(Self::Strings),
+            "proof" => Some(Self::Proof),
             _ => None,
         }
     }
@@ -32,11 +34,12 @@ impl Module {
             Self::Debug => "debug",
             Self::Memory => "memory",
             Self::Strings => "strings",
+            Self::Proof => "proof",
         }
     }
 
     pub(crate) fn partial(self) -> bool {
-        matches!(self, Self::Memory | Self::Strings)
+        matches!(self, Self::Memory | Self::Strings | Self::Proof)
     }
 
     pub(crate) fn item(self, name: &str) -> Option<Item> {
