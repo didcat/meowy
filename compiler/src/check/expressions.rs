@@ -274,6 +274,7 @@ impl Checker {
             }
             ExprKind::Field { value, name } => {
                 if self.required && self.type_work.is_some() {
+                    self.charge_ancestors(expr)?;
                     let (ty, input) = self.required_field(expr)?;
                     if let Some(error) = input.error {
                         return Err(error);

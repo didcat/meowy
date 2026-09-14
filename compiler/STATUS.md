@@ -73,6 +73,31 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Projection charging plan
+
+Investigation: `required_path` and `required_field` serve both eligibility and
+execution. Charging there would count form/hint walks repeatedly. Integer field
+execution in `expressions.rs` and boolean field execution in `booleans.rs` own
+ancestor charges, after their existing outer-node charge and before lookup.
+Parentheses contribute no steps; each nested field and named root contributes one.
+Retained Input.work remains a bootstrap guard, not a logical cost.
+
+Dependency-ordered commits:
+
+1. Add a shared ancestor-charge traversal at the two execution sites, with focused
+   exact/grouped/repeated-read, form isolation and budget-failure regressions.
+2. Add independently useful projection integration coverage and refresh both
+   handoffs after the complete `python3 -B tools/verify.py --compiler` gate.
+
+The shared traversal now charges each non-group ancestor sequentially at both
+scalar execution sites. Three focused groups pass (local/module identity, exact
+and grouped/repeated/skipped reads, lookup/runtime isolation and E220 cleanup).
+Validation: `cargo test --manifest-path compiler/Cargo.toml --lib logical_projection`
+and cargo fmt pass. Log: `/tmp/meowy-projection-focused.log`.
+Next: integration tests for retained failures, static metadata and real imports,
+then the full compiler gate. Subsequent work remains retained-input accounting
+and other expression/aggregate/text/helper domains; proof outcomes stay gated.
+
 ### Logical integer charges
 
 `a9d2c9e` adds `charge_integer` at raw_expression, guarded by required mode and an

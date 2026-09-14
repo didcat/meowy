@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod tests;
+
 use crate::ast::{self, ExprKind};
 use crate::check::{
     Checker, Constant, Result, Value,
@@ -42,6 +45,24 @@ impl Source {
 }
 
 impl Checker {
+    pub(crate) fn charge_ancestors(&mut self, expr: &ast::Expr) -> Result<()> {
+        let ExprKind::Field { value, .. } = &expr.kind else {
+            unreachable!()
+        };
+        let mut node = value.as_ref();
+        loop {
+            if let ExprKind::Group(value) = &node.kind {
+                node = value;
+                continue;
+            }
+            self.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+            match &node.kind {
+                ExprKind::Field { value, .. } => node = value,
+                _ => return Ok(()),
+            }
+        }
+    }
+
     pub(crate) fn required_path(&mut self, expr: &ast::Expr) -> Result<(Source, Type, Vec<usize>)> {
         let mut root = expr;
         let mut names = Vec::new();

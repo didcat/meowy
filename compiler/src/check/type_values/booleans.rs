@@ -62,6 +62,7 @@ impl Checker {
                     _ => None,
                 },
                 ExprKind::Field { .. } => {
+                    self.charge_ancestors(expr)?;
                     let (id, ty, path) = self.required_path(expr)?;
                     if ty != Type::Bool {
                         return Err(Diagnostic::unsupported(
