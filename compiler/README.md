@@ -14,7 +14,9 @@ provides a static `uint32` revision constant. Opaque
 [descriptor type aliases](docs/FOUNDATION.md#proof-descriptor-type-aliases) remain
 separate from runtime storage. [Deferred query checking](docs/FOUNDATION.md#deferred-proof-query-checking)
 retains type-only copy queries until ordinary checks finish, then reports B001;
-proof evaluation remains unimplemented.
+proof evaluation remains unimplemented. An independent
+[logical type ledger](docs/FOUNDATION.md#logical-type-materialization-accounting)
+tracks materialization within required roots; broader accounting remains open.
 [Allocator return bounds](docs/ALLOCATOR_BOUNDS.md) track
 public input lifetimes through immutable values, mutable handles/tagged records,
 field writes, shared-reference members, restart headers and shared snapshots. Owning-string

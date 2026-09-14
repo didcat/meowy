@@ -92,7 +92,10 @@ impl Checker {
                 ..Work::default()
             });
         }
-        let result = run(self);
+        let result = match &self.type_work.as_ref().unwrap().logical.failure {
+            Some(error) => Err(error.clone()),
+            None => run(self),
+        };
         let result = match &self.type_work.as_ref().unwrap().logical.failure {
             Some(error) => Err(error.clone()),
             None => result,
@@ -168,6 +171,9 @@ mod tests {
                     crate::check::required::MAX_TYPES;
                 let error = checker.type_work.as_mut().unwrap().node(span).unwrap_err();
                 assert_eq!(error.code, "E220");
+                let nested: Result<()> =
+                    checker.required_root(span, |_| panic!("failed root ran again"));
+                assert_eq!(nested.unwrap_err().code, "E220");
                 Ok(())
             })
             .unwrap_err();
@@ -187,5 +193,73 @@ mod tests {
         };
         assert_eq!(work.node(span).unwrap_err().code, "B001");
         assert_eq!(work.logical.types, 0);
+    }
+    #[test]
+    pub(crate) fn logical_roots_cover_real_metatype_bindings_without_resetting_nested_work() {
+        let source = "kind<Type>:<int32>";
+        let block = crate::parser::parse(source).unwrap();
+        let crate::ast::StmtKind::Bind { value, ty, .. } = &block.stmts[0].kind else {
+            panic!()
+        };
+        let span = Span::new(100, 140);
+        let mut checker = Checker::new();
+        let error = checker
+            .required_root(span, |checker| {
+                checker.type_work.as_mut().unwrap().logical.types =
+                    crate::check::required::MAX_TYPES - 2;
+                checker.meta_binding(value, ty.as_ref().unwrap())?;
+                assert_eq!(
+                    checker.type_work.as_ref().unwrap().logical.types,
+                    crate::check::required::MAX_TYPES
+                );
+                checker.meta_binding(value, ty.as_ref().unwrap())
+            })
+            .err()
+            .unwrap();
+        assert_eq!(error.code, "E220");
+        assert_eq!(error.span, span);
+        assert!(checker.type_work.is_none());
+        checker.meta_binding(value, ty.as_ref().unwrap()).unwrap();
+        assert!(checker.type_work.is_none());
+    }
+
+    #[test]
+    pub(crate) fn logical_type_charges_skip_inactive_construction_and_restore_source_failures() {
+        let mut costs = Vec::new();
+        for source in [
+            "kind<Type>:{-><int32>}",
+            "kind<Type>:{|false|unused:<int32[4]>;-><int32>}",
+        ] {
+            let block = crate::parser::parse(source).unwrap();
+            let crate::ast::StmtKind::Bind { value, ty, .. } = &block.stmts[0].kind else {
+                panic!()
+            };
+            let mut checker = Checker::new();
+            let cost = checker
+                .required_root(value.span, |checker| {
+                    checker.meta_binding(value, ty.as_ref().unwrap())?;
+                    let budget = &checker.type_work.as_ref().unwrap().logical;
+                    assert_eq!(budget.root, value.span);
+                    Ok((budget.steps, budget.types))
+                })
+                .unwrap();
+            costs.push(cost);
+        }
+        assert_eq!(costs[0], costs[1]);
+        let source = "kind<Type>:{bad:1/0;-><int32>}";
+        let block = crate::parser::parse(source).unwrap();
+        let crate::ast::StmtKind::Bind { value, ty, .. } = &block.stmts[0].kind else {
+            panic!()
+        };
+        let mut checker = Checker::new();
+        let scopes = checker.scopes.len();
+        let error = checker
+            .meta_binding(value, ty.as_ref().unwrap())
+            .err()
+            .unwrap();
+        assert_eq!(error.code, "E107");
+        assert_eq!(&source[error.span.start..error.span.end], "1/0");
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(checker.type_work.is_none());
     }
 }

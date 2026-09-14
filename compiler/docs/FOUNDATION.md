@@ -87,6 +87,26 @@ copies add no entries. These are B001 bootstrap limits, not E220 logical account
 Query evaluation, scalar projections, assertions, place queries, required-block
 query construction and general generic specialization remain unavailable.
 
+## Logical type materialization accounting
+
+Existing required type roots now carry an independent logical ledger. Each
+materialized type node charges one evaluation step and one constructed type node,
+including copies and repeated materialization. Nested computed-type and metatype
+bindings share the outer root and its source span. Independent roots start fresh.
+Skipped constructors contribute no type materialization charges.
+
+The ledger enforces revision 1 limits of 1,000,000 steps and 65,536 type nodes.
+Charges are atomic and checked for integer overflow. E220 identifies the root and
+exhausted counter; a caught failure remains fatal for that root and prevents later
+nested evaluation. Root state is cleared on completion or failure.
+
+This is partial accounting: steps currently cover type materialization only.
+General expression/statement and retained-input charges, aggregate slots, text,
+source-helper depth and deferred-query budget retention remain unimplemented.
+The lower existing bootstrap limits still fail with B001 first; their counters are
+not treated as language work. Logical-limit boundaries are tested internally,
+not claimed as source-level E220 qualification. Proof evaluation remains gated.
+
 ## Nominal types
 
 Foundation types now belong to the HIR type system. They remain distinct from

@@ -19,6 +19,10 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
+Required type materialization now has a separate logical ledger with shared nested
+roots, original root spans and sticky budget failures. Other accounting domains
+and proof evaluation remain incomplete; bootstrap limits still report B001.
+
 The partial proof package now exposes typed revision metadata and opaque descriptor
 type aliases through local bindings and file facades. Type-only copy queries now
 retain pending metadata and fixed Result signatures until ordinary typing and
@@ -53,33 +57,35 @@ direct required reads pass focused checker/native tests and the full compiler ga
 Proof evaluation remains unimplemented. Opaque descriptor type aliases now preserve nominal identities
 and reject runtime storage; the final compiler gate passes.
 Pending query copies retain source origins without runtime storage. The next
-prerequisite is logical required-root accounting; query outcomes remain gated.
+prerequisite is completing logical charges beyond type materialization; query
+outcomes remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 861
-  library/878 native tests (1739 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 868
+  library/878 native tests (1746 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-pending-query-complete-gate.log`.
-- All 28 parser tests passed. Six pending-query checker groups cover fixed Result
-  identity, shared copy origins, call capacity, ordinary-error precedence, captures,
-  runtime escape rejection and explicit metadata/flag gates. Record argument
-  arity and documentation attachment regressions also pass.
-- Three native groups exercise check/build/run in both profiles: original file
-  spans, type-argument import discovery, preserved ownership/type errors, and no
-  startup before unsupported evaluation is reported. Logs:
-  `/tmp/meowy-pending-query-integration.log`, `/tmp/meowy-type-call-doc-tests.log`,
-  `/tmp/meowy-pending-query-export-gates.log`, `/tmp/meowy-pending-query-flags.log`.
-- No proof outcome is evaluated and no unsupported query counts as successful
-  conformance. Runtime implementation, reference fixtures, dependencies and versions
-  are unchanged. Editor and separate runtime/sanitizer gates were not rerun.
+  debug/release. Log: `/tmp/meowy-logical-type-gate.log`.
+- Root extraction passed the same 111 baseline required-evaluation tests plus a
+  nested-sharing/cleanup regression. The ledger passed 223 checker tests before
+  source integration. Logs: `/tmp/meowy-required-root-before.log`,
+  `/tmp/meowy-required-root-after.log`, `/tmp/meowy-logical-type-ledger.log`.
+- Six focused ledger/integration tests verify logical boundaries, overflow and
+  atomic charges, sticky failures, shared root spans, repeated materialization,
+  real metatype bindings, skipped constructors and original failure cleanup.
+  Log: `/tmp/meowy-logical-root-integration.log` (ten selected tests total).
+- Logical E220 boundaries are tested internally; source programs still reach
+  lower B001 bootstrap limits first. Full accounting and proof evaluation remain
+  incomplete. No unsupported query counts as successful conformance.
+- Runtime implementation, reference fixtures, dependencies and versions are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
 
 ## Area handoff
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Pending type-only proof queries retain origins until ordinary checks finish; evaluation remains gated. |
+| Compiler | Required roots track logical type materialization separately from bootstrap work; proof evaluation remains gated. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -115,9 +121,10 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Add logical required-root accounting independently of bootstrap guards, with
-   nested-root sharing and deterministic work. Pending query identities and the
-   post-ownership B001 gate are implemented; outcomes and flags remain gated. The
+1. Extend the logical type ledger to expression/statement and retained-input work,
+   then aggregate/text/helper counters and deferred-query budgets. Keep bootstrap
+   guards separate. Pending query identities and the post-ownership B001 gate are
+   implemented; outcomes and flags remain gated. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered
    descriptor, accounting, phase/dependency and type-only query slices.
 2. Broaden subtraction only after its remaining syntax/representation prerequisites

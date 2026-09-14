@@ -1,4 +1,5 @@
 use super::*;
+use crate::ast::Span;
 use crate::ast::{Expr, TypeExpr, TypeKind};
 
 pub(crate) fn literal() -> Expr {

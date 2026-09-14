@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-14. Type-only copy queries retain pending metadata until ordinary checks finish.
+Updated: 2026-09-14. Required roots now track logical type materialization separately.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -57,10 +57,10 @@ outcome is constructed. The reference remains authoritative.
   type formation and query availability must reject E225. Ordinary runtime
   conditions derived from flags retain both successors for base typing/ownership.
   Existing constant folding or `inputs` evidence cannot provide this guarantee.
-- `type_values.rs::Work` is bootstrap work (4096 visits, 64 levels, 16384 nodes),
-  with B001 failures. It is not the revision 1 logical budget. Proof needs shared
-  required-root counters for steps, aggregate slots, text, types and helper depth;
-  keep infrastructure limits separate. Never relabel bootstrap exhaustion E220.
+- `type_values/work.rs::Work` retains bootstrap limits (4096 visits, 64 levels,
+  16384 nodes), with B001 failures. Its separate `required::Budget` currently charges
+  type materialization only. Other step sources, aggregate/text/helper counters and
+  pending-query budget retention remain prerequisites. Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
   explicitly Never, but `Type::is_copy` currently returns true for `Type::Never`;
@@ -72,45 +72,35 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Logical accounting continuation
+### Logical type accounting
 
-The existing Work visits are not language steps: they include bootstrap traversal
-and retained initializer evidence. They must not be relabeled E220. The first
-logical charging domain will be actual type materialization, whose nodes already
-have one owning traversal; scalar/control/input, aggregate/text and helper charging
-remain separate follow-ups. Proof evaluation stays gated.
+`5d03d9b` extracts `type_values/work.rs` and centralizes required-root lifetimes.
+The same 111 baseline tests plus a nested-sharing/cleanup regression passed.
+`cecf7c6` adds `check/required.rs::Budget`, separate from bootstrap Work counts.
+Each successful type node materialization charges one logical step and one type
+node. Nested roots keep the outer source span; independent roots reset counters.
+Charges are atomic, overflow-safe and sticky on E220. Failed roots cannot start
+more nested evaluation, and outer completion/failure discards their state.
 
-Dependency-ordered commits:
-1. Extract bootstrap work ownership and centralize required-root lifetime handling
-   for computed types and metatype bindings. Preserve all counts/errors; verify
-   nested sharing and cleanup. Baseline: 111 required-evaluation tests pass in
-   `/tmp/meowy-required-root-before.log`.
-2. Add an independent logical ledger with per-root origin and atomic counter
-   checks. Wire type-node materialization only: one step plus one type node each.
-   Keep earlier bootstrap limits B001. Test exact/below/above logical limits,
-   overflow, repeated charges, nested roots and failure cleanup.
-3. Validate metadata exports/imports, independent source roots and the unchanged
-   query gate; document the partial charging boundary and run the full compiler gate.
+The ledger uses the revision 1 step/type limits (1,000,000 and 65,536). Source
+programs still encounter lower bootstrap limits first; those remain B001. Logical
+boundary tests inject consumed budgets internally and are not source-level E220
+qualification. No query outcome is evaluated.
 
-Root lifetime extraction passes the same 111 baseline tests plus a new nested
-sharing/error-cleanup regression (112 total). Log: `/tmp/meowy-required-root-after.log`.
-Bootstrap counts and diagnostics are unchanged. Next: the independent type ledger.
-Refactor commit: `5d03d9b`. The type ledger is implemented locally: independent
-step/type counters, original root span, atomic checked additions and sticky E220
-failures. Work.node charges one step/type after the existing bootstrap guard.
-Existing test snapshots require default initialization of the new ledger field;
-those struct literals must change with the field to keep the commit buildable.
-Two additional full Work literals were found by the compiler and now initialize
-the new field. This field change requires all nine existing snapshot-test files
-in the same buildable slice; splitting their defaults from the new field would
-produce either missing-field errors or needless-update lint failures. The logical
-root gate also preserves a caught budget failure so hints cannot suppress E220.
-All 223 checker tests pass (`/tmp/meowy-logical-type-ledger.log`). The slice is
-under 300 changed lines across 14 files; nine test modules directly initialize
-Work and must provide its new field in the same buildable change. Next: source
-root/metadata integration checks and documentation, then the full compiler gate.
-Logical type limits are internally boundary-tested; source programs still hit
-lower bootstrap limits first. No claim of complete revision 1 accounting is made.
+The ledger field required default initialization in nine existing test modules;
+all fourteen affected files had to change together for a buildable struct update.
+That validated slice contained 203 changed lines. The integration exercises real
+metatype bindings, repeated/nested construction, skipped constructors and retained
+original E107 spans. All 223 checker tests passed after the ledger; ten focused
+logical tests pass after integration. Logs: `/tmp/meowy-logical-type-ledger.log`,
+`/tmp/meowy-logical-root-integration.log`. The complete compiler gate passes;
+no outstanding failures remain. Span is now imported directly by the legacy test
+module that uses it, so production and test lint checks both pass.
+
+Next: define and wire the remaining logical charging domains without copying
+bootstrap traversal counts. General expression/statement and retained-input work,
+aggregate/text/helper counters and pending-query budget retention are not yet
+implemented. Preserve B001 infrastructure limits and keep proof evaluation gated.
 
 ### Deferred copy-query integration
 
@@ -149,7 +139,7 @@ invalid query arity reaches E212. `b7cfeb0` keeps known flag projections B001 an
 unknown fields E201. Their focused tests and the complete final gate pass.
 No outstanding failures.
 
-Next: logical required-root accounting and proof-dependency tracking. Pending
+Next: complete logical required-root accounting and proof-dependency tracking. Pending
 origins are ready, but evaluated results, canonical combined origin sets and
 outcomes must remain gated until those prerequisites are connected.
 
@@ -427,22 +417,23 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 861
-  library/878 native tests (1739 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 868
+  library/878 native tests (1746 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-pending-query-complete-gate.log`.
-- All 28 parser tests passed. Six pending-query checker groups cover fixed Result
-  identity, shared copy origins, call capacity, ordinary-error precedence, captures,
-  runtime escape rejection and explicit metadata/flag gates. Record argument
-  arity and documentation attachment regressions also pass.
-- Three native groups exercise check/build/run in both profiles: original file
-  spans, type-argument import discovery, preserved ownership/type errors, and no
-  startup before unsupported evaluation is reported. Logs:
-  `/tmp/meowy-pending-query-integration.log`, `/tmp/meowy-type-call-doc-tests.log`,
-  `/tmp/meowy-pending-query-export-gates.log`, `/tmp/meowy-pending-query-flags.log`.
-- No proof outcome is evaluated and no unsupported query counts as successful
-  conformance. Runtime implementation, reference fixtures, dependencies and versions
-  are unchanged. Editor and separate runtime/sanitizer gates were not rerun.
+  debug/release. Log: `/tmp/meowy-logical-type-gate.log`.
+- Root extraction passed the same 111 baseline required-evaluation tests plus a
+  nested-sharing/cleanup regression. The ledger passed 223 checker tests before
+  source integration. Logs: `/tmp/meowy-required-root-before.log`,
+  `/tmp/meowy-required-root-after.log`, `/tmp/meowy-logical-type-ledger.log`.
+- Six focused ledger/integration tests verify logical boundaries, overflow and
+  atomic charges, sticky failures, shared root spans, repeated materialization,
+  real metatype bindings, skipped constructors and original failure cleanup.
+  Log: `/tmp/meowy-logical-root-integration.log` (ten selected tests total).
+- Logical E220 boundaries are tested internally; source programs still reach
+  lower B001 bootstrap limits first. Full accounting and proof evaluation remain
+  incomplete. No unsupported query counts as successful conformance.
+- Runtime implementation, reference fixtures, dependencies and versions are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
 
 ## Prior capabilities and other areas
@@ -480,8 +471,9 @@ paths, manifest boundaries, depth/file/edge/source/discovery budgets remain enfo
 `src/driver.rs` protects graph inputs from output replacement and maps diagnostics.
 Native file sites remain in `src/backend/sites.rs` and `native/runtime.cpp`.
 
-Type-value resolution/work bounds live in `src/check/type_values.rs`; ordinary type
-construction and symbol lookup remain in `src/check/names.rs`. Required list extents
+Type-value resolution lives in `src/check/type_values.rs`; bootstrap work and root
+lifetimes are in `type_values/work.rs`, with logical type charges in `required.rs`.
+Ordinary type construction and symbol lookup remain in `src/check/names.rs`. Required list extents
 still use `src/list.rs::list_extent` and scalar checks in `src/check/scalars.rs`.
 
 Static integer validation/folding is in `src/check/type_values/scalars.rs`; `Value::Static`
@@ -513,14 +505,14 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Extend `check/queries.rs` beyond pending origins only after logical root
-   accounting and proof-dependency handling are connected. Next implement the
-   [planned accounting prerequisite](#dependency-ordered-commit-series): separate
-   language counters/root identity from bootstrap guards; share nested roots,
-   restore state on failure and test exact/below/above limits and retained work.
-   Do not relabel existing Work exhaustion E220. Pending metadata already supplies
-   call spans/target/revision; keep active outcomes, flags and assertions gated
-   until phase/dependency and charging rules can be enforced together.
+1. Extend the partial ledger in `check/required.rs` and `type_values/work.rs`:
+   first trace logical expression/statement charges through `type_values/{scalars,
+   booleans,statements}.rs` and retained evidence in `inputs.rs`. Record charge
+   ownership before changing counters; grouping/skipped work must not be charged
+   as evaluated expressions. Add focused repeated-input, short-circuit, nested-root
+   and failure tests with each domain. Aggregate/text/helper counters and retaining
+   a query's consumed root budget are subsequent slices. Keep proof outcomes gated
+   until complete accounting and dependency tracking are connected.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.

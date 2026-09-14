@@ -16,7 +16,7 @@ mod work;
 pub(crate) use work::Work;
 
 use super::{Checker, Result, Scope, Value};
-use crate::ast::{self, ExprKind, Span};
+use crate::ast::{self, ExprKind};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
