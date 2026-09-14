@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Explicit core.Type required bindings and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Ordinary core.Type binding roots are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -215,20 +215,22 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Required metatype bindings are complete across `8ba36b3` (type specifications),
-`b5e0681` (bindings) and `31888ee` (integration). The guide and compiler gate pass.
+Inspection: ordinary bindings reject annotated compile-time identities before reaching
+metatype evaluation. Let immutable named metatype annotations start/join the existing
+required evaluator before normal expression lowering, after function-declaration handling.
+Keep Value::Type in the lexical scope and emit no runtime binding. Nested metatype
+bindings must share budgets; independent ordinary binding roots reset them.
 
-Next, investigate ordinary immutable `core.Type` bindings as implicit required roots
-at module/function scope. Trace `check/statements.rs` identity handling and the
-metatype binding evaluator; annotations must start/join a bounded required root before
-ordinary runtime expression checking. Record dependency-ordered commits:
+Dependency-ordered commit plan:
 
-1. Introduce the root boundary with guaranteed restoration and existing budgets;
-   preserve unannotated identities and runtime binding behavior.
-2. Accept named metatype-annotated local statements without runtime locals or captures,
-   with focused type/literal/block initializer and rejection tests.
-3. Verify aliases, module startup, scope, budgets and documentation; update handoffs
-   and run the compiler gate across the series.
+1. Complete: meta_binding restores absent work state on success/failure and preserves
+   active outer counters. 824 library/844 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-metatype-root-boundary.log`.
+2. Route ordinary immutable named metatype bindings through it; preserve function,
+   mutable/value-export and runtime data gates. Include checker/native regressions.
+3. Verify lexical/alias identity, independent/shared budgets, source failures,
+   documentation and module/function staging, then commit integration separately.
+4. Update guides/handoffs, execute the guide and run the final compiler gate.
 
 Keep named value exports, first-class metatype values, type-of-type queries, runtime
 type containers, type-producing/generic helpers and other scalar kinds separate.

@@ -1,3 +1,4 @@
+use super::Work;
 use crate::ast::{Expr, TypeExpr, TypeKind};
 use crate::check::{Checker, Result, Spec, Value};
 use crate::foundation::Module;
@@ -31,6 +32,22 @@ impl Checker {
     }
 
     pub(crate) fn meta_binding(&mut self, expr: &Expr, annotation: &TypeExpr) -> Result<Value> {
+        let root = self.type_work.is_none();
+        if root {
+            self.type_work = Some(Work::default());
+        }
+        let result = self.meta_binding_inner(expr, annotation);
+        if root {
+            self.type_work = None;
+        }
+        result
+    }
+
+    pub(crate) fn meta_binding_inner(
+        &mut self,
+        expr: &Expr,
+        annotation: &TypeExpr,
+    ) -> Result<Value> {
         self.type_work.as_mut().unwrap().node(annotation.span)?;
         let value = self.type_binding(expr, None)?;
         if !matches!(value, Value::Type(_)) {
@@ -180,5 +197,65 @@ mod integration {
             crate::documentation::checked(source, true).unwrap_err()[0].code,
             "B001"
         );
+    }
+}
+
+#[cfg(test)]
+mod roots {
+    use super::*;
+    use crate::ast::StmtKind;
+
+    #[test]
+    pub(crate) fn metatype_roots_restore_work_and_scope_after_success_or_failure() {
+        let mut checker = Checker::new();
+        let scopes = checker.scopes.len();
+        for (source, code) in [
+            ("kind<Type>:{local:4;-><int32>}", ""),
+            ("kind<Type>:{local:4;-><int32>;tail:1/0}", "E107"),
+            ("kind<Type>:{->4}", "E207"),
+            ("kind<Type>:<uint8>", ""),
+        ] {
+            let parsed = crate::parser::parse(source).unwrap();
+            let StmtKind::Bind { value, ty, .. } = &parsed.stmts[0].kind else {
+                panic!("binding")
+            };
+            let result = checker.meta_binding(value, ty.as_ref().unwrap());
+            if code.is_empty() {
+                assert!(matches!(result.unwrap(), Value::Type(_)));
+            } else {
+                assert_eq!(result.err().unwrap().code, code);
+            }
+            assert!(checker.type_work.is_none());
+            assert_eq!(checker.scopes.len(), scopes);
+            assert!(!checker.required);
+            assert!(checker.locals.is_empty());
+            assert_eq!(
+                checker
+                    .required_value("local", value.span)
+                    .err()
+                    .unwrap()
+                    .code,
+                "E201"
+            );
+        }
+    }
+
+    #[test]
+    pub(crate) fn metatype_roots_join_existing_work_without_resetting_counters() {
+        let parsed = crate::parser::parse("kind<Type>:<int32>").unwrap();
+        let StmtKind::Bind { value, ty, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(Work {
+            visits: 100,
+            nodes: 200,
+            depth: 3,
+        });
+        checker.meta_binding(value, ty.as_ref().unwrap()).unwrap();
+        let work = checker.type_work.as_ref().unwrap();
+        assert_eq!(work.visits, 101);
+        assert_eq!(work.nodes, 202);
+        assert_eq!(work.depth, 3);
     }
 }
