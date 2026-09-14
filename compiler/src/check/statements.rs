@@ -446,6 +446,32 @@ impl Checker {
         value: &ast::Expr,
         span: Span,
     ) -> Result<Vec<hir::Stmt>> {
+        if label.is_none()
+            && name.is_some()
+            && self.owner == 0
+            && self.scopes.len() == self.module.depth
+            && self
+                .frames
+                .last()
+                .is_some_and(|frame| frame.id == self.module.block)
+            && self.pending_query(value)?.is_some()
+        {
+            if annotation
+                .map(|ty| self.spec(ty))
+                .transpose()?
+                .is_none_or(|ty| matches!(ty, super::Spec::Descriptor(_)))
+            {
+                return Err(Diagnostic::unsupported(
+                    "proof descriptor metadata exports",
+                    span,
+                ));
+            }
+            return Err(Self::error(
+                "E223",
+                "proof descriptors cannot enter runtime exports",
+                span,
+            ));
+        }
         if self.export_type_value(label, name, annotation, mutable, value, span)? {
             return Ok(Vec::new());
         }

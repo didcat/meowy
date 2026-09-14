@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-14. Proof revision metadata and descriptor type aliases are implemented.
+Updated: 2026-09-14. Type-only copy queries retain pending metadata until ordinary checks finish.
 Proof queries remain unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -26,18 +26,18 @@ results, direct flags, `assert` and `expect<S>`. Begin with concrete types alrea
 represented by the bootstrap; defer value observations, place probes, generic
 analysis, bounds, composition helpers and static descriptor exports. This is a
 partial package milestone, not revision 1 qualification. Only module/revision
-metadata and descriptor type aliases are implemented so far. No result value or
-observation is constructed. The reference remains authoritative.
+metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
+outcome is constructed. The reference remains authoritative.
 
 ### Prerequisites and current integration
 
 - `src/foundation.rs` now includes partial `proof` module identity;
   `check/names.rs::symbol` provides typed revision metadata. Module/member aliases
   retain identity and same-spelling user bindings remain ordinary bindings.
-  Descriptor type names now resolve to `Spec::Descriptor`; query dispatch remains
-  unimplemented.
-- `check.rs::Value` separates static scalars, records and types, but has no opaque
-  descriptor or deferred proof value. `Spec::Descriptor` names static descriptor
+  Descriptor type names resolve to `Spec::Descriptor`. Type-only `can_copy` calls
+  now queue metadata by resolved `Item::CanCopy` identity; evaluation stays gated.
+- `check.rs::Value::Pending` indexes an immutable query record without runtime
+  storage. Copies retain call span, owner, target, revision and checked type argument. `Spec::Descriptor` names static descriptor
   types without adding runtime `hir::Type` variants. `Spec::Meta` still represents
   `core.Type`. Results need a fixed declared `proof.Result` type distinct from
   the active nominal alternative. Do not encode them as ordinary runtime records
@@ -48,8 +48,8 @@ observation is constructed. The reference remains authoritative.
   future value/place queries need validated source descriptions without loads,
   loans, index evaluation or last-use effects.
 - `check.rs::check_imports` checks the body before borrow and loan validation.
-  Queue proof obligations with fixed signatures while checking; solve them only
-  after ordinary validation succeeds. Type capability answers need a type walk,
+  Pending query bindings now have fixed Result signatures while checking; a B001
+  gate after borrow/loan validation prevents unresolved queries reaching codegen. Type capability answers need a type walk,
   not a scalar CFG analysis. They still must not discharge assertions early or
   suppress ordinary failures in uncalled/runtime-skipped checked bodies.
 - Scalar constants and initializer evidence currently have no proof-dependency
@@ -111,6 +111,20 @@ All four pending-query groups pass, including capacity boundaries and copies
 that retain a single origin. Log: `/tmp/meowy-pending-query-tests.log`. No active
 result representation has been added yet;
 result outcomes, canonical origin sets and logical accounting remain separate.
+
+Checker commit: `72e7483`. Integration tests now cover file-origin diagnostics,
+type-argument import discovery, no startup on check/build/run, and ownership
+failures in checked bodies. Documentation tracing found that Call dropped the
+parent before visiting specialized arguments; it now forwards the declaration
+parent for that node so inline type fields retain attachment. All four pending
+checker groups, three native groups in debug/release and the documentation traversal
+regression pass. Logs: `/tmp/meowy-pending-query-integration.log` and
+`/tmp/meowy-type-call-doc-tests.log`. The full gate passed, but final review
+found that static descriptor exports are permitted by the reference. A narrow
+follow-up keeps top-level metadata export attempts B001 while runtime-typed exports
+and record fields retain E223. Five focused checker and three native groups pass;
+log: `/tmp/meowy-pending-query-export-gates.log`. The final gate rerun is pending.
+Native/documentation integration remains uncommitted for the final slice.
 
 ### Descriptor identity slice
 
@@ -472,16 +486,17 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Continue step 2 of the [proof series](#dependency-ordered-commit-series) beyond
-   completed static type aliases: model result values with a fixed declared Result,
-   separate active alternative and retained target/revision/source origins. Trace
-   `check.rs::Value`, required metadata copying and the post-ownership obligation
-   boundary before editing; avoid unused standalone representation scaffolding.
-   Test copied historical identity, non-forgeability, deterministic origin order
-   and absence of runtime storage. Queries must remain gated until deferred
-   obligations, dependency tracking and logical accounting are connected.
+1. Extend `check/queries.rs` beyond pending origins only after logical root
+   accounting and proof-dependency handling are connected. Next implement the
+   [planned accounting prerequisite](#dependency-ordered-commit-series): separate
+   language counters/root identity from bootstrap guards; share nested roots,
+   restore state on failure and test exact/below/above limits and retained work.
+   Do not relabel existing Work exhaustion E220. Pending metadata already supplies
+   call spans/target/revision; keep active outcomes, flags and assertions gated
+   until phase/dependency and charging rules can be enforced together.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.
 
 Do not push or bump release versions here.
+

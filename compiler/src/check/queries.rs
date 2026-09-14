@@ -158,7 +158,8 @@ mod tests {
             "copy<int32>:r",
             "f:(){copy:r}",
             "d:@\"debug\";d.print(r)",
-            "->value:r",
+            "->value<int32>:r",
+            "record:{->value:r}",
             "|r|{}",
         ] {
             let source = format!(r#"p:@"proof";r:p.can_copy<uint32>();{tail}"#);
@@ -210,6 +211,19 @@ mod tests {
                 assert!(error.message.contains("pending proof query capacity"));
                 assert_eq!(error.span.start, source.rfind("p.can_copy").unwrap());
             }
+        }
+    }
+    #[test]
+    pub(crate) fn pending_proof_metadata_exports_remain_capability_gated() {
+        for tail in [
+            "->value:r",
+            "->value<p.Result>:r",
+            "->value:p.can_copy<uint32>()",
+        ] {
+            let source = format!(r#"p:@"proof";r:p.can_copy<uint32>();{tail}"#);
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "B001");
+            assert!(error.message.contains("proof descriptor metadata exports"));
         }
     }
 }
