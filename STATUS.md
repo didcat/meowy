@@ -23,37 +23,37 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Required boolean-result blocks now work in logical `!`, `&&`, `||` and matcher
-conditions. Structural checks defer local initializers; selected blocks preserve
-boolean kinds, source order, scope and shared budgets without runtime storage.
-Direct boolean block equality remains separate.
+Required block equality now supports integer and boolean results with deferred kind
+selection and exact widths. Equality evaluates both sides once; outer logical short
+circuits still skip blocks. Scope, source errors and shared budgets are preserved
+without runtime storage. Ordered comparisons remain integer-only.
 
-Commits: `705c2dc` (shared forms), `d5f51db` (execution), `321502a` (integration).
-The compiler README describes the supported boundary. Detailed guide changes are
-on hold while the user edits `docs/`; those user changes remain untouched.
+Commits: `60bc234` (shared operands), `95d3180` (equality), `a414ec7` (integration).
+The compiler guide now covers scalar equality and the previously deferred logical
+block operands. The user's documentation formatting is preserved.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1648
-  Rust tests (810 library/838 native), 20 Python tests, fmt, Clippy and build.
-- Four boolean-block checker tests and three native groups cover logical results,
-  matcher conditions, scope/kind gates, exact work, source errors and module staging.
-- Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links
-  and catalog/schema checks pass. Log: `/tmp/meowy-logical-blocks-gate.log`.
-- No detailed guide was edited or executed this slice; user documentation is untouched.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1656
+  Rust tests (815 library/841 native), 20 Python tests, fmt, Clippy and build.
+- Four equality checker tests and three native groups cover kinds, exact work, eager
+  reads, scope, source errors, aliases and module/function staging.
+- Logical/equality guides each print `7` in debug/release. Conformance: 10 passed,
+  13 unsupported, 0 failed in both profiles. Local links and catalog/schema checks pass.
+  Log: `/tmp/meowy-block-equality-gate.log`.
 - Proof remains specification-only; its examples were not compiled or executed.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. User documentation changes are outside these compiler commits.
+  remains open. The user's documentation formatting is preserved.
 
 ## Area handoff
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Boolean logical blocks preserve short circuits, checked result kinds and shared budgets. |
+| Compiler | Scalar block equality preserves deferred kinds, eager reads and shared budgets. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -77,8 +77,7 @@ implemented; no runtime/compile-time execution of proof examples was claimed.
 
 ## Next steps
 
-1. Investigate direct boolean block equality with deferred operand kinds; see the
-   [compiler handoff](compiler/STATUS.md#next-steps).
-2. Keep `docs/` untouched while the user is editing it; defer detailed guide updates.
-3. Implement proof only in separately planned slices against its qualification contract.
+1. Investigate explicit `core.Type` bindings in required scopes while retaining their
+   compile-time-only representation; see the [compiler handoff](compiler/STATUS.md#next-steps).
+2. Implement proof only in separately planned slices against its qualification contract.
    Do not push or claim full release qualification.

@@ -140,7 +140,7 @@ documentation retains the declared widths and resulting constructed type signatu
 Eligible local/field/module inputs work in function-scoped required blocks without
 allowing runtime captures. Checking/building remain silent and preserve eager module
 initialization, including failures behind skipped required reads. Float/text results,
-mutable scratch and boolean-result block operands remain unsupported.
+mutable scratch and non-scalar operand results remain unsupported.
 Scalar result blocks do not accept named field emissions.
 
 ## Inferred scalar blocks
@@ -178,7 +178,7 @@ Type-producing blocks retain type values, and type aliases still require a type 
 Named fields can infer a unit-primary record; records with integer/boolean primaries
 remain gated. A nested unannotated block may also supply an inferred scalar record field.
 Float/text/null results, mutable scratch, fallback arms, skipped documented declarations
-and boolean-result block operands remain separate.
+and non-scalar operand results remain separate.
 
 Inference shares the existing required scopes, source eligibility and work/depth/node
 budgets. Original source reads retain their work and errors, while aliases of materialized
@@ -223,8 +223,8 @@ skipped-documentation gates. No runtime locals or statements are introduced.
 The same expressions can supply list extents inside an active required root, as in
 the computed type block above. Negative extents remain E104 and bootstrap capacity
 limits still apply. This does not enable block extents in a direct type annotation
-outside such a root. Boolean-result operand blocks, noninteger block results,
-helpers, mutable scratch and records with scalar primaries remain separate.
+outside such a root. Noninteger arithmetic block results, helpers, mutable scratch
+and records with scalar primaries remain separate.
 
 ## Annotated record construction
 
@@ -565,9 +565,10 @@ debug : @"debug"
 debug.print(flags[2])
 ```
 
-This prints `true`. All supported operand names, field paths and types are checked
-before evaluation, including skipped operands. Unknown/private names and incompatible
-operand kinds still fail. Logical operators evaluate left-to-right and skip unnecessary
+This prints `true`. Outer operand names, field paths and known types are checked
+before evaluation, including skipped operands. Operand-block initializers follow the
+deferred rules below. Unknown/private outer names and known incompatible operand kinds
+still fail. Logical operators evaluate left-to-right and skip unnecessary
 right operands. Skipped inputs need no initializer evidence and contribute no evaluation
 work or retained errors. An evaluated runtime, mutable or effectful source remains
 unavailable. Module initialization still runs normally, even when a required read is skipped.
@@ -584,7 +585,37 @@ and consumes frontend checking work. Evaluation retains the shared required-root
 work/depth bounds; skipped evaluation is not charged. Independent roots reset their
 budgets. These bootstrap limits report B001 and do not implement full-language E220.
 Direct calls and unsupported operators remain unavailable as outer operands even
-in skipped expression syntax. Boolean-result operand blocks remain separate.
+in skipped expression syntax. Supported operand blocks defer their local initializers.
+
+### Logical block operands
+
+Required `!`, `&&`, `||` and matcher conditions accept boolean-result blocks:
+
+```meowy
+<Items> : {
+    ready : !({ -> false }) && ({ -> true })
+    skipped : false && ({ unused : 1 / 0; -> true })
+    | ({ -> ready }) | -> <int32[4]>
+    | !ready | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`; the skipped block is not evaluated. Use `!({ ... })` to negate
+a block result. `!{ ... }` retains the language's unchecked-block meaning.
+
+Structural validation checks supported statement forms and labels without resolving
+block-local values or annotations. Selected blocks execute once with boolean context,
+including nested primaries and tails. Empty selected results report E204, duplicate
+primaries E205 and wrong scalar kinds E207. Skipped initializers add no evaluation
+work or constructed type nodes. Local names do not escape the block.
+
+Logical short circuits, source failures, shared budgets and module startup retain
+their existing behavior. Named/outer emissions, mutation, fallback arms and skipped
+documented declarations retain their gates. A boolean block in a matcher condition
+uses this same checking and execution path.
 
 ### Integer comparisons
 
@@ -666,8 +697,44 @@ is widened to make a comparison fit.
 Skipped blocks contribute no evaluation visits or constructed type nodes. Selected
 blocks retain source work, tail errors, shared budgets and original diagnostic spans.
 Unsupported statement forms, fallback arms and skipped documented declarations retain
-their gates. Selected block operands must produce integers; boolean-result block
-comparisons, whole-module records and helper evaluation remain separate.
+their gates. Ordered comparisons require integers. Equality can instead select
+boolean operands as described below; whole-record comparisons and helper evaluation
+remain separate.
+
+### Scalar block equality
+
+Required `==` and `!=` accept integer or boolean block results, including a block
+on either side of an ordinary scalar operand:
+
+```meowy
+<Items> : {
+    enabled : { -> true }
+    same : ({ -> enabled }) == ({ local : false; -> !local })
+    different : ({ -> false }) != true
+    | same && different | -> <int32[4]>
+    | !(same && different) | -> <string>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Known outer types provide context; otherwise the left operand's
+selected result determines the scalar kind and the right operand must match it.
+Integer widths remain exact. The checker never executes a skipped block to guess
+its kind, and booleans are never encoded as integers for equality.
+
+Equality evaluates both operands once, left to right. A `false` left value does not
+skip the right side; only a failure stops evaluation. An enclosing `&&` or `||` can
+skip the entire comparison, in which case block-local initializers and unresolved
+kinds remain unevaluated. Ordinary known outer name/type checks still apply.
+
+Known incompatible scalar kinds report E222, known integer-width mismatches retain
+E213, and an evaluated operand that does not satisfy its scalar context reports E207.
+Ordered comparisons remain integer-only. Empty results, type/record-valued operands,
+float/text comparisons, helpers and borrowed storage remain separate capabilities.
+Source work/errors, aliases, lexical scope, documentation and module/function staging
+follow the same rules as the existing required operand paths.
 
 ## Block initializers
 
@@ -770,7 +837,8 @@ Selected standalone expression blocks, named/outer emissions, mutation and evalu
 helper calls remain unavailable inside boolean blocks. Integer and boolean blocks
 retain independently typed primaries. Required type blocks can read the resulting
 booleans as immutable scratch and evaluate explicitly annotated boolean block bindings.
-Unannotated boolean operand blocks remain separate.
+Required operand-block execution follows the rules above; it does not broaden
+eligibility for arbitrary runtime initializers.
 
 ### Record scratch in scalar initializers
 

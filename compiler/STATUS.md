@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required boolean block equality is in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required boolean block equality and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,30 +21,27 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required boolean blocks now work in `!`, `&&`, `||` and required matcher conditions.
-`required_block_form` shares bounded statement validation with integer comparisons;
-`boolean_form` defers local initializer/type resolution and supplies boolean context.
-`required_boolean` executes selected blocks through existing typed `scalar_block`.
+Required block `==`/`!=` now supports integer and boolean results without guessing
+unknown kinds. `comparisons/equality.rs` owns deferred equality forms and selected
+scalar materialization. Known outer kinds supply context; otherwise the left result
+sets the right operand's exact scalar kind. Integer widths remain unchanged.
 
-Short circuits retain left-to-right evaluation: skipped blocks create no scopes,
-resolve no initializers and charge no evaluation visits/type nodes. Selected blocks
-retain declarations, matcher choices, nested primaries and tail errors. Empty selected
-blocks report E204, duplicate primaries E205 and incompatible scalar results E207.
-Labels, mutation, named/outer emissions and unsupported statement forms retain gates.
+`operand_block` shares contextual/inferred block evaluation with arithmetic operands.
+Groups and blocks retain the existing work/depth accounting. Equality evaluates both
+operands once, including a false left boolean; failures stop the right read and keep
+original spans. An enclosing logical short circuit skips all block execution.
 
-Grouped negation uses `!({ ... })`; bare `!{ ... }` remains unchecked-block syntax.
-Bindings resolve normally, including shadowed boolean names. Logical results can feed
-inferred record fields and type selection without allocating runtime locals/statements.
-Direct boolean block equality still follows the gated comparison path; equality of
-already formed boolean/logical values retains its existing behavior.
+Known scalar-kind mismatches remain E222, known integer-width mismatches E213 and
+selected context mismatches E207. Ordered comparisons keep their integer-only path.
+Type/record/null/float/text block results and whole-record equality remain gated.
 
-Shared work/depth/node budgets, scope restoration, source evidence, original error
-spans and alias reuse remain intact. Check/build stay silent while normal module
-startup and function-scoped required input reads retain their existing contracts.
+Aliases, scope restoration, source costs and module primary identity are preserved.
+Check/build remain silent, module initialization retains its effects and required
+function reads do not grant runtime captures. No runtime locals/statements are created.
 
-The user is editing `docs/`; no docs directory was changed for this compiler slice.
-The detailed computed-type guide update is deferred. Compiler README and STATUS are
-current. The proof package remains a specification and was not implemented here.
+Documentation editing has resumed. The scalar equality guide and previously deferred
+logical-block guide are updated without undoing the user's formatting. Proof remains
+specification-only and has no implementation in this slice.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -132,23 +129,25 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `705c2dc`: shared operand-block validation; 806 library/835 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-boolean-block-form.log`.
-- `d5f51db`: boolean logical block execution; 808 library/836 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-logical-blocks.log`.
-- `321502a`: integration; 810 library/838 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-logical-blocks-integration.log`.
-- Four boolean-block checker tests and three native groups cover logical truth tables,
-  matcher conditions, kind/scope gates, exact work, depth, source errors, alias reuse,
-  skipped metadata and module/function staging. The shared-form test checks no resolution.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 810
-  library/838 native Rust tests (1648 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-logical-blocks-gate.log`.
+- `60bc234`: shared scalar operand materialization; 811 library/838 native tests,
+  fmt and Clippy passed. Log: `/tmp/meowy-equality-operands-refactor.log`.
+- `95d3180`: block equality; 813 library/839 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-block-equality.log`.
+- `a414ec7`: integration; 815 library/841 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-block-equality-integration.log`.
+- Four equality checker tests and three native groups cover scalar truth tables,
+  deferred kinds, exact work, eager RHS reads, mixed-kind gates, scope, source errors,
+  aliases, metadata and module/function staging. The helper test checks scalar contexts.
+- Logical/equality guides each print `7` in debug/release:
+  `/tmp/meowy-scalar-equality-doc-5whlw1y6/{logic,equality}.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 815
+  library/841 native Rust tests (1656 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-block-equality-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
-  catalog/schema and whitespace checks passed. No detailed guide was edited/executed.
+  catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. Preserve the user's uncommitted `docs/` edits.
+  remains open. The user's formatting commit is preserved.
 
 ## Prior capabilities and other areas
 
@@ -207,7 +206,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, direct boolean block equality, helper
+Whole-record module inputs, conditional module exports, explicit core.Type bindings, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -215,31 +214,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-The user finished documentation formatting (`f93c84d`); normal guide updates may resume.
-The working tree was clean at the start of this slice. Preserve the formatting.
+Scalar block equality is complete across `60bc234` (shared operands), `95d3180`
+(equality) and `a414ec7` (integration). Both guide examples and the compiler gate pass.
 
-Inspection: direct operand blocks currently choose the integer comparison path even
-for equality. Add a separate deferred scalar-equality path, using known outer kinds
-without executing blocks. Selected operands infer or inherit an integer/boolean kind,
-materialize once left-to-right, and must match exactly. Ordered comparisons remain
-integer-only; block-free comparison behavior and work must remain unchanged.
+Next, investigate explicit `core.Type` bindings in required scopes as a prerequisite
+for declared compile-time APIs. Trace the foundation type registry, `check/names.rs`
+and `type_values::type_binding`; current type values exist but annotated identity
+bindings remain gated. Record dependency-ordered commits after checking the contract:
 
-Dependency-ordered commit plan:
+1. Represent/resolve the compile-time-only type kind without allowing native storage,
+   layout, captures, pointer formation or runtime use.
+2. Accept explicitly annotated type-value scratch in required scopes with exact kind
+   validation and focused tests; preserve ordinary data annotations and type namespaces.
+3. Verify aliases, imported identities, budgets, diagnostics and documentation/staging;
+   update handoffs and run the compiler gate across the series.
 
-1. Complete: shared operand-block materialization retains inferred/contextual scalar
-   kinds and existing integer work. 811 library/838 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-equality-operands-refactor.log`. Committed as `60bc234`.
-2. Complete: deferred equality forms preserve known outer kinds and select integer/
-   boolean execution from materialized values. Logical contexts and ordered comparisons
-   remain separate. 813 library/839 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-block-equality.log`. Committed as `95d3180`.
-3. Complete: exact selected/skipped work, mixed kinds, scope restoration, eager RHS
-   reads, original errors, alias reuse, metadata and module/function staging pass
-   815 library/841 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-block-equality-integration.log`.
-4. Update the equality guide and previously deferred logical-block guide, run their
-   examples in both profiles, update handoffs and run the final compiler gate.
-
-Keep empty/null results, scalar-primary records, skipped documented declarations,
-fallback arms, mutable/float/text/reference fields, whole-module records and helpers
-separate. Proof implementation requires its own plan. Do not push.
+Keep runtime type containers, generic helper execution, empty/null scalar results,
+scalar-primary records, skipped documented declarations, mutable/float/text/reference
+fields and whole-module records separate. Proof needs its own plan. Do not push.

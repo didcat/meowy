@@ -80,9 +80,10 @@ short-circuited blocks do no evaluation work. Boolean-result blocks also work in
 required `!`, `&&`, `||` and matcher conditions. Their statement forms are checked
 without resolving local initializers; selected results must be boolean and retain
 source errors and shared budgets. Use `!({ -> false })` for negation; `!{ ... }`
-retains its unchecked-block meaning. Direct boolean block equality, float/text
-comparisons, empty composition sources, mutable scratch, whole-module records and
-helpers remain separate.
+retains its unchecked-block meaning. Direct block `==`/`!=` selects integer or boolean
+equality from checked operand kinds; both operands execute even when the left value
+is false. Ordered comparisons remain integer-only. Float/text comparisons, empty
+composition sources, mutable scratch, whole-module records and helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the
