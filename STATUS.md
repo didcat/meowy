@@ -19,6 +19,9 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
+Bounded type subtraction is in progress. Its gated parser slice passes 843 library/
+866 native tests, fmt and Clippy; evaluator and integration work follow.
+
 Required `==`/`!=` now accepts bare type-producing blocks on either side of another
 block or known type value. Selected blocks retain normalized identity, scoped locals,
 source errors and work budgets. Scalar contexts preserve widths; mixed evaluated

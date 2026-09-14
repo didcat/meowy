@@ -53,6 +53,10 @@ impl Parser {
             }
             let start = left.span.start;
             if min <= 100 {
+                if self.subtraction_suffix() {
+                    left = self.type_subtraction(left)?;
+                    continue;
+                }
                 if self.take("(") {
                     let args = self.arguments(")")?;
                     left = Expr {

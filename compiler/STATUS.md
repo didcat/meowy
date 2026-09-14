@@ -19,21 +19,34 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
-## Bare type-block equality series
+## Active plan: bounded type subtraction
 
-Dependency-ordered slices:
+The contract defines `!<U>` on compile-time type sets. `hir::Type::subtract`
+already handles the supported normalized concrete alternatives; literal subtypes
+and broad bases such as `error` remain unsupported. Reuse `ExprKind::Binary` with
+operator `!`, wrapped by `TypeKind::Computed` in annotations. Existing graph/docs
+visitors then retain both operands and original spans without new AST variants.
 
-1. `f2a1962`: infer type payloads for block equality, preserve scalar contexts, and
-   diagnose type emissions in scalar blocks with E207. Focused tests stay with behavior.
-2. `055d8cf`: skip/source/work integration, imported identity/privacy/startup,
-   independent roots, failed-state restoration and runtime/helper boundaries.
-3. This documentation commit integrates the guide/README and both handoffs. Guide
-   execution and the full `python3 -B tools/verify.py --compiler` gate pass.
+Dependency-ordered commits:
+1. Parse subtraction suffixes in annotations and value expressions; preserve unary
+   `!`/`!=`, bound chains and test spans/shape. Evaluation remains gated in this slice.
+2. Evaluate supported concrete operands left-to-right with shared work/node budgets;
+   integrate required bindings and equality forms, with focused checker/native tests.
+3. Verify imports, original errors, repeated work, skipped constructors, scope and
+   runtime value preservation with integration regressions.
+4. Document supported syntax/boundaries, execute the guide, update both handoffs and
+   run the full compiler gate. Commit each validated slice.
 
-Five checker/five native groups, fmt and Clippy pass. No implementation failures remain.
-Logs: `/tmp/meowy-type-blocks-slice1.log` and `/tmp/meowy-type-blocks-slice2.log`.
-The extracted guide `/tmp/meowy-type-blocks-guide.mwy` prints `7` in debug/release.
-Final results are recorded below. Next: investigate bounded type subtraction.
+The first bounded grammar accepts one explicit bracket per subtraction suffix;
+use a named union or computed type inside that bracket to remove multiple members.
+Unparenthesized union suffixes after subtraction remain gated rather than assigning
+an unconfirmed mixed union/subtraction precedence. Repeated subtraction is left-to-right.
+Parser slice validation: 843 library/866 native tests, fmt and Clippy pass.
+Three new parser groups cover query/literal/annotation forms, Unicode-offset spans,
+left-to-right chains, unchanged unary `!`/`!=`, chain limits and the mixed-union gate.
+Annotation lookahead now retains subtraction budget diagnostics. Evaluation remains
+B001 until the next slice. Log: `/tmp/meowy-subtraction-parser.log`.
+No outstanding failures. Next: commit parsing, then implement required subtraction.
 
 ## Current compiler slice
 

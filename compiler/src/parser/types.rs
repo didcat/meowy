@@ -1,5 +1,5 @@
 use super::{ParseResult, Parser};
-use crate::ast::{Span, TypeExpr, TypeKind};
+use crate::ast::{Expr, ExprKind, Span, TypeExpr, TypeKind};
 use crate::diagnostic::Diagnostic;
 
 impl Parser {
@@ -15,26 +15,72 @@ impl Parser {
                 }
             }
         }
-        if self.at("!")
-            && self
-                .tokens
-                .get(self.pos + 1)
-                .is_some_and(|token| token.text == "<")
-        {
-            return Err(Diagnostic::unsupported(
-                "type subtraction",
-                self.token().span,
-            ));
-        }
-        if members.len() == 1 {
-            Ok(members.remove(0))
+        let mut ty = if members.len() == 1 {
+            members.remove(0)
         } else {
             let span = Span::new(members[0].span.start, members.last().unwrap().span.end);
-            Ok(TypeExpr {
+            TypeExpr {
                 kind: TypeKind::Union(members),
                 span,
-            })
+            }
+        };
+        let mut count = 0;
+        while self.subtraction_suffix() {
+            count += 1;
+            if count > 64 {
+                return Err(Diagnostic::unsupported(
+                    "type subtraction chain beyond 64 operations",
+                    self.token().span,
+                ));
+            }
+            let span = ty.span;
+            let value = self.type_subtraction(Expr {
+                kind: ExprKind::TypeValue(ty),
+                span,
+            })?;
+            ty = TypeExpr {
+                span: value.span,
+                kind: TypeKind::Computed(Box::new(value)),
+            };
         }
+        Ok(ty)
+    }
+
+    pub(crate) fn subtraction_suffix(&self) -> bool {
+        self.at("!")
+            && self.tokens[self.pos + 1..]
+                .iter()
+                .find(|token| token.kind != crate::lexer::TokenKind::Newline)
+                .is_some_and(|token| token.text == "<")
+    }
+
+    pub(crate) fn type_subtraction(&mut self, left: Expr) -> ParseResult<Expr> {
+        self.need("!")?;
+        self.newlines();
+        let ty = self.type_bracket()?;
+        let span = Span::new(left.span.start, ty.span.end);
+        if self.at("<") {
+            let save = self.pos;
+            let next = self.type_bracket();
+            self.pos = save;
+            if next.is_ok() {
+                return Err(Diagnostic::unsupported(
+                    "union suffixes after type subtraction; use a named union operand",
+                    self.token().span,
+                ));
+            }
+        }
+        Ok(Expr {
+            span,
+            kind: ExprKind::Binary {
+                op: "!".into(),
+                left: Box::new(left),
+                right: Box::new(Expr {
+                    span: ty.span,
+                    kind: ExprKind::TypeValue(ty),
+                }),
+            },
+        })
     }
 
     pub(crate) fn type_bracket(&mut self) -> ParseResult<TypeExpr> {

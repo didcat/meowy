@@ -220,6 +220,7 @@ impl Parser {
             match token.text.as_str() {
                 "<" => depth += 1,
                 ">" | ">>" if token.text.len() <= depth => depth -= token.text.len(),
+                "!" if depth == 0 => {}
                 ":" | ":=" if depth == 0 => return true,
                 ";" if depth == 0 => return false,
                 _ if depth == 0 => return false,

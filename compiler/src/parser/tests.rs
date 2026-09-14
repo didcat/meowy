@@ -3,6 +3,7 @@ use crate::ast::*;
 
 mod borrows;
 mod doc_fences;
+mod subtraction;
 
 pub(crate) fn value(source: &str) -> Expr {
     let block = parse(source).unwrap();
