@@ -228,9 +228,11 @@ Dependency-ordered commit plan:
 
 1. Complete: shared operand-block materialization retains inferred/contextual scalar
    kinds and existing integer work. 811 library/838 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-equality-operands-refactor.log`.
-2. Add deferred equality operand forms and selected integer/boolean equality with
-   focused accepted/rejected tests. Keep comparisons and arithmetic domains separate.
+   Log: `/tmp/meowy-equality-operands-refactor.log`. Committed as `60bc234`.
+2. Complete: deferred equality forms preserve known outer kinds and select integer/
+   boolean execution from materialized values. Logical contexts and ordered comparisons
+   remain separate. 813 library/839 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-block-equality.log`.
 3. Verify short circuits, mixed kinds, exact work, scopes, source errors and staging.
 4. Update the equality guide and previously deferred logical-block guide, run their
    examples in both profiles, update handoffs and run the final compiler gate.

@@ -1,4 +1,5 @@
 mod blocks;
+mod equality;
 
 use crate::ast;
 use crate::check::{Checker, Constant, Result, Value};
@@ -50,6 +51,11 @@ impl Checker {
                 self.type_work.as_ref().unwrap().depth,
                 &mut 0,
             )?;
+            if matches!(op, "==" | "!=") {
+                return self
+                    .required_block_equality(op, left, right, context.as_ref())
+                    .map(Some);
+            }
             let Value::Static {
                 value: Constant::Int(a),
                 ty,

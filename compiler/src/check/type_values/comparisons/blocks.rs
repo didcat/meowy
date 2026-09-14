@@ -11,6 +11,9 @@ impl Checker {
         depth: usize,
         count: &mut usize,
     ) -> Result<Option<Type>> {
+        if matches!(op, "==" | "!=") {
+            return self.block_equality_form(op, left, right, depth, count);
+        }
         let context = self
             .required_hint(left)
             .or_else(|| self.required_hint(right))
@@ -149,7 +152,7 @@ mod tests {
             ("flag:false&&(({x:=4;->x})==1)", "B001"),
             ("flag:false&&(({->field:4})==1)", "B001"),
             ("flag:false&&(({->4})==unknown)", "E201"),
-            ("flag:({->4})==false", "E222"),
+            ("flag:({->4})==false", "E207"),
         ] {
             let source = format!("<T>:{{{body};-><int32>}}");
             let error = crate::compile(&source).unwrap_err().remove(0);

@@ -310,3 +310,23 @@ pub(crate) fn required_logical_blocks_preserve_source_errors_and_module_staging(
     case.runs(b"data\ntypes\nentry\n7\n");
     super::file_modules::case("m:@\"./data.mwy\";f<int32>:(){<T>:{flag:({->m.flag})||({->false});|flag|-><int32[4]>;|!flag|-><string>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())",&[("data.mwy","->flag:true")]).runs(b"9\n");
 }
+
+#[test]
+pub(crate) fn required_block_equality_executes_boolean_kinds_and_short_circuits() {
+    for (a, b, expected) in [
+        ("true", "true", true),
+        ("true", "false", false),
+        ("false", "true", false),
+        ("false", "false", true),
+    ] {
+        let source = format!(
+            "<T>:{{flag:({{->{a}}})==({{->{b}}});skip:false&&(({{->missing()}})==true);|flag|-><int32[4]>;|!flag|-><int32[2]>}};v<T>:[3,7];d:@\"debug\";d.print(v[2])"
+        );
+        case(&source, &[]).runs(b"7\n");
+        let values = vec!["1"; if expected { 5 } else { 3 }].join(",");
+        let output =
+            case(&format!("{source};extra<T>:[{values}]"), &[]).command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E103\""));
+    }
+}
