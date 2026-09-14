@@ -171,6 +171,7 @@ mod tests {
         }
         for (call, code) in [
             ("p.can_copy<uint32,int32>()", "E212"),
+            ("p.can_copy<{n<int32>},uint32>()", "E212"),
             ("p.can_copy<uint32>(missing)", "E212"),
             ("p.can_copy<Missing>()", "E202"),
             ("p.can_copy<uint8[1/0]>()", "E107"),

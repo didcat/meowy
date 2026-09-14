@@ -371,6 +371,7 @@ impl Parser {
         let mut angles = 0usize;
         let mut parens = 0usize;
         let mut brackets = 0usize;
+        let mut braces = 0usize;
         for (offset, token) in self.tokens[self.pos..].iter().enumerate() {
             if token.kind == TokenKind::Eof {
                 return false;
@@ -380,8 +381,10 @@ impl Parser {
                 ")" if parens > 0 => parens -= 1,
                 "[" => brackets += 1,
                 "]" if brackets > 0 => brackets -= 1,
-                "<" if parens == 0 && brackets == 0 => angles += 1,
-                ">" | ">>" if parens == 0 && brackets == 0 => {
+                "{" => braces += 1,
+                "}" if braces > 0 => braces -= 1,
+                "<" if parens == 0 && brackets == 0 && braces == 0 => angles += 1,
+                ">" | ">>" if parens == 0 && brackets == 0 && braces == 0 => {
                     let count = token.text.len();
                     if count > angles {
                         return false;
@@ -395,7 +398,7 @@ impl Parser {
                     }
                 }
                 "," | "." | "&" | "&!" | "*" | "!" => {}
-                _ if parens > 0 || brackets > 0 => {}
+                _ if parens > 0 || brackets > 0 || braces > 0 => {}
                 _ if matches!(
                     token.kind,
                     TokenKind::Name | TokenKind::Int | TokenKind::Newline

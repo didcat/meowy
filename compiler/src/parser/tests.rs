@@ -300,6 +300,7 @@ pub(crate) fn explicit_type_calls_retain_arguments_and_source_spans() {
         "f < uint32 > ()",
         "p.can_copy<uint32>()",
         "f<{n<int32>}>()",
+        "f<{n<int32>},uint32>()",
         "f<(kind)>()",
     ] {
         let ExprKind::Call { callee, .. } = value(source).kind else {
