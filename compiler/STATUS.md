@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
 Updated: 2026-09-13. Named type-value export checking is implemented.
-Focused export tests pass; full-series validation is pending. Full v0.0.1 remains incomplete.
+The final compiler gate and documented example pass. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,30 +21,33 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Ordinary immutable bindings annotated with `core.Type`, prelude `Type` or a metatype
-alias now start/join required evaluation before runtime expression lowering. Function
-declaration handling remains separate. The binding stores only Value::Type in its
-lexical scope; it emits no runtime local or statement.
+Named immutable type-value exports are implemented in `exports::export_type_value`.
+Unconditional top-level metatype-annotated emissions start/join bounded required
+roots and register only `Value::Type` in lexical/module maps. No runtime field,
+emission, local or scalar input is created. Function/data exports retain their paths.
 
-`meta_binding` owns the root boundary and delegates initializer checking to its inner
-evaluator. Fresh roots start bounded Work and restore its absence on success/failure;
-active roots preserve their counters. Nested type construction cannot reset its budget.
-Independent ordinary bindings have independent roots.
+`Module.values` and `module_member` preserve payload identity through imports,
+ordinary aliases, explicit value re-exports and type-namespace aliases. The type/value
+namespaces remain separate. Metatype aliases use lexical lookup; private names stay
+private. Runtime composition does not forward compile-time exports. Mutable, nested,
+labeled, conditional and unannotated type-value emissions remain gated.
 
-Literal, alias, supported type-query and required block initializers preserve concrete
-type identity. Runtime parameters are not values available to required evaluation;
-queries of their declared types remain valid. Mutable bindings and type-producing
-functions retain gates, and runtime storage/printing/borrowing remain unavailable.
+Each initializer starts a fresh root unless required evaluation is already active.
+Nested work shares budgets; eligible scalar input failures keep original source spans
+through facades and tails. Runtime module initialization remains once-only and ordered;
+panics still stop dependent modules and entry execution. Imported type payloads can
+construct function-local types without granting runtime captures.
 
-Metatype initializers are checked even in unreachable runtime branches. Skipped
-required matcher bodies retain their prior semantics. Original errors, alias privacy,
-lexical scope and documentation signatures are preserved. Check/build remain silent
-and ordinary module initialization retains its effects.
+Documentation emission metadata now retains the annotation location, so named type
+values display core.Type while aliases display the concrete data type. The
+[guide](docs/COMPUTED_TYPES.md#named-type-value-exports) covers syntax and boundaries.
+Commits: `93ef8d1` (exports), `6f9cd05` (facades), `bf76f46` (integration).
 
-Public type aliases can expose concrete results or metatype identities; ordinary named
-bindings remain private. Named type-value exports and first-class metatype values are
-still separate. Runtime implementation, reference fixtures, dependencies and release
-versions were not changed. Proof remains specification-only.
+Ordinary immutable metatype bindings also work at module/function scope. They remain
+private without explicit exports and have no runtime storage. Runtime branch
+reachability does not skip required roots; skipped required matcher bodies keep their
+prior semantics. First-class metatype values, runtime type containers and type-producing
+helpers remain separate. Proof remains specification-only.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -132,24 +135,23 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `1d4a58e`: bounded root wrapper; 824 library/844 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-metatype-root-boundary.log`.
-- `9320e8e`: ordinary metatype statements; 826 library/845 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-ordinary-metatype-bindings.log`.
-- `dbc1a8b`: integration; 827 library/848 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-metatype-roots-integration.log`.
-- Five root/statement checker tests and four native groups cover restoration, shared
-  counters, module/function type queries, kinds, privacy, unreachable roots, original
-  failures, documentation and module staging.
-- Ordinary-binding guide prints `7` in debug/release:
-  `/tmp/meowy-metatype-roots-doc-ejt7oqxn/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 827
-  library/848 native Rust tests (1675 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-metatype-roots-gate.log`.
-- Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
-  catalog/schema and whitespace checks passed. Full release qualification remains open.
-- Editor and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. Named value exports and type-producing helpers are not implemented.
+- Export implementation: 829 library/849 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-type-exports-slice1.log`.
+- Facades: three new native groups passed; focused export run included two checker/
+  six native groups. Log: `/tmp/meowy-type-exports-facades.log`.
+- Integration: 830 library/856 native tests (1686 total), fmt and Clippy passed.
+  Three checker/eight new native groups cover payloads, storage, scope, namespaces,
+  privacy, collisions, budgets, original errors, documentation and startup/failure.
+  Log: `/tmp/meowy-type-exports-slice3.log`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1686
+  Rust tests, 20 Python tests, fmt, Clippy, build, links and catalog/schema checks.
+  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+  Log: `/tmp/meowy-type-exports-gate.log`.
+- The three-file named-export guide prints `7` in debug/release.
+  Extracted source: `/tmp/meowy-type-exports-doc-nsew30hi/main.mwy`.
+- Runtime implementation, reference fixtures, dependencies and release versions are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open; proof examples remain unimplemented/unexecuted.
 
 ## Prior capabilities and other areas
 
@@ -208,7 +210,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, named core.Type value exports, helper
+Whole-record module inputs, conditional module exports, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -216,46 +218,16 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Named immutable type-value exports are the active slice. Investigation found that
-`Module.values` and `module_member` already carry `Value::Type`; ordinary emission
-handling reaches runtime type lowering before it can register a metatype export.
-Reuse `meta_annotation` and `meta_binding`, keeping function declarations on their
-existing path. Compile-time exports must not enter runtime slots or module inputs.
+Named type-value exports are complete across the three commits above and the guide
+update. The compiler gate passes; there are no outstanding failures in this slice.
 
-Dependency-ordered commit plan:
+1. Investigate normalized type-value `==`/`!=` inside required evaluation against
+   `docs/reference/compile-time.md`. Trace `type_values/booleans/forms.rs`,
+   `type_values/comparisons.rs` and existing concrete `Type` identity before planning
+   bounded comparison, short-circuit, kind and source-work tests. Keep runtime
+   equality and helpers outside that slice.
+2. Implement proof only with a separate dependency-ordered plan against its
+   qualification contract. Keep first-class metatype values, type-of-type queries,
+   runtime type containers and type-producing/generic helpers separate.
 
-1. Add unconditional top-level annotated metatype export checking and focused HIR,
-   diagnostic and native tests. Preserve mutable, conditional and nested gates.
-2. Verify imported identities, explicit re-exports, privacy, collisions and lexical
-   metatype aliases through file graphs; change lookup only if evidence requires it.
-3. Cover required work/errors, documentation and startup, document the supported
-   syntax, and run `python3 -B tools/verify.py --compiler` across the series.
-
-Acceptance: exported concrete types can construct imported runtime data without
-runtime type storage; ordinary module effects still execute once in dependency order.
-Step 1 implementation reuses bounded metatype roots and stores only `Value::Type`
-in module/lexical maps. Two checker tests and one native debug/release group pass;
-HIR has no type fields, locals, emissions or scalar inputs. Mutable/conditional/
-nested exports, wrong kinds and collisions retain explicit diagnostics.
-Full Rust validation passed: 829 library/849 native tests, fmt and Clippy.
-Logs: `/tmp/meowy-type-exports-focused.log`, `/tmp/meowy-type-exports-slice1.log`.
-Step 1 committed as `93ef8d1`. Step 2 confirms that existing module lookup preserves
-concrete payloads through aliases, explicit value/type re-exports and function scopes.
-Private names and value/type namespaces stay separate; implicit forwarding, missing
-annotations and mutable/conditional exports remain gated. Function/data compositions
-retain E205 collisions. Three new native groups pass in the focused export run
-(two checker/six native groups total); fmt and Clippy pass. The function facade fixture
-uses the existing complete signature. Log: `/tmp/meowy-type-exports-facades.log`.
-Step 2 committed as `6f9cd05`. Next cover work, source errors, documentation and
-startup in an integration test commit, then update guides/handoffs in a separate
-documentation commit. This split keeps both review questions below the size threshold.
-Integration now passes three checker/ten native focused tests, including original
-UTF-8 source errors through scalar facades, independent versus nested root budgets,
-silent check/build and once-only type-only dependency startup/failure. Emission docs
-now retain annotation locations and show core.Type; type aliases show concrete types.
-Full Rust validation passed: 830 library/856 native tests, fmt and Clippy.
-Logs: `/tmp/meowy-type-exports-integration.log`, `/tmp/meowy-type-exports-slice3.log`.
-Integration is ready to commit; guides and the final compiler gate remain.
-The prior compiler gate above is the baseline. Keep first-class metatype values, type-of-type queries, runtime type
-containers and type-producing/generic helpers separate. Proof needs its own plan.
 Do not push or bump release versions here.

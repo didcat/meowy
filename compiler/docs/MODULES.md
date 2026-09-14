@@ -78,7 +78,7 @@ Importers use `<geometry.Point>` in type positions. A facade can re-export the
 same type with `-> <Point> : <geometry.Point>`. Private aliases can define the underlying
 type without making their private names visible. Missing or private imported type
 names report E202; type declarations do not create values in the value namespace.
-A type and a data/function export may intentionally use the same name.
+A type alias and a value export may intentionally use the same name.
 
 Aliases remain transparent: record field order is normalized, permissions remain
 part of the type, and aliases of one primitive/record type remain interchangeable.
@@ -91,6 +91,10 @@ Existing computed type values still work, for example
 `token : <geometry.Point>; -> <PublicPoint> : token`. Qualified type references use the
 angle-bracket type context. [Straight-line computed type blocks](COMPUTED_TYPES.md)
 can also construct an exported alias using local type bindings and a primary emission.
+Named immutable type values also support `-> token <Type> : <geometry.Point>`.
+Importers use `<(module.token)>`; facades require an explicit
+`-> token <Type> : source.token`. These exports create no runtime field and are not
+forwarded by `-> source`. See [named type-value exports](COMPUTED_TYPES.md#named-type-value-exports).
 General helper evaluation remains unsupported. Type lookup and copied signatures
 charge the existing proof budget.
 

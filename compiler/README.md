@@ -91,8 +91,10 @@ annotation without creating runtime storage. Metatype aliases can be explicitly
 exported/imported. Ordinary immutable metatype-annotated statements start or join
 required evaluation at module/function scope and produce no runtime binding. Independent
 roots reset budgets; nested bindings share them. Runtime containers reject the metatype;
-named value exports, first-class metatype values and type-producing functions remain
-separate.
+unconditional named metatype exports preserve concrete payloads through explicit
+facades without runtime fields. Private names, separate type/value namespaces and
+module startup remain intact. First-class metatype values and type-producing
+functions remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the

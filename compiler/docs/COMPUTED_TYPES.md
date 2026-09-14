@@ -88,8 +88,8 @@ binding, while a constructed type alias displays the actual resulting data type.
 
 Named metatype annotations also start required evaluation in ordinary statements,
 as described below. Mutable type bindings, first-class metatype expressions
-(`core.Type` or `<core.Type>`), type-of-type queries, computed metatype annotations,
-named type-value exports and compile-time helper execution remain separate.
+(`core.Type` or `<core.Type>`), type-of-type queries, computed metatype annotations
+and compile-time helper execution remain separate.
 The type namespace can name `core.Type`; that does not make it a native data type.
 
 ### Ordinary type-value bindings
@@ -131,10 +131,60 @@ errors preserve their original source spans, and known forbidden effects remain 
 
 The binding's name follows ordinary lexical scope. It is not implicitly exported and
 cannot be printed, borrowed, or placed in runtime storage. Explicit type-namespace
-exports can publish the concrete result; named value exports remain separate.
+exports can publish the concrete result; named value exports use the form below.
 An annotation on a function declaration remains its result annotation, so this does
 not enable type-producing functions. Module initialization effects still run normally
 at execution; checking/building neither run nor remove them.
+
+### Named type-value exports
+
+An unconditional top-level named emission with `core.Type`, prelude `Type` or a
+metatype alias exports a concrete type value. For example, `types.mwy`:
+
+```meowy
+core : @"core"
+private <core.Type> : <int32>
+-> element <core.Type> : private
+-> items <Type> : { -> <(element)[4]> }
+```
+
+A facade explicitly forwards each value in `facade.mwy`:
+
+```meowy
+types : @"./types.mwy"
+-> items <Type> : types.items
+```
+
+The importer uses the value expression in a computed type annotation:
+
+```meowy
+types : @"./facade.mwy"
+values <(types.items)> : [3, 7]
+debug : @"debug"
+debug.print(values[2])
+```
+
+This prints `7`. Each export retains the concrete payload in the value namespace;
+`<types.items>` would instead look for a type-namespace alias. Ordinary local aliases
+remain private. A facade can also publish `-> <Items> : types.items` in the type
+namespace. `-> types` forwards runtime fields and does not forward type values.
+
+Exports require an explicit metatype annotation in this bootstrap. Mutable, nested,
+labeled and conditional type-value exports remain unsupported, as do type-producing
+functions. Type-value names collide with function/data exports, while the separate
+type namespace may reuse the name. Metatype annotations follow lexical lookup.
+
+Each export starts or joins the same bounded required evaluation as an ordinary
+metatype binding. Nested bindings share work; independent exports start fresh roots.
+Eligible input failures preserve their original source spans, including initializer
+tails after the type emission. Checked documentation shows `core.Type` for the value
+export and the concrete result for a type alias.
+
+Type exports create no runtime locals, fields or emissions. Imported payloads remain
+available inside function type construction. Checking/building stay silent, while
+module initialization effects still execute once in dependency order. An initializer
+panic prevents dependent modules and the entry file from running even when the module
+is imported only for its types.
 
 ## Conditional type selection
 
