@@ -96,6 +96,20 @@ callback may have those effects when the runner actually invokes it. Suite
 exports are test-discovery roots, not native ABI exports. An ordinary application
 build retains only code and data required by its own reachable operations.
 
+## Static proof contracts
+
+[`@"proof"`](proof.md#testing-with-proof-queries) tests compiler-established facts
+without executing the observed program. `proof.assert(result)` requires `Always`;
+`proof.expect<S>(result)` tests an exact outcome, including `Indeterminable`.
+These are compile-time checking obligations, not `testing.assert` runtime panics.
+
+A proof failure in a checked test callback prevents building that test program.
+Skipped callbacks remain checked, so `testing.skip` cannot hide a failed proof
+assertion. Standalone positive/negative checking fixtures can test the package
+without a runtime suite; this adds no test-discovery convention or CLI flag.
+Runtime tests still cover actual input-dependent behavior, effects, and cleanup.
+The proof reference lists the separate implementation/qualification requirements.
+
 ## Assertions borrow their evidence
 
 | API                                                                           | Result  | Comparison and failure                                                    |

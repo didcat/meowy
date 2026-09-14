@@ -71,6 +71,24 @@ folding does not make a runtime-dependent type legal. Type queries inspect types
 without evaluating operands. Target queries and pointer-width arithmetic use the
 selected target, never the compiler host's representation.
 
+## Proof observations
+
+[`@"proof"`](stdlib/proof.md) defines compiler-known, non-evaluating observation
+parameters. A query can describe a runtime place and return an opaque compile-time
+`proof.Result` without reading that place or making its runtime value available to
+required evaluation. Ordinary helpers do not acquire this parameter mode.
+
+The proof package fixes its own canonical analysis revision and three outcomes;
+its compile-time descriptor types may form metadata unions/collections but have no
+runtime representation. Scalar projections may be materialized as constants. They
+cannot determine types, extents, specialization, imports, or ownership acceptance,
+or feed another observation. These backward dependencies use E225. Invalid proof
+observations/descriptors use E223 and failed proof expectations use E224.
+
+Proof roots share the logical limits below; budget exhaustion is E220, never an
+indeterminable answer. The package's specified interval abstraction is a precision
+rule, not permission to replace an exhausted computation with an unknown result.
+
 ## Purity
 
 `core.Pure` is a compiler-checked callable capability, not a keyword or an opt-in

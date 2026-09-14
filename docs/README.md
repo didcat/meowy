@@ -44,6 +44,7 @@ working version works.
 | How do errors and nullable values narrow?                   | [Types](reference/types.md#unions-and-narrowing)                                                    |
 | How do I create and read my own errors?                     | [Errors and custom failures](reference/stdlib/errors.md)                                            |
 | How do I write and run a test suite?                        | [Testing](reference/stdlib/testing.md)                                                              |
+| What can the compiler prove, and how do I test those guarantees? | [Proof queries and static tests](reference/stdlib/proof.md) |
 | What can I configure in mod.mwy?                            | [Fully commented manifest](guide/mod.full.mwy)                                                      |
 | Where does memory come from, and when is it released?       | [Memory](reference/memory.md)                                                                       |
 | How do stack, heap, and static storage affect peak memory?  | [Memory and binary optimization](reference/optimization.md)                                         |

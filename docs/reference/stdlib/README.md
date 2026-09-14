@@ -22,6 +22,7 @@ connects these API choices to stack, heap, static storage, and linker behavior.
 | `@"debug"`                             | Diagnostic printing and panics                                                       | [Diagnostic output](core.md#output-and-text)                             |
 | `@"errors"`                            | Custom failure types, codes, messages, typed payloads, and explicit boxing           | [Errors and custom failures](errors.md)                                  |
 | `@"testing"`                           | Assertions, suite values, expected panics, skipped cases, and reproducible test runs | [Testing](testing.md)                                                    |
+| `@"proof"` | Compile-time value/capability queries, bounded analysis, and static contract tests | [Proof queries](proof.md) |
 | `@"bytes"`                             | Initialized byte storage, views, copying, and searching                              | [Bytes](text-and-data.md#bytes-and-utf-8-strings)                        |
 | `@"strings"`                           | Borrowed text, parsing, and explicitly owned text                                    | [Text](text-and-data.md)                                                 |
 | `@"unicode"`                           | Scalars, grapheme boundaries, normalization, and case folding                        | [Unicode](text-and-data.md#unicode-operations)                           |

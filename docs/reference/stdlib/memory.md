@@ -51,3 +51,8 @@ metadata inspection and concrete error construction need no such allocation.
 The [memory reference](../memory.md) defines ownership, borrowing, raw pointer
 preconditions, string lifetimes, and deterministic cleanup. These APIs do not
 relax those rules.
+
+Type capability queries and immediate place-operation probes are specified by
+[`@"proof"`](proof.md#type-capabilities-and-ownership-probes). A query reports the
+canonical checker's knowledge; it performs no copy, move, borrow, or reservation.
+Its result cannot replace any of the storage, lifetime, or authority checks above.

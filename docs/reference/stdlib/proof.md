@@ -7,6 +7,11 @@ facts established during checking. This is a language/library reference, not an
 implementation claim. The bootstrap does not implement this package. All source
 examples in this chapter are specification examples awaiting compiler qualification.
 
+- [Results](#result-types-and-meaning), [inspection and assertions](#inspection-assertions-and-composition).
+- [Value observations](#admissible-value-observations), [type/place queries](#type-capabilities-and-ownership-probes).
+- [Canonical analysis](#canonical-analysis-profile-1), [phase ordering](#phase-ordering-and-circularity).
+- [Testing](#testing-with-proof-queries), [budgets and diagnostics](#work-accounting-and-failures), [qualification](#qualification-obligations).
+
 ```meowy
 proof : @"proof"
 
@@ -64,11 +69,15 @@ observation parameters: a helper returning a proof descriptor is compile-time-on
 and can receive only compile-time arguments. It cannot accept a runtime value
 and silently quote the caller's expression. Helpers can combine existing results.
 
-Proof results, bounds, and inspection records are compile-time-only. They have
+Proof results, bounds, and inspection records are compile-time-only. Compile-time
+metadata may copy them without granting the runtime `memory.Copy` capability. They have
 no native representation, size, address, destructor, equality operator, or runtime
 serialization. They cannot enter runtime storage, `any`, captures, tasks, FFI,
 or a module's runtime exports. Static metadata exports are permitted; private
 source identities must not be exposed by inspecting an exported descriptor.
+Compiled interfaces retain the target, revision, origins, and proof-dependency marks.
+A cache/interface for a different target or revision cannot supply an answer; rebuild
+it under the required contract or report unsupported/incompatible infrastructure.
 
 Their scalar projections, such as `.always` or `.lower`, are ordinary compile-time
 constants and may be materialized in runtime scalar storage. This does not carry
@@ -224,7 +233,9 @@ A known same-version scalar place equals itself, even if its value is unknown.
 
 `values` is an immutable compile-time bounded list of compatible scalar constants;
 its initialized elements form the set. Duplicates and order do not affect the
-answer. They still count toward construction and inspection work. An empty set
+answer. They still count toward construction and inspection work.
+`notin` is one observation: classify membership once and complement the outcome,
+without constructing an intermediate result or charging a second observation. An empty set
 makes `in` never and `notin` always at a reachable point. A runtime collection is
 not static metadata and is rejected with E211; no runtime scan is inserted.
 
@@ -267,8 +278,10 @@ Compile-time-only types and `<never>` produce `Never` for these runtime-operatio
 queries. Ill-formed types remain type errors, not `Never`.
 
 For a generic parameter, use only facts entailed by its declared constraints.
-An unconstrained runtime data parameter has indeterminable copyability but admits
-ordinary generic moves and references. A `memory.Copy` constraint proves copyability.
+An unconstrained runtime data parameter has indeterminable copyability. Moves and
+references are `Always` only where the declaration entails admissible runtime data;
+if the binder also admits types with prohibited runtime operations, their outcome is
+indeterminable. A `memory.Copy` constraint proves copyability on its admitted types.
 Monomorphization, inlining, or inspecting one caller must not strengthen the answer
 inside the generic declaration. Generic bodies must still be valid for every type
 admitted by their constraints; proof flags cannot replace a required constraint.
@@ -304,6 +317,12 @@ Revision 1 evaluates probes with this ordered, conservative rule:
    is compatible or has a definitely disjoint canonical place.
 4. Otherwise return `Indeterminable`. A possible conflict is not a definite failure;
    absence of a definite conflict is not permission.
+
+At control-flow joins, must-initialization, must-lifetime, and must-authority facts
+intersect; may facts and possible loan-origin sets union. Retain definite loan facts
+only when every live predecessor supplies them. Apply explicit move, initialization,
+write, and scope-exit transfers in source order. Do not recover cross-path correlations
+that this component-wise state has discarded.
 
 Use exact binding/field origins and known element indices for canonical places.
 Unknown index relationships and unresolved alias overlap are possible overlap.
@@ -381,6 +400,10 @@ Use the following domain for each initialized scalar version:
 - Type alternatives and structural capabilities come from declared types and
   the ordinary stable type-predicate refinements. Unresolved generic facts remain
   unresolved; a runtime type tag never becomes a compile-time type argument.
+
+A finite set represents admitted possibilities exactly as a set; it does not claim
+that every member is realizable by a concrete execution. All domains overapproximate
+actual normally reaching values.
 
 Canonicalize a finite set with more than 16 members to its interval hull.
 Canonicalize any interval containing at most 16 integers to its enumerated set.
@@ -493,7 +516,8 @@ Proof-derived scalars may control ordinary runtime behavior when both branches a
 independently well-typed and ownership-valid. They must not determine type formation,
 array/list capacities, generic arguments, overload resolution, imports, manifests,
 capability constraints, or ownership acceptance. Those backward dependencies are
-E225. A type query on the fixed `proof.Result` signature remains permitted.
+E225. Type queries on fixed signatures remain permitted: `result<>` is
+`proof.Result` and `result.always<>` is `boolean`, independently of the answer.
 
 A query cannot introduce an unsafe assumption, establish its own precondition, or
 hide invalid ordinary code in an answer-dependent branch. Ill-formed programs retain
@@ -504,3 +528,247 @@ Changing any rule, precision limit, transfer, or outcome table requires a contra
 revision. Debug/release, caching, worker scheduling, compiler memory availability,
 source paths, and optional diagnostics cannot change the answer. Target-dependent
 integer ranges use the declared target, not the machine running the compiler.
+
+## Testing with proof queries
+
+Proof tests check **static contracts**: established facts, structural capabilities,
+analysis precision, and assertions that an optimization must not change. They need
+compilation but no execution of the observed program. The compiler still performs
+real bounded work; zero runtime cost is not a claim of free or instant compilation.
+
+Use `assert` for a required guarantee and `expect<S>` when the exact classification
+is the subject of the test. In particular, an indeterminable result cannot be tested
+by asserting its proposition or its negation; use `expect<proof.Indeterminable>`.
+Do not feed a proof-derived flag back into `proof.is` to test the first query: that
+creates the forbidden dependency E225. Inspect it or use `expect` directly.
+
+Save the following as a checking fixture, for example `tests/proof_contracts.mwy`:
+
+```meowy
+proof : @"proof"
+
+capabilities <null> : () {
+    proof.assert(proof.can_copy<uint32>(), "uint32 must remain copyable")
+    proof.expect<proof.Never>(proof.can_copy<&!uint32>())
+}
+
+parameter_facts <null> : (x <uint8>) {
+    proof.assert(proof.between(x, 0, 255))
+    proof.expect<proof.Indeterminable>(proof.is(x, 5))
+}
+
+guarded_facts <null> : (x <int32>) {
+    | x >= 0 && x <= 9 | {
+        proof.assert(proof.between(x, 0, 9))
+        proof.expect<proof.Never>(proof.is(x, -1))
+    }
+}
+```
+
+Under a compiler implementing this contract, `meowy check tests/proof_contracts.mwy`
+must succeed without calling these functions. A concrete call with argument 5
+cannot strengthen the declaration-context query in `parameter_facts`. No test
+runner, host input, process startup, or runtime assertion is needed for this file.
+The current bootstrap's rejection of `@"proof"` is not successful qualification.
+
+Ownership-state tests can require a particular probe result without attempting
+an illegal borrow:
+
+```meowy
+proof : @"proof"
+
+borrow_state <null> : () {
+    x <uint8> := 5
+    view : &x
+    blocked : proof.can_exclusive_borrow(x)
+    copy : *view
+    available : proof.can_exclusive_borrow(x)
+    proof.expect<proof.Never>(blocked)
+    proof.expect<proof.Always>(available)
+}
+```
+
+`view` has a later source use at the first probe and has reached its last use at
+the second. Removing the unused runtime `copy` binding during optimization must
+not change either canonical answer. The second result still does not provide a
+reference that may outlive the probe's hypothetical statement interval.
+
+### Negative compilation tests
+
+**Invalid specification example — expected E224:**
+
+```meowy
+proof : @"proof"
+x <int32> : 5
+proof.assert(proof.is(x, 6), "this guarantee is false")
+```
+
+A negative test must require checking failure with the specified primary code,
+assertion span, query origin, and actual outcome. `Never` and `Indeterminable`
+assertion failures both use E224 but diagnostics must distinguish them. A crash,
+missing package, unsupported compiler, timeout, or unrelated error is not a pass.
+Do not compare incidental prose or internal descriptor layout as an API contract.
+
+### Relationship to runtime tests
+
+[Testing](testing.md) continues to check actual execution, returned values, I/O,
+panics, cleanup, and concurrency. Proof assertions inside checked test callbacks
+are discharged while compiling those callbacks. `testing.skip` does not hide them:
+its callback remains checked under the testing package's existing rules. A proof
+failure prevents building that test program; it is not a caught runtime panic.
+
+Assertions in runtime function bodies are checking obligations at their source
+points. Inside an ordinary compile-time-only helper that consumes descriptors,
+normal required evaluation selects which metadata operations execute. Such a
+helper may inspect/combine results but cannot create answer-dependent observations.
+Runtime conditions never defer a proof assertion until program execution.
+
+Use runtime/property tests when the required property depends on actual inputs,
+external state, or a relation outside profile 1. `Indeterminable` does not fail a
+runtime property test and does not mean that the property is false. Conversely,
+finite runtime samples cannot establish an `Always` result in this API.
+
+Keep language-semantic tests and precision-regression tests distinct. An `assert`
+may document an invariant required by an API; `expect<Indeterminable>` can pin a
+conservative analysis boundary. Both are stable within revision 1. A later proof
+revision needs an explicit test migration, not silent acceptance under a stronger
+optimizer. Test debug/release and supported targets separately where type bounds differ.
+
+## Work accounting and failures
+
+An observation call outside an existing required-evaluation root starts a proof
+root. A query in an existing root uses that root's remaining counters. Descriptor
+inspection and composition inside a helper do not reset its budget. The logical
+limits and E220 behavior are those of [compile-time evaluation](../compile-time.md#evaluation-budgets).
+No flag permits an unbounded solver or a wall-clock-dependent answer.
+
+For a value query or place probe, the canonical walk covers the containing checked
+function or module body, not callee bodies. Reset cyclic headers as specified above
+and remove restart/back edges from the scalar-transfer walk. Visit each reachable
+source transfer once after joining its incoming edge states; break topological ties
+by source order. Charge each incoming edge/component join once, even if its values
+are unchanged. Bottom sites require query validation but no scalar transfer. This
+walk, not the implementation's cache visits, determines the logical count.
+
+Charge the canonical analysis as if performed afresh for each observation:
+
+| Work | Required logical charge |
+| --- | --- |
+| Intrinsic invocation | One evaluation step. |
+| Source statement/expression transfer used for the frozen facts | One step per visit; observation-only nodes have no value transfer. |
+| Scalar state component joined, intersected, invalidated, or inspected | One step per component. |
+| Finite arithmetic/comparison pair or membership element inspected | One step per pair/element, including duplicate input elements. |
+| Type component, canonical place component, or loan origin inspected | One step per component/origin. |
+| Constructed `Result`, including `not`/`all`/`any` output | One aggregate slot plus one per distinct retained observation origin. |
+| Constructed `Flags` | Three aggregate slots. |
+| Constructed `Bounds<T>` | Four aggregate slots: its three fields and observation origin. |
+
+Finite pair enumeration is in ascending scalar order; union alternatives use the
+language's canonical type order. State joins use source predecessor order, with
+associative canonical hull/union results. No extra iterative rejoins are charged.
+Header resets replace repeated numeric loop iteration. Loan may-use analysis uses
+reverse source order, propagating newly discovered uses until no set grows; each
+new origin/edge membership costs one step. Unknown alias overlap is represented
+once, not expanded into guessed concrete addresses.
+
+Retained origin sets are deduplicated and ordered by logical module identity and
+source span. Metadata copies preserve origins without rerunning their queries;
+ordinary aggregate/type/text materialization charges also apply. `assert` forwards
+the successful descriptor with its narrowed meta-type; it does not create a new
+observation origin. `expect` returns null and constructs no result descriptor.
+Type-only capability queries charge their type walk, not unrelated function bodies.
+
+Analysis caches, memoization, parallelism, and dead-code elimination cannot change
+these logical charges. Compiler memory limits or unavailable tooling are infrastructure
+failures. They must never be converted to `Never` or `Indeterminable`.
+The 16-value precision limit is different: taking a prescribed interval hull is a
+normal profile operation, not resource exhaustion. Unsupported fact transfers use
+the specified full domain; an unsupported package implementation must report its
+capability failure instead of pretending to implement this rule.
+
+### Diagnostic contract
+
+Existing name, type, privacy, ownership, and argument diagnostics remain authoritative.
+[The diagnostic catalog](../diagnostic-codes.md) assigns the proof-specific codes.
+
+| Situation | Required result |
+| --- | --- |
+| Valid query with insufficient canonical facts | `Indeterminable`; compilation continues. |
+| Unknown name/type, bad arity, incompatible scalar widths, or invalid literal | Existing E201/E202/E212/E213/E216 as applicable. |
+| Unsupported observation term/domain, unavailable data observation, reversed bounds, invalid `expect` kind, forged descriptor, or runtime descriptor escape | E223. |
+| Known forbidden observation-argument effect | E219; do not execute it. |
+| `assert` receives `Never` or `Indeterminable`, or `expect<S>` sees another alternative | E224. |
+| Proof answer feeds another observation, type/specialization formation, or ownership acceptance | E225. |
+| Logical evaluation budget is exhausted | E220 with the root, counter, and limit. |
+| Compiler does not implement this package/profile | Explicit unsupported-capability diagnostic; never a proof outcome. |
+
+Validate ordinary program/name/type errors first. Validate query syntax and static
+metadata before classifying, including at unreachable points. Reject forbidden
+proof dependencies before evaluating affected queries. Resource failure stops the
+query; it cannot be followed by a speculative expectation result. E224 is emitted
+only after an otherwise valid result exists. Independently diagnosable errors may
+be reported together in deterministic source order.
+
+E224 diagnostics must show the required and actual alternative, assertion site,
+original observation site(s), subject version, relevant admitted domain/capability
+facts, and revision. For `Indeterminable`, identify missing facts or the prescribed
+precision boundary. For `Never`, explain the established contradiction. A compiler
+must not invent a feasible runtime counterexample merely from an admitted abstract value.
+Private module implementation facts stay private; identify the published contract
+or an unavailable fact rather than exposing inaccessible source contents.
+
+No public proof-report schema, certificate interchange format, solver trace, runtime
+`assume`, unchecked coercion, automatic fix, or serialized witness is defined here.
+Normal diagnostics may render internal evidence; that rendering is not a portable
+proof accepted by another compiler.
+
+## Qualification obligations
+
+These are required acceptance cases, not evidence that the bootstrap runs them.
+An implementation must turn them into executable positive/negative checking fixtures
+and retain the runtime tests for operations that the queries do not execute.
+`A`, `N`, and `I` below mean `Always`, `Never`, and `Indeterminable`.
+
+| Case | Required observation or rejection |
+| --- | --- |
+| Scalar literal 5 compared with 5 / 6 | A / N. |
+| Unrestricted `uint8` parameter compared with 5 | I, even at a call site that passes 5. |
+| Stable guard narrows an integer to 0 through 9 | `between(x, 0, 9)` A; `is(x, -1)` N. |
+| Direct copy of an unknown scalar / independently computed `x + 0` | Same-value identity A / lost-correlation I when nonsingleton. |
+| Join of 16 distinct scalar constants / 17 constants | Exact set / canonical interval hull. |
+| Integer interval intersected with `!=` at an interior point | Preserve the interval unless already in finite-set form. |
+| Full `uint8` domain tested against all 256 values | Membership A despite the subject's interval representation. |
+| Empty or duplicate membership metadata | Empty gives N/A for `in`/`notin`; duplicates preserve the answer but are charged. |
+| Nullable integer admitted as 5 or null, compared with 5 | I; known null compared with 5 is N; null compared with null is A. |
+| Two incompatible integer widths / out-of-range metadata literal | E213 / E216, without widening. |
+| Reversed interval / runtime membership collection | E223 / E211. |
+| Unknown non-null integer bounds | Full declared range; `singleton` false. |
+| Known integer singleton bounds | Equal lower/upper; `singleton` true. |
+| Value observation at a bottom point | I; bounds use the full declared integer range. |
+| Concrete copyable scalar / exclusive-reference type | `can_copy<T>()` A / N. |
+| Unconstrained generic / generic constrained by `memory.Copy` | Copyability I / A, independent of specialization. |
+| Copyable type but a definitely live exclusive loan blocks reading the place | Type query A; place copy probe N. |
+| Definitely live shared view, used after an exclusive-borrow probe | Probe N without performing the conflicting borrow. |
+| Probe after that view's last source use | A if all other location conditions hold; optimization cannot erase the earlier use for analysis. |
+| Potential alias overlap without a definite conflict | I; no permission or denial is invented. |
+| Immutable location probed for exclusive borrowing | N even when `<&!T>` is a valid reference type. |
+| Probe result retained across mutation or scope exit | Historical result only; no loan, permission, or value refinement survives. |
+| Query through an import alias / shadowed same-spelling user function | Preserve intrinsic identity / ordinary user-function behavior. |
+| Observation contains an effectful call / arbitrary pure call | E219 / E223; neither executes as an observation. |
+| Query or queried value depends on a proof flag | E225, including control dependence. |
+| Proof flag used as a type extent or to waive a generic/borrow requirement | E225; invalid ordinary code remains invalid. |
+| `assert` on N or I / `expect<Indeterminable>` on I | E224 / successful null result. |
+| Runtime-skipped or uncalled checked body contains a failing proof assertion | E224 during checking. |
+| Result descriptor passed to runtime formatting, storage, FFI, or erasure | E223; scalar projections remain ordinary constants. |
+| One step below / at / above a logical limit | Required accounting boundary; exhaustion is E220, not I. |
+| Cold/warm caches, different worker schedules, debug/release, optimized/unoptimized | Identical answers, logical charges, and acceptance for the same target/revision. |
+
+Qualification must also compare generated runtime behavior with and without unused
+proof queries: no added loads, borrows, moves, cleanup, allocations, or module startup
+effects. Explicitly materialized flags may affect application behavior as written;
+removing those uses is not a semantics-preserving comparison.
+
+Release support requires these cases, deterministic diagnostic origins, target-specific
+integer-range tests, generic declaration-context tests, alias/lifetime invalidation
+tests, and budget boundaries. The presence of this reference, link validation, or a
+compiler's unsupported rejection does not satisfy that gate.
