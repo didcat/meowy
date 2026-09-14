@@ -144,6 +144,8 @@ See [types](types.md) and [values and blocks](values-and-blocks.md).
 | `E220` | Compile-time evaluation budget exceeded                 | Show the root, exhausted logical counter, limit and active helper stack; bounded evaluation does not depend on wall-clock time.                   |
 | `E221` | Invalid forward function group                          | Show the reserved signature and missing, mismatched, capturing or generic definition, or the statement interrupting the group.                    |
 | `E222` | Operator is not defined for these operands              | Show the operation and complete operand types; use a supported comparison or explicit library operation.                                          |
+| `E223` | Invalid proof observation or descriptor | Show the resolved query, unsupported subject/domain, unavailable place, malformed static metadata, or illegal descriptor use; follow the [proof contract](stdlib/proof.md). |
+| `E224` | Compile-time proof expectation failed | Show the assertion and original observation, required outcome and actual Always/Never/Indeterminable result; strengthen ordinary evidence or correct the expectation. |
 
 `E207` covers initialization as well as later assignment. Changing `"twenty"` to
 `20` is not a type conversion defined by the language. `E208` concerns a value

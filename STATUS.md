@@ -58,9 +58,27 @@ release qualification remains incomplete.
 | Standard library | Net specifies peers and HTTP adapters; type/I/O/task foundations precede implementation. |
 | Runtime and release | File-site runtime helpers passed native probes; platform/distribution qualification remains open. |
 
+## Current documentation task
+
+Specify `@"proof"` as a strict, compile-time standard-library query package. No compiler
+implementation is part of this task. Keep the completed compiler handoff above intact.
+
+Dependency-ordered documentation commits:
+
+1. Complete: `docs/reference/stdlib/proof.md` defines staging, result types, inspection,
+   assertions/expected-status tests, composition and value/bounds APIs. E223/E224 are
+   registered with their owning contracts. Local links and whitespace checks pass;
+   the proof API has not been compiled or executed.
+2. Define type/place capability queries, snapshot validity, a deterministic revision-1
+   analysis profile and phase/cycle rules. Keep proof answers independent of optimization
+   and prevent queries from granting ownership or weakening generic constraints.
+3. Complete budgets, diagnostics, examples and qualification obligations; register codes,
+   connect library/reference indexes and the compile-time contract, and run the default
+   repository verifier. Report documentation validation separately from implementation.
+
 ## Next steps
 
-1. Investigate boolean-result blocks in required logical operators, preserving short
-   circuits and selected boolean kinds. See the [compiler handoff](compiler/STATUS.md#next-steps).
-2. Keep whole-module records, skipped documented declarations, fallback arms and helpers
-   separate. Commit validated slices using [AGENTS.md](AGENTS.md); do not push.
+1. Complete the proof reference and its documentation checks in the slices above.
+2. Resume the compiler's planned boolean-result blocks in required logical operators
+   after this specification task; see the [compiler handoff](compiler/STATUS.md#next-steps).
+3. Do not push or claim the new proof API is implemented or release-qualified.
