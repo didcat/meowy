@@ -85,6 +85,13 @@ equality from checked operand kinds; both operands execute even when the left va
 is false. Ordered comparisons remain integer-only. Float/text comparisons, empty
 composition sources, mutable scratch, whole-module records and helpers remain separate.
 
+Required `==`/`!=` compares normalized concrete type identity for literals, supported
+queries, aliases and exported type values. Unions and record field order normalize;
+widths, mutability, capacities and nominal identities remain distinct. Both operands
+retain source errors and work, while short-circuiting skips constructors. Computed
+type-block operands use `<(expression)>`; bare blocks retain scalar equality.
+See [type-value equality](docs/COMPUTED_TYPES.md#type-value-equality).
+
 Required type-value bindings may explicitly use `core.Type`, prelude `Type` or a
 metatype alias. The checker preserves concrete type payloads and documents their
 annotation without creating runtime storage. Metatype aliases can be explicitly

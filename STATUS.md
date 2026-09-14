@@ -19,48 +19,46 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
-Required type-value equality is in progress. The first slice adds normalized `==`/`!=`
-for known type operands; 832 library/858 native tests, fmt and Clippy pass.
-See the compiler handoff for the remaining source/work/facade integration and final gate.
+Required `==`/`!=` now compares normalized type identity for literals, supported
+queries, aliases and explicitly exported type values. Both operands preserve source
+errors and input work; short-circuiting skips constructors. Required type values and
+comparison results create no runtime storage. Bare block comparisons remain scalar;
+computed type-block operands use `<(expression)>`.
 
+Commits: `2c4c26a` (comparison), `b7591ab` (integration evidence).
+The [guide](compiler/docs/COMPUTED_TYPES.md#type-value-equality) covers syntax,
+normalization, work accounting and remaining boundaries. Its example prints `7` in
+debug/release. The full compiler gate passes.
 
-The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
-guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
-and `STATUS.md`. Links and Cargo metadata follow this layout.
-
-Named immutable `core.Type` exports now preserve concrete type payloads through
-imports and explicit facades without runtime fields. Private names, type/value
-namespaces, required budgets, source errors and module startup remain intact.
-Ordinary metatype bindings continue to work at module/function scope without storage.
-
-Commits: `93ef8d1` (exports), `6f9cd05` (facades), `bf76f46` (integration).
-The [guide](compiler/docs/COMPUTED_TYPES.md#named-type-value-exports) covers syntax,
-explicit forwarding and remaining boundaries.
+Named immutable `core.Type` exports continue to retain concrete payloads through
+explicit facades. Private names, separate namespaces and module startup stay intact.
+The compiler entry guide is [compiler/README.md](compiler/README.md); detailed guides
+live in `compiler/docs/`.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- Rust integration: 830 library/856 native tests (1686 total), fmt and Clippy pass.
-  Log: `/tmp/meowy-type-exports-slice3.log`.
-- Three checker/eight new native groups cover type exports, privacy, collisions,
-  required budgets, source errors, documentation and module startup/failure.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1686
-  Rust tests, 20 Python tests, fmt, Clippy, build, links and catalog/schema checks.
-  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-type-exports-gate.log`. The named-export guide prints `7` in
-  both profiles; source: `/tmp/meowy-type-exports-doc-nsew30hi/main.mwy`.
-- Proof remains specification-only; its examples were not compiled or executed.
-- Runtime implementation, reference fixtures and dependencies are unchanged. Editor
-  and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. Project version and release tags were not changed.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 835
+  library/861 native tests (1696 total), 20 Python tests, fmt, Clippy, build, links
+  and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
+  debug/release. Log: `/tmp/meowy-type-equality-gate.log`.
+- Five checker/five native equality groups cover normalized identity, kind/runtime
+  boundaries, short-circuiting, work/node/depth limits, repeated cached inputs,
+  independent roots, source errors, facade privacy and module startup.
+  Focused log: `/tmp/meowy-type-equality-slice2.log`.
+- The equality guide example prints `7` in debug/release.
+  Extracted source: `/tmp/meowy-type-equality-guide.mwy`.
+- Runtime implementation, reference fixtures, dependencies and release versions are
+  unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open; proof examples remain unimplemented/unexecuted.
 
 ## Area handoff
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Named core.Type exports retain compile-time identity through explicit facades. |
+| Compiler | Required type equality preserves normalized identity and bounded operand work. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -96,7 +94,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Investigate normalized type-value equality inside required evaluation;
+1. Investigate bare type-block equality operand inference;
    see the [compiler handoff](compiler/STATUS.md#next-steps).
 2. Implement proof only in separately planned slices against its qualification contract.
    Do not push, bump versions automatically or claim full release qualification.

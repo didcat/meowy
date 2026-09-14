@@ -41,6 +41,47 @@ including calls through resolved aliases and calls after a primary emission.
 The checker does not execute them. This is a narrow effect check; source helper
 purity and transitive call analysis are not implemented by this slice.
 
+## Type-value equality
+
+Inside required evaluation, `==` and `!=` compare normalized concrete type identity:
+
+```meowy
+element <Type> : <int32>
+<Items> : {
+    same : element == <int32>
+    union : <int32><null><never> == <null><int32>
+    shape : <{ first <int32>; ready <boolean> }> == <{ ready <boolean>; first <int32> }>
+    | same && union && shape | -> <(element)[4]>
+}
+values <Items> : [3, 7]
+debug : @"debug"
+debug.print(values[2])
+```
+
+This prints `7`. Type literals, supported type queries, lexical type-value aliases,
+core/foundation type members and explicitly exported type values retain identity.
+Union order, repeated members and `never` do not change the normalized set. Record
+field order does not matter; names, types, mutability and the primary do. Integer
+width/sign, list capacity, reference mode and nominal foundation identities remain
+part of the type. Equality compares identity, not assignability.
+
+Both operands resolve once in source order through the bounded type evaluator.
+Each resolved payload charges its type nodes; each eligible constructor input charges
+its retained work again, even when both operands read the same input. A failing left
+operand stops the right; a successful left operand always evaluates the right.
+Failures keep their original source span through imports and facades. Independent
+required roots reset budgets; nested comparisons share the enclosing counters.
+
+Short-circuit `&&`/`||` checks operand forms and outer lexical/member lookup, but skips
+constructor evaluation, type-name resolution inside literals and their input/node
+work. Thus `false && (<int32[1 / 0]> == <Missing>)` does not construct either type.
+Mixed known type/scalar operands and ordered type comparisons report E222.
+
+Use `<({ -> <int32> })> == <int32>` for a computed type-block operand. Bare block
+equality still follows the integer/boolean path. Type-of-type queries and helpers
+remain unsupported. Equality is available only inside required evaluation; it does
+not create runtime type values or enable ordinary runtime type equality.
+
 ## Explicit type-value bindings
 
 Inside a required block, an immutable binding can declare `core.Type` as its kind:
@@ -1404,7 +1445,7 @@ bootstrap support only; they do not implement the language's logical E220 counte
 Scalar scratch beyond integers/booleans, mutable scratch, restarts, labeled blocks,
 annotated or named emissions, general expression statements and source/helper calls
 remain unsupported in type blocks. `core.Type` parameter/result annotations, generic
-specialization, type equality, full purity analysis, intrinsic descriptions and the
+specialization, bare type-block equality, full purity analysis, intrinsic descriptions and the
 complete required evaluator remain separate. Runtime type-value storage remains gated.
 
 See [the runnable example](../examples/computed-types.mwy), [STATUS.md](../STATUS.md),
