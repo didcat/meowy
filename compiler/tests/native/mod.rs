@@ -73,6 +73,7 @@ pub(crate) mod nested_writes;
 pub(crate) mod panic_sites;
 pub(crate) mod panics;
 pub(crate) mod primary_inputs;
+pub(crate) mod proof_queries;
 pub(crate) mod published_snapshots;
 pub(crate) mod reborrows;
 pub(crate) mod record_scratch;

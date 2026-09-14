@@ -12,7 +12,9 @@ The [foundation values](docs/FOUNDATION.md) include static heap handles and nomi
 allocation-failure transport. [Proof revision metadata](docs/FOUNDATION.md#proof-revision-metadata)
 provides a static `uint32` revision constant. Opaque
 [descriptor type aliases](docs/FOUNDATION.md#proof-descriptor-type-aliases) remain
-separate from runtime storage; proof queries remain unimplemented.
+separate from runtime storage. [Deferred query checking](docs/FOUNDATION.md#deferred-proof-query-checking)
+retains type-only copy queries until ordinary checks finish, then reports B001;
+proof evaluation remains unimplemented.
 [Allocator return bounds](docs/ALLOCATOR_BOUNDS.md) track
 public input lifetimes through immutable values, mutable handles/tagged records,
 field writes, shared-reference members, restart headers and shared snapshots. Owning-string

@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
 Updated: 2026-09-14. Type-only copy queries retain pending metadata until ordinary checks finish.
-Proof queries remain unimplemented. Full v0.0.1 is incomplete.
+Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -72,59 +72,46 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Deferred query prerequisites
+### Deferred copy-query integration
 
-Current tracing found a missing dependency: `parser/expressions.rs` rejects explicit
-`callee<T>()` syntax before checker dispatch. `Value` and `Spec` already separate
-runtime data from static descriptor names, but no source query can currently reach
-that boundary. Retaining type-call arguments must precede pending result values.
+`6acc657` retains explicit type-call suffixes as `ExprKind::Specialize`, including
+ordered type arguments and original spans. It preserves ascription/query/reference
+contexts and the 64-argument/256-tree-depth bootstrap guards. Generic type binders,
+nested generic types, value arguments and explicit union arguments remain gated.
+This parser slice needed nine files because AST visitors and both affected existing
+parser test groups had to change together; 28 parser tests passed.
 
-Dependency-ordered slices for this continuation:
-1. Preserve explicit type-call suffixes in a bounded AST node, including spans and
-   existing module/documentation traversal. Keep generic evaluation unsupported;
-   test type queries, ascriptions, comparisons, argument ordering and nesting.
-2. Validate graph discovery, source diagnostics and documentation traversal for
-   retained arguments. No imported initializer or argument may execute at check.
-3. Connect resolved type-only copy-query declarations to pending metadata and the
-   post-ownership gate. Preserve copies/origins without inventing an active outcome;
-   ordinary program errors precede the unsupported evaluator diagnostic. Keep
-   flags, assertions, query evaluation and runtime storage gated. Run the full gate.
+`72e7483` connects resolved `Item::CanCopy` identity to `Value::Pending` and
+`check/queries.rs::Query`. Calls retain a checked type argument, call span, owner,
+target and revision. Copies share their original queue index; no active outcome is
+invented. Immutable locals accept the fixed Result annotation; direct `result<>`
+type aliases return `Spec::Descriptor(Result)`. Mutable/runtime storage, truthiness,
+formatting and captures remain E223. Narrowed pending annotations are E207.
 
-Parser implementation is local. One old borrowed-callee test expected parser
-rejection; it now checks the retained reference shape and the checker B001 gate.
-All 28 parser tests pass; log: `/tmp/meowy-type-call-parser.log`.
-No outstanding parser failures. Next: graph/documentation integration tests. This slice touches nine files because the new
-AST node requires parser/bounds, exhaustive checker/import visitors, documentation
-traversal and both existing parser test groups together; separating those would
-leave an unhandled node or a failing test. The slice remains under 200 changed lines.
+The pending-evaluation B001 gate runs after ordinary typing and borrow/loan checks.
+It also applies to uncalled functions and runtime-skipped checked bodies. Every
+pending-query program is rejected before code generation. Required-block query
+construction, flags, assertions and general generic execution remain unavailable.
+A 4096-call queue bound is bootstrap capacity, not E220 logical accounting; copies
+add no entries. Independent calls retain distinct original locations.
 
-Parser commit: `6acc657`. Next is the pending-query checker seam; graph and
-documentation integration will validate that concrete path in the final slice.
-Pending queries will retain checked type, call span, owner, target and revision,
-with no active outcome. Copies share the same query identity. Only immutable
-local bindings and fixed type queries are admitted before a post-ownership B001
-gate; no query-containing program reaches code generation.
+`b620759` preserves the reference's distinction between unsupported static metadata
+exports (B001) and invalid runtime-typed exports/record storage (E223).
 
-Pending query metadata is implemented locally. Existing proof tests pass; focused
-copy/origin, fixed-type, ordinary-error precedence and escape tests have been added.
-All four pending-query groups pass, including capacity boundaries and copies
-that retain a single origin. Log: `/tmp/meowy-pending-query-tests.log`. No active
-result representation has been added yet;
-result outcomes, canonical origin sets and logical accounting remain separate.
+The final integration keeps type-argument imports visible to graph discovery,
+reports owning-file/local spans, and prevents check/build/run from starting the
+program. Documentation passes the declaration parent through specialized callees,
+so inline type fields and computed bindings retain their attachments and spans.
+Six pending checker groups, three native groups in both profiles and the
+additional documentation regression pass. Logs: `/tmp/meowy-pending-query-export-gates.log`,
+`/tmp/meowy-type-call-doc-tests.log`. `4aa3ea3` retains record type arguments so
+invalid query arity reaches E212. `b7cfeb0` keeps known flag projections B001 and
+unknown fields E201. Their focused tests and the complete final gate pass.
+No outstanding failures.
 
-Checker commit: `72e7483`. Integration tests now cover file-origin diagnostics,
-type-argument import discovery, no startup on check/build/run, and ownership
-failures in checked bodies. Documentation tracing found that Call dropped the
-parent before visiting specialized arguments; it now forwards the declaration
-parent for that node so inline type fields retain attachment. All four pending
-checker groups, three native groups in debug/release and the documentation traversal
-regression pass. Logs: `/tmp/meowy-pending-query-integration.log` and
-`/tmp/meowy-type-call-doc-tests.log`. The full gate passed, but final review
-found that static descriptor exports are permitted by the reference. A narrow
-follow-up keeps top-level metadata export attempts B001 while runtime-typed exports
-and record fields retain E223. Five focused checker and three native groups pass;
-log: `/tmp/meowy-pending-query-export-gates.log`. The final gate rerun is pending.
-Native/documentation integration remains uncommitted for the final slice.
+Next: logical required-root accounting and proof-dependency tracking. Pending
+origins are ready, but evaluated results, canonical combined origin sets and
+outcomes must remain gated until those prerequisites are connected.
 
 ### Descriptor identity slice
 
@@ -143,13 +130,13 @@ Nominal identity/storage boundaries pass five proof checker groups and the two
 revision native groups. Required descriptor aliases charge one bootstrap type node
 and restore lexical scope. No outstanding failures. Log:
 `/tmp/meowy-proof-descriptor-tests.log`. Native facade/privacy/documentation
-integration and the full compiler gate now pass. Result values/origins remain
+integration and the full compiler gate pass. Evaluated result values remain
 unimplemented.
 Identity commit: `2f09968`. Native facade/privacy and rendered documentation
 regressions pass. Five proof checker groups and four native groups are now covered;
 log: `/tmp/meowy-proof-descriptor-integration.log`. No outstanding failures.
-The alias guide passes checking in both profiles. Next: result metadata and
-deferred obligations, retaining the query gates.
+The alias guide passes checking in both profiles. Pending query metadata now
+extends this representation; evaluated results remain gated.
 
 ### Dependency-ordered commit series
 
@@ -194,11 +181,11 @@ profile 1 value/ownership analysis requires its own frozen graph and canonical
 transfer plan; existing optimizer or borrow answers are not substitutes.
 
 Step 1 metadata is complete in two slices: `9ddefca` adds module/static scalar
-identity; the current integration adds direct required member reads and structural
-checks. Immutable unannotated aliases remain static; annotated/mutable scalar
+identity; `ae7fde7` adds direct required member reads and structural checks.
+Immutable unannotated aliases remain static; annotated/mutable scalar
 bindings can materialize runtime values. HIR tests verify unused aliases create no
-statements, functions or locals. Query members remain B001; named descriptor
-types are now recognized.
+statements, functions or locals. Named descriptor types are recognized; query
+evaluation remains B001.
 
 Three checker groups and two native groups pass, including debug/release, exact
 widths, skipped failures, lexical shadowing, function-local required reads and
@@ -207,7 +194,7 @@ expression visit. No outstanding focused failures. Logs:
 `/tmp/meowy-proof-metadata-tests.log`, `/tmp/meowy-proof-required-tests.log`.
 The full compiler gate passes. The [foundation guide](docs/FOUNDATION.md#proof-revision-metadata)
 documents the subset; its example prints `1` and `7` in debug/release.
-Next: result values and deferred obligations; proof queries remain gated.
+Pending query metadata now extends this completed slice; evaluated results remain gated.
 
 Planning validation: source/reference inspection and all four default
 `python3 -B tools/verify.py` checks pass (16 tooling tests, local links, catalog and
@@ -400,22 +387,22 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 852
-  library/875 native tests (1727 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 861
+  library/878 native tests (1739 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-proof-descriptor-gate.log`.
-- Five proof checker groups and four native groups cover revision identity/reads,
-  descriptor aliases, runtime storage rejection, zero-HIR unused metadata, scope,
-  file facades/privacy and rendered documentation.
-  Focused log: `/tmp/meowy-proof-descriptor-integration.log`.
-- The foundation guide example prints `1` and `7` in debug/release.
-  Extracted source: `/tmp/meowy-proof-revision-guide.mwy`. Documentation links
-  pass in the final gate. The descriptor alias guide passes `check` in debug/release;
-  source: `/tmp/meowy-proof-descriptor-guide.mwy`.
-- Proof queries and constructed result values are unimplemented; no proof analysis
-  fixture passed.
-  Runtime implementation, reference fixtures, dependencies and versions are
-  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
+  debug/release. Log: `/tmp/meowy-pending-query-complete-gate.log`.
+- All 28 parser tests passed. Six pending-query checker groups cover fixed Result
+  identity, shared copy origins, call capacity, ordinary-error precedence, captures,
+  runtime escape rejection and explicit metadata/flag gates. Record argument
+  arity and documentation attachment regressions also pass.
+- Three native groups exercise check/build/run in both profiles: original file
+  spans, type-argument import discovery, preserved ownership/type errors, and no
+  startup before unsupported evaluation is reported. Logs:
+  `/tmp/meowy-pending-query-integration.log`, `/tmp/meowy-type-call-doc-tests.log`,
+  `/tmp/meowy-pending-query-export-gates.log`, `/tmp/meowy-pending-query-flags.log`.
+- No proof outcome is evaluated and no unsupported query counts as successful
+  conformance. Runtime implementation, reference fixtures, dependencies and versions
+  are unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
 
 ## Prior capabilities and other areas
@@ -499,4 +486,3 @@ explicitly documented. No outstanding failures remain.
    first-class metatypes, runtime type containers and type-producing helpers separate.
 
 Do not push or bump release versions here.
-

@@ -231,3 +231,27 @@ pub(crate) fn documentation_public_file_exports_reject_private_links() {
     let model = Model::at(source, &parsed, 0, false).unwrap();
     crate::check::check_documented(&parsed.block, Some(model)).unwrap();
 }
+
+#[test]
+pub(crate) fn documentation_retains_explicit_type_call_fields_and_computed_bindings() {
+    let source =
+        r#"result:f<{#| Member. |#n<int32>}>();other:f<({#| Type. |#kind:<uint32>;->kind})>()"#;
+    let base = 513;
+    let parsed = crate::parser::parse_documented_at(source, base).unwrap();
+    let model = Model::at(source, &parsed, base, true).unwrap();
+    for (name, token) in [("n", "n<int32>"), ("kind", "kind:<uint32>")] {
+        let entry = model
+            .entries
+            .iter()
+            .find(|entry| entry.name == name)
+            .unwrap();
+        assert!(entry.doc.is_some());
+        assert_eq!(entry.span.start, base + source.find(token).unwrap());
+    }
+    let field = model
+        .entries
+        .iter()
+        .find(|entry| entry.name == "n")
+        .unwrap();
+    assert_eq!(model.entries[field.parent.unwrap()].name, "result");
+}

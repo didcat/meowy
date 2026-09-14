@@ -400,7 +400,12 @@ impl Model {
                 self.walk_expr(source, parsed, index, None, stage, depth + 1)?;
             }
             ExprKind::Call { callee, args } => {
-                self.walk_expr(source, parsed, callee, None, stage, depth + 1)?;
+                let parent = if matches!(callee.kind, ExprKind::Specialize { .. }) {
+                    parent
+                } else {
+                    None
+                };
+                self.walk_expr(source, parsed, callee, parent, stage, depth + 1)?;
                 for arg in args {
                     self.walk_expr(source, parsed, arg, None, stage, depth + 1)?;
                 }

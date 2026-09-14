@@ -61,6 +61,32 @@ first-class descriptor type values, descriptor function signatures and `Bounds<T
 remain B001. Active alternatives, retained observation origins and descriptor
 inspection still require the later metadata evaluator.
 
+## Deferred proof query checking
+
+The checker recognizes type-only `proof.can_copy<T>()` through ordinary module and
+member aliases. It retains the checked type argument, call origin, owner, target
+and revision as pending metadata. No Always/Never/Indeterminable answer is formed.
+Every program containing a pending query still fails with B001 before code generation.
+
+Immutable local bindings can copy pending metadata without runtime storage or
+creating another query. An explicit `proof.Result` annotation and a direct type
+alias such as `<Result> : result<>` retain the fixed declared result type.
+Annotations claiming a narrower alternative fail E207. Runtime storage, formatting,
+truthiness, mutable bindings, captures and runtime-typed exports fail E223.
+Static descriptor metadata exports remain B001 until their implementation exists.
+
+Ordinary typing and ownership validation finish before the pending-evaluation gate,
+including uncalled function bodies and runtime-skipped branches. Earlier query
+copies do not replace the original diagnostic location. Type arguments discover
+file imports normally; checking never executes their startup code.
+
+The parser retains up to 64 explicit type arguments using supported type syntax;
+nested generic types and value arguments remain unavailable. The copy query accepts
+exactly one type argument and no value arguments. The queue caps at 4096 calls;
+copies add no entries. These are B001 bootstrap limits, not E220 logical accounting.
+Query evaluation, scalar projections, assertions, place queries, required-block
+query construction and general generic specialization remain unavailable.
+
 ## Nominal types
 
 Foundation types now belong to the HIR type system. They remain distinct from
