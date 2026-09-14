@@ -366,6 +366,19 @@ impl Checker {
                     };
                 }
                 let symbol = self.symbol(value)?;
+                if let Some(Value::Pending(_)) = symbol {
+                    return Err(
+                        if ["always", "never", "indeterminable"].contains(&name.as_str()) {
+                            Diagnostic::unsupported("pending proof scalar projections", expr.span)
+                        } else {
+                            Self::error(
+                                "E201",
+                                format!("proof.Result has no field `{name}`"),
+                                expr.span,
+                            )
+                        },
+                    );
+                }
                 if let Some(Value::FileModule { id, ty }) = &symbol {
                     return self.module_member(*id, ty, name, expr.span);
                 }

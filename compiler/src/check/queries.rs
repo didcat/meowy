@@ -227,4 +227,15 @@ mod tests {
             assert!(error.message.contains("proof descriptor metadata exports"));
         }
     }
+    #[test]
+    pub(crate) fn pending_proof_flags_remain_unsupported_without_runtime_escape_errors() {
+        for field in ["always", "never", "indeterminable"] {
+            let source = format!(r#"p:@"proof";r:p.can_copy<uint32>();flag:r.{field}"#);
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "B001");
+            assert!(error.message.contains("pending proof scalar projections"));
+        }
+        let source = r#"p:@"proof";r:p.can_copy<uint32>();flag:r.missing"#;
+        assert_eq!(crate::compile(source).unwrap_err()[0].code, "E201");
+    }
 }
