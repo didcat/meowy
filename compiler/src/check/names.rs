@@ -1,7 +1,7 @@
 use super::{Checker, Constant, Result, Spec, Value};
 use crate::ast::{self, ExprKind, Span, TypeKind};
 use crate::diagnostic::Diagnostic;
-use crate::foundation::{Item, Module};
+use crate::foundation::{Descriptor, Item, Module};
 use crate::hir::{self, Type};
 use std::collections::BTreeMap;
 
@@ -110,6 +110,9 @@ impl Checker {
                         });
                     }
                     if let Value::Module(module) = self.value(module, expr.span)? {
+                        if let Some(ty) = Descriptor::resolve(module, member) {
+                            return Ok(Spec::Descriptor(ty));
+                        }
                         if let Some(Item::Type(ty)) = module.item(member) {
                             return Ok(Spec::Data(Type::Foundation(ty)));
                         }
@@ -196,7 +199,16 @@ impl Checker {
             TypeKind::Union(types) => {
                 let types = types
                     .iter()
-                    .map(|ty| self.ty(ty))
+                    .map(|ty| {
+                        let spec = self.spec(ty)?;
+                        if matches!(spec, Spec::Descriptor(_)) {
+                            return Err(Diagnostic::unsupported(
+                                "proof descriptor union construction",
+                                ty.span,
+                            ));
+                        }
+                        self.spec_type(spec, ty.span)
+                    })
                     .collect::<Result<Vec<_>>>()?;
                 Ok(Spec::Data(Type::union(types)))
             }
@@ -227,6 +239,12 @@ impl Checker {
 
     pub(crate) fn function_type(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
         let spec = self.spec(expr)?;
+        if matches!(spec, Spec::Descriptor(_)) {
+            return Err(Diagnostic::unsupported(
+                "proof descriptor function signatures",
+                expr.span,
+            ));
+        }
         if matches!(spec, Spec::Meta) {
             return Err(Diagnostic::unsupported(
                 "type-producing function signatures",
@@ -238,6 +256,12 @@ impl Checker {
 
     pub(crate) fn type_literal(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
         let spec = self.spec(expr)?;
+        if let Spec::Descriptor(ty) = spec {
+            return Err(Diagnostic::unsupported(
+                format!("first-class {} type values", ty.name()),
+                expr.span,
+            ));
+        }
         if matches!(spec, Spec::Meta) {
             return Err(Diagnostic::unsupported(
                 "first-class core.Type values",
@@ -249,6 +273,14 @@ impl Checker {
 
     pub(crate) fn spec_type(&mut self, spec: Spec, span: Span) -> Result<Type> {
         match spec {
+            Spec::Descriptor(ty) => Err(Self::error(
+                "E223",
+                format!(
+                    "{} is a compile-time-only descriptor with no runtime representation",
+                    ty.name()
+                ),
+                span,
+            )),
             Spec::Meta => Err(Self::error(
                 "E211",
                 "core.Type has no runtime representation",

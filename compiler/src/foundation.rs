@@ -10,6 +10,41 @@ pub(crate) enum Module {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Descriptor {
+    Always,
+    Never,
+    Indeterminable,
+    Result,
+    Flags,
+}
+
+impl Descriptor {
+    pub(crate) fn resolve(module: Module, name: &str) -> Option<Self> {
+        if module != Module::Proof {
+            return None;
+        }
+        Some(match name {
+            "Always" => Self::Always,
+            "Never" => Self::Never,
+            "Indeterminable" => Self::Indeterminable,
+            "Result" => Self::Result,
+            "Flags" => Self::Flags,
+            _ => return None,
+        })
+    }
+
+    pub(crate) fn name(self) -> &'static str {
+        match self {
+            Self::Always => "proof.Always",
+            Self::Never => "proof.Never",
+            Self::Indeterminable => "proof.Indeterminable",
+            Self::Result => "proof.Result",
+            Self::Flags => "proof.Flags",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Item {
     Type(FoundationType),
     Heap,

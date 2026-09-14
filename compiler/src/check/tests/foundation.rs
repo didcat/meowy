@@ -116,11 +116,11 @@ pub(crate) fn proof_revision_retains_uint32_identity_and_static_aliases() {
 }
 
 #[test]
-pub(crate) fn proof_queries_and_descriptor_types_remain_unsupported() {
+pub(crate) fn proof_queries_and_descriptor_construction_remain_unsupported() {
     for source in [
         r#"p:@"proof";p.can_copy<uint32>()"#,
         r#"p:@"proof";alias:p;query:alias.is"#,
-        r#"p:@"proof";<R>:<p.Result>"#,
+        r#"p:@"proof";kind<Type>:<p.Result>"#,
         r#"p:@"proof";p.assert(true)"#,
     ] {
         rejects(source, "B001");
@@ -153,4 +153,50 @@ pub(crate) fn proof_revision_supports_direct_required_reads_and_skipped_checks()
         r#"p:@"proof";<T>:{ok:true||(p.missing==1);-><uint8>}"#,
         "B001",
     );
+}
+
+#[test]
+pub(crate) fn proof_descriptor_type_aliases_preserve_nominal_identity_without_storage() {
+    for name in ["Always", "Never", "Indeterminable", "Result", "Flags"] {
+        let source = format!(r#"p:@"proof";alias:p;<A>:<alias.{name}>;<B>:<A>;-><Export>:<B>"#);
+        let program = crate::compile(&source).unwrap();
+        assert!(program.body.stmts.is_empty());
+        assert!(program.locals.is_empty());
+        let errors = crate::compile(&format!("{source};value<B>:null")).unwrap_err();
+        assert_eq!(errors[0].code, "E223");
+        assert!(errors[0].message.contains(&format!("proof.{name}")));
+    }
+    accepts(
+        r#"p:@"proof";<A>:<p.Always>;{<Always>:<int32>;v<Always>:7};<Always>:<boolean>;v<Always>:true"#,
+    );
+    accepts(r#"p:@"proof";<T>:{<A>:<p.Always>;<B>:<A>;-><uint8>};v<T>:7"#);
+    rejects(
+        r#"p:@"proof";<T>:{<A>:<p.Always>;-><uint8>};<B>:<A>"#,
+        "E202",
+    );
+    rejects(r#"p:@"debug";<A>:<p.Always>"#, "E202");
+    rejects(r#"p:{->Always:1};<A>:<p.Always>"#, "E202");
+}
+
+#[test]
+pub(crate) fn proof_descriptors_reject_runtime_shapes_and_keep_evaluator_gates() {
+    for source in [
+        r#"p:@"proof";v<p.Result>:{->always:true;->never:false;->indeterminable:false}"#,
+        r#"p:@"proof";<R>:<{value<p.Flags>}>"#,
+        r#"p:@"proof";<R>:<p.Result[0]>"#,
+        r#"p:@"proof";<R>:<&p.Always>"#,
+        r#"p:@"proof";<R>:<&!p.Never>"#,
+        r#"p:@"proof";->v<p.Result>:null"#,
+    ] {
+        rejects(source, "E223");
+    }
+    for source in [
+        r#"p:@"proof";f<p.Result>:(){->null}"#,
+        r#"p:@"proof";f:(x<p.Always>){->null}"#,
+        r#"p:@"proof";<R>:<p.Always><p.Never><p.Indeterminable>"#,
+        r#"p:@"proof";<A>:<p.Always>;kind<Type>:<A>"#,
+        r#"p:@"proof";kind:p.Result"#,
+    ] {
+        rejects(source, "B001");
+    }
 }

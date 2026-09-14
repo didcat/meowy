@@ -92,6 +92,7 @@ impl Value {
 #[derive(Clone)]
 pub(crate) enum Spec {
     Meta,
+    Descriptor(crate::foundation::Descriptor),
     Data(Type),
     Function { params: Vec<Type>, result: Type },
 }

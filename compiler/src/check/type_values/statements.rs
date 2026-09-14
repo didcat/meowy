@@ -32,7 +32,7 @@ impl Checker {
                 let spec = &self.scopes.last().unwrap().types[name];
                 let work = self.type_work.as_mut().unwrap();
                 match spec {
-                    Spec::Meta => work.node(stmt.span)?,
+                    Spec::Meta | Spec::Descriptor(_) => work.node(stmt.span)?,
                     Spec::Data(ty) => work.materialize(ty, stmt.span)?,
                     Spec::Function { params, result } => {
                         for ty in params.iter().chain(std::iter::once(result)) {

@@ -69,6 +69,25 @@ metadata is implemented so far. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Descriptor identity slice
+
+Step 2 starts with a separate static type namespace representation, not a new
+`hir::Type` variant: `Spec::Descriptor` retains opaque `proof.Always`, `Never`,
+`Indeterminable`, `Result` and `Flags` identities through type aliases. Runtime
+storage conversion reports E223. First-class descriptor type values, helpers and
+explicit descriptor union construction remain B001 until their metadata evaluator
+exists. No active result or observation origin is constructed in this slice.
+
+Commit order: (1) nominal type resolution/storage boundaries with checker tests;
+(2) native file-alias/privacy and documentation integration, full compiler gate.
+Preserve known-good revision metadata. Next within step 2: result values with fixed
+declared type, active alternative and retained origins, before public construction.
+Nominal identity/storage boundaries pass five proof checker groups and the two
+revision native groups. Required descriptor aliases charge one bootstrap type node
+and restore lexical scope. No outstanding failures. Log:
+`/tmp/meowy-proof-descriptor-tests.log`. Next: native facade/privacy/documentation
+integration, then the full compiler gate. Result values/origins remain unimplemented.
+
 ### Dependency-ordered commit series
 
 Each numbered item is a review concern, not permission for an oversized commit.
