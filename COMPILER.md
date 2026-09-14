@@ -17,6 +17,11 @@ includes the complete documented initial language, standard library, CLI,
 developer tools, and distribution profile. The staged subsets below are
 development milestones toward that full v0.0.1 release.
 
+Project tags follow [Versioning, allegedly](VERSIONING.md): `v0.0.N` is a release
+identifier, not a compatibility or scheduling promise. The scope above is the
+current named implementation target; it is not a meaning assigned to every `0.0`
+version, nor a requirement to wait for `v1.0.0`.
+
 ## The language split
 
 | Part                           | Language                                                        | Responsibility                                                                                                   |

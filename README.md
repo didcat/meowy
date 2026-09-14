@@ -46,7 +46,8 @@ Current version: v0.0.0
 
 v0.0.1 is the first full release target, covering the documented language and
 ecosystem for the initial supported platform. Full release scope belongs to
-v0.0.1, not a future v1.0.0.
+v0.0.1, not a future v1.0.0. The major and minor numbers have retired; the patch
+number handles everything. See [Versioning, allegedly](VERSIONING.md).
 
 ## Documentation
 

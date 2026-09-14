@@ -75,6 +75,18 @@ Default repository verification and whitespace checks pass. The package, observa
 parameter mode, proof-only descriptor unions and executable proof fixtures are not
 implemented; no runtime/compile-time execution of proof examples was claimed.
 
+## Release naming
+
+[VERSIONING.md](VERSIONING.md) defines the project release policy: keep major/minor
+at zero, use the patch field as a chosen release identifier, make releases without a
+fixed cadence, and label pre-releases as uncertain. Numbers do not promise compatibility
+or chronological order. The existing full-release target remains an implementation
+milestone, and protocol/schema/contract revision rules remain independent.
+README and COMPILER link this policy. No package version or release tag was changed.
+All four default repository checks pass, including 16 tooling tests, local links,
+catalog metadata and schemas. Log: `/tmp/meowy-versioning-docs.log`. Compiler/runtime
+execution was not part of this documentation edit.
+
 ## Next steps
 
 1. Investigate explicit `core.Type` bindings in required scopes while retaining their
