@@ -239,7 +239,14 @@ HIR has no type fields, locals, emissions or scalar inputs. Mutable/conditional/
 nested exports, wrong kinds and collisions retain explicit diagnostics.
 Full Rust validation passed: 829 library/849 native tests, fmt and Clippy.
 Logs: `/tmp/meowy-type-exports-focused.log`, `/tmp/meowy-type-exports-slice1.log`.
-Step 1 is ready to commit; next verify file-graph re-export and privacy behavior.
+Step 1 committed as `93ef8d1`. Step 2 confirms that existing module lookup preserves
+concrete payloads through aliases, explicit value/type re-exports and function scopes.
+Private names and value/type namespaces stay separate; implicit forwarding, missing
+annotations and mutable/conditional exports remain gated. Function/data compositions
+retain E205 collisions. Three new native groups pass in the focused export run
+(two checker/six native groups total); fmt and Clippy pass. The function facade fixture
+uses the existing complete signature. Log: `/tmp/meowy-type-exports-facades.log`.
+Step 2 is ready to commit. Next cover work, source errors, documentation and startup.
 The prior compiler gate above is the baseline. Keep first-class metatype values, type-of-type queries, runtime type
 containers and type-producing/generic helpers separate. Proof needs its own plan.
 Do not push or bump release versions here.

@@ -96,6 +96,7 @@ pub(crate) mod tagged_allocators;
 pub(crate) mod temporary_borrows;
 pub(crate) mod transitive_borrows;
 pub(crate) mod transitive_restarts;
+pub(crate) mod type_exports;
 pub(crate) mod union_aliases;
 pub(crate) mod unions;
 pub(crate) mod widened_aliases;
