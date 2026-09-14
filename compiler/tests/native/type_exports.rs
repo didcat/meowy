@@ -112,3 +112,125 @@ pub(crate) fn type_exports_check_facade_collisions_and_shadowable_annotations() 
     )
     .runs(b"4\n");
 }
+
+#[test]
+pub(crate) fn type_exports_preserve_silent_checks_and_single_dependency_startup() {
+    let case = case(
+        "m:@\"./facade.mwy\";s:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");v<(m.kind)>:7;d.print(v)",
+        &[
+            (
+                "types.mwy",
+                "d:@\"debug\";d.print(\"types\");->kind<Type>:<int32>",
+            ),
+            (
+                "facade.mwy",
+                "m:@\"./types.mwy\";d:@\"debug\";d.print(\"facade\");->kind<Type>:m.kind",
+            ),
+        ],
+    );
+    for profile in ["debug", "release"] {
+        for action in ["check", "build"] {
+            let output = case.command(action, &["--profile", profile]);
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(output.stdout.is_empty());
+            assert!(output.stderr.is_empty());
+        }
+    }
+    case.runs(b"types\nfacade\nentry\n7\n");
+}
+
+#[test]
+pub(crate) fn type_exports_do_not_remove_failing_module_initializers() {
+    let case = case(
+        "m:@\"./facade.mwy\";d:@\"debug\";d.print(\"entry\");v<(m.kind)>:7",
+        &[
+            (
+                "types.mwy",
+                "d:@\"debug\";->kind<Type>:<int32>;d.print(\"types\");d.panic(\"stop\")",
+            ),
+            (
+                "facade.mwy",
+                "m:@\"./types.mwy\";->kind<Type>:m.kind;d:@\"debug\";d.print(\"facade\")",
+            ),
+        ],
+    );
+    for profile in ["debug", "release"] {
+        let output = case.command("check", &["--profile", profile]);
+        assert!(output.status.success());
+        assert!(output.stdout.is_empty());
+        let output = case.command("run", &["--profile", profile]);
+        assert_eq!(output.status.code(), Some(1));
+        assert_eq!(output.stdout, b"types\n");
+        assert!(String::from_utf8_lossy(&output.stderr).starts_with("panic[P006]: stop"));
+    }
+}
+
+#[test]
+pub(crate) fn type_exports_retain_original_required_input_errors_across_facades() {
+    let data = "#é🙂#\nraw:{->n<uint8>:255};->bad:raw.n+1";
+    for body in [
+        "->kind<Type>:<int32[m.bad]>",
+        "->kind<Type>:{-><int32>;tail:m.bad}",
+    ] {
+        let case = case(
+            "m:@\"./facade.mwy\";v<(m.kind)>:7",
+            &[
+                ("data.mwy", data),
+                ("input.mwy", "m:@\"./data.mwy\";->m"),
+                ("types.mwy", &format!("m:@\"./input.mwy\";{body}")),
+                ("facade.mwy", "m:@\"./types.mwy\";->kind<Type>:m.kind"),
+            ],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+        }
+    }
+}
+
+#[test]
+pub(crate) fn type_exports_reset_roots_and_share_nested_initializer_work() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data = format!("private:{{->4;v0:1;{tail}}};->width:private");
+    let roots = (0..20)
+        .map(|id| format!("->kind{id}<Type>:{{n:m.width;-><int32[n]>}};"))
+        .collect::<String>();
+    let nested = roots.replace("->kind", "kind");
+    for (body, accepted) in [
+        (roots, true),
+        (format!("->all<Type>:{{{nested}-><int32>}}"), false),
+    ] {
+        let case = case(&format!("m:@\"./data.mwy\";{body}"), &[("data.mwy", &data)]);
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if accepted {
+                assert!(output.status.success(), "{error}");
+            } else {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            }
+        }
+    }
+}

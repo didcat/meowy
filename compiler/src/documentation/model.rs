@@ -260,7 +260,7 @@ impl Model {
                         stage,
                         parent,
                         public || parent.is_some_and(|id| self.entries[id].public),
-                        None,
+                        ty.as_ref().map(|ty| ty.span.start),
                     )?)
                 } else {
                     parent

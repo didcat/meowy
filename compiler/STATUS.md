@@ -246,7 +246,16 @@ annotations and mutable/conditional exports remain gated. Function/data composit
 retain E205 collisions. Three new native groups pass in the focused export run
 (two checker/six native groups total); fmt and Clippy pass. The function facade fixture
 uses the existing complete signature. Log: `/tmp/meowy-type-exports-facades.log`.
-Step 2 is ready to commit. Next cover work, source errors, documentation and startup.
+Step 2 committed as `6f9cd05`. Next cover work, source errors, documentation and
+startup in an integration test commit, then update guides/handoffs in a separate
+documentation commit. This split keeps both review questions below the size threshold.
+Integration now passes three checker/ten native focused tests, including original
+UTF-8 source errors through scalar facades, independent versus nested root budgets,
+silent check/build and once-only type-only dependency startup/failure. Emission docs
+now retain annotation locations and show core.Type; type aliases show concrete types.
+Full Rust validation passed: 830 library/856 native tests, fmt and Clippy.
+Logs: `/tmp/meowy-type-exports-integration.log`, `/tmp/meowy-type-exports-slice3.log`.
+Integration is ready to commit; guides and the final compiler gate remain.
 The prior compiler gate above is the baseline. Keep first-class metatype values, type-of-type queries, runtime type
 containers and type-producing/generic helpers separate. Proof needs its own plan.
 Do not push or bump release versions here.

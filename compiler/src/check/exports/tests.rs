@@ -354,3 +354,24 @@ pub(crate) fn named_type_exports_preserve_kinds_scope_and_storage_gates() {
     crate::compile("<Type>:<uint8>;->n<Type>:4").unwrap();
     crate::compile("->kind<Type>:<int32>;->n<(kind)>:4;->get<int32>:(){->7}").unwrap();
 }
+
+#[test]
+pub(crate) fn named_type_exports_document_the_annotation_and_concrete_alias() {
+    let source = "c:@\"core\";#| Element. |#->element<c.Type>:<int32>;#| Items. |#->items<Type>:{-><(element)[4]>};#| Alias. |#-><Items>:items";
+    let (_, model) = crate::documentation::checked(source, true).unwrap();
+    let model = model.unwrap();
+    for (name, signature) in [
+        ("element", "core.Type"),
+        ("items", "core.Type"),
+        ("Items", "int32[4]"),
+    ] {
+        let entry = model
+            .entries
+            .iter()
+            .find(|entry| entry.name == name)
+            .unwrap();
+        assert!(entry.checked);
+        assert!(entry.public);
+        assert_eq!(entry.signature, signature);
+    }
+}
