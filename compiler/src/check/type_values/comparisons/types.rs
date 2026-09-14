@@ -108,3 +108,151 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod work {
+    use super::*;
+    use crate::ast::StmtKind;
+    use crate::check::Constant;
+    use crate::check::type_values::{MAX_DEPTH, MAX_NODES, MAX_WORK, Work};
+
+    #[test]
+    pub(crate) fn type_equality_charges_selected_operands_and_restores_failed_state() {
+        for (source, visits, nodes) in [
+            ("<int32> == <int32>", 3, 2),
+            ("false&&(<int32[1/0]> == <Missing>)", 2, 0),
+            ("true||(<int32[1/0]> != <Missing>)", 2, 0),
+        ] {
+            let parsed = crate::parser::parse(&format!("flag:{source}")).unwrap();
+            let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+                panic!("binding")
+            };
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let scopes = checker.scopes.len();
+            checker.boolean_form(value, 0, &mut 0).unwrap();
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+            assert_eq!(checker.type_work.as_ref().unwrap().nodes, 0);
+            checker.type_boolean(value, None).unwrap();
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, visits);
+            assert_eq!(checker.type_work.as_ref().unwrap().nodes, nodes);
+            for (work, accepted) in [
+                (
+                    Work {
+                        visits: MAX_WORK - visits,
+                        nodes: MAX_NODES - nodes,
+                        depth: 0,
+                    },
+                    true,
+                ),
+                (
+                    Work {
+                        visits: MAX_WORK - visits + 1,
+                        ..Work::default()
+                    },
+                    false,
+                ),
+                (
+                    Work {
+                        depth: MAX_DEPTH,
+                        ..Work::default()
+                    },
+                    false,
+                ),
+            ] {
+                let depth = work.depth;
+                checker.type_work = Some(work);
+                let result = checker.type_boolean(value, None);
+                if accepted {
+                    assert!(result.is_ok(), "{source}: {:?}", result.err());
+                } else {
+                    assert_eq!(result.err().unwrap().code, "B001");
+                }
+                assert_eq!(checker.scopes.len(), scopes);
+                assert_eq!(checker.type_work.as_ref().unwrap().depth, depth);
+                assert!(!checker.required);
+            }
+            if nodes > 0 {
+                checker.type_work = Some(Work {
+                    nodes: MAX_NODES - nodes + 1,
+                    ..Work::default()
+                });
+                assert_eq!(
+                    checker.type_boolean(value, None).err().unwrap().code,
+                    "B001"
+                );
+                assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            }
+            checker.type_work = Some(Work::default());
+            assert!(matches!(
+                checker.type_boolean(value, None).unwrap(),
+                Value::Static {
+                    value: Constant::Bool(_),
+                    ..
+                }
+            ));
+            assert!(checker.locals.is_empty());
+        }
+    }
+
+    #[test]
+    pub(crate) fn type_equality_charges_the_same_cached_input_on_both_sides() {
+        use crate::check::inputs::Input;
+        use crate::hir::Type;
+        for (right, accepted) in [("4", true), ("n", false)] {
+            let parsed =
+                crate::parser::parse(&format!("flag:<int32[n]> == <int32[{right}]>")).unwrap();
+            let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+                panic!("binding")
+            };
+            let mut checker = Checker::new();
+            checker
+                .declare(
+                    "n",
+                    Value::Local {
+                        id: 0,
+                        ty: Type::Int {
+                            bits: 32,
+                            signed: true,
+                        },
+                        mutable: false,
+                        owner: 0,
+                        constant: None,
+                    },
+                    value.span,
+                )
+                .unwrap();
+            checker.inputs.insert(
+                0,
+                Input {
+                    value: Some(4),
+                    error: None,
+                    work: MAX_WORK / 2,
+                },
+            );
+            checker.type_work = Some(Work::default());
+            let result = checker.type_boolean(value, None);
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+        }
+    }
+
+    #[test]
+    pub(crate) fn type_equality_retains_left_to_right_constructor_errors() {
+        for (expr, failed) in [
+            ("<int32[1/0]> == <int32[2/0]>", "1/0"),
+            ("<int32[2/0]> != <int32[1/0]>", "2/0"),
+            ("<int32> == <({-><int32>;tail:2/0})>", "2/0"),
+            ("<({-><int32>;tail:1/0})> == <int32[2/0]>", "1/0"),
+        ] {
+            let source = format!("<T>:{{flag:{expr};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "E107", "{expr}: {error:?}");
+            assert_eq!(error.span.start, source.find(failed).unwrap());
+        }
+    }
+}

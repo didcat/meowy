@@ -42,7 +42,14 @@ equality before scalar comparisons and reuses `type_value` for both operands. Ad
 checker identity/kind/skip tests and native profile/storage-boundary coverage. All
 832 library/858 native tests, fmt and Clippy pass. Log:
 `/tmp/meowy-type-equality-slice1.log`. The initial fixture token-spacing errors are
-resolved. Next: commit slice 1, then add source/work/facade integration evidence.
+resolved. Slice 1 committed as `2c4c26a`. Slice 2 adds operand work/node limits,
+failed-state restoration, constructor error order, facade identity/privacy/startup,
+original source diagnostics and repeated-input/root-budget tests. Five checker and
+five native equality groups, fmt and Clippy pass; primitive identity charges three
+visits and two materialized type nodes. The repeated-cache test accepts one read and
+rejects two reads when each retains half the visit budget. Log:
+`/tmp/meowy-type-equality-slice2.log`. No outstanding failures. Next: commit slice 2,
+document support and run the final compiler gate.
 
 ## Current compiler slice
 
