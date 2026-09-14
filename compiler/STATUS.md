@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required boolean logical block operands are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required boolean logical block operands and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,30 +21,30 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required integer comparisons now accept inline blocks and arithmetic containing them.
-`comparisons.rs` owns integer comparison validation/execution; `comparisons/blocks.rs`
-validates deferred operand forms without evaluating block-local initializers. Existing
-block-free comparisons retain their original eager form checks and evaluation costs.
+Required boolean blocks now work in `!`, `&&`, `||` and required matcher conditions.
+`required_block_form` shares bounded statement validation with integer comparisons;
+`boolean_form` defers local initializer/type resolution and supplies boolean context.
+`required_boolean` executes selected blocks through existing typed `scalar_block`.
 
-Known outer names/types and supported block statement forms are checked before logical
-short-circuiting. Unresolved block-local values, annotations and dependent literal widths
-wait until the comparison runs. Selected operands use `integer_arithmetic` once, left
-to right, preserving exact widths and source errors. All six integer relations work.
+Short circuits retain left-to-right evaluation: skipped blocks create no scopes,
+resolve no initializers and charge no evaluation visits/type nodes. Selected blocks
+retain declarations, matcher choices, nested primaries and tail errors. Empty selected
+blocks report E204, duplicate primaries E205 and incompatible scalar results E207.
+Labels, mutation, named/outer emissions and unsupported statement forms retain gates.
 
-Short-circuited blocks charge no evaluation visits or constructed type nodes. Structural
-validation remains bounded by the existing form count/depth limits. Selected blocks
-retain scope, work/depth/node budgets, tail errors and original dependency spans.
-Known incompatible widths remain E213; evaluated block width mismatches remain E207
-and deferred literal range errors remain E216.
+Grouped negation uses `!({ ... })`; bare `!{ ... }` remains unchecked-block syntax.
+Bindings resolve normally, including shadowed boolean names. Logical results can feed
+inferred record fields and type selection without allocating runtime locals/statements.
+Direct boolean block equality still follows the gated comparison path; equality of
+already formed boolean/logical values retains its existing behavior.
 
-Block-local declarations do not escape to the other operand. Materialized aliases reuse
-values, original sources retain complete work, and independent roots reset budgets.
-Required comparisons produce no runtime locals or HIR statements. Check/build remain
-silent and normal module startup and function capture restrictions are preserved.
+Shared work/depth/node budgets, scope restoration, source evidence, original error
+spans and alias reuse remain intact. Check/build stay silent while normal module
+startup and function-scoped required input reads retain their existing contracts.
 
-Selected boolean-result block operands, empty/null/float/text results, scalar-primary
-records, mutable scratch, whole-module namespaces, fallback arms and helpers remain
-separate. Skipped documentation retains its existing unanalyzed-declaration gate.
+The user is editing `docs/`; no docs directory was changed for this compiler slice.
+The detailed computed-type guide update is deferred. Compiler README and STATUS are
+current. The proof package remains a specification and was not implemented here.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -132,25 +132,23 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `803eda8`: comparison extraction; 800 library/832 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-comparison-refactor.log`.
-- `00f68eb`: deferred block comparisons; 802 library/833 native tests, fmt and
-  Clippy passed. Log: `/tmp/meowy-block-comparisons.log`.
-- `287459d`: integration; 805 library/835 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-block-comparisons-integration.log`.
-- Five block-comparison checker tests and three native groups cover all relations,
-  deferred/known widths, exact work, structural bounds, scope, source costs/errors,
-  skipped values/types, documentation and module/function staging.
-- Block-comparison guide prints `7` in debug/release:
-  `/tmp/meowy-block-comparisons-doc-c7rut46c/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 805
-  library/835 native Rust tests (1640 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-block-comparisons-gate.log`.
+- `705c2dc`: shared operand-block validation; 806 library/835 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-boolean-block-form.log`.
+- `d5f51db`: boolean logical block execution; 808 library/836 native tests, fmt and
+  Clippy passed. Log: `/tmp/meowy-logical-blocks.log`.
+- `321502a`: integration; 810 library/838 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-logical-blocks-integration.log`.
+- Four boolean-block checker tests and three native groups cover logical truth tables,
+  matcher conditions, kind/scope gates, exact work, depth, source errors, alias reuse,
+  skipped metadata and module/function staging. The shared-form test checks no resolution.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 810
+  library/838 native Rust tests (1648 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-logical-blocks-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
-  catalog/schema and whitespace checks passed. Full release qualification remains open.
+  catalog/schema and whitespace checks passed. No detailed guide was edited/executed.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. Evaluator/record bounds are not native support guarantees.
+  remains open. Preserve the user's uncommitted `docs/` edits.
 
 ## Prior capabilities and other areas
 
@@ -209,7 +207,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, required boolean-result block operands, helper
+Whole-record module inputs, conditional module exports, direct boolean block equality, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -217,31 +215,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: required boolean form checking has no block case, while execution already
-short-circuits logical operators. Reuse comparison block statement validation and
-`scalar_block(..., boolean)` for selected operands. The block form has an expected
-boolean context; its local initializers remain deferred until execution. Grouped
-negation must use `!({ ... })`; bare `!{ ... }` is the existing unchecked-block syntax.
+Boolean logical blocks are complete across `705c2dc` (shared forms), `d5f51db`
+(execution) and `321502a` (integration). The final compiler gate passes; detailed
+guide changes remain deferred while the user edits documentation.
 
-Dependency-ordered commit plan:
+Next, investigate direct boolean block equality (`==` and `!=`). Trace
+`block_comparison_form`, `required_comparison`, `boolean_form` and `required_boolean`.
+A comparison with unresolved block kinds must not guess integer or execute a skipped
+operand for its type. Preserve known outer type checks and exact scalar matching.
+Record dependency-ordered commits:
 
-1. Complete: common operand-block statement validation preserves comparison diagnostics
-   and structural accounting. 806 library/835 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-boolean-block-form.log`. Committed as `705c2dc`.
-2. Complete: boolean block forms/execution support `!`, `&&`, `||` and required
-   matcher conditions. 808 library/836 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-logical-blocks.log`. Committed as `d5f51db`.
-3. Complete: exact selected/skipped visits, 62/63 nested execution boundary, scope
-   restoration, metadata, source work/alias reuse, errors and module/function staging
-   pass 810 library/838 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-logical-blocks-integration.log`.
-4. Update compiler README/handoffs and run the final compiler gate across the series.
-   The user is editing `docs/`; leave all docs directories untouched this turn.
-   Record any detailed guide update for a later documentation pass.
+1. Share deferred comparison operand validation for integer/boolean contexts, keeping
+   arithmetic integer-only and ordered comparisons restricted to their supported kinds.
+2. Materialize selected equality operands once, choose integer/boolean equality from
+   checked kinds and preserve source order, short circuits and mismatch diagnostics.
+3. Verify budgets, scopes, errors and staging; update compiler handoffs and run the
+   full compiler gate. Keep detailed guide edits deferred while the user edits docs.
 
-Keep direct boolean block equality/comparison disambiguation, empty/null results,
-scalar-primary records, skipped documented declarations, fallback arms, mutable/
-float/text/reference fields, whole-module records and helpers separate. The proof
-package remains a specified future API, not part of this implementation. Do not push.
-
-Unrelated documentation edits appeared during this work; preserve them unstaged.
+Keep empty/null results, scalar-primary records, skipped documented declarations,
+fallback arms, mutable/float/text/reference fields, whole-module records and helpers
+separate. Proof implementation requires its own plan. Do not push or touch `docs/`.

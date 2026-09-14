@@ -76,9 +76,13 @@ width or boolean kind without runtime storage. Required integer arithmetic can e
 block operands once in source order, with contextual widths and shared checked operators;
 active required roots also accept those operands in list extents. Integer comparisons
 accept block operands with bounded structural validation and deferred local values/widths;
-short-circuited blocks do no evaluation work. Boolean-result block operands, float/text
-comparisons, empty composition sources, mutable scratch, whole-module records and helpers
-remain separate.
+short-circuited blocks do no evaluation work. Boolean-result blocks also work in
+required `!`, `&&`, `||` and matcher conditions. Their statement forms are checked
+without resolving local initializers; selected results must be boolean and retain
+source errors and shared budgets. Use `!({ -> false })` for negation; `!{ ... }`
+retains its unchecked-block meaning. Direct boolean block equality, float/text
+comparisons, empty composition sources, mutable scratch, whole-module records and
+helpers remain separate.
 
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the
