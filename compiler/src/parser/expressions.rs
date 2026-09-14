@@ -131,10 +131,37 @@ impl Parser {
                 }
                 if self.at("<") {
                     if self.specialized_call() {
-                        return Err(Diagnostic::unsupported(
-                            "generic call specialization",
-                            self.token().span,
-                        ));
+                        self.need("<")?;
+                        let mut types = Vec::new();
+                        loop {
+                            self.newlines();
+                            if self.token().kind == TokenKind::Int {
+                                return Err(Diagnostic::unsupported(
+                                    "value arguments in generic calls",
+                                    self.token().span,
+                                ));
+                            }
+                            if types.len() == 64 {
+                                return Err(Diagnostic::unsupported(
+                                    "explicit type arguments beyond 64 entries",
+                                    self.token().span,
+                                ));
+                            }
+                            types.push(self.type_atom()?);
+                            self.newlines();
+                            if self.take(">") {
+                                break;
+                            }
+                            self.need(",")?;
+                        }
+                        left = Expr {
+                            kind: ExprKind::Specialize {
+                                value: Box::new(left),
+                                types,
+                            },
+                            span: Span::new(start, self.end()),
+                        };
+                        continue;
                     }
                     let save = self.pos;
                     self.bump();
@@ -150,10 +177,20 @@ impl Parser {
                     if !condition || min <= 40 {
                         if let Ok(ty) = self.type_union() {
                             if self.at("(") {
-                                return Err(Diagnostic::unsupported(
-                                    "generic call specialization",
-                                    Span::new(start, self.end()),
-                                ));
+                                if matches!(ty.kind, crate::ast::TypeKind::Union(_)) {
+                                    return Err(Diagnostic::unsupported(
+                                        "union suffixes in generic calls; use a named type argument",
+                                        ty.span,
+                                    ));
+                                }
+                                left = Expr {
+                                    kind: ExprKind::Specialize {
+                                        value: Box::new(left),
+                                        types: vec![ty],
+                                    },
+                                    span: Span::new(start, self.end()),
+                                };
+                                continue;
                             }
                             if condition && is_comparison(&left) {
                                 return Err(Diagnostic::new(

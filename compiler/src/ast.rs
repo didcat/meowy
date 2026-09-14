@@ -111,6 +111,10 @@ pub enum ExprKind {
         ty: TypeExpr,
         predicate: bool,
     },
+    Specialize {
+        value: Box<Expr>,
+        types: Vec<TypeExpr>,
+    },
     TypeQuery(Box<Expr>),
     TypeValue(TypeExpr),
     List(Vec<Expr>),

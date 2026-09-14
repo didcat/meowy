@@ -97,6 +97,12 @@ impl<'a> Scan<'a> {
                     self.push(Node::Expr(value))?;
                     self.push(Node::Type(ty))?;
                 }
+                ExprKind::Specialize { value, types } => {
+                    self.push(Node::Expr(value))?;
+                    for ty in types {
+                        self.push(Node::Type(ty))?;
+                    }
+                }
                 ExprKind::TypeValue(ty) => self.push(Node::Type(ty))?,
                 ExprKind::List(values) => {
                     for value in values {

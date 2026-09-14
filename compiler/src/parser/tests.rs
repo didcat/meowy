@@ -158,7 +158,7 @@ pub(crate) fn interpolation_has_absolute_spans_and_nested_strings() {
 #[test]
 pub(crate) fn rejects_unavailable_generics_and_malformed_delimiters() {
     assert_eq!(parse("f<:T>:(x<T>){->x}").unwrap_err()[0].code, "B001");
-    assert_eq!(parse("f<int32>(1)").unwrap_err()[0].code, "B001");
+    assert_eq!(crate::compile("f<int32>(1)").unwrap_err()[0].code, "B001");
     assert_eq!(parse("bytes.filled<4>(0)").unwrap_err()[0].code, "B001");
     assert_eq!(parse("x:(1]").unwrap_err()[0].code, "E002");
     assert!(parse("|true|f();||g()").is_err());
@@ -275,4 +275,64 @@ pub(crate) fn exported_types_keep_invalid_and_labeled_declarations_gated() {
         parse("'out{'out-><T>:<int32>}").unwrap_err()[0].code,
         "B001"
     );
+}
+
+#[test]
+pub(crate) fn explicit_type_calls_retain_arguments_and_source_spans() {
+    let source = "f<uint32, &int32[2]>(7, 8)";
+    let ExprKind::Call { callee, args } = value(source).kind else {
+        panic!()
+    };
+    assert_eq!(args.len(), 2);
+    assert_eq!(&source[args[0].span.start..args[0].span.end], "7");
+    let ExprKind::Specialize {
+        value: callee,
+        types,
+    } = callee.kind
+    else {
+        panic!()
+    };
+    assert!(matches!(callee.kind, ExprKind::Name(ref name) if name == "f"));
+    assert_eq!(types.len(), 2);
+    assert_eq!(&source[types[0].span.start..types[0].span.end], "uint32");
+    assert_eq!(&source[types[1].span.start..types[1].span.end], "&int32[2]");
+    for source in [
+        "f < uint32 > ()",
+        "p.can_copy<uint32>()",
+        "f<{n<int32>}>()",
+        "f<(kind)>()",
+    ] {
+        let ExprKind::Call { callee, .. } = value(source).kind else {
+            panic!("{source}")
+        };
+        assert!(
+            matches!(callee.kind, ExprKind::Specialize { .. }),
+            "{source}"
+        );
+    }
+}
+
+#[test]
+pub(crate) fn explicit_type_calls_preserve_suffix_context_and_limits() {
+    assert!(matches!(value("x<uint32>").kind, ExprKind::Ascribe { .. }));
+    assert!(matches!(value("x<>").kind, ExprKind::TypeQuery(_)));
+    assert!(matches!(value("x < y").kind, ExprKind::Binary { ref op, .. } if op == "<"));
+    assert!(matches!(
+        value("f<uint32>()<>").kind,
+        ExprKind::TypeQuery(_)
+    ));
+    let args = std::iter::repeat_n("int32", 64)
+        .collect::<Vec<_>>()
+        .join(",");
+    assert!(parse(&format!("f<{args}>()")).is_ok());
+    assert_eq!(
+        parse(&format!("f<{args},int32>()")).unwrap_err()[0].code,
+        "B001"
+    );
+    assert_eq!(
+        parse(&format!("f{}", "<int32>()".repeat(140))).unwrap_err()[0].code,
+        "B001"
+    );
+    assert_eq!(parse("f<int32><null>()").unwrap_err()[0].code, "B001");
+    assert!(parse("f<int32,>()").is_err());
 }

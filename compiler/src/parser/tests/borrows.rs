@@ -121,7 +121,14 @@ pub(crate) fn borrow_type_suffixes_apply_to_the_reference() {
         panic!()
     };
     assert_eq!(tree(arms[0].0.as_ref().unwrap()), "(ascribe true (& x))");
-    assert_eq!(parse("r.&f<int32>()").unwrap_err()[0].code, "B001");
+    let ExprKind::Call { callee, .. } = value("r.&f<int32>()").kind else {
+        panic!()
+    };
+    let ExprKind::Specialize { value, .. } = callee.kind else {
+        panic!()
+    };
+    assert_eq!(tree(&value), "(& (field r f))");
+    assert_eq!(crate::compile("r.&f<int32>()").unwrap_err()[0].code, "B001");
 }
 
 #[test]

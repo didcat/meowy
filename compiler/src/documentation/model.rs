@@ -420,6 +420,14 @@ impl Model {
                 self.walk_expr(source, parsed, value, None, stage, depth + 1)?;
                 self.walk_block(source, parsed, block, None, false, depth + 1)?;
             }
+            ExprKind::Specialize { value, types } => {
+                self.walk_expr(source, parsed, value, parent, stage, depth + 1)?;
+                if let Some(id) = parent {
+                    for ty in types {
+                        self.walk_type(source, parsed, ty, id, stage, depth + 1)?;
+                    }
+                }
+            }
             ExprKind::Ascribe { value, ty, .. } => {
                 self.walk_expr(source, parsed, value, parent, stage, depth + 1)?;
                 if let Some(id) = parent {

@@ -385,6 +385,12 @@ impl Checker {
                     expr.span,
                 ));
             }
+            ExprKind::Specialize { .. } => {
+                return Err(Diagnostic::unsupported(
+                    "generic call specialization",
+                    expr.span,
+                ));
+            }
             ExprKind::Unsupported(feature) => {
                 return Err(Diagnostic::unsupported(feature, expr.span));
             }

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Proof revision metadata and descriptor type aliases are implemented.
+Updated: 2026-09-14. Proof revision metadata and descriptor type aliases are implemented.
 Proof queries remain unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -71,6 +71,35 @@ observation is constructed. The reference remains authoritative.
   to an owning source. E224 also needs deterministic query origins, required/actual
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
+
+### Deferred query prerequisites
+
+Current tracing found a missing dependency: `parser/expressions.rs` rejects explicit
+`callee<T>()` syntax before checker dispatch. `Value` and `Spec` already separate
+runtime data from static descriptor names, but no source query can currently reach
+that boundary. Retaining type-call arguments must precede pending result values.
+
+Dependency-ordered slices for this continuation:
+1. Preserve explicit type-call suffixes in a bounded AST node, including spans and
+   existing module/documentation traversal. Keep generic evaluation unsupported;
+   test type queries, ascriptions, comparisons, argument ordering and nesting.
+2. Validate graph discovery, source diagnostics and documentation traversal for
+   retained arguments. No imported initializer or argument may execute at check.
+3. Connect resolved type-only copy-query declarations to pending metadata and the
+   post-ownership gate. Preserve copies/origins without inventing an active outcome;
+   ordinary program errors precede the unsupported evaluator diagnostic. Keep
+   flags, assertions, query evaluation and runtime storage gated. Run the full gate.
+
+Parser implementation is local. One old borrowed-callee test expected parser
+rejection; it now checks the retained reference shape and the checker B001 gate.
+All 28 parser tests pass; log: `/tmp/meowy-type-call-parser.log`.
+No outstanding parser failures. Next: graph/documentation integration tests. This slice touches nine files because the new
+AST node requires parser/bounds, exhaustive checker/import visitors, documentation
+traversal and both existing parser test groups together; separating those would
+leave an unhandled node or a failing test. The slice remains under 200 changed lines.
+
+No result representation has been added yet. Parser work is the immediate step;
+result outcomes, canonical origin sets and logical accounting remain separate.
 
 ### Descriptor identity slice
 

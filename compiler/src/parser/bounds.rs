@@ -32,6 +32,7 @@ pub(crate) fn bounded_tree(expr: &Expr) -> bool {
                 | ExprKind::Group(value)
                 | ExprKind::Field { value, .. }
                 | ExprKind::Ascribe { value, .. }
+                | ExprKind::Specialize { value, .. }
                 | ExprKind::TypeQuery(value) => pending.push((TreeNode::Expr(value), depth)),
                 ExprKind::Binary { left, right, .. } => {
                     pending.push((TreeNode::Expr(left), depth));
