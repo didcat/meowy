@@ -238,6 +238,7 @@ mod integration {
                     visits,
                     depth,
                     nodes: 0,
+                    ..Work::default()
                 });
                 let result = checker.type_boolean(value, None);
                 if accepted {

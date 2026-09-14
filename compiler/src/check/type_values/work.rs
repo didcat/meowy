@@ -1,6 +1,6 @@
 use super::{MAX_DEPTH, MAX_NODES, MAX_WORK};
 use crate::ast::Span;
-use crate::check::{Checker, Result, inputs::Input};
+use crate::check::{Checker, Result, inputs::Input, required::Budget};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
@@ -9,6 +9,7 @@ pub(crate) struct Work {
     pub(crate) visits: usize,
     pub(crate) depth: usize,
     pub(crate) nodes: usize,
+    pub(crate) logical: Budget,
 }
 
 impl Work {
@@ -49,7 +50,7 @@ impl Work {
         if self.nodes > MAX_NODES {
             return Err(Self::budget(span));
         }
-        Ok(())
+        self.logical.charge(1, 1)
     }
 
     pub(crate) fn materialize(&mut self, ty: &Type, span: Span) -> Result<()> {
@@ -78,13 +79,24 @@ impl Work {
 impl Checker {
     pub(crate) fn required_root<T>(
         &mut self,
+        span: Span,
         run: impl FnOnce(&mut Self) -> Result<T>,
     ) -> Result<T> {
         let root = self.type_work.is_none();
         if root {
-            self.type_work = Some(Work::default());
+            self.type_work = Some(Work {
+                logical: Budget {
+                    root: span,
+                    ..Budget::default()
+                },
+                ..Work::default()
+            });
         }
         let result = run(self);
+        let result = match &self.type_work.as_ref().unwrap().logical.failure {
+            Some(error) => Err(error.clone()),
+            None => result,
+        };
         if root {
             self.type_work = None;
         }
@@ -101,9 +113,9 @@ mod tests {
         let mut checker = Checker::new();
         let span = Span::new(3, 7);
         let error = checker
-            .required_root(|checker| {
+            .required_root(span, |checker| {
                 checker.type_work.as_mut().unwrap().spend(span)?;
-                let result: Result<()> = checker.required_root(|checker| {
+                let result: Result<()> = checker.required_root(span, |checker| {
                     checker.type_work.as_mut().unwrap().spend(span)?;
                     Err(Checker::error("E107", "original failure", span))
                 });
@@ -115,11 +127,65 @@ mod tests {
         assert_eq!(error.span, span);
         assert!(checker.type_work.is_none());
         checker
-            .required_root(|checker| {
+            .required_root(span, |checker| {
                 assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
                 checker.type_work.as_mut().unwrap().spend(span)
             })
             .unwrap();
         assert!(checker.type_work.is_none());
+    }
+    #[test]
+    pub(crate) fn logical_type_materialization_shares_origin_and_counts_repeated_nodes() {
+        let span = Span::new(10, 40);
+        let inner = Span::new(20, 30);
+        let ty = Type::List {
+            element: Box::new(Type::Bool),
+            capacity: 2,
+        };
+        let mut checker = Checker::new();
+        checker
+            .required_root(span, |checker| {
+                checker.type_work.as_mut().unwrap().materialize(&ty, span)?;
+                checker.required_root(inner, |checker| {
+                    checker.type_work.as_mut().unwrap().materialize(&ty, inner)
+                })?;
+                let budget = &checker.type_work.as_ref().unwrap().logical;
+                assert_eq!(budget.root, span);
+                assert_eq!((budget.steps, budget.types), (4, 4));
+                Ok(())
+            })
+            .unwrap();
+        assert!(checker.type_work.is_none());
+    }
+
+    #[test]
+    pub(crate) fn logical_type_failure_cannot_be_swallowed_and_resets_next_root() {
+        let span = Span::new(10, 40);
+        let mut checker = Checker::new();
+        let error = checker
+            .required_root(span, |checker| {
+                checker.type_work.as_mut().unwrap().logical.types =
+                    crate::check::required::MAX_TYPES;
+                let error = checker.type_work.as_mut().unwrap().node(span).unwrap_err();
+                assert_eq!(error.code, "E220");
+                Ok(())
+            })
+            .unwrap_err();
+        assert_eq!(error.span, span);
+        assert!(checker.type_work.is_none());
+        checker
+            .required_root(Span::new(50, 60), |checker| {
+                let work = checker.type_work.as_mut().unwrap();
+                assert_eq!((work.logical.steps, work.logical.types), (0, 0));
+                work.node(span)
+            })
+            .unwrap();
+        assert!(checker.type_work.is_none());
+        let mut work = Work {
+            nodes: MAX_NODES,
+            ..Work::default()
+        };
+        assert_eq!(work.node(span).unwrap_err().code, "B001");
+        assert_eq!(work.logical.types, 0);
     }
 }

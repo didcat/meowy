@@ -162,6 +162,7 @@ mod integration {
                         visits: MAX_WORK - 3,
                         nodes: MAX_NODES - 3,
                         depth: 0,
+                        ..Work::default()
                     },
                     true,
                 ),

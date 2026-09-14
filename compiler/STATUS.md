@@ -95,7 +95,22 @@ Dependency-ordered commits:
 Root lifetime extraction passes the same 111 baseline tests plus a new nested
 sharing/error-cleanup regression (112 total). Log: `/tmp/meowy-required-root-after.log`.
 Bootstrap counts and diagnostics are unchanged. Next: the independent type ledger.
-No claim of complete revision 1 accounting is made.
+Refactor commit: `5d03d9b`. The type ledger is implemented locally: independent
+step/type counters, original root span, atomic checked additions and sticky E220
+failures. Work.node charges one step/type after the existing bootstrap guard.
+Existing test snapshots require default initialization of the new ledger field;
+those struct literals must change with the field to keep the commit buildable.
+Two additional full Work literals were found by the compiler and now initialize
+the new field. This field change requires all nine existing snapshot-test files
+in the same buildable slice; splitting their defaults from the new field would
+produce either missing-field errors or needless-update lint failures. The logical
+root gate also preserves a caught budget failure so hints cannot suppress E220.
+All 223 checker tests pass (`/tmp/meowy-logical-type-ledger.log`). The slice is
+under 300 changed lines across 14 files; nine test modules directly initialize
+Work and must provide its new field in the same buildable change. Next: source
+root/metadata integration checks and documentation, then the full compiler gate.
+Logical type limits are internally boundary-tested; source programs still hit
+lower bootstrap limits first. No claim of complete revision 1 accounting is made.
 
 ### Deferred copy-query integration
 

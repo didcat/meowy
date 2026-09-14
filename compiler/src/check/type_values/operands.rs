@@ -195,6 +195,7 @@ mod tests {
                 visits,
                 depth,
                 nodes: 0,
+                ..Work::default()
             });
             let result = checker.integer_arithmetic(value, None);
             if accepted {

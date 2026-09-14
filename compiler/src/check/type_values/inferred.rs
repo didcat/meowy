@@ -154,6 +154,7 @@ mod tests {
                 visits,
                 nodes,
                 depth: 0,
+                ..Work::default()
             });
             let result = checker.inferred_block(value);
             if accepted {

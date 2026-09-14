@@ -11,6 +11,7 @@ mod names;
 mod queries;
 mod references;
 mod refinement;
+mod required;
 mod scalars;
 mod statements;
 mod temporaries;

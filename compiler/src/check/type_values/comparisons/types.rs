@@ -158,6 +158,7 @@ mod work {
                         visits: MAX_WORK - visits,
                         nodes: MAX_NODES - nodes,
                         depth: 0,
+                        ..Work::default()
                     },
                     true,
                 ),

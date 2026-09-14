@@ -113,6 +113,7 @@ mod tests {
                 visits,
                 nodes,
                 depth: 0,
+                ..Work::default()
             });
             let result = checker.partial_record(value, &ty);
             if accepted {

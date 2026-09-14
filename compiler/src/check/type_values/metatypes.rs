@@ -33,7 +33,9 @@ impl Checker {
     }
 
     pub(crate) fn meta_binding(&mut self, expr: &Expr, annotation: &TypeExpr) -> Result<Value> {
-        self.required_root(|checker| checker.meta_binding_inner(expr, annotation))
+        self.required_root(expr.span, |checker| {
+            checker.meta_binding_inner(expr, annotation)
+        })
     }
 
     pub(crate) fn meta_binding_inner(
@@ -151,6 +153,7 @@ mod integration {
                 visits,
                 nodes,
                 depth: 0,
+                ..Work::default()
             });
             let result = checker.type_binding(value, ty.as_ref());
             if accepted {
@@ -241,6 +244,7 @@ mod roots {
             visits: 100,
             nodes: 200,
             depth: 3,
+            ..Work::default()
         });
         checker.meta_binding(value, ty.as_ref().unwrap()).unwrap();
         let work = checker.type_work.as_ref().unwrap();

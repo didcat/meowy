@@ -128,6 +128,7 @@ pub(crate) fn block_type_equality_charges_selected_work_and_restores_budget_fail
                     visits: MAX_WORK - visits,
                     nodes: MAX_NODES - nodes,
                     depth: 0,
+                    ..Work::default()
                 },
                 true,
             ),
