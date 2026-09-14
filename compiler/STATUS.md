@@ -232,8 +232,11 @@ Dependency-ordered commit plan:
 2. Complete: deferred equality forms preserve known outer kinds and select integer/
    boolean execution from materialized values. Logical contexts and ordered comparisons
    remain separate. 813 library/839 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-block-equality.log`.
-3. Verify short circuits, mixed kinds, exact work, scopes, source errors and staging.
+   Log: `/tmp/meowy-block-equality.log`. Committed as `95d3180`.
+3. Complete: exact selected/skipped work, mixed kinds, scope restoration, eager RHS
+   reads, original errors, alias reuse, metadata and module/function staging pass
+   815 library/841 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-block-equality-integration.log`.
 4. Update the equality guide and previously deferred logical-block guide, run their
    examples in both profiles, update handoffs and run the final compiler gate.
 

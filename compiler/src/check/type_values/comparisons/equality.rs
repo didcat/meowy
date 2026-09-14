@@ -184,3 +184,88 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod integration {
+    use super::*;
+    use crate::ast::StmtKind;
+    use crate::check::type_values::{MAX_DEPTH, MAX_WORK, Work};
+
+    #[test]
+    pub(crate) fn block_equality_preserves_selected_work_and_restores_failed_state() {
+        for (source, expected, cost) in [
+            ("({->false})==({->false})", true, 11),
+            ("({->false})!=({->true})", true, 11),
+            ("({local:true;->local})==({->true})", true, 13),
+            ("false&&(({->missing()})==true)", false, 2),
+        ] {
+            let parsed = crate::parser::parse(&format!("flag:{source}")).unwrap();
+            let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+                panic!("binding")
+            };
+            let mut checker = Checker::new();
+            checker.type_work = Some(Work::default());
+            let scopes = checker.scopes.len();
+            checker.boolean_form(value, 0, &mut 0).unwrap();
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+            assert!(
+                matches!(checker.type_boolean(value,None).unwrap(),Value::Static {value:Constant::Bool(found),..} if found==expected)
+            );
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, cost, "{source}");
+            for (visits, depth, accepted) in [
+                (MAX_WORK - cost, 0, true),
+                (MAX_WORK - cost + 1, 0, false),
+                (0, MAX_DEPTH, false),
+            ] {
+                checker.type_work = Some(Work {
+                    visits,
+                    depth,
+                    nodes: 0,
+                });
+                let result = checker.type_boolean(value, None);
+                if accepted {
+                    assert!(result.is_ok(), "{:?}", result.err());
+                } else {
+                    assert_eq!(result.err().unwrap().code, "B001");
+                }
+                assert_eq!(checker.scopes.len(), scopes);
+                assert_eq!(checker.type_work.as_ref().unwrap().depth, depth);
+                assert!(!checker.required);
+            }
+            assert!(checker.locals.is_empty());
+        }
+    }
+
+    #[test]
+    pub(crate) fn block_equality_preserves_error_order_and_documents_boolean_results() {
+        for (expr, failed) in [
+            ("({->false})==({->bad})", "raw.n+1"),
+            ("({->true})!=({->bad})", "raw.n+1"),
+            ("({->false;tail:1/0})==({->bad})", "1/0"),
+            ("({->bad})==({->false;tail:1/0})", "raw.n+1"),
+        ] {
+            let source =
+                format!("raw:{{->n<uint8>:255}};bad:raw.n+1==0;<T>:{{flag:{expr};-><int32>}}");
+            let error = crate::compile(&source).unwrap_err().remove(0);
+            assert_eq!(error.code, "E107");
+            assert_eq!(error.span.start, source.find(failed).unwrap());
+        }
+        let source = "#| Items. |#<T>:{#| Same. |#flag:({#| Local. |#local:true;->local})==true;|flag|-><int32[4]>;|!flag|-><string>}";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [("flag", "boolean"), ("local", "boolean"), ("T", "int32[4]")] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+        let source = "<T>:{flag:false&&(({#| Skipped. |#local:true;->local})==true);-><int32>}";
+        assert_eq!(
+            crate::documentation::checked(source, true).unwrap_err()[0].code,
+            "B001"
+        );
+    }
+}
