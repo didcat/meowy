@@ -22,8 +22,10 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 Required `==`/`!=` now compares normalized type identity for literals, supported
 queries, aliases and explicitly exported type values. Both operands preserve source
 errors and input work; short-circuiting skips constructors. Required type values and
-comparison results create no runtime storage. Bare block comparisons remain scalar;
-computed type-block operands use `<(expression)>`.
+comparison results create no runtime storage. Bare blocks now infer type payloads
+for equality with other blocks or known types; scalar contexts retain E207 checks.
+The behavior slice `f2a1962` passes 838 library/862 native tests, fmt and Clippy.
+Skip/source/budget integration and the final gate are in progress.
 
 Commits: `2c4c26a` (comparison), `b7591ab` (integration evidence).
 The [guide](compiler/docs/COMPUTED_TYPES.md#type-value-equality) covers syntax,

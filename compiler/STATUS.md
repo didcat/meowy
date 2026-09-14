@@ -44,7 +44,12 @@ that same diagnostic correction. Original constructor failures remain intact.
 
 All 838 library/862 native tests, fmt and Clippy pass.
 Log: `/tmp/meowy-type-blocks-slice1.log`. No outstanding failures.
-Next: commit slice 1, then add skip/source/work integration evidence.
+Slice 1 committed as `f2a1962`. Slice 2 adds structural skip/outer-name checks,
+work/node/depth and failed-state bounds, imported identity/startup/privacy,
+first-error source spans, repeated inputs/independent roots and runtime/helper gates.
+Five checker/five native groups, fmt and Clippy pass.
+Log: `/tmp/meowy-type-blocks-slice2.log`. No outstanding failures.
+Next: commit integration evidence, update docs and run the full compiler gate.
 
 ## Current compiler slice
 
