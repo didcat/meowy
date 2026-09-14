@@ -5,6 +5,7 @@ mod fields;
 mod inferred;
 mod integers;
 mod matches;
+mod metatypes;
 mod operands;
 mod records;
 mod scalars;
@@ -263,6 +264,11 @@ impl Checker {
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
+        if let Some(annotation) = annotation
+            && self.meta_annotation(annotation)?
+        {
+            return self.meta_binding(expr, annotation);
+        }
         let mut form = expr;
         while let ExprKind::Group(value) = &form.kind {
             form = value;

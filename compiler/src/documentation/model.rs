@@ -222,7 +222,15 @@ impl Model {
                 } else {
                     Kind::Binding
                 };
-                let id = self.add(name, kind, stmt.span, stage, parent, public, None)?;
+                let id = self.add(
+                    name,
+                    kind,
+                    stmt.span,
+                    stage,
+                    parent,
+                    public,
+                    ty.as_ref().map(|ty| ty.span.start),
+                )?;
                 if let Some(ty) = ty {
                     self.walk_type(source, parsed, ty, id, stage, depth + 1)?;
                 }

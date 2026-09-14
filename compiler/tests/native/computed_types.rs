@@ -295,3 +295,8 @@ pub(crate) fn initializer_blocks_charge_cached_dependencies_and_unused_tail_work
         assert!(error.contains("computed type bootstrap budget"), "{error}");
     }
 }
+
+#[test]
+pub(crate) fn explicit_type_bindings_construct_native_types_without_type_storage() {
+    super::file_modules::case("c:@\"core\";<Kind>:<c.Type>;<Items>:{base<Kind>:<int32>;element<Type>:{->base};-><(element)[4]>};v<Items>:[3,7];d:@\"debug\";d.print(v[2])",&[]).runs(b"7\n");
+}

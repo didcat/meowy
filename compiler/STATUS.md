@@ -225,9 +225,11 @@ Dependency-ordered commit plan:
 1. Complete: `Spec::Meta` resolves core/prelude and alias type names without entering
    runtime HIR. Storage uses reject E211; function/metatype-value support remains B001.
    817 library/841 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-metatype-spec.log`.
-2. Accept simple named metatype annotations in required bindings, materialize their
-   type-valued initializer once, retain metadata/node accounting and test execution.
+   Log: `/tmp/meowy-metatype-spec.log`. Committed as `8ba36b3`.
+2. Complete: named metatype annotations retain Value::Type payloads, exact result
+   checks, one charged meta node and core.Type documentation signatures. Binding
+   annotation spans are retained. 820 library/842 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-metatype-bindings.log`.
 3. Verify aliases/imported metatype identities, scope, errors, budgets and staging;
    update guides/handoffs and run the final compiler gate in a separate doc slice.
 

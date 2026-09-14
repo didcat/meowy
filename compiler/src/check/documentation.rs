@@ -37,6 +37,12 @@ impl Checker {
                         None => String::new(),
                     }
                 }
+                _ if entry
+                    .type_at
+                    .is_some_and(|at| model.types.get(&at).is_some_and(|ty| ty == "core.Type")) =>
+                {
+                    "core.Type".into()
+                }
                 _ => {
                     let value = self
                         .scopes
