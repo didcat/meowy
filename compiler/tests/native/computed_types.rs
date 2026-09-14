@@ -300,3 +300,75 @@ pub(crate) fn initializer_blocks_charge_cached_dependencies_and_unused_tail_work
 pub(crate) fn explicit_type_bindings_construct_native_types_without_type_storage() {
     super::file_modules::case("c:@\"core\";<Kind>:<c.Type>;<Items>:{base<Kind>:<int32>;element<Type>:{->base};-><(element)[4]>};v<Items>:[3,7];d:@\"debug\";d.print(v[2])",&[]).runs(b"7\n");
 }
+
+#[test]
+pub(crate) fn metatype_alias_exports_keep_identity_and_silent_module_staging() {
+    let case = super::file_modules::case(
+        "m:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");v<m.Items>:[3,7];d.print(v[2])",
+        &[
+            (
+                "kind.mwy",
+                "c:@\"core\";d:@\"debug\";d.print(\"kind\");-><Kind>:<c.Type>;-><Element>:<int32>;->width<uint8>:4",
+            ),
+            (
+                "facade.mwy",
+                "m:@\"./kind.mwy\";-><Kind>:<m.Kind>;-><Element>:<m.Element>;->m",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./facade.mwy\";d:@\"debug\";d.print(\"types\");-><Items>:{element<m.Kind>:<m.Element>;result<m.Kind>:{-><(element)[m.width]>};->result}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        let output = case.command(action, &[]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty());
+    }
+    case.runs(b"kind\ntypes\nentry\n7\n");
+    super::file_modules::case("m:@\"./kind.mwy\";f<int32>:(){<T>:{element<m.Kind>:<int32>;-><(element)[4]>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())",&[("kind.mwy","c:@\"core\";-><Kind>:<c.Type>")]).runs(b"9\n");
+    super::file_modules::case(
+        "m:@\"./fake.mwy\";<T>:{n<m.Type>:4;-><int32[n]>};v<T>:[7];d:@\"debug\";d.print(v[1])",
+        &[("fake.mwy", "-><Type>:<uint8>")],
+    )
+    .runs(b"7\n");
+}
+
+#[test]
+pub(crate) fn metatype_bindings_preserve_private_names_and_initializer_error_spans() {
+    let data = "#é🙂#\nc:@\"core\";<Private>:<c.Type>;-><Kind>:<c.Type>;raw:{->n<uint8>:255};->bad:raw.n+1";
+    for (body, code) in [
+        ("kind<m.Kind>:{n:m.bad;-><int32[n]>}", "E107"),
+        ("kind<m.Private>:{-><int32>}", "E202"),
+        ("kind<m.Kind>:m.bad", "E107"),
+    ] {
+        let case = super::file_modules::case(
+            &format!("m:@\"./kind.mwy\";<T>:{{{body};-><int32>}}"),
+            &[("kind.mwy", data)],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
+            if code == "E107" {
+                assert!(
+                    error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                    "{error}"
+                );
+                assert!(
+                    error.contains(&format!(
+                        "\"path\":\"{}\"",
+                        case.path.join("kind.mwy").display()
+                    )),
+                    "{error}"
+                );
+            }
+        }
+    }
+}

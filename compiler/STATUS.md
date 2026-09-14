@@ -229,9 +229,12 @@ Dependency-ordered commit plan:
 2. Complete: named metatype annotations retain Value::Type payloads, exact result
    checks, one charged meta node and core.Type documentation signatures. Binding
    annotation spans are retained. 820 library/842 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-metatype-bindings.log`.
-3. Verify aliases/imported metatype identities, scope, errors, budgets and staging;
-   update guides/handoffs and run the final compiler gate in a separate doc slice.
+   Log: `/tmp/meowy-metatype-bindings.log`. Committed as `b5e0681`.
+3. Complete: explicit metatype re-exports, aliases, fake-core names, function scopes,
+   privacy, source spans, skipped metadata and exact node/work boundaries pass
+   822 library/844 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-metatype-integration.log`.
+4. Update guides/handoffs, run the standalone guide and the final compiler gate.
 
 Keep first-class metatype values, type-of-type queries, type-producing helper functions,
 runtime type containers, generic helper execution, scalar-primary records and other

@@ -114,3 +114,71 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod integration {
+    use super::*;
+    use crate::ast::StmtKind;
+    use crate::check::type_values::{MAX_NODES, MAX_WORK, Work};
+
+    #[test]
+    pub(crate) fn metatype_bindings_charge_annotation_and_payload_without_data_locals() {
+        let parsed = crate::parser::parse("kind<Type>:<int32>").unwrap();
+        let StmtKind::Bind { value, ty, .. } = &parsed.stmts[0].kind else {
+            panic!("binding")
+        };
+        let mut checker = Checker::new();
+        checker.type_work = Some(Work::default());
+        assert!(matches!(
+            checker.type_binding(value, ty.as_ref()).unwrap(),
+            Value::Type(_)
+        ));
+        assert_eq!(checker.type_work.as_ref().unwrap().visits, 1);
+        assert_eq!(checker.type_work.as_ref().unwrap().nodes, 2);
+        for (visits, nodes, accepted) in [
+            (MAX_WORK - 1, MAX_NODES - 2, true),
+            (MAX_WORK, 0, false),
+            (0, MAX_NODES - 1, false),
+        ] {
+            checker.type_work = Some(Work {
+                visits,
+                nodes,
+                depth: 0,
+            });
+            let result = checker.type_binding(value, ty.as_ref());
+            if accepted {
+                assert!(result.is_ok(), "{:?}", result.err());
+            } else {
+                assert_eq!(result.err().unwrap().code, "B001");
+            }
+            assert_eq!(checker.type_work.as_ref().unwrap().depth, 0);
+            assert!(checker.locals.is_empty());
+        }
+    }
+
+    #[test]
+    pub(crate) fn metatype_bindings_preserve_selected_scope_and_skipped_annotations() {
+        crate::compile("<T>:{|false|unused<Missing>:{->unknown()};kind<Type>:{|true|-><int32>;|false|-><Missing>};->kind};v<T>:7").unwrap();
+        for (source, code) in [
+            (
+                "<T>:{kind<Type>:{-><int32>};copy<Type>:kind;copy<Type>:kind;->copy}",
+                "E203",
+            ),
+            ("<T>:{kind<Type>:{-><int32>;-><string>};->kind}", "E205"),
+            ("<T>:{kind<Type>:{|false|-><int32>};->kind}", "E211"),
+            ("<T>:{kind<Type>:<int32>;n:kind<>;->kind}", "B001"),
+            ("<T>:{kind<Type>:<int32>;->kind};outside:kind", "E201"),
+        ] {
+            assert_eq!(
+                crate::compile(source).unwrap_err()[0].code,
+                code,
+                "{source}"
+            );
+        }
+        let source = "<T>:{|false|unused:{#| Skipped. |#kind<Type>:<int32>;->kind};-><int32>}";
+        assert_eq!(
+            crate::documentation::checked(source, true).unwrap_err()[0].code,
+            "B001"
+        );
+    }
+}
