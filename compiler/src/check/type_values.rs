@@ -11,8 +11,11 @@ mod records;
 mod scalars;
 mod statements;
 mod subtraction;
+mod work;
 
-use super::{Checker, Result, Scope, Value, inputs::Input};
+pub(crate) use work::Work;
+
+use super::{Checker, Result, Scope, Value};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
@@ -35,96 +38,17 @@ impl Output {
     }
 }
 
-#[derive(Default)]
-pub(crate) struct Work {
-    pub(crate) visits: usize,
-    pub(crate) depth: usize,
-    pub(crate) nodes: usize,
-}
-
-impl Work {
-    pub(crate) fn budget(span: Span) -> Diagnostic {
-        Diagnostic::unsupported("computed type bootstrap budget exhausted", span)
-    }
-
-    pub(crate) fn spend(&mut self, span: Span) -> Result<()> {
-        self.visits += 1;
-        if self.visits > MAX_WORK {
-            return Err(Self::budget(span));
-        }
-        Ok(())
-    }
-
-    pub(crate) fn enter(&mut self, span: Span) -> Result<()> {
-        self.spend(span)?;
-        if self.depth == MAX_DEPTH {
-            return Err(Self::budget(span));
-        }
-        self.depth += 1;
-        Ok(())
-    }
-
-    pub(crate) fn input<T>(&mut self, input: &Input<T>, span: Span) -> Result<()> {
-        self.visits = self.visits.saturating_add(input.work);
-        if self.visits > MAX_WORK {
-            return Err(Self::budget(span));
-        }
-        match &input.error {
-            Some(error) => Err(error.clone()),
-            None => Ok(()),
-        }
-    }
-
-    pub(crate) fn node(&mut self, span: Span) -> Result<()> {
-        self.nodes += 1;
-        if self.nodes > MAX_NODES {
-            return Err(Self::budget(span));
-        }
-        Ok(())
-    }
-
-    pub(crate) fn materialize(&mut self, ty: &Type, span: Span) -> Result<()> {
-        let mut pending = vec![ty];
-        while let Some(ty) = pending.pop() {
-            self.node(span)?;
-            if pending.len() > MAX_NODES {
-                return Err(Self::budget(span));
-            }
-            match ty {
-                Type::Reference(ty) | Type::Exclusive(ty) | Type::List { element: ty, .. } => {
-                    pending.push(ty);
-                }
-                Type::Record { primary, fields } => {
-                    pending.push(primary);
-                    pending.extend(fields.iter().map(|field| &field.ty));
-                }
-                Type::Union(members) => pending.extend(members),
-                _ => {}
-            }
-        }
-        Ok(())
-    }
-}
-
 impl Checker {
     pub(crate) fn type_value(&mut self, expr: &ast::Expr) -> Result<Type> {
-        let root = self.type_work.is_none();
-        if root {
-            self.type_work = Some(Work::default());
-        }
-        let result = (|| {
-            self.type_work.as_mut().unwrap().enter(expr.span)?;
-            let result = self.type_value_inner(expr);
-            let work = self.type_work.as_mut().unwrap();
+        self.required_root(|checker| {
+            checker.type_work.as_mut().unwrap().enter(expr.span)?;
+            let result = checker.type_value_inner(expr);
+            let work = checker.type_work.as_mut().unwrap();
             work.depth -= 1;
             let ty = result?;
             work.materialize(&ty, expr.span)?;
             Ok(ty)
-        })();
-        if root {
-            self.type_work = None;
-        }
-        result
+        })
     }
 
     pub(crate) fn type_value_inner(&mut self, expr: &ast::Expr) -> Result<Type> {

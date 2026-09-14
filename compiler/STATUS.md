@@ -72,6 +72,31 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Logical accounting continuation
+
+The existing Work visits are not language steps: they include bootstrap traversal
+and retained initializer evidence. They must not be relabeled E220. The first
+logical charging domain will be actual type materialization, whose nodes already
+have one owning traversal; scalar/control/input, aggregate/text and helper charging
+remain separate follow-ups. Proof evaluation stays gated.
+
+Dependency-ordered commits:
+1. Extract bootstrap work ownership and centralize required-root lifetime handling
+   for computed types and metatype bindings. Preserve all counts/errors; verify
+   nested sharing and cleanup. Baseline: 111 required-evaluation tests pass in
+   `/tmp/meowy-required-root-before.log`.
+2. Add an independent logical ledger with per-root origin and atomic counter
+   checks. Wire type-node materialization only: one step plus one type node each.
+   Keep earlier bootstrap limits B001. Test exact/below/above logical limits,
+   overflow, repeated charges, nested roots and failure cleanup.
+3. Validate metadata exports/imports, independent source roots and the unchanged
+   query gate; document the partial charging boundary and run the full compiler gate.
+
+Root lifetime extraction passes the same 111 baseline tests plus a new nested
+sharing/error-cleanup regression (112 total). Log: `/tmp/meowy-required-root-after.log`.
+Bootstrap counts and diagnostics are unchanged. Next: the independent type ledger.
+No claim of complete revision 1 accounting is made.
+
 ### Deferred copy-query integration
 
 `6acc657` retains explicit type-call suffixes as `ExprKind::Specialize`, including

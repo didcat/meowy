@@ -1,3 +1,4 @@
+#[cfg(test)]
 use super::Work;
 use crate::ast::{Expr, TypeExpr, TypeKind};
 use crate::check::{Checker, Result, Spec, Value};
@@ -32,15 +33,7 @@ impl Checker {
     }
 
     pub(crate) fn meta_binding(&mut self, expr: &Expr, annotation: &TypeExpr) -> Result<Value> {
-        let root = self.type_work.is_none();
-        if root {
-            self.type_work = Some(Work::default());
-        }
-        let result = self.meta_binding_inner(expr, annotation);
-        if root {
-            self.type_work = None;
-        }
-        result
+        self.required_root(|checker| checker.meta_binding_inner(expr, annotation))
     }
 
     pub(crate) fn meta_binding_inner(
