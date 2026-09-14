@@ -45,6 +45,11 @@ impl Checker {
     ) -> Result<bool> {
         self.form_work(expr, depth, count)?;
         match &expr.kind {
+            ExprKind::Binary { op, left, right } if op == "!" => {
+                self.subtraction_operand_form(left, depth + 1, count)?;
+                self.subtraction_operand_form(right, depth + 1, count)?;
+                Ok(true)
+            }
             ExprKind::TypeValue(_) | ExprKind::TypeQuery(_) => Ok(true),
             ExprKind::Group(value) => self.type_operand_form(value, depth + 1, count),
             ExprKind::Name(_) | ExprKind::Field { .. } => {

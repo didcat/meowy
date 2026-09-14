@@ -99,6 +99,7 @@ pub(crate) mod transitive_restarts;
 pub(crate) mod type_block_equality;
 pub(crate) mod type_equality;
 pub(crate) mod type_exports;
+pub(crate) mod type_subtraction;
 pub(crate) mod union_aliases;
 pub(crate) mod unions;
 pub(crate) mod widened_aliases;

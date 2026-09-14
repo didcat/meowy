@@ -10,6 +10,7 @@ mod operands;
 mod records;
 mod scalars;
 mod statements;
+mod subtraction;
 
 use super::{Checker, Result, Scope, Value, inputs::Input};
 use crate::ast::{self, ExprKind, Span};
@@ -156,6 +157,12 @@ impl Checker {
                 )),
             },
             ExprKind::Group(value) => self.type_value(value),
+            ExprKind::Binary { op, left, right } if op == "!" => {
+                self.type_operand_form(expr, self.type_work.as_ref().unwrap().depth, &mut 0)?;
+                let left = self.subtraction_operand(left)?;
+                let right = self.subtraction_operand(right)?;
+                Ok(left.subtract(&right))
+            }
             ExprKind::Block(block) => self.type_block(block),
             ExprKind::Field { .. } => match self.symbol(expr)? {
                 Some(Value::Type(ty)) => Ok(ty),
@@ -307,6 +314,7 @@ impl Checker {
             }
         }
         let scalar = match &form.kind {
+            ExprKind::Binary { op, .. } if op == "!" => false,
             ExprKind::Int(_)
             | ExprKind::Unary { .. }
             | ExprKind::Binary { .. }

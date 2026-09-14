@@ -46,7 +46,15 @@ Three new parser groups cover query/literal/annotation forms, Unicode-offset spa
 left-to-right chains, unchanged unary `!`/`!=`, chain limits and the mixed-union gate.
 Annotation lookahead now retains subtraction budget diagnostics. Evaluation remains
 B001 until the next slice. Log: `/tmp/meowy-subtraction-parser.log`.
-No outstanding failures. Next: commit parsing, then implement required subtraction.
+Parser committed as `bc3030c`. The evaluator reuses bounded type operands and
+normalized `Type::subtract`, including bare type blocks. Required bindings and
+equality forms recognize subtraction. Two checker/one native groups cover normalized
+sets, widths, mutability, references, capacities, empty results, queries and runtime
+value rejection. Broad bases/literal subtypes retain their existing gates.
+
+All 845 library/867 native tests, fmt and Clippy pass.
+Log: `/tmp/meowy-subtraction-evaluator.log`. No outstanding failures.
+Next: commit evaluation, then verify import/source/work integration.
 
 ## Current compiler slice
 

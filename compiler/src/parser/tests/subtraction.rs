@@ -83,8 +83,4 @@ pub(crate) fn type_subtraction_bounds_annotation_and_expression_chains() {
                 .any(|error| error.code == "B001")
         );
     }
-    assert_eq!(
-        crate::compile("<T>:<int32><null>!<null>").unwrap_err()[0].code,
-        "B001"
-    );
 }
