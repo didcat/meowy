@@ -217,3 +217,96 @@ pub(crate) fn required_logical_block_operands_execute_nested_boolean_results() {
     }
     case("<T>:{flag:!({->false})&&({|true|->true;tail:4});r:{->flag:flag};|r.flag|-><int32[2]>};v<T>:[3,7];d:@\"debug\";d.print(v[2])",&[]).runs(b"7\n");
 }
+
+#[test]
+pub(crate) fn required_logical_blocks_retain_source_work_and_skip_unselected_inputs() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data = format!("private:{{->4;v0:1;{tail}}};->flag:private>0");
+    let repeated = (0..20)
+        .map(|id| format!("f{id}:({{->m.flag}})&&true;"))
+        .collect::<String>();
+    let aliases = (0..20)
+        .map(|id| format!("f{id}:({{->copy}})&&true;"))
+        .collect::<String>();
+    let skipped = (0..20)
+        .map(|id| format!("f{id}:false&&({{->m.flag}});"))
+        .collect::<String>();
+    let separate = (0..20)
+        .map(|id| format!("<T{id}>:{{flag:({{->m.flag}})&&true;-><int32>}};"))
+        .collect::<String>();
+    for profile in ["debug", "release"] {
+        for (body, accepted) in [
+            (format!("<T>:{{{repeated}-><int32>}}"), false),
+            (format!("<T>:{{copy:m.flag;{aliases}-><int32>}}"), true),
+            (format!("<T>:{{{skipped}-><int32>}}"), true),
+            (separate.clone(), true),
+        ] {
+            let output = case(
+                &format!("m:@\"./data.mwy\";{body}"),
+                &[("data.mwy", data.as_str())],
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if accepted {
+                assert!(output.status.success(), "{error}");
+            } else {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn required_logical_blocks_preserve_source_errors_and_module_staging() {
+    let data = "#é🙂#\nraw:{->n<uint8>:255};->flag:raw.n+1==0";
+    for value in ["({->m.flag})&&({->1/0})", "!({->m.flag})"] {
+        let case = case(
+            &format!("m:@\"./data.mwy\";<T>:{{flag:{value};-><int32>}}"),
+            &[("data.mwy", data)],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+        }
+    }
+    let case = case(
+        "m:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");v<m.Items>:[3,7];d.print(v[2])",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(\"data\");->flag:true"),
+            (
+                "types.mwy",
+                "m:@\"./data.mwy\";d:@\"debug\";d.print(\"types\");-><Items>:{flag:({->m.flag})&&!({->false});|flag|-><int32[4]>;|!flag|-><string>}",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        let output = case.command(action, &[]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty());
+    }
+    case.runs(b"data\ntypes\nentry\n7\n");
+    super::file_modules::case("m:@\"./data.mwy\";f<int32>:(){<T>:{flag:({->m.flag})||({->false});|flag|-><int32[4]>;|!flag|-><string>};v<T>:[9];->v[1]};d:@\"debug\";d.print(f())",&[("data.mwy","->flag:true")]).runs(b"9\n");
+}

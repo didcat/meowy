@@ -230,8 +230,11 @@ Dependency-ordered commit plan:
    Log: `/tmp/meowy-boolean-block-form.log`. Committed as `705c2dc`.
 2. Complete: boolean block forms/execution support `!`, `&&`, `||` and required
    matcher conditions. 808 library/836 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-logical-blocks.log`.
-3. Verify exact work, skipped initializers, bounds, scope, source errors and staging.
+   Log: `/tmp/meowy-logical-blocks.log`. Committed as `d5f51db`.
+3. Complete: exact selected/skipped visits, 62/63 nested execution boundary, scope
+   restoration, metadata, source work/alias reuse, errors and module/function staging
+   pass 810 library/838 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-logical-blocks-integration.log`.
 4. Update compiler README/handoffs and run the final compiler gate across the series.
    The user is editing `docs/`; leave all docs directories untouched this turn.
    Record any detailed guide update for a later documentation pass.
