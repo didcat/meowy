@@ -400,7 +400,7 @@ mod tests {
     #[test]
     pub(crate) fn metatype_storage_and_function_boundaries_remain_closed() {
         for (source, code) in [
-            ("c:@\"core\";x<c.Type>:4", "E211"),
+            ("c:@\"core\";x<c.Type>:4", "E207"),
             ("c:@\"core\";<R>:<{field<c.Type>}>", "E211"),
             ("c:@\"core\";<R>:<c.Type[1]>", "E211"),
             ("c:@\"core\";<R>:<&c.Type>", "E211"),

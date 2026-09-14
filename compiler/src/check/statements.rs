@@ -44,6 +44,19 @@ impl Checker {
                     self.declare_function(name, ty.as_ref(), params, body, stmt.span)?;
                     return Ok(Vec::new());
                 }
+                if let Some(annotation) = ty
+                    && self.meta_annotation(annotation)?
+                {
+                    if *mutable {
+                        return Err(Diagnostic::unsupported(
+                            "mutable type-value bindings",
+                            stmt.span,
+                        ));
+                    }
+                    let value = self.meta_binding(value, annotation)?;
+                    self.declare(name, value, stmt.span)?;
+                    return Ok(Vec::new());
+                }
                 if let Some(symbol) = self.symbol(value)?
                     && !matches!(
                         symbol,

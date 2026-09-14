@@ -101,10 +101,7 @@ mod tests {
                 assert_eq!(result.unwrap_err()[0].code, code, "{body}");
             }
         }
-        assert_eq!(
-            crate::compile("kind<Type>:<int32>").unwrap_err()[0].code,
-            "B001"
-        );
+        crate::compile("kind<Type>:<int32>").unwrap();
         assert_eq!(
             crate::compile("<T>:{|true|kind<Type>:<int32>;->kind}").unwrap_err()[0].code,
             "E201"
@@ -257,5 +254,39 @@ mod roots {
         assert_eq!(work.visits, 101);
         assert_eq!(work.nodes, 202);
         assert_eq!(work.depth, 3);
+    }
+}
+
+#[cfg(test)]
+mod statements {
+    #[test]
+    pub(crate) fn ordinary_metatype_bindings_keep_types_out_of_runtime_storage() {
+        let source = "c:@\"core\";<Kind>:<c.Type>;element<Kind>:<int32>;alias<Type>:element;items<c.Type>:{count<uint8>:4;-><(alias)[count]>};<Items>:items";
+        let program = crate::compile(source).unwrap();
+        assert!(program.body.stmts.is_empty());
+        assert!(program.locals.is_empty());
+        assert!(program.functions.is_empty());
+        crate::compile(&format!("{source};v<Items>:[1,2,3,4]")).unwrap();
+        crate::compile("<Type>:<uint8>;n<Type>:4").unwrap();
+    }
+
+    #[test]
+    pub(crate) fn ordinary_metatype_bindings_preserve_scope_and_runtime_boundaries() {
+        for (source, code) in [
+            ("kind<Type>:=<int32>", "B001"),
+            ("kind<Type>:4", "E207"),
+            ("kind<Type>:{->false}", "E207"),
+            ("kind<Type>:{-><int32>;tail:1/0}", "E107"),
+            ("kind<Type>:<int32>;kind<Type>:<string>", "E203"),
+            ("f<int32>:(v<uint8>){kind<Type>:v;->1}", "E211"),
+            ("|true|kind<Type>:<int32>;copy<Type>:kind", "E201"),
+            ("kind<Type>:<int32>;d:@\"debug\";d.print(kind)", "B001"),
+            ("kind<Type>:<int32>;p:&kind", "B001"),
+            ("kind<Type>:<Type>", "B001"),
+            ("make<Type>:(){-><int32>}", "B001"),
+        ] {
+            let error = crate::compile(source).unwrap_err().remove(0);
+            assert_eq!(error.code, code, "{source}: {error:?}");
+        }
     }
 }

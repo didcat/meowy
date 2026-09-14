@@ -225,9 +225,11 @@ Dependency-ordered commit plan:
 
 1. Complete: meta_binding restores absent work state on success/failure and preserves
    active outer counters. 824 library/844 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-metatype-root-boundary.log`.
-2. Route ordinary immutable named metatype bindings through it; preserve function,
-   mutable/value-export and runtime data gates. Include checker/native regressions.
+   Log: `/tmp/meowy-metatype-root-boundary.log`. Committed as `1d4a58e`.
+2. Complete: ordinary immutable metatype bindings start/join required evaluation and
+   declare only Value::Type. Module/function examples, parameter type queries, scopes
+   and runtime/mutation gates pass 826 library/845 native tests, fmt and Clippy.
+   Log: `/tmp/meowy-ordinary-metatype-bindings.log`.
 3. Verify lexical/alias identity, independent/shared budgets, source failures,
    documentation and module/function staging, then commit integration separately.
 4. Update guides/handoffs, execute the guide and run the final compiler gate.

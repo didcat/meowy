@@ -372,3 +372,8 @@ pub(crate) fn metatype_bindings_preserve_private_names_and_initializer_error_spa
         }
     }
 }
+
+#[test]
+pub(crate) fn ordinary_metatype_bindings_execute_module_and_function_scoped_types() {
+    super::file_modules::case("c:@\"core\";element<c.Type>:<int32>;items<Type>:{-><(element)[4]>};v<(items)>:[3,7];f<int32>:(value<int32>){local<Type>:value<>;copy<(local)>:value;->copy};d:@\"debug\";d.print(v[2]);d.print(f(9))",&[]).runs(b"7\n9\n");
+}
