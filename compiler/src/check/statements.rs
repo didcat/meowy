@@ -34,6 +34,36 @@ impl Checker {
                 mutable,
                 value,
             } => {
+                if let Some(id) = self.pending_query(value)? {
+                    if *mutable {
+                        return Err(Self::error(
+                            "E223",
+                            "proof descriptors cannot enter mutable storage",
+                            stmt.span,
+                        ));
+                    }
+                    if let Some(ty) = ty {
+                        match self.spec(ty)? {
+                            super::Spec::Descriptor(crate::foundation::Descriptor::Result) => {}
+                            super::Spec::Descriptor(_) => {
+                                return Err(Self::error(
+                                    "E207",
+                                    "pending query has declared type proof.Result",
+                                    ty.span,
+                                ));
+                            }
+                            _ => {
+                                return Err(Self::error(
+                                    "E223",
+                                    "proof descriptors cannot enter runtime storage",
+                                    ty.span,
+                                ));
+                            }
+                        }
+                    }
+                    self.declare(name, Value::Pending(id), stmt.span)?;
+                    return Ok(Vec::new());
+                }
                 if let ExprKind::Function { params, body } = &value.kind {
                     if *mutable {
                         return Err(Diagnostic::unsupported(
@@ -262,6 +292,9 @@ impl Checker {
                 Ok(stmts)
             }
             StmtKind::Expr(value) => {
+                if self.pending_query(value)?.is_some() {
+                    return Ok(Vec::new());
+                }
                 if let ExprKind::Call { callee, args } = &value.kind
                     && let Some(Value::Control {
                         target,

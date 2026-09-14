@@ -49,6 +49,7 @@ pub(crate) enum Item {
     Type(FoundationType),
     Heap,
     StringCopy,
+    CanCopy,
 }
 
 impl Module {
@@ -79,6 +80,7 @@ impl Module {
 
     pub(crate) fn item(self, name: &str) -> Option<Item> {
         match (self, name) {
+            (Self::Proof, "can_copy") => Some(Item::CanCopy),
             (Self::Memory, "Allocator") => Some(Item::Type(FoundationType::Allocator)),
             (Self::Memory, "AllocationFailure") => {
                 Some(Item::Type(FoundationType::AllocationFailure))
@@ -97,6 +99,7 @@ impl Item {
             Self::Type(ty) => ty.name(),
             Self::Heap => "memory.heap",
             Self::StringCopy => "strings.copy",
+            Self::CanCopy => "proof.can_copy",
         }
     }
 }

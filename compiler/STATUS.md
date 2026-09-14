@@ -98,7 +98,18 @@ AST node requires parser/bounds, exhaustive checker/import visitors, documentati
 traversal and both existing parser test groups together; separating those would
 leave an unhandled node or a failing test. The slice remains under 200 changed lines.
 
-No result representation has been added yet. Parser work is the immediate step;
+Parser commit: `6acc657`. Next is the pending-query checker seam; graph and
+documentation integration will validate that concrete path in the final slice.
+Pending queries will retain checked type, call span, owner, target and revision,
+with no active outcome. Copies share the same query identity. Only immutable
+local bindings and fixed type queries are admitted before a post-ownership B001
+gate; no query-containing program reaches code generation.
+
+Pending query metadata is implemented locally. Existing proof tests pass; focused
+copy/origin, fixed-type, ordinary-error precedence and escape tests have been added.
+All four pending-query groups pass, including capacity boundaries and copies
+that retain a single origin. Log: `/tmp/meowy-pending-query-tests.log`. No active
+result representation has been added yet;
 result outcomes, canonical origin sets and logical accounting remain separate.
 
 ### Descriptor identity slice

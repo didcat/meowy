@@ -47,6 +47,11 @@ impl Checker {
             .cloned()
             .ok_or_else(|| Self::error("E201", format!("unknown value `{name}`"), span))?;
         match &value {
+            Value::Pending(id) if self.queries[*id].owner != self.owner => Err(Self::error(
+                "E223",
+                "proof descriptors cannot be captured by another function",
+                span,
+            )),
             Value::Local { .. } if self.required => Ok(value),
             Value::Local { owner, .. } | Value::Control { owner, .. } if *owner != self.owner => {
                 Err(Diagnostic::unsupported(
@@ -195,7 +200,12 @@ impl Checker {
                 };
                 Ok(Spec::Data(ty))
             }
-            TypeKind::Computed(value) => Ok(Spec::Data(self.type_value(value)?)),
+            TypeKind::Computed(value) => {
+                if self.pending_type(value)? {
+                    return Ok(Spec::Descriptor(Descriptor::Result));
+                }
+                Ok(Spec::Data(self.type_value(value)?))
+            }
             TypeKind::Union(types) => {
                 let types = types
                     .iter()

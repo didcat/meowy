@@ -8,6 +8,7 @@ mod indexed;
 mod inputs;
 mod mutation;
 mod names;
+mod queries;
 mod references;
 mod refinement;
 mod scalars;
@@ -72,6 +73,7 @@ pub(crate) enum Value {
         owner: usize,
     },
     Type(Type),
+    Pending(usize),
 }
 
 impl Value {
@@ -154,6 +156,7 @@ pub(crate) struct Checker {
     pub(crate) block_lengths: BTreeMap<usize, crate::list::Fact>,
     pub(crate) required: bool,
     pub(crate) type_work: Option<type_values::Work>,
+    pub(crate) queries: Vec<queries::Query>,
     pub(crate) documentation: Option<crate::documentation::Model>,
     pub(crate) imports: BTreeMap<usize, String>,
     pub(crate) file_docs: BTreeMap<usize, crate::documentation::Model>,
@@ -215,6 +218,9 @@ pub(crate) fn check_imports(
                 .map_err(|error| vec![error])?;
             let facts = crate::borrow::check(&program, &mut checker.flow, &checker.proofs)?;
             crate::loans::check(&program, &facts, &checker.proofs, &mut checker.flow)?;
+            if let Some(query) = checker.queries.first() {
+                return Err(vec![query.unsupported()]);
+            }
             let mut docs = checker.documentation;
             if let Some(model) = &mut docs {
                 model.finish().map_err(|error| vec![error])?;
@@ -278,6 +284,7 @@ impl Checker {
             block_lengths: BTreeMap::new(),
             required: false,
             type_work: None,
+            queries: Vec::new(),
             documentation: None,
             file_docs: BTreeMap::new(),
             imports: BTreeMap::new(),

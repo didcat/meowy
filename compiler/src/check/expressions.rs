@@ -181,6 +181,13 @@ impl Checker {
                     value.ty = ty;
                     return Ok(value);
                 }
+                Value::Pending(_) => {
+                    return Err(Self::error(
+                        "E223",
+                        "proof descriptors have no runtime value",
+                        expr.span,
+                    ));
+                }
                 Value::Function { .. } => {
                     return Err(Diagnostic::unsupported(
                         "first-class function values",

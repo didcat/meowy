@@ -117,6 +117,7 @@ impl Checker {
                         .unwrap_or_else(|| "unresolved".into())
                 )
             }
+            Value::Pending(_) => "proof.Result".into(),
             Value::Module(module) => format!("module {}", module.name()),
             Value::FileModule { .. } => "file module".into(),
             Value::Foundation(item) => format!("intrinsic {}", item.name()),
