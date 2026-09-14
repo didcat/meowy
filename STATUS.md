@@ -19,18 +19,16 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
-Required `==`/`!=` now compares normalized type identity for literals, supported
-queries, aliases and explicitly exported type values. Both operands preserve source
-errors and input work; short-circuiting skips constructors. Required type values and
-comparison results create no runtime storage. Bare blocks now infer type payloads
-for equality with other blocks or known types; scalar contexts retain E207 checks.
-The behavior slice `f2a1962` passes 838 library/862 native tests, fmt and Clippy.
-Skip/source/budget integration and the final gate are in progress.
+Required `==`/`!=` now accepts bare type-producing blocks on either side of another
+block or known type value. Selected blocks retain normalized identity, scoped locals,
+source errors and work budgets. Scalar contexts preserve widths; mixed evaluated
+type/scalar results report E207. Short-circuiting checks block structure without
+resolving local initializers or result kinds. No runtime type storage is created.
 
-Commits: `2c4c26a` (comparison), `b7591ab` (integration evidence).
-The [guide](compiler/docs/COMPUTED_TYPES.md#type-value-equality) covers syntax,
-normalization, work accounting and remaining boundaries. Its example prints `7` in
-debug/release. The full compiler gate passes.
+Commits: `f2a1962` (block inference), `055d8cf` (integration evidence).
+The [guide](compiler/docs/COMPUTED_TYPES.md#type-producing-block-operands) covers syntax,
+result kinds and evaluation boundaries. Its example prints `7` in debug/release.
+The full compiler gate passes.
 
 Named immutable `core.Type` exports continue to retain concrete payloads through
 explicit facades. Private names, separate namespaces and module startup stay intact.
@@ -42,16 +40,17 @@ release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 835
-  library/861 native tests (1696 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 840
+  library/866 native tests (1706 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-equality-gate.log`.
-- Five checker/five native equality groups cover normalized identity, kind/runtime
-  boundaries, short-circuiting, work/node/depth limits, repeated cached inputs,
-  independent roots, source errors, facade privacy and module startup.
-  Focused log: `/tmp/meowy-type-equality-slice2.log`.
-- The equality guide example prints `7` in debug/release.
-  Extracted source: `/tmp/meowy-type-equality-guide.mwy`.
+  debug/release. Log: `/tmp/meowy-type-blocks-gate.log`.
+- Five checker/five native block-equality groups cover inferred type identity,
+  contextual scalar kinds, E207 type emissions, skipped structure/values, source
+  order, imported privacy/startup, repeated input costs, independent roots and
+  work/node/depth failures with restored state. Focused logs:
+  `/tmp/meowy-type-blocks-slice1.log`, `/tmp/meowy-type-blocks-slice2.log`.
+- The type-producing block equality guide prints `7` in debug/release.
+  Extracted source: `/tmp/meowy-type-blocks-guide.mwy`.
 - Runtime implementation, reference fixtures, dependencies and release versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
   qualification remains open; proof examples remain unimplemented/unexecuted.
@@ -60,7 +59,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Required type equality preserves normalized identity and bounded operand work. |
+| Compiler | Bare type-block equality preserves inferred identity, scalar context and bounded work. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -96,7 +95,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Investigate bare type-block equality operand inference;
+1. Investigate bounded type subtraction syntax and required evaluation;
    see the [compiler handoff](compiler/STATUS.md#next-steps).
 2. Implement proof only in separately planned slices against its qualification contract.
    Do not push, bump versions automatically or claim full release qualification.

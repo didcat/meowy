@@ -80,7 +80,7 @@ short-circuited blocks do no evaluation work. Boolean-result blocks also work in
 required `!`, `&&`, `||` and matcher conditions. Their statement forms are checked
 without resolving local initializers; selected results must be boolean and retain
 source errors and shared budgets. Use `!({ -> false })` for negation; `!{ ... }`
-retains its unchecked-block meaning. Direct block `==`/`!=` selects integer or boolean
+retains its unchecked-block meaning. Direct block `==`/`!=` selects integer, boolean or type
 equality from checked operand kinds; both operands execute even when the left value
 is false. Ordered comparisons remain integer-only. Float/text comparisons, empty
 composition sources, mutable scratch, whole-module records and helpers remain separate.
@@ -89,7 +89,9 @@ Required `==`/`!=` compares normalized concrete type identity for literals, supp
 queries, aliases and exported type values. Unions and record field order normalize;
 widths, mutability, capacities and nominal identities remain distinct. Both operands
 retain source errors and work, while short-circuiting skips constructors. Computed
-type-block operands use `<(expression)>`; bare blocks retain scalar equality.
+type-block operands may use `<(expression)>` or bare blocks. Selected blocks infer
+type payloads; mixed type/scalar results report E207. Skipped blocks retain structural
+checks without evaluating local initializers or result kinds.
 See [type-value equality](docs/COMPUTED_TYPES.md#type-value-equality).
 
 Required type-value bindings may explicitly use `core.Type`, prelude `Type` or a

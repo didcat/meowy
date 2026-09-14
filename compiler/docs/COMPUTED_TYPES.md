@@ -77,10 +77,48 @@ constructor evaluation, type-name resolution inside literals and their input/nod
 work. Thus `false && (<int32[1 / 0]> == <Missing>)` does not construct either type.
 Mixed known type/scalar operands and ordered type comparisons report E222.
 
-Use `<({ -> <int32> })> == <int32>` for a computed type-block operand. Bare block
-equality still follows the integer/boolean path. Type-of-type queries and helpers
-remain unsupported. Equality is available only inside required evaluation; it does
-not create runtime type values or enable ordinary runtime type equality.
+Type-of-type queries and helpers remain unsupported. Equality is available only
+inside required evaluation; it does not create runtime type values or enable
+ordinary runtime type equality.
+
+### Type-producing block operands
+
+Required equality also accepts bare blocks that produce types, on either side of
+another block or an existing type value:
+
+```meowy
+<Items> : {
+    same : ({ base <uint8> : 2; -> <int32[base * 2]> }) == <int32[4]>
+    different : ({ -> <uint8> }) != ({ -> <int32> })
+    | same && different | -> <int32[4]>
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. Selected blocks infer their result kind and preserve normalized
+type identity, including local aliases, nested type blocks, supported type queries
+and imported payloads. The explicit `<(expression)>` spelling remains supported.
+Bindings inside an operand leave scope before the next operand is evaluated.
+
+Known scalar operands supply their existing integer/boolean context. Otherwise the
+left operand is inferred, and both selected results must have the same value kind.
+An evaluated type/scalar mismatch reports E207. A type emitted in a scalar result
+block also reports E207 after its constructor is checked; constructor errors keep
+their own diagnostics. A type-valued result does not enable ordered comparisons.
+
+Each operand executes once from left to right. Primary emissions do not skip tails;
+a failing left initializer or tail stops the right operand. Blocks and their nested
+type payloads share the enclosing work/depth/node limits. Eligible input reads retain
+their full cost, including repeated reads of the same source. Independent roots reset
+those budgets, and checking creates no runtime locals for either operand.
+
+Short-circuiting checks supported block statement forms and outer operand names
+without resolving block-local initializers, annotations or result kinds. Thus
+`false && (({ -> <int32> }) == ({ -> true }))` skips the mismatched results.
+Mutable scratch, named/labeled emissions and helpers retain their existing gates.
+Module initialization still runs in dependency order at program startup.
 
 ## Explicit type-value bindings
 
@@ -917,8 +955,9 @@ kinds remain unevaluated. Ordinary known outer name/type checks still apply.
 
 Known incompatible scalar kinds report E222, known integer-width mismatches retain
 E213, and an evaluated operand that does not satisfy its scalar context reports E207.
-Ordered comparisons remain integer-only. Empty results, type/record-valued operands,
-float/text comparisons, helpers and borrowed storage remain separate capabilities.
+Ordered comparisons remain integer-only. [Type-producing blocks](#type-producing-block-operands)
+use normalized type identity. Empty results, record-valued operands, float/text
+comparisons, helpers and borrowed storage remain separate capabilities.
 Source work/errors, aliases, lexical scope, documentation and module/function staging
 follow the same rules as the existing required operand paths.
 
@@ -1445,7 +1484,7 @@ bootstrap support only; they do not implement the language's logical E220 counte
 Scalar scratch beyond integers/booleans, mutable scratch, restarts, labeled blocks,
 annotated or named emissions, general expression statements and source/helper calls
 remain unsupported in type blocks. `core.Type` parameter/result annotations, generic
-specialization, bare type-block equality, full purity analysis, intrinsic descriptions and the
+specialization, full purity analysis, intrinsic descriptions and the
 complete required evaluator remain separate. Runtime type-value storage remains gated.
 
 See [the runnable example](../examples/computed-types.mwy), [STATUS.md](../STATUS.md),

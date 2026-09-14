@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required normalized type equality is implemented.
+Updated: 2026-09-13. Bare type-block equality is implemented.
 The final compiler gate and guide execution pass. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -19,55 +19,49 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
-## Active plan: bare type-block equality
+## Bare type-block equality series
 
-Investigation: `inferred_block` already returns and materializes `Value::Type`.
-`equality_operand` currently rejects that payload, and `type_comparison_form`
-rejects a known type paired with a bare block. Reuse these paths: defer bare-block
-kinds until selected evaluation, accept type payloads without scalar context, and
-compare two payloads by normalized identity. Preserve scalar context and mixed-kind
-E207 errors, structural skip checks, left-to-right errors and existing budgets.
+Dependency-ordered slices:
 
-Dependency-ordered commits:
-1. Extend equality dispatch/operand inference with focused checker/native coverage
-   for two blocks, block/type pairs, normalization, scalar compatibility and rejection.
-2. Add integration coverage for skipped bodies, source order, imported payloads,
-   work/node/depth bounds and state restoration.
-3. Update the guide/README and both handoffs, execute the guide and run the complete
-   compiler gate. Commit each validated slice; keep runtime equality/helpers separate.
+1. `f2a1962`: infer type payloads for block equality, preserve scalar contexts, and
+   diagnose type emissions in scalar blocks with E207. Focused tests stay with behavior.
+2. `055d8cf`: skip/source/work integration, imported identity/privacy/startup,
+   independent roots, failed-state restoration and runtime/helper boundaries.
+3. This documentation commit integrates the guide/README and both handoffs. Guide
+   execution and the full `python3 -B tools/verify.py --compiler` gate pass.
 
-Slice 1 routes known type/block pairs through block inference and accepts inferred
-payloads without scalar context. Three checker/one native groups cover normalization,
-block/type pairs and E207 mixed-result errors. Known type emissions in scalar blocks
-now resolve the constructor and report E207; the logical-block regression reflects
-that same diagnostic correction. Original constructor failures remain intact.
-
-All 838 library/862 native tests, fmt and Clippy pass.
-Log: `/tmp/meowy-type-blocks-slice1.log`. No outstanding failures.
-Slice 1 committed as `f2a1962`. Slice 2 adds structural skip/outer-name checks,
-work/node/depth and failed-state bounds, imported identity/startup/privacy,
-first-error source spans, repeated inputs/independent roots and runtime/helper gates.
-Five checker/five native groups, fmt and Clippy pass.
-Log: `/tmp/meowy-type-blocks-slice2.log`. No outstanding failures.
-Next: commit integration evidence, update docs and run the full compiler gate.
+Five checker/five native groups, fmt and Clippy pass. No implementation failures remain.
+Logs: `/tmp/meowy-type-blocks-slice1.log` and `/tmp/meowy-type-blocks-slice2.log`.
+The extracted guide `/tmp/meowy-type-blocks-guide.mwy` prints `7` in debug/release.
+Final results are recorded below. Next: investigate bounded type subtraction.
 
 ## Current compiler slice
 
-Required `==`/`!=` recognizes type literals/queries, grouped lexical aliases and
-core/foundation/file-module type members before scalar comparison dispatch.
-`comparisons/types.rs::type_comparison_form` performs bounded kind checking without
-constructing skipped operands. Both known operands must be type values; mixed kinds
-and ordered comparisons report E222. Bare blocks retain scalar equality; explicit
-`<(expression)>` supports computed type-block operands. Runtime equality stays gated.
+Required `==`/`!=` accepts bare type-producing blocks, including grouped forms and
+block/type-value pairs in either order. `type_comparison_form` defers such pairs to
+`block_equality_form`; structural checks do not infer skipped block results.
+`equality_operand` reuses `operand_block`/`inferred_block` and accepts `Value::Type`
+when no scalar context is required. Both type payloads compare by normalized identity.
 
-Both operands use `type_value` in source order. Existing normalized `hir::Type`
-identity retains record fields/mutability/primary, union sets, widths, list capacities,
-reference modes and foundation identities. Each payload is materialized against the
-node budget; input evidence is charged on every read. A first error stops evaluation
-and retains its source span through facades. Skipped constructors spend no evaluation
-visits or type nodes; lexical/member lookup remains checked. Primitive equality costs
-three visits/two type nodes. Failed roots restore depth/scope and independent roots
-reset budgets. Type-only checking preserves native initialization order.
+Known integer/boolean operands retain contextual widths and result kinds. Selected
+mixed type/scalar results report E207; scalar blocks emitting known type values also
+report E207 after checking the constructor. Original constructor errors remain intact.
+Direct known type/scalar or ordered type comparisons retain E222; runtime type values,
+record-value equality in required blocks, helpers and first-class metatypes remain gated.
+
+Both operands evaluate once in source order, including selected tails. First failures
+stop the right operand and preserve original source paths/spans through facades.
+Each inferred type block materializes its payload against the shared node budget;
+input reads retain their full work on every read. Two grouped primitive type blocks
+cost 11 visits/four nodes; a literal/block pair costs seven visits/three nodes. Failed
+budgets restore scope/depth, independent roots reset budgets and skipped operands
+spend no evaluation work/nodes. Skipped forms still check supported statements and
+outer lexical/member lookup while deferring block-local names, types and result kinds.
+
+Literals, supported queries, aliases and core/foundation/file-module type members
+retain normalized `hir::Type` identity: record fields/mutability/primary, union sets,
+widths, list capacities, reference modes and nominal identities. No runtime locals
+are created, and native module initialization order/privacy are preserved.
 
 Named immutable type-value exports are implemented in `exports::export_type_value`.
 Unconditional top-level metatype-annotated emissions start/join bounded required
@@ -183,16 +177,17 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 835
-  library/861 native tests (1696 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 840
+  library/866 native tests (1706 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-equality-gate.log`.
-- Five checker/five native equality groups cover normalized identity, kind/runtime
-  boundaries, short-circuiting, work/node/depth limits, repeated cached inputs,
-  independent roots, source errors, facade privacy and module startup.
-  Focused log: `/tmp/meowy-type-equality-slice2.log`.
-- The equality guide example prints `7` in debug/release.
-  Extracted source: `/tmp/meowy-type-equality-guide.mwy`.
+  debug/release. Log: `/tmp/meowy-type-blocks-gate.log`.
+- Five checker/five native block-equality groups cover inferred type identity,
+  contextual scalar kinds, E207 type emissions, skipped structure/values, source
+  order, imported privacy/startup, repeated input costs, independent roots and
+  work/node/depth failures with restored state. Focused logs:
+  `/tmp/meowy-type-blocks-slice1.log`, `/tmp/meowy-type-blocks-slice2.log`.
+- The type-producing block equality guide prints `7` in debug/release.
+  Extracted source: `/tmp/meowy-type-blocks-guide.mwy`.
 - Runtime implementation, reference fixtures, dependencies and release versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun. Full release
   qualification remains open; proof examples remain unimplemented/unexecuted.
@@ -262,14 +257,13 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-The required type equality series is complete; no outstanding failures remain.
+The bare type-block equality series is complete; no outstanding failures remain.
 
-1. Investigate bare type-producing block equality in `type_values/comparisons/equality.rs`.
-   Plan operand-kind inference separately, preserving existing scalar context, skipped
-   block structural checks, selected work/errors and E207 behavior for invalid results.
-   Trace `equality_operand`, `operand_block` and `inferred_block`; add accepted native,
-   mixed-kind, source-order and budget regressions before the final compiler gate.
-   Keep runtime equality and type-producing helpers outside that slice.
+1. Investigate bounded type subtraction against `docs/reference/types.md` and
+   `docs/reference/compile-time.md`. Trace `parser/types.rs` (currently unsupported),
+   expression parsing, `type_values.rs` and `hir::Type::subtract`; plan syntax/AST,
+   required evaluation and integration as separate reviewable slices. Preserve
+   normalized identity, left-to-right source/work evidence and short-circuit behavior.
 2. Implement proof only with a separate dependency-ordered plan against its
    qualification contract. Keep first-class metatype values, type-of-type queries,
    runtime type containers and type-producing/generic helpers separate.
