@@ -98,7 +98,12 @@ operator/literal charges are now sequential so grouped and ungrouped forms retai
 the same consumed prefix when the second step exhausts the budget. A dedicated
 regression passes. All 129 required-evaluation tests pass; log:
 `/tmp/meowy-integer-node-charges.log`. No outstanding failures. Next: manual
-block operators and comparison/extent integration. Proof evaluation remains gated.
+block operators and comparison/extent integration. Shared hook commit: `a9d2c9e`.
+Manual block-arithmetic operators now call the same charging helper, while their
+leaves and blocks retain their existing owners. Five focused integration groups
+pass. All 134 required-evaluation tests pass; log:
+`/tmp/meowy-integer-block-charges.log`. No outstanding failures. Next: combined
+source integration/docs and the full compiler gate. Proof evaluation remains gated.
 
 ### Statement and boolean logical charges
 

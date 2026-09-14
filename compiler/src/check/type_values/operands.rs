@@ -97,6 +97,7 @@ impl Checker {
                 if matches!(op.as_str(), "-" | "~")
                     && !(op == "-" && matches!(value.kind, ExprKind::Int(_))) =>
             {
+                self.charge_integer(expr)?;
                 let context = self.unary_context(op, value, expected)?;
                 let value = self.integer_operand(value, context.as_ref())?;
                 self.unary_value(op, value, expr.span)
@@ -104,6 +105,7 @@ impl Checker {
             ExprKind::Binary { op, left, right }
                 if matches!(op.as_str(), "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^") =>
             {
+                self.charge_integer(expr)?;
                 let context = self
                     .required_hint(left)
                     .or_else(|| self.required_hint(right))
