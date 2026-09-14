@@ -377,3 +377,108 @@ pub(crate) fn metatype_bindings_preserve_private_names_and_initializer_error_spa
 pub(crate) fn ordinary_metatype_bindings_execute_module_and_function_scoped_types() {
     super::file_modules::case("c:@\"core\";element<c.Type>:<int32>;items<Type>:{-><(element)[4]>};v<(items)>:[3,7];f<int32>:(value<int32>){local<Type>:value<>;copy<(local)>:value;->copy};d:@\"debug\";d.print(v[2]);d.print(f(9))",&[]).runs(b"7\n9\n");
 }
+
+#[test]
+pub(crate) fn ordinary_metatype_roots_reset_independently_and_share_nested_work() {
+    let tail = (1..18)
+        .map(|id| format!("v{id}:v{}+1;", id - 1))
+        .collect::<String>();
+    let data = format!("private:{{->4;v0:1;{tail}}};->width:private");
+    let roots = (0..20)
+        .map(|id| format!("kind{id}<Type>:{{n:m.width;-><int32[n]>}};"))
+        .collect::<String>();
+    let aliases = (0..20)
+        .map(|id| format!("kind{id}<Type>:<int32[width]>;"))
+        .collect::<String>();
+    for profile in ["debug", "release"] {
+        for (body, accepted) in [
+            (roots.clone(), true),
+            (format!("all<Type>:{{{roots}-><int32>}}"), false),
+            (
+                format!("all<Type>:{{width:m.width;{aliases}-><int32>}}"),
+                true,
+            ),
+        ] {
+            let output = super::file_modules::case(
+                &format!("m:@\"./data.mwy\";{body}"),
+                &[("data.mwy", data.as_str())],
+            )
+            .command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            if accepted {
+                assert!(output.status.success(), "{error}");
+            } else {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(error.contains("\"code\":\"B001\""), "{error}");
+                assert!(error.contains("computed type bootstrap budget"), "{error}");
+            }
+        }
+    }
+}
+
+#[test]
+pub(crate) fn ordinary_metatype_roots_preserve_imported_identity_privacy_and_staging() {
+    let case = super::file_modules::case(
+        "m:@\"./types.mwy\";d:@\"debug\";d.print(\"entry\");local<m.Kind>:<m.Items>;v<(local)>:[3,7];d.print(v[2])",
+        &[
+            (
+                "kind.mwy",
+                "c:@\"core\";d:@\"debug\";d.print(\"kind\");-><Kind>:<c.Type>",
+            ),
+            (
+                "types.mwy",
+                "m:@\"./kind.mwy\";d:@\"debug\";d.print(\"types\");private<m.Kind>:<int32>;items<m.Kind>:{-><(private)[4]>};-><Items>:items;-><Kind>:<m.Kind>",
+            ),
+        ],
+    );
+    for action in ["check", "build"] {
+        let output = case.command(action, &[]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+        assert!(output.stderr.is_empty());
+    }
+    case.runs(b"kind\ntypes\nentry\n7\n");
+    let output = super::file_modules::case(
+        "m:@\"./types.mwy\";local<Type>:m.private",
+        &[("types.mwy", "private<Type>:<int32>;-><Data>:private")],
+    )
+    .command("check", &["--json"]);
+    assert_eq!(output.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E201\""));
+    super::file_modules::case(
+        "m:@\"./fake.mwy\";n<m.Type>:4;d:@\"debug\";d.print(n)",
+        &[("fake.mwy", "-><Type>:<uint8>")],
+    )
+    .runs(b"4\n");
+}
+
+#[test]
+pub(crate) fn ordinary_metatype_roots_preserve_original_initializer_failures() {
+    let data = "#é🙂#\nraw:{->n<uint8>:255};->bad:raw.n+1";
+    for prefix in ["", "|false|"] {
+        let source = format!("m:@\"./data.mwy\";{prefix}kind<Type>:{{n:m.bad;-><int32[n]>}}");
+        let case = super::file_modules::case(&source, &[("data.mwy", data)]);
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!("\"start\":{}", data.find("raw.n+1").unwrap())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+        }
+    }
+}

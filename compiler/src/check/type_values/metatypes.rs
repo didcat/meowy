@@ -290,3 +290,34 @@ mod statements {
         }
     }
 }
+
+#[cfg(test)]
+mod root_integration {
+    #[test]
+    pub(crate) fn ordinary_metatype_roots_keep_unreachable_checks_and_documented_kinds() {
+        for (source, code) in [
+            ("|false|kind<Type>:{-><int32>;tail:1/0}", "E107"),
+            ("d:@\"debug\";kind<Type>:{-><int32>;d.print(7)}", "E219"),
+            ("kind<Type>:{local:4;-><int32>};outside:local", "E201"),
+        ] {
+            let error = crate::compile(source).unwrap_err().remove(0);
+            assert_eq!(error.code, code, "{source}: {error:?}");
+        }
+        let source = "c:@\"core\";#| Element. |#element<c.Type>:<int32>;#| Items. |#items<Type>:{-><(element)[4]>};#| Alias. |#<Items>:items";
+        let (_, model) = crate::documentation::checked(source, true).unwrap();
+        let model = model.unwrap();
+        for (name, signature) in [
+            ("element", "core.Type"),
+            ("items", "core.Type"),
+            ("Items", "int32[4]"),
+        ] {
+            let entry = model
+                .entries
+                .iter()
+                .find(|entry| entry.name == name)
+                .unwrap();
+            assert!(entry.checked);
+            assert_eq!(entry.signature, signature);
+        }
+    }
+}

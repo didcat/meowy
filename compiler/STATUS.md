@@ -229,9 +229,10 @@ Dependency-ordered commit plan:
 2. Complete: ordinary immutable metatype bindings start/join required evaluation and
    declare only Value::Type. Module/function examples, parameter type queries, scopes
    and runtime/mutation gates pass 826 library/845 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-ordinary-metatype-bindings.log`.
-3. Verify lexical/alias identity, independent/shared budgets, source failures,
-   documentation and module/function staging, then commit integration separately.
+   Log: `/tmp/meowy-ordinary-metatype-bindings.log`. Committed as `9320e8e`.
+3. Complete: independent/shared budgets, aliases, privacy, runtime-unreachable roots,
+   original failures, documented kinds and module startup pass 827 library/848 native
+   tests, fmt and Clippy. Log: `/tmp/meowy-metatype-roots-integration.log`.
 4. Update guides/handoffs, execute the guide and run the final compiler gate.
 
 Keep named value exports, first-class metatype values, type-of-type queries, runtime
