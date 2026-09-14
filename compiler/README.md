@@ -16,7 +16,7 @@ separate from runtime storage. [Deferred query checking](docs/FOUNDATION.md#defe
 retains type-only copy queries until ordinary checks finish, then reports B001;
 proof evaluation remains unimplemented. An independent
 [logical ledger](docs/FOUNDATION.md#logical-required-evaluation-accounting) tracks
-type materialization, required statements/blocks and selected boolean evaluation;
+type materialization, required statements/blocks and selected integer/boolean evaluation;
 broader accounting remains open.
 [Allocator return bounds](docs/ALLOCATOR_BOUNDS.md) track
 public input lifetimes through immutable values, mutable handles/tagged records,

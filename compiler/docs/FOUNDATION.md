@@ -107,9 +107,17 @@ Delegated boolean blocks are charged at block execution, so wrapper paths do not
 count them again. Repeated boolean reads are separate steps; retained bootstrap
 initializer visits are not copied into the logical ledger.
 
-This remains partial accounting. Integer and other type-expression evaluation,
-projection ancestors and retained initializer work, aggregate slots, text,
-source-helper depth and deferred-query budget retention remain unimplemented.
+Required integer evaluation charges literal/name/outer-field reads and arithmetic
+nodes in the shared evaluator. Block arithmetic charges its own operators while
+delegating leaves and block bodies, avoiding duplicate charges. Unary minus and
+an immediately following integer literal each cost one step; the signed-minimum
+literal rule is preserved. Type-query operands, eligibility walks and runtime
+folding add no integer evaluation charges. Extents inside an existing required
+root use the same evaluator and charges.
+
+This remains partial accounting. Projection ancestors, other type-expression
+dispatch and retained initializer work, aggregate slots, text, source-helper depth,
+rootless list extents and deferred-query budget retention remain unimplemented.
 The lower existing bootstrap limits still fail with B001 first; their counters are
 not treated as language work. Logical-limit boundaries are tested internally,
 not claimed as source-level E220 qualification. Proof evaluation remains gated.

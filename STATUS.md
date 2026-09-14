@@ -20,7 +20,7 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 ## Current milestone
 
 The logical ledger now charges type materialization, evaluated required statements
-and blocks, and selected boolean evaluation. Nested roots retain original spans
+and blocks, and selected integer/boolean evaluation. Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
 
@@ -58,24 +58,27 @@ direct required reads pass focused checker/native tests and the full compiler ga
 Proof evaluation remains unimplemented. Opaque descriptor type aliases now preserve nominal identities
 and reject runtime storage; the final compiler gate passes.
 Pending query copies retain source origins without runtime storage. The next
-prerequisite is integer and remaining logical charging; query outcomes remain gated.
+prerequisite is projection ancestors and remaining logical charging; query outcomes
+remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 877
-  library/878 native tests (1755 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 887
+  library/879 native tests (1766 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-statement-boolean-gate.log`.
-- Statement/block charging passed 119 required-evaluation tests; boolean charging
-  passed 123. Logs: `/tmp/meowy-statement-charges.log`,
-  `/tmp/meowy-boolean-charges.log`.
-- Nine accounting integration groups pass: exact counts, grouping, skipped and
-  selected paths, repeated reads, block equality, nested budget failures, scope/depth
-  cleanup, independent roots and original input errors. Log:
-  `/tmp/meowy-charge-integration.log`.
+  debug/release. Log: `/tmp/meowy-integer-charge-gate.log`.
+- The shared integer hook passed 129 required-evaluation tests; delegated arithmetic
+  passed 134. Logs: `/tmp/meowy-integer-node-charges.log`,
+  `/tmp/meowy-integer-block-charges.log`.
+- Ten integer accounting groups and one native integration group pass: exact and
+  grouped counts, sequential negative-literal charges, first-error order, runtime
+  and eligibility isolation, repeated reads, block operators, skipped comparisons,
+  extents, root/depth/mode cleanup and type-query non-evaluation. Native checks and
+  debug/release runs retain imported widths and startup order. Log:
+  `/tmp/meowy-integer-charge-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Integer and other charging domains and proof
-  evaluation remain incomplete. No unsupported query counts as conformance success.
+  lower B001 bootstrap limits first. Remaining charging domains and proof evaluation
+  are incomplete. No unsupported query counts as conformance success.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -84,7 +87,7 @@ prerequisite is integer and remaining logical charging; query outcomes remain ga
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Logical charges cover type materialization, required statements/blocks and boolean evaluation; proof evaluation remains gated. |
+| Compiler | Logical charges cover type materialization, required statements/blocks and integer/boolean evaluation; proof evaluation remains gated. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -120,8 +123,9 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Extend logical charging to integer evaluation and retained-input work, then
-   projection/type-expression details, aggregate/text/helper counters and query budgets. Keep bootstrap
+1. Extend logical charging to projection ancestors and retained-input work, then
+   other type-expression dispatch, aggregate/text/helper counters, rootless extents
+   and deferred-query budgets. Keep bootstrap
    guards separate. Pending query identities and the post-ownership B001 gate are
    implemented; outcomes and flags remain gated. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered

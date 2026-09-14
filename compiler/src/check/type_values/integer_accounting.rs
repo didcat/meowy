@@ -242,3 +242,26 @@ pub(crate) fn logical_integer_reads_do_not_copy_retained_bootstrap_work() {
             .unwrap();
     }
 }
+
+#[test]
+pub(crate) fn logical_integer_type_query_operands_remain_unevaluated() {
+    let mut costs = Vec::new();
+    for result in ["<int32>", "n<>", "(n/0)<>"] {
+        let source = format!("kind<Type>:{{n:1+2;->{result}}}");
+        let block = crate::parser::parse(&source).unwrap();
+        let StmtKind::Bind { value, ty, .. } = &block.stmts[0].kind else {
+            panic!()
+        };
+        let mut checker = Checker::new();
+        costs.push(
+            checker
+                .required_root(value.span, |checker| {
+                    checker.meta_binding(value, ty.as_ref().unwrap())?;
+                    let budget = &checker.type_work.as_ref().unwrap().logical;
+                    Ok((budget.steps, budget.types))
+                })
+                .unwrap(),
+        );
+    }
+    assert_eq!(costs, vec![(9, 3); 3]);
+}

@@ -515,3 +515,27 @@ pub(crate) fn proof_revision_required_reads_preserve_facades_and_widths() {
         ],
     ).runs(b"data\nfacade\n7\n");
 }
+
+#[test]
+pub(crate) fn logical_integer_charging_preserves_imported_widths_and_startup() {
+    let case = case(
+        r#"m:@"./facade.mwy";d:@"debug";<Items>:{n:m.count+({->1});ok:n==3;|ok|-><uint8[n]>};x<Items>:[3,5,7];d.print(x[3])"#,
+        &[
+            (
+                "data.mwy",
+                r#"d:@"debug";d.print("data");->count<uint32>:2"#,
+            ),
+            ("facade.mwy", r#"m:@"./data.mwy";->count:m.count"#),
+        ],
+    );
+    for profile in ["debug", "release"] {
+        let output = case.command("check", &["--profile", profile]);
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(output.stdout.is_empty());
+    }
+    case.runs(b"data\n7\n");
+}

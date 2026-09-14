@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-14. Logical charges now cover required statements, blocks and boolean evaluation.
+Updated: 2026-09-14. Logical charges now include required integer evaluation.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -59,8 +59,8 @@ outcome is constructed. The reference remains authoritative.
   Existing constant folding or `inputs` evidence cannot provide this guarantee.
 - `type_values/work.rs::Work` retains bootstrap limits (4096 visits, 64 levels,
   16384 nodes), with B001 failures. Its separate `required::Budget` currently charges
-  type materialization, required statements/blocks and outer boolean evaluation.
-  Integer/projection/input work, aggregate/text/helper counters and pending-query
+  type materialization, required statements/blocks and outer integer/boolean evaluation.
+  Projection/input work, other type-expression dispatch, aggregate/text/helper counters and pending-query
   budget retention remain prerequisites. Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
@@ -73,37 +73,32 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Integer charging plan
+### Logical integer charges
 
-Trace result: scalar_input validates eligibility and retained failures before
-integer_result evaluates through the shared expression checker. Do not charge
-that validation walk. In an active required root, raw_expression owns integer
-literal/name/outer-field and arithmetic nodes. Immediate negative literals bypass
-child expression dispatch, so their operator and literal need two charges while
-preserving the signed-minimum rule. Runtime checking without required mode is free.
+`a9d2c9e` adds `charge_integer` at raw_expression, guarded by required mode and an
+active work root. It charges integer literal/name/outer-field and arithmetic nodes.
+Grouping adds no charges. Immediate negative literals charge operator and literal
+sequentially, preserving consumed work on failure and the signed-minimum rule.
+Eligibility, hint/form walks and runtime folding are not charged as evaluation.
 
-Block arithmetic is separate: integer_operand owns its manually evaluated unary
-and binary nodes; fallback leaves delegate to raw_expression and blocks delegate
-to scoped_output. Groups and hint/form checks add no charges. List extents inside
-existing roots already use these paths; plain extents without a root remain separate.
+`623c451` adds charges for unary/binary nodes manually evaluated by integer_operand.
+Fallback leaves still use the shared evaluator; scoped_output owns block charges.
+Integer comparisons and list extents inside required roots reuse these paths.
+Plain extents without a work root retain their existing behavior and remain outside
+logical-root accounting. Legacy Input.work is not copied into logical counters.
 
-Commit order: (1) shared integer evaluation hook with grouping, order, eligibility
-and runtime-isolation tests; (2) delegated block arithmetic with comparison/extent
-integration and limits; (3) docs/handoffs and the full compiler gate. Existing
-partial-count tests will gain the newly implemented integer contributions.
-Projection ancestors, retained initializer work, other type-expression dispatch,
-aggregate/text/helper counters and deferred-query budgets remain open.
-The shared hook passes all 128 required-evaluation tests. Negative-literal
-operator/literal charges are now sequential so grouped and ungrouped forms retain
-the same consumed prefix when the second step exhausts the budget. A dedicated
-regression passes. All 129 required-evaluation tests pass; log:
-`/tmp/meowy-integer-node-charges.log`. No outstanding failures. Next: manual
-block operators and comparison/extent integration. Shared hook commit: `a9d2c9e`.
-Manual block-arithmetic operators now call the same charging helper, while their
-leaves and blocks retain their existing owners. Five focused integration groups
-pass. All 134 required-evaluation tests pass; log:
-`/tmp/meowy-integer-block-charges.log`. No outstanding failures. Next: combined
-source integration/docs and the full compiler gate. Proof evaluation remains gated.
+All 129 required-evaluation tests passed after the shared hook; all 134 passed
+after delegated operators. Ten focused integer groups and one native group pass:
+exact/grouped costs, first-error order, repeated reads, negative literals, block
+arithmetic, skipped comparisons, extents, root/depth/mode restoration, type-query
+non-evaluation and imported widths/startup in debug/release. Logs:
+`/tmp/meowy-integer-node-charges.log`, `/tmp/meowy-integer-block-charges.log`,
+`/tmp/meowy-integer-charge-integration.log`. The full compiler gate passes.
+No outstanding failures remain.
+
+Remaining domains: projection ancestors and other type-expression dispatch,
+retained initializer accounting, aggregate/text/helper counters, rootless extent
+roots and pending-query budget retention. Proof evaluation stays gated.
 
 ### Statement and boolean logical charges
 
@@ -126,8 +121,8 @@ failure cleanup and independent roots. Logs: `/tmp/meowy-statement-charges.log`,
 `/tmp/meowy-boolean-charges.log`, `/tmp/meowy-charge-integration.log`.
 The complete compiler gate passes. No outstanding failures remain.
 
-Remaining domains: integer evaluation, type-expression dispatch beyond type
-materialization, projection ancestors and retained initializer work, aggregate/text
+Integer evaluation now extends these charges. Remaining domains include other
+type-expression dispatch, projection ancestors and retained initializer work, aggregate/text
 and helper charges, and pending-query budget retention. Proof evaluation stays gated.
 
 ### Logical type accounting
@@ -156,7 +151,7 @@ no outstanding failures remain. Span is now imported directly by the legacy test
 module that uses it, so production and test lint checks both pass.
 
 Statement/block and boolean charging now extend this ledger. Remaining logical
-domains must not copy bootstrap traversal counts; integer/type-expression dispatch,
+domains must not copy bootstrap traversal counts; other type-expression dispatch,
 projection/input work, aggregate/text/helper counters and pending-query budget
 retention are still open. Preserve B001 infrastructure limits and keep proof evaluation gated.
 
@@ -475,20 +470,22 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 877
-  library/878 native tests (1755 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 887
+  library/879 native tests (1766 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-statement-boolean-gate.log`.
-- Statement/block charging passed 119 required-evaluation tests; boolean charging
-  passed 123. Logs: `/tmp/meowy-statement-charges.log`,
-  `/tmp/meowy-boolean-charges.log`.
-- Nine accounting integration groups pass: exact counts, grouping, skipped and
-  selected paths, repeated reads, block equality, nested budget failures, scope/depth
-  cleanup, independent roots and original input errors. Log:
-  `/tmp/meowy-charge-integration.log`.
+  debug/release. Log: `/tmp/meowy-integer-charge-gate.log`.
+- The shared integer hook passed 129 required-evaluation tests; delegated arithmetic
+  passed 134. Logs: `/tmp/meowy-integer-node-charges.log`,
+  `/tmp/meowy-integer-block-charges.log`.
+- Ten integer accounting groups and one native integration group pass: exact and
+  grouped counts, sequential negative-literal charges, first-error order, runtime
+  and eligibility isolation, repeated reads, block operators, skipped comparisons,
+  extents, root/depth/mode cleanup and type-query non-evaluation. Native checks and
+  debug/release runs retain imported widths and startup order. Log:
+  `/tmp/meowy-integer-charge-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Integer and other charging domains and proof
-  evaluation remain incomplete. No unsupported query counts as conformance success.
+  lower B001 bootstrap limits first. Remaining charging domains and proof evaluation
+  are incomplete. No unsupported query counts as conformance success.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -562,15 +559,15 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Trace integer charge ownership through `type_values/scalars.rs::scalar_input`,
-   `integer_result`, `integers.rs`, `operands.rs`, `list.rs` and runtime expression
-   folding before adding logical hooks. Avoid charging eligibility walks as
-   evaluation or charging delegated block nodes twice. Keep retained Input.work
-   separate from logical reads/materialization. Record the next commit slices and
-   test grouping, first-error order, repeated operands and skipped comparisons.
-   Projection ancestors, other type-expression dispatch, aggregate/text/helper
-   counters and pending-query budget retention remain subsequent work. Keep proof
-   outcomes gated until complete accounting and dependency tracking are connected.
+1. Trace projection-ancestor charge ownership in `type_values/fields.rs`,
+   `booleans.rs` and the required field branch of `check/expressions.rs`. Outer
+   field nodes are charged; ancestor lookup must be charged only on evaluation,
+   not on repeated eligibility/form traversal. Plan separate slices and test
+   grouped paths, nested records, module identities, repeated reads and first errors.
+   Retained initializer work requires its own accounting decision; do not copy
+   bootstrap Input.work. Other type-expression dispatch, aggregate/text/helper
+   counters, rootless extents and pending-query budget retention remain subsequent
+   work. Keep proof outcomes gated until accounting and dependency rules are complete.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.
