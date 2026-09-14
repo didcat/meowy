@@ -37,6 +37,63 @@ pub(crate) struct Input {
 }
 
 impl Checker {
+    pub(crate) fn export_type_value(
+        &mut self,
+        label: Option<&str>,
+        name: Option<&str>,
+        annotation: Option<&ast::TypeExpr>,
+        mutable: bool,
+        value: &ast::Expr,
+        span: Span,
+    ) -> Result<bool> {
+        let (Some(name), Some(annotation)) = (name, annotation) else {
+            return Ok(false);
+        };
+        if matches!(value.kind, ExprKind::Function { .. }) || !self.meta_annotation(annotation)? {
+            return Ok(false);
+        }
+        if label.is_some()
+            || self.owner != 0
+            || self.scopes.len() != self.module.depth
+            || self
+                .frames
+                .last()
+                .is_none_or(|frame| frame.id != self.module.block)
+        {
+            return Err(Diagnostic::unsupported(
+                "non-top-level type-value exports",
+                span,
+            ));
+        }
+        if mutable {
+            return Err(Diagnostic::unsupported("mutable type-value exports", span));
+        }
+        if !self.flow.spend(name.len() + self.module.values.len() + 1) {
+            return Err(Diagnostic::unsupported(
+                "module export budget exhausted",
+                span,
+            ));
+        }
+        if self.module.values.contains_key(name)
+            || self
+                .frames
+                .last()
+                .unwrap()
+                .slots
+                .contains_key(&Some(name.into()))
+        {
+            return Err(Self::error(
+                "E205",
+                format!("module export `{name}` is already emitted"),
+                span,
+            ));
+        }
+        let value = self.meta_binding(value, annotation)?;
+        self.declare(name, value.clone(), span)?;
+        self.module.values.insert(name.into(), value);
+        Ok(true)
+    }
+
     pub(crate) fn module_value(
         &mut self,
         value: &ast::Expr,

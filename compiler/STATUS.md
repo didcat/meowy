@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Ordinary core.Type binding roots and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Named type-value export checking is implemented.
+Focused export tests pass; full-series validation is pending. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -216,21 +216,30 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Ordinary metatype roots are complete across `1d4a58e` (root boundary), `9320e8e`
-(statements) and `dbc1a8b` (integration). The guide and compiler gate pass.
+Named immutable type-value exports are the active slice. Investigation found that
+`Module.values` and `module_member` already carry `Value::Type`; ordinary emission
+handling reaches runtime type lowering before it can register a metatype export.
+Reuse `meta_annotation` and `meta_binding`, keeping function declarations on their
+existing path. Compile-time exports must not enter runtime slots or module inputs.
 
-Next, investigate named immutable type-value exports. Trace `check/exports.rs` and
-ordinary emission handling: module `values` already retains compile-time identities,
-but typed named metatype emissions still enter unsupported runtime/storage paths.
-Record dependency-ordered commits:
+Dependency-ordered commit plan:
 
-1. Reuse bounded metatype evaluation for an unconditional top-level export without
-   constructing a runtime field; preserve function and data export paths.
-2. Retain imported Value::Type identity and explicit re-export semantics, enforcing
-   annotation, privacy, collisions and non-top-level gates with focused tests.
-3. Verify source work/errors, documentation and module startup; update handoffs and
-   run the compiler gate across the series.
+1. Add unconditional top-level annotated metatype export checking and focused HIR,
+   diagnostic and native tests. Preserve mutable, conditional and nested gates.
+2. Verify imported identities, explicit re-exports, privacy, collisions and lexical
+   metatype aliases through file graphs; change lookup only if evidence requires it.
+3. Cover required work/errors, documentation and startup, document the supported
+   syntax, and run `python3 -B tools/verify.py --compiler` across the series.
 
-Keep first-class metatype values, type-of-type queries, runtime type containers,
-type-producing/generic helper functions and other scalar kinds separate. Proof needs
-its own implementation plan. Do not push or bump release versions here.
+Acceptance: exported concrete types can construct imported runtime data without
+runtime type storage; ordinary module effects still execute once in dependency order.
+Step 1 implementation reuses bounded metatype roots and stores only `Value::Type`
+in module/lexical maps. Two checker tests and one native debug/release group pass;
+HIR has no type fields, locals, emissions or scalar inputs. Mutable/conditional/
+nested exports, wrong kinds and collisions retain explicit diagnostics.
+Full Rust validation passed: 829 library/849 native tests, fmt and Clippy.
+Logs: `/tmp/meowy-type-exports-focused.log`, `/tmp/meowy-type-exports-slice1.log`.
+Step 1 is ready to commit; next verify file-graph re-export and privacy behavior.
+The prior compiler gate above is the baseline. Keep first-class metatype values, type-of-type queries, runtime type
+containers and type-producing/generic helpers separate. Proof needs its own plan.
+Do not push or bump release versions here.

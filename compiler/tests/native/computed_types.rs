@@ -482,3 +482,15 @@ pub(crate) fn ordinary_metatype_roots_preserve_original_initializer_failures() {
         }
     }
 }
+
+#[test]
+pub(crate) fn named_type_exports_construct_imported_runtime_data() {
+    super::file_modules::case(
+        "m:@\"./types.mwy\";v<(m.items)>:[3,7];d:@\"debug\";d.print(v[2]);d.print(m.get())",
+        &[(
+            "types.mwy",
+            "->element<Type>:<int32>;->items<Type>:{-><(element)[4]>};->get<int32>:(){->9}",
+        )],
+    )
+    .runs(b"7\n9\n");
+}

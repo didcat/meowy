@@ -412,6 +412,9 @@ impl Checker {
         value: &ast::Expr,
         span: Span,
     ) -> Result<Vec<hir::Stmt>> {
+        if self.export_type_value(label, name, annotation, mutable, value, span)? {
+            return Ok(Vec::new());
+        }
         if self.export_function(label, name, annotation, mutable, value, span)? {
             return Ok(Vec::new());
         }

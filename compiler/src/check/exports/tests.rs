@@ -297,3 +297,60 @@ pub(crate) fn boolean_primaries_preserve_emission_identity_tail_work_and_errors(
         assert!(check(source).module.primary.is_none(), "{source}");
     }
 }
+
+#[test]
+pub(crate) fn named_type_exports_keep_concrete_payloads_without_runtime_fields() {
+    use crate::check::Value;
+    use crate::hir::Type;
+    let source = "c:@\"core\";<Kind>:<c.Type>;private<Kind>:<uint8>;->element<Kind>:private;->items<Type>:{count:4;-><(element)[count]>};->copy<Type>:items";
+    let parsed = crate::parser::parse(source).unwrap();
+    let mut checker = crate::check::Checker::new();
+    let block = checker.block(&parsed, None, None).unwrap();
+    assert!(block.stmts.is_empty());
+    assert!(checker.locals.is_empty());
+    assert!(checker.module.inputs.is_empty());
+    assert!(checker.module.primary.is_none());
+    assert_eq!(checker.module.values.len(), 3);
+    assert!(matches!(
+        checker.module.values["element"],
+        Value::Type(Type::Int {
+            bits: 8,
+            signed: false
+        })
+    ));
+    let Value::Type(items) = &checker.module.values["items"] else {
+        panic!("type value")
+    };
+    let Value::Type(copy) = &checker.module.values["copy"] else {
+        panic!("type value")
+    };
+    assert_eq!(items, copy);
+    crate::compile(&format!("{source};v<(copy)>:[1,2,3,4]")).unwrap();
+}
+
+#[test]
+pub(crate) fn named_type_exports_preserve_kinds_scope_and_storage_gates() {
+    for (source, code) in [
+        ("->kind<Type>:=<int32>", "B001"),
+        ("|true|->kind<Type>:<int32>", "B001"),
+        ("|false|->kind<Type>:<int32>", "B001"),
+        ("row:{->kind<Type>:<int32>}", "B001"),
+        ("f<int32>:(){->kind<Type>:<int32>;->1}", "B001"),
+        ("->kind<Type>:7", "E207"),
+        ("->kind<Type>:{->false}", "E207"),
+        ("->kind<Type>:missing", "E201"),
+        ("->kind<Type>:<Type>", "B001"),
+        ("->make<Type>:(){-><int32>}", "B001"),
+        ("->kind<Type>:<int32>;->kind<Type>:<uint8>", "E205"),
+        ("->kind:7;->kind<Type>:<int32>", "E205"),
+        ("->kind<Type>:<int32>;->kind:7", "E205"),
+        ("kind:7;->kind<Type>:<int32>", "E203"),
+        ("->kind<Type>:{local:4;-><int32>};outside:local", "E201"),
+        ("->kind<Type>:<int32>;p:&kind", "B001"),
+    ] {
+        let error = crate::compile(source).unwrap_err().remove(0);
+        assert_eq!(error.code, code, "{source}: {error:?}");
+    }
+    crate::compile("<Type>:<uint8>;->n<Type>:4").unwrap();
+    crate::compile("->kind<Type>:<int32>;->n<(kind)>:4;->get<int32>:(){->7}").unwrap();
+}
