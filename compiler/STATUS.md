@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Bounded concrete type subtraction is implemented.
-The final compiler gate and guide execution pass. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. The first executable proof series is planned below.
+Subtraction remains validated; proof remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -19,6 +19,103 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
+## Executable proof plan
+
+The next milestone is bounded type-only `proof.can_copy<T>()`, with opaque static
+results, direct flags, `assert` and `expect<S>`. Begin with concrete types already
+represented by the bootstrap; defer value observations, place probes, generic
+analysis, bounds, composition helpers and static descriptor exports. This is a
+partial package milestone, not revision 1 qualification. No dispatch changes have
+been made. The reference remains authoritative for supported operations.
+
+### Prerequisites found in the current implementation
+
+- `src/foundation.rs` resolves four built-in modules; `proof` is absent.
+  `check/names.rs::symbol` resolves imports and members through lexical identities,
+  while `spec` resolves type names. Extend these paths together; aliases must retain
+  identity and same-spelling user bindings must remain ordinary bindings.
+- `check.rs::Value` separates static scalars, records and types, but has no opaque
+  descriptor or deferred proof value. `Spec::Meta` represents `core.Type`, not
+  proof metadata. Results need a fixed declared `proof.Result` type distinct from
+  the active nominal alternative. Do not encode them as ordinary runtime records
+  or add a native foundation layout. Copies retain origin/target/revision metadata.
+- `check/functions.rs::call` evaluates ordinary arguments through `expr` and builds
+  runtime calls. Observation arguments must bypass that path only after intrinsic
+  identity is resolved. Type-only queries need no place observation machinery;
+  future value/place queries need validated source descriptions without loads,
+  loans, index evaluation or last-use effects.
+- `check.rs::check_imports` checks the body before borrow and loan validation.
+  Queue proof obligations with fixed signatures while checking; solve them only
+  after ordinary validation succeeds. Type capability answers need a type walk,
+  not a scalar CFG analysis. They still must not discharge assertions early or
+  suppress ordinary failures in uncalled/runtime-skipped checked bodies.
+- Scalar constants and initializer evidence currently have no proof-dependency
+  marks. Add transitive data/control dependency tracking before exposing flags;
+  type formation and query availability must reject E225. Ordinary runtime
+  conditions derived from flags retain both successors for base typing/ownership.
+  Existing constant folding or `inputs` evidence cannot provide this guarantee.
+- `type_values.rs::Work` is bootstrap work (4096 visits, 64 levels, 16384 nodes),
+  with B001 failures. It is not the revision 1 logical budget. Proof needs shared
+  required-root counters for steps, aggregate slots, text, types and helper depth;
+  keep infrastructure limits separate. Never relabel bootstrap exhaustion E220.
+- `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
+  audit its domain before dispatch. `<never>` and compile-time-only types are
+  explicitly Never, but `Type::is_copy` currently returns true for `Type::Never`;
+  a direct call would therefore give the wrong proof result. Unsupported type
+  representations remain B001, and malformed
+  types retain ordinary errors; neither is an Indeterminable result.
+- `diagnostic.rs` carries one span and a message; `driver.rs::report_at` maps it
+  to an owning source. E224 also needs deterministic query origins, required/actual
+  alternatives, capability facts and revision. Preserve private file boundaries;
+  any source-note support should be an independently validated prerequisite.
+
+### Dependency-ordered commit series
+
+Each numbered item is a review concern, not permission for an oversized commit.
+Split integration further if it exceeds the repository review threshold. Keep
+source-visible queries unsupported until their prerequisite checks are connected.
+
+1. Add partial module identity and typed `proof.revision` (`uint32`, value 1).
+   Reuse static scalar resolution. Test import/member aliases, lexical shadowing,
+   exact queried width, required reads and no module initialization effects.
+   Query members remain B001. This is package metadata, not an executable proof.
+2. Add internal nominal descriptor identity, fixed signatures and retained origins.
+   Cover Result versus active alternative, metadata copying, forbidden truthiness,
+   forgery and runtime escape (E223), with no HIR runtime storage. Keep public
+   construction gated until obligation evaluation is ready.
+3. Implement logical required-root accounting independently of bootstrap guards.
+   Test exact/below/above limits, nested root sharing, independent roots, restored
+   state after errors and identical cached/uncached charges. E220 must name root,
+   counter and limit; include aggregate/origin materialization, not just visits.
+4. Add deferred obligations after ordinary checking and proof-dependency propagation.
+   Keep fixed query signatures usable before answers exist. Cover copied/arithmetic
+   flags, controlled query availability, type extents and both runtime branches;
+   E225 must precede affected query evaluation. Preserve original ordinary errors.
+5. Add bounded type-only `can_copy<T>()` classification and charged origin creation.
+   Connect only after steps 2-4. Cover integers, shared/exclusive references,
+   supported aggregates, never and metadata types; audit nominal capabilities.
+   Reject bad arity with E212, malformed types with their original error, and
+   unsupported place/generic forms with B001. Do not fabricate Indeterminable.
+6. Add direct result flags, `assert` and `expect<S>` with diagnostic evidence.
+   Test A/N outcomes through source, I assertion behavior with internal descriptors
+   until an I-producing query exists, invalid expectation types (E223), mismatch
+   (E224), fixed type queries and failures in uncalled/runtime-skipped bodies.
+   Add source-note rendering separately first if needed for multi-file origins.
+7. Integrate aliases, file facades/privacy, repeated roots and debug/release native
+   checks; compare runtime behavior and HIR with unused queries removed. Add the
+   supported-subset guide, run `python3 -B tools/verify.py --compiler`, and update
+   both handoffs. Unsupported proof fixtures do not count as qualification passes.
+
+Stop condition: type-only copy queries can be checked, inspected and asserted with
+correct phase/dependency/budget behavior and no runtime query effects. Broader
+profile 1 value/ownership analysis requires its own frozen graph and canonical
+transfer plan; existing optimizer or borrow answers are not substitutes.
+
+Planning validation: source/reference inspection and all four default
+`python3 -B tools/verify.py` checks pass (16 tooling tests, local links, catalog and
+schemas). Log: `/tmp/meowy-proof-plan-checks.log`. No proof example was executed;
+the compiler/runtime gates below are retained subtraction evidence, not new runs.
+
 ## Type subtraction series
 
 Dependency-ordered slices:
@@ -35,7 +132,7 @@ Dependency-ordered slices:
 Seven library/five native focused groups, fmt and Clippy pass. No implementation
 failures remain. Logs: `/tmp/meowy-subtraction-parser.log`,
 `/tmp/meowy-subtraction-evaluator.log`, `/tmp/meowy-subtraction-integration.log`.
-No outstanding failures. Next: plan the first executable proof slice.
+No outstanding failures. Next: implement the proof metadata prerequisite above.
 
 ## Current compiler slice
 
@@ -287,11 +384,12 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Plan the first executable proof slice against `docs/reference/stdlib/proof.md`,
-   especially phase ordering, diagnostic rules, work accounting and qualification.
-   Trace `foundation.rs`, `check/names.rs` and the required evaluator. Identify the
-   needed static result/observation prerequisites before changing dispatch or checks;
-   record dependency-ordered slices and meaningful acceptance/rejection tests.
+1. Implement step 1 of the [proof series](#dependency-ordered-commit-series) in
+   `src/foundation.rs` and `src/check/names.rs`, with checker/native regressions:
+   partial import identity and typed revision metadata only. Verify aliases,
+   shadowing, required reads, uint32 identity and unsupported query diagnostics.
+   Then proceed to descriptor representation; do not enable queries before the
+   deferred-obligation, dependency and logical-accounting prerequisites are ready.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.

@@ -40,8 +40,16 @@ live in `compiler/docs/`.
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
+The first executable proof series is now planned: bounded type-only copy queries,
+static descriptors and assertions. Phase/dependency tracking and logical root
+accounting must precede query execution. Proof remains specification-only.
+
 ## Actual validation
 
+- Proof planning: source/reference inspection and all four default
+  `python3 -B tools/verify.py` checks pass, including 16 tooling tests.
+  Log: `/tmp/meowy-proof-plan-checks.log`. No compiler or runtime execution was
+  rerun for this documentation slice; the following evidence is from subtraction.
 - `python3 -B tools/verify.py --compiler`: all ten checks passed, including 847
   library/871 native tests (1718 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
@@ -97,7 +105,9 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Plan the first executable proof slice against its qualification contract;
-   see the [compiler handoff](compiler/STATUS.md#next-steps).
+1. Implement the planned proof metadata prerequisite: partial module identity and
+   typed revision constant, with queries still gated. The
+   [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered
+   descriptor, accounting, phase/dependency and type-only query slices.
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.
