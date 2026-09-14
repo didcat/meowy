@@ -34,8 +34,32 @@ and may determine a type extent. General extents outside an active required bloc
 retain their existing syntax restrictions.
 
 The [proof reference](../../docs/reference/stdlib/proof.md) defines a larger contract.
-Queries, descriptors, flags and assertions remain B001; this metadata slice does
-not implement or qualify executable proof analysis.
+Queries, result construction, flag inspection and assertions remain B001; this
+metadata slice does not implement or qualify executable proof analysis.
+
+## Proof descriptor type aliases
+
+The type namespace recognizes `proof.Always`, `proof.Never`,
+`proof.Indeterminable`, `proof.Result` and `proof.Flags` as opaque static identities.
+Local aliases and explicit file-module type exports preserve these identities and
+privacy. They add no runtime storage and retain their names in generated API pages.
+
+```meowy
+proof : @"proof"
+<Outcome> : <proof.Result>
+<Guaranteed> : <proof.Always>
+<Again> : <Outcome>
+```
+
+These declarations name types; they construct no proof result. An attempted
+runtime binding, record field, list element or reference using a descriptor type
+reports E223. No same-shaped record can provide a runtime descriptor value.
+
+`proof.Result` names the reference's closed result union, but the bootstrap cannot
+yet construct descriptor unions with adjacent type suffixes. Those constructors,
+first-class descriptor type values, descriptor function signatures and `Bounds<T>`
+remain B001. Active alternatives, retained observation origins and descriptor
+inspection still require the later metadata evaluator.
 
 ## Nominal types
 

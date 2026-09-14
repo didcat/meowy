@@ -153,3 +153,42 @@ pub(crate) fn exported_types_documentation_keeps_attachment_signatures_and_publi
     assert_eq!(output.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E803\""));
 }
+
+#[test]
+pub(crate) fn proof_descriptor_aliases_cross_facades_without_runtime_payloads() {
+    case(
+        r#"m:@"./facade.mwy";<Local>:<m.Outcome>;d:@"debug";d.print(m.Outcome)"#,
+        &[
+            ("types.mwy", r#"p:@"proof";d:@"debug";d.print("types");<Private>:<p.Result>;-><Outcome>:<Private>"#),
+            ("facade.mwy", r#"m:@"./types.mwy";-><Outcome>:<m.Outcome>;->Outcome:7"#),
+        ],
+    ).runs(b"types\n7\n");
+    for (entry, code) in [
+        (r#"m:@"./facade.mwy";value<m.Outcome>:null"#, "E223"),
+        (r#"m:@"./facade.mwy";<Hidden>:<m.Private>"#, "E202"),
+    ] {
+        let case = case(
+            entry,
+            &[
+                (
+                    "types.mwy",
+                    r#"p:@"proof";<Private>:<p.Result>;-><Outcome>:<Private>"#,
+                ),
+                ("facade.mwy", r#"m:@"./types.mwy";-><Outcome>:<m.Outcome>"#),
+            ],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
+            assert!(
+                error.contains(&format!("\"path\":\"{}\"", case.source.display())),
+                "{error}"
+            );
+            if code == "E223" {
+                assert!(error.contains("proof.Result"), "{error}");
+            }
+        }
+    }
+}

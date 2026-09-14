@@ -176,3 +176,21 @@ pub fn documentation_cli_keeps_unavailable_modes_and_assets_explicit() {
         Some(2)
     );
 }
+
+#[test]
+pub fn proof_descriptor_documentation_preserves_nominal_alias_names() {
+    let case = Case::new(
+        r#"p:@"proof";#| Outcome. |#<Outcome>:<p.Result>;#| Guaranteed. |#<Guaranteed>:<p.Always>;#| Alias of [[<Outcome>]]. |#<Again>:<Outcome>"#,
+    );
+    let output = case.path.join("site");
+    let built = doc(&case, "build", &["--output", output.to_str().unwrap()]);
+    assert!(
+        built.status.success(),
+        "{}",
+        String::from_utf8_lossy(&built.stderr)
+    );
+    let page = fs::read_to_string(output.join("index.html")).unwrap();
+    assert!(page.contains("proof.Result"));
+    assert!(page.contains("proof.Always"));
+    assert!(page.contains("Again"));
+}

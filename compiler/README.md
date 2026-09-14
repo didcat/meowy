@@ -10,7 +10,9 @@ borrow contracts, shared reborrows, last-use checks for mutable owners, and inli
 bounded lists of copyable reference-free elements. It is not the complete v0.0.1 language.
 The [foundation values](docs/FOUNDATION.md) include static heap handles and nominal
 allocation-failure transport. [Proof revision metadata](docs/FOUNDATION.md#proof-revision-metadata)
-provides a static `uint32` revision constant; proof queries remain unimplemented.
+provides a static `uint32` revision constant. Opaque
+[descriptor type aliases](docs/FOUNDATION.md#proof-descriptor-type-aliases) remain
+separate from runtime storage; proof queries remain unimplemented.
 [Allocator return bounds](docs/ALLOCATOR_BOUNDS.md) track
 public input lifetimes through immutable values, mutable handles/tagged records,
 field writes, shared-reference members, restart headers and shared snapshots. Owning-string

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Proof revision metadata is implemented and validated.
+Updated: 2026-09-13. Proof revision metadata and descriptor type aliases are implemented.
 Proof queries remain unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -26,17 +26,20 @@ results, direct flags, `assert` and `expect<S>`. Begin with concrete types alrea
 represented by the bootstrap; defer value observations, place probes, generic
 analysis, bounds, composition helpers and static descriptor exports. This is a
 partial package milestone, not revision 1 qualification. Only module/revision
-metadata is implemented so far. The reference remains authoritative.
+metadata and descriptor type aliases are implemented so far. No result value or
+observation is constructed. The reference remains authoritative.
 
 ### Prerequisites and current integration
 
 - `src/foundation.rs` now includes partial `proof` module identity;
   `check/names.rs::symbol` provides typed revision metadata. Module/member aliases
   retain identity and same-spelling user bindings remain ordinary bindings.
-  Descriptor type names and query dispatch remain unimplemented.
+  Descriptor type names now resolve to `Spec::Descriptor`; query dispatch remains
+  unimplemented.
 - `check.rs::Value` separates static scalars, records and types, but has no opaque
-  descriptor or deferred proof value. `Spec::Meta` represents `core.Type`, not
-  proof metadata. Results need a fixed declared `proof.Result` type distinct from
+  descriptor or deferred proof value. `Spec::Descriptor` names static descriptor
+  types without adding runtime `hir::Type` variants. `Spec::Meta` still represents
+  `core.Type`. Results need a fixed declared `proof.Result` type distinct from
   the active nominal alternative. Do not encode them as ordinary runtime records
   or add a native foundation layout. Copies retain origin/target/revision metadata.
 - `check/functions.rs::call` evaluates ordinary arguments through `expr` and builds
@@ -85,8 +88,14 @@ declared type, active alternative and retained origins, before public constructi
 Nominal identity/storage boundaries pass five proof checker groups and the two
 revision native groups. Required descriptor aliases charge one bootstrap type node
 and restore lexical scope. No outstanding failures. Log:
-`/tmp/meowy-proof-descriptor-tests.log`. Next: native facade/privacy/documentation
-integration, then the full compiler gate. Result values/origins remain unimplemented.
+`/tmp/meowy-proof-descriptor-tests.log`. Native facade/privacy/documentation
+integration and the full compiler gate now pass. Result values/origins remain
+unimplemented.
+Identity commit: `2f09968`. Native facade/privacy and rendered documentation
+regressions pass. Five proof checker groups and four native groups are now covered;
+log: `/tmp/meowy-proof-descriptor-integration.log`. No outstanding failures.
+The alias guide passes checking in both profiles. Next: result metadata and
+deferred obligations, retaining the query gates.
 
 ### Dependency-ordered commit series
 
@@ -134,7 +143,8 @@ Step 1 metadata is complete in two slices: `9ddefca` adds module/static scalar
 identity; the current integration adds direct required member reads and structural
 checks. Immutable unannotated aliases remain static; annotated/mutable scalar
 bindings can materialize runtime values. HIR tests verify unused aliases create no
-statements, functions or locals. Query members/types remain B001.
+statements, functions or locals. Query members remain B001; named descriptor
+types are now recognized.
 
 Three checker groups and two native groups pass, including debug/release, exact
 widths, skipped failures, lexical shadowing, function-local required reads and
@@ -143,7 +153,7 @@ expression visit. No outstanding focused failures. Logs:
 `/tmp/meowy-proof-metadata-tests.log`, `/tmp/meowy-proof-required-tests.log`.
 The full compiler gate passes. The [foundation guide](docs/FOUNDATION.md#proof-revision-metadata)
 documents the subset; its example prints `1` and `7` in debug/release.
-Next: internal descriptor identity; proof queries remain gated.
+Next: result values and deferred obligations; proof queries remain gated.
 
 Planning validation: source/reference inspection and all four default
 `python3 -B tools/verify.py` checks pass (16 tooling tests, local links, catalog and
@@ -336,18 +346,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 850
-  library/873 native tests (1723 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 852
+  library/875 native tests (1727 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-proof-metadata-gate.log`.
-- Three proof metadata checker groups and two native groups cover alias/shadowing
-  behavior, uint32 identity, runtime scalar materialization, zero-HIR unused
-  aliases, direct required reads, skipped diagnostics and facade startup order.
-  Focused log: `/tmp/meowy-proof-required-tests.log`.
+  debug/release. Log: `/tmp/meowy-proof-descriptor-gate.log`.
+- Five proof checker groups and four native groups cover revision identity/reads,
+  descriptor aliases, runtime storage rejection, zero-HIR unused metadata, scope,
+  file facades/privacy and rendered documentation.
+  Focused log: `/tmp/meowy-proof-descriptor-integration.log`.
 - The foundation guide example prints `1` and `7` in debug/release.
   Extracted source: `/tmp/meowy-proof-revision-guide.mwy`. Documentation links
-  were rechecked after the guide update: 1190 links, zero failures.
-- Proof queries/descriptors are unimplemented; no proof analysis fixture passed.
+  pass in the final gate. The descriptor alias guide passes `check` in debug/release;
+  source: `/tmp/meowy-proof-descriptor-guide.mwy`.
+- Proof queries and constructed result values are unimplemented; no proof analysis
+  fixture passed.
   Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -420,12 +432,14 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Implement step 2 of the [proof series](#dependency-ordered-commit-series):
-   internal nominal descriptor identity, fixed signatures and retained origins.
-   Trace `check.rs::Value`/`Spec`, `check/names.rs::spec` and metadata bindings before
-   editing. Keep runtime HIR/storage separate; test active alternative versus
-   declared Result, copies, forgery and escape gates. Do not enable source queries
-   before deferred obligations, dependency tracking and logical accounting exist.
+1. Continue step 2 of the [proof series](#dependency-ordered-commit-series) beyond
+   completed static type aliases: model result values with a fixed declared Result,
+   separate active alternative and retained target/revision/source origins. Trace
+   `check.rs::Value`, required metadata copying and the post-ownership obligation
+   boundary before editing; avoid unused standalone representation scaffolding.
+   Test copied historical identity, non-forgeability, deterministic origin order
+   and absence of runtime storage. Queries must remain gated until deferred
+   obligations, dependency tracking and logical accounting are connected.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.
