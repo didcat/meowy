@@ -41,6 +41,57 @@ including calls through resolved aliases and calls after a primary emission.
 The checker does not execute them. This is a narrow effect check; source helper
 purity and transitive call analysis are not implemented by this slice.
 
+## Explicit type-value bindings
+
+Inside a required block, an immutable binding can declare `core.Type` as its kind:
+
+```meowy
+core : @"core"
+<Kind> : <core.Type>
+<Items> : {
+    element <Kind> : <int32>
+    result <core.Type> : {
+        count <uint8> : 4
+        -> <(element)[count]>
+    }
+    -> result
+}
+items <Items> : [3, 7]
+debug : @"debug"
+debug.print(items[2])
+```
+
+This prints `7`. The initializer must produce an existing supported type value.
+Type literals, type-value aliases, supported type queries and type-producing required
+blocks retain their concrete identity. A supported scalar/record result instead reports
+E207; source failures keep their own diagnostics and original spans.
+
+`Type` is also available in the prelude type namespace. Core module aliases, local type
+aliases and explicitly exported/imported metatype aliases preserve the same kind.
+Names remain shadowable: `<Type> : <uint8>` makes a local `Type` annotation an ordinary
+integer annotation. A file exporting its own type named `Type` does not become core.
+Facades must explicitly re-export type aliases; `-> module` does not forward them.
+
+The checker keeps this kind outside runtime HIR. No runtime locals or native layouts
+are created for typed required bindings. Data types containing `core.Type`, including
+record fields, list elements, references and unions, report E211 when resolved through
+the data-type path. Type-producing function signatures remain explicitly unsupported.
+
+Each selected annotation charges one type node, in addition to the existing type
+initializer/materialization work. Aliases, nested blocks and imported identities share
+the enclosing budgets. Skipped bindings do not resolve their annotations or initializers;
+skipped documented declarations retain their existing gate. Local names leave scope
+normally, and checking/building preserve silent staging and normal module startup.
+
+Checked documentation displays `core.Type` for an explicitly annotated type-value
+binding, while a constructed type alias displays the actual resulting data type.
+
+This slice accepts named metatype annotations in required scopes only. Annotated
+identity bindings in ordinary module/function statements, mutable type bindings,
+first-class metatype expressions (`core.Type` or `<core.Type>`), type-of-type queries,
+computed metatype annotations and compile-time helper execution remain separate.
+The type namespace can name `core.Type`; that does not make it a native data type.
+
 ## Conditional type selection
 
 Independent boolean matchers can select a type inside a required block:

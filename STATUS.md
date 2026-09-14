@@ -23,37 +23,37 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Required block equality now supports integer and boolean results with deferred kind
-selection and exact widths. Equality evaluates both sides once; outer logical short
-circuits still skip blocks. Scope, source errors and shared budgets are preserved
-without runtime storage. Ordered comparisons remain integer-only.
+Required bindings now accept explicit `core.Type` annotations and metatype aliases.
+The kind lives only in the checker; concrete type payloads retain identity without
+runtime storage. Exports, scopes, node/work budgets and source errors are checked.
+Ordinary annotated identity statements and type-producing helpers remain separate.
 
-Commits: `60bc234` (shared operands), `95d3180` (equality), `a414ec7` (integration).
-The compiler guide now covers scalar equality and the previously deferred logical
-block operands. The user's documentation formatting is preserved.
+Commits: `8ba36b3` (metatype specifications), `b5e0681` (required bindings),
+`31888ee` (integration). The [guide](compiler/docs/COMPUTED_TYPES.md#explicit-type-value-bindings)
+covers syntax, aliases, documentation signatures and storage boundaries.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1656
-  Rust tests (815 library/841 native), 20 Python tests, fmt, Clippy and build.
-- Four equality checker tests and three native groups cover kinds, exact work, eager
-  reads, scope, source errors, aliases and module/function staging.
-- Logical/equality guides each print `7` in debug/release. Conformance: 10 passed,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1666
+  Rust tests (822 library/844 native), 20 Python tests, fmt, Clippy and build.
+- Tests cover metatype identity, runtime storage gates, wrong initializers, scopes,
+  budgets, imported aliases, privacy, error spans, documentation and module staging.
+- Explicit type-value guide prints `7` in debug/release. Conformance: 10 passed,
   13 unsupported, 0 failed in both profiles. Local links and catalog/schema checks pass.
-  Log: `/tmp/meowy-block-equality-gate.log`.
+  Log: `/tmp/meowy-metatype-gate.log`.
 - Proof remains specification-only; its examples were not compiled or executed.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. The user's documentation formatting is preserved.
+  remains open. Project version and release tags were not changed.
 
 ## Area handoff
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Scalar block equality preserves deferred kinds, eager reads and shared budgets. |
+| Compiler | Explicit required core.Type bindings preserve type identity and have no runtime storage. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -89,7 +89,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Investigate explicit `core.Type` bindings in required scopes while retaining their
-   compile-time-only representation; see the [compiler handoff](compiler/STATUS.md#next-steps).
+1. Investigate ordinary metatype-annotated bindings as implicit required roots;
+   see the [compiler handoff](compiler/STATUS.md#next-steps).
 2. Implement proof only in separately planned slices against its qualification contract.
-   Do not push or claim full release qualification.
+   Do not push, bump versions automatically or claim full release qualification.

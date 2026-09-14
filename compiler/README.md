@@ -85,6 +85,12 @@ equality from checked operand kinds; both operands execute even when the left va
 is false. Ordered comparisons remain integer-only. Float/text comparisons, empty
 composition sources, mutable scratch, whole-module records and helpers remain separate.
 
+Required type-value bindings may explicitly use `core.Type`, prelude `Type` or a
+metatype alias. The checker preserves concrete type payloads and documents their
+annotation without creating runtime storage. Metatype aliases can be explicitly
+exported/imported. Runtime containers reject the metatype; ordinary annotated identity
+bindings, first-class metatype values and type-producing functions remain separate.
+
 The [pointer syntax example](examples/pointer-syntax.mwy) demonstrates tight prefix
 `&`/`&!`/`*`, selected-field `.&`/`.&!`/`.*` and grouped indexed targets. See the
 [grammar](../docs/reference/syntax.md#operators-and-evaluation-order) for the binding rules.
