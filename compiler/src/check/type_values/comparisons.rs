@@ -1,5 +1,6 @@
 mod blocks;
 mod equality;
+mod types;
 
 use crate::ast;
 use crate::check::{Checker, Constant, Result, Value};
@@ -43,6 +44,21 @@ impl Checker {
         left: &ast::Expr,
         right: &ast::Expr,
     ) -> Result<Option<bool>> {
+        if self.type_comparison_form(
+            op,
+            left,
+            right,
+            self.type_work.as_ref().unwrap().depth,
+            &mut 0,
+        )? {
+            let left = self.type_value(left)?;
+            let right = self.type_value(right)?;
+            return Ok(Some(if op == "==" {
+                left == right
+            } else {
+                left != right
+            }));
+        }
         if self.integer_blocks(left)? || self.integer_blocks(right)? {
             let context = self.block_comparison_form(
                 op,

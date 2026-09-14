@@ -19,6 +19,31 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
+## Active plan: required type equality
+
+Investigation: `hir::Type` already preserves normalized union sets, canonical record
+fields, widths, mutability, reference modes and foundation identities. Required
+boolean forms currently dispatch only integer/boolean comparisons. Reuse `type_value`
+for left-to-right construction and node/work charging; compare its concrete payloads.
+Recognize literals, queries, lexical type values and module members without evaluating
+constructors during short-circuit form checking. Bare block equality stays scalar;
+computed type blocks can use `<(expression)>`. Runtime equality/helpers stay separate.
+
+Dependency-ordered commits:
+1. Add bounded type-operand classification and required equality, with checker and
+   native regressions for normalized identity, kind errors and skipped construction.
+2. Validate imported/facade identity, source errors, selected work and budget/state
+   restoration with focused integration tests.
+3. Document supported syntax/boundaries, update both handoffs and run the full compiler
+   gate across the series. Commit the validated integration documentation.
+
+Slice 1 implementation is in place: bounded form classification dispatches type
+equality before scalar comparisons and reuses `type_value` for both operands. Added
+checker identity/kind/skip tests and native profile/storage-boundary coverage. All
+832 library/858 native tests, fmt and Clippy pass. Log:
+`/tmp/meowy-type-equality-slice1.log`. The initial fixture token-spacing errors are
+resolved. Next: commit slice 1, then add source/work/facade integration evidence.
+
 ## Current compiler slice
 
 Named immutable type-value exports are implemented in `exports::export_type_value`.

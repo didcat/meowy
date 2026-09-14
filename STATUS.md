@@ -19,6 +19,11 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Current milestone
 
+Required type-value equality is in progress. The first slice adds normalized `==`/`!=`
+for known type operands; 832 library/858 native tests, fmt and Clippy pass.
+See the compiler handoff for the remaining source/work/facade integration and final gate.
+
+
 The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.

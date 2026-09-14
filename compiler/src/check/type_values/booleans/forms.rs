@@ -62,6 +62,9 @@ impl Checker {
                 ) =>
             {
                 if matches!(op.as_str(), "==" | "!=" | "<" | ">" | "<=" | ">=") {
+                    if self.type_comparison_form(op, left, right, depth + 1, count)? {
+                        return Ok(Type::Bool);
+                    }
                     if self.integer_blocks(left)? || self.integer_blocks(right)? {
                         self.block_comparison_form(op, left, right, depth + 1, count)?;
                         return Ok(Type::Bool);
