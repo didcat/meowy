@@ -37,7 +37,7 @@ pub(crate) fn logical_blocks_skip_initializers_and_preserve_kind_and_scope_gates
         ("flag:({local:true;->local})&&local", "E201"),
         ("flag:false&&({local:=true;->local})", "B001"),
         ("flag:true||({->field:true})", "B001"),
-        ("flag:!({-><boolean>})", "B001"),
+        ("flag:!({-><boolean>})", "E207"),
     ] {
         let source = format!("<T>:{{{body};-><int32>}}");
         let error = crate::compile(&source).unwrap_err().remove(0);

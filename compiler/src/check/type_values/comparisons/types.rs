@@ -15,6 +15,11 @@ impl Checker {
         if !a && !b {
             return Ok(false);
         }
+        if matches!(op, "==" | "!=")
+            && (a && Self::equality_block(right) || b && Self::equality_block(left))
+        {
+            return Ok(false);
+        }
         if !a || !b || !matches!(op, "==" | "!=") {
             return Err(Self::error(
                 "E222",
@@ -23,6 +28,13 @@ impl Checker {
             ));
         }
         Ok(true)
+    }
+
+    pub(crate) fn equality_block(mut expr: &Expr) -> bool {
+        while let ExprKind::Group(value) = &expr.kind {
+            expr = value;
+        }
+        matches!(expr.kind, ExprKind::Block(_))
     }
 
     pub(crate) fn type_operand_form(
@@ -100,7 +112,6 @@ mod tests {
             ("<int32> == missing", "E201"),
             ("<int32> == <Missing>", "E202"),
             ("<int32> == <int32[1/0]>", "E107"),
-            ("<int32> == ({-><int32>})", "E222"),
         ] {
             let source = format!("<T>:{{flag:{expr};-><int32>}}");
             let error = crate::compile(&source).unwrap_err().remove(0);

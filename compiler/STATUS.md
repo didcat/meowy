@@ -19,21 +19,32 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
-## Required type equality series
+## Active plan: bare type-block equality
 
-Dependency-ordered slices:
+Investigation: `inferred_block` already returns and materializes `Value::Type`.
+`equality_operand` currently rejects that payload, and `type_comparison_form`
+rejects a known type paired with a bare block. Reuse these paths: defer bare-block
+kinds until selected evaluation, accept type payloads without scalar context, and
+compare two payloads by normalized identity. Preserve scalar context and mixed-kind
+E207 errors, structural skip checks, left-to-right errors and existing budgets.
 
-1. `2c4c26a`: bounded operand classification and required normalized equality, with
-   checker/native identity, kind, skip and runtime-boundary regressions.
-2. `b7591ab`: source/work/facade integration, including repeated cached inputs,
-   independent roots, original errors and failed budget-state restoration.
-3. This documentation commit integrates the guide/README and both handoffs. The
-   guide executes and `python3 -B tools/verify.py --compiler` passes across the series.
+Dependency-ordered commits:
+1. Extend equality dispatch/operand inference with focused checker/native coverage
+   for two blocks, block/type pairs, normalization, scalar compatibility and rejection.
+2. Add integration coverage for skipped bodies, source order, imported payloads,
+   work/node/depth bounds and state restoration.
+3. Update the guide/README and both handoffs, execute the guide and run the complete
+   compiler gate. Commit each validated slice; keep runtime equality/helpers separate.
 
-No implementation failures remain. Five checker/five native equality groups, fmt and
-Clippy pass. Logs: `/tmp/meowy-type-equality-slice1.log` and
-`/tmp/meowy-type-equality-slice2.log`. Final results are recorded below.
-Next: investigate bare type-block operand inference as a separate slice.
+Slice 1 routes known type/block pairs through block inference and accepts inferred
+payloads without scalar context. Three checker/one native groups cover normalization,
+block/type pairs and E207 mixed-result errors. Known type emissions in scalar blocks
+now resolve the constructor and report E207; the logical-block regression reflects
+that same diagnostic correction. Original constructor failures remain intact.
+
+All 838 library/862 native tests, fmt and Clippy pass.
+Log: `/tmp/meowy-type-blocks-slice1.log`. No outstanding failures.
+Next: commit slice 1, then add skip/source/work integration evidence.
 
 ## Current compiler slice
 

@@ -57,6 +57,14 @@ impl Checker {
         if matches!(form.kind, ExprKind::Block(_)) {
             return self.scalar_block(expr, ty);
         }
+        if self.type_operand_form(expr, self.type_work.as_ref().unwrap().depth, &mut 0)? {
+            self.type_value(expr)?;
+            return Err(Self::error(
+                "E207",
+                "required scalar block cannot emit a type value",
+                expr.span,
+            ));
+        }
         if self.boolean_scalar(expr) {
             let value = self.type_boolean(expr, None)?;
             if *ty != Type::Bool {

@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod types;
+
 use crate::ast::{Expr, ExprKind, Span};
 use crate::check::{Checker, Constant, Result, Value};
 use crate::hir::Type;
@@ -40,6 +43,9 @@ impl Checker {
         depth: usize,
         count: &mut usize,
     ) -> Result<Option<Type>> {
+        if self.type_operand_form(expr, depth, count)? {
+            return Ok(None);
+        }
         match &expr.kind {
             ExprKind::Block(block) => {
                 self.form_work(expr, depth, count)?;
@@ -89,11 +95,16 @@ impl Checker {
             };
             self.type_work.as_mut().unwrap().depth -= 1;
             result?
+        } else if self.type_operand_form(expr, self.type_work.as_ref().unwrap().depth, &mut 0)? {
+            self.type_value(expr).map(Value::Type)?
         } else if self.boolean_scalar(expr) {
             self.type_boolean(expr, None)?
         } else {
             self.integer_arithmetic(expr, expected.filter(|ty| matches!(ty, Type::Int { .. })))?
         };
+        if matches!(value, Value::Type(_)) && expected.is_none() {
+            return Ok(value);
+        }
         let ty = value.data_type();
         if !matches!(ty, Some(Type::Int { .. } | Type::Bool))
             || expected.is_some_and(|expected| ty.as_ref() != Some(expected))
@@ -115,9 +126,11 @@ impl Checker {
         context: Option<&Type>,
     ) -> Result<bool> {
         let left = self.equality_operand(left, context)?;
-        let ty = left.data_type().unwrap();
-        let right = self.equality_operand(right, Some(&ty))?;
+        let ty = left.data_type();
+        let span = right.span;
+        let right = self.equality_operand(right, ty.as_ref())?;
         match (left, right) {
+            (Value::Type(a), Value::Type(b)) => Ok(if op == "==" { a == b } else { a != b }),
             (
                 Value::Static {
                     value: Constant::Int(a),
@@ -138,7 +151,11 @@ impl Checker {
                     ..
                 },
             ) => Ok(if op == "==" { a == b } else { a != b }),
-            _ => unreachable!(),
+            _ => Err(Self::error(
+                "E207",
+                "required equality operands must have the same value kind",
+                span,
+            )),
         }
     }
 }
