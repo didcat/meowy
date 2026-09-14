@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod accounting;
 mod blocks;
 mod booleans;
 mod comparisons;
@@ -183,6 +185,7 @@ impl Checker {
                 block.span,
             ));
         }
+        self.type_work.as_mut().unwrap().logical.charge(1, 0)?;
         self.scopes.push(Scope::default());
         let result = self.type_statements(&block.stmts, &mut output);
         self.scopes.pop();

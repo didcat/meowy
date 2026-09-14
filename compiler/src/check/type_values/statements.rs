@@ -13,6 +13,7 @@ impl Checker {
 
     pub(crate) fn type_statement(&mut self, stmt: &Stmt, output: &mut Output) -> Result<()> {
         self.type_work.as_mut().unwrap().spend(stmt.span)?;
+        self.type_work.as_mut().unwrap().logical.charge(1, 0)?;
         match &stmt.kind {
             StmtKind::Bind {
                 name,

@@ -245,7 +245,8 @@ mod tests {
                 .unwrap();
             costs.push(cost);
         }
-        assert_eq!(costs[0], costs[1]);
+        assert_eq!(costs[0].1, costs[1].1);
+        assert!(costs[1].0 > costs[0].0);
         let source = "kind<Type>:{bad:1/0;-><int32>}";
         let block = crate::parser::parse(source).unwrap();
         let crate::ast::StmtKind::Bind { value, ty, .. } = &block.stmts[0].kind else {

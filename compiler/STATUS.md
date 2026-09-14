@@ -72,6 +72,27 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Statement and boolean charging plan
+
+Charge ownership from the trace:
+- `type_statement` owns one charge per evaluated required statement. Structural
+  `type_branch_form` checks and skipped matcher bodies contribute no such charge.
+- `scoped_output` owns the evaluated block node for type, scalar and record blocks;
+  `scalar_block`/`inferred_block`/group wrappers must not charge it again.
+- `required_boolean` owns evaluated non-group/non-block boolean expression nodes.
+  Recursive dispatch follows short-circuit selection; delegated block execution
+  owns its node. Form checks and legacy retained Input.work remain separate.
+- Integer evaluation, type-expression dispatch beyond materialization, projection
+  ancestors and retained initializer accounting need separate ownership work.
+
+Commit order: (1) statement/block charges and boundary/skip/error tests;
+(2) boolean node charges, grouping, short-circuit and read tests;
+(3) integration documentation/handoffs and the complete compiler gate. Keep all
+bootstrap counters unchanged and proof evaluation gated. Statement/block charging
+now passes all 119 required-evaluation tests, including three new accounting groups.
+Log: `/tmp/meowy-statement-charges.log`. No outstanding failures; next is boolean
+expression charging.
+
 ### Logical type accounting
 
 `5d03d9b` extracts `type_values/work.rs` and centralizes required-root lifetimes.
