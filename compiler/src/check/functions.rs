@@ -14,10 +14,10 @@ impl Checker {
         body: &ast::Block,
         span: Span,
     ) -> Result<()> {
-        let result = annotation.map(|ty| self.ty(ty)).transpose()?;
+        let result = annotation.map(|ty| self.function_type(ty)).transpose()?;
         let args = params
             .iter()
-            .map(|param| self.ty(&param.ty))
+            .map(|param| self.function_type(&param.ty))
             .collect::<Result<_>>()?;
         let id = self.functions.len();
         self.functions.push(None);
@@ -110,7 +110,7 @@ impl Checker {
             })?;
             let actual_params = params
                 .iter()
-                .map(|param| self.ty(&param.ty))
+                .map(|param| self.function_type(&param.ty))
                 .collect::<Result<Vec<_>>>()?;
             let actual_result = ty
                 .as_ref()

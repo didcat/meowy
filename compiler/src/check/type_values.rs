@@ -73,11 +73,19 @@ impl Work {
         }
     }
 
+    pub(crate) fn node(&mut self, span: Span) -> Result<()> {
+        self.nodes += 1;
+        if self.nodes > MAX_NODES {
+            return Err(Self::budget(span));
+        }
+        Ok(())
+    }
+
     pub(crate) fn materialize(&mut self, ty: &Type, span: Span) -> Result<()> {
         let mut pending = vec![ty];
         while let Some(ty) = pending.pop() {
-            self.nodes += 1;
-            if self.nodes > MAX_NODES || pending.len() > MAX_NODES {
+            self.node(span)?;
+            if pending.len() > MAX_NODES {
                 return Err(Self::budget(span));
             }
             match ty {
@@ -119,7 +127,7 @@ impl Checker {
 
     pub(crate) fn type_value_inner(&mut self, expr: &ast::Expr) -> Result<Type> {
         match &expr.kind {
-            ExprKind::TypeValue(ty) => self.ty(ty),
+            ExprKind::TypeValue(ty) => self.type_literal(ty),
             ExprKind::TypeQuery(value) => {
                 if let Some(ty) = self.hint(value) {
                     return Ok(ty);

@@ -355,6 +355,14 @@ impl Checker {
 
     pub(crate) fn charge_spec(spec: &Spec, flow: &mut crate::flow::Flow, span: Span) -> Result<()> {
         match spec {
+            Spec::Meta => {
+                if !flow.spend(1) {
+                    return Err(Diagnostic::unsupported(
+                        "module type export budget exhausted",
+                        span,
+                    ));
+                }
+            }
             Spec::Data(ty) => {
                 crate::borrow_contract::type_weight(ty, flow, span)?;
             }

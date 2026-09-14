@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required boolean block equality and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Explicit core.Type required bindings are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -214,21 +214,23 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Scalar block equality is complete across `60bc234` (shared operands), `95d3180`
-(equality) and `a414ec7` (integration). Both guide examples and the compiler gate pass.
+Inspection: runtime HIR types cannot represent `core.Type` safely. Add a checker-only
+`Spec::Meta` kind instead, resolved through the actual core module/type namespace and
+ordinary type aliases. Data type conversion must reject it; type-producing function
+signatures and first-class metatype values must retain explicit unsupported gates.
+Required bindings keep existing `Value::Type` payloads and never allocate runtime locals.
 
-Next, investigate explicit `core.Type` bindings in required scopes as a prerequisite
-for declared compile-time APIs. Trace the foundation type registry, `check/names.rs`
-and `type_values::type_binding`; current type values exist but annotated identity
-bindings remain gated. Record dependency-ordered commits after checking the contract:
+Dependency-ordered commit plan:
 
-1. Represent/resolve the compile-time-only type kind without allowing native storage,
-   layout, captures, pointer formation or runtime use.
-2. Accept explicitly annotated type-value scratch in required scopes with exact kind
-   validation and focused tests; preserve ordinary data annotations and type namespaces.
-3. Verify aliases, imported identities, budgets, diagnostics and documentation/staging;
-   update handoffs and run the compiler gate across the series.
+1. Complete: `Spec::Meta` resolves core/prelude and alias type names without entering
+   runtime HIR. Storage uses reject E211; function/metatype-value support remains B001.
+   817 library/841 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-metatype-spec.log`.
+2. Accept simple named metatype annotations in required bindings, materialize their
+   type-valued initializer once, retain metadata/node accounting and test execution.
+3. Verify aliases/imported metatype identities, scope, errors, budgets and staging;
+   update guides/handoffs and run the final compiler gate in a separate doc slice.
 
-Keep runtime type containers, generic helper execution, empty/null scalar results,
-scalar-primary records, skipped documented declarations, mutable/float/text/reference
-fields and whole-module records separate. Proof needs its own plan. Do not push.
+Keep first-class metatype values, type-of-type queries, type-producing helper functions,
+runtime type containers, generic helper execution, scalar-primary records and other
+required scalar kinds separate. Proof needs its own implementation plan. Do not push.

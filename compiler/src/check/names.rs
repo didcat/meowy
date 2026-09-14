@@ -94,6 +94,9 @@ impl Checker {
                     if let Value::Module(module) = self.value(module, expr.span)?
                         && module == Module::Core
                     {
+                        if member == "Type" {
+                            return Ok(Spec::Meta);
+                        }
                         return Self::primitive(member).map(Spec::Data).ok_or_else(|| {
                             if ["int128", "uint128", "Type", "error", "any"].contains(&member) {
                                 Diagnostic::unsupported(format!("type `core.{member}`"), expr.span)
@@ -139,9 +142,9 @@ impl Checker {
             TypeKind::Function { params, result } => {
                 let params = params
                     .iter()
-                    .map(|ty| self.ty(ty))
+                    .map(|ty| self.function_type(ty))
                     .collect::<Result<Vec<_>>>()?;
-                let result = self.ty(result)?;
+                let result = self.function_type(result)?;
                 Ok(Spec::Function { params, result })
             }
             TypeKind::Record { primary, fields } => {
@@ -218,21 +221,50 @@ impl Checker {
     }
 
     pub(crate) fn ty(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
-        match self.spec(expr)? {
+        let spec = self.spec(expr)?;
+        self.spec_type(spec, expr.span)
+    }
+
+    pub(crate) fn function_type(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
+        let spec = self.spec(expr)?;
+        if matches!(spec, Spec::Meta) {
+            return Err(Diagnostic::unsupported(
+                "type-producing function signatures",
+                expr.span,
+            ));
+        }
+        self.spec_type(spec, expr.span)
+    }
+
+    pub(crate) fn type_literal(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
+        let spec = self.spec(expr)?;
+        if matches!(spec, Spec::Meta) {
+            return Err(Diagnostic::unsupported(
+                "first-class core.Type values",
+                expr.span,
+            ));
+        }
+        self.spec_type(spec, expr.span)
+    }
+
+    pub(crate) fn spec_type(&mut self, spec: Spec, span: Span) -> Result<Type> {
+        match spec {
+            Spec::Meta => Err(Self::error(
+                "E211",
+                "core.Type has no runtime representation",
+                span,
+            )),
             Spec::Data(ty) if ty.has_drop() => Err(Diagnostic::unsupported(
                 "storage requiring owning cleanup schedules",
-                expr.span,
+                span,
             )),
             Spec::Data(ty) => {
                 if let Some(model) = &mut self.documentation {
-                    model.record_type(expr.span, &ty)?;
+                    model.record_type(span, &ty)?;
                 }
                 Ok(ty)
             }
-            Spec::Function { .. } => Err(Diagnostic::unsupported(
-                "stored function pointers",
-                expr.span,
-            )),
+            Spec::Function { .. } => Err(Diagnostic::unsupported("stored function pointers", span)),
         }
     }
 
@@ -273,7 +305,7 @@ impl Checker {
                 })?;
                 Ok(Some(Value::Module(module)))
             }
-            ExprKind::TypeValue(ty) => Ok(Some(Value::Type(self.ty(ty)?))),
+            ExprKind::TypeValue(ty) => Ok(Some(Value::Type(self.type_literal(ty)?))),
             ExprKind::TypeQuery(_) => Ok(Some(Value::Type(self.type_value(expr)?))),
             ExprKind::Field { value, name } => {
                 if let ExprKind::Label(label) = &value.kind {
@@ -297,6 +329,12 @@ impl Checker {
                 }
                 if let Some(Value::Module(module)) = symbol {
                     let result = match (module, name.as_str()) {
+                        (Module::Core, "Type") => {
+                            return Err(Diagnostic::unsupported(
+                                "first-class core.Type values",
+                                expr.span,
+                            ));
+                        }
                         (Module::Core, "true") => Value::Constant(Constant::Bool(true)),
                         (Module::Core, "false") => Value::Constant(Constant::Bool(false)),
                         (Module::Core, "null") => Value::Constant(Constant::Null),
@@ -330,6 +368,51 @@ impl Checker {
                 Ok(None)
             }
             _ => Ok(None),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub(crate) fn metatype_aliases_resolve_without_runtime_types_or_storage() {
+        let program =
+            crate::compile("c:@\"core\";alias:c;<Kind>:<alias.Type>;<Again>:<Kind>").unwrap();
+        assert!(program.locals.is_empty());
+        assert!(program.body.stmts.is_empty());
+        let mut checker = Checker::new();
+        let span = Span::new(0, 1);
+        checker
+            .declare("c", Value::Module(Module::Core), span)
+            .unwrap();
+        let ty = ast::TypeExpr {
+            span,
+            kind: TypeKind::Name("c.Type".into()),
+        };
+        assert!(matches!(checker.spec(&ty).unwrap(), Spec::Meta));
+        assert_eq!(checker.ty(&ty).unwrap_err().code, "E211");
+        assert!(checker.locals.is_empty());
+        crate::compile("<Type>:<int32>;n<Type>:4").unwrap();
+    }
+
+    #[test]
+    pub(crate) fn metatype_storage_and_function_boundaries_remain_closed() {
+        for (source, code) in [
+            ("c:@\"core\";x<c.Type>:4", "E211"),
+            ("c:@\"core\";<R>:<{field<c.Type>}>", "E211"),
+            ("c:@\"core\";<R>:<c.Type[1]>", "E211"),
+            ("c:@\"core\";<R>:<&c.Type>", "E211"),
+            ("c:@\"core\";<R>:<c.Type><null>", "E211"),
+            ("c:@\"core\";f<c.Type>:(){-><int32>}", "B001"),
+            ("c:@\"core\";f<int32>:(t<c.Type>){->4}", "B001"),
+            ("c:@\"core\";<F>:<(c.Type)->int32>", "B001"),
+            ("c:@\"core\";value:c.Type", "B001"),
+            ("c:@\"core\";value:<c.Type>", "B001"),
+        ] {
+            let error = crate::compile(source).unwrap_err().remove(0);
+            assert_eq!(error.code, code, "{source}: {error:?}");
         }
     }
 }

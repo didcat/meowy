@@ -91,6 +91,7 @@ impl Value {
 
 #[derive(Clone)]
 pub(crate) enum Spec {
+    Meta,
     Data(Type),
     Function { params: Vec<Type>, result: Type },
 }
@@ -247,6 +248,7 @@ impl Checker {
                 prelude.types.insert(name.into(), Spec::Data(ty));
             }
         }
+        prelude.types.insert("Type".into(), Spec::Meta);
         Self {
             scopes: vec![prelude],
             frames: Vec::new(),

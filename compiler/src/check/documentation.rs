@@ -242,6 +242,7 @@ impl Checker {
 
 pub(crate) fn spec_name(spec: &Spec) -> String {
     match spec {
+        Spec::Meta => "core.Type".into(),
         Spec::Data(ty) => crate::documentation::model::type_name(ty),
         Spec::Function { params, result } => format!(
             "({})->{}",
