@@ -77,20 +77,64 @@ are created for typed required bindings. Data types containing `core.Type`, incl
 record fields, list elements, references and unions, report E211 when resolved through
 the data-type path. Type-producing function signatures remain explicitly unsupported.
 
-Each selected annotation charges one type node, in addition to the existing type
-initializer/materialization work. Aliases, nested blocks and imported identities share
-the enclosing budgets. Skipped bindings do not resolve their annotations or initializers;
-skipped documented declarations retain their existing gate. Local names leave scope
+Within required evaluation, each selected annotation charges one type node in addition
+to existing initializer/materialization work. Aliases, nested blocks and imported
+identities share the enclosing budgets. Skipped required bindings do not resolve their
+annotations or initializers; skipped documented declarations retain their existing gate. Local names leave scope
 normally, and checking/building preserve silent staging and normal module startup.
 
 Checked documentation displays `core.Type` for an explicitly annotated type-value
 binding, while a constructed type alias displays the actual resulting data type.
 
-This slice accepts named metatype annotations in required scopes only. Annotated
-identity bindings in ordinary module/function statements, mutable type bindings,
-first-class metatype expressions (`core.Type` or `<core.Type>`), type-of-type queries,
-computed metatype annotations and compile-time helper execution remain separate.
+Named metatype annotations also start required evaluation in ordinary statements,
+as described below. Mutable type bindings, first-class metatype expressions
+(`core.Type` or `<core.Type>`), type-of-type queries, computed metatype annotations,
+named type-value exports and compile-time helper execution remain separate.
 The type namespace can name `core.Type`; that does not make it a native data type.
+
+### Ordinary type-value bindings
+
+An immutable named `core.Type` annotation starts required evaluation even at ordinary
+module or function scope:
+
+```meowy
+core : @"core"
+element <core.Type> : <int32>
+items <Type> : { -> <(element)[4]> }
+values <(items)> : [3, 7]
+
+copy <int32> : (value <int32>) {
+    local <Type> : value<>
+    result <(local)> : value
+    -> result
+}
+
+debug : @"debug"
+debug.print(copy(values[2]))
+```
+
+This prints `7`. The type-valued bindings create no runtime locals or statements.
+The parameter type query is static; using the parameter's runtime value as the
+initializer of `local` would remain E211. Concrete type payloads retain identity
+through both typed and ordinary unannotated identity aliases.
+
+A binding starts a fresh budget only when no required root is active. Bindings nested
+inside its initializer share that root's remaining work and type-node counters.
+Finishing or failing the root restores the previous checking state. Imported metatype
+aliases use the same rules; unrelated or shadowed types named `Type` remain ordinary
+data types. Existing unannotated identity and runtime data bindings are unchanged.
+
+Runtime branch reachability does not defer a metatype initializer: the compiler checks
+it even in a statically unreachable runtime arm. A skipped branch *inside required
+evaluation* still skips its initializer under the existing matcher rules. Initializer
+errors preserve their original source spans, and known forbidden effects remain E219.
+
+The binding's name follows ordinary lexical scope. It is not implicitly exported and
+cannot be printed, borrowed, or placed in runtime storage. Explicit type-namespace
+exports can publish the concrete result; named value exports remain separate.
+An annotation on a function declaration remains its result annotation, so this does
+not enable type-producing functions. Module initialization effects still run normally
+at execution; checking/building neither run nor remove them.
 
 ## Conditional type selection
 

@@ -23,27 +23,27 @@ The compiler entry guide is [compiler/README.md](compiler/README.md); detailed
 guides live in `compiler/docs/`. The compiler root keeps `README.md`, `AGENTS.md`
 and `STATUS.md`. Links and Cargo metadata follow this layout.
 
-Required bindings now accept explicit `core.Type` annotations and metatype aliases.
-The kind lives only in the checker; concrete type payloads retain identity without
-runtime storage. Exports, scopes, node/work budgets and source errors are checked.
-Ordinary annotated identity statements and type-producing helpers remain separate.
+Ordinary immutable `core.Type` bindings now start/join required evaluation at module
+and function scope. Type payloads remain compiler-only values with no runtime local.
+Independent roots reset budgets; nested bindings share them. Scopes, imported aliases,
+source errors and module startup retain their existing contracts.
 
-Commits: `8ba36b3` (metatype specifications), `b5e0681` (required bindings),
-`31888ee` (integration). The [guide](compiler/docs/COMPUTED_TYPES.md#explicit-type-value-bindings)
-covers syntax, aliases, documentation signatures and storage boundaries.
+Commits: `1d4a58e` (root boundary), `9320e8e` (statements), `dbc1a8b` (integration).
+The [guide](compiler/docs/COMPUTED_TYPES.md#ordinary-type-value-bindings) covers syntax,
+root budgets, runtime branches and remaining boundaries.
 
 Net/HTTP/TLS still needs broader generic-type/I/O/task foundations. Full v0.0.1
 release qualification remains incomplete.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1666
-  Rust tests (822 library/844 native), 20 Python tests, fmt, Clippy and build.
-- Tests cover metatype identity, runtime storage gates, wrong initializers, scopes,
-  budgets, imported aliases, privacy, error spans, documentation and module staging.
-- Explicit type-value guide prints `7` in debug/release. Conformance: 10 passed,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1675
+  Rust tests (827 library/848 native), 20 Python tests, fmt, Clippy and build.
+- Five root/statement checker tests and four native groups cover type identity,
+  shared/independent budgets, privacy, source errors, documentation and startup.
+- Ordinary-binding guide prints `7` in debug/release. Conformance: 10 passed,
   13 unsupported, 0 failed in both profiles. Local links and catalog/schema checks pass.
-  Log: `/tmp/meowy-metatype-gate.log`.
+  Log: `/tmp/meowy-metatype-roots-gate.log`.
 - Proof remains specification-only; its examples were not compiled or executed.
 - Runtime implementation, reference fixtures and dependencies are unchanged. Editor
   and separate runtime/sanitizer gates were not rerun; full release qualification
@@ -53,7 +53,7 @@ release qualification remains incomplete.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Explicit required core.Type bindings preserve type identity and have no runtime storage. |
+| Compiler | Ordinary core.Type bindings start bounded required roots without runtime storage. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -89,7 +89,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Investigate ordinary metatype-annotated bindings as implicit required roots;
+1. Investigate named immutable type-value exports without runtime fields;
    see the [compiler handoff](compiler/STATUS.md#next-steps).
 2. Implement proof only in separately planned slices against its qualification contract.
    Do not push, bump versions automatically or claim full release qualification.

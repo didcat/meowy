@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Ordinary core.Type binding roots are in progress.
-The previous compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Ordinary core.Type binding roots and integration pass.
+The final compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -21,29 +21,30 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Current compiler slice
 
-Required immutable bindings now accept named `core.Type`, prelude `Type` and metatype
-alias annotations. `Spec::Meta` represents the kind outside runtime HIR; the existing
-`Value::Type` carries the concrete type payload. Core module identity and lexical type
-lookup determine the kind, so shadowed or unrelated names retain ordinary behavior.
+Ordinary immutable bindings annotated with `core.Type`, prelude `Type` or a metatype
+alias now start/join required evaluation before runtime expression lowering. Function
+declaration handling remains separate. The binding stores only Value::Type in its
+lexical scope; it emits no runtime local or statement.
 
-`type_values/metatypes.rs` recognizes metatype annotations without reevaluating data
-annotations, materializes the initializer once and requires a type value. Supported
-non-type results report E207. Selected annotations charge one meta node plus existing
-payload work. Skipped bindings retain their existing resolution/documentation gates.
+`meta_binding` owns the root boundary and delegates initializer checking to its inner
+evaluator. Fresh roots start bounded Work and restore its absence on success/failure;
+active roots preserve their counters. Nested type construction cannot reset its budget.
+Independent ordinary bindings have independent roots.
 
-Type aliases may explicitly export/re-export the metatype through file modules. `-> m`
-continues to forward data only; type facades name their exports explicitly. Privacy,
-function-scoped required reads, source errors and silent check/build staging are intact.
+Literal, alias, supported type-query and required block initializers preserve concrete
+type identity. Runtime parameters are not values available to required evaluation;
+queries of their declared types remain valid. Mutable bindings and type-producing
+functions retain gates, and runtime storage/printing/borrowing remain unavailable.
 
-Data type conversion rejects Spec::Meta with E211, preventing runtime fields, lists,
-references and unions. Type-producing function signatures and first-class metatype
-values retain B001 capability gates. No metatype reaches backend layout or local storage.
-`spec_type`, `function_type` and `type_literal` preserve these distinct boundaries.
+Metatype initializers are checked even in unreachable runtime branches. Skipped
+required matcher bodies retain their prior semantics. Original errors, alias privacy,
+lexical scope and documentation signatures are preserved. Check/build remain silent
+and ordinary module initialization retains its effects.
 
-Binding annotation spans now survive in the documentation model; explicitly typed
-values display core.Type, while aliases display their constructed data types. No
-runtime implementation, dependency or reference fixture changed. Proof remains only
-specified, and the release naming policy is unchanged.
+Public type aliases can expose concrete results or metatype identities; ordinary named
+bindings remain private. Named type-value exports and first-class metatype values are
+still separate. Runtime implementation, reference fixtures, dependencies and release
+versions were not changed. Proof remains specification-only.
 
 `Module.primary` retains an emission ID and typed `Primary::Int`/`Primary::Bool`
 evidence. `primary_input` captures eligible direct unconditional emissions;
@@ -131,24 +132,24 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `8ba36b3`: checker-only metatype specifications; 817 library/841 native tests,
-  fmt and Clippy passed. Log: `/tmp/meowy-metatype-spec.log`.
-- `b5e0681`: explicit required bindings; 820 library/842 native tests, fmt and Clippy
-  passed. Log: `/tmp/meowy-metatype-bindings.log`.
-- `31888ee`: integration; 822 library/844 native tests, fmt and Clippy passed.
-  Log: `/tmp/meowy-metatype-integration.log`.
-- Namespace/storage tests, five binding checker tests and three native groups cover
-  alias identity, wrong results, exact node/work accounting, scopes, skipped metadata,
-  exports/privacy, original spans, documentation and module/function staging.
-- Explicit type-value guide prints `7` in debug/release:
-  `/tmp/meowy-metatype-doc-966a0wy0/main.mwy`.
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 822
-  library/844 native Rust tests (1666 total), 20 Python tests, fmt, Clippy and build.
-  Log: `/tmp/meowy-metatype-gate.log`.
+- `1d4a58e`: bounded root wrapper; 824 library/844 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-metatype-root-boundary.log`.
+- `9320e8e`: ordinary metatype statements; 826 library/845 native tests, fmt and Clippy
+  passed. Log: `/tmp/meowy-ordinary-metatype-bindings.log`.
+- `dbc1a8b`: integration; 827 library/848 native tests, fmt and Clippy passed.
+  Log: `/tmp/meowy-metatype-roots-integration.log`.
+- Five root/statement checker tests and four native groups cover restoration, shared
+  counters, module/function type queries, kinds, privacy, unreachable roots, original
+  failures, documentation and module staging.
+- Ordinary-binding guide prints `7` in debug/release:
+  `/tmp/meowy-metatype-roots-doc-ejt7oqxn/main.mwy`.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 827
+  library/848 native Rust tests (1675 total), 20 Python tests, fmt, Clippy and build.
+  Log: `/tmp/meowy-metatype-roots-gate.log`.
 - Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Local links,
   catalog/schema and whitespace checks passed. Full release qualification remains open.
 - Editor and separate runtime/sanitizer gates were not rerun; full release qualification
-  remains open. First-class metatype values and type-producing helpers are not implemented.
+  remains open. Named value exports and type-producing helpers are not implemented.
 
 ## Prior capabilities and other areas
 
@@ -207,7 +208,7 @@ Nested paths/subrecord evidence are in `src/check/inputs/records/paths.rs`.
 
 ## Still outside this compiler
 
-Whole-record module inputs, conditional module exports, ordinary core.Type binding roots, helper
+Whole-record module inputs, conditional module exports, named core.Type value exports, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
@@ -215,26 +216,21 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Inspection: ordinary bindings reject annotated compile-time identities before reaching
-metatype evaluation. Let immutable named metatype annotations start/join the existing
-required evaluator before normal expression lowering, after function-declaration handling.
-Keep Value::Type in the lexical scope and emit no runtime binding. Nested metatype
-bindings must share budgets; independent ordinary binding roots reset them.
+Ordinary metatype roots are complete across `1d4a58e` (root boundary), `9320e8e`
+(statements) and `dbc1a8b` (integration). The guide and compiler gate pass.
 
-Dependency-ordered commit plan:
+Next, investigate named immutable type-value exports. Trace `check/exports.rs` and
+ordinary emission handling: module `values` already retains compile-time identities,
+but typed named metatype emissions still enter unsupported runtime/storage paths.
+Record dependency-ordered commits:
 
-1. Complete: meta_binding restores absent work state on success/failure and preserves
-   active outer counters. 824 library/844 native tests, fmt and Clippy pass.
-   Log: `/tmp/meowy-metatype-root-boundary.log`. Committed as `1d4a58e`.
-2. Complete: ordinary immutable metatype bindings start/join required evaluation and
-   declare only Value::Type. Module/function examples, parameter type queries, scopes
-   and runtime/mutation gates pass 826 library/845 native tests, fmt and Clippy.
-   Log: `/tmp/meowy-ordinary-metatype-bindings.log`. Committed as `9320e8e`.
-3. Complete: independent/shared budgets, aliases, privacy, runtime-unreachable roots,
-   original failures, documented kinds and module startup pass 827 library/848 native
-   tests, fmt and Clippy. Log: `/tmp/meowy-metatype-roots-integration.log`.
-4. Update guides/handoffs, execute the guide and run the final compiler gate.
+1. Reuse bounded metatype evaluation for an unconditional top-level export without
+   constructing a runtime field; preserve function and data export paths.
+2. Retain imported Value::Type identity and explicit re-export semantics, enforcing
+   annotation, privacy, collisions and non-top-level gates with focused tests.
+3. Verify source work/errors, documentation and module startup; update handoffs and
+   run the compiler gate across the series.
 
-Keep named value exports, first-class metatype values, type-of-type queries, runtime
-type containers, type-producing/generic helpers and other scalar kinds separate.
-Proof needs its own implementation plan. Do not push or bump release versions here.
+Keep first-class metatype values, type-of-type queries, runtime type containers,
+type-producing/generic helper functions and other scalar kinds separate. Proof needs
+its own implementation plan. Do not push or bump release versions here.
