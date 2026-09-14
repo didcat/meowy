@@ -4,6 +4,35 @@ use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
+    pub(crate) fn charge_integer(&mut self, expr: &ast::Expr) -> Result<()> {
+        if !self.required {
+            return Ok(());
+        }
+        let Some(work) = &mut self.type_work else {
+            return Ok(());
+        };
+        let steps = match &expr.kind {
+            ExprKind::Int(_) | ExprKind::Name(_) | ExprKind::Field { .. } => 1,
+            ExprKind::Unary { op, value }
+                if op == "-" && matches!(value.kind, ExprKind::Int(_)) =>
+            {
+                2
+            }
+            ExprKind::Unary { op, .. } if matches!(op.as_str(), "-" | "~") => 1,
+            ExprKind::Binary { op, .. }
+                if matches!(op.as_str(), "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^") =>
+            {
+                1
+            }
+            _ => 0,
+        };
+        work.logical.charge(0, 0)?;
+        for _ in 0..steps {
+            work.logical.charge(1, 0)?;
+        }
+        Ok(())
+    }
+
     pub(crate) fn required_value(&mut self, name: &str, span: Span) -> Result<Value> {
         let saved = std::mem::replace(&mut self.required, true);
         let result = self.value(name, span);

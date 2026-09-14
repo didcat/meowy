@@ -73,6 +73,33 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Integer charging plan
+
+Trace result: scalar_input validates eligibility and retained failures before
+integer_result evaluates through the shared expression checker. Do not charge
+that validation walk. In an active required root, raw_expression owns integer
+literal/name/outer-field and arithmetic nodes. Immediate negative literals bypass
+child expression dispatch, so their operator and literal need two charges while
+preserving the signed-minimum rule. Runtime checking without required mode is free.
+
+Block arithmetic is separate: integer_operand owns its manually evaluated unary
+and binary nodes; fallback leaves delegate to raw_expression and blocks delegate
+to scoped_output. Groups and hint/form checks add no charges. List extents inside
+existing roots already use these paths; plain extents without a root remain separate.
+
+Commit order: (1) shared integer evaluation hook with grouping, order, eligibility
+and runtime-isolation tests; (2) delegated block arithmetic with comparison/extent
+integration and limits; (3) docs/handoffs and the full compiler gate. Existing
+partial-count tests will gain the newly implemented integer contributions.
+Projection ancestors, retained initializer work, other type-expression dispatch,
+aggregate/text/helper counters and deferred-query budgets remain open.
+The shared hook passes all 128 required-evaluation tests. Negative-literal
+operator/literal charges are now sequential so grouped and ungrouped forms retain
+the same consumed prefix when the second step exhausts the budget. A dedicated
+regression passes. All 129 required-evaluation tests pass; log:
+`/tmp/meowy-integer-node-charges.log`. No outstanding failures. Next: manual
+block operators and comparison/extent integration. Proof evaluation remains gated.
+
 ### Statement and boolean logical charges
 
 `92a0dfc` charges one logical step in `type_statement` for each evaluated required

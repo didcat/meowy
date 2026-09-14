@@ -22,19 +22,19 @@ pub(crate) fn cost(source: &str) -> (usize, usize) {
 
 #[test]
 pub(crate) fn logical_statement_steps_count_blocks_once_and_preserve_groups() {
-    assert_eq!(cost("a:1;b:2;->3"), (4, 0));
-    assert_eq!(cost("->7"), (2, 0));
-    assert_eq!(cost("->(((7)))"), (2, 0));
-    assert_eq!(cost("->{->7}"), (4, 0));
-    assert_eq!(cost("->(({->7}))"), (4, 0));
-    assert_eq!(cost("<T>:<uint8>;->7"), (4, 1));
+    assert_eq!(cost("a:1;b:2;->3"), (7, 0));
+    assert_eq!(cost("->7"), (3, 0));
+    assert_eq!(cost("->(((7)))"), (3, 0));
+    assert_eq!(cost("->{->7}"), (5, 0));
+    assert_eq!(cost("->(({->7}))"), (5, 0));
+    assert_eq!(cost("<T>:<uint8>;->7"), (5, 1));
 }
 
 #[test]
 pub(crate) fn logical_statement_steps_skip_bodies_but_charge_selected_statements() {
     let skipped = cost("|false|x:1;->7");
     let selected = cost("|true|x:1;->7");
-    assert_eq!(selected.0, skipped.0 + 1);
+    assert_eq!(selected.0, skipped.0 + 2);
     assert_eq!(selected.1, skipped.1);
     assert_eq!(cost("|false|x:<int32[4]>;->7"), skipped);
 }
@@ -43,7 +43,7 @@ pub(crate) fn logical_statement_steps_skip_bodies_but_charge_selected_statements
 pub(crate) fn logical_statement_limits_restore_scope_and_stop_before_later_statements() {
     let block = crate::parser::parse("a:1;b:2;->3").unwrap();
     let root = Span::new(100, 140);
-    for remaining in [3, 4, 5] {
+    for remaining in [6, 7, 8] {
         let mut checker = Checker::new();
         let scopes = checker.scopes.len();
         let result = checker.required_root(root, |checker| {
@@ -56,7 +56,7 @@ pub(crate) fn logical_statement_limits_restore_scope_and_stop_before_later_state
                 }),
             )
         });
-        assert_eq!(result.is_ok(), remaining >= 4);
+        assert_eq!(result.is_ok(), remaining >= 7);
         if let Err(error) = result {
             assert_eq!(error.code, "E220");
             assert_eq!(error.span, root);
@@ -75,7 +75,7 @@ pub(crate) fn logical_statement_limits_restore_scope_and_stop_before_later_state
                 signed: true,
             }),
         );
-        assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, 2);
+        assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, 5);
         result.map(|_| ())
     });
     let error = result.unwrap_err();
@@ -196,10 +196,10 @@ pub(crate) fn logical_boolean_reads_do_not_reuse_bootstrap_initializer_counts() 
 
 #[test]
 pub(crate) fn logical_control_and_boolean_blocks_combine_without_duplicate_charges() {
-    assert_eq!(cost("flag:true;|flag|x:1;->7"), (7, 0));
-    assert_eq!(cost("flag:false;|flag|x:1;->7"), (6, 0));
-    assert_eq!(cost("flag:{->true};|flag|x:1;->7"), (9, 0));
-    assert_eq!(cost("flag:(({->true}));|flag|x:1;->7"), (9, 0));
+    assert_eq!(cost("flag:true;|flag|x:1;->7"), (9, 0));
+    assert_eq!(cost("flag:false;|flag|x:1;->7"), (7, 0));
+    assert_eq!(cost("flag:{->true};|flag|x:1;->7"), (11, 0));
+    assert_eq!(cost("flag:(({->true}));|flag|x:1;->7"), (11, 0));
     assert_eq!(
         boolean_cost("({->true})==({->false})", &mut Checker::new()).unwrap(),
         7

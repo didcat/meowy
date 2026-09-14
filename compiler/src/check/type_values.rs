@@ -5,6 +5,8 @@ mod booleans;
 mod comparisons;
 mod fields;
 mod inferred;
+#[cfg(test)]
+mod integer_accounting;
 mod integers;
 mod matches;
 mod metatypes;

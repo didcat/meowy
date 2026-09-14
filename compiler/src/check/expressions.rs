@@ -87,6 +87,7 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
+        self.charge_integer(expr)?;
         let (kind, ty) = match &expr.kind {
             ExprKind::Int(text) => return self.integer(text, false, expected, expr.span),
             ExprKind::Float(text) => return Self::floating(text, expected, expr.span),
