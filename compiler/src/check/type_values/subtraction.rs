@@ -89,3 +89,119 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod integration {
+    use super::*;
+    use crate::ast::{Span, StmtKind};
+    use crate::check::type_values::{MAX_DEPTH, MAX_NODES, MAX_WORK, Work};
+
+    #[test]
+    pub(crate) fn type_subtraction_skips_constructors_but_checks_known_operand_forms() {
+        for expr in [
+            "false&&(<int32[1/0]>!<Missing> == <never>)",
+            "true||(({local<Missing>:unknown();->local})!<null> == <int32>)",
+            "false&&(({->true})!<null> == <never>)",
+            "false&&(({kind:<int32>;->kind})!<(kind)> == <never>)",
+        ] {
+            crate::compile(&format!("<T>:{{flag:{expr};-><int32>}}")).unwrap();
+        }
+        for (expr, code) in [
+            ("false&&(1!<null> == <never>)", "E222"),
+            ("true||(missing!<null> == <never>)", "E201"),
+            ("false&&(({local:=1;-><int32>})!<null> == <never>)", "B001"),
+            ("({kind:<int32>;->kind})!<(kind)> == <never>", "E201"),
+        ] {
+            let source = format!("<T>:{{flag:{expr};-><int32>}}");
+            assert_eq!(
+                crate::compile(&source).unwrap_err()[0].code,
+                code,
+                "{source}"
+            );
+        }
+    }
+
+    #[test]
+    pub(crate) fn type_subtraction_charges_both_types_and_restores_budget_state() {
+        for (removed, expected) in [
+            (
+                "null",
+                Type::Int {
+                    bits: 32,
+                    signed: true,
+                },
+            ),
+            ("int32", Type::Never),
+        ] {
+            let parsed = crate::parser::parse(&format!("value:kind!<{removed}>")).unwrap();
+            let StmtKind::Bind { value, .. } = &parsed.stmts[0].kind else {
+                panic!("binding")
+            };
+            let mut checker = Checker::new();
+            checker
+                .declare(
+                    "kind",
+                    Value::Type(Type::Int {
+                        bits: 32,
+                        signed: true,
+                    }),
+                    Span::new(0, 4),
+                )
+                .unwrap();
+            checker.type_work = Some(Work::default());
+            checker.type_operand_form(value, 0, &mut 0).unwrap();
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 0);
+            assert_eq!(checker.type_work.as_ref().unwrap().nodes, 0);
+            assert_eq!(checker.type_value(value).unwrap(), expected);
+            assert_eq!(checker.type_work.as_ref().unwrap().visits, 3);
+            assert_eq!(checker.type_work.as_ref().unwrap().nodes, 3);
+            let scopes = checker.scopes.len();
+            for (work, accepted) in [
+                (
+                    Work {
+                        visits: MAX_WORK - 3,
+                        nodes: MAX_NODES - 3,
+                        depth: 0,
+                    },
+                    true,
+                ),
+                (
+                    Work {
+                        visits: MAX_WORK - 2,
+                        ..Work::default()
+                    },
+                    false,
+                ),
+                (
+                    Work {
+                        nodes: MAX_NODES - 2,
+                        ..Work::default()
+                    },
+                    false,
+                ),
+                (
+                    Work {
+                        depth: MAX_DEPTH - 1,
+                        ..Work::default()
+                    },
+                    false,
+                ),
+            ] {
+                let depth = work.depth;
+                checker.type_work = Some(work);
+                let result = checker.type_value(value);
+                if accepted {
+                    assert_eq!(result.unwrap(), expected);
+                } else {
+                    assert_eq!(result.unwrap_err().code, "B001");
+                }
+                assert_eq!(checker.type_work.as_ref().unwrap().depth, depth);
+                assert_eq!(checker.scopes.len(), scopes);
+                assert!(!checker.required);
+            }
+            checker.type_work = Some(Work::default());
+            assert_eq!(checker.type_value(value).unwrap(), expected);
+            assert!(checker.locals.is_empty());
+        }
+    }
+}

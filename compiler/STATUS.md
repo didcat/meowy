@@ -54,7 +54,13 @@ value rejection. Broad bases/literal subtypes retain their existing gates.
 
 All 845 library/867 native tests, fmt and Clippy pass.
 Log: `/tmp/meowy-subtraction-evaluator.log`. No outstanding failures.
-Next: commit evaluation, then verify import/source/work integration.
+Evaluator committed as `ae68e3b`. Integration tests now cover form-only skips,
+work/node/depth boundaries and state restoration, facade identity/privacy, removed
+operand import discovery/startup, source failure order and repeated input/root costs.
+All seven library/five native focused groups, fmt and Clippy pass, including
+selected operand scope and runtime/helper boundaries. Log:
+`/tmp/meowy-subtraction-integration.log`. No outstanding failures. Next: commit
+integration, document the supported subset and run the final compiler gate.
 
 ## Current compiler slice
 
