@@ -1,8 +1,28 @@
 use crate::ast::{self, ExprKind};
 use crate::check::{Checker, Result, Value};
+use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
+    pub(crate) fn required_block_form(
+        &mut self,
+        block: &ast::Block,
+        kind: &str,
+        depth: usize,
+        count: &mut usize,
+    ) -> Result<()> {
+        if block.label.is_some() {
+            return Err(Diagnostic::unsupported(
+                format!("labeled required {kind} blocks"),
+                block.span,
+            ));
+        }
+        for stmt in &block.stmts {
+            self.type_branch_form(stmt, false, depth + 1, count)?;
+        }
+        Ok(())
+    }
+
     pub(crate) fn scalar_block(&mut self, expr: &ast::Expr, ty: &Type) -> Result<Value> {
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = match &expr.kind {
@@ -52,6 +72,32 @@ mod tests {
             panic!("binding")
         };
         value.clone()
+    }
+
+    #[test]
+    pub(crate) fn operand_block_forms_do_not_resolve_or_evaluate_initializers() {
+        let expr = expression("{local<Missing>:unknown();->local}");
+        let ExprKind::Block(block) = &expr.kind else {
+            panic!("block")
+        };
+        let mut checker = Checker::new();
+        let scopes = checker.scopes.len();
+        let mut count = 0;
+        checker
+            .required_block_form(block, "comparison", 0, &mut count)
+            .unwrap();
+        assert_eq!(count, 2);
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(checker.type_work.is_none());
+        assert!(checker.locals.is_empty());
+        assert_eq!(
+            checker
+                .required_value("local", expr.span)
+                .err()
+                .unwrap()
+                .code,
+            "E201"
+        );
     }
 
     #[test]

@@ -1,7 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-13. Required integer block comparisons and integration pass.
-The final compiler gate passed. Full v0.0.1 remains incomplete.
+Updated: 2026-09-13. Required boolean logical block operands are in progress.
+The previous compiler gate passed. Full v0.0.1 remains incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
@@ -217,23 +217,25 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-Integer block comparisons are complete across `803eda8` (comparison extraction),
-`00f68eb` (deferred forms/execution) and `287459d` (integration). The guide and full
-compiler gate pass.
+Inspection: required boolean form checking has no block case, while execution already
+short-circuits logical operators. Reuse comparison block statement validation and
+`scalar_block(..., boolean)` for selected operands. The block form has an expected
+boolean context; its local initializers remain deferred until execution. Grouped
+negation must use `!({ ... })`; bare `!{ ... }` is the existing unchecked-block syntax.
 
-Next, investigate boolean-result blocks as operands of required `!`, `&&` and `||`.
-Trace `boolean_form`, `required_boolean`, `scalar_block` and the new structural block
-checks. Keep skipped blocks unevaluated and validate selected results as booleans.
-Record dependency-ordered commits:
+Dependency-ordered commit plan:
 
-1. Share bounded required block statement-form validation where integer comparisons
-   and boolean logical operands need the same structural gate.
-2. Add selected boolean block execution for logical operators, preserving short circuits,
-   scalar/type/record boundaries, scope and exact evaluation work; include focused tests.
-3. Verify errors, budgets, documentation and module/function staging; update handoffs
-   and run `python3 -B tools/verify.py --compiler` across the series.
+1. Complete: common operand-block statement validation preserves comparison diagnostics
+   and structural accounting. 806 library/835 native tests, fmt and Clippy pass.
+   Log: `/tmp/meowy-boolean-block-form.log`.
+2. Add boolean block forms and selected execution for `!`, `&&`, `||` and required
+   matcher conditions; keep focused acceptance/rejection tests with this behavior.
+3. Verify exact work, skipped initializers, bounds, scope, source errors and staging.
+4. Update guides/handoffs and run the final compiler gate across the series.
 
-Keep boolean block equality/comparison disambiguation separate until its result-kind
-contract is explicit. Empty/null results, scalar-primary records, skipped documented
-declarations, fallback arms, mutable/float/text/reference fields, whole-module records,
-helpers and borrowed storage remain separate. Do not push.
+Keep direct boolean block equality/comparison disambiguation, empty/null results,
+scalar-primary records, skipped documented declarations, fallback arms, mutable/
+float/text/reference fields, whole-module records and helpers separate. The proof
+package remains a specified future API, not part of this implementation. Do not push.
+
+Unrelated documentation edits appeared during this work; preserve them unstaged.

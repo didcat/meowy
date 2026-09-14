@@ -1,6 +1,5 @@
 use crate::ast::{Expr, ExprKind, Span};
 use crate::check::{Checker, Result};
-use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
 impl Checker {
@@ -41,15 +40,7 @@ impl Checker {
         }
         match &expr.kind {
             ExprKind::Block(block) => {
-                if block.label.is_some() {
-                    return Err(Diagnostic::unsupported(
-                        "labeled required comparison blocks",
-                        block.span,
-                    ));
-                }
-                for stmt in &block.stmts {
-                    self.type_branch_form(stmt, false, depth + 1, count)?;
-                }
+                self.required_block_form(block, "comparison", depth, count)?;
                 Ok(expected.cloned())
             }
             ExprKind::Group(value) => self.block_integer_form(value, expected, depth + 1, count),
