@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-14. Logical charges now include required integer evaluation.
+Updated: 2026-09-14. Logical charges now include scalar projection ancestors.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -59,8 +59,9 @@ outcome is constructed. The reference remains authoritative.
   Existing constant folding or `inputs` evidence cannot provide this guarantee.
 - `type_values/work.rs::Work` retains bootstrap limits (4096 visits, 64 levels,
   16384 nodes), with B001 failures. Its separate `required::Budget` currently charges
-  type materialization, required statements/blocks and outer integer/boolean evaluation.
-  Projection/input work, other type-expression dispatch, aggregate/text/helper counters and pending-query
+  type materialization, required statements/blocks and integer/boolean evaluation,
+  including scalar projection ancestors. Retained-input work, other type-expression
+  dispatch, aggregate/text/helper counters and pending-query
   budget retention remain prerequisites. Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
@@ -73,7 +74,7 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Projection charging plan
+### Scalar projection charging
 
 Investigation: `required_path` and `required_field` serve both eligibility and
 execution. Charging there would count form/hint walks repeatedly. Integer field
@@ -84,18 +85,21 @@ Retained Input.work remains a bootstrap guard, not a logical cost.
 
 Dependency-ordered commits:
 
-1. Add a shared ancestor-charge traversal at the two execution sites, with focused
+1. `5f716ec`: add a shared ancestor-charge traversal at the two execution sites, with focused
    exact/grouped/repeated-read, form isolation and budget-failure regressions.
-2. Add independently useful projection integration coverage and refresh both
-   handoffs after the complete `python3 -B tools/verify.py --compiler` gate.
+2. The integration slice adds retained-error, type-query, static metadata and
+   real import coverage, and refreshes both handoffs after the complete gate.
 
 The shared traversal now charges each non-group ancestor sequentially at both
 scalar execution sites. Three focused groups pass (local/module identity, exact
 and grouped/repeated/skipped reads, lookup/runtime isolation and E220 cleanup).
 Validation: `cargo test --manifest-path compiler/Cargo.toml --lib logical_projection`
 and cargo fmt pass. Log: `/tmp/meowy-projection-focused.log`.
-Next: integration tests for retained failures, static metadata and real imports,
-then the full compiler gate. Subsequent work remains retained-input accounting
+Implementation commit: `5f716ec`. Six focused library groups and one native
+group now pass, including retained first-error spans, type-query non-evaluation,
+static import metadata and real facade startup/widths in debug/release.
+Log: `/tmp/meowy-projection-integration.log`. All ten full compiler gate checks pass; log:
+`/tmp/meowy-projection-gate.log`. No outstanding failures remain. Subsequent work remains retained-input accounting
 and other expression/aggregate/text/helper domains; proof outcomes stay gated.
 
 ### Logical integer charges
@@ -495,19 +499,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 887
-  library/879 native tests (1766 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 893
+  library/880 native tests (1773 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-integer-charge-gate.log`.
-- The shared integer hook passed 129 required-evaluation tests; delegated arithmetic
-  passed 134. Logs: `/tmp/meowy-integer-node-charges.log`,
-  `/tmp/meowy-integer-block-charges.log`.
-- Ten integer accounting groups and one native integration group pass: exact and
-  grouped counts, sequential negative-literal charges, first-error order, runtime
-  and eligibility isolation, repeated reads, block operators, skipped comparisons,
-  extents, root/depth/mode cleanup and type-query non-evaluation. Native checks and
-  debug/release runs retain imported widths and startup order. Log:
-  `/tmp/meowy-integer-charge-integration.log`.
+  debug/release. Log: `/tmp/meowy-projection-gate.log`.
+- Six focused projection groups and one native integration group pass: exact,
+  grouped/repeated/skipped reads, lookup/runtime isolation, E220 prefix/root cleanup,
+  retained first-error spans, type-query non-evaluation, static import metadata and
+  real facade widths/startup in debug/release. Logs:
+  `/tmp/meowy-projection-focused.log`, `/tmp/meowy-projection-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
   lower B001 bootstrap limits first. Remaining charging domains and proof evaluation
   are incomplete. No unsupported query counts as conformance success.
@@ -584,15 +584,16 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Trace projection-ancestor charge ownership in `type_values/fields.rs`,
-   `booleans.rs` and the required field branch of `check/expressions.rs`. Outer
-   field nodes are charged; ancestor lookup must be charged only on evaluation,
-   not on repeated eligibility/form traversal. Plan separate slices and test
-   grouped paths, nested records, module identities, repeated reads and first errors.
-   Retained initializer work requires its own accounting decision; do not copy
-   bootstrap Input.work. Other type-expression dispatch, aggregate/text/helper
-   counters, rootless extents and pending-query budget retention remain subsequent
-   work. Keep proof outcomes gated until accounting and dependency rules are complete.
+1. Audit retained-input accounting in `type_values/work.rs`, `inputs.rs` and
+   `inputs/records.rs` against compile-time revision 1: available immutable reads
+   charge a read, materialized copies charge slots/text, and caching cannot change
+   logical costs. Decide which initializer work belongs to each required root;
+   do not copy bootstrap Input.work into the ledger. Record a dependency-ordered
+   plan before changes, with repeated-read, ancestor-error and root-sharing tests.
+   Scalar projection ancestors are complete; record-valued projections and other
+   type-expression dispatch remain part of the subsequent accounting audit.
+   Aggregate/text/helper counters, rootless extents and pending-query retention
+   remain open. Keep proof outcomes gated until accounting/dependency rules finish.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.

@@ -117,3 +117,63 @@ pub(crate) fn logical_projection_limits_keep_prefix_charges_and_restore_roots() 
         }
     }
 }
+
+#[test]
+pub(crate) fn logical_projection_errors_keep_origins_and_stop_later_reads() {
+    for source in ["row.part.n+row.part.n", "row.part.flag==row.part.flag"] {
+        let mut checker = checker(false);
+        let id = checker.module.inputs["row"].id;
+        let origin = Span::new(200, 210);
+        checker.record_inputs.get_mut(&id).unwrap().input.error =
+            Some(Checker::error("E107", "retained ancestor failure", origin));
+        let expr = value(source);
+        let result = checker.required_root(expr.span, |checker| {
+            let result = if source.contains("flag") {
+                checker.required_boolean(&expr).map(|_| ())
+            } else {
+                checker.integer_result(&expr, None).map(|_| ())
+            };
+            assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, 4);
+            result
+        });
+        let error = result.unwrap_err();
+        assert_eq!(error.code, "E107");
+        assert_eq!(error.span, origin);
+        assert!(checker.type_work.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn logical_projection_queries_do_not_evaluate_paths() {
+    let mut costs = Vec::new();
+    for source in ["row.part.n<>", "(row.part.n/0)<>"] {
+        let mut checker = checker(false);
+        let expr = value(source);
+        costs.push(
+            checker
+                .required_root(expr.span, |checker| {
+                    checker.type_value(&expr)?;
+                    let budget = &checker.type_work.as_ref().unwrap().logical;
+                    Ok((budget.steps, budget.types))
+                })
+                .unwrap(),
+        );
+    }
+    assert_eq!(costs[0], costs[1]);
+    assert_eq!(costs[0], (1, 1));
+}
+
+#[test]
+pub(crate) fn logical_projection_static_metadata_charges_import_ancestors() {
+    let expr = value("(@\"proof\").revision");
+    let mut checker = Checker::new();
+    checker
+        .required_root(expr.span, |checker| {
+            checker.scalar_input(&expr)?;
+            assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, 0);
+            checker.integer_result(&expr, None)?;
+            assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, 2);
+            Ok(())
+        })
+        .unwrap();
+}

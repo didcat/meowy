@@ -1,6 +1,17 @@
 use super::{Case, file_modules::case};
 
 #[test]
+pub(crate) fn logical_projection_imports_preserve_grouped_widths_and_startup() {
+    case(
+        "m:@\"./facade.mwy\";alias:m;d:@\"debug\";<T>:{n:((alias).row).part.n+alias.row.part.n;flag:alias.row.part.flag==((m.row).part).flag;-><uint8[n]>};v<T>:[7];d.print(v[1]);d.print(m.row.part.flag)",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);->row:{->part:{->n<uint8>:2;->flag:true}}"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->row:m.row"),
+        ],
+    ).runs(b"1\n2\n7\ntrue\n");
+}
+
+#[test]
 pub(crate) fn computed_fields_keep_local_module_values_types_and_initialization_order() {
     case(
         "m:@\"./types.mwy\";d:@\"debug\";items<m.Items>:[3,7];d.print(items[2]);d.print(m.get())",
