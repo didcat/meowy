@@ -22,7 +22,7 @@ connects these API choices to stack, heap, static storage, and linker behavior.
 | `@"debug"`                             | Diagnostic printing and panics                                                       | [Diagnostic output](core.md#output-and-text)                             |
 | `@"errors"`                            | Custom failure types, codes, messages, typed payloads, and explicit boxing           | [Errors and custom failures](errors.md)                                  |
 | `@"testing"`                           | Assertions, suite values, expected panics, skipped cases, and reproducible test runs | [Testing](testing.md)                                                    |
-| `@"proof"` | Compile-time value/capability queries, bounded analysis, and static contract tests | [Proof queries](proof.md) |
+| `@"proof"`                             | Compile-time value/capability queries, bounded analysis, and static contract tests   | [Proof queries](proof.md)                                                |
 | `@"bytes"`                             | Initialized byte storage, views, copying, and searching                              | [Bytes](text-and-data.md#bytes-and-utf-8-strings)                        |
 | `@"strings"`                           | Borrowed text, parsing, and explicitly owned text                                    | [Text](text-and-data.md)                                                 |
 | `@"unicode"`                           | Scalars, grapheme boundaries, normalization, and case folding                        | [Unicode](text-and-data.md#unicode-operations)                           |
@@ -40,7 +40,7 @@ connects these API choices to stack, heap, static storage, and linker behavior.
 | `@"io"`                                | Readers, writers, buffers, streams, and partial progress                             | [I/O](io-and-system.md#readers-and-writers)                              |
 | `@"path"`, `@"fs"`                     | Lexical paths, files, metadata, and directory traversal                              | [Paths and files](io-and-system.md#paths-are-data)                       |
 | `@"env"`, `@"process"`                 | Explicit environment snapshots, argv, and child processes                            | [Processes](io-and-system.md#environment-and-processes)                  |
-| `@"net"`                               | Addresses, DNS, TCP/UDP, capability-typed peers and HTTP protocol adapters             | [Networking and peers](net.md), [HTTP contracts](http.md)                |
+| `@"net"`                               | Addresses, DNS, TCP/UDP, capability-typed peers and HTTP protocol adapters           | [Networking and peers](net.md), [HTTP contracts](http.md)                |
 | `@"tls"`                               | Explicit trust, authenticated encrypted streams and negotiated protocols             | [TLS transports](tls.md)                                                 |
 | `@"cli"`                               | Typed application options, subcommands, help, and usage errors                       | [CLI applications](cli.md)                                               |
 | `@"ffi"`                               | Declared native layouts and foreign symbols                                          | [Native APIs](ffi.md)                                                    |

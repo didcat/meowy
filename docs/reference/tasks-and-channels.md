@@ -225,7 +225,7 @@ all retained borrows must still remain valid:
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | `memory.Allocator`                                                                                | `Send` and `Sync`; its implementation synchronizes allocation/release across runtime threads            |
 | `collections.Vector<T>`, `json.Document<T>`                                                       | `Send` when `T` is `Send`; `Sync` when `T` is `Sync`                                                    |
-| `collections.Map<K, V>`                                                                            | Each capability requires it for `K` and `V`; its pure non-capturing hash/equality pointers satisfy both |
+| `collections.Map<K, V>`                                                                           | Each capability requires it for `K` and `V`; its pure non-capturing hash/equality pointers satisfy both |
 | `strings.Owned`, `strings.Builder`, `path.Owned`                                                  | `Send` and `Sync`; mutation still needs exclusive access                                                |
 | `channel.Sender<T>`, `channel.Receiver<T>`                                                        | `Send` when `T` is `Send`; never `Sync`                                                                 |
 | `time.Timer`, `time.Ticker`, `fs.File`, process child/pipe owners, network socket/listener owners | `Send`, never `Sync`                                                                                    |

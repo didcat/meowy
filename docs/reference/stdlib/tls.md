@@ -39,18 +39,18 @@ application authorization. Validating a certificate does not log a user in.
 
 ## Configuration and operation surface
 
-| API/type | Contract |
-| --- | --- |
-| `tls.roots(bytes, allocator, limits)` | Parse an owned root set or return a typed configuration/allocation failure |
-| `tls.system_roots(allocator, limits)` | Explicitly snapshot supported host trust data or fail |
-| `tls.identity(chain, key, allocator, limits)` | Construct an owned credential after format/key consistency checks |
-| `tls.client_config(spec)` | Validate versions, trust, optional client identity, ALPN and handshake limits |
-| `tls.server_config(spec)` | Validate server identities, client-auth policy, ALPN and handshake limits |
-| `tls.connect(stream, config, peer, allocator, deadline)` | Consume a connected transport and authenticate the named service |
-| `tls.accept(stream, config, allocator, deadline)` | Consume an accepted transport and perform the configured server handshake |
-| `stream.read(buffer)`, `stream.write(bytes)` | Authenticated stream I/O with the ordinary partial-progress contract |
-| `stream.peer()`, `stream.protocol()` | Borrow verified peer facts and the negotiated protocol/version |
-| `stream.close(deadline)` | Consume the owner, attempt bounded orderly shutdown, and report failure/progress |
+| API/type                                                 | Contract                                                                         |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `tls.roots(bytes, allocator, limits)`                    | Parse an owned root set or return a typed configuration/allocation failure       |
+| `tls.system_roots(allocator, limits)`                    | Explicitly snapshot supported host trust data or fail                            |
+| `tls.identity(chain, key, allocator, limits)`            | Construct an owned credential after format/key consistency checks                |
+| `tls.client_config(spec)`                                | Validate versions, trust, optional client identity, ALPN and handshake limits    |
+| `tls.server_config(spec)`                                | Validate server identities, client-auth policy, ALPN and handshake limits        |
+| `tls.connect(stream, config, peer, allocator, deadline)` | Consume a connected transport and authenticate the named service                 |
+| `tls.accept(stream, config, allocator, deadline)`        | Consume an accepted transport and perform the configured server handshake        |
+| `stream.read(buffer)`, `stream.write(bytes)`             | Authenticated stream I/O with the ordinary partial-progress contract             |
+| `stream.peer()`, `stream.protocol()`                     | Borrow verified peer facts and the negotiated protocol/version                   |
+| `stream.close(deadline)`                                 | Consume the owner, attempt bounded orderly shutdown, and report failure/progress |
 
 Configurations are immutable owners or views of explicitly retained configuration
 owners. A configuration retaining roots, credentials or allocator storage cannot

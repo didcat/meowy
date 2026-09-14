@@ -22,14 +22,14 @@ established merely by adding this chapter.
 
 ## Layers and protocol boundaries
 
-| Layer | Responsibility |
-| --- | --- |
-| Messages | Methods, URLs, status values, ordered fields, body streams and trailers |
-| Sender adapter | Origin selection, authenticated connections, bounded pooling and explicit attempt policies |
-| Receiver adapter | Connection/stream admission, exchanges, deadlines, cancellation and draining |
-| Codecs | Bytes, text, typed JSON, forms, multipart and explicit streaming representations |
-| Contracts | Typed inputs, named response alternatives, middleware context and effective wire schemas |
-| Router | Deterministic matching and dispatch through those contracts |
+| Layer            | Responsibility                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| Messages         | Methods, URLs, status values, ordered fields, body streams and trailers                    |
+| Sender adapter   | Origin selection, authenticated connections, bounded pooling and explicit attempt policies |
+| Receiver adapter | Connection/stream admission, exchanges, deadlines, cancellation and draining               |
+| Codecs           | Bytes, text, typed JSON, forms, multipart and explicit streaming representations           |
+| Contracts        | Typed inputs, named response alternatives, middleware context and effective wire schemas   |
+| Router           | Deterministic matching and dispatch through those contracts                                |
 
 The protocol models follow [HTTP semantics](https://www.rfc-editor.org/rfc/rfc9110.html).
 HTTP/1.1 framing and connection handling follow
@@ -93,16 +93,16 @@ handle was dropped.
 
 ## Sender surface and attempt policy
 
-| API | Contract |
-| --- | --- |
-| `net.http.url(text)` | Validate a borrowed URL view or return InvalidUrl |
-| `net.http.headers(allocator, limits)` | Create an explicitly owned bounded header collection |
-| `net.http.request(method, url, headers, body)` | Construct a typed message without sending it |
-| `net.http.sender(config)` | Describe the HTTP sender role without opening a connection or making a request |
-| `spec.sender(sender)` | Attach that role to a capability-typed net peer configuration |
-| `peer.send(request, options)` | Consume an outbound message and return a leased response or a payload-retaining SendFailure |
-| `peer.call(endpoint, input, allocator, options)` | Encode/decode through an effective endpoint contract; unavailable without an HTTP sender |
-| `peer.stop(deadline)`, `peer.close()` | Use the shared peer shutdown contract after response leases and request tasks end |
+| API                                              | Contract                                                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `net.http.url(text)`                             | Validate a borrowed URL view or return InvalidUrl                                           |
+| `net.http.headers(allocator, limits)`            | Create an explicitly owned bounded header collection                                        |
+| `net.http.request(method, url, headers, body)`   | Construct a typed message without sending it                                                |
+| `net.http.sender(config)`                        | Describe the HTTP sender role without opening a connection or making a request              |
+| `spec.sender(sender)`                            | Attach that role to a capability-typed net peer configuration                               |
+| `peer.send(request, options)`                    | Consume an outbound message and return a leased response or a payload-retaining SendFailure |
+| `peer.call(endpoint, input, allocator, options)` | Encode/decode through an effective endpoint contract; unavailable without an HTTP sender    |
+| `peer.stop(deadline)`, `peer.close()`            | Use the shared peer shutdown contract after response leases and request tasks end           |
 
 HTTP sender configuration requires finite pool/admission limits and explicit proxy,
 trust and protocol policies. HTTPS uses the separate TLS contract. DNS and address
@@ -176,16 +176,16 @@ Sender/receiver configuration requires a complete Limits record and deadline pol
 there is no omitted-field meaning of unlimited. Deployments may publish named
 profiles, but those profiles must specify their exact versioned values.
 
-| Budget | Required boundary |
-| --- | --- |
-| Target/start line and wire head | Count bytes before unbounded parsing or allocation |
-| Field count and decoded field bytes | Bound names, values and compression expansion independently of wire size |
-| Encoded body, decoded body and buffered body | Separate finite counters; a stream is not permission for unlimited work |
-| Content-coding layers and decoder work | Reject excessive nesting/expansion before oversized output allocation |
-| Trailer bytes and fields | Separate bounded post-body metadata |
-| Multipart parts, headers and field/file bytes | Apply both total-message and per-part limits |
-| Connections, streams, queues and pool entries | Bound live resource admission, not just completed payload sizes |
-| Connect, TLS, head, idle-progress and total exchange deadlines | Use monotonic time; an idle timeout does not replace a total deadline |
+| Budget                                                         | Required boundary                                                        |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Target/start line and wire head                                | Count bytes before unbounded parsing or allocation                       |
+| Field count and decoded field bytes                            | Bound names, values and compression expansion independently of wire size |
+| Encoded body, decoded body and buffered body                   | Separate finite counters; a stream is not permission for unlimited work  |
+| Content-coding layers and decoder work                         | Reject excessive nesting/expansion before oversized output allocation    |
+| Trailer bytes and fields                                       | Separate bounded post-body metadata                                      |
+| Multipart parts, headers and field/file bytes                  | Apply both total-message and per-part limits                             |
+| Connections, streams, queues and pool entries                  | Bound live resource admission, not just completed payload sizes          |
+| Connect, TLS, head, idle-progress and total exchange deadlines | Use monotonic time; an idle timeout does not replace a total deadline    |
 
 These acceptance limits are not a byte-accurate allocator quota. Allocator overhead,
 protocol tables and task stacks need their own resource accounting. Invalid limits
@@ -207,14 +207,14 @@ server/client feature of this API.
 
 ## Body codecs and ownership
 
-| Descriptor | Decoded/encoded representation |
-| --- | --- |
-| `net.http.empty()` | No representation body |
-| `net.http.bytes()` | Explicit byte owner/view or bounded body stream, selected by the operation |
-| `net.http.text()` | Validated UTF-8 with an explicit owner when collected |
-| `net.http.json<T>()` | Existing typed JSON schema and a `json.Document<T>` on decode |
-| `net.http.form<T>()` | Bounded URL-encoded fields through declared scalar parsers |
-| `net.http.multipart(spec)` | Bounded streaming parts with explicit per-part descriptors |
+| Descriptor                                       | Decoded/encoded representation                                              |
+| ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `net.http.empty()`                               | No representation body                                                      |
+| `net.http.bytes()`                               | Explicit byte owner/view or bounded body stream, selected by the operation  |
+| `net.http.text()`                                | Validated UTF-8 with an explicit owner when collected                       |
+| `net.http.json<T>()`                             | Existing typed JSON schema and a `json.Document<T>` on decode               |
+| `net.http.form<T>()`                             | Bounded URL-encoded fields through declared scalar parsers                  |
+| `net.http.multipart(spec)`                       | Bounded streaming parts with explicit per-part descriptors                  |
 | `net.http.map_codec<T, U>(base, encode, decode)` | Checked mappings between domain T and the base codec's declared wire type U |
 
 Only supported [JSON schemas](json.md#typed-schemas-and-numbers) are accepted by

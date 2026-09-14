@@ -360,14 +360,14 @@ and uses `<T>` as the result. Multiple binders have no implied result type; a
 local function may infer its result from emissions, while an exported function
 must provide an explicit result annotation.
 
-| Function declaration prefix         | Type parameters    | Result contract                                            |
-| ----------------------------------- | ------------------ | ---------------------------------------------------------- |
-| `identity<:T> :`                    | `T`                | Shorthand result `<T>`.                                    |
-| `consume<:T><null> :`               | `T`                | Explicit result `<null>`.                                  |
-| `maybe<:T><T><null> :`              | `T`                | Explicit union result `<T><null>`.                         |
-| `second<:K, :V><V> :`                | `K`, `V`           | Explicit result `<V>`.                                     |
+| Function declaration prefix               | Type parameters    | Result contract                                            |
+| ----------------------------------------- | ------------------ | ---------------------------------------------------------- |
+| `identity<:T> :`                          | `T`                | Shorthand result `<T>`.                                    |
+| `consume<:T><null> :`                     | `T`                | Explicit result `<null>`.                                  |
+| `maybe<:T><T><null> :`                    | `T`                | Explicit union result `<T><null>`.                         |
+| `second<:K, :V><V> :`                     | `K`, `V`           | Explicit result `<V>`.                                     |
 | `make_d<:K, :V, :Y, :Z><D<K, V, Y, Z>> :` | `K`, `V`, `Y`, `Z` | Explicit constructed result.                               |
-| `local_pair<:K, :V> :`               | `K`, `V`           | Inferred local result; incomplete at an exported boundary. |
+| `local_pair<:K, :V> :`                    | `K`, `V`           | Inferred local result; incomplete at an exported boundary. |
 
 For example, a nullable result needs its success type after the binder list too:
 

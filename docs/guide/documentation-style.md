@@ -26,19 +26,19 @@ Use four spaces for each indentation level. Prefer one statement per line in com
 examples; keep existing statement-ending newlines and use semicolons between simple
 statements that intentionally share a line. Do not pad empty delimiters: `()`, `[]`, `{}`.
 
-| Construct | Presentation |
-| --- | --- |
-| Bindings and assignment | `count <int32> : 4`, `count := 4`, `count = 5` |
-| Emissions | `-> count : 4`, `-> count`, `'result -> count` |
-| Binary operations | `count + 1`, `left == right`, `ready && active` |
-| Calls and lists | `read(path, limit)`, `[1, 2, 3]` |
-| Inline blocks | `{ -> count : 4 }`, `(value <int32>) { -> value }` |
-| Matchers and type tests | `\| ready \| { -> 1 }`, `\| value <int32> \| use(value)` |
-| Field access and dispatch | `value.field`, `value.(read)`, `value.{ -> self }` |
-| Borrows and dereferences | `&value`, `&!value`, `*pointer`, `value.&field` |
-| Ascriptions and type queries | `self<MyCoolType>`, `value<>` |
-| Imports and scope access | `@"debug"`, `'result.leave()` |
-| Task operations | `>> work()`, `<< task` |
+| Construct                    | Presentation                                             |
+| ---------------------------- | -------------------------------------------------------- |
+| Bindings and assignment      | `count <int32> : 4`, `count := 4`, `count = 5`           |
+| Emissions                    | `-> count : 4`, `-> count`, `'result -> count`           |
+| Binary operations            | `count + 1`, `left == right`, `ready && active`          |
+| Calls and lists              | `read(path, limit)`, `[1, 2, 3]`                         |
+| Inline blocks                | `{ -> count : 4 }`, `(value <int32>) { -> value }`       |
+| Matchers and type tests      | `\| ready \| { -> 1 }`, `\| value <int32> \| use(value)` |
+| Field access and dispatch    | `value.field`, `value.(read)`, `value.{ -> self }`       |
+| Borrows and dereferences     | `&value`, `&!value`, `*pointer`, `value.&field`          |
+| Ascriptions and type queries | `self<MyCoolType>`, `value<>`                            |
+| Imports and scope access     | `@"debug"`, `'result.leave()`                            |
+| Task operations              | `>> work()`, `<< task`                                   |
 
 Keep punctuation belonging to one token intact, including `->`, `:=`, `&!`, `&&`,
 `||`, `>>` and `<<`. Keep type suffix internals and generic arguments attached;

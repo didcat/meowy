@@ -162,13 +162,13 @@ permits PNG, JPEG, GIF and WebP assets from that directory; resolved paths must 
 inside it. SVG, source/credential files and arbitrary HTML are not copied as assets.
 Builds do not download remote images, include remote source or execute Markdown extensions.
 
-| Fence info | Check behavior |
-| --- | --- |
-| `meowy` or `meowy check` | Parse and semantically check a complete example without execution |
-| `meowy run` | Check an example; build/run it only when the user requests example execution |
-| `meowy reject=CODE` | Require the specified primary language diagnostic during checking |
-| `output` | Expected UTF-8 stdout for the immediately preceding run example |
-| `text` or another display language | Render only; make no compiler-validation claim |
+| Fence info                         | Check behavior                                                               |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| `meowy` or `meowy check`           | Parse and semantically check a complete example without execution            |
+| `meowy run`                        | Check an example; build/run it only when the user requests example execution |
+| `meowy reject=CODE`                | Require the specified primary language diagnostic during checking            |
+| `output`                           | Expected UTF-8 stdout for the immediately preceding run example              |
+| `text` or another display language | Render only; make no compiler-validation claim                               |
 
 Every meowy example is a complete source unit with explicit imports and setup.
 There are no hidden `main` wrappers, implicit enclosing locals or erased setup
@@ -201,12 +201,12 @@ unannounced public endpoints or inherited production credentials.
 These commands extend the full language's [CLI contract](../cli/README.md).
 The bootstrap implements their standalone forms under the profile above:
 
-| Command | Work performed |
-| --- | --- |
-| `meowy doc check PATH` | Check source, attachments, links and all meowy example check expectations |
+| Command                                 | Work performed                                                                                 |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `meowy doc check PATH`                  | Check source, attachments, links and all meowy example check expectations                      |
 | `meowy doc check PATH --require-public` | Also require nonempty documentation on exported declarations and named exported record members |
-| `meowy doc check PATH --run-examples` | Additionally build/run explicitly runnable examples using the test runner |
-| `meowy doc build PATH --output DIR` | Check documentation and render a local API site without executing examples |
+| `meowy doc check PATH --run-examples`   | Additionally build/run explicitly runnable examples using the test runner                      |
+| `meowy doc build PATH --output DIR`     | Check documentation and render a local API site without executing examples                     |
 
 PATH/project discovery and `--profile`, `--target` and `--offline` use ordinary CLI
 rules. An incompatible host may check examples but cannot claim their execution.

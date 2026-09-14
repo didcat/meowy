@@ -23,12 +23,12 @@ Above the maximum age
 Enter a whole number from 0 to 255
 ```
 
-| Input | Result |
-| --- | --- |
-| `"18"`, `"24"`, `"100"` | Accepted; both endpoints are inclusive |
-| `"17"` | Below the minimum |
-| `"101"` | Above the maximum |
-| `"256"`, `"-1"`, `"twenty"`, `""` | Parse failure |
+| Input                             | Result                                 |
+| --------------------------------- | -------------------------------------- |
+| `"18"`, `"24"`, `"100"`           | Accepted; both endpoints are inclusive |
+| `"17"`                            | Below the minimum                      |
+| `"101"`                           | Above the maximum                      |
+| `"256"`, `"-1"`, `"twenty"`, `""` | Parse failure                          |
 
 The supplied Options satisfies `minimum <= maximum`. Change the arguments in
 main to explore the table. A rejected age is an expected result, so this demo

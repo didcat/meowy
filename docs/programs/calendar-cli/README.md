@@ -25,11 +25,11 @@ The [time and calendar guide](../../guide/time-and-date.md) explains the Chinese
 example's source, leap-month identity, and the difference between durations and
 calendar arithmetic.
 
-| Outcome | Status |
-| --- | --- |
-| Help, version, successful conversion | 0 |
-| Invalid option/date or unsupported calendar range | 2 |
-| Argv acquisition or output failure | 1 |
+| Outcome                                           | Status |
+| ------------------------------------------------- | ------ |
+| Help, version, successful conversion              | 0      |
+| Invalid option/date or unsupported calendar range | 2      |
+| Argv acquisition or output failure                | 1      |
 
 Command metadata and parse results use inline storage. `process.arguments` takes
 an explicit allocator; its owner remains alive until every parsed string view has

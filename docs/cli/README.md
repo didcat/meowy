@@ -13,35 +13,35 @@ contains the full three-error example used below.
 
 ## Choose a command
 
-| When                                     | Command                                      | Why                                                                  |
-| ---------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------- |
-| Learn the available options              | `meowy help` or `meowy help err reproduce`   | Read help for one command without running it                         |
-| Identify a toolchain                     | `meowy --version`                            | Print the version and build identity                                 |
-| Check source while editing               | `meowy check main.mwy`                       | Check the module graph without linking or executing the application  |
-| Connect an editor                        | `meowy lsp`                                  | Serve current buffers with project configuration from `mod.mwy`      |
-| Diagnose editor setup                    | `meowy lsp doctor main.mwy`                  | Check toolchain, manifest, and local analysis inputs                 |
-| Check project coding policy              | `meowy style check`                          | Inspect layout, preferred expression forms, and code quality         |
-| Review safe style changes                | `meowy style fix --diff`                     | Preview proven rewrites and layout without changing source           |
-| Apply only source layout                 | `meowy fmt`                                  | Use gatostyle's layout settings without semantic rewrites            |
-| Run a program                            | `meowy run main.mwy`                         | Build and execute the selected entry                                 |
-| Exercise the project's test suites       | `meowy test`                                 | Check suites, then run each selected case in its own process         |
-| See which cases would run                | `meowy test --list`                          | Check static suite descriptors and list case IDs without execution   |
-| Check API documentation                  | `meowy doc check main.mwy`                    | Check attached prose, symbol links and example source without execution |
-| Run explicitly runnable documentation    | `meowy doc check main.mwy --run-examples`     | Execute selected doc examples through the ordinary test runner       |
-| Build a local API reference              | `meowy doc build main.mwy --output build/docs` | Render checked documentation without publishing it                  |
-| Produce a native executable              | `meowy build main.mwy --output build/main`   | Build without executing the result                                   |
-| Explain executable size and dependencies | `meowy build --report`                       | Save section sizes, retention evidence, and runtime requirements     |
-| Resolve newly declared dependencies      | `meowy deps resolve`                         | Fill missing lock entries while preserving existing locked revisions |
-| Deliberately update a dependency         | `meowy deps update geometry`                 | Re-resolve that alias and the transitive changes it requires         |
-| Read less after a failed run             | `meowy err summary`                          | List occurrences, locations, and fix counts                          |
-| Understand one rule violation            | `meowy err explain 1`                        | Explain the rule against the saved source                            |
-| Look up a rule without a saved run       | `meowy err explain E303`                     | Read its meaning, evidence, and repair guidance                      |
-| See compiler or runtime evidence         | `meowy err inspect 1 --verbose`              | Open the recorded internals without replaying the failure            |
-| Review proposed edits                    | `meowy err fix all --diff`                   | Show every candidate without changing source                         |
-| Replay what failed                       | `meowy err reproduce 1 --verbose`            | Verify and execute the capsule, with the relevant evidence views     |
-| Carry a failure to another machine       | `meowy err export 1 --output error-1.replay` | Write one self-contained executable                                  |
-| Prepare a compiler bug report            | `meowy err report 1 --diff`                  | Review the exact outgoing payload locally                            |
-| Recover diagnostic cache space           | `meowy err cleanup --diff`                   | List the sessions and bytes eligible for deletion                    |
+| When                                     | Command                                        | Why                                                                     |
+| ---------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------- |
+| Learn the available options              | `meowy help` or `meowy help err reproduce`     | Read help for one command without running it                            |
+| Identify a toolchain                     | `meowy --version`                              | Print the version and build identity                                    |
+| Check source while editing               | `meowy check main.mwy`                         | Check the module graph without linking or executing the application     |
+| Connect an editor                        | `meowy lsp`                                    | Serve current buffers with project configuration from `mod.mwy`         |
+| Diagnose editor setup                    | `meowy lsp doctor main.mwy`                    | Check toolchain, manifest, and local analysis inputs                    |
+| Check project coding policy              | `meowy style check`                            | Inspect layout, preferred expression forms, and code quality            |
+| Review safe style changes                | `meowy style fix --diff`                       | Preview proven rewrites and layout without changing source              |
+| Apply only source layout                 | `meowy fmt`                                    | Use gatostyle's layout settings without semantic rewrites               |
+| Run a program                            | `meowy run main.mwy`                           | Build and execute the selected entry                                    |
+| Exercise the project's test suites       | `meowy test`                                   | Check suites, then run each selected case in its own process            |
+| See which cases would run                | `meowy test --list`                            | Check static suite descriptors and list case IDs without execution      |
+| Check API documentation                  | `meowy doc check main.mwy`                     | Check attached prose, symbol links and example source without execution |
+| Run explicitly runnable documentation    | `meowy doc check main.mwy --run-examples`      | Execute selected doc examples through the ordinary test runner          |
+| Build a local API reference              | `meowy doc build main.mwy --output build/docs` | Render checked documentation without publishing it                      |
+| Produce a native executable              | `meowy build main.mwy --output build/main`     | Build without executing the result                                      |
+| Explain executable size and dependencies | `meowy build --report`                         | Save section sizes, retention evidence, and runtime requirements        |
+| Resolve newly declared dependencies      | `meowy deps resolve`                           | Fill missing lock entries while preserving existing locked revisions    |
+| Deliberately update a dependency         | `meowy deps update geometry`                   | Re-resolve that alias and the transitive changes it requires            |
+| Read less after a failed run             | `meowy err summary`                            | List occurrences, locations, and fix counts                             |
+| Understand one rule violation            | `meowy err explain 1`                          | Explain the rule against the saved source                               |
+| Look up a rule without a saved run       | `meowy err explain E303`                       | Read its meaning, evidence, and repair guidance                         |
+| See compiler or runtime evidence         | `meowy err inspect 1 --verbose`                | Open the recorded internals without replaying the failure               |
+| Review proposed edits                    | `meowy err fix all --diff`                     | Show every candidate without changing source                            |
+| Replay what failed                       | `meowy err reproduce 1 --verbose`              | Verify and execute the capsule, with the relevant evidence views        |
+| Carry a failure to another machine       | `meowy err export 1 --output error-1.replay`   | Write one self-contained executable                                     |
+| Prepare a compiler bug report            | `meowy err report 1 --diff`                    | Review the exact outgoing payload locally                               |
+| Recover diagnostic cache space           | `meowy err cleanup --diff`                     | List the sessions and bytes eligible for deletion                       |
 
 `--help` on any command is equivalent to asking for its help. CLI subcommand names
 are shell arguments; they do not introduce reserved words into meowy source.
@@ -123,14 +123,14 @@ A task-using standalone program still needs an explicit executor configuration;
 
 ### Profiles, targets, and dependencies
 
-| Option                                   | Applies to                                                     | Effect                                                                            |
-| ---------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Option                                   | Applies to                                                                               | Effect                                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
 | `--profile debug` or `--profile release` | `check`, `build`, `run`, `test`, `doc check`, `doc build`                                | Override `build.profile` for this invocation                                      |
 | `--target TRIPLE`                        | `check`, `build`, `run`, `test`, `doc check`, `doc build`                                | Override `build.target` and record the chosen architecture, OS, and ABI           |
-| `--output PATH`                          | `build`, `err export`, `doc build`                                          | Select the output file                                                            |
-| `--report`                               | `build`                                                        | Write a build report and link map beside the executable                           |
+| `--output PATH`                          | `build`, `err export`, `doc build`                                                       | Select the output file                                                            |
+| `--report`                               | `build`                                                                                  | Write a build report and link map beside the executable                           |
 | `--offline`                              | `check`, `build`, `run`, `test`, `doc check`, `doc build`, `deps resolve`, `deps update` | Require all dependency content and resolution metadata locally                    |
-| `--record-replay`                        | `run`                                                          | Record supported runtime inputs and scheduling decisions for deterministic replay |
+| `--record-replay`                        | `run`                                                                                    | Record supported runtime inputs and scheduling decisions for deterministic replay |
 
 Defaults are the manifest's values, then `debug` and the host target. Both profiles
 preserve checked arithmetic, bounds, ownership, and cleanup. `release` is an

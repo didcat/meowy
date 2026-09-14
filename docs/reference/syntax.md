@@ -56,17 +56,17 @@ actually contains that intrinsic value.
 
 ## Literals, values, and comments
 
-| Form                            | Meaning                            |
-| ------------------------------- | ---------------------------------- |
-| `null`, `true`, `false`         | Predefined null and boolean values |
-| `42`, `1_024`, `0xff`, `0b1010` | Integer literals                   |
-| `3.5`, `1.0e-3`                 | Floating-point literals            |
-| `"hello"`                       | UTF-8 string literal               |
-| `"value: {expression}"`         | Interpolated string                |
-| `[1, 2, 3]`                     | Bounded list literal               |
-| `{ -> x : 1 }`                  | Block with a named emission        |
-| `# comment #`                   | Delimited comment; may span lines  |
-| `#\| documentation \|#`         | Documentation for the following declaration |
+| Form                             | Meaning                                        |
+| -------------------------------- | ---------------------------------------------- |
+| `null`, `true`, `false`          | Predefined null and boolean values             |
+| `42`, `1_024`, `0xff`, `0b1010`  | Integer literals                               |
+| `3.5`, `1.0e-3`                  | Floating-point literals                        |
+| `"hello"`                        | UTF-8 string literal                           |
+| `"value: {expression}"`          | Interpolated string                            |
+| `[1, 2, 3]`                      | Bounded list literal                           |
+| `{ -> x : 1 }`                   | Block with a named emission                    |
+| `# comment #`                    | Delimited comment; may span lines              |
+| `#\| documentation \|#`          | Documentation for the following declaration    |
 | `#!\| module documentation \|!#` | Documentation for the containing source module |
 
 Ordinary comments do not nest. Documentation fences use matching bar counts and
@@ -135,45 +135,45 @@ literal contents retain their own bytes regardless of the surrounding layout.
 
 ## Forms at a glance
 
-| Form                                    | Meaning                                                          |
-| --------------------------------------- | ---------------------------------------------------------------- |
-| `name : value`                          | Immutable binding                                                |
-| `name := value`                         | Mutable binding                                                  |
-| `name <T> : value`                      | Explicit binding type                                            |
-| `name = value`                          | Reassign a mutable binding                                       |
-| `<Name> : <T>`                          | Type alias                                                       |
-| `-> value`                              | Primary emission                                                 |
-| `-> name : value`                       | Immutable named emission                                         |
-| `-> name := value`                      | Mutable named emission                                           |
-| `(x <T>) { ... }`                       | Function value                                                   |
-| `f <R> : (x <T>) { ... }`               | Function declaration with result type `R`                        |
-| `f <(T) -> R>;`                           | Forward signature, completed by the following definition group   |
-| `f(value)`                              | Function call                                                    |
-| `value.name`                            | Field selection                                                  |
-| `value.&name`, `value.&!name`            | Shared or exclusive borrow of the selected field                 |
-| `value.*name`                           | Dereference the selected field                                  |
-| `value.(f)`                             | Call `f` with `value` as its first argument                      |
-| `value.{ ... }`                         | Evaluate block with `self` bound to `value`                      |
-| `\| condition \| statement`             | Conditional matcher arm                                          |
-| `'scope { ... }`                        | Named, immediately evaluated block                               |
-| `'scope -> value`                       | Primary emission into a named enclosing block                    |
-| `'scope.leave()`                        | Finish that named block                                          |
-| `'scope.restart()`                      | Clean up and restart that named block                            |
-| `\| value <T> \| statement`              | Type predicate in a matcher condition                            |
-| `value<>`                               | Compile-time type query                                          |
-| `value<T>`                              | Proven type ascription in a value expression; no conversion      |
-| `name <(expression)> : value`            | Binding annotated by a computed type                             |
-| `@"name"`                               | Module import                                                    |
-| `&value`, `&!value`                     | Shared or exclusive borrow                                       |
-| `&(value[index])`, `&!(value[index])`   | Shared or exclusive borrow of the selected element               |
-| `*reference`                            | Access a safe reference's referent                               |
-| `>> expression`, `<< task`              | Start or join a task                                             |
-| `&group<T[N]>`                          | Declare a bounded task group                                     |
-| `&group >> expression`                  | Submit a task to a group                                         |
-| `!{ ... }`                              | Block permitting operations with caller-proven safety conditions |
-| `(x <T>) !{ ... }`                      | Function whose callers must establish those conditions           |
-| `<:T : memory.Copy>`                    | Generic type binder constrained by a capability value            |
-| `<D<:K, :V, :Y, :Z>> : <{ ... }>`            | Generic type alias with four independent type parameters         |
+| Form                                          | Meaning                                                          |
+| --------------------------------------------- | ---------------------------------------------------------------- |
+| `name : value`                                | Immutable binding                                                |
+| `name := value`                               | Mutable binding                                                  |
+| `name <T> : value`                            | Explicit binding type                                            |
+| `name = value`                                | Reassign a mutable binding                                       |
+| `<Name> : <T>`                                | Type alias                                                       |
+| `-> value`                                    | Primary emission                                                 |
+| `-> name : value`                             | Immutable named emission                                         |
+| `-> name := value`                            | Mutable named emission                                           |
+| `(x <T>) { ... }`                             | Function value                                                   |
+| `f <R> : (x <T>) { ... }`                     | Function declaration with result type `R`                        |
+| `f <(T) -> R>;`                               | Forward signature, completed by the following definition group   |
+| `f(value)`                                    | Function call                                                    |
+| `value.name`                                  | Field selection                                                  |
+| `value.&name`, `value.&!name`                 | Shared or exclusive borrow of the selected field                 |
+| `value.*name`                                 | Dereference the selected field                                   |
+| `value.(f)`                                   | Call `f` with `value` as its first argument                      |
+| `value.{ ... }`                               | Evaluate block with `self` bound to `value`                      |
+| `\| condition \| statement`                   | Conditional matcher arm                                          |
+| `'scope { ... }`                              | Named, immediately evaluated block                               |
+| `'scope -> value`                             | Primary emission into a named enclosing block                    |
+| `'scope.leave()`                              | Finish that named block                                          |
+| `'scope.restart()`                            | Clean up and restart that named block                            |
+| `\| value <T> \| statement`                   | Type predicate in a matcher condition                            |
+| `value<>`                                     | Compile-time type query                                          |
+| `value<T>`                                    | Proven type ascription in a value expression; no conversion      |
+| `name <(expression)> : value`                 | Binding annotated by a computed type                             |
+| `@"name"`                                     | Module import                                                    |
+| `&value`, `&!value`                           | Shared or exclusive borrow                                       |
+| `&(value[index])`, `&!(value[index])`         | Shared or exclusive borrow of the selected element               |
+| `*reference`                                  | Access a safe reference's referent                               |
+| `>> expression`, `<< task`                    | Start or join a task                                             |
+| `&group<T[N]>`                                | Declare a bounded task group                                     |
+| `&group >> expression`                        | Submit a task to a group                                         |
+| `!{ ... }`                                    | Block permitting operations with caller-proven safety conditions |
+| `(x <T>) !{ ... }`                            | Function whose callers must establish those conditions           |
+| `<:T : memory.Copy>`                          | Generic type binder constrained by a capability value            |
+| `<D<:K, :V, :Y, :Z>> : <{ ... }>`             | Generic type alias with four independent type parameters         |
 | `f<:K, :V><V> : (key <K>, value <V>) { ... }` | Generic function with an explicit result type                    |
 
 The escaped pipes in the table stand for literal `|` characters. Spaces around
@@ -216,14 +216,14 @@ the bodies of blocks and functions are ordinary value contexts; a nested matcher
 starts its own condition context. Thus a predicate inside an argument must be
 expressed through a matcher, not inferred from its distance to an outer `|`.
 
-| Form                              | Interpretation                                 |
-| --------------------------------- | ---------------------------------------------- |
-| `\| value <T> \| use(value)`          | Test `value` and refine it in the arm          |
-| `\| !(value <T>) \| reject()`         | Negate the type test                           |
+| Form                                 | Interpretation                                 |
+| ------------------------------------ | ---------------------------------------------- |
+| `\| value <T> \| use(value)`         | Test `value` and refine it in the arm          |
+| `\| !(value <T>) \| reject()`        | Negate the type test                           |
 | `\| accepts<T>(value) \| use(value)` | Call a specialized boolean function            |
 | `\| accepts(value<T>) \| use(value)` | Pass a proven ascription to a boolean function |
-| `\| flag \| copy : value<T>`           | Test `flag`; the body contains an ascription   |
-| `copy : value <T>`                  | Ascription, even with a space                  |
+| `\| flag \| copy : value<T>`         | Test `flag`; the body contains an ascription   |
+| `copy : value <T>`                   | Ascription, even with a space                  |
 
 The contexts compose through dispatch too:
 
@@ -265,18 +265,18 @@ not change the contextual rule for a type suffix after a runtime expression.
 
 From highest to lowest precedence:
 
-| Level | Operators/forms                                                                    |
-| ----- | ---------------------------------------------------------------------------------- |
-| 1     | Prefix borrow `&`, `&!` and dereference `*`                                         |
+| Level | Operators/forms                                                                      |
+| ----- | ------------------------------------------------------------------------------------ |
+| 1     | Prefix borrow `&`, `&!` and dereference `*`                                          |
 | 2     | Calls, field selection/borrow/dereference, indexing, dispatch, type query/ascription |
 | 3     | Unary `!`, `-`, `~`, task start `>>`, join `<<`                                      |
-| 4     | `*`, `/`, `%`                                                                      |
-| 5     | `+`, `-`                                                                           |
-| 6     | Integer bitwise `&`, then `^`, then `\|`                                           |
-| 7     | `<`, `<=`, `>`, `>=`, type predicates                                              |
-| 8     | `==`, `!=`                                                                         |
-| 9     | `&&`                                                                               |
-| 10    | `\|\|`                                                                             |
+| 4     | `*`, `/`, `%`                                                                        |
+| 5     | `+`, `-`                                                                             |
+| 6     | Integer bitwise `&`, then `^`, then `\|`                                             |
+| 7     | `<`, `<=`, `>`, `>=`, type predicates                                                |
+| 8     | `==`, `!=`                                                                           |
+| 9     | `&&`                                                                                 |
+| 10    | `\|\|`                                                                               |
 
 Binary arithmetic operators associate left-to-right; comparisons cannot be
 chained. Assignment, emissions, and matchers are statement forms. Parentheses
@@ -291,26 +291,26 @@ expression. Prefix operators nest right-to-left. Consequently, `&*p.field`
 means `(&(*p)).field`, and `*p.field` means `(*p).field`. Other unary operators
 retain their usual precedence: `-value.field` means `-(value.field)`.
 
-| Expression | Grouping and meaning |
-| --- | --- |
-| `&object.field` | `(&object).field`: borrow the object, then select its field |
-| `object.&field` | `&(object.field)`: borrow the selected field |
-| `object.&!field` | `&!(object.field)`: exclusively borrow the selected field |
-| `object.inner.&field` | `&(object.inner.field)`: borrow the final field |
-| `object.&inner.field` | `(&(object.inner)).field`: borrow `inner`, then select `field` |
-| `&items[i]` | `(&items)[i]`: borrow the list, then index it |
-| `&(items[i])` | Select and borrow the element |
-| `object.&items[i]` | `(&(object.items))[i]`: borrow `items`, then index it |
-| `&f()` | `(&f)()`: borrow the callable, then call through that reference |
-| `&(f())` | Call `f`, then borrow its result |
-| `&*p` | `&(*p)`: reborrow the referent |
-| `*object.field` | `(*object).field`: dereference the object, then select its field |
-| `object.*field` | `*(object.field)`: dereference the selected field |
+| Expression            | Grouping and meaning                                                |
+| --------------------- | ------------------------------------------------------------------- |
+| `&object.field`       | `(&object).field`: borrow the object, then select its field         |
+| `object.&field`       | `&(object.field)`: borrow the selected field                        |
+| `object.&!field`      | `&!(object.field)`: exclusively borrow the selected field           |
+| `object.inner.&field` | `&(object.inner.field)`: borrow the final field                     |
+| `object.&inner.field` | `(&(object.inner)).field`: borrow `inner`, then select `field`      |
+| `&items[i]`           | `(&items)[i]`: borrow the list, then index it                       |
+| `&(items[i])`         | Select and borrow the element                                       |
+| `object.&items[i]`    | `(&(object.items))[i]`: borrow `items`, then index it               |
+| `&f()`                | `(&f)()`: borrow the callable, then call through that reference     |
+| `&(f())`              | Call `f`, then borrow its result                                    |
+| `&*p`                 | `&(*p)`: reborrow the referent                                      |
+| `*object.field`       | `(*object).field`: dereference the object, then select its field    |
+| `object.*field`       | `*(object.field)`: dereference the selected field                   |
 | `object.*inner.field` | `(*(object.inner)).field`: dereference `inner`, then select `field` |
-| `*items[i]` | `(*items)[i]`: dereference the list reference, then index it |
-| `*(items[i])` | Select the element, then dereference it |
-| `*f()` | `(*f)()`: dereference the callable reference, then call it |
-| `*(f())` | Call `f`, then dereference its result |
+| `*items[i]`           | `(*items)[i]`: dereference the list reference, then index it        |
+| `*(items[i])`         | Select the element, then dereference it                             |
+| `*f()`                | `(*f)()`: dereference the callable reference, then call it          |
+| `*(f())`              | Call `f`, then dereference its result                               |
 
 The exclusive prefix `&!` follows the same grouping rules. A dotted `&`, `&!` or
 `*` must be followed by a field name and applies only to that immediately selected

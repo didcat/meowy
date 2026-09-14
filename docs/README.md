@@ -32,50 +32,50 @@ working version works.
 
 ## Look something up
 
-| Question                                                    | Reference                                                                                           |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| What does this punctuation mean?                            | [Syntax](reference/syntax.md)                                                                       |
-| How do I document APIs without repeating their types?       | [Checked documentation comments](reference/documentation.md)                                         |
-| Does `->` return? Does `{ ... }` create a function?         | [Values and blocks](reference/values-and-blocks.md)                                                 |
-| Can a mutable binding change type?                          | [Types](reference/types.md)                                                                         |
-| How do I declare `D<K, V, Y, Z>` or a generic function?        | [Multiple type parameters](reference/types.md#multiple-type-parameters)                             |
-| How do I construct types or check pure helpers?             | [Compile-time evaluation](reference/compile-time.md)                                                |
-| How do I accept capturing callbacks without boxing?         | [Callable capabilities](reference/types.md#callable-environments)                                   |
-| How do errors and nullable values narrow?                   | [Types](reference/types.md#unions-and-narrowing)                                                    |
-| How do I create and read my own errors?                     | [Errors and custom failures](reference/stdlib/errors.md)                                            |
-| How do I write and run a test suite?                        | [Testing](reference/stdlib/testing.md)                                                              |
-| What can the compiler prove, and how do I test those guarantees? | [Proof queries and static tests](reference/stdlib/proof.md) |
-| What can I configure in mod.mwy?                            | [Fully commented manifest](guide/mod.full.mwy)                                                      |
-| Where does memory come from, and when is it released?       | [Memory](reference/memory.md)                                                                       |
-| How do stack, heap, and static storage affect peak memory?  | [Memory and binary optimization](reference/optimization.md)                                         |
-| Why does importing time not link the whole stdlib?          | [Import reachability](reference/optimization.md#how-imports-become-executable-bytes)                |
-| How do I deploy on a small machine or in a container?       | [Constrained deployment](reference/optimization.md#docker-images-old-machines-and-virtual-machines) |
-| Is `T[4]` an array or a capacity limit?                     | [Collections](reference/collections.md)                                                             |
-| Who joins a task? What does cancellation guarantee?         | [Tasks and channels](reference/tasks-and-channels.md)                                               |
-| How are native data and functions declared?                 | [Modules and FFI](reference/modules-and-ffi.md#native-interfaces)                                   |
-| Which C types and calling conventions are accepted?         | [Native ABI profile](reference/native-abi.md)                                                       |
-| Which machine and runtime can run the initial distribution? | [Target profile](reference/target-profile.md)                                                       |
-| What does the standard library provide?                     | [Standard library](reference/stdlib/README.md)                                                      |
-| How do I compose TCP/UDP peers with sender/receiver capabilities? | [Networking and peers](reference/stdlib/net.md)                                                  |
-| How do I add typed HTTP requests, handlers and routers to a peer? | [HTTP protocol contracts](reference/stdlib/http.md)                                              |
-| How are encrypted connections and peer identities checked?  | [TLS transports](reference/stdlib/tls.md)                                                             |
-| How do durations, dates, and zones work?                    | [Time and date](reference/stdlib/time-and-date.md)                                                  |
-| How do I use Chinese or Hebrew leap months?                 | [Calendars](reference/stdlib/calendars.md)                                                          |
-| How do I build my own CLI application?                      | [CLI library](reference/stdlib/cli.md)                                                              |
-| How do I configure mod.mwy and local import aliases?        | [Manifest guide](guide/mod.md)                                                                      |
-| Which dependency revision and build settings win?           | [Package identity and build graphs](reference/packages-and-builds.md)                               |
-| How do I enforce coding style and code quality?             | [gatostyle](guide/gatostyle.md)                                                                     |
-| How do I configure editor analysis and compatibility?       | [Language server](reference/lsp.md)                                                                 |
-| Which failures are values?                                  | [Diagnostics](reference/diagnostics.md)                                                             |
-| What does a diagnostic code mean?                           | [Code catalog](reference/diagnostic-codes.md)                                                       |
-| How do I check, build, and run a program?                   | [Command line](cli/README.md#check-build-and-run)                                                   |
-| How do I review and apply suggested fixes?                  | [Repair workflow](cli/README.md#preview-and-apply-repairs)                                          |
-| Can I see the original compiler and runtime evidence?       | [Replay capsules](reference/diagnostics.md#replay-capsules)                                         |
-| How do I replay a failure without the project?              | [Export a replay executable](cli/README.md#export-one-executable)                                   |
-| Which effects can a recording reproduce?                    | [Recording boundaries and budgets](reference/replay-recording.md)                                   |
-| What does each recorded operation contain?                  | [Runtime event registry](reference/runtime-events.md)                                               |
-| How do tools read locks, diagnostics and capsules?          | [Artifact formats and schemas](reference/artifact-formats.md)                                       |
-| Which small programs pin the language rules?                | [Conformance cases](conformance/README.md)                                                          |
+| Question                                                          | Reference                                                                                           |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| What does this punctuation mean?                                  | [Syntax](reference/syntax.md)                                                                       |
+| How do I document APIs without repeating their types?             | [Checked documentation comments](reference/documentation.md)                                        |
+| Does `->` return? Does `{ ... }` create a function?               | [Values and blocks](reference/values-and-blocks.md)                                                 |
+| Can a mutable binding change type?                                | [Types](reference/types.md)                                                                         |
+| How do I declare `D<K, V, Y, Z>` or a generic function?           | [Multiple type parameters](reference/types.md#multiple-type-parameters)                             |
+| How do I construct types or check pure helpers?                   | [Compile-time evaluation](reference/compile-time.md)                                                |
+| How do I accept capturing callbacks without boxing?               | [Callable capabilities](reference/types.md#callable-environments)                                   |
+| How do errors and nullable values narrow?                         | [Types](reference/types.md#unions-and-narrowing)                                                    |
+| How do I create and read my own errors?                           | [Errors and custom failures](reference/stdlib/errors.md)                                            |
+| How do I write and run a test suite?                              | [Testing](reference/stdlib/testing.md)                                                              |
+| What can the compiler prove, and how do I test those guarantees?  | [Proof queries and static tests](reference/stdlib/proof.md)                                         |
+| What can I configure in mod.mwy?                                  | [Fully commented manifest](guide/mod.full.mwy)                                                      |
+| Where does memory come from, and when is it released?             | [Memory](reference/memory.md)                                                                       |
+| How do stack, heap, and static storage affect peak memory?        | [Memory and binary optimization](reference/optimization.md)                                         |
+| Why does importing time not link the whole stdlib?                | [Import reachability](reference/optimization.md#how-imports-become-executable-bytes)                |
+| How do I deploy on a small machine or in a container?             | [Constrained deployment](reference/optimization.md#docker-images-old-machines-and-virtual-machines) |
+| Is `T[4]` an array or a capacity limit?                           | [Collections](reference/collections.md)                                                             |
+| Who joins a task? What does cancellation guarantee?               | [Tasks and channels](reference/tasks-and-channels.md)                                               |
+| How are native data and functions declared?                       | [Modules and FFI](reference/modules-and-ffi.md#native-interfaces)                                   |
+| Which C types and calling conventions are accepted?               | [Native ABI profile](reference/native-abi.md)                                                       |
+| Which machine and runtime can run the initial distribution?       | [Target profile](reference/target-profile.md)                                                       |
+| What does the standard library provide?                           | [Standard library](reference/stdlib/README.md)                                                      |
+| How do I compose TCP/UDP peers with sender/receiver capabilities? | [Networking and peers](reference/stdlib/net.md)                                                     |
+| How do I add typed HTTP requests, handlers and routers to a peer? | [HTTP protocol contracts](reference/stdlib/http.md)                                                 |
+| How are encrypted connections and peer identities checked?        | [TLS transports](reference/stdlib/tls.md)                                                           |
+| How do durations, dates, and zones work?                          | [Time and date](reference/stdlib/time-and-date.md)                                                  |
+| How do I use Chinese or Hebrew leap months?                       | [Calendars](reference/stdlib/calendars.md)                                                          |
+| How do I build my own CLI application?                            | [CLI library](reference/stdlib/cli.md)                                                              |
+| How do I configure mod.mwy and local import aliases?              | [Manifest guide](guide/mod.md)                                                                      |
+| Which dependency revision and build settings win?                 | [Package identity and build graphs](reference/packages-and-builds.md)                               |
+| How do I enforce coding style and code quality?                   | [gatostyle](guide/gatostyle.md)                                                                     |
+| How do I configure editor analysis and compatibility?             | [Language server](reference/lsp.md)                                                                 |
+| Which failures are values?                                        | [Diagnostics](reference/diagnostics.md)                                                             |
+| What does a diagnostic code mean?                                 | [Code catalog](reference/diagnostic-codes.md)                                                       |
+| How do I check, build, and run a program?                         | [Command line](cli/README.md#check-build-and-run)                                                   |
+| How do I review and apply suggested fixes?                        | [Repair workflow](cli/README.md#preview-and-apply-repairs)                                          |
+| Can I see the original compiler and runtime evidence?             | [Replay capsules](reference/diagnostics.md#replay-capsules)                                         |
+| How do I replay a failure without the project?                    | [Export a replay executable](cli/README.md#export-one-executable)                                   |
+| Which effects can a recording reproduce?                          | [Recording boundaries and budgets](reference/replay-recording.md)                                   |
+| What does each recorded operation contain?                        | [Runtime event registry](reference/runtime-events.md)                                               |
+| How do tools read locks, diagnostics and capsules?                | [Artifact formats and schemas](reference/artifact-formats.md)                                       |
+| Which small programs pin the language rules?                      | [Conformance cases](conformance/README.md)                                                          |
 
 ## Read complete programs
 

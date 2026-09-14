@@ -62,7 +62,7 @@ binding's access promise; C `const` does not create a separate ABI representatio
 | Raw data pointer `*T` or `*!T`, for an admissible native object type `T` | Yes                               | Yes              | Yes                   |
 | `*null`, `*!null`                                                        | Yes, as `const void *` / `void *` | Yes              | Yes                   |
 | Type constructed by `ffi.record("C", fields)`                            | Yes, by value                     | Yes, by value    | Yes, inline           |
-| `collections.Array<T, N>` with native element type and positive `N`       | No                                | No               | Yes, inline C array   |
+| `collections.Array<T, N>` with native element type and positive `N`      | No                                | No               | Yes, inline C array   |
 | `null`                                                                   | No                                | Yes, as C `void` | No                    |
 | Every other type                                                         | No                                | No               | No                    |
 

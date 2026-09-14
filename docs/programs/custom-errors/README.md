@@ -28,15 +28,15 @@ Could not parse: twenty
 Cause: strings.ParseError (the decimal parser rejected the input)
 ```
 
-| Operation | What this program demonstrates |
-| --- | --- |
-| `errors.define<AgeRequirement>(...)` | Defines a distinct error type with a static code and message |
-| `too_young.make(...)` | Constructs that type with the supplied age and minimum stored inline |
-| `age <error>` in a matcher | Selects both failure alternatives without erasing their concrete types |
-| `errors.code(&failure)`, `errors.message(&failure)` | Reads metadata through a shared borrow of the closed error union |
-| `failure.payload()` | Borrows the `TooYoung` payload so its fields can be inspected |
-| `failure.take_payload()` | Consumes the `InvalidAge` error and yields its payload |
-| `*cause <strings.ParseError>` in a matcher | Inspects the concrete parser failure retained in that payload |
+| Operation                                           | What this program demonstrates                                         |
+| --------------------------------------------------- | ---------------------------------------------------------------------- |
+| `errors.define<AgeRequirement>(...)`                | Defines a distinct error type with a static code and message           |
+| `too_young.make(...)`                               | Constructs that type with the supplied age and minimum stored inline   |
+| `age <error>` in a matcher                          | Selects both failure alternatives without erasing their concrete types |
+| `errors.code(&failure)`, `errors.message(&failure)` | Reads metadata through a shared borrow of the closed error union       |
+| `failure.payload()`                                 | Borrows the `TooYoung` payload so its fields can be inspected          |
+| `failure.take_payload()`                            | Consumes the `InvalidAge` error and yields its payload                 |
+| `*cause <strings.ParseError>` in a matcher          | Inspects the concrete parser failure retained in that payload          |
 
 `AgeRequirement` and `InvalidInput` are ordinary records. They do not match
 `<error>` by themselves: `errors.define` supplies the nominal identity, and its

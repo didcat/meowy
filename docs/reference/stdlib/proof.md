@@ -86,12 +86,12 @@ on that body's declared inputs and local facts, not on an optimizer's chosen cal
 
 ## Result types and meaning
 
-| Type | Meaning for an admissible proposition at its observation point |
-| --- | --- |
-| `proof.Always` | The proposition holds for every state admitted by the canonical analysis. |
-| `proof.Never` | Its negation holds for every admitted state. |
-| `proof.Indeterminable` | Neither universal conclusion is established. |
-| `proof.Result` | The closed union `<proof.Always><proof.Never><proof.Indeterminable>`. |
+| Type                   | Meaning for an admissible proposition at its observation point            |
+| ---------------------- | ------------------------------------------------------------------------- |
+| `proof.Always`         | The proposition holds for every state admitted by the canonical analysis. |
+| `proof.Never`          | Its negation holds for every admitted state.                              |
+| `proof.Indeterminable` | Neither universal conclusion is established.                              |
+| `proof.Result`         | The closed union `<proof.Always><proof.Never><proof.Indeterminable>`.     |
 
 The three alternatives are disjoint, opaque nominal descriptor types. Only proof
 intrinsics construct them. A same-shaped record or a type ascription cannot forge
@@ -111,11 +111,11 @@ compile-time context. The descriptor union is not a runtime tagged union.
 
 Every alternative and `proof.Result` expose these immutable scalar projections:
 
-| Projection | `Always` | `Never` | `Indeterminable` |
-| --- | --- | --- | --- |
-| `.always <boolean>` | `true` | `false` | `false` |
-| `.never <boolean>` | `false` | `true` | `false` |
-| `.indeterminable <boolean>` | `false` | `false` | `true` |
+| Projection                  | `Always` | `Never` | `Indeterminable` |
+| --------------------------- | -------- | ------- | ---------------- |
+| `.always <boolean>`         | `true`   | `false` | `false`          |
+| `.never <boolean>`          | `false`  | `true`  | `false`          |
+| `.indeterminable <boolean>` | `false`  | `false` | `true`           |
 
 Exactly one flag is true. `!result.always` means either `Never` or
 `Indeterminable`; it is not equivalent to `result.never`. Results have no
@@ -137,14 +137,14 @@ The API tables use the library's usual signature notation. `Result` means
 `proof.Result`, and `message` must be a compile-time string. A message may be
 omitted; the compiler then generates one from the query and assertion origins.
 
-| API | Result | Contract |
-| --- | --- | --- |
-| `inspect(result <Result>)` | `proof.Flags` | Return the three boolean flags without asserting any outcome. |
-| `assert(result <Result>, message <string>)` | `proof.Always` | Require `Always`; otherwise fail checking with E224. |
-| `expect<S>(result <Result>, message <string>)` | `null` | Require exactly alternative `S`, one of the three nominal result types; mismatch is E224. |
-| `not(result <Result>)` | `Result` | Negate the anchored proposition using the table below. |
-| `all(results)` | `Result` | Conjoin an immutable compile-time bounded list of results. |
-| `any(results)` | `Result` | Disjoin such a list. |
+| API                                            | Result         | Contract                                                                                  |
+| ---------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------- |
+| `inspect(result <Result>)`                     | `proof.Flags`  | Return the three boolean flags without asserting any outcome.                             |
+| `assert(result <Result>, message <string>)`    | `proof.Always` | Require `Always`; otherwise fail checking with E224.                                      |
+| `expect<S>(result <Result>, message <string>)` | `null`         | Require exactly alternative `S`, one of the three nominal result types; mismatch is E224. |
+| `not(result <Result>)`                         | `Result`       | Negate the anchored proposition using the table below.                                    |
+| `all(results)`                                 | `Result`       | Conjoin an immutable compile-time bounded list of results.                                |
+| `any(results)`                                 | `Result`       | Disjoin such a list.                                                                      |
 
 `proof.Flags` is an opaque compile-time inspection record with exactly the same
 three projections as a result. `inspect` is redundant with direct projections
@@ -166,10 +166,10 @@ Assertions are compile-time obligations in every checked body, even one that is
 not called at runtime. They are not runtime panics and cannot be hidden behind
 a runtime condition. Testing an observation does not execute its subject.
 
-| Input | `not` |
-| --- | --- |
-| `Always` | `Never` |
-| `Never` | `Always` |
+| Input            | `not`            |
+| ---------------- | ---------------- |
+| `Always`         | `Never`          |
+| `Never`          | `Always`         |
 | `Indeterminable` | `Indeterminable` |
 
 `all` returns `Never` if any input is `Never`, `Always` if all are `Always`, and
@@ -211,14 +211,14 @@ records, lists as whole values, resources, and user-defined equality are not val
 predicate domains; querying them with these APIs is E223. Type predicates and
 ownership probes have their separately defined, wider domains.
 
-| API | Result | Meaning |
-| --- | --- | --- |
-| `is(x, value)` | `Result` | Prove equality of the two observed scalar values, including their null alternatives. |
-| `in(x, values)` | `Result` | Prove membership in a compile-time finite scalar set. |
-| `notin(x, values)` | `Result` | Exactly `not(in(x, values))`, including validation and uncertainty. |
-| `between(x, low, high)` | `Result` | Prove `low <= x && x <= high`, with inclusive static integer endpoints. |
-| `has_type<T>(x)` | `Result` | Prove that the existing language type predicate `x <T>` holds. |
-| `boundaries(x)` | `proof.Bounds<T>` | Return conservative inclusive bounds for a non-null integer observation of type `T`. |
+| API                     | Result            | Meaning                                                                              |
+| ----------------------- | ----------------- | ------------------------------------------------------------------------------------ |
+| `is(x, value)`          | `Result`          | Prove equality of the two observed scalar values, including their null alternatives. |
+| `in(x, values)`         | `Result`          | Prove membership in a compile-time finite scalar set.                                |
+| `notin(x, values)`      | `Result`          | Exactly `not(in(x, values))`, including validation and uncertainty.                  |
+| `between(x, low, high)` | `Result`          | Prove `low <= x && x <= high`, with inclusive static integer endpoints.              |
+| `has_type<T>(x)`        | `Result`          | Prove that the existing language type predicate `x <T>` holds.                       |
+| `boundaries(x)`         | `proof.Bounds<T>` | Return conservative inclusive bounds for a non-null integer observation of type `T`. |
 
 `is` observes both operands at the same source point. Non-null scalar types must
 match exactly; different integer widths/signedness use E213, other incompatible
@@ -258,12 +258,12 @@ signature family, not a new general function-overloading rule. Zero value argume
 require explicit `T`; one observation argument selects the place form and infers
 its type. Other combinations are E212.
 
-| Type query | Proposition; no particular runtime object is examined |
-| --- | --- |
-| `can_copy<T>()` | `T` satisfies the existing `memory.Copy` capability. |
-| `can_move<T>()` | An initialized owned `T` admits ordinary by-value transfer to a fresh local. |
-| `can_borrow<T>()` | The shared reference type `<&T>` is well-formed for runtime storage. |
-| `can_exclusive_borrow<T>()` | `<&!T>` is well-formed for a fresh mutable owned location of `T`. |
+| Type query                  | Proposition; no particular runtime object is examined                        |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| `can_copy<T>()`             | `T` satisfies the existing `memory.Copy` capability.                         |
+| `can_move<T>()`             | An initialized owned `T` admits ordinary by-value transfer to a fresh local. |
+| `can_borrow<T>()`           | The shared reference type `<&T>` is well-formed for runtime storage.         |
+| `can_exclusive_borrow<T>()` | `<&!T>` is well-formed for a fresh mutable owned location of `T`.            |
 
 All return `proof.Result`. Concrete runtime data types use their normative type
 and capability rules, including opaque types' published capabilities. These are
@@ -286,12 +286,12 @@ Monomorphization, inlining, or inspecting one caller must not strengthen the ans
 inside the generic declaration. Generic bodies must still be valid for every type
 admitted by their constraints; proof flags cannot replace a required constraint.
 
-| Place query | Hypothetical immediate operation |
-| --- | --- |
-| `can_copy(place)` | Read a copy into a fresh local, without invalidating the source. |
-| `can_move(place)` | Transfer into a fresh local using ordinary copy/move rules. |
-| `can_borrow(place)` | Create a shared reference used only through the end of this full statement. |
-| `can_exclusive_borrow(place)` | Create an exclusive reference for that same statement interval. |
+| Place query                   | Hypothetical immediate operation                                            |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `can_copy(place)`             | Read a copy into a fresh local, without invalidating the source.            |
+| `can_move(place)`             | Transfer into a fresh local using ordinary copy/move rules.                 |
+| `can_borrow(place)`           | Create a shared reference used only through the end of this full statement. |
+| `can_exclusive_borrow(place)` | Create an exclusive reference for that same statement interval.             |
 
 These also return `proof.Result`. The probe creates no local, loan, reservation,
 read, move, cleanup, or runtime check. Its hypothetical destination has the same
@@ -422,17 +422,17 @@ Process the source control-flow graph after name/type resolution and before
 optimization, using mathematical integers to calculate abstract bounds. Each
 transfer is clipped to the declared integer type; arithmetic never wraps.
 
-| Source operation | Required transfer |
-| --- | --- |
-| Scalar literal or an already established compile-time scalar constant | Its singleton domain. |
-| Direct scalar copy | Copy domain and same-value identity. |
-| Integer `+`, `-`, `*` | For finite sets, calculate all pairs; otherwise calculate the mathematical interval hull. Keep representable normal results, then canonicalize. |
-| Unary integer `-`, `~` | Calculate finite images or exact interval images, intersect with the result type, then canonicalize. |
-| Integer `/`, `%`, `&`, `|`, `^` | Calculate finite-set pairs exactly; otherwise use the full result-type domain. |
-| Boolean operators | Apply ordinary boolean tables to the admitted values, with short-circuit control flow. |
-| Scalar comparison | Apply the ordinary comparator to all admitted pairs: all true/all false gives that singleton, otherwise both booleans. Same-value identities use diagonal pairs. |
-| Call result, runtime input, or unsupported fact transfer | Full declared result domain; do not inspect the callee body. |
-| Assignment | Create a fresh version with the RHS domain; invalidate overlapping place facts. |
+| Source operation                                                      | Required transfer                                                                                                                                                |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Scalar literal or an already established compile-time scalar constant | Its singleton domain.                                                                                                                                            |
+| Direct scalar copy                                                    | Copy domain and same-value identity.                                                                                                                             |
+| Integer `+`, `-`, `*`                                                 | For finite sets, calculate all pairs; otherwise calculate the mathematical interval hull. Keep representable normal results, then canonicalize.                  |
+| Unary integer `-`, `~`                                                | Calculate finite images or exact interval images, intersect with the result type, then canonicalize.                                                             |
+| Integer `/`, `%`, `&`, `                                              | `, `^`                                                                                                                                                           | Calculate finite-set pairs exactly; otherwise use the full result-type domain. |
+| Boolean operators                                                     | Apply ordinary boolean tables to the admitted values, with short-circuit control flow.                                                                           |
+| Scalar comparison                                                     | Apply the ordinary comparator to all admitted pairs: all true/all false gives that singleton, otherwise both booleans. Same-value identities use diagonal pairs. |
+| Call result, runtime input, or unsupported fact transfer              | Full declared result domain; do not inspect the callee body.                                                                                                     |
+| Assignment                                                            | Create a fresh version with the RHS domain; invalidate overlapping place facts.                                                                                  |
 
 Discard arithmetic pairs that cannot complete normally; do not infer anything about
 states after a panic. Statically invalid source must still report its ordinary
@@ -472,12 +472,12 @@ answer. Unsupported alias relationships remain possible overlap for place probes
 First validate the query, then check reachability, then apply these rules. For value
 queries, bottom yields `Indeterminable`. For reachable admitted domains:
 
-| Query | `Always` | `Never` | Otherwise |
-| --- | --- | --- | --- |
-| `is(x, y)` | Same-value identity, or every admitted pair is equal. | No admitted pair is equal. | `Indeterminable` |
-| `in(x, S)` | Every admitted subject value belongs to `S`. | No admitted value belongs to `S`. | `Indeterminable` |
-| `between(x, l, h)` | The integer domain is contained in `[l, h]`. | It is disjoint from `[l, h]`. | `Indeterminable` |
-| `has_type<T>(x)` | All admitted alternatives satisfy the predicate. | None can satisfy it. | `Indeterminable` |
+| Query              | `Always`                                              | `Never`                           | Otherwise        |
+| ------------------ | ----------------------------------------------------- | --------------------------------- | ---------------- |
+| `is(x, y)`         | Same-value identity, or every admitted pair is equal. | No admitted pair is equal.        | `Indeterminable` |
+| `in(x, S)`         | Every admitted subject value belongs to `S`.          | No admitted value belongs to `S`. | `Indeterminable` |
+| `between(x, l, h)` | The integer domain is contained in `[l, h]`.          | It is disjoint from `[l, h]`.     | `Indeterminable` |
+| `has_type<T>(x)`   | All admitted alternatives satisfy the predicate.      | None can satisfy it.              | `Indeterminable` |
 
 Different identities use the Cartesian product of their domains; do not recover
 relations lost at joins. Finite-set membership is exact against the static metadata
@@ -652,16 +652,16 @@ walk, not the implementation's cache visits, determines the logical count.
 
 Charge the canonical analysis as if performed afresh for each observation:
 
-| Work | Required logical charge |
-| --- | --- |
-| Intrinsic invocation | One evaluation step. |
-| Source statement/expression transfer used for the frozen facts | One step per visit; observation-only nodes have no value transfer. |
-| Scalar state component joined, intersected, invalidated, or inspected | One step per component. |
-| Finite arithmetic/comparison pair or membership element inspected | One step per pair/element, including duplicate input elements. |
-| Type component, canonical place component, or loan origin inspected | One step per component/origin. |
-| Constructed `Result`, including `not`/`all`/`any` output | One aggregate slot plus one per distinct retained observation origin. |
-| Constructed `Flags` | Three aggregate slots. |
-| Constructed `Bounds<T>` | Four aggregate slots: its three fields and observation origin. |
+| Work                                                                  | Required logical charge                                               |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Intrinsic invocation                                                  | One evaluation step.                                                  |
+| Source statement/expression transfer used for the frozen facts        | One step per visit; observation-only nodes have no value transfer.    |
+| Scalar state component joined, intersected, invalidated, or inspected | One step per component.                                               |
+| Finite arithmetic/comparison pair or membership element inspected     | One step per pair/element, including duplicate input elements.        |
+| Type component, canonical place component, or loan origin inspected   | One step per component/origin.                                        |
+| Constructed `Result`, including `not`/`all`/`any` output              | One aggregate slot plus one per distinct retained observation origin. |
+| Constructed `Flags`                                                   | Three aggregate slots.                                                |
+| Constructed `Bounds<T>`                                               | Four aggregate slots: its three fields and observation origin.        |
 
 Finite pair enumeration is in ascending scalar order; union alternatives use the
 language's canonical type order. State joins use source predecessor order, with
@@ -691,16 +691,16 @@ capability failure instead of pretending to implement this rule.
 Existing name, type, privacy, ownership, and argument diagnostics remain authoritative.
 [The diagnostic catalog](../diagnostic-codes.md) assigns the proof-specific codes.
 
-| Situation | Required result |
-| --- | --- |
-| Valid query with insufficient canonical facts | `Indeterminable`; compilation continues. |
-| Unknown name/type, bad arity, incompatible scalar widths, or invalid literal | Existing E201/E202/E212/E213/E216 as applicable. |
-| Unsupported observation term/domain, unavailable data observation, reversed bounds, invalid `expect` kind, forged descriptor, or runtime descriptor escape | E223. |
-| Known forbidden observation-argument effect | E219; do not execute it. |
-| `assert` receives `Never` or `Indeterminable`, or `expect<S>` sees another alternative | E224. |
-| Proof answer feeds another observation, type/specialization formation, or ownership acceptance | E225. |
-| Logical evaluation budget is exhausted | E220 with the root, counter, and limit. |
-| Compiler does not implement this package/profile | Explicit unsupported-capability diagnostic; never a proof outcome. |
+| Situation                                                                                                                                                  | Required result                                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Valid query with insufficient canonical facts                                                                                                              | `Indeterminable`; compilation continues.                           |
+| Unknown name/type, bad arity, incompatible scalar widths, or invalid literal                                                                               | Existing E201/E202/E212/E213/E216 as applicable.                   |
+| Unsupported observation term/domain, unavailable data observation, reversed bounds, invalid `expect` kind, forged descriptor, or runtime descriptor escape | E223.                                                              |
+| Known forbidden observation-argument effect                                                                                                                | E219; do not execute it.                                           |
+| `assert` receives `Never` or `Indeterminable`, or `expect<S>` sees another alternative                                                                     | E224.                                                              |
+| Proof answer feeds another observation, type/specialization formation, or ownership acceptance                                                             | E225.                                                              |
+| Logical evaluation budget is exhausted                                                                                                                     | E220 with the root, counter, and limit.                            |
+| Compiler does not implement this package/profile                                                                                                           | Explicit unsupported-capability diagnostic; never a proof outcome. |
 
 Validate ordinary program/name/type errors first. Validate query syntax and static
 metadata before classifying, including at unreachable points. Reject forbidden
@@ -729,39 +729,39 @@ An implementation must turn them into executable positive/negative checking fixt
 and retain the runtime tests for operations that the queries do not execute.
 `A`, `N`, and `I` below mean `Always`, `Never`, and `Indeterminable`.
 
-| Case | Required observation or rejection |
-| --- | --- |
-| Scalar literal 5 compared with 5 / 6 | A / N. |
-| Unrestricted `uint8` parameter compared with 5 | I, even at a call site that passes 5. |
-| Stable guard narrows an integer to 0 through 9 | `between(x, 0, 9)` A; `is(x, -1)` N. |
-| Direct copy of an unknown scalar / independently computed `x + 0` | Same-value identity A / lost-correlation I when nonsingleton. |
-| Join of 16 distinct scalar constants / 17 constants | Exact set / canonical interval hull. |
-| Integer interval intersected with `!=` at an interior point | Preserve the interval unless already in finite-set form. |
-| Full `uint8` domain tested against all 256 values | Membership A despite the subject's interval representation. |
-| Empty or duplicate membership metadata | Empty gives N/A for `in`/`notin`; duplicates preserve the answer but are charged. |
-| Nullable integer admitted as 5 or null, compared with 5 | I; known null compared with 5 is N; null compared with null is A. |
-| Two incompatible integer widths / out-of-range metadata literal | E213 / E216, without widening. |
-| Reversed interval / runtime membership collection | E223 / E211. |
-| Unknown non-null integer bounds | Full declared range; `singleton` false. |
-| Known integer singleton bounds | Equal lower/upper; `singleton` true. |
-| Value observation at a bottom point | I; bounds use the full declared integer range. |
-| Concrete copyable scalar / exclusive-reference type | `can_copy<T>()` A / N. |
-| Unconstrained generic / generic constrained by `memory.Copy` | Copyability I / A, independent of specialization. |
-| Copyable type but a definitely live exclusive loan blocks reading the place | Type query A; place copy probe N. |
-| Definitely live shared view, used after an exclusive-borrow probe | Probe N without performing the conflicting borrow. |
-| Probe after that view's last source use | A if all other location conditions hold; optimization cannot erase the earlier use for analysis. |
-| Potential alias overlap without a definite conflict | I; no permission or denial is invented. |
-| Immutable location probed for exclusive borrowing | N even when `<&!T>` is a valid reference type. |
-| Probe result retained across mutation or scope exit | Historical result only; no loan, permission, or value refinement survives. |
-| Query through an import alias / shadowed same-spelling user function | Preserve intrinsic identity / ordinary user-function behavior. |
-| Observation contains an effectful call / arbitrary pure call | E219 / E223; neither executes as an observation. |
-| Query or queried value depends on a proof flag | E225, including control dependence. |
-| Proof flag used as a type extent or to waive a generic/borrow requirement | E225; invalid ordinary code remains invalid. |
-| `assert` on N or I / `expect<Indeterminable>` on I | E224 / successful null result. |
-| Runtime-skipped or uncalled checked body contains a failing proof assertion | E224 during checking. |
-| Result descriptor passed to runtime formatting, storage, FFI, or erasure | E223; scalar projections remain ordinary constants. |
-| One step below / at / above a logical limit | Required accounting boundary; exhaustion is E220, not I. |
-| Cold/warm caches, different worker schedules, debug/release, optimized/unoptimized | Identical answers, logical charges, and acceptance for the same target/revision. |
+| Case                                                                               | Required observation or rejection                                                                |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Scalar literal 5 compared with 5 / 6                                               | A / N.                                                                                           |
+| Unrestricted `uint8` parameter compared with 5                                     | I, even at a call site that passes 5.                                                            |
+| Stable guard narrows an integer to 0 through 9                                     | `between(x, 0, 9)` A; `is(x, -1)` N.                                                             |
+| Direct copy of an unknown scalar / independently computed `x + 0`                  | Same-value identity A / lost-correlation I when nonsingleton.                                    |
+| Join of 16 distinct scalar constants / 17 constants                                | Exact set / canonical interval hull.                                                             |
+| Integer interval intersected with `!=` at an interior point                        | Preserve the interval unless already in finite-set form.                                         |
+| Full `uint8` domain tested against all 256 values                                  | Membership A despite the subject's interval representation.                                      |
+| Empty or duplicate membership metadata                                             | Empty gives N/A for `in`/`notin`; duplicates preserve the answer but are charged.                |
+| Nullable integer admitted as 5 or null, compared with 5                            | I; known null compared with 5 is N; null compared with null is A.                                |
+| Two incompatible integer widths / out-of-range metadata literal                    | E213 / E216, without widening.                                                                   |
+| Reversed interval / runtime membership collection                                  | E223 / E211.                                                                                     |
+| Unknown non-null integer bounds                                                    | Full declared range; `singleton` false.                                                          |
+| Known integer singleton bounds                                                     | Equal lower/upper; `singleton` true.                                                             |
+| Value observation at a bottom point                                                | I; bounds use the full declared integer range.                                                   |
+| Concrete copyable scalar / exclusive-reference type                                | `can_copy<T>()` A / N.                                                                           |
+| Unconstrained generic / generic constrained by `memory.Copy`                       | Copyability I / A, independent of specialization.                                                |
+| Copyable type but a definitely live exclusive loan blocks reading the place        | Type query A; place copy probe N.                                                                |
+| Definitely live shared view, used after an exclusive-borrow probe                  | Probe N without performing the conflicting borrow.                                               |
+| Probe after that view's last source use                                            | A if all other location conditions hold; optimization cannot erase the earlier use for analysis. |
+| Potential alias overlap without a definite conflict                                | I; no permission or denial is invented.                                                          |
+| Immutable location probed for exclusive borrowing                                  | N even when `<&!T>` is a valid reference type.                                                   |
+| Probe result retained across mutation or scope exit                                | Historical result only; no loan, permission, or value refinement survives.                       |
+| Query through an import alias / shadowed same-spelling user function               | Preserve intrinsic identity / ordinary user-function behavior.                                   |
+| Observation contains an effectful call / arbitrary pure call                       | E219 / E223; neither executes as an observation.                                                 |
+| Query or queried value depends on a proof flag                                     | E225, including control dependence.                                                              |
+| Proof flag used as a type extent or to waive a generic/borrow requirement          | E225; invalid ordinary code remains invalid.                                                     |
+| `assert` on N or I / `expect<Indeterminable>` on I                                 | E224 / successful null result.                                                                   |
+| Runtime-skipped or uncalled checked body contains a failing proof assertion        | E224 during checking.                                                                            |
+| Result descriptor passed to runtime formatting, storage, FFI, or erasure           | E223; scalar projections remain ordinary constants.                                              |
+| One step below / at / above a logical limit                                        | Required accounting boundary; exhaustion is E220, not I.                                         |
+| Cold/warm caches, different worker schedules, debug/release, optimized/unoptimized | Identical answers, logical charges, and acceptance for the same target/revision.                 |
 
 Qualification must also compare generated runtime behavior with and without unused
 proof queries: no added loads, borrows, moves, cleanup, allocations, or module startup

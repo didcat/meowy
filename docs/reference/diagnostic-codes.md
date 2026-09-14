@@ -24,7 +24,7 @@ catalog version and explanation that accompanied its original toolchain.
 | `E5xx` | Projects, imports, and build inputs      | `error[E503]`       |
 | `E6xx` | Native boundaries and linking            | `error[E601]`       |
 | `E7xx` | Diagnostic sessions, repairs, and replay | `error[E702]`       |
-| `E8xx` | Documentation and documentation tools   | `error[E801]`       |
+| `E8xx` | Documentation and documentation tools    | `error[E801]`       |
 | `P0xx` | Runtime panics                           | `panic[P003]`       |
 | `T0xx` | Test-runner expectations and supervision | `failure[T002]`     |
 | `F0xx` | Compiler faults                          | `fatal[F001]`       |
@@ -79,13 +79,13 @@ because they contain another quote.
 
 ## Documentation
 
-| Code | Diagnostic and trigger | Evidence and repair direction |
-| --- | --- | --- |
-| `E801` | Orphaned, duplicate or misplaced documentation | Show the doc opener and expected declaration/module position |
-| `E802` | Malformed, unresolved or inaccessible documentation link | Show the link span and resolve against checked bindings, not prose spelling |
-| `E803` | Invalid example metadata or missing required public documentation | Identify the fence attribute or undocumented declaration |
+| Code   | Diagnostic and trigger                                              | Evidence and repair direction                                                |
+| ------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `E801` | Orphaned, duplicate or misplaced documentation                      | Show the doc opener and expected declaration/module position                 |
+| `E802` | Malformed, unresolved or inaccessible documentation link            | Show the link span and resolve against checked bindings, not prose spelling  |
+| `E803` | Invalid example metadata or missing required public documentation   | Identify the fence attribute or undocumented declaration                     |
 | `E804` | Documentation example check/output/exit/time/output-budget mismatch | Show the containing fence and example-local diagnostic or execution evidence |
-| `E805` | Unsafe or failed documentation publication | Identify the destination and preserve unrelated or previous valid output |
+| `E805` | Unsafe or failed documentation publication                          | Identify the destination and preserve unrelated or previous valid output     |
 
 Unsupported language features and unavailable infrastructure retain B/F diagnostics;
 they never satisfy an expected E-code rejection. These codes do not imply LSP,
@@ -120,33 +120,33 @@ owner simply by deleting `N`.
 
 See [types](types.md) and [values and blocks](values-and-blocks.md).
 
-| Code   | Diagnostic and trigger                                  | Evidence and repair direction                                                                                                                     |
-| ------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `E201` | Unknown value name or member                            | Show the lookup and its scope or receiver type; identify a missing import or binding without treating the spelling as syntax                      |
-| `E202` | Unknown type name                                       | Show the type lookup and available namespace; import, qualify, or declare the intended type                                                       |
-| `E203` | Binding already declared in this scope                  | Mark both declarations in the same namespace; choose another name or an intentional inner scope                                                   |
-| `E204` | Required result component is uninitialized              | Show the required primary or field and a completing path that does not initialize it or provide a permitted default                               |
-| `E205` | Result component may be emitted twice                   | Mark both emissions and the path connecting them; emit once or use control flow that excludes the second write                                    |
-| `E206` | Conflicting expanded fields                             | Show each origin and incompatible field declarations; give the composition one unambiguous shape                                                  |
-| `E207` | Incompatible initializer or assignment                  | Show the required binding type and actual value type; choose a compatible value or explicitly change the contract                                 |
-| `E208` | Type ascription lacks a proof                           | Show the current flow type and requested type; establish narrowing before using `value<T>`                                                        |
-| `E209` | Type subtraction cannot represent the result            | Show the source set and removed alternative; use a predicate when subtracting a literal from an unrestricted primitive                            |
-| `E210` | Generic capability requirement is not satisfied         | Show the instantiated type, constrained binder, and operation needing `Copy`, `Send`, or another declared capability                              |
-| `E211` | Type depends on a runtime value                         | Show the runtime dependency reaching a type expression; supply a compile-time argument or keep the choice in ordinary value storage               |
-| `E212` | Call or generic arguments do not match the signature    | Show required arity/types or unresolved/conflicting type binders beside the supplied arguments; nullable parameters still require arguments       |
-| `E213` | Numeric operands require an explicit conversion         | Show both already-typed operand types; convert deliberately rather than silently changing width or signedness                                     |
-| `E214` | Public function signature is incomplete                 | Mark missing parameter or result annotations at the exported boundary; state the public contract                                                  |
-| `E215` | Matcher condition is not boolean                        | Show the condition type; use an explicit comparison or type predicate rather than implicit truthiness                                             |
-| `E216` | Literal is not representable in its expected type       | Show the literal and target range; choose the intended width or a representable value                                                             |
-| `E217` | Invalid error definition or static constructor metadata | Mark the offending error descriptor field, code or static-message constructor argument and show the required metadata contract                    |
-| `E218` | Invalid testing descriptor or callback                  | Mark invalid Suite/Case shape, callback result/captures, panic expectation, skip reason, or runtime-dependent metadata                            |
-| `E219` | Forbidden compile-time effect                           | Show the required evaluation root and transitive call reaching I/O, runtime resources, mutation of external storage, or another forbidden effect. |
-| `E220` | Compile-time evaluation budget exceeded                 | Show the root, exhausted logical counter, limit and active helper stack; bounded evaluation does not depend on wall-clock time.                   |
-| `E221` | Invalid forward function group                          | Show the reserved signature and missing, mismatched, capturing or generic definition, or the statement interrupting the group.                    |
-| `E222` | Operator is not defined for these operands              | Show the operation and complete operand types; use a supported comparison or explicit library operation.                                          |
-| `E223` | Invalid proof observation or descriptor | Show the resolved query, unsupported subject/domain, unavailable place, malformed static metadata, or illegal descriptor use; follow the [proof contract](stdlib/proof.md). |
-| `E224` | Compile-time proof expectation failed | Show the assertion and original observation, required outcome and actual Always/Never/Indeterminable result; strengthen ordinary evidence or correct the expectation. |
-| `E225` | Proof query has a forbidden backward dependency | Show the dependency from a proof answer into another observation, its availability, type formation, specialization, or ownership acceptance; remove the cycle or use ordinary declared facts. |
+| Code   | Diagnostic and trigger                                  | Evidence and repair direction                                                                                                                                                                 |
+| ------ | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `E201` | Unknown value name or member                            | Show the lookup and its scope or receiver type; identify a missing import or binding without treating the spelling as syntax                                                                  |
+| `E202` | Unknown type name                                       | Show the type lookup and available namespace; import, qualify, or declare the intended type                                                                                                   |
+| `E203` | Binding already declared in this scope                  | Mark both declarations in the same namespace; choose another name or an intentional inner scope                                                                                               |
+| `E204` | Required result component is uninitialized              | Show the required primary or field and a completing path that does not initialize it or provide a permitted default                                                                           |
+| `E205` | Result component may be emitted twice                   | Mark both emissions and the path connecting them; emit once or use control flow that excludes the second write                                                                                |
+| `E206` | Conflicting expanded fields                             | Show each origin and incompatible field declarations; give the composition one unambiguous shape                                                                                              |
+| `E207` | Incompatible initializer or assignment                  | Show the required binding type and actual value type; choose a compatible value or explicitly change the contract                                                                             |
+| `E208` | Type ascription lacks a proof                           | Show the current flow type and requested type; establish narrowing before using `value<T>`                                                                                                    |
+| `E209` | Type subtraction cannot represent the result            | Show the source set and removed alternative; use a predicate when subtracting a literal from an unrestricted primitive                                                                        |
+| `E210` | Generic capability requirement is not satisfied         | Show the instantiated type, constrained binder, and operation needing `Copy`, `Send`, or another declared capability                                                                          |
+| `E211` | Type depends on a runtime value                         | Show the runtime dependency reaching a type expression; supply a compile-time argument or keep the choice in ordinary value storage                                                           |
+| `E212` | Call or generic arguments do not match the signature    | Show required arity/types or unresolved/conflicting type binders beside the supplied arguments; nullable parameters still require arguments                                                   |
+| `E213` | Numeric operands require an explicit conversion         | Show both already-typed operand types; convert deliberately rather than silently changing width or signedness                                                                                 |
+| `E214` | Public function signature is incomplete                 | Mark missing parameter or result annotations at the exported boundary; state the public contract                                                                                              |
+| `E215` | Matcher condition is not boolean                        | Show the condition type; use an explicit comparison or type predicate rather than implicit truthiness                                                                                         |
+| `E216` | Literal is not representable in its expected type       | Show the literal and target range; choose the intended width or a representable value                                                                                                         |
+| `E217` | Invalid error definition or static constructor metadata | Mark the offending error descriptor field, code or static-message constructor argument and show the required metadata contract                                                                |
+| `E218` | Invalid testing descriptor or callback                  | Mark invalid Suite/Case shape, callback result/captures, panic expectation, skip reason, or runtime-dependent metadata                                                                        |
+| `E219` | Forbidden compile-time effect                           | Show the required evaluation root and transitive call reaching I/O, runtime resources, mutation of external storage, or another forbidden effect.                                             |
+| `E220` | Compile-time evaluation budget exceeded                 | Show the root, exhausted logical counter, limit and active helper stack; bounded evaluation does not depend on wall-clock time.                                                               |
+| `E221` | Invalid forward function group                          | Show the reserved signature and missing, mismatched, capturing or generic definition, or the statement interrupting the group.                                                                |
+| `E222` | Operator is not defined for these operands              | Show the operation and complete operand types; use a supported comparison or explicit library operation.                                                                                      |
+| `E223` | Invalid proof observation or descriptor                 | Show the resolved query, unsupported subject/domain, unavailable place, malformed static metadata, or illegal descriptor use; follow the [proof contract](stdlib/proof.md).                   |
+| `E224` | Compile-time proof expectation failed                   | Show the assertion and original observation, required outcome and actual Always/Never/Indeterminable result; strengthen ordinary evidence or correct the expectation.                         |
+| `E225` | Proof query has a forbidden backward dependency         | Show the dependency from a proof answer into another observation, its availability, type formation, specialization, or ownership acceptance; remove the cycle or use ordinary declared facts. |
 
 `E207` covers initialization as well as later assignment. Changing `"twenty"` to
 `20` is not a type conversion defined by the language. `E208` concerns a value

@@ -15,13 +15,13 @@ public artifact format is established by this documentation change.
 
 ## Layers and responsibilities
 
-| Layer | Responsibility |
-| --- | --- |
-| Addresses and resolution | Numeric addresses, endpoints, explicit DNS and deadlines |
-| Transports | TCP byte streams, UDP datagrams and their resource/progress rules |
-| Peer composition | Typed transport, protocol and sender/receiver roles; admission and lifetime |
-| Protocol adapters | Message framing, codecs and protocol-specific operations |
-| HTTP contracts | Typed requests/replies, optional routers, middleware and response policies |
+| Layer                    | Responsibility                                                              |
+| ------------------------ | --------------------------------------------------------------------------- |
+| Addresses and resolution | Numeric addresses, endpoints, explicit DNS and deadlines                    |
+| Transports               | TCP byte streams, UDP datagrams and their resource/progress rules           |
+| Peer composition         | Typed transport, protocol and sender/receiver roles; admission and lifetime |
+| Protocol adapters        | Message framing, codecs and protocol-specific operations                    |
+| HTTP contracts           | Typed requests/replies, optional routers, middleware and response policies  |
 
 `net.peer()` composes these layers; it does not replace the direct transport APIs.
 TCP preserves byte order, not message boundaries. UDP preserves datagram boundaries,
@@ -36,19 +36,19 @@ roles. Roles are capabilities, not runtime Boolean flags, string names or nullab
 callbacks. Configuration methods consume their builder and return its next concrete
 type, retaining concrete handler/capture types without implicit boxing or erasure.
 
-| Configuration operation | Contract |
-| --- | --- |
-| `net.peer()` | Create an unstarted builder with no transport or roles |
-| `net.tcp(config)` | Describe a TCP transport and explicit outgoing/bind policy without opening sockets |
-| `net.udp(config)` | Describe a UDP transport and explicit local binding/destination policy |
-| `spec.transport(transport)` | Select the single concrete transport pipeline |
-| `net.raw.sender(config)` | Describe native stream initiation or datagram sending for the selected transport |
-| `net.raw.receiver(handler, config)` | Bind a concrete accepted-stream or incoming-datagram handler |
-| `net.http.sender(config)` | Describe HTTP request initiation, response decoding and bounded pooling |
-| `net.http.receiver(service, config)` | Bind a concrete HTTP service and its exchange/admission policy |
-| `spec.sender(sender)` | Add the one outbound role and its concrete protocol adapter |
-| `spec.receiver(receiver)` | Add the one inbound role and its concrete protocol adapter |
-| `spec.start(allocator, limits)` | Consume a complete configuration and return an active peer or StartFailure |
+| Configuration operation              | Contract                                                                           |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| `net.peer()`                         | Create an unstarted builder with no transport or roles                             |
+| `net.tcp(config)`                    | Describe a TCP transport and explicit outgoing/bind policy without opening sockets |
+| `net.udp(config)`                    | Describe a UDP transport and explicit local binding/destination policy             |
+| `spec.transport(transport)`          | Select the single concrete transport pipeline                                      |
+| `net.raw.sender(config)`             | Describe native stream initiation or datagram sending for the selected transport   |
+| `net.raw.receiver(handler, config)`  | Bind a concrete accepted-stream or incoming-datagram handler                       |
+| `net.http.sender(config)`            | Describe HTTP request initiation, response decoding and bounded pooling            |
+| `net.http.receiver(service, config)` | Bind a concrete HTTP service and its exchange/admission policy                     |
+| `spec.sender(sender)`                | Add the one outbound role and its concrete protocol adapter                        |
+| `spec.receiver(receiver)`            | Add the one inbound role and its concrete protocol adapter                         |
+| `spec.start(allocator, limits)`      | Consume a complete configuration and return an active peer or StartFailure         |
 
 There must be exactly one transport and at least one role before start is available.
 Transport, sender and receiver may be configured in either order; completing the
@@ -80,15 +80,15 @@ capabilities must be assigned when the feature is implemented.
 
 ## Protocol-specific operations
 
-| Active peer configuration | Available activity |
-| --- | --- |
-| TCP with raw sender | `peer.connect(endpoint, deadline)` returns a bounded StreamLease with ordinary stream I/O |
-| TCP with raw receiver | Dispatch an accepted StreamLease to the configured handler |
-| UDP with raw sender | `peer.send_to(endpoint, bytes, deadline)` submits one complete datagram or fails |
-| UDP with raw receiver | Dispatch a DatagramEvent with sender, bytes, truncation and a scoped reply operation |
-| HTTP with sender | `peer.send(request, options)` and `peer.call(endpoint, input, allocator, options)` |
-| HTTP with receiver | Dispatch decoded exchanges to the configured concrete service |
-| Compatible sender and receiver | Union of their operations, with shared peer ownership and explicit budgets |
+| Active peer configuration      | Available activity                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| TCP with raw sender            | `peer.connect(endpoint, deadline)` returns a bounded StreamLease with ordinary stream I/O |
+| TCP with raw receiver          | Dispatch an accepted StreamLease to the configured handler                                |
+| UDP with raw sender            | `peer.send_to(endpoint, bytes, deadline)` submits one complete datagram or fails          |
+| UDP with raw receiver          | Dispatch a DatagramEvent with sender, bytes, truncation and a scoped reply operation      |
+| HTTP with sender               | `peer.send(request, options)` and `peer.call(endpoint, input, allocator, options)`        |
+| HTTP with receiver             | Dispatch decoded exchanges to the configured concrete service                             |
+| Compatible sender and receiver | Union of their operations, with shared peer ownership and explicit budgets                |
 
 A raw stream lease has the same partial read/write and half-close rules as
 `net.Stream`, but retains its peer's lifetime and admission budget. A datagram event
@@ -161,7 +161,6 @@ the sender or receiver builder call produces a different capability type, not a
 disabled role checked at each operation.
 
 ## Direct network services
-
 
 `net.parse_address(text)` returns an inline IPv4/IPv6 `net.Address` or
 `net.InvalidAddress`. It parses numeric addresses only, without DNS or a default
