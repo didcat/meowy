@@ -74,6 +74,31 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Aggregate-slot accounting plan
+
+Audit: revision 1 counts cumulative initialized fields and primary slots,
+including recursive copies, separately from expression/type steps. Required
+records currently materialize scalar/record fields only, with unit primaries.
+`insert_required_field` owns successful field initialization; completion owns
+implicit unit primaries, and composition owns explicit forwarded primaries.
+`type_record` materializes copies; lookup and scalar projections only read.
+
+Dependency-ordered commits:
+
+1. Extend the logical ledger with the 1,048,576 aggregate-slot limit and atomic,
+   sticky E220 accounting; test exact limits, overflow and root sharing/reset.
+2. Charge required record construction, recursive copies and composition at their
+   initialization sites; test nested/repeated copies, grouping, selected/skipped
+   construction, read isolation and source-order failures.
+3. Add native facade/composition integration and document the supported boundary;
+   run the complete compiler gate and refresh both handoffs.
+
+Ledger support implemented. Three focused logical-slot groups and cargo fmt
+pass: exact limit, atomic mixed-counter failure, overflow, sticky failure and
+nested/independent root behavior. Log: `/tmp/meowy-slot-ledger.log`.
+Next: commit the ledger slice, then integrate record construction/copies. Keep
+bootstrap limits and proof outcomes unchanged; list/text/helper domains stay open.
+
 ### Retained record-read accounting
 
 Audit: revision 1 charges reads of already available immutable inputs, not their
