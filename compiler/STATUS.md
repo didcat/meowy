@@ -74,6 +74,29 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Retained record-read accounting
+
+Audit: revision 1 charges reads of already available immutable inputs, not their
+initializer traversal. `Input.work` and record ancestor evidence retain bootstrap
+eligibility/error costs only. Scalar execution already charges its read nodes.
+`required_record` is execution-only (called by `type_record`); it currently omits
+name/field steps. `required_path` also serves hints/composition checks and must
+remain uncharged. Record copies still need a separate aggregate-slot ledger.
+
+Dependency-ordered commits:
+
+1. Charge record name/field execution and projection ancestors in `records.rs`;
+   add exact/grouped/repeated/cached-read, lookup isolation and root-limit tests.
+2. Add ancestor-error, skipped/type-query and native facade integration coverage;
+   run the full compiler gate and refresh both handoffs.
+
+Slice 1 implemented: execution charges a name/field step and field ancestors,
+without changing lookup or bootstrap evidence. Three focused test groups and
+cargo fmt pass; log: `/tmp/meowy-record-accounting-focused.log`. Exact/grouped
+and repeated reads, materialized-copy reads, nested root sharing, lookup isolation
+and E220 prefix/reset boundaries pass. No outstanding failures.
+Next: commit the reviewed slice, then add source/import/error integration coverage.
+
 ### Scalar projection charging
 
 Investigation: `required_path` and `required_field` serve both eligibility and

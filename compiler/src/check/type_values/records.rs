@@ -1,3 +1,5 @@
+#[cfg(test)]
+mod accounting;
 mod build;
 mod compose;
 mod inferred;
@@ -37,6 +39,9 @@ impl Checker {
     pub(crate) fn required_record(&mut self, expr: &ast::Expr) -> Result<(Type, Record)> {
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| {
+            if matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. }) {
+                self.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+            }
             let (ty, input) = match &expr.kind {
                 ExprKind::Name(name) => match self.required_value(name, expr.span)? {
                     Value::Local {
@@ -55,6 +60,7 @@ impl Checker {
                     }
                 },
                 ExprKind::Field { .. } => {
+                    self.charge_ancestors(expr)?;
                     let (source, ty, path) = self.required_path(expr)?;
                     (ty, source.record(self, &path))
                 }
