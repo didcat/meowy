@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-14. Logical charges now include scalar projection ancestors.
+Updated: 2026-09-15. Logical charges now include retained record reads and paths.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -60,8 +60,8 @@ outcome is constructed. The reference remains authoritative.
 - `type_values/work.rs::Work` retains bootstrap limits (4096 visits, 64 levels,
   16384 nodes), with B001 failures. Its separate `required::Budget` currently charges
   type materialization, required statements/blocks and integer/boolean evaluation,
-  including scalar projection ancestors. Retained-input work, other type-expression
-  dispatch, aggregate/text/helper counters and pending-query
+  including scalar/record projection ancestors and retained record reads. Other
+  type-expression dispatch, aggregate/text/helper counters and pending-query
   budget retention remain prerequisites. Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
@@ -78,24 +78,23 @@ outcome is constructed. The reference remains authoritative.
 
 Audit: revision 1 charges reads of already available immutable inputs, not their
 initializer traversal. `Input.work` and record ancestor evidence retain bootstrap
-eligibility/error costs only. Scalar execution already charges its read nodes.
-`required_record` is execution-only (called by `type_record`); it currently omits
-name/field steps. `required_path` also serves hints/composition checks and must
-remain uncharged. Record copies still need a separate aggregate-slot ledger.
+eligibility/error costs only. `required_record` is execution-only; `required_path`
+also serves hints/composition checks and remains uncharged. Record copies still
+need a separate aggregate-slot ledger.
 
-Dependency-ordered commits:
+Completed dependency-ordered slices:
 
-1. Charge record name/field execution and projection ancestors in `records.rs`;
-   add exact/grouped/repeated/cached-read, lookup isolation and root-limit tests.
-2. Add ancestor-error, skipped/type-query and native facade integration coverage;
-   run the full compiler gate and refresh both handoffs.
+1. `c57282b`: charge record name/field execution and projection ancestors, with
+   exact/grouped/repeated/cached-read, lookup isolation and root-limit tests.
+2. Integration: ancestor-error precedence, skipped/type-query and native facade
+   coverage; documentation and both handoffs refreshed after the complete gate.
 
-Slice 1 implemented: execution charges a name/field step and field ancestors,
-without changing lookup or bootstrap evidence. Three focused test groups and
-cargo fmt pass; log: `/tmp/meowy-record-accounting-focused.log`. Exact/grouped
-and repeated reads, materialized-copy reads, nested root sharing, lookup isolation
-and E220 prefix/reset boundaries pass. No outstanding failures.
-Next: commit the reviewed slice, then add source/import/error integration coverage.
+Five checker groups and two native groups pass, including debug/release startup
+and original-file errors. The complete compiler gate passes with no outstanding
+failures. Logs: `/tmp/meowy-record-accounting-focused.log`,
+`/tmp/meowy-record-accounting-integration.log`, `/tmp/meowy-record-accounting-gate.log`.
+Next: recursive aggregate construction/copy slot accounting, then remaining
+expression/text/helper domains and deferred-query roots. Proof outcomes stay gated.
 
 ### Scalar projection charging
 
@@ -122,8 +121,8 @@ Implementation commit: `5f716ec`. Six focused library groups and one native
 group now pass, including retained first-error spans, type-query non-evaluation,
 static import metadata and real facade startup/widths in debug/release.
 Log: `/tmp/meowy-projection-integration.log`. All ten full compiler gate checks pass; log:
-`/tmp/meowy-projection-gate.log`. No outstanding failures remain. Subsequent work remains retained-input accounting
-and other expression/aggregate/text/helper domains; proof outcomes stay gated.
+`/tmp/meowy-projection-gate.log`. No outstanding failures remain. Record-read accounting now extends this work;
+aggregate copies and other expression/text/helper domains remain open.
 
 ### Logical integer charges
 
@@ -148,8 +147,8 @@ non-evaluation and imported widths/startup in debug/release. Logs:
 `/tmp/meowy-integer-charge-integration.log`. The full compiler gate passes.
 No outstanding failures remain.
 
-Remaining domains: projection ancestors and other type-expression dispatch,
-retained initializer accounting, aggregate/text/helper counters, rootless extent
+Remaining domains: other type-expression dispatch, aggregate/text/helper
+counters, rootless extent
 roots and pending-query budget retention. Proof evaluation stays gated.
 
 ### Statement and boolean logical charges
@@ -174,8 +173,8 @@ failure cleanup and independent roots. Logs: `/tmp/meowy-statement-charges.log`,
 The complete compiler gate passes. No outstanding failures remain.
 
 Integer evaluation now extends these charges. Remaining domains include other
-type-expression dispatch, projection ancestors and retained initializer work, aggregate/text
-and helper charges, and pending-query budget retention. Proof evaluation stays gated.
+type-expression dispatch, aggregate/text/helper charges and pending-query budget
+retention. Proof evaluation stays gated.
 
 ### Logical type accounting
 
@@ -204,7 +203,7 @@ module that uses it, so production and test lint checks both pass.
 
 Statement/block and boolean charging now extend this ledger. Remaining logical
 domains must not copy bootstrap traversal counts; other type-expression dispatch,
-projection/input work, aggregate/text/helper counters and pending-query budget
+aggregate/text/helper counters and pending-query budget
 retention are still open. Preserve B001 infrastructure limits and keep proof evaluation gated.
 
 ### Deferred copy-query integration
@@ -522,18 +521,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 893
-  library/880 native tests (1773 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 898
+  library/882 native tests (1780 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-projection-gate.log`.
-- Six focused projection groups and one native integration group pass: exact,
-  grouped/repeated/skipped reads, lookup/runtime isolation, E220 prefix/root cleanup,
-  retained first-error spans, type-query non-evaluation, static import metadata and
-  real facade widths/startup in debug/release. Logs:
-  `/tmp/meowy-projection-focused.log`, `/tmp/meowy-projection-integration.log`.
+  debug/release. Log: `/tmp/meowy-record-accounting-gate.log`.
+- Five focused record-accounting checker groups and two native groups pass:
+  exact/grouped/repeated reads, retained-work separation, nested root sharing,
+  E220 prefix/reset boundaries, ancestor-error precedence, skipped copies,
+  type-query non-evaluation, facade widths and debug/release startup. Logs:
+  `/tmp/meowy-record-accounting-focused.log`,
+  `/tmp/meowy-record-accounting-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Remaining charging domains and proof evaluation
-  are incomplete. No unsupported query counts as conformance success.
+  lower B001 bootstrap limits first. Aggregate-copy accounting and other charging
+  domains remain incomplete. No unsupported query counts as conformance success.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -607,16 +607,16 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Audit retained-input accounting in `type_values/work.rs`, `inputs.rs` and
-   `inputs/records.rs` against compile-time revision 1: available immutable reads
-   charge a read, materialized copies charge slots/text, and caching cannot change
-   logical costs. Decide which initializer work belongs to each required root;
-   do not copy bootstrap Input.work into the ledger. Record a dependency-ordered
-   plan before changes, with repeated-read, ancestor-error and root-sharing tests.
-   Scalar projection ancestors are complete; record-valued projections and other
-   type-expression dispatch remain part of the subsequent accounting audit.
-   Aggregate/text/helper counters, rootless extents and pending-query retention
-   remain open. Keep proof outcomes gated until accounting/dependency rules finish.
+1. Add aggregate-slot accounting in `required.rs`, `type_values/records.rs` and
+   `type_values/records/{build,compose}.rs`: revision 1 counts initialized fields
+   and primary slots recursively, including materialized copies. Separate ledger
+   support from construction/copy integration in a recorded commit plan. Test
+   repeated and nested copies, selected/skipped construction, source-order failures
+   and root sharing/reset. Name/field reads now charge steps without replaying
+   retained initializer work; do not copy bootstrap `Input.work` into the ledger.
+   Other type-expression dispatch, text/helper counters, rootless extents and
+   pending-query retention remain open. Keep proof outcomes gated until accounting
+   and phase/dependency prerequisites finish.
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.

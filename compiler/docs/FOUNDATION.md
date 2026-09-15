@@ -115,9 +115,16 @@ literal rule is preserved. Type-query operands, eligibility walks and runtime
 folding add no integer evaluation charges. Extents inside an existing required
 root use the same evaluator and charges.
 
-This remains partial accounting. Projection ancestors, other type-expression
-dispatch and retained initializer work, aggregate slots, text, source-helper depth,
-rootless list extents and deferred-query budget retention remain unimplemented.
+Scalar and record field reads charge every evaluated projection ancestor and named
+root. Record name reads charge one step, including reads of materialized scratch
+copies. Available immutable inputs do not replay initializer work in the logical
+ledger; retained ancestor errors and bootstrap work checks still apply. Record
+copy type construction retains its separate step/type charges. Lookup, grouping,
+type-query operands and skipped copies add no record-read charges.
+
+This remains partial accounting. Aggregate-copy slots, other type-expression
+dispatch, text, source-helper depth, rootless list extents and deferred-query
+budget retention remain unimplemented.
 The lower existing bootstrap limits still fail with B001 first; their counters are
 not treated as language work. Logical-limit boundaries are tested internally,
 not claimed as source-level E220 qualification. Proof evaluation remains gated.

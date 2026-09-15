@@ -1,6 +1,47 @@
 use super::{Case, file_modules::case};
 
 #[test]
+pub(crate) fn logical_record_imports_keep_copies_widths_and_startup() {
+    case(
+        "m:@\"./facade.mwy\";alias:m;d:@\"debug\";<T>:{copy:((alias).row).part;again:copy;|false|unused:m.row.part;-><uint8[again.n]>};v<T>:[7];d.print(v[1]);d.print(m.row.part.flag)",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);->row:{->part:{->n<uint8>:2;->flag:true}}"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->row:m.row"),
+        ],
+    ).runs(b"1\n2\n7\ntrue\n");
+}
+
+#[test]
+pub(crate) fn logical_record_import_errors_keep_original_file_and_span() {
+    let source = "row:{->part:{->n<uint8>:4};->bad<uint8>:255+1};->row:row";
+    let case = case(
+        "m:@\"./facade.mwy\";<T>:{copy:m.row.part;-><int32>}",
+        &[
+            ("data.mwy", source),
+            ("facade.mwy", "m:@\"./data.mwy\";->row:m.row"),
+        ],
+    );
+    for action in ["check", "build", "run"] {
+        let output = case.command(action, &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E107\""), "{error}");
+        assert!(
+            error.contains(&format!(
+                "\"path\":\"{}\"",
+                case.path.join("data.mwy").display()
+            )),
+            "{error}"
+        );
+        assert!(
+            error.contains(&format!("\"start\":{}", source.find("255+1").unwrap())),
+            "{error}"
+        );
+    }
+}
+
+#[test]
 pub(crate) fn logical_projection_imports_preserve_grouped_widths_and_startup() {
     case(
         "m:@\"./facade.mwy\";alias:m;d:@\"debug\";<T>:{n:((alias).row).part.n+alias.row.part.n;flag:alias.row.part.flag==((m.row).part).flag;-><uint8[n]>};v<T>:[7];d.print(v[1]);d.print(m.row.part.flag)",

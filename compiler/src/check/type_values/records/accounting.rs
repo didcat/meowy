@@ -106,3 +106,71 @@ pub(crate) fn logical_record_read_limits_preserve_prefixes_and_restore_roots() {
         }
     }
 }
+
+#[test]
+pub(crate) fn logical_record_errors_preserve_ancestors_and_budget_precedence() {
+    for remaining in [1, 2] {
+        let mut checker = checker();
+        let id = checker.module.inputs["row"].id;
+        let origin = Span::new(200, 210);
+        checker.record_inputs.get_mut(&id).unwrap().input.error =
+            Some(Checker::error("E107", "retained ancestor failure", origin));
+        let expr = value("row.part");
+        let root = Span::new(100, 150);
+        let error = checker
+            .required_root(root, |checker| {
+                checker.type_work.as_mut().unwrap().logical.steps = MAX_STEPS - remaining;
+                let result = checker.type_record(&expr, None);
+                let work = checker.type_work.as_ref().unwrap();
+                assert_eq!(work.logical.steps, MAX_STEPS);
+                assert_eq!(work.logical.types, 0);
+                assert_eq!(work.depth, 0);
+                result
+            })
+            .err()
+            .unwrap();
+        assert_eq!(error.code, if remaining == 1 { "E220" } else { "E107" });
+        assert_eq!(error.span, if remaining == 1 { root } else { origin });
+        assert!(checker.type_work.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn logical_record_queries_and_skipped_copies_do_not_read_inputs() {
+    let mut costs = Vec::new();
+    for selected in [false, true] {
+        let mut checker = checker();
+        let expr = value(&format!("{{|{selected}|copy:row.part;-><int32>}}"));
+        costs.push(
+            checker
+                .required_root(expr.span, |checker| {
+                    checker.type_value(&expr)?;
+                    let budget = &checker.type_work.as_ref().unwrap().logical;
+                    Ok((budget.steps, budget.types))
+                })
+                .unwrap(),
+        );
+    }
+    assert_eq!(costs[1].0 - costs[0].0, 7);
+    assert_eq!(costs[1].1 - costs[0].1, 4);
+    let mut checker = checker();
+    let id = checker.module.inputs["row"].id;
+    checker.record_inputs.get_mut(&id).unwrap().input.error = Some(Checker::error(
+        "E107",
+        "unread initializer",
+        Span::new(200, 210),
+    ));
+    for source in ["row.part<>", "((row).part)<>"] {
+        let expr = value(source);
+        checker
+            .required_root(expr.span, |checker| {
+                checker.type_value(&expr)?;
+                let budget = &checker.type_work.as_ref().unwrap().logical;
+                assert_eq!((budget.steps, budget.types), (4, 4));
+                Ok(())
+            })
+            .unwrap();
+    }
+    let expr = value("{|false|copy:row.part;-><int32>}");
+    checker.type_value(&expr).unwrap();
+}
