@@ -21,7 +21,9 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 The logical ledger now charges type materialization, evaluated required statements
 and blocks, selected integer/boolean evaluation, and scalar/record projection
-paths. Retained record reads charge without replaying initializer work.
+paths. Required record construction and recursive copies now charge aggregate
+slots; composition transfers charged slots without duplication. Retained record
+reads charge without replaying initializer work.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
@@ -60,24 +62,27 @@ direct required reads pass focused checker/native tests and the full compiler ga
 Proof evaluation remains unimplemented. Opaque descriptor type aliases now preserve nominal identities
 and reject runtime storage; the final compiler gate passes.
 Pending query copies retain source origins without runtime storage. The next
-prerequisite is aggregate-copy accounting and remaining logical charging; query outcomes
+prerequisite is remaining type-expression and logical-root accounting; query outcomes
 remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 898
-  library/882 native tests (1780 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 907
+  library/883 native tests (1790 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-record-accounting-gate.log`.
-- Five focused record-accounting checker groups and two native groups pass:
-  exact/grouped/repeated reads, retained-work separation, nested root sharing,
-  E220 prefix/reset boundaries, ancestor-error precedence, skipped copies,
-  type-query non-evaluation, facade widths and debug/release startup. Logs:
-  `/tmp/meowy-record-accounting-focused.log`,
-  `/tmp/meowy-record-accounting-integration.log`.
+  debug/release. Log: `/tmp/meowy-record-slot-gate.log`.
+- Three ledger groups and six record-slot checker groups pass: exact/overflow
+  limits, nested/repeated copies, typed/inferred/partial composition, skipped
+  construction, read isolation, source-order failures and scope/root restoration.
+  The existing 150 required-evaluation tests passed before final integration.
+  Logs: `/tmp/meowy-slot-ledger.log`, `/tmp/meowy-record-slots.log`,
+  `/tmp/meowy-record-slots-regressions.log`.
+- Native facade and partial-composition programs pass in debug/release, retaining
+  field widths, outputs and startup order. Their integration log also covers
+  failed copies and repeated nested roots: `/tmp/meowy-record-slot-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Aggregate-copy accounting and other charging
-  domains remain incomplete. No unsupported query counts as conformance success.
+  lower B001 bootstrap limits first. Other accounting domains and proof execution
+  remain incomplete. Unsupported queries do not count as conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -86,7 +91,7 @@ remain gated.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Logical charges cover type materialization, required statements/blocks and scalar/record reads and projection paths; aggregate-copy accounting remains open. |
+| Compiler | Logical charges cover type materialization, required statements/blocks and scalar/record reads, projection paths and constructed/copied record slots; broader accounting remains open. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -122,12 +127,11 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Add recursive aggregate-slot accounting for required record construction and
-   copies, then other type-expression dispatch, text/helper counters, rootless
-   extents and deferred-query budgets. Scalar/record reads and projection paths
-   charge logical steps; retained initializer visits remain bootstrap-only.
-   Pending query identities and the post-ownership B001 gate are implemented;
-   outcomes and flags remain gated. The
+1. Audit remaining type-expression dispatch and construction costs, then
+   text/helper counters, rootless extents and deferred-query budgets. Required
+   record construction and recursive copies now charge aggregate slots; scalar
+   and record reads retain separate step costs. Pending query identities and the
+   post-ownership B001 gate are implemented; outcomes and flags remain gated. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered
    accounting, phase/dependency and type-only query slices.
 2. Broaden subtraction only after its remaining syntax/representation prerequisites

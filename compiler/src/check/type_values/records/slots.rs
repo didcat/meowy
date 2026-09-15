@@ -143,4 +143,60 @@ mod tests {
             assert!(checker.type_work.is_none());
         }
     }
+
+    #[test]
+    pub(crate) fn logical_record_slots_do_not_allocate_for_reads_or_failed_copies() {
+        let mut checker = super::super::accounting::checker();
+        let expr = value("row.part");
+        checker
+            .required_root(expr.span, |checker| {
+                checker.required_record(&expr)?;
+                checker.type_value(&value("row.part<>"))?;
+                checker.integer_result(&value("row.part.n"), None)?;
+                checker.required_boolean(&value("row.part.flag"))?;
+                assert_eq!(checker.type_work.as_ref().unwrap().logical.slots, 0);
+                checker.type_record(&expr, None)?;
+                assert_eq!(checker.type_work.as_ref().unwrap().logical.slots, 3);
+                Ok(())
+            })
+            .unwrap();
+        let id = checker.module.inputs["row"].id;
+        let origin = Span::new(200, 210);
+        checker.record_inputs.get_mut(&id).unwrap().input.error =
+            Some(Checker::error("E107", "retained ancestor failure", origin));
+        let error = checker
+            .required_root(expr.span, |checker| {
+                let result = checker.type_record(&expr, None);
+                assert_eq!(checker.type_work.as_ref().unwrap().logical.slots, 0);
+                result
+            })
+            .err()
+            .unwrap();
+        assert_eq!(error.code, "E107");
+        assert_eq!(error.span, origin);
+        assert!(checker.type_work.is_none());
+    }
+
+    #[test]
+    pub(crate) fn logical_record_slots_share_nested_evaluation_and_reset_independent_roots() {
+        let mut checker = Checker::new();
+        let expr = value("{r:{->n:4};copy:r;-><int32>}");
+        let root = Span::new(100, 150);
+        for _ in 0..2 {
+            checker
+                .required_root(root, |checker| {
+                    assert_eq!(checker.type_work.as_ref().unwrap().logical.slots, 0);
+                    for count in 1..=3 {
+                        checker.type_value(&expr)?;
+                        let budget = &checker.type_work.as_ref().unwrap().logical;
+                        assert_eq!(budget.root, root);
+                        assert_eq!(budget.slots, 4 * count);
+                    }
+                    Ok(())
+                })
+                .unwrap();
+            assert!(checker.type_work.is_none());
+            assert!(checker.locals.is_empty());
+        }
+    }
 }

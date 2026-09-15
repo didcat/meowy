@@ -1,6 +1,20 @@
 use super::{Case, file_modules::case};
 
 #[test]
+pub(crate) fn logical_record_slots_keep_facade_composition_and_native_layout() {
+    case(
+        "m:@\"./facade.mwy\";d:@\"debug\";<T>:{base:m.row.part;r<{n<uint8>;flag<boolean>;extra<uint8>}>:{->base;->extra:2};copy:r;-><uint8[copy.n+copy.extra]>};v<T>:[7];d.print(v[1]);d.print(m.row.part.flag)",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);->row:{->part:{->n<uint8>:2;->flag:true}}"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->row:m.row"),
+        ],
+    ).runs(b"1\n2\n7\ntrue\n");
+    Case::new(
+        "d:@\"debug\";<T>:{r<{part<{n<uint8>}>;flag<boolean>}>:{->{->part:{->n:4}};->flag:true};|false|unused:r;copy:r;-><uint8[copy.part.n]>};v<T>:[9];d.print(v[1])",
+    ).runs(b"9\n");
+}
+
+#[test]
 pub(crate) fn logical_record_imports_keep_copies_widths_and_startup() {
     case(
         "m:@\"./facade.mwy\";alias:m;d:@\"debug\";<T>:{copy:((alias).row).part;again:copy;|false|unused:m.row.part;-><uint8[again.n]>};v<T>:[7];d.print(v[1]);d.print(m.row.part.flag)",

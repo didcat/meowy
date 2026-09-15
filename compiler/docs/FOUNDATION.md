@@ -95,7 +95,8 @@ including copies and repeated materialization. Nested computed-type and metatype
 bindings share the outer root and its source span. Independent roots start fresh.
 Skipped constructors contribute no type materialization charges.
 
-The ledger enforces revision 1 limits of 1,000,000 steps and 65,536 type nodes.
+The ledger enforces revision 1 limits of 1,000,000 steps, 65,536 type nodes
+and 1,048,576 constructed aggregate slots.
 Charges are atomic and checked for integer overflow. E220 identifies the root and
 exhausted counter; a caught failure remains fatal for that root and prevents later
 nested evaluation. Root state is cleared on completion or failure.
@@ -122,7 +123,18 @@ ledger; retained ancestor errors and bootstrap work checks still apply. Record
 copy type construction retains its separate step/type charges. Lookup, grouping,
 type-query operands and skipped copies add no record-read charges.
 
-This remains partial accounting. Aggregate-copy slots, other type-expression
+Required records charge one slot per initialized field and unit primary, including
+nested records. Materialized copies charge all their slots recursively; repeated
+copies charge again. Reading an available record or scalar field allocates no
+slots. Type-only list extents do not construct list elements.
+
+Named emissions charge after their value is ready; implicit unit primaries charge
+at completion. Composition transfers the slots already charged by its constructed
+or copied source into the flattened result, without charging them twice. Added
+fields still charge normally. Skipped construction allocates nothing, failed roots
+retain consumed prefixes, and independent roots reset the slot counter.
+
+This remains partial accounting. Required list values, other type-expression
 dispatch, text, source-helper depth, rootless list extents and deferred-query
 budget retention remain unimplemented.
 The lower existing bootstrap limits still fail with B001 first; their counters are
