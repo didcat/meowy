@@ -80,7 +80,8 @@ Audit: revision 1 counts cumulative initialized fields and primary slots,
 including recursive copies, separately from expression/type steps. Required
 records currently materialize scalar/record fields only, with unit primaries.
 `insert_required_field` owns successful field initialization; completion owns
-implicit unit primaries, and composition owns explicit forwarded primaries.
+implicit unit primaries. Composition transfers already constructed/copied slots
+into the flattened result, including the primary, without another allocation.
 `type_record` materializes copies; lookup and scalar projections only read.
 
 Dependency-ordered commits:
@@ -96,8 +97,18 @@ Dependency-ordered commits:
 Ledger support implemented. Three focused logical-slot groups and cargo fmt
 pass: exact limit, atomic mixed-counter failure, overflow, sticky failure and
 nested/independent root behavior. Log: `/tmp/meowy-slot-ledger.log`.
-Next: commit the ledger slice, then integrate record construction/copies. Keep
-bootstrap limits and proof outcomes unchanged; list/text/helper domains stay open.
+Ledger commit: `7656b4b`. Record integration is implemented.
+It charges recursive copies in `type_record`, explicit fields on successful insertion,
+and implicit primaries on completion. Forwarded composition fields (`bind: false`)
+and primaries transfer already charged slots; partial/nested sources retain their
+construction charges. Scalar reads, hints and type-only extents allocate no slots.
+Four focused record-slot groups and cargo fmt pass: nested/repeated/grouped
+copies, typed/inferred/partial composition, skipped branches, E107/E204/E205
+ordering and E220 prefix/scope/root restoration. Log: `/tmp/meowy-record-slots.log`.
+The existing required-evaluation suite also passes; log:
+`/tmp/meowy-record-slots-regressions.log`. Next: commit slice 2, then add native
+integration and complete the compiler gate. Bootstrap limits and proof outcomes are unchanged; list/text/helper
+domains stay open.
 
 ### Retained record-read accounting
 

@@ -116,6 +116,7 @@ impl Checker {
         }
         if bind {
             self.declare(name, value.clone(), span)?;
+            self.type_work.as_mut().unwrap().slot()?;
         }
         output.fields.insert(index, value);
         Ok(())
@@ -140,6 +141,9 @@ impl Checker {
                 format!("required record field `{}` is not initialized", field.name),
                 span,
             ));
+        }
+        if output.value.is_none() {
+            self.type_work.as_mut().unwrap().slot()?;
         }
         let mut values = BTreeMap::new();
         for (index, value) in output.fields {

@@ -4,6 +4,7 @@ mod build;
 mod compose;
 mod inferred;
 mod partial;
+mod slots;
 
 use crate::ast::{self, ExprKind};
 use crate::check::{Checker, Result, Value, inputs::Record};
@@ -30,6 +31,7 @@ impl Checker {
             .as_mut()
             .unwrap()
             .materialize(&ty, expr.span)?;
+        self.type_work.as_mut().unwrap().record_slots(&ty)?;
         Ok(Value::Record {
             ty,
             input: Box::new(input),
