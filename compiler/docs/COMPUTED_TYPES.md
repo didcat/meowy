@@ -1532,6 +1532,20 @@ Exhaustion reports B001. Nested blocks share the counters; independent roots res
 them. Existing parser, type/layout and proof limits still apply. These limits qualify
 bootstrap support only; they do not implement the language's logical E220 counters.
 
+A separate logical ledger now charges required statements, scalar evaluation,
+record reads/copies and type-expression dispatch. Type literals, type-value reads,
+queries and subtraction each charge an expression step; member reads also charge
+their evaluated ancestors. Blocks charge at entry. Parentheses and synthetic
+subtraction wrappers add no logical steps or type nodes. Type-query operands and
+skipped branches remain unevaluated. Existing bootstrap traversal guards still apply.
+
+For example, `<int32> !<null>` and `(<int32>) !<null>` each currently charge six
+logical steps and three type nodes. Repeated reads and constructors charge again;
+logical exhaustion retains the outer required root. Constructor accounting still
+needs to cover all source components before normalization, and text, helper,
+rootless extent and pending-query accounting remain incomplete. This ledger does
+not yet qualify the full required-evaluation contract or execute proof queries.
+
 Scalar scratch beyond integers/booleans, mutable scratch, restarts, labeled blocks,
 annotated or named emissions, general expression statements and source/helper calls
 remain unsupported in type blocks. `core.Type` parameter/result annotations, generic

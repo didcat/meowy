@@ -21,9 +21,11 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 The logical ledger now charges type materialization, evaluated required statements
 and blocks, selected integer/boolean evaluation, and scalar/record projection
-paths. Required record construction and recursive copies now charge aggregate
-slots; composition transfers charged slots without duplication. Retained record
-reads charge without replaying initializer work.
+paths. Type literals, reads, queries and subtraction now charge expression steps;
+grouping and synthetic wrappers add no logical construction costs. Required record
+construction and recursive copies now charge aggregate slots; composition transfers
+charged slots without duplication. Retained record reads charge without replaying
+initializer work.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
@@ -67,22 +69,20 @@ remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 907
-  library/883 native tests (1790 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 914
+  library/885 native tests (1799 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-record-slot-gate.log`.
-- Three ledger groups and six record-slot checker groups pass: exact/overflow
-  limits, nested/repeated copies, typed/inferred/partial composition, skipped
-  construction, read isolation, source-order failures and scope/root restoration.
-  The existing 150 required-evaluation tests passed before final integration.
-  Logs: `/tmp/meowy-slot-ledger.log`, `/tmp/meowy-record-slots.log`,
-  `/tmp/meowy-record-slots-regressions.log`.
-- Native facade and partial-composition programs pass in debug/release, retaining
-  field widths, outputs and startup order. Their integration log also covers
-  failed copies and repeated nested roots: `/tmp/meowy-record-slot-integration.log`.
+  debug/release. Log: `/tmp/meowy-type-expression-gate.log`.
+- Ten focused logical-type checker tests and two native groups pass: exact/overflow
+  step limits, grouping/synthetic wrappers, repeated aliases, skipped constructors,
+  query operands, source-order errors, scope/depth restoration and bootstrap guards.
+  Facades retain type identity, startup order and original-file errors; accepted
+  native programs pass in debug/release. Log:
+  `/tmp/meowy-type-expression-integration.log`.
 - Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Other accounting domains and proof execution
-  remain incomplete. Unsupported queries do not count as conformance successes.
+  lower B001 bootstrap limits first. Source-constructor traversal before
+  normalization, text/helper counters, rootless extents and pending-query budgets
+  remain incomplete. Proof outcomes remain gated.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -91,7 +91,7 @@ remain gated.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Logical charges cover type materialization, required statements/blocks and scalar/record reads, projection paths and constructed/copied record slots; broader accounting remains open. |
+| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; source-constructor accounting remains open. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -127,7 +127,8 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Audit remaining type-expression dispatch and construction costs, then
+1. Audit source type-construction costs before normalization in `names.rs` and
+   `type_values/work.rs`, including duplicate inputs and failure prefixes, then
    text/helper counters, rootless extents and deferred-query budgets. Required
    record construction and recursive copies now charge aggregate slots; scalar
    and record reads retain separate step costs. Pending query identities and the

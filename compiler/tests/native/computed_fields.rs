@@ -1,6 +1,49 @@
 use super::{Case, file_modules::case};
 
 #[test]
+pub(crate) fn logical_type_expressions_keep_facade_types_and_startup() {
+    case(
+        "m:@\"./facade.mwy\";d:@\"debug\";<T>:{kind:((m).Kind);copy:kind!<null>;|false|unused:<int32[1/0]>;->copy};v<T>:7;d.print(v)",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);->Kind<Type>:<uint8><null>"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->Kind<Type>:m.Kind"),
+        ],
+    ).runs(b"1\n2\n7\n");
+    Case::new("d:@\"debug\";f<uint8>:(n<uint8>){<T>:((n/0)<>!<null>);v<T>:7;->v};d.print(f(2))")
+        .runs(b"7\n");
+}
+
+#[test]
+pub(crate) fn logical_type_expressions_keep_source_errors_through_facades() {
+    let source = "->bad<uint8>:255+1";
+    let case = case(
+        "m:@\"./facade.mwy\";<T>:(({n:m.bad;-><uint8>})!<null>)",
+        &[
+            ("data.mwy", source),
+            ("facade.mwy", "m:@\"./data.mwy\";->bad:m.bad"),
+        ],
+    );
+    for action in ["check", "build", "run"] {
+        let output = case.command(action, &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E107\""), "{error}");
+        assert!(
+            error.contains(&format!(
+                "\"path\":\"{}\"",
+                case.path.join("data.mwy").display()
+            )),
+            "{error}"
+        );
+        assert!(
+            error.contains(&format!("\"start\":{}", source.find("255+1").unwrap())),
+            "{error}"
+        );
+    }
+}
+
+#[test]
 pub(crate) fn logical_record_slots_keep_facade_composition_and_native_layout() {
     case(
         "m:@\"./facade.mwy\";d:@\"debug\";<T>:{base:m.row.part;r<{n<uint8>;flag<boolean>;extra<uint8>}>:{->base;->extra:2};copy:r;-><uint8[copy.n+copy.extra]>};v<T>:[7];d.print(v[1]);d.print(m.row.part.flag)",

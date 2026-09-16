@@ -136,3 +136,51 @@ pub(crate) fn logical_type_form_checks_do_not_evaluate_query_operands() {
     });
     result.unwrap();
 }
+
+#[test]
+pub(crate) fn logical_type_branches_only_charge_selected_constructors() {
+    let mut checker = Checker::new();
+    let skipped = cost(&mut checker, "{|false|unused:<int32>!<null>;-><int32>}");
+    let selected = cost(&mut checker, "{|true|unused:<int32>!<null>;-><int32>}");
+    assert_eq!(skipped, (7, 2));
+    assert_eq!(selected, (14, 5));
+    assert_eq!(
+        cost(
+            &mut checker,
+            "{|true|unused:(((<int32>))!<null>);-><int32>}"
+        ),
+        selected
+    );
+    assert_eq!(
+        cost(&mut checker, "{kind:<int32>;copy:kind;again:kind;->kind}"),
+        (14, 5)
+    );
+}
+
+#[test]
+pub(crate) fn logical_type_failures_stop_right_operands_and_restore_scopes() {
+    let root = Span::new(300, 350);
+    for source in [
+        "({bad:1/0;-><int32>})!<({bad:2/0;-><null>})>",
+        "((({bad:1/0;-><int32>})))!<({bad:2/0;-><null>})>",
+    ] {
+        let expr = expression(source);
+        let mut checker = Checker::new();
+        let scopes = checker.scopes.len();
+        let error = checker
+            .required_root(root, |checker| {
+                let result = checker.type_value(&expr);
+                let work = checker.type_work.as_ref().unwrap();
+                assert_eq!((work.logical.steps, work.logical.types), (6, 0));
+                assert_eq!(work.depth, 0);
+                result
+            })
+            .unwrap_err();
+        assert_eq!(error.code, "E107");
+        let text = format!("value:{source}");
+        assert_eq!(&text[error.span.start..error.span.end], "1/0");
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(checker.type_work.is_none());
+        assert_eq!(cost(&mut checker, "<int32>"), (2, 1));
+    }
+}
