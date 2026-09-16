@@ -372,7 +372,9 @@ impl Checker {
         exported: bool,
         span: Span,
     ) -> Result<()> {
-        self.declare_source_type(name, ty, exported, span, false)
+        self.construction_root(ty.span, |checker| {
+            checker.declare_source_type(name, ty, exported, span, true)
+        })
     }
 
     pub(crate) fn declare_source_type(

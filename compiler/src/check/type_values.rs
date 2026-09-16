@@ -4,6 +4,8 @@ mod blocks;
 mod booleans;
 mod comparisons;
 #[cfg(test)]
+mod constructor_roots;
+#[cfg(test)]
 mod expression_accounting;
 #[cfg(test)]
 mod extent_roots;

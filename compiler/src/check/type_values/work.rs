@@ -134,6 +134,15 @@ impl Checker {
         self.type_work.as_ref().is_some_and(|work| !work.ordinary)
     }
 
+    pub(crate) fn construction_root<T>(
+        &mut self,
+        span: Span,
+        run: impl FnOnce(&mut Self) -> Result<T>,
+    ) -> Result<T> {
+        let ordinary = self.type_work.as_ref().is_none_or(|work| work.ordinary);
+        self.mode_root(span, ordinary, run)
+    }
+
     pub(crate) fn mode_root<T>(
         &mut self,
         span: Span,
