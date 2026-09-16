@@ -86,7 +86,7 @@ root. Reservation and definition syntax are distinct evaluated declarations.
 
 Dependency-ordered slices:
 
-1. Reuse checked parameter types in body locals with ordinary/forward regressions.
+1. `d4f4573`: reuse checked parameter types in body locals with ordinary/forward regressions.
 2. Root definition and forward signatures; charge each written annotation once,
    preserve ordinary/computed modes and test counts, limits and source ordering.
 3. Root explicit re-export signatures and verify native integration; refresh guide
@@ -96,7 +96,13 @@ Parameter reuse passes both new checker groups and all 940 library tests, Clippy
 and formatting. Checked widths survive body parameter shadowing; computed
 parameter annotations no longer replay. Logs: `/tmp/meowy-signature-reuse-focused.log`,
 `/tmp/meowy-signature-reuse-library.log`, `/tmp/meowy-signature-reuse-clippy.log`.
-Next: signature roots. Inferred result/body checking stays outside fresh header roots.
+Definition and reservation roots are implemented. Forward definitions now check
+written result annotations before parameters, matching source order. Focused
+count/mode/limit/error tests and all 943 library tests pass, with Clippy and
+formatting. Logs: `/tmp/meowy-signature-roots-focused.log`,
+`/tmp/meowy-signature-roots-library.log`, `/tmp/meowy-signature-roots-clippy.log`.
+Inferred results and body checking remain outside fresh header roots. Next:
+explicit function re-export signatures and native integration.
 Other type-value/ascription sites and pending-query budgets remain later work.
 
 ### Ordinary constructor roots

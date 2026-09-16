@@ -17,11 +17,17 @@ impl Checker {
         body: &ast::Block,
         span: Span,
     ) -> Result<()> {
-        let result = annotation.map(|ty| self.function_type(ty)).transpose()?;
-        let args: Vec<_> = params
-            .iter()
-            .map(|param| self.function_type(&param.ty))
-            .collect::<Result<_>>()?;
+        let (args, result) =
+            self.construction_root(Span::new(span.start, body.span.start), |checker| {
+                let result = annotation
+                    .map(|ty| checker.source_function(ty, true))
+                    .transpose()?;
+                let args: Vec<_> = params
+                    .iter()
+                    .map(|param| checker.source_function(&param.ty, true))
+                    .collect::<Result<_>>()?;
+                Ok((args, result))
+            })?;
         let id = self.functions.len();
         self.functions.push(None);
         self.declare(
@@ -51,7 +57,9 @@ impl Checker {
             span,
         }) = stmts.get(index)
         {
-            let Spec::Function { params, result } = self.spec(ty)? else {
+            let Spec::Function { params, result } =
+                self.construction_root(ty.span, |checker| checker.source_spec(ty, true))?
+            else {
                 return Err(Self::error(
                     "E221",
                     "forward declarations require a concrete function signature",
@@ -112,15 +120,19 @@ impl Checker {
                     stmt.span,
                 )
             })?;
-            let actual_params = params
-                .iter()
-                .map(|param| self.function_type(&param.ty))
-                .collect::<Result<Vec<_>>>()?;
-            let actual_result = ty
-                .as_ref()
-                .map(|ty| self.ty(ty))
-                .transpose()?
-                .unwrap_or(expected_result.clone());
+            let (actual_params, actual_result) =
+                self.construction_root(Span::new(stmt.span.start, body.span.start), |checker| {
+                    let result = ty
+                        .as_ref()
+                        .map(|ty| checker.source_type(ty, true))
+                        .transpose()?
+                        .unwrap_or(expected_result.clone());
+                    let args = params
+                        .iter()
+                        .map(|param| checker.source_function(&param.ty, true))
+                        .collect::<Result<Vec<_>>>()?;
+                    Ok((args, result))
+                })?;
             if expected_params != actual_params || actual_result != expected_result {
                 return Err(Self::error(
                     "E221",

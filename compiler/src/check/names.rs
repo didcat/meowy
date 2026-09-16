@@ -283,10 +283,6 @@ impl Checker {
         self.spec_type(spec, expr.span)
     }
 
-    pub(crate) fn function_type(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
-        self.source_function(expr, false)
-    }
-
     pub(crate) fn source_function(&mut self, expr: &ast::TypeExpr, charge: bool) -> Result<Type> {
         let spec = self.source_spec(expr, charge)?;
         if matches!(spec, Spec::Descriptor(_)) {
