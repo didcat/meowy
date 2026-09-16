@@ -75,6 +75,32 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Source-constructor accounting in progress
+
+Audit: `spec` is shared by execution, symbol lookup and form checking; charging
+all calls would count unevaluated work. Required type literals need an explicit
+construction mode passed recursively through the existing resolver. Charge source
+composite nodes before children, repeated named payloads when substituted, and
+implicit record primaries. Keep result traversal for bootstrap guards only when
+source construction already supplied logical charges. Computed operands retain
+nested expression evaluation; transparent synthetic wrappers must not add work.
+
+Dependency-ordered commit plan:
+
+1. Charge required type-literal source traversal before normalization, with exact
+   duplicate/nested constructor, source-failure, lookup isolation and limit tests.
+2. Integrate required alias/annotation construction without repeating resolution;
+   keep ordinary lookup uncharged and add focused scope/skip regressions.
+3. Native integration and guide/handoffs after the complete compiler gate.
+
+Required literal construction is implemented. Five source traversal groups, all
+919 library tests, Clippy with warnings denied and formatting pass. Bootstrap
+result traversal retains its prior counts; lookup remains uncharged. Logs:
+`/tmp/meowy-source-types-focused.log`, `/tmp/meowy-source-types-library.log`,
+`/tmp/meowy-source-types-clippy.log`. Next: required alias/annotation integration.
+Text/helper counters, rootless extents and pending-query budgets remain subsequent
+prerequisites; proof outcomes remain gated.
+
 ### Type-expression accounting
 
 `type_value_inner` charges evaluated literals, reads, queries and subtraction;

@@ -15,6 +15,8 @@ mod metatypes;
 mod operands;
 mod records;
 mod scalars;
+#[cfg(test)]
+mod source_accounting;
 mod statements;
 mod subtraction;
 mod work;
@@ -76,7 +78,10 @@ impl Checker {
             self.charge_ancestors(expr)?;
         }
         match &expr.kind {
-            ExprKind::TypeValue(ty) => self.type_literal(ty),
+            ExprKind::TypeValue(ty) => {
+                let spec = self.source_spec(ty, !transparent_type(expr))?;
+                self.literal_type(spec, ty.span)
+            }
             ExprKind::TypeQuery(value) => {
                 if let Some(ty) = self.hint(value) {
                     return Ok(ty);

@@ -1,6 +1,6 @@
 use super::{MAX_DEPTH, MAX_NODES, MAX_WORK};
 use crate::ast::{Expr, Span};
-use crate::check::{Checker, Result, inputs::Input, required::Budget};
+use crate::check::{Checker, Result, Spec, inputs::Input, required::Budget};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
 
@@ -65,14 +65,51 @@ impl Work {
     }
 
     pub(crate) fn type_result(&mut self, ty: &Type, expr: &Expr) -> Result<()> {
-        self.visit_type(ty, expr.span, !super::transparent_type(expr))
+        self.visit_type(
+            ty,
+            expr.span,
+            !super::transparent_type(expr)
+                && !matches!(expr.kind, crate::ast::ExprKind::TypeValue(_)),
+        )
     }
 
     pub(crate) fn visit_type(&mut self, ty: &Type, span: Span, logical: bool) -> Result<()> {
+        self.walk_type(ty, span, true, logical)
+    }
+
+    pub(crate) fn logical_spec(&mut self, spec: &Spec) -> Result<()> {
+        match spec {
+            Spec::Meta | Spec::Descriptor(_) => self.logical.charge(1, 1),
+            Spec::Data(ty) => self.logical_type(ty),
+            Spec::Function { params, result } => {
+                self.logical.charge(1, 1)?;
+                for ty in params.iter().chain(std::iter::once(result)) {
+                    self.logical_type(ty)?;
+                }
+                Ok(())
+            }
+        }
+    }
+
+    pub(crate) fn logical_type(&mut self, ty: &Type) -> Result<()> {
+        self.walk_type(ty, self.logical.root, false, true)
+    }
+
+    pub(crate) fn walk_type(
+        &mut self,
+        ty: &Type,
+        span: Span,
+        bootstrap: bool,
+        logical: bool,
+    ) -> Result<()> {
         let mut pending = vec![ty];
         while let Some(ty) = pending.pop() {
-            self.visit_node(span, logical)?;
-            if pending.len() > MAX_NODES {
+            if bootstrap {
+                self.visit_node(span, logical)?;
+            } else if logical {
+                self.logical.charge(1, 1)?;
+            }
+            if bootstrap && pending.len() > MAX_NODES {
                 return Err(Self::budget(span));
             }
             match ty {

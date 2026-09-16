@@ -90,6 +90,35 @@ impl Checker {
     }
 
     pub(crate) fn spec(&mut self, expr: &ast::TypeExpr) -> Result<Spec> {
+        self.source_spec(expr, false)
+    }
+
+    pub(crate) fn source_spec(&mut self, expr: &ast::TypeExpr, charge: bool) -> Result<Spec> {
+        if charge
+            && matches!(
+                expr.kind,
+                TypeKind::Function { .. }
+                    | TypeKind::Record { .. }
+                    | TypeKind::Union(_)
+                    | TypeKind::List { .. }
+                    | TypeKind::Reference { .. }
+            )
+        {
+            self.type_work.as_mut().unwrap().logical.charge(1, 1)?;
+        }
+        let spec = self.source_spec_inner(expr, charge)?;
+        if charge && matches!(expr.kind, TypeKind::Name(_) | TypeKind::Computed(_)) {
+            self.type_work.as_mut().unwrap().logical_spec(&spec)?;
+        }
+        Ok(spec)
+    }
+
+    pub(crate) fn source_type(&mut self, expr: &ast::TypeExpr, charge: bool) -> Result<Type> {
+        let spec = self.source_spec(expr, charge)?;
+        self.spec_type(spec, expr.span)
+    }
+
+    pub(crate) fn source_spec_inner(&mut self, expr: &ast::TypeExpr, charge: bool) -> Result<Spec> {
         match &expr.kind {
             TypeKind::Name(name) => {
                 if let Some((module, member)) = name.split_once('.') {
@@ -150,20 +179,23 @@ impl Checker {
             TypeKind::Function { params, result } => {
                 let params = params
                     .iter()
-                    .map(|ty| self.function_type(ty))
+                    .map(|ty| self.source_function(ty, charge))
                     .collect::<Result<Vec<_>>>()?;
-                let result = self.function_type(result)?;
+                let result = self.source_function(result, charge)?;
                 Ok(Spec::Function { params, result })
             }
             TypeKind::Record { primary, fields } => {
+                if charge && primary.is_none() {
+                    self.type_work.as_mut().unwrap().logical.charge(1, 1)?;
+                }
                 let primary = primary
                     .as_ref()
-                    .map(|ty| self.ty(ty))
+                    .map(|ty| self.source_type(ty, charge))
                     .transpose()?
                     .unwrap_or(Type::Null);
                 let mut result = BTreeMap::new();
                 for (name, ty, mutable) in fields {
-                    let ty = self.ty(ty)?;
+                    let ty = self.source_type(ty, charge)?;
                     if *mutable && ty.has_reference() && !ty.fixed_borrowed_value() {
                         return Err(Diagnostic::unsupported(
                             "mutable reference-bearing record fields",
@@ -210,7 +242,7 @@ impl Checker {
                 let types = types
                     .iter()
                     .map(|ty| {
-                        let spec = self.spec(ty)?;
+                        let spec = self.source_spec(ty, charge)?;
                         if matches!(spec, Spec::Descriptor(_)) {
                             return Err(Diagnostic::unsupported(
                                 "proof descriptor union construction",
@@ -226,16 +258,16 @@ impl Checker {
                 let Some(size) = size else {
                     return Err(Diagnostic::unsupported("borrowed slice types", expr.span));
                 };
-                let element = self.ty(element)?;
+                let element = self.source_type(element, charge)?;
                 let capacity = self.list_extent(size)?;
                 Ok(Spec::Data(self.list_type(element, capacity, expr.span)?))
             }
             TypeKind::Reference { value, mutable } => {
                 if *mutable {
-                    let ty = self.ty(value)?;
+                    let ty = self.source_type(value, charge)?;
                     return Ok(Spec::Data(self.exclusive_type(ty, expr.span)?));
                 }
-                let ty = self.ty(value)?;
+                let ty = self.source_type(value, charge)?;
                 Ok(Spec::Data(self.reference_type(ty, expr.span)?))
             }
             TypeKind::Unsupported(feature) => Err(Diagnostic::unsupported(feature, expr.span)),
@@ -248,7 +280,11 @@ impl Checker {
     }
 
     pub(crate) fn function_type(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
-        let spec = self.spec(expr)?;
+        self.source_function(expr, false)
+    }
+
+    pub(crate) fn source_function(&mut self, expr: &ast::TypeExpr, charge: bool) -> Result<Type> {
+        let spec = self.source_spec(expr, charge)?;
         if matches!(spec, Spec::Descriptor(_)) {
             return Err(Diagnostic::unsupported(
                 "proof descriptor function signatures",
@@ -266,19 +302,23 @@ impl Checker {
 
     pub(crate) fn type_literal(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
         let spec = self.spec(expr)?;
+        self.literal_type(spec, expr.span)
+    }
+
+    pub(crate) fn literal_type(&mut self, spec: Spec, span: Span) -> Result<Type> {
         if let Spec::Descriptor(ty) = spec {
             return Err(Diagnostic::unsupported(
                 format!("first-class {} type values", ty.name()),
-                expr.span,
+                span,
             ));
         }
         if matches!(spec, Spec::Meta) {
             return Err(Diagnostic::unsupported(
                 "first-class core.Type values",
-                expr.span,
+                span,
             ));
         }
-        self.spec_type(spec, expr.span)
+        self.spec_type(spec, span)
     }
 
     pub(crate) fn spec_type(&mut self, spec: Spec, span: Span) -> Result<Type> {
