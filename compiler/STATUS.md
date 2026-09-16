@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-15. Ordinary aliases and data annotations now have constructor roots.
+Updated: 2026-09-15. Function signatures now have roots and reuse checked parameter types.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -75,35 +75,37 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Function signature accounting in progress
+### Function signature accounting
 
-Audit: `declare_function`/`forward` resolve parameter types before body checking;
-`function` resolves them again after installing parameter locals. Reuse the checked
-parameter types to avoid repeated computed work and parameter-shadow lookup drift.
-Function definitions need one source-header root, ending before body evaluation;
-explicit forward/export function-type annotations have their own type-expression
-root. Reservation and definition syntax are distinct evaluated declarations.
+Definitions construct written annotations in a root spanning the source header;
+result annotations precede parameters. The root ends before body checking unless
+an outer required root already exists. Forward reservations and explicit function
+re-export annotations root their source function-type expressions. Reservations
+and definitions are distinct source work; omitted result annotations reuse the
+reserved/inferred result without additional construction. Ordinary/computed modes
+and nested extent budgets follow `construction_root`/`mode_root`.
 
-Dependency-ordered slices:
+Completed dependency-ordered slices:
 
-1. `d4f4573`: reuse checked parameter types in body locals with ordinary/forward regressions.
-2. Root definition and forward signatures; charge each written annotation once,
-   preserve ordinary/computed modes and test counts, limits and source ordering.
-3. Root explicit re-export signatures and verify native integration; refresh guide
-   and handoffs after the complete compiler gate.
+1. `d4f4573`: body locals reuse checked parameter types. Annotation evaluation is
+   not repeated after parameter names enter scope; outer constant widths survive
+   parameter shadowing. Duplicate names and signature mismatches retain checks.
+2. `9157ec3`: definition/forward roots, exact counts, type limits and mode tests.
+   Forward definitions now evaluate written result annotations before parameters.
+3. Explicit re-export roots, native facade/forward/error integration, guide and
+   both handoffs; the complete compiler gate passes.
 
-Parameter reuse passes both new checker groups and all 940 library tests, Clippy
-and formatting. Checked widths survive body parameter shadowing; computed
-parameter annotations no longer replay. Logs: `/tmp/meowy-signature-reuse-focused.log`,
-`/tmp/meowy-signature-reuse-library.log`, `/tmp/meowy-signature-reuse-clippy.log`.
-Definition and reservation roots are implemented. Forward definitions now check
-written result annotations before parameters, matching source order. Focused
-count/mode/limit/error tests and all 943 library tests pass, with Clippy and
-formatting. Logs: `/tmp/meowy-signature-roots-focused.log`,
-`/tmp/meowy-signature-roots-library.log`, `/tmp/meowy-signature-roots-clippy.log`.
-Inferred results and body checking remain outside fresh header roots. Next:
-explicit function re-export signatures and native integration.
-Other type-value/ascription sites and pending-query budgets remain later work.
+Six focused checker groups and two new native groups pass, alongside existing
+signature/documentation tests. The full gate passes 944 library/893 native tests,
+Clippy, formatting and bootstrap conformance. No outstanding failures remain. Logs: `/tmp/meowy-signature-reuse-library.log`,
+`/tmp/meowy-signature-roots-library.log`, `/tmp/meowy-signature-integration.log`,
+`/tmp/meowy-signature-gate.log`.
+
+Next: actual type-value/ascription uses still share `symbol`/`type_literal`/`ty`
+lookup APIs. Trace value execution versus hints before assigning more roots. Do
+not count compiler metadata clones or body-local type reuse as source work.
+Pending query budgets, text/helper admission and phase/dependency tracking remain
+prerequisites; proof outcomes and full release qualification stay gated.
 
 ### Ordinary constructor roots
 
@@ -129,11 +131,8 @@ Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-alias-roots-library.log`,
 `/tmp/meowy-constructor-roots-gate.log`. No outstanding failures remain. Ordinary block checking still fails fast
 without scope recovery; statement-level tests verify root cleanup independently.
 
-Next: audit function declaration/forward/export signatures in `functions.rs` and
-`exports.rs`, plus actual type-value/ascription uses sharing `symbol` or `ty` probes.
-These sites are not yet explicitly rooted. Avoid charging a signature twice when
-forward declarations or body checks reuse it. Pending queries also need durable
-root budgets; text/helper admission and phase/dependency work still gate outcomes.
+Function signatures are now integrated above. Actual type-value/ascription uses
+still need their own execution/probe audit; pending queries need retained budgets.
 
 ### Ordinary extent roots
 
@@ -191,8 +190,8 @@ Logs: `/tmp/meowy-source-types-focused.log`, `/tmp/meowy-source-types-library.lo
 `/tmp/meowy-source-types-integration.log`, `/tmp/meowy-source-types-gate.log`.
 
 Ordinary aliases/data annotations and their extents now have explicit roots;
-`spec` remains a lookup path. Function signatures and other type-use sites still
-need an execution-boundary audit. Text/helper values are
+`spec` remains a lookup path. Function signatures are now rooted; other type-use
+sites still need an execution-boundary audit. Text/helper values are
 not admitted by the bounded required interpreter; audit gates before adding unused
 counters. Pending queries still need shared/root budget retention. Keep outcomes
 gated until these accounting and phase/dependency prerequisites finish.
@@ -699,20 +698,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 938
-  library/891 native tests (1829 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 944
+  library/893 native tests (1837 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-constructor-roots-gate.log`.
-- Nine new checker groups cover scoped modes, alias/data roots, shared constructor
-  and extent costs, duplicate inputs, exact/overflow budgets, independent resets,
-  lookup isolation and original failure order. Two native groups cover imported
-  aliases, annotated exports, computed operands, startup and original-file errors.
-  Accepted programs and input-gate checks pass in debug/release. Logs:
-  `/tmp/meowy-data-roots-library.log`, `/tmp/meowy-constructor-roots-integration.log`.
+  debug/release. Log: `/tmp/meowy-signature-gate.log`.
+- Six new checker groups cover checked parameter reuse, parameter shadowing,
+  definition/forward/re-export costs, computed modes, exact/overflow type limits
+  and source-order errors. Two native groups cover facade calls, forward bodies,
+  startup and original-file failures. Accepted programs run in debug/release.
+  Existing signature/documentation integration also passes. Log:
+  `/tmp/meowy-signature-integration.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Function declaration signatures, other type-use roots, text/helper
-  counters and pending-query budget retention remain open. Proof outcomes stay
-  gated; unsupported queries are not conformance successes.
+  separate. Actual type-value/ascription execution roots, text/helper counters and
+  pending-query budget retention remain open. Proof outcomes stay gated;
+  unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -786,15 +785,15 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Audit remaining type-use execution boundaries in `check/functions.rs`,
-   `check/exports.rs` and `check/names.rs`: function declaration/forward/export
-   signatures and actual type-value/ascription uses still share lookup APIs.
-   Trace reuse before choosing roots; do not duplicate signature work during body
-   checking or charge lookup/type-query probes. Record ordered slices and test
-   repeated signatures, computed operands, extent/input modes, exact limits,
-   source-order errors and original-file spans, then run the compiler gate.
-   Alias and data-annotation roots are integrated. Pending-query budget retention,
-   text/helper admission and phase/dependency tracking remain separate prerequisites.
+1. Trace actual type-value/ascription execution in `check/statements.rs`,
+   `check/expressions.rs`, `check/names.rs` and hint/refinement callers of `symbol`
+   or `ty`. Function definition/forward/export roots are integrated; retain checked
+   parameter types and do not replay annotations during body setup. Distinguish
+   execution from probes before adding roots, then record ordered slices and test
+   repeated uses, skipped/type-query operands, mode restoration, exact limits and
+   original-file failures. Pending-query budget retention, text/helper admission
+   and phase/dependency tracking remain separate prerequisites. Run the compiler
+   gate after each completed series; keep proof outcomes gated.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep

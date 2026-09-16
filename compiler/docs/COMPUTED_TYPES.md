@@ -1569,8 +1569,20 @@ initializer proofs there. Reachability and required-evaluation state restore aft
 success or failure. An extent root charges integer evaluation, not the surrounding
 list type or its elements.
 
-Function declaration signatures, other type-use execution boundaries, text/helper
-counters and pending-query budget retention still need integration.
+Function definition headers now have one root for their written annotations,
+ending before body checking. Result annotations precede parameter annotations;
+forward reservations and explicit function re-export signatures have separate
+roots at their function-type expressions. A reservation and its written definition
+each charge their own source annotations. Omitted result annotations reuse the
+reserved or inferred result without inventing construction work.
+
+Body locals reuse the parameter types checked at declaration time. Computed
+annotations do not run again after parameter names enter scope, so a parameter
+shadowing an outer constant cannot change another parameter's checked type.
+Computed operands share the signature budget and restore ordinary input mode.
+
+Other type-use execution boundaries, text/helper counters and pending-query budget
+retention still need integration.
 This ledger does not yet qualify the full required-evaluation contract or execute
 proof queries.
 

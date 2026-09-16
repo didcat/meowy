@@ -341,7 +341,9 @@ impl Checker {
             )
         })?;
         if let Some(function) = function {
-            let signature = self.spec(annotation)?;
+            let signature = self.construction_root(annotation.span, |checker| {
+                checker.source_spec(annotation, true)
+            })?;
             if !matches!((&signature, &function),
                 (Spec::Function {params, result}, Value::Function {params: actual, result: Some(found), ..})
                 if params == actual && result == found)

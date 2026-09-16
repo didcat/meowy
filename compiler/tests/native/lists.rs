@@ -388,3 +388,54 @@ pub(crate) fn ordinary_constructor_roots_preserve_source_errors_across_facades()
         }
     }
 }
+
+#[test]
+pub(crate) fn signature_roots_preserve_parameter_types_through_bodies_and_facades() {
+    super::file_modules::case(
+        "m:@\"./facade.mwy\";d:@\"debug\";d.print(m.first(9,[7,8]))",
+        &[
+            ("data.mwy", "width:2;d:@\"debug\";d.print(1);->first<int32>:(width<int32>,items<int32[width]>){->items[1]}"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->first<(int32,int32[2])->int32>:m.first"),
+        ],
+    ).runs(b"1\n2\n7\n");
+    Case::new(
+        "d:@\"debug\";width:2;f<(int32,int32[2])->int32>;f<int32>:(width<int32>,items<int32[width]>){->items[2]};d.print(f(9,[7,8]))",
+    ).runs(b"8\n");
+}
+
+#[test]
+pub(crate) fn signature_roots_keep_forward_and_export_source_errors() {
+    for (source, facade, path) in [
+        (
+            "f<(int32[2])->int32[2]>;f<int32[1/0]>:(n<int32[2/0]>){->n}",
+            "m:@\"./data.mwy\"",
+            "data.mwy",
+        ),
+        (
+            "->f<int32>:(n<int32>){->n}",
+            "m:@\"./data.mwy\";->f<(int32[1/0])->int32>:m.f",
+            "facade.mwy",
+        ),
+    ] {
+        let case = super::file_modules::case(
+            "m:@\"./facade.mwy\"",
+            &[("data.mwy", source), ("facade.mwy", facade)],
+        );
+        let text = if path == "data.mwy" { source } else { facade };
+        for action in ["check", "build", "run"] {
+            let output = case.command(action, &["--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!("\"path\":\"{}\"", case.path.join(path).display())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!("\"start\":{}", text.find("1/0").unwrap())),
+                "{error}"
+            );
+        }
+    }
+}

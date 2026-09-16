@@ -29,7 +29,9 @@ construction and recursive copies now charge aggregate slots; composition transf
 charged slots without duplication. Retained record reads charge without replaying
 initializer work. Ordinary aliases and data annotations now have constructor
 roots; nested extents share their budgets and computed operands restore input
-mode afterward. Standalone ordinary extents retain isolated roots and input gates.
+mode afterward. Function definition/forward/export signatures now have roots;
+body locals reuse checked parameter types without replaying annotations. Standalone
+ordinary extents retain isolated roots and input gates.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
@@ -73,20 +75,20 @@ remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 938
-  library/891 native tests (1829 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 944
+  library/893 native tests (1837 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-constructor-roots-gate.log`.
-- Nine new checker groups cover scoped modes, alias/data roots, shared constructor
-  and extent costs, duplicate inputs, exact/overflow budgets, independent resets,
-  lookup isolation and original failure order. Two native groups cover imported
-  aliases, annotated exports, computed operands, startup and original-file errors.
-  Accepted programs and input-gate checks pass in debug/release. Logs:
-  `/tmp/meowy-data-roots-library.log`, `/tmp/meowy-constructor-roots-integration.log`.
+  debug/release. Log: `/tmp/meowy-signature-gate.log`.
+- Six new checker groups cover checked parameter reuse, parameter shadowing,
+  definition/forward/re-export costs, computed modes, exact/overflow type limits
+  and source-order errors. Two native groups cover facade calls, forward bodies,
+  startup and original-file failures. Accepted programs run in debug/release.
+  Existing signature/documentation integration also passes. Log:
+  `/tmp/meowy-signature-integration.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Function declaration signatures, other type-use roots, text/helper
-  counters and pending-query budget retention remain open. Proof outcomes stay
-  gated; unsupported queries are not conformance successes.
+  separate. Actual type-value/ascription execution roots, text/helper counters and
+  pending-query budget retention remain open. Proof outcomes stay gated;
+  unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -131,12 +133,12 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Audit remaining function-signature and type-use execution boundaries in
-   `check/functions.rs`, `check/exports.rs` and `check/names.rs`, preserving lookup
-   isolation and avoiding duplicate signature charges. Ordinary alias/data roots
-   and nested extent budgets are integrated. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
-   records next steps for remaining roots, text/helper gates and deferred queries.
-   Proof outcomes and flags remain gated.
+1. Trace actual type-value/ascription execution versus lookup/hint probes in
+   `check/statements.rs`, `check/expressions.rs` and `check/names.rs`. Function
+   definition/forward/export roots are integrated and body parameter types are
+   reused. The [compiler handoff](compiler/STATUS.md#executable-proof-plan) records
+   next root, deferred-query, text/helper and phase/dependency work. Proof outcomes
+   and flags remain gated.
 
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

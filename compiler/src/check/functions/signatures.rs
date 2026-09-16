@@ -119,3 +119,20 @@ pub(crate) fn signature_roots_share_limits_and_restore_after_failure() {
         assert!(next.type_work.is_none());
     }
 }
+
+#[test]
+pub(crate) fn signature_exports_charge_explicit_signatures_without_body_replay() {
+    assert_eq!(cost("->f<int32>:(n<int32>){->n}"), (2, 2));
+    assert_eq!(
+        cost("f<int32>:(n<int32>){->n};->g<(int32)->int32>:f"),
+        (5, 5)
+    );
+    assert_eq!(
+        cost("<F>:<(int32)->int32>;f<int32>:(n<int32>){->n};->g<F>:f"),
+        (8, 8)
+    );
+    assert_eq!(
+        crate::compile("f<int32>:(n<int32>){->n};->g<(uint8)->int32>:f").unwrap_err()[0].code,
+        "E207"
+    );
+}
