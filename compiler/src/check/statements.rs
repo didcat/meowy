@@ -87,7 +87,7 @@ impl Checker {
                     self.declare(name, value, stmt.span)?;
                     return Ok(Vec::new());
                 }
-                if let Some(symbol) = self.symbol(value)?
+                if let Some(symbol) = self.binding_symbol(value)?
                     && !matches!(
                         symbol,
                         Value::Local { .. }

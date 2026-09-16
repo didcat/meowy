@@ -85,7 +85,7 @@ computed operands and type queries keep their existing required-evaluation path.
 
 Dependency-ordered slices:
 
-1. Root ascription/type-test target construction with exact counts, mode, failure
+1. `3876c34`: root ascription/type-test target construction with exact counts, mode, failure
    order and lookup-isolation regressions.
 2. Charge ordinary type-identity bindings without replaying symbol/type resolution;
    cover literals, groups, reads, queries and nominal/member identities.
@@ -95,7 +95,12 @@ Ascription/type-test construction is rooted; all 947 library tests pass. Clippy
 identified `ty` as test-only after the final execution caller migrated; its wrapper
 is now test-gated. Lookup behavior is unchanged; Clippy and formatting pass.
 Logs: `/tmp/meowy-ascription-roots-library.log`,
-`/tmp/meowy-ascription-roots-clippy.log`. Next: ordinary type-identity bindings. Pending-query budget
+`/tmp/meowy-ascription-roots-clippy.log`. A separate `binding_symbol` execution
+path now charges ordinary type identities without replaying queries or literal
+resolution. All three binding groups and all 950 library tests pass, with Clippy
+and formatting. Logs: `/tmp/meowy-type-binding-focused.log`,
+`/tmp/meowy-type-binding-library.log`, `/tmp/meowy-type-binding-clippy.log`.
+Next: native integration and the complete gate. Pending-query budget
 retention, text/helper admission and phase/dependency tracking remain open.
 
 ### Function signature accounting

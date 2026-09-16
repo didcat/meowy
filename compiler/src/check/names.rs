@@ -375,6 +375,43 @@ impl Checker {
         Ok(id)
     }
 
+    pub(crate) fn binding_symbol(&mut self, expr: &ast::Expr) -> Result<Option<Value>> {
+        let mut form = expr;
+        while let ExprKind::Group(value) = &form.kind {
+            form = value;
+        }
+        if let ExprKind::TypeValue(ty) = &form.kind {
+            let charge = !super::type_values::transparent_type(form);
+            return self.construction_root(expr.span, |checker| {
+                if charge {
+                    checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+                }
+                let spec = checker.source_spec(ty, charge)?;
+                checker
+                    .literal_type(spec, ty.span)
+                    .map(|ty| Some(Value::Type(ty)))
+            });
+        }
+        let symbol = self.symbol(expr)?;
+        if !matches!(form.kind, ExprKind::TypeQuery(_)) {
+            let ty = match &symbol {
+                Some(Value::Type(ty)) => Some(ty.clone()),
+                Some(Value::Foundation(Item::Type(ty))) => Some(Type::Foundation(*ty)),
+                _ => None,
+            };
+            if let Some(ty) = ty {
+                self.construction_root(expr.span, |checker| {
+                    checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+                    if matches!(form.kind, ExprKind::Field { .. }) {
+                        checker.charge_ancestors(form)?;
+                    }
+                    checker.type_work.as_mut().unwrap().logical_type(&ty)
+                })?;
+            }
+        }
+        Ok(symbol)
+    }
+
     pub(crate) fn symbol(&mut self, expr: &ast::Expr) -> Result<Option<Value>> {
         match &expr.kind {
             ExprKind::Name(name) => Ok(Some(self.value(name, expr.span)?)),
