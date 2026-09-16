@@ -21,7 +21,9 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 The logical ledger now charges type materialization, evaluated required statements
 and blocks, selected integer/boolean evaluation, and scalar/record projection
-paths. Type literals, reads, queries and subtraction now charge expression steps;
+paths. Required type literals, aliases and annotations now charge source nodes
+before normalization, retaining duplicate inputs and work before errors. Type
+literals, reads, queries and subtraction also charge expression steps;
 grouping and synthetic wrappers add no logical construction costs. Required record
 construction and recursive copies now charge aggregate slots; composition transfers
 charged slots without duplication. Retained record reads charge without replaying
@@ -69,20 +71,20 @@ remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 914
-  library/885 native tests (1799 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 925
+  library/887 native tests (1812 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-expression-gate.log`.
-- Ten focused logical-type checker tests and two native groups pass: exact/overflow
-  step limits, grouping/synthetic wrappers, repeated aliases, skipped constructors,
-  query operands, source-order errors, scope/depth restoration and bootstrap guards.
-  Facades retain type identity, startup order and original-file errors; accepted
-  native programs pass in debug/release. Log:
-  `/tmp/meowy-type-expression-integration.log`.
-- Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Source-constructor traversal before
-  normalization, text/helper counters, rootless extents and pending-query budgets
-  remain incomplete. Proof outcomes remain gated.
+  debug/release. Log: `/tmp/meowy-source-types-gate.log`.
+- Eleven source-constructor checker groups and two native groups pass: duplicate
+  union inputs, repeated/nested aliases and extents, implicit primaries, scalar
+  and record annotations, selected/skipped work, exact/overflow logical limits,
+  lookup isolation, source-order failures and scope/root restoration. Native
+  facades retain widths, startup order and original-file errors in debug/release.
+  Log: `/tmp/meowy-source-types-integration.log`.
+- Logical E220 boundaries are tested internally; bootstrap B001 guards remain
+  separate. Ordinary source traversal outside required evaluation, rootless
+  extents, text/helper counters and pending-query budget retention remain open.
+  Proof outcomes remain gated; unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -91,7 +93,7 @@ remain gated.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; source-constructor accounting remains open. |
+| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; remaining root domains and query budgets stay open. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -127,13 +129,12 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Audit source type-construction costs before normalization in `names.rs` and
-   `type_values/work.rs`, including duplicate inputs and failure prefixes, then
-   text/helper counters, rootless extents and deferred-query budgets. Required
-   record construction and recursive copies now charge aggregate slots; scalar
-   and record reads retain separate step costs. Pending query identities and the
-   post-ownership B001 gate are implemented; outcomes and flags remain gated. The
-   [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the ordered
-   accounting, phase/dependency and type-only query slices.
+1. Audit remaining root domains in `list.rs`, `check/names.rs` and `check/exports.rs`,
+   plus text/helper gates and deferred-query budgets. Required source construction
+   now retains duplicate inputs and failure prefixes; ordinary/rootless paths need
+   explicit root lifetimes. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
+   records the ordered accounting, phase/dependency and type-only query work.
+   Proof outcomes and flags remain gated.
+
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

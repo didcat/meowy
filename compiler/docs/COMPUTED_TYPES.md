@@ -1541,10 +1541,22 @@ skipped branches remain unevaluated. Existing bootstrap traversal guards still a
 
 For example, `<int32> !<null>` and `(<int32>) !<null>` each currently charge six
 logical steps and three type nodes. Repeated reads and constructors charge again;
-logical exhaustion retains the outer required root. Constructor accounting still
-needs to cover all source components before normalization, and text, helper,
-rootless extent and pending-query accounting remain incomplete. This ledger does
-not yet qualify the full required-evaluation contract or execute proof queries.
+logical exhaustion retains the outer required root.
+
+Within required evaluation, type literals, aliases and binding/field annotations
+now charge source construction before normalization. `<int32><int32>` charges
+three type nodes (the union and both inputs), even though its result is `int32`.
+Composite nodes charge before their children; implicit record primaries and each
+substitution of a named payload also count. Construction stops at the first error,
+retaining the work already performed. Array extents evaluate once per occurrence;
+constructing a list type does not construct its elements as values.
+
+Lookup and form checks do not enter this source-construction path. Completed
+literal/alias results retain bootstrap traversal without charging their logical
+construction twice. Text/helper counters, ordinary roots outside the required
+interpreter, rootless extents and pending-query budget retention remain incomplete.
+This ledger does not yet qualify the full required-evaluation contract or execute
+proof queries.
 
 Scalar scratch beyond integers/booleans, mutable scratch, restarts, labeled blocks,
 annotated or named emissions, general expression statements and source/helper calls

@@ -14,6 +14,7 @@ pub(crate) fn logical_source_types_count_inputs_before_union_normalization() {
         ("(((<int32><int32>)))", (4, 3)),
         ("<never><int32><int32>", (5, 4)),
         ("<int32[2]><int32[2]>", (8, 5)),
+        ("<int32[({->2})]><int32[({->2})]>", (12, 5)),
         ("<{a<int32><int32>;b<boolean>}>", (7, 6)),
         ("<&int32><&int32>", (6, 5)),
         ("<int32><int32>!<null>", (8, 5)),

@@ -1,6 +1,51 @@
 use super::{Case, file_modules::case};
 
 #[test]
+pub(crate) fn logical_source_constructors_keep_facade_types_and_required_records() {
+    case(
+        "m:@\"./facade.mwy\";d:@\"debug\";<T>:{<U>:<m.Item><m.Item>;n<U>:7;flag<boolean><boolean>:true;r<{n<U><U>;flag<boolean>}>:{->n<U><U>:n;->flag:flag};copy<{n<U>;flag<boolean>}>:r;|false|unused<int32[1/0]>:1;-><uint8[copy.n]>};v<T>:[9];d.print(v[1])",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);-><Item>:<uint8><uint8>"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);-><Item>:<m.Item>"),
+        ],
+    ).runs(b"1\n2\n9\n");
+    Case::new(
+        "d:@\"debug\";<T>:{<A>:<uint8[({->2})]><uint8[({->2})]>;-><A>};v<T>:[7,9];d.print(v[2])",
+    )
+    .runs(b"9\n");
+}
+
+#[test]
+pub(crate) fn logical_source_constructors_keep_original_extent_failures() {
+    let source = "->bad<uint8>:255+1";
+    let case = case(
+        "m:@\"./facade.mwy\";<T>:{<U>:<uint8[m.bad]><uint8>;-><U>}",
+        &[
+            ("data.mwy", source),
+            ("facade.mwy", "m:@\"./data.mwy\";->bad:m.bad"),
+        ],
+    );
+    for action in ["check", "build", "run"] {
+        let output = case.command(action, &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E107\""), "{error}");
+        assert!(
+            error.contains(&format!(
+                "\"path\":\"{}\"",
+                case.path.join("data.mwy").display()
+            )),
+            "{error}"
+        );
+        assert!(
+            error.contains(&format!("\"start\":{}", source.find("255+1").unwrap())),
+            "{error}"
+        );
+    }
+}
+
+#[test]
 pub(crate) fn logical_type_expressions_keep_facade_types_and_startup() {
     case(
         "m:@\"./facade.mwy\";d:@\"debug\";<T>:{kind:((m).Kind);copy:kind!<null>;|false|unused:<int32[1/0]>;->copy};v<T>:7;d.print(v)",

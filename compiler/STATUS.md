@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-15. Required type-expression dispatch now charges logical steps.
+Updated: 2026-09-15. Required constructors now charge source nodes before normalization.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -61,9 +61,9 @@ outcome is constructed. The reference remains authoritative.
   16384 nodes), with B001 failures. Its separate `required::Budget` currently charges
   type materialization, required statements/blocks and integer/boolean evaluation,
   including scalar/record projection ancestors and retained record reads. Type
-  expression dispatch now charges separately; constructor traversal, text/helper
-  counters and pending-query budget retention remain prerequisites. Never relabel
-  B001 as E220.
+  expression dispatch and required source constructors now charge separately.
+  Remaining root domains, text/helper counters and pending-query budget retention
+  remain prerequisites. Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
   explicitly Never, but `Type::is_copy` currently returns true for `Type::Never`;
@@ -75,42 +75,40 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Source-constructor accounting in progress
+### Source-constructor accounting
 
-Audit: `spec` is shared by execution, symbol lookup and form checking; charging
-all calls would count unevaluated work. Required type literals need an explicit
-construction mode passed recursively through the existing resolver. Charge source
-composite nodes before children, repeated named payloads when substituted, and
-implicit record primaries. Keep result traversal for bootstrap guards only when
-source construction already supplied logical charges. Computed operands retain
-nested expression evaluation; transparent synthetic wrappers must not add work.
+`source_spec` explicitly charges construction for required literals, aliases and
+scalar/block/record annotations; `spec` retains ordinary lookup behavior. Mode is
+passed through the existing resolver, not stored in mutable checker state. Source
+composites charge before children; duplicate union inputs, implicit primaries and
+repeated named payload substitutions retain complete logical type/step costs.
+Computed operands retain nested evaluation, and synthetic wrappers stay transparent.
+Completed literal/alias payloads retain bootstrap traversal without duplicate
+logical construction charges. Scalar annotation/error order remains unchanged.
 
-Dependency-ordered commit plan:
+Completed dependency-ordered slices:
 
-1. `1bbf3b8`: charge required type-literal source traversal before normalization, with exact
-   duplicate/nested constructor, source-failure, lookup isolation and limit tests.
-2. `504c37a`: integrate required aliases and scalar/block annotations with focused scope,
-   skip, function-type, exact-count and failure-order regressions.
-3. Charge record field/copy annotations separately. Splitting these independently
-   testable call-site groups keeps each slice below eight files.
-4. Native integration and guide/handoffs after the complete compiler gate.
+1. `1bbf3b8`: source type-literal traversal and exact/failure/lookup/limit tests.
+2. `504c37a`: required aliases and scalar/block annotations, including function
+   aliases and selected/skipped declaration coverage.
+3. `ca17338`: record field/copy annotations, independent copy costs and scope/root
+   restoration after failed construction or logical exhaustion.
+4. Integration: native facades, repeated extent blocks, source errors, guide and
+   both handoffs; the complete compiler gate passes.
 
-Required literal construction is implemented. Five source traversal groups, all
-919 library tests, Clippy with warnings denied and formatting pass. Bootstrap
-result traversal retains its prior counts; lookup remains uncharged. Logs:
-`/tmp/meowy-source-types-focused.log`, `/tmp/meowy-source-types-library.log`,
-`/tmp/meowy-source-types-clippy.log`. Required aliases and scalar/block annotations
-now charge source construction; all 923 library tests, Clippy and formatting pass.
-Function alias nodes, selected/skipped declarations and existing scalar failure
-order are covered. Logs: `/tmp/meowy-source-aliases-library.log`,
-`/tmp/meowy-source-aliases-clippy.log`. Record field/copy annotation charging now
-passes eleven source-accounting groups, all 925 library tests, Clippy and formatting.
-Duplicate annotation inputs charge exactly once, skipped copies add no type work,
-and failure/limit roots restore scope. Logs: `/tmp/meowy-source-records.log`,
-`/tmp/meowy-source-records-library.log`, `/tmp/meowy-source-records-clippy.log`.
-Next: native integration, guide/handoffs and the complete compiler gate.
-Text/helper counters, rootless extents and pending-query budgets remain subsequent
-prerequisites; proof outcomes remain gated.
+Eleven source-accounting groups and two native groups pass, including debug/release
+startup and original-file errors. The complete gate passes 925 library/887 native
+tests, Clippy, formatting and bootstrap conformance. No outstanding failures remain.
+Logs: `/tmp/meowy-source-types-focused.log`, `/tmp/meowy-source-types-library.log`,
+`/tmp/meowy-source-aliases-library.log`, `/tmp/meowy-source-records-library.log`,
+`/tmp/meowy-source-types-integration.log`, `/tmp/meowy-source-types-gate.log`.
+
+Next: audit remaining root domains. Ordinary `spec`/`declare_type` outside the
+required interpreter still use uncharged source traversal. `list.rs::list_extent`
+executes permitted rootless extents without a `Work` root. Text/helper values are
+not admitted by the bounded required interpreter; audit gates before adding unused
+counters. Pending queries still need shared/root budget retention. Keep outcomes
+gated until these accounting and phase/dependency prerequisites finish.
 
 ### Type-expression accounting
 
@@ -135,11 +133,8 @@ Logs: `/tmp/meowy-type-expression-focused.log`,
 `/tmp/meowy-type-expression-library.log`, `/tmp/meowy-type-expression-clippy.log`,
 `/tmp/meowy-type-expression-integration.log`, `/tmp/meowy-type-expression-gate.log`.
 
-Next: `names.rs::spec` constructs source types, but `Work::materialize` visits the
-normalized result. Audit duplicate union inputs, nested constructors, aliases and
-failure prefixes before charging source components; avoid charging reused payloads
-twice. Keep bootstrap guards independent. Text/helper counters, rootless extents
-and pending-query budgets follow; proof outcomes remain gated.
+Required source construction is now integrated above. Ordinary root domains,
+text/helper counters and pending-query budget retention remain open.
 
 ### Aggregate-slot accounting
 
@@ -167,8 +162,8 @@ profiles pass. The complete compiler gate passes with no outstanding failures.
 Logs: `/tmp/meowy-slot-ledger.log`, `/tmp/meowy-record-slots.log`,
 `/tmp/meowy-record-slots-regressions.log`, `/tmp/meowy-record-slot-integration.log`,
 `/tmp/meowy-record-slot-gate.log`.
-Next: audit source type-construction costs, then remaining
-text/helper/root domains. Proof outcomes and required list values stay gated.
+Next: audit remaining text/helper/root domains. Proof outcomes and required list
+values stay gated.
 
 ### Retained record-read accounting
 
@@ -618,20 +613,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 914
-  library/885 native tests (1799 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 925
+  library/887 native tests (1812 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-expression-gate.log`.
-- Ten focused logical-type checker tests and two native groups pass: exact/overflow
-  step limits, grouping/synthetic wrappers, repeated aliases, skipped constructors,
-  query operands, source-order errors, scope/depth restoration and bootstrap guards.
-  Facades retain type identity, startup order and original-file errors; accepted
-  native programs pass in debug/release. Log:
-  `/tmp/meowy-type-expression-integration.log`.
-- Logical E220 boundaries are tested internally; source programs still reach
-  lower B001 bootstrap limits first. Source-constructor traversal before
-  normalization, text/helper counters, rootless extents and pending-query budgets
-  remain incomplete. Proof outcomes remain gated.
+  debug/release. Log: `/tmp/meowy-source-types-gate.log`.
+- Eleven source-constructor checker groups and two native groups pass: duplicate
+  union inputs, repeated/nested aliases and extents, implicit primaries, scalar
+  and record annotations, selected/skipped work, exact/overflow logical limits,
+  lookup isolation, source-order failures and scope/root restoration. Native
+  facades retain widths, startup order and original-file errors in debug/release.
+  Log: `/tmp/meowy-source-types-integration.log`.
+- Logical E220 boundaries are tested internally; bootstrap B001 guards remain
+  separate. Ordinary source traversal outside required evaluation, rootless
+  extents, text/helper counters and pending-query budget retention remain open.
+  Proof outcomes remain gated; unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -705,15 +700,14 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Audit source type construction in `names.rs::spec` and `type_values/work.rs`:
-   normalized result traversal misses duplicate union inputs and construction
-   prefixes before errors. Define which source and reused payload nodes charge;
-   preserve transparent grouping and type-query operand isolation. Record ordered
-   slices and test duplicates, nested aliases, repeated constructors, exact limits
-   and source-order failures before the full compiler gate. Type-expression
-   dispatch and record-slot charges are integrated. Text/helper counters, rootless
-   list extents and pending-query budget retention remain later prerequisites;
-   keep proof outcomes gated until accounting and phase/dependency work finish.
+1. Audit remaining required roots in `list.rs::list_extent`, `check/names.rs` and
+   `check/exports.rs`, plus text/helper gates in `type_values.rs` and `queries.rs`.
+   Required literal/alias/annotation source construction is now charged; ordinary
+   traversal still uses lookup mode, and rootless extents have no logical root.
+   Record the dependency-ordered root-lifetime plan before edits. Test independent
+   resets, nested shared budgets, skipped/query operands, scope/error restoration
+   and original-file spans, then run the compiler gate. Pending query budgets and
+   phase/dependency tracking remain prerequisites; keep proof outcomes gated.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
