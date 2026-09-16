@@ -16,7 +16,7 @@ impl Checker {
         output: &mut Output,
     ) -> Result<()> {
         let value = if let Some(annotation) = annotation {
-            let ty = self.ty(annotation)?;
+            let ty = self.source_type(annotation, true)?;
             if !self.record_shape(&ty) {
                 return Err(Diagnostic::unsupported(
                     "inferred required field shape",

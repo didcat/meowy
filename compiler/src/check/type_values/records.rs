@@ -18,7 +18,7 @@ impl Checker {
     ) -> Result<Value> {
         let (ty, input) = self.required_record(expr)?;
         if let Some(annotation) = annotation {
-            let expected = self.ty(annotation)?;
+            let expected = self.source_type(annotation, true)?;
             if expected != ty {
                 return Err(Self::error(
                     "E207",

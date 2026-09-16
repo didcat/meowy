@@ -89,7 +89,7 @@ Dependency-ordered commit plan:
 
 1. `1bbf3b8`: charge required type-literal source traversal before normalization, with exact
    duplicate/nested constructor, source-failure, lookup isolation and limit tests.
-2. Integrate required aliases and scalar/block annotations with focused scope,
+2. `504c37a`: integrate required aliases and scalar/block annotations with focused scope,
    skip, function-type, exact-count and failure-order regressions.
 3. Charge record field/copy annotations separately. Splitting these independently
    testable call-site groups keeps each slice below eight files.
@@ -103,7 +103,12 @@ result traversal retains its prior counts; lookup remains uncharged. Logs:
 now charge source construction; all 923 library tests, Clippy and formatting pass.
 Function alias nodes, selected/skipped declarations and existing scalar failure
 order are covered. Logs: `/tmp/meowy-source-aliases-library.log`,
-`/tmp/meowy-source-aliases-clippy.log`. Next: record field/copy annotations.
+`/tmp/meowy-source-aliases-clippy.log`. Record field/copy annotation charging now
+passes eleven source-accounting groups, all 925 library tests, Clippy and formatting.
+Duplicate annotation inputs charge exactly once, skipped copies add no type work,
+and failure/limit roots restore scope. Logs: `/tmp/meowy-source-records.log`,
+`/tmp/meowy-source-records-library.log`, `/tmp/meowy-source-records-clippy.log`.
+Next: native integration, guide/handoffs and the complete compiler gate.
 Text/helper counters, rootless extents and pending-query budgets remain subsequent
 prerequisites; proof outcomes remain gated.
 

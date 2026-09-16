@@ -36,7 +36,7 @@ impl Checker {
     ) -> Result<()> {
         let (index, ty) = self.required_record_slot(name, span, output)?;
         if let Some(annotation) = annotation
-            && self.ty(annotation)? != ty
+            && self.source_type(annotation, true)? != ty
         {
             return Err(Self::error(
                 "E207",

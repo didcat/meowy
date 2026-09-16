@@ -185,3 +185,72 @@ pub(crate) fn logical_source_annotations_preserve_scalar_failure_order() {
         assert!(checker.type_work.is_none());
     }
 }
+
+#[test]
+pub(crate) fn logical_source_record_annotations_charge_each_construction_once() {
+    let mut checker = Checker::new();
+    for (plain, annotated, nodes) in [
+        (
+            "{r:{->n:7};-><int32>}",
+            "{r:{->n<int32><int32>:7};-><int32>}",
+            3,
+        ),
+        (
+            "{r<{n<int32>}>:{->n:7};-><int32>}",
+            "{r<{n<int32>}>:{->n<int32><int32>:7};-><int32>}",
+            3,
+        ),
+        (
+            "{r:{->n:7};copy:r;-><int32>}",
+            "{r:{->n:7};copy<{n<int32><int32>}>:r;-><int32>}",
+            5,
+        ),
+    ] {
+        let plain = cost(&mut checker, plain);
+        let annotated = cost(&mut checker, annotated);
+        assert_eq!(annotated, (plain.0 + nodes, plain.1 + nodes));
+    }
+    assert_eq!(
+        cost(
+            &mut checker,
+            "{r:{->n:7};|false|copy<{n<int32><int32>}>:r;-><int32>}"
+        ),
+        cost(&mut checker, "{r:{->n:7};|false|copy:r;-><int32>}")
+    );
+}
+
+#[test]
+pub(crate) fn logical_source_record_annotations_keep_failures_and_reset_limits() {
+    for source in [
+        "{r:{->n<Missing>:1/0};-><int32>}",
+        "{r<{n<int32>}>:{->n<Missing>:1/0};-><int32>}",
+        "{r:{->n:7};copy<{n<Missing>}>:r;-><int32>}",
+    ] {
+        let mut checker = Checker::new();
+        let expr = expression(source);
+        let scopes = checker.scopes.len();
+        let error = checker.type_value(&expr).unwrap_err();
+        assert_eq!(error.code, "E202", "{source}");
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(checker.type_work.is_none());
+    }
+    let source = "{r:{->n<int32><int32>:7};copy<{n<int32><int32>}>:r;-><int32>}";
+    let root = Span::new(300, 350);
+    let mut checker = Checker::new();
+    let total = cost(&mut checker, source).1;
+    for remaining in [total - 1, total, total + 1] {
+        let expr = expression(source);
+        let result = checker.required_root(root, |checker| {
+            checker.type_work.as_mut().unwrap().logical.types = MAX_TYPES - remaining;
+            checker.type_value(&expr)
+        });
+        assert_eq!(result.is_ok(), remaining >= total);
+        if let Err(error) = result {
+            assert_eq!(error.code, "E220");
+            assert_eq!(error.span, root);
+        }
+        assert_eq!(checker.scopes.len(), 1);
+        assert!(checker.type_work.is_none());
+    }
+    assert_eq!(cost(&mut checker, source).1, total);
+}
