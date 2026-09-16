@@ -372,6 +372,17 @@ impl Checker {
         exported: bool,
         span: Span,
     ) -> Result<()> {
+        self.declare_source_type(name, ty, exported, span, false)
+    }
+
+    pub(crate) fn declare_source_type(
+        &mut self,
+        name: &str,
+        ty: &ast::TypeExpr,
+        exported: bool,
+        span: Span,
+        charge: bool,
+    ) -> Result<()> {
         if exported
             && (self.owner != 0
                 || self.scopes.len() != self.module.depth
@@ -388,7 +399,7 @@ impl Checker {
                 span,
             ));
         }
-        let spec = self.spec(ty)?;
+        let spec = self.source_spec(ty, charge)?;
         if exported {
             Self::charge_spec(&spec, &mut self.flow, span)?;
         }

@@ -134,11 +134,15 @@ impl Checker {
             return self.type_boolean(expr, annotation);
         }
         if self.integer_blocks(expr)? {
-            let expected = annotation.map(|ty| self.ty(ty)).transpose()?;
+            let expected = annotation
+                .map(|ty| self.source_type(ty, true))
+                .transpose()?;
             return self.integer_arithmetic(expr, expected.as_ref());
         }
         self.scalar_input(expr)?;
-        let expected = annotation.map(|ty| self.ty(ty)).transpose()?;
+        let expected = annotation
+            .map(|ty| self.source_type(ty, true))
+            .transpose()?;
         if expected
             .as_ref()
             .is_some_and(|ty| !matches!(ty, Type::Int { .. } | Type::Bool))

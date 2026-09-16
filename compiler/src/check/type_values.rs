@@ -236,7 +236,7 @@ impl Checker {
         if matches!(form.kind, ExprKind::Block(_))
             && let Some(annotation) = annotation
         {
-            let ty = self.ty(annotation)?;
+            let ty = self.source_type(annotation, true)?;
             if matches!(ty, Type::Record { .. }) {
                 return self.record_block(expr, &ty);
             }

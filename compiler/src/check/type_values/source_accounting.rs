@@ -119,3 +119,69 @@ pub(crate) fn logical_source_types_leave_lookups_and_bootstrap_costs_separate() 
         })
         .unwrap();
 }
+
+#[test]
+pub(crate) fn logical_source_aliases_charge_declared_inputs_and_substitutions() {
+    let mut checker = Checker::new();
+    for (source, expected) in [
+        ("{<A>:<int32><int32>;-><A>}", (9, 5)),
+        ("{<A>:<int32><int32>;<B>:<A><A>;-><B>}", (13, 8)),
+        ("{|false|<A>:<int32><int32>;-><int32>}", (7, 2)),
+        ("{|true|<A>:<int32><int32>;-><int32>}", (11, 5)),
+        ("{<F>:<(int32)->int32>;-><int32>}", (9, 5)),
+        ("{<F>:<(int32)->int32>;<G>:<F>;-><int32>}", (13, 8)),
+    ] {
+        assert_eq!(cost(&mut checker, source), expected, "{source}");
+    }
+}
+
+#[test]
+pub(crate) fn logical_source_aliases_preserve_failed_root_and_scope() {
+    let source = "{<A>:<int32><Missing>;-><uint8>}";
+    let expr = expression(source);
+    let mut checker = Checker::new();
+    let scopes = checker.scopes.len();
+    let error = checker
+        .required_root(expr.span, |checker| {
+            let result = checker.type_value(&expr);
+            let budget = &checker.type_work.as_ref().unwrap().logical;
+            assert_eq!((budget.steps, budget.types), (4, 2));
+            result
+        })
+        .unwrap_err();
+    assert_eq!(error.code, "E202");
+    assert_eq!(checker.scopes.len(), scopes);
+    assert!(checker.type_work.is_none());
+    assert_eq!(cost(&mut checker, "{<A>:<int32>;-><A>}"), (7, 3));
+}
+
+#[test]
+pub(crate) fn logical_source_annotations_count_scalar_and_block_construction() {
+    let mut checker = Checker::new();
+    for (source, expected) in [
+        ("{n<int32><int32>:7;-><int32>}", (10, 5)),
+        ("{flag<boolean><boolean>:true;-><int32>}", (10, 5)),
+        ("{n<int32><int32>:{->7};-><int32>}", (12, 5)),
+        ("{flag<boolean><boolean>:{->true};-><int32>}", (12, 5)),
+        ("{|false|n<int32><int32>:7;-><int32>}", (7, 2)),
+        ("{r<{n<int32><int32>}>:{->n:7};-><int32>}", (17, 10)),
+    ] {
+        assert_eq!(cost(&mut checker, source), expected, "{source}");
+    }
+}
+
+#[test]
+pub(crate) fn logical_source_annotations_preserve_scalar_failure_order() {
+    for (source, code) in [
+        ("{n<Missing>:1/0;-><int32>}", "E202"),
+        ("{flag<Missing>:({bad:1/0;->true})==true;-><int32>}", "E107"),
+    ] {
+        let expr = expression(source);
+        let mut checker = Checker::new();
+        let scopes = checker.scopes.len();
+        let error = checker.type_value(&expr).unwrap_err();
+        assert_eq!(error.code, code, "{source}");
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(checker.type_work.is_none());
+    }
+}

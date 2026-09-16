@@ -16,7 +16,7 @@ impl Checker {
         self.boolean_form(expr, self.type_work.as_ref().unwrap().depth, &mut 0)?;
         let value = self.required_boolean(expr)?;
         if let Some(annotation) = annotation {
-            let ty = self.ty(annotation)?;
+            let ty = self.source_type(annotation, true)?;
             if !matches!(ty, Type::Bool | Type::Int { .. }) {
                 return Err(Diagnostic::unsupported(
                     "computed boolean binding annotation",

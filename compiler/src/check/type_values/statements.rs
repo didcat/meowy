@@ -29,15 +29,15 @@ impl Checker {
                 ty,
                 exported: false,
             } => {
-                self.declare_type(name, ty, false, stmt.span)?;
+                self.declare_source_type(name, ty, false, stmt.span, true)?;
                 let spec = &self.scopes.last().unwrap().types[name];
                 let work = self.type_work.as_mut().unwrap();
                 match spec {
-                    Spec::Meta | Spec::Descriptor(_) => work.node(stmt.span)?,
-                    Spec::Data(ty) => work.materialize(ty, stmt.span)?,
+                    Spec::Meta | Spec::Descriptor(_) => work.visit_node(stmt.span, false)?,
+                    Spec::Data(ty) => work.visit_type(ty, stmt.span, false)?,
                     Spec::Function { params, result } => {
                         for ty in params.iter().chain(std::iter::once(result)) {
-                            work.materialize(ty, stmt.span)?;
+                            work.visit_type(ty, stmt.span, false)?;
                         }
                     }
                 }
