@@ -75,10 +75,31 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Ordinary constructor roots in progress
+
+Audit: ordinary aliases and data annotations are execution boundaries; `spec`,
+`ty` and symbol lookup also serve probes. Constructor roots must preserve ordinary
+extent eligibility while computed operands temporarily enter required input mode.
+The same logical budget/root must survive these transitions and restore mode on
+both success and failure.
+
+Dependency-ordered slices:
+
+1. Scoped ordinary/required modes with shared-budget and restoration regressions.
+2. Ordinary alias constructor roots and normalized-input/extent/failure tests.
+3. Data binding/emission annotation roots with focused order/input-gate tests.
+4. Native integration, guide and both handoffs after the complete compiler gate.
+
+Scoped modes pass all 931 library tests, Clippy and formatting; computed operands
+restore the enclosing ordinary mode and sticky failures retain the outer root.
+Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-constructor-modes-clippy.log`.
+Next: ordinary alias constructor roots. Function signatures, pending queries and remaining type-use
+sites need their own execution-versus-probe audit. Proof outcomes stay gated.
+
 ### Ordinary extent roots
 
 `list_extent` creates a `required_root` for ordinary permitted extent expressions.
-`Work.extent_only` separates accounting from retained initializer proof access;
+`Work.ordinary` separates accounting from retained initializer proof access;
 `proven_inputs` gates local/module/field evidence in `expressions.rs`. Ordinary
 constants and form restrictions retain their prior behavior. `extent_value` keeps
 reachability and required-state restoration shared between both paths.

@@ -61,7 +61,7 @@ pub(crate) fn transparent_type(expr: &ast::Expr) -> bool {
 
 impl Checker {
     pub(crate) fn type_value(&mut self, expr: &ast::Expr) -> Result<Type> {
-        self.required_root(expr.span, |checker| {
+        self.mode_root(expr.span, false, |checker| {
             checker.type_work.as_mut().unwrap().enter(expr.span)?;
             let result = checker.type_value_inner(expr);
             let work = checker.type_work.as_mut().unwrap();

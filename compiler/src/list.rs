@@ -34,10 +34,7 @@ impl Checker {
                     expr.span,
                 ));
             }
-            return self.required_root(expr.span, |checker| {
-                checker.type_work.as_mut().unwrap().extent_only = true;
-                checker.extent_value(expr)
-            });
+            return self.mode_root(expr.span, true, |checker| checker.extent_value(expr));
         }
         if self.integer_blocks(expr)? {
             let Value::Static {

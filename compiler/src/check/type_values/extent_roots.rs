@@ -43,7 +43,7 @@ pub(crate) fn ordinary_extent_evaluation_charges_groups_and_limits() {
             let mut checker = Checker::new();
             let result = checker.required_root(root, |checker| {
                 let work = checker.type_work.as_mut().unwrap();
-                work.extent_only = true;
+                work.ordinary = true;
                 work.logical.steps = MAX_STEPS - remaining;
                 let result = checker.list_extent(&expression(source));
                 assert!(!checker.required);
@@ -120,9 +120,65 @@ pub(crate) fn required_extents_share_the_existing_root_and_input_mode() {
             assert_eq!(work.logical.root, root);
             assert_eq!(work.logical.steps, 6);
             assert_eq!((work.logical.types, work.logical.slots), (0, 0));
-            assert!(!work.extent_only);
+            assert!(!work.ordinary);
             Ok(())
         })
         .unwrap();
     assert!(checker.type_work.is_none());
+}
+
+#[test]
+pub(crate) fn constructor_modes_share_budgets_and_restore_nested_failures() {
+    let root = Span::new(100, 150);
+    let inner = Span::new(200, 250);
+    let mut checker = Checker::new();
+    checker
+        .mode_root(root, true, |checker| {
+            assert!(!checker.proven_inputs());
+            checker.list_extent(&expression("1+2"))?;
+            for fail in [false, true] {
+                let result = checker.mode_root(inner, false, |checker| {
+                    assert!(checker.proven_inputs());
+                    checker.list_extent(&expression("{->2}"))?;
+                    if fail {
+                        return Err(Checker::error("E107", "inner failure", inner));
+                    }
+                    Ok(())
+                });
+                assert_eq!(result.is_err(), fail);
+                assert!(!checker.proven_inputs());
+            }
+            let budget = &checker.type_work.as_ref().unwrap().logical;
+            assert_eq!(budget.root, root);
+            assert_eq!(budget.steps, 9);
+            Ok(())
+        })
+        .unwrap();
+    assert!(checker.type_work.is_none());
+}
+
+#[test]
+pub(crate) fn constructor_modes_restore_after_computed_values_and_sticky_limits() {
+    let root = Span::new(100, 150);
+    let mut checker = Checker::new();
+    checker
+        .mode_root(root, true, |checker| {
+            checker.type_value(&expression("{-><int32[({->2})]>}"))?;
+            assert!(!checker.proven_inputs());
+            assert_eq!(checker.type_work.as_ref().unwrap().logical.root, root);
+            Ok(())
+        })
+        .unwrap();
+    let error = checker
+        .mode_root(root, true, |checker| {
+            checker.type_work.as_mut().unwrap().logical.steps = MAX_STEPS;
+            let error = checker.type_value(&expression("<int32>")).unwrap_err();
+            assert_eq!(error.code, "E220");
+            assert!(!checker.proven_inputs());
+            Ok(())
+        })
+        .unwrap_err();
+    assert_eq!(error.span, root);
+    assert!(checker.type_work.is_none());
+    assert_eq!(checker.list_extent(&expression("2")).unwrap(), 2);
 }
