@@ -80,6 +80,18 @@ including uncalled function bodies and runtime-skipped branches. Earlier query
 copies do not replace the original diagnostic location. Type arguments discover
 file imports normally; checking never executes their startup code.
 
+Type-only calls charge one invocation step and construct their written type
+argument in a required root at the call span. An existing outer root supplies its
+remaining counters and original span. Ordinary extent restrictions remain active;
+computed operands temporarily enter required-input mode. Arity checks precede
+construction, and failed arguments do not allocate pending query metadata.
+
+Each admitted query retains an index into its outer root's logical ledger. That
+ledger is saved when the root exits, including work after the query and any sticky
+budget failure. Queries in the same root share it; independent calls start fresh
+ledgers. Copies reuse the query index without replaying argument construction.
+This retains accounting for future evaluation; no proof outcome is produced.
+
 The parser retains up to 64 explicit type arguments using supported type syntax;
 nested generic types and value arguments remain unavailable. The copy query accepts
 exactly one type argument and no value arguments. The queue caps at 4096 calls;
@@ -138,8 +150,9 @@ fields still charge normally. Skipped construction allocates nothing, failed roo
 retain consumed prefixes, and independent roots reset the slot counter.
 
 This remains partial accounting. Required list values, other type-expression
-dispatch, text, source-helper depth, rootless list extents and deferred-query
-budget retention remain unimplemented.
+dispatch, text, source-helper depth, deferred proof analysis and descriptor
+construction remain unimplemented.
+Pending queries retain their argument/root budgets as described above.
 The lower existing bootstrap limits still fail with B001 first; their counters are
 not treated as language work. Logical-limit boundaries are tested internally,
 not claimed as source-level E220 qualification. Proof evaluation remains gated.

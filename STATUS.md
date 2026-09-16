@@ -38,7 +38,8 @@ Field hints now restrict symbol resolution to name/import chains, preventing
 computed-type bases from spending operand work or leaving sticky budget failures.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
-steps. Other accounting domains and proof evaluation remain incomplete.
+steps. Pending queries retain shared argument/root budgets. Remaining accounting domains
+and proof evaluation stay incomplete.
 
 The partial proof package now exposes typed revision metadata and opaque descriptor
 type aliases through local bindings and file facades. Type-only copy queries now
@@ -73,25 +74,29 @@ accounting must precede query execution. Partial module/revision metadata and
 direct required reads pass focused checker/native tests and the full compiler gate.
 Proof evaluation remains unimplemented. Opaque descriptor type aliases now preserve nominal identities
 and reject runtime storage; the final compiler gate passes.
-Pending query copies retain source origins without runtime storage. The next
-prerequisite is remaining type-expression and logical-root accounting; query outcomes
-remain gated.
+Pending query copies retain source origins without runtime storage. Calls now
+charge argument construction and retain their shared outer logical budget through
+root completion, including tail work and failures. Remaining descriptor execution,
+text/helper admission and phase/dependency work still gate query outcomes.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 953
-  library/897 native tests (1850 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 960
+  library/899 native tests (1859 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-field-hint-gate.log`.
-- Three new checker groups cover unevaluated computed-field bases, nested queries,
-  zero bootstrap/logical work, sticky-limit isolation, metadata/record hints and
-  selected constructor errors. Two native groups retain imported widths, startup
-  and original dependency spans; accepted programs pass in debug/release. Logs:
-  `/tmp/meowy-field-hint-library.log`, `/tmp/meowy-field-hint-native.log`.
+  debug/release. Log: `/tmp/meowy-query-budget-gate.log`.
+- Seven new checker groups cover invocation/type charges, descriptor/meta targets,
+  exact/overflow limits, arity/error order, ordinary/computed modes, shared root
+  identity, copies, tail work/failures and independent roots. Logs:
+  `/tmp/meowy-query-arguments.log`, `/tmp/meowy-query-budgets.log`.
+- Two native groups check facade targets, original query origins, argument modes
+  and source-file failures in debug/release. Valid arguments reach the intended
+  pending-evaluation B001 gate; no query execution is claimed. Log:
+  `/tmp/meowy-query-budget-native.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Pending-query argument roots/budget retention, text/helper counters
-  and phase/dependency tracking remain open. Proof outcomes stay gated;
-  unsupported queries are not conformance successes.
+  separate. Descriptor execution roots, text/helper admission and phase/dependency
+  tracking remain open. Proof outcomes stay gated; unsupported queries are not
+  conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -100,7 +105,7 @@ remain gated.
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; remaining root domains and query budgets stay open. |
+| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; query argument/root budgets are retained; descriptor execution and phase tracking stay open. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -136,12 +141,11 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Address pending-query argument construction and retained root budgets in
-   `compiler/src/check/queries.rs`. The field-hint audit/fix is integrated; shared
-   symbol behavior for rejecting calls/exports remains unchanged. The
-   [compiler handoff](compiler/STATUS.md#executable-proof-plan) records root
-   ownership, text/helper and phase/dependency prerequisites. Proof outcomes and
-   flags remain gated.
+1. Audit remaining descriptor execution roots and text/helper admission before
+   enabling query analysis. Pending-query argument construction and shared budget
+   retention are integrated. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
+   records the remaining accounting and phase/dependency prerequisites. Proof
+   outcomes and flags remain gated.
 
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-16. Field hints no longer evaluate computed type-query operands.
+Updated: 2026-09-16. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -62,8 +62,9 @@ outcome is constructed. The reference remains authoritative.
   type materialization, required statements/blocks and integer/boolean evaluation,
   including scalar/record projection ancestors and retained record reads. Type
   expression dispatch and required source constructors now charge separately.
-  Remaining root domains, text/helper counters and pending-query budget retention
-  remain prerequisites. Never relabel B001 as E220.
+  Pending queries now retain outer-root budgets. Remaining descriptor execution
+  roots, text/helper admission and phase/dependency tracking remain prerequisites.
+  Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
   explicitly Never, but `Type::is_copy` currently returns true for `Type::Never`;
@@ -75,39 +76,41 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Pending-query budget plan
+### Pending-query argument roots and retained budgets
 
-The reference requires a query outside required evaluation to start a proof root;
-inside one, it shares the remaining outer counters. Current `pending_query` calls
-`spec`, so written argument constructors are not consistently charged and the
-ledger disappears before deferred evaluation. Calls and copies already have
-separate identities; preserve ordinary error ordering and the final B001 gate.
+Type-only queries now charge one invocation step and construct written arguments
+through `source_spec` in a `construction_root` at the call span. Existing roots
+share their remaining counters; ordinary extent gates and temporary computed-input
+modes remain intact. Arity checks precede construction. Malformed/unsupported
+arguments reserve no query metadata or budget slot.
 
-Dependency-ordered slices:
+`Work.query_root` reserves one stable index into `Checker.query_budgets` on the
+first admitted query. Nested queries share it. `required_root` moves the final
+logical ledger into that slot when the outer root exits, preserving tail charges,
+all three counters, the original span and sticky E220. Independent calls start
+fresh ledgers even at identical source spans. Copies keep their query/root IDs
+without replaying argument construction. Roots without queries retain no ledger.
+Bootstrap traversal counters remain local resource guards. The final pending gate
+reads the retained ledger after ordinary typing and ownership checks.
 
-1. Construct admitted query type arguments through `construction_root` and
-   `source_spec(..., true)`, charging the invocation once. Keep arity checks first,
-   ordinary extent gates and computed operand modes. Add exact-limit/error tests.
-2. Retain one logical budget per outer root containing queries. Reserve a stable
-   root index on the first admitted query, share it across nested queries, and
-   move the final ledger into checker-owned storage only when the outer root exits.
-   Copies reuse the query/root IDs. Preserve tail work and sticky failures; do not
-   snapshot each query independently or reset counters at deferred evaluation.
-3. Native module/mode/error integration, guide and handoffs; full compiler gate.
+Completed dependency-ordered slices:
 
-Only logical counters survive the root; bootstrap traversal depth/work remain
-local resource guards. Required-block query syntax, outcomes, flags, descriptor
-result construction and phase/dependency tracking remain gated. No new runtime
-representation or dependencies are needed. Slice 1 now charges invocation and written constructors in a shared ordinary
-root. Focused tests preserve the parser gate on union suffixes in generic calls and
-full function-type diagnostic spans. All 957 library tests pass (`/tmp/meowy-query-arguments.log`), including four
-new argument groups. Formatting passes. Slice 1 is committed as `66dfbca`. Slice 2 now reserves one checker-owned
-budget slot per active query root and finalizes it when the outer root exits.
-The pending gate reads that final ledger after ordinary ownership checks. Tests
-cover shared IDs, copies, tail charges/failures and independent same-span roots.
-All 13 focused query groups pass. Failed arguments reserve no query/budget
-slots; ordinary roots without queries retain no ledgers. All 960 library tests pass (`/tmp/meowy-query-budgets.log`); formatting
-passes. Next: commit slice 2, add native integration and run the full gate.
+1. `66dfbca`: argument roots, invocation/type charges, exact-limit, mode and
+   first-error tests. All 957 library tests passed.
+2. `bbc71bf`: shared budget identity and retention through outer-root completion,
+   copies, tail work/failures and independent roots. All 960 library tests pass.
+3. Native facade targets, descriptor/meta arguments, call origins, argument modes
+   and dependency failures; guide and handoffs. Both native groups pass in both
+   profiles, reaching the expected pending-evaluation B001 gate for valid arguments.
+
+Logs: `/tmp/meowy-query-arguments.log`, `/tmp/meowy-query-budgets.log`,
+`/tmp/meowy-query-budget-native.log`. The full compiler gate passes all ten
+checks, including 960 library/899 native tests, formatting, Clippy and bootstrap
+conformance (`/tmp/meowy-query-budget-gate.log`).
+
+Required-block query syntax, evaluated outcomes, scalar flags, descriptor result
+construction and phase/dependency tracking remain gated. Next: audit text/helper
+admission and remaining descriptor annotation/execution roots before query analysis.
 
 ### Symbol-probe audit and field-hint isolation
 
@@ -123,7 +126,7 @@ field classification can also inspect computed bases, but those forms currently
 reject. Preserve their diagnostics separately; do not globally charge `symbol`.
 Required comparison form checks already restrict field bases to names/imports.
 Direct bindings/ascriptions retain their existing execution paths. Pending query
-arguments still use `spec` without a retained construction root.
+arguments now construct and retain their outer budgets as described above.
 
 Dependency-ordered slices:
 
@@ -135,7 +138,7 @@ Dependency-ordered slices:
 Logs: `/tmp/meowy-field-hint-library.log`, `/tmp/meowy-field-hint-native.log`.
 The complete compiler gate passes (`/tmp/meowy-field-hint-gate.log`), including
 953 library/897 native tests, formatting, Clippy and bootstrap conformance.
-Pending-query argument construction and retained budgets remain prerequisites;
+Pending-query argument construction and retained budgets are integrated above;
 proof outcomes stay gated.
 
 ### Type-use execution accounting
@@ -166,8 +169,8 @@ outstanding failures remain. Logs:
 The field-hint audit and isolation above follow this series. Shared `symbol`
 remains unchanged: direct query bindings execute their existing evaluator, while
 rejecting call/export/required-field forms retain their diagnostics. Pending-query
-argument roots and retained budgets are next; text/helper admission and phase/
-dependency tracking remain prerequisites to proof outcomes.
+argument roots and retained budgets are integrated above; text/helper admission
+and phase/dependency tracking remain prerequisites to proof outcomes.
 
 ### Function signature accounting
 
@@ -224,7 +227,7 @@ Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-alias-roots-library.log`,
 without scope recovery; statement-level tests verify root cleanup independently.
 
 Function signatures and direct type-use execution are now integrated above.
-Computed-type/query probes and pending-query retained budgets remain open.
+Field hints and pending-query argument budgets are now integrated above.
 
 ### Ordinary extent roots
 
@@ -250,8 +253,8 @@ No outstanding failures remain.
 Independent extents reset their budget; active required roots share counters and
 retain broader input eligibility. Extent roots do not charge surrounding type
 construction. Ordinary aliases and data annotations now supply enclosing roots;
-other execution sites still require a probe-versus-construction audit. Pending-query budgets and the
-text/helper admission gates remain separate; proof outcomes stay gated.
+pending-query arguments now construct and retain outer budgets. Descriptor
+execution roots and text/helper admission remain separate; proof outcomes stay gated.
 
 ### Source-constructor accounting
 
@@ -285,7 +288,7 @@ Ordinary aliases/data annotations and their extents now have explicit roots;
 `spec` remains a lookup path. Function signatures are now rooted; other type-use
 sites still need an execution-boundary audit. Text/helper values are
 not admitted by the bounded required interpreter; audit gates before adding unused
-counters. Pending queries still need shared/root budget retention. Keep outcomes
+counters. Pending queries now retain shared root budgets. Keep outcomes
 gated until these accounting and phase/dependency prerequisites finish.
 
 ### Type-expression accounting
@@ -312,7 +315,7 @@ Logs: `/tmp/meowy-type-expression-focused.log`,
 `/tmp/meowy-type-expression-integration.log`, `/tmp/meowy-type-expression-gate.log`.
 
 Required source construction is now integrated above. Ordinary root domains,
-text/helper counters and pending-query budget retention remain open.
+text/helper counters and deferred descriptor execution accounting remain open.
 
 ### Aggregate-slot accounting
 
@@ -418,7 +421,7 @@ non-evaluation and imported widths/startup in debug/release. Logs:
 No outstanding failures remain.
 
 Remaining domains: other type-use roots, text/helper counters and
-pending-query budget retention. Proof evaluation stays gated.
+deferred descriptor execution accounting. Proof evaluation stays gated.
 
 ### Statement and boolean logical charges
 
@@ -442,8 +445,8 @@ failure cleanup and independent roots. Logs: `/tmp/meowy-statement-charges.log`,
 The complete compiler gate passes. No outstanding failures remain.
 
 Integer evaluation now extends these charges. Remaining domains include other
-type-expression dispatch, text/helper charges and pending-query budget
-retention. Proof evaluation stays gated.
+type-expression dispatch, text/helper charges and deferred descriptor
+execution accounting. Proof evaluation stays gated.
 
 ### Logical type accounting
 
@@ -472,8 +475,8 @@ module that uses it, so production and test lint checks both pass.
 
 Statement/block and boolean charging now extend this ledger. Remaining logical
 domains must not copy bootstrap traversal counts; other type-expression dispatch,
-text/helper counters and pending-query budget
-retention are still open. Preserve B001 infrastructure limits and keep proof evaluation gated.
+text/helper counters and deferred descriptor
+execution accounting are still open. Preserve B001 infrastructure limits and keep proof evaluation gated.
 
 ### Deferred copy-query integration
 
@@ -790,19 +793,22 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 953
-  library/897 native tests (1850 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 960
+  library/899 native tests (1859 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-field-hint-gate.log`.
-- Three new checker groups cover unevaluated computed-field bases, nested queries,
-  zero bootstrap/logical work, sticky-limit isolation, metadata/record hints and
-  selected constructor errors. Two native groups retain imported widths, startup
-  and original dependency spans; accepted programs pass in debug/release. Logs:
-  `/tmp/meowy-field-hint-library.log`, `/tmp/meowy-field-hint-native.log`.
+  debug/release. Log: `/tmp/meowy-query-budget-gate.log`.
+- Seven new checker groups cover invocation/type charges, descriptor/meta targets,
+  exact/overflow limits, arity/error order, ordinary/computed modes, shared root
+  identity, copies, tail work/failures and independent roots. Logs:
+  `/tmp/meowy-query-arguments.log`, `/tmp/meowy-query-budgets.log`.
+- Two native groups check facade targets, original query origins, argument modes
+  and source-file failures in debug/release. Valid arguments reach the intended
+  pending-evaluation B001 gate; no query execution is claimed. Log:
+  `/tmp/meowy-query-budget-native.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Pending-query argument roots/budget retention, text/helper counters
-  and phase/dependency tracking remain open. Proof outcomes stay gated;
-  unsupported queries are not conformance successes.
+  separate. Descriptor execution roots, text/helper admission and phase/dependency
+  tracking remain open. Proof outcomes stay gated; unsupported queries are not
+  conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -876,14 +882,14 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Add pending-query argument construction and retained root budgets in
-   `check/queries.rs`, using the existing `construction_root`/`source_spec` and
-   logical ledger. Plan root ownership before retaining counters: nested calls
-   must share the outer root and copies must not reset/replay argument work.
-   Cover exact/overflow limits, descriptor/meta targets, ordinary/computed modes,
-   original spans, query copies and first-error order. Preserve rejecting shared
-   symbol paths audited above. Run the full compiler gate after integration.
-   Text/helper admission and phase/dependency tracking still gate proof outcomes.
+1. Audit text/helper admission in `check/type_values` and descriptor annotation/
+   execution roots in `check/statements.rs` before enabling deferred query analysis.
+   Argument roots and shared budget retention are integrated. Preserve the current
+   unsupported gates; add counters only for admitted execution. Record ordered
+   slices and test selected/skipped work, original errors and outer-root limits.
+   Then add transitive data/control proof dependencies before producing outcomes
+   or flags; type formation and query availability must retain E225 separation.
+   Run the full compiler gate after each integrated series.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
