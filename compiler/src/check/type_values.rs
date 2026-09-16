@@ -3,6 +3,8 @@ mod accounting;
 mod blocks;
 mod booleans;
 mod comparisons;
+#[cfg(test)]
+mod expression_accounting;
 mod fields;
 mod inferred;
 #[cfg(test)]
@@ -42,6 +44,17 @@ impl Output {
     }
 }
 
+pub(crate) fn transparent_type(expr: &ast::Expr) -> bool {
+    match &expr.kind {
+        ExprKind::Group(_) => true,
+        ExprKind::TypeValue(ast::TypeExpr {
+            kind: ast::TypeKind::Computed(value),
+            ..
+        }) => expr.span == value.span,
+        _ => false,
+    }
+}
+
 impl Checker {
     pub(crate) fn type_value(&mut self, expr: &ast::Expr) -> Result<Type> {
         self.required_root(expr.span, |checker| {
@@ -50,12 +63,18 @@ impl Checker {
             let work = checker.type_work.as_mut().unwrap();
             work.depth -= 1;
             let ty = result?;
-            work.materialize(&ty, expr.span)?;
+            work.type_result(&ty, expr)?;
             Ok(ty)
         })
     }
 
     pub(crate) fn type_value_inner(&mut self, expr: &ast::Expr) -> Result<Type> {
+        if !transparent_type(expr) && !matches!(expr.kind, ExprKind::Block(_)) {
+            self.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+        }
+        if matches!(expr.kind, ExprKind::Field { .. }) {
+            self.charge_ancestors(expr)?;
+        }
         match &expr.kind {
             ExprKind::TypeValue(ty) => self.type_literal(ty),
             ExprKind::TypeQuery(value) => {

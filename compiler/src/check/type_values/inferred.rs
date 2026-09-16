@@ -33,10 +33,7 @@ impl Checker {
         self.type_work.as_mut().unwrap().depth -= 1;
         let value = result?;
         if let Value::Type(ty) = &value {
-            self.type_work
-                .as_mut()
-                .unwrap()
-                .materialize(ty, expr.span)?;
+            self.type_work.as_mut().unwrap().type_result(ty, expr)?;
         }
         Ok(value)
     }

@@ -166,7 +166,7 @@ pub(crate) fn logical_record_queries_and_skipped_copies_do_not_read_inputs() {
             .required_root(expr.span, |checker| {
                 checker.type_value(&expr)?;
                 let budget = &checker.type_work.as_ref().unwrap().logical;
-                assert_eq!((budget.steps, budget.types), (4, 4));
+                assert_eq!((budget.steps, budget.types), (5, 4));
                 Ok(())
             })
             .unwrap();

@@ -74,6 +74,31 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Type-expression accounting in progress
+
+Audit: `type_value` materializes its result at every wrapper, including groups;
+`type_value_inner` does not charge reads, queries or subtraction dispatch.
+`names.rs::spec` constructs types separately; normalized/repeated constructor
+inputs need a further audit. Keep bootstrap visits/depth/node limits independent.
+
+Dependency-ordered commit plan:
+
+1. Correct logical type-expression dispatch and exclude group materialization
+   charges while retaining bootstrap guards; include exact counts, repeated reads,
+   query/group isolation and root-limit regression tests.
+2. Add selected/skipped and first-failure integration coverage; refresh both
+   handoffs and accounting documentation after the full compiler gate.
+
+Eight focused logical-type tests and all 912 library tests pass. Query expression
+steps now appear in the three existing query-count assertions; grouping remains
+free of logical charges. Clippy with warnings denied and formatting checks pass.
+Logs: `/tmp/meowy-type-expression-focused.log`,
+`/tmp/meowy-type-expression-library.log`, `/tmp/meowy-type-expression-clippy.log`.
+Next: selected/skipped and source-error integration, then the complete compiler gate.
+
+Broader constructor traversal, text/helper counters, rootless extents and
+pending-query budgets remain next prerequisites; proof outcomes stay gated.
+
 ### Aggregate-slot accounting
 
 Revision 1 counts initialized fields and primary slots, including recursive

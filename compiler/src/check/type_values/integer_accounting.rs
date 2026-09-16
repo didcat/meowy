@@ -263,5 +263,5 @@ pub(crate) fn logical_integer_type_query_operands_remain_unevaluated() {
                 .unwrap(),
         );
     }
-    assert_eq!(costs, vec![(9, 3); 3]);
+    assert_eq!(costs, vec![(10, 3); 3]);
 }

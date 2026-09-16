@@ -1,5 +1,5 @@
 use super::{MAX_DEPTH, MAX_NODES, MAX_WORK};
-use crate::ast::Span;
+use crate::ast::{Expr, Span};
 use crate::check::{Checker, Result, inputs::Input, required::Budget};
 use crate::diagnostic::Diagnostic;
 use crate::hir::Type;
@@ -46,17 +46,32 @@ impl Work {
     }
 
     pub(crate) fn node(&mut self, span: Span) -> Result<()> {
+        self.visit_node(span, true)
+    }
+
+    pub(crate) fn visit_node(&mut self, span: Span, logical: bool) -> Result<()> {
         self.nodes += 1;
         if self.nodes > MAX_NODES {
             return Err(Self::budget(span));
         }
-        self.logical.charge(1, 1)
+        if logical {
+            self.logical.charge(1, 1)?;
+        }
+        Ok(())
     }
 
     pub(crate) fn materialize(&mut self, ty: &Type, span: Span) -> Result<()> {
+        self.visit_type(ty, span, true)
+    }
+
+    pub(crate) fn type_result(&mut self, ty: &Type, expr: &Expr) -> Result<()> {
+        self.visit_type(ty, expr.span, !super::transparent_type(expr))
+    }
+
+    pub(crate) fn visit_type(&mut self, ty: &Type, span: Span, logical: bool) -> Result<()> {
         let mut pending = vec![ty];
         while let Some(ty) = pending.pop() {
-            self.node(span)?;
+            self.visit_node(span, logical)?;
             if pending.len() > MAX_NODES {
                 return Err(Self::budget(span));
             }

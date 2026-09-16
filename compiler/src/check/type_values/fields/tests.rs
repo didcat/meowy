@@ -160,7 +160,7 @@ pub(crate) fn logical_projection_queries_do_not_evaluate_paths() {
         );
     }
     assert_eq!(costs[0], costs[1]);
-    assert_eq!(costs[0], (1, 1));
+    assert_eq!(costs[0], (2, 1));
 }
 
 #[test]
