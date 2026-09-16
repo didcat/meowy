@@ -137,3 +137,83 @@ pub(crate) fn type_identity_bindings_share_limits_and_do_not_charge_literal_prob
         assert!(checker.type_work.is_none());
     }
 }
+
+#[test]
+pub(crate) fn field_hints_do_not_evaluate_computed_type_bases() {
+    for source in [
+        "kind:(<({-><int32>})>.missing)<>",
+        "kind:((7<>).missing)<>",
+        "kind:(<({-><int32[1/0]>})>.missing)<>",
+        "kind:((<({-><int32>})>.missing).again)<>",
+    ] {
+        let block = crate::parser::parse(source).unwrap();
+        let StmtKind::Bind { value, .. } = &block.stmts[0].kind else {
+            panic!()
+        };
+        let ExprKind::TypeQuery(operand) = &value.kind else {
+            panic!()
+        };
+        let mut checker = Checker::new();
+        checker
+            .mode_root(value.span, true, |checker| {
+                assert!(checker.hint(operand).is_none());
+                let work = checker.type_work.as_ref().unwrap();
+                assert_eq!((work.visits, work.nodes), (0, 0), "{source}");
+                assert_eq!((work.logical.steps, work.logical.types), (0, 0));
+                assert!(work.ordinary);
+                Ok(())
+            })
+            .unwrap();
+        assert!(checker.type_work.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn field_hint_failures_do_not_poison_query_roots() {
+    let source = "kind:(<({-><int32>})>.missing)<>";
+    let block = crate::parser::parse(source).unwrap();
+    let StmtKind::Bind { value, .. } = &block.stmts[0].kind else {
+        panic!()
+    };
+    let root = Span::new(100, 150);
+    let mut checker = Checker::new();
+    let error = checker
+        .mode_root(root, true, |checker| {
+            checker.type_work.as_mut().unwrap().logical.types = MAX_TYPES;
+            checker.type_value(value)
+        })
+        .unwrap_err();
+    assert_eq!(error.code, "B001");
+    assert_eq!(error.span, value.span);
+    assert!(
+        error
+            .message
+            .contains("type queries requiring expression evaluation")
+    );
+    assert!(checker.type_work.is_none());
+}
+
+#[test]
+pub(crate) fn field_hints_keep_metadata_record_types_and_selected_errors() {
+    for (source, expected) in [
+        (r#"p:@"proof";alias:p;kind:(alias.revision)<>"#, (2, 1)),
+        (r#"kind:((@"proof").revision)<>"#, (2, 1)),
+        ("record:{->n<uint32>:7};kind:record.n<>", (3, 2)),
+    ] {
+        assert_eq!(cost(source), expected, "{source}");
+        crate::compile(source).unwrap();
+    }
+    for (source, code, token) in [
+        ("kind:<({-><int32[1/0]>})>", "E107", "1/0"),
+        (
+            "kind:(<({-><int32[1/0]>})>.missing)<>",
+            "B001",
+            "(<({-><int32[1/0]>})>.missing)<>",
+        ),
+        ("kind:(7<int32[1/0]>)<>", "B001", "(7<int32[1/0]>)<>"),
+    ] {
+        let error = crate::compile(source).unwrap_err().remove(0);
+        assert_eq!(error.code, code, "{source}");
+        assert_eq!(&source[error.span.start..error.span.end], token);
+    }
+}

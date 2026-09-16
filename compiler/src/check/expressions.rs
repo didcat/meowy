@@ -431,10 +431,22 @@ impl Checker {
         }
     }
 
+    pub(crate) fn hint_symbol(&mut self, expr: &ast::Expr) -> Option<Value> {
+        let mut base = expr;
+        while let ExprKind::Group(value) | ExprKind::Field { value, .. } = &base.kind {
+            base = value;
+        }
+        if matches!(base.kind, ExprKind::Name(_) | ExprKind::Import(_)) {
+            self.symbol(expr).ok().flatten()
+        } else {
+            None
+        }
+    }
+
     pub(crate) fn hint(&mut self, expr: &ast::Expr) -> Option<Type> {
         if matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. })
             && matches!(
-                self.symbol(expr).ok().flatten(),
+                self.hint_symbol(expr),
                 Some(Value::Foundation(crate::foundation::Item::Heap))
             )
         {
@@ -479,7 +491,7 @@ impl Checker {
             }
             ExprKind::String(_) => Some(Type::String),
             ExprKind::Field { value, name } => {
-                if let Some(Value::Static { ty, .. }) = self.symbol(expr).ok().flatten() {
+                if let Some(Value::Static { ty, .. }) = self.hint_symbol(expr) {
                     return Some(ty);
                 }
                 let ty = self.hint(value).map(|ty| match ty {

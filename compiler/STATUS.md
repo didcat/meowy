@@ -75,6 +75,37 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Symbol-probe audit and field-hint isolation
+
+Audit: `symbol(TypeQuery)` runs `type_value`, and computed `type_literal` operands
+also enter required evaluation. Field hints call `symbol` twice while looking for
+heap/static metadata; a computed-type field base can therefore spend work and
+leave a sticky E220 while its hint result is discarded. Successful metadata paths
+are name/import chains. Function-call classification and unannotated export
+classification can also inspect computed bases, but those forms currently reject;
+keep their diagnostic behavior separate from this hint repair. Required comparison
+form checks already restrict field bases to names/imports.
+
+Dependency-ordered slices:
+
+1. Restrict field-hint symbol resolution to name/import chains; keep regression
+   tests with the fix for zero operand work, sticky-limit isolation, metadata hints
+   and source errors. Run focused checker tests before committing.
+2. Add native diagnostic/accepted-program coverage and update the guide and
+   handoffs; run the complete compiler gate and commit integration.
+
+Reproduction: focused regressions observe six bootstrap visits/four type nodes
+for an unevaluated computed field base and E220 replacing the expected B001 at
+the logical type limit. The record metadata control costs three steps/two nodes
+including its written field annotation. The hint-only resolver restriction now passes all nine type-use checker tests.
+It preserves metadata/record hints, selected constructor failures and outer query
+spans; an exhausted type budget no longer becomes sticky during operand hints.
+All 953 library tests pass (`/tmp/meowy-field-hint-library.log`); formatting
+passes. Next: commit slice 1, then native integration and the full compiler gate.
+Pending-query
+argument roots/budget retention and remaining rejecting classification paths stay
+separate; proof outcomes remain gated.
+
 ### Type-use execution accounting
 
 Ascription/type-test target construction uses `construct_type` after checking its
