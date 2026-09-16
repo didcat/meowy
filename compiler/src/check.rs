@@ -158,6 +158,7 @@ pub(crate) struct Checker {
     pub(crate) required: bool,
     pub(crate) type_work: Option<type_values::Work>,
     pub(crate) queries: Vec<queries::Query>,
+    pub(crate) query_budgets: Vec<Option<required::Budget>>,
     pub(crate) documentation: Option<crate::documentation::Model>,
     pub(crate) imports: BTreeMap<usize, String>,
     pub(crate) file_docs: BTreeMap<usize, crate::documentation::Model>,
@@ -220,7 +221,10 @@ pub(crate) fn check_imports(
             let facts = crate::borrow::check(&program, &mut checker.flow, &checker.proofs)?;
             crate::loans::check(&program, &facts, &checker.proofs, &mut checker.flow)?;
             if let Some(query) = checker.queries.first() {
-                return Err(vec![query.unsupported()]);
+                let budget = checker.query_budgets[query.root]
+                    .as_ref()
+                    .expect("closed query root");
+                return Err(vec![query.unsupported(budget)]);
             }
             let mut docs = checker.documentation;
             if let Some(model) = &mut docs {
@@ -286,6 +290,7 @@ impl Checker {
             required: false,
             type_work: None,
             queries: Vec::new(),
+            query_budgets: Vec::new(),
             documentation: None,
             file_docs: BTreeMap::new(),
             imports: BTreeMap::new(),

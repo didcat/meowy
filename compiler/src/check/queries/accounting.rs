@@ -63,6 +63,7 @@ pub(crate) fn pending_argument_limits_share_outer_roots_and_restore_modes() {
         });
         assert_eq!(result.is_ok(), passes);
         assert_eq!(checker.queries.len(), usize::from(passes));
+        assert_eq!(checker.query_budgets.len(), usize::from(passes));
         if let Err(error) = result {
             assert_eq!(error.code, "E220");
             assert_eq!(error.span, root);
@@ -87,6 +88,7 @@ pub(crate) fn pending_arguments_preserve_modes_and_first_source_errors() {
         assert_eq!(error.code, code, "{source}");
         assert_eq!(&source[error.span.start..error.span.end], token);
         assert!(checker.queries.is_empty());
+        assert!(checker.query_budgets.is_empty());
         assert!(checker.type_work.is_none());
     }
     for source in [
@@ -123,8 +125,101 @@ pub(crate) fn pending_argument_arity_checks_precede_constructor_work() {
                 let work = checker.type_work.as_ref().unwrap();
                 assert_eq!((work.logical.steps, work.logical.types), (0, 0));
                 assert!(checker.queries.is_empty());
+                assert!(checker.query_budgets.is_empty());
                 Ok(())
             })
             .unwrap();
     }
+}
+
+#[test]
+pub(crate) fn pending_budgets_keep_shared_root_tail_work_and_copy_identity() {
+    let block =
+        crate::parser::parse("r:p.can_copy<uint32>();copy:r;second:p.can_copy<never>()").unwrap();
+    let root = Span::new(100, 150);
+    let mut checker = checker();
+    checker
+        .mode_root(root, true, |checker| {
+            checker
+                .type_work
+                .as_mut()
+                .unwrap()
+                .logical
+                .charge_all(3, 2, 5)?;
+            checker.stmt(&block.stmts[0])?;
+            assert_eq!(checker.queries[0].root, 0);
+            assert!(checker.query_budgets[0].is_none());
+            checker.stmt(&block.stmts[1])?;
+            assert_eq!(checker.queries.len(), 1);
+            assert!(matches!(
+                checker.value("copy", root)?,
+                crate::check::Value::Pending(0)
+            ));
+            checker.required_root(block.stmts[2].span, |checker| {
+                checker.stmt(&block.stmts[2])?;
+                Ok(())
+            })?;
+            assert_eq!(checker.queries[1].root, 0);
+            assert!(checker.query_budgets[0].is_none());
+            checker
+                .type_work
+                .as_mut()
+                .unwrap()
+                .logical
+                .charge_all(7, 4, 9)
+        })
+        .unwrap();
+    assert!(checker.type_work.is_none());
+    assert_eq!(checker.query_budgets.len(), 1);
+    let budget = checker.query_budgets[0].as_ref().unwrap();
+    assert_eq!(budget.root, root);
+    assert_eq!((budget.steps, budget.types, budget.slots), (14, 8, 14));
+    assert!(budget.failure.is_none());
+}
+
+#[test]
+pub(crate) fn pending_budgets_keep_independent_calls_separate_and_skip_unused_roots() {
+    let expr = call("r:p.can_copy<uint32>()");
+    let mut checker = checker();
+    checker
+        .required_root(expr.span, |checker| {
+            checker.type_work.as_mut().unwrap().logical.charge(20, 10)
+        })
+        .unwrap();
+    assert!(checker.query_budgets.is_empty());
+    for id in 0..3 {
+        assert_eq!(checker.pending_query(&expr).unwrap(), Some(id));
+        assert_eq!(checker.queries[id].root, id);
+        let budget = checker.query_budgets[id].as_ref().unwrap();
+        assert_eq!(budget.root, expr.span);
+        assert_eq!((budget.steps, budget.types), (2, 1));
+        assert!(budget.failure.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn pending_budgets_retain_tail_failures_and_restore_next_root() {
+    let expr = call("r:p.can_copy<uint32>()");
+    let root = Span::new(100, 150);
+    let mut checker = checker();
+    let error = checker
+        .mode_root(root, true, |checker| {
+            checker.pending_query(&expr)?;
+            let budget = &mut checker.type_work.as_mut().unwrap().logical;
+            budget.charge(MAX_STEPS - 2, 0)?;
+            assert_eq!(budget.charge(1, 0).unwrap_err().code, "E220");
+            Ok(())
+        })
+        .unwrap_err();
+    assert_eq!(error.code, "E220");
+    assert_eq!(error.span, root);
+    let budget = checker.query_budgets[0].as_ref().unwrap();
+    assert_eq!(budget.steps, MAX_STEPS);
+    assert_eq!(budget.failure.as_ref().unwrap().span, root);
+    assert_eq!(checker.queries[0].unsupported(budget).code, "E220");
+    assert!(checker.type_work.is_none());
+    checker.pending_query(&expr).unwrap();
+    let budget = checker.query_budgets[1].as_ref().unwrap();
+    assert_eq!((budget.steps, budget.types), (2, 1));
+    assert_eq!(checker.queries[1].unsupported(budget).code, "B001");
 }

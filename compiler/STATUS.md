@@ -101,8 +101,13 @@ result construction and phase/dependency tracking remain gated. No new runtime
 representation or dependencies are needed. Slice 1 now charges invocation and written constructors in a shared ordinary
 root. Focused tests preserve the parser gate on union suffixes in generic calls and
 full function-type diagnostic spans. All 957 library tests pass (`/tmp/meowy-query-arguments.log`), including four
-new argument groups. Formatting passes. Next: commit slice 1, then retain the
-outer ledger across deferred queries.
+new argument groups. Formatting passes. Slice 1 is committed as `66dfbca`. Slice 2 now reserves one checker-owned
+budget slot per active query root and finalizes it when the outer root exits.
+The pending gate reads that final ledger after ordinary ownership checks. Tests
+cover shared IDs, copies, tail charges/failures and independent same-span roots.
+All 13 focused query groups pass. Failed arguments reserve no query/budget
+slots; ordinary roots without queries retain no ledgers. All 960 library tests pass (`/tmp/meowy-query-budgets.log`); formatting
+passes. Next: commit slice 2, add native integration and run the full gate.
 
 ### Symbol-probe audit and field-hint isolation
 

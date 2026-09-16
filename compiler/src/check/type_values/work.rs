@@ -11,6 +11,7 @@ pub(crate) struct Work {
     pub(crate) depth: usize,
     pub(crate) nodes: usize,
     pub(crate) logical: Budget,
+    pub(crate) query_root: Option<usize>,
 }
 
 impl Work {
@@ -182,7 +183,10 @@ impl Checker {
             None => result,
         };
         if root {
-            self.type_work = None;
+            let work = self.type_work.take().unwrap();
+            if let Some(id) = work.query_root {
+                self.query_budgets[id] = Some(work.logical);
+            }
         }
         result
     }

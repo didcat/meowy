@@ -9,10 +9,14 @@ pub(crate) struct Query {
     pub(crate) owner: usize,
     pub(crate) target: &'static str,
     pub(crate) revision: u32,
+    pub(crate) root: usize,
 }
 
 impl Query {
-    pub(crate) fn unsupported(&self) -> Diagnostic {
+    pub(crate) fn unsupported(&self, budget: &super::required::Budget) -> Diagnostic {
+        if let Some(error) = &budget.failure {
+            return error.clone();
+        }
         Diagnostic::unsupported(
             format!(
                 "proof.can_copy evaluation for {} (revision {}, target {})",
@@ -50,31 +54,41 @@ impl Checker {
                         expr.span,
                     ));
                 }
-                let ty = self.construction_root(expr.span, |checker| {
+                self.construction_root(expr.span, |checker| {
                     checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
-                    checker.source_spec(&types[0], true)
-                })?;
-                if matches!(ty, Spec::Function { .. }) {
-                    return Err(Diagnostic::unsupported(
-                        "proof queries on function signatures",
-                        types[0].span,
-                    ));
-                }
-                if self.queries.len() == 4096 || !self.flow.spend(1) {
-                    return Err(Diagnostic::unsupported(
-                        "pending proof query capacity exhausted",
-                        expr.span,
-                    ));
-                }
-                let id = self.queries.len();
-                self.queries.push(Query {
-                    ty,
-                    span: expr.span,
-                    owner: self.owner,
-                    target: crate::driver::TARGET,
-                    revision: 1,
-                });
-                Ok(Some(id))
+                    let ty = checker.source_spec(&types[0], true)?;
+                    if matches!(ty, Spec::Function { .. }) {
+                        return Err(Diagnostic::unsupported(
+                            "proof queries on function signatures",
+                            types[0].span,
+                        ));
+                    }
+                    if checker.queries.len() == 4096 || !checker.flow.spend(1) {
+                        return Err(Diagnostic::unsupported(
+                            "pending proof query capacity exhausted",
+                            expr.span,
+                        ));
+                    }
+                    let root = match checker.type_work.as_ref().unwrap().query_root {
+                        Some(id) => id,
+                        None => {
+                            let id = checker.query_budgets.len();
+                            checker.query_budgets.push(None);
+                            checker.type_work.as_mut().unwrap().query_root = Some(id);
+                            id
+                        }
+                    };
+                    let id = checker.queries.len();
+                    checker.queries.push(Query {
+                        ty,
+                        span: expr.span,
+                        owner: checker.owner,
+                        target: crate::driver::TARGET,
+                        revision: 1,
+                        root,
+                    });
+                    Ok(Some(id))
+                })
             }
             _ => Ok(None),
         }
