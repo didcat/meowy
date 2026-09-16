@@ -274,6 +274,10 @@ impl Checker {
         }
     }
 
+    pub(crate) fn construct_type(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
+        self.construction_root(expr.span, |checker| checker.source_type(expr, true))
+    }
+
     pub(crate) fn ty(&mut self, expr: &ast::TypeExpr) -> Result<Type> {
         let spec = self.spec(expr)?;
         self.spec_type(spec, expr.span)

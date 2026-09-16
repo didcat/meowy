@@ -127,3 +127,82 @@ pub(crate) fn ordinary_alias_roots_keep_failed_prefixes_and_lookup_isolation() {
     checker.declare_type("B", &ty, false, ty.span).unwrap();
     assert!(checker.type_work.is_none());
 }
+
+#[test]
+pub(crate) fn ordinary_data_roots_charge_annotations_without_runtime_work() {
+    for (source, expected) in [
+        ("v<int32[1+2]>:[7]", (5, 2)),
+        ("v<int32><int32>:7", (3, 3)),
+        ("->v<int32[1+2]>:[7]", (5, 2)),
+        ("|false|v<int32[1+2]>:[]", (5, 2)),
+        ("<A>:<int32[2]>;v<A>:[7];->copy<A>:v", (7, 6)),
+    ] {
+        let block = crate::parser::parse(source).unwrap();
+        let root = Span::new(100, 150);
+        let mut checker = Checker::new();
+        checker
+            .mode_root(root, true, |checker| {
+                checker.block(&block, None, None)?;
+                let work = checker.type_work.as_ref().unwrap();
+                assert_eq!(
+                    (work.logical.steps, work.logical.types),
+                    expected,
+                    "{source}"
+                );
+                assert_eq!(work.logical.root, root);
+                assert!(work.ordinary);
+                Ok(())
+            })
+            .unwrap();
+        assert!(checker.type_work.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn ordinary_data_roots_restore_errors_and_keep_extent_modes() {
+    crate::compile("v<({-><int32[({->2})]>})>:[7]").unwrap();
+    for source in ["v<int32[({->2})]>:[]", "->v<int32[({->2})]>:[]"] {
+        let error = crate::compile(source).unwrap_err().remove(0);
+        assert_eq!(error.code, "B001");
+    }
+    let source = "v<int32[1+2]>:[1/0]";
+    let block = crate::parser::parse(source).unwrap();
+    let root = Span::new(100, 150);
+    for (remaining, code) in [(4, "E220"), (5, "E107")] {
+        let mut checker = Checker::new();
+        let scopes = checker.scopes.len();
+        let error = checker
+            .mode_root(root, true, |checker| {
+                checker.type_work.as_mut().unwrap().logical.steps = MAX_STEPS - remaining;
+                checker.stmt(&block.stmts[0])
+            })
+            .unwrap_err();
+        assert_eq!(error.code, code);
+        if code == "E220" {
+            assert_eq!(error.span, root);
+        } else {
+            assert_eq!(&source[error.span.start..error.span.end], "1/0");
+        }
+        assert_eq!(checker.scopes.len(), scopes);
+        assert!(checker.type_work.is_none());
+        checker.construct_type(&annotation("<int32[2]>")).unwrap();
+        assert!(checker.type_work.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn ordinary_data_roots_leave_type_lookup_uncharged() {
+    let ty = annotation("<int32><int32>");
+    let mut checker = Checker::new();
+    checker
+        .mode_root(ty.span, true, |checker| {
+            checker.ty(&ty)?;
+            checker.type_literal(&ty)?;
+            assert_eq!(checker.type_work.as_ref().unwrap().logical.steps, 0);
+            checker.construct_type(&ty)?;
+            let budget = &checker.type_work.as_ref().unwrap().logical;
+            assert_eq!((budget.steps, budget.types), (3, 3));
+            Ok(())
+        })
+        .unwrap();
+}

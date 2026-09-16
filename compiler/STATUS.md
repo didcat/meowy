@@ -86,7 +86,7 @@ both success and failure.
 Dependency-ordered slices:
 
 1. `b293502`: scoped ordinary/required modes with shared-budget and restoration regressions.
-2. Ordinary alias constructor roots and normalized-input/extent/failure tests.
+2. `a22fbdc`: ordinary alias constructor roots and normalized-input/extent/failure tests.
 3. Data binding/emission annotation roots with focused order/input-gate tests.
 4. Native integration, guide and both handoffs after the complete compiler gate.
 
@@ -96,7 +96,12 @@ Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-constructor-modes-clippy.l
 Ordinary alias construction now enters a root at its type expression. Four new
 root/count/mode groups and all 935 library tests pass, with Clippy and formatting.
 Logs: `/tmp/meowy-alias-roots-focused.log`, `/tmp/meowy-alias-roots-library.log`,
-`/tmp/meowy-alias-roots-clippy.log`. Next: data binding/emission annotation roots. Function signatures, pending
+`/tmp/meowy-alias-roots-clippy.log`. Data binding/emission annotation roots pass all 938 library tests, Clippy and
+formatting. Execution counts, lookup isolation, extent modes and annotation-before-
+initializer errors are covered. Ordinary block checking still fails fast without
+recovering its scope; the focused statement test verifies root cleanup independently.
+Logs: `/tmp/meowy-data-roots-library.log`, `/tmp/meowy-data-roots-clippy.log`.
+Next: native integration and the complete compiler gate. Function signatures, pending
 queries and remaining type-use
 sites need their own execution-versus-probe audit. Proof outcomes stay gated.
 

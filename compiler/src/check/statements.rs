@@ -105,7 +105,7 @@ impl Checker {
                     self.declare(name, symbol, stmt.span)?;
                     return Ok(Vec::new());
                 }
-                let expected = ty.as_ref().map(|ty| self.ty(ty)).transpose()?;
+                let expected = ty.as_ref().map(|ty| self.construct_type(ty)).transpose()?;
                 let (value, exports) = if name.starts_with('\0') {
                     let (value, module) = self.module_value(value, expected.as_ref())?;
                     (value, Some(module))
@@ -526,7 +526,7 @@ impl Checker {
             }
             (None, _) => None,
         };
-        let annotated = annotation.map(|ty| self.ty(ty)).transpose()?;
+        let annotated = annotation.map(|ty| self.construct_type(ty)).transpose()?;
         if let (Some(expected), Some(annotated)) = (&expected, &annotated)
             && !expected.accepts(annotated)
         {
