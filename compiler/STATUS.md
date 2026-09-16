@@ -75,6 +75,30 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Function signature accounting in progress
+
+Audit: `declare_function`/`forward` resolve parameter types before body checking;
+`function` resolves them again after installing parameter locals. Reuse the checked
+parameter types to avoid repeated computed work and parameter-shadow lookup drift.
+Function definitions need one source-header root, ending before body evaluation;
+explicit forward/export function-type annotations have their own type-expression
+root. Reservation and definition syntax are distinct evaluated declarations.
+
+Dependency-ordered slices:
+
+1. Reuse checked parameter types in body locals with ordinary/forward regressions.
+2. Root definition and forward signatures; charge each written annotation once,
+   preserve ordinary/computed modes and test counts, limits and source ordering.
+3. Root explicit re-export signatures and verify native integration; refresh guide
+   and handoffs after the complete compiler gate.
+
+Parameter reuse passes both new checker groups and all 940 library tests, Clippy
+and formatting. Checked widths survive body parameter shadowing; computed
+parameter annotations no longer replay. Logs: `/tmp/meowy-signature-reuse-focused.log`,
+`/tmp/meowy-signature-reuse-library.log`, `/tmp/meowy-signature-reuse-clippy.log`.
+Next: signature roots. Inferred result/body checking stays outside fresh header roots.
+Other type-value/ascription sites and pending-query budgets remain later work.
+
 ### Ordinary constructor roots
 
 `construction_root` starts a budget at an ordinary alias or data annotation's type

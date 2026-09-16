@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod signatures;
+
 use super::{Checker, Result, Scope, Spec, Value};
 use crate::ast::{self, ExprKind, Span, StmtKind};
 use crate::diagnostic::Diagnostic;
@@ -15,7 +18,7 @@ impl Checker {
         span: Span,
     ) -> Result<()> {
         let result = annotation.map(|ty| self.function_type(ty)).transpose()?;
-        let args = params
+        let args: Vec<_> = params
             .iter()
             .map(|param| self.function_type(&param.ty))
             .collect::<Result<_>>()?;
@@ -25,12 +28,13 @@ impl Checker {
             name,
             Value::Function {
                 id,
-                params: args,
+                params: args.clone(),
                 result: result.clone(),
             },
             span,
         )?;
-        let result = self.function(id, name, params, body, result, span)?;
+        let params: Vec<_> = params.iter().zip(args).collect();
+        let result = self.function(id, name, &params, body, result, span)?;
         if let Some(Value::Function { result: target, .. }) =
             self.scopes.last_mut().expect("scope").values.get_mut(name)
         {
@@ -124,7 +128,8 @@ impl Checker {
                     stmt.span,
                 ));
             }
-            self.function(id, name, params, body, Some(expected_result), stmt.span)
+            let params: Vec<_> = params.iter().zip(actual_params).collect();
+            self.function(id, name, &params, body, Some(expected_result), stmt.span)
                 .map_err(|error| {
                     if error.code == "B001" && error.message.contains("captur") {
                         Self::error(
@@ -145,7 +150,7 @@ impl Checker {
         &mut self,
         id: usize,
         name: &str,
-        params: &[ast::Param],
+        params: &[(&ast::Param, Type)],
         body: &ast::Block,
         result: Option<Type>,
         span: Span,
@@ -162,15 +167,14 @@ impl Checker {
         }
         self.scopes.push(Scope::default());
         let mut ids = Vec::new();
-        for param in params {
-            let ty = self.ty(&param.ty)?;
+        for (param, ty) in params {
             let id = self.local(ty.clone());
             self.places.insert(id);
             self.declare(
                 &param.name,
                 Value::Local {
                     id,
-                    ty,
+                    ty: ty.clone(),
                     mutable: false,
                     owner: self.owner,
                     constant: None,
