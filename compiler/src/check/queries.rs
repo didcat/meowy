@@ -50,7 +50,10 @@ impl Checker {
                         expr.span,
                     ));
                 }
-                let ty = self.spec(&types[0])?;
+                let ty = self.construction_root(expr.span, |checker| {
+                    checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+                    checker.source_spec(&types[0], true)
+                })?;
                 if matches!(ty, Spec::Function { .. }) {
                     return Err(Diagnostic::unsupported(
                         "proof queries on function signatures",
@@ -93,6 +96,9 @@ impl Checker {
             && matches!(self.symbol(value)?, Some(Value::Pending(_))))
     }
 }
+
+#[cfg(test)]
+mod accounting;
 
 #[cfg(test)]
 mod tests {

@@ -75,6 +75,35 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Pending-query budget plan
+
+The reference requires a query outside required evaluation to start a proof root;
+inside one, it shares the remaining outer counters. Current `pending_query` calls
+`spec`, so written argument constructors are not consistently charged and the
+ledger disappears before deferred evaluation. Calls and copies already have
+separate identities; preserve ordinary error ordering and the final B001 gate.
+
+Dependency-ordered slices:
+
+1. Construct admitted query type arguments through `construction_root` and
+   `source_spec(..., true)`, charging the invocation once. Keep arity checks first,
+   ordinary extent gates and computed operand modes. Add exact-limit/error tests.
+2. Retain one logical budget per outer root containing queries. Reserve a stable
+   root index on the first admitted query, share it across nested queries, and
+   move the final ledger into checker-owned storage only when the outer root exits.
+   Copies reuse the query/root IDs. Preserve tail work and sticky failures; do not
+   snapshot each query independently or reset counters at deferred evaluation.
+3. Native module/mode/error integration, guide and handoffs; full compiler gate.
+
+Only logical counters survive the root; bootstrap traversal depth/work remain
+local resource guards. Required-block query syntax, outcomes, flags, descriptor
+result construction and phase/dependency tracking remain gated. No new runtime
+representation or dependencies are needed. Slice 1 now charges invocation and written constructors in a shared ordinary
+root. Focused tests preserve the parser gate on union suffixes in generic calls and
+full function-type diagnostic spans. All 957 library tests pass (`/tmp/meowy-query-arguments.log`), including four
+new argument groups. Formatting passes. Next: commit slice 1, then retain the
+outer ledger across deferred queries.
+
 ### Symbol-probe audit and field-hint isolation
 
 `symbol(TypeQuery)` runs `type_value`, and computed `type_literal` operands also
