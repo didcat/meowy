@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-16. Ascriptions and ordinary type-identity bindings now charge execution.
+Updated: 2026-09-16. Field hints no longer evaluate computed type-query operands.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -77,34 +77,32 @@ outcome is constructed. The reference remains authoritative.
 
 ### Symbol-probe audit and field-hint isolation
 
-Audit: `symbol(TypeQuery)` runs `type_value`, and computed `type_literal` operands
-also enter required evaluation. Field hints call `symbol` twice while looking for
-heap/static metadata; a computed-type field base can therefore spend work and
-leave a sticky E220 while its hint result is discarded. Successful metadata paths
-are name/import chains. Function-call classification and unannotated export
-classification can also inspect computed bases, but those forms currently reject;
-keep their diagnostic behavior separate from this hint repair. Required comparison
-form checks already restrict field bases to names/imports.
+`symbol(TypeQuery)` runs `type_value`, and computed `type_literal` operands also
+enter required evaluation. Field hints previously called `symbol` twice while
+looking for heap/static metadata: a computed field base spent work and could leave
+sticky E220 despite its hint result being discarded. `hint_symbol` now resolves
+only name/import chains; computed bases and nested type queries spend no operand
+work. Successful metadata/record hints and selected constructor errors remain intact.
+
+Function-call classification, unannotated export classification and required scalar
+field classification can also inspect computed bases, but those forms currently
+reject. Preserve their diagnostics separately; do not globally charge `symbol`.
+Required comparison form checks already restrict field bases to names/imports.
+Direct bindings/ascriptions retain their existing execution paths. Pending query
+arguments still use `spec` without a retained construction root.
 
 Dependency-ordered slices:
 
-1. Restrict field-hint symbol resolution to name/import chains; keep regression
-   tests with the fix for zero operand work, sticky-limit isolation, metadata hints
-   and source errors. Run focused checker tests before committing.
-2. Add native diagnostic/accepted-program coverage and update the guide and
-   handoffs; run the complete compiler gate and commit integration.
+1. `19cff61`: hint-only resolution with zero-work, sticky-limit, metadata and
+   error-order regressions. All 953 library tests pass.
+2. Native imported record/metadata widths, source query/constructor error spans,
+   guide and handoffs. Both focused native groups pass in debug/release.
 
-Reproduction: focused regressions observe six bootstrap visits/four type nodes
-for an unevaluated computed field base and E220 replacing the expected B001 at
-the logical type limit. The record metadata control costs three steps/two nodes
-including its written field annotation. The hint-only resolver restriction now passes all nine type-use checker tests.
-It preserves metadata/record hints, selected constructor failures and outer query
-spans; an exhausted type budget no longer becomes sticky during operand hints.
-All 953 library tests pass (`/tmp/meowy-field-hint-library.log`); formatting
-passes. Next: commit slice 1, then native integration and the full compiler gate.
-Pending-query
-argument roots/budget retention and remaining rejecting classification paths stay
-separate; proof outcomes remain gated.
+Logs: `/tmp/meowy-field-hint-library.log`, `/tmp/meowy-field-hint-native.log`.
+The complete compiler gate passes (`/tmp/meowy-field-hint-gate.log`), including
+953 library/897 native tests, formatting, Clippy and bootstrap conformance.
+Pending-query argument construction and retained budgets remain prerequisites;
+proof outcomes stay gated.
 
 ### Type-use execution accounting
 
@@ -131,12 +129,11 @@ outstanding failures remain. Logs:
 `/tmp/meowy-ascription-roots-library.log`, `/tmp/meowy-type-binding-library.log`,
 `/tmp/meowy-type-use-integration.log`, `/tmp/meowy-type-use-gate.log`.
 
-Next: audit the remaining `symbol(TypeQuery)` and computed `type_literal` probe
-paths. They can invoke `type_value`; establish which callers actually execute
-values versus only classify/hint them before changing diagnostics or budgets.
-Do not globally charge `symbol`. Pending-query argument construction/retained
-root budgets and text/helper admission remain prerequisites to phase/dependency
-tracking and proof outcomes.
+The field-hint audit and isolation above follow this series. Shared `symbol`
+remains unchanged: direct query bindings execute their existing evaluator, while
+rejecting call/export/required-field forms retain their diagnostics. Pending-query
+argument roots and retained budgets are next; text/helper admission and phase/
+dependency tracking remain prerequisites to proof outcomes.
 
 ### Function signature accounting
 
@@ -759,20 +756,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 950
-  library/895 native tests (1845 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 953
+  library/897 native tests (1850 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-use-gate.log`.
-- Six new checker groups cover ascription/type-test target costs, type-identity
-  literals/copies/members/queries, grouping, nominal types, exact/overflow limits,
-  ordinary/computed modes, lookup isolation and first-error order. Two native
-  groups retain imported identities, startup, widths, ascription behavior and
-  original-file failures; accepted programs pass in debug/release. Logs:
-  `/tmp/meowy-type-binding-library.log`, `/tmp/meowy-type-use-integration.log`.
+  debug/release. Log: `/tmp/meowy-field-hint-gate.log`.
+- Three new checker groups cover unevaluated computed-field bases, nested queries,
+  zero bootstrap/logical work, sticky-limit isolation, metadata/record hints and
+  selected constructor errors. Two native groups retain imported widths, startup
+  and original dependency spans; accepted programs pass in debug/release. Logs:
+  `/tmp/meowy-field-hint-library.log`, `/tmp/meowy-field-hint-native.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Remaining computed-type/query probes, text/helper counters and pending
-  query budget retention still need work. Proof outcomes remain gated; unsupported
-  queries are not conformance successes.
+  separate. Pending-query argument roots/budget retention, text/helper counters
+  and phase/dependency tracking remain open. Proof outcomes stay gated;
+  unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -846,15 +842,14 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Audit remaining computed-type/query probe calls to `symbol`/`type_literal` in
-   `check/names.rs`, expression hints, function-call classification and exports.
-   Direct bindings and ascription/type-test targets now charge execution. Prove
-   whether remaining successful probe paths replay `type_value`, or split those
-   execution/probe paths before changing accounting. Preserve error order, query
-   operand isolation, ordinary/computed modes and original spans. Record ordered
-   slices and run the full compiler gate after integration. Then address pending
-   query argument construction and retained root budgets in `check/queries.rs`;
-   text/helper admission and phase/dependency tracking still gate proof outcomes.
+1. Add pending-query argument construction and retained root budgets in
+   `check/queries.rs`, using the existing `construction_root`/`source_spec` and
+   logical ledger. Plan root ownership before retaining counters: nested calls
+   must share the outer root and copies must not reset/replay argument work.
+   Cover exact/overflow limits, descriptor/meta targets, ordinary/computed modes,
+   original spans, query copies and first-error order. Preserve rejecting shared
+   symbol paths audited above. Run the full compiler gate after integration.
+   Text/helper admission and phase/dependency tracking still gate proof outcomes.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep

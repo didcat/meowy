@@ -113,8 +113,11 @@ nodes in the shared evaluator. Block arithmetic charges its own operators while
 delegating leaves and block bodies, avoiding duplicate charges. Unary minus and
 an immediately following integer literal each cost one step; the signed-minimum
 literal rule is preserved. Type-query operands, eligibility walks and runtime
-folding add no integer evaluation charges. Extents inside an existing required
-root use the same evaluator and charges.
+folding add no integer evaluation charges. Field hints resolve metadata only
+through name/import chains, so computed type bases and nested queries do not
+execute while inspecting an operand. Unsupported operand hints retain B001
+without consuming constructor work or poisoning the enclosing logical budget.
+Extents inside an existing required root use the same evaluator and charges.
 
 Scalar and record field reads charge every evaluated projection ancestor and named
 root. Record name reads charge one step, including reads of materialized scratch

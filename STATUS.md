@@ -34,6 +34,8 @@ body locals reuse checked parameter types without replaying annotations. Standal
 ordinary extents retain isolated roots and input gates. Ascription/type-test
 targets and ordinary type-identity bindings now charge execution separately from
 lookup, preserving ordinary extent restrictions and query operand isolation.
+Field hints now restrict symbol resolution to name/import chains, preventing
+computed-type bases from spending operand work or leaving sticky budget failures.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
@@ -77,20 +79,19 @@ remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 950
-  library/895 native tests (1845 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 953
+  library/897 native tests (1850 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-type-use-gate.log`.
-- Six new checker groups cover ascription/type-test target costs, type-identity
-  literals/copies/members/queries, grouping, nominal types, exact/overflow limits,
-  ordinary/computed modes, lookup isolation and first-error order. Two native
-  groups retain imported identities, startup, widths, ascription behavior and
-  original-file failures; accepted programs pass in debug/release. Logs:
-  `/tmp/meowy-type-binding-library.log`, `/tmp/meowy-type-use-integration.log`.
+  debug/release. Log: `/tmp/meowy-field-hint-gate.log`.
+- Three new checker groups cover unevaluated computed-field bases, nested queries,
+  zero bootstrap/logical work, sticky-limit isolation, metadata/record hints and
+  selected constructor errors. Two native groups retain imported widths, startup
+  and original dependency spans; accepted programs pass in debug/release. Logs:
+  `/tmp/meowy-field-hint-library.log`, `/tmp/meowy-field-hint-native.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Remaining computed-type/query probes, text/helper counters and pending
-  query budget retention still need work. Proof outcomes remain gated; unsupported
-  queries are not conformance successes.
+  separate. Pending-query argument roots/budget retention, text/helper counters
+  and phase/dependency tracking remain open. Proof outcomes stay gated;
+  unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -135,11 +136,11 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Audit remaining computed-type/query symbol probes for replay before changing
-   shared lookup behavior. Direct type bindings and ascription/type-test targets
-   are integrated. Then address pending-query argument construction and retained
-   budgets. The [compiler handoff](compiler/STATUS.md#executable-proof-plan) records
-   the remaining probe, text/helper and phase/dependency work. Proof outcomes and
+1. Address pending-query argument construction and retained root budgets in
+   `compiler/src/check/queries.rs`. The field-hint audit/fix is integrated; shared
+   symbol behavior for rejecting calls/exports remains unchanged. The
+   [compiler handoff](compiler/STATUS.md#executable-proof-plan) records root
+   ownership, text/helper and phase/dependency prerequisites. Proof outcomes and
    flags remain gated.
 
 2. Broaden subtraction only after its remaining syntax/representation prerequisites

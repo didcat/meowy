@@ -539,3 +539,46 @@ pub(crate) fn logical_integer_charging_preserves_imported_widths_and_startup() {
     }
     case.runs(b"data\n7\n");
 }
+
+#[test]
+pub(crate) fn field_hints_preserve_imported_types_and_metadata_widths() {
+    case(
+        r#"m:@"./types.mwy";p:@"proof";alias:p;d:@"debug";kind:(alias.revision)<>;n<(kind)>:4294967295;row<m.Row>:{->n<uint64>:4294967297};field:row.n<>;copy<(field)>:row.n;d.print(n);d.print(copy)"#,
+        &[("types.mwy", r#"d:@"debug";d.print("init");-><Row>:<{n<uint64>}>"#)],
+    ).runs(b"init\n4294967295\n4294967297\n");
+}
+
+#[test]
+pub(crate) fn field_hints_keep_query_and_constructor_dependency_spans() {
+    for (value, code, token) in [
+        (
+            "(<({-><int32[1/0]>})>.missing)<>",
+            "B001",
+            "(<({-><int32[1/0]>})>.missing)<>",
+        ),
+        ("<({-><int32[1/0]>})>", "E107", "1/0"),
+    ] {
+        let source = format!(r#"d:@"debug";d.print("init");kind:{value}"#);
+        let case = case(r#"m:@"./types.mwy""#, &[("types.mwy", &source)]);
+        for action in ["check", "build", "run"] {
+            let output = case.command(action, &["--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("types.mwy").display()
+                )),
+                "{error}"
+            );
+            let start = source.find(token).unwrap();
+            assert!(error.contains(&format!("\"start\":{start}")), "{error}");
+            assert!(
+                error.contains(&format!("\"end\":{}", start + token.len())),
+                "{error}"
+            );
+        }
+    }
+}
