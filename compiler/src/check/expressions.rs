@@ -353,7 +353,7 @@ impl Checker {
                 predicate,
             } => {
                 let value = self.expr(value, None)?;
-                let ty = self.ty(ty)?;
+                let ty = self.construct_type(ty)?;
                 if value.ty == Type::Never {
                     return Ok(value);
                 }

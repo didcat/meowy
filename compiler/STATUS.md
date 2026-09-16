@@ -75,6 +75,29 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Type-use execution accounting in progress
+
+Audit: `raw_expression::Ascribe` checks the value once, then resolves the written
+target type with `ty`. That is an execution boundary. Ordinary identity bindings
+route through `symbol`, also used by hints/probes; they need a separate binding
+entry point. Literal constructors must retain ordinary extent eligibility, while
+computed operands and type queries keep their existing required-evaluation path.
+
+Dependency-ordered slices:
+
+1. Root ascription/type-test target construction with exact counts, mode, failure
+   order and lookup-isolation regressions.
+2. Charge ordinary type-identity bindings without replaying symbol/type resolution;
+   cover literals, groups, reads, queries and nominal/member identities.
+3. Native integration, guide and handoffs after the complete compiler gate.
+
+Ascription/type-test construction is rooted; all 947 library tests pass. Clippy
+identified `ty` as test-only after the final execution caller migrated; its wrapper
+is now test-gated. Lookup behavior is unchanged; Clippy and formatting pass.
+Logs: `/tmp/meowy-ascription-roots-library.log`,
+`/tmp/meowy-ascription-roots-clippy.log`. Next: ordinary type-identity bindings. Pending-query budget
+retention, text/helper admission and phase/dependency tracking remain open.
+
 ### Function signature accounting
 
 Definitions construct written annotations in a root spanning the source header;

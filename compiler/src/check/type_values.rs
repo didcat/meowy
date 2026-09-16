@@ -23,6 +23,8 @@ mod scalars;
 mod source_accounting;
 mod statements;
 mod subtraction;
+#[cfg(test)]
+mod type_uses;
 mod work;
 
 pub(crate) use work::Work;
