@@ -1581,8 +1581,19 @@ annotations do not run again after parameter names enter scope, so a parameter
 shadowing an outer constant cannot change another parameter's checked type.
 Computed operands share the signature budget and restore ordinary input mode.
 
-Other type-use execution boundaries, text/helper counters and pending-query budget
-retention still need integration.
+Ascriptions and type tests construct their target types after checking the value
+operand once. Their type work remains required even in runtime-skipped code;
+this does not turn runtime value evaluation into required evaluation.
+
+Unannotated type-identity bindings now have a separate execution lookup. Literal
+constructors charge source nodes once; copied type identities and member reads
+charge reads and payload traversal. Groups and synthetic subtraction wrappers add
+no work, and queries reuse their existing evaluator without an extra binding charge.
+Ordinary literal extents retain their existing input gates. No runtime type storage
+is created, and type-query operands remain unevaluated.
+
+Remaining computed-type/query symbol probes still need an execution audit.
+Text/helper counters and pending-query budget retention also remain incomplete.
 This ledger does not yet qualify the full required-evaluation contract or execute
 proof queries.
 

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-15. Function signatures now have roots and reuse checked parameter types.
+Updated: 2026-09-16. Ascriptions and ordinary type-identity bindings now charge execution.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -75,33 +75,37 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Type-use execution accounting in progress
+### Type-use execution accounting
 
-Audit: `raw_expression::Ascribe` checks the value once, then resolves the written
-target type with `ty`. That is an execution boundary. Ordinary identity bindings
-route through `symbol`, also used by hints/probes; they need a separate binding
-entry point. Literal constructors must retain ordinary extent eligibility, while
-computed operands and type queries keep their existing required-evaluation path.
+Ascription/type-test target construction uses `construct_type` after checking its
+value once. The old `ty` lookup wrapper is now test-only. `binding_symbol` handles
+ordinary unannotated identity bindings separately from shared `symbol` probes:
+literals construct once in the ordinary mode, type/member/nominal reads charge
+read steps and payload traversal, and queries retain their existing evaluator
+without a second charge. Groups and synthetic wrappers add no logical work.
 
-Dependency-ordered slices:
+Completed slices:
 
-1. `3876c34`: root ascription/type-test target construction with exact counts, mode, failure
-   order and lookup-isolation regressions.
-2. Charge ordinary type-identity bindings without replaying symbol/type resolution;
-   cover literals, groups, reads, queries and nominal/member identities.
-3. Native integration, guide and handoffs after the complete compiler gate.
+1. `3876c34`: target construction, exact/overflow costs, mode/error order and
+   lookup isolation for ascriptions and type tests.
+2. `93f21d4`: type-identity binding execution, including copies, members, nominal
+   identities, queried types, grouping, subtraction, input gates and no storage.
+3. Native imported identities, ascriptions/type tests and source-file errors;
+   guide and both handoffs. The complete compiler gate passes.
 
-Ascription/type-test construction is rooted; all 947 library tests pass. Clippy
-identified `ty` as test-only after the final execution caller migrated; its wrapper
-is now test-gated. Lookup behavior is unchanged; Clippy and formatting pass.
-Logs: `/tmp/meowy-ascription-roots-library.log`,
-`/tmp/meowy-ascription-roots-clippy.log`. A separate `binding_symbol` execution
-path now charges ordinary type identities without replaying queries or literal
-resolution. All three binding groups and all 950 library tests pass, with Clippy
-and formatting. Logs: `/tmp/meowy-type-binding-focused.log`,
-`/tmp/meowy-type-binding-library.log`, `/tmp/meowy-type-binding-clippy.log`.
-Next: native integration and the complete gate. Pending-query budget
-retention, text/helper admission and phase/dependency tracking remain open.
+Six new checker groups and two native groups pass. The complete gate passes
+950 library/895 native tests, Clippy and formatting. Native accepted programs run
+in debug/release, retaining startup order, widths and original errors. No
+outstanding failures remain. Logs:
+`/tmp/meowy-ascription-roots-library.log`, `/tmp/meowy-type-binding-library.log`,
+`/tmp/meowy-type-use-integration.log`, `/tmp/meowy-type-use-gate.log`.
+
+Next: audit the remaining `symbol(TypeQuery)` and computed `type_literal` probe
+paths. They can invoke `type_value`; establish which callers actually execute
+values versus only classify/hint them before changing diagnostics or budgets.
+Do not globally charge `symbol`. Pending-query argument construction/retained
+root budgets and text/helper admission remain prerequisites to phase/dependency
+tracking and proof outcomes.
 
 ### Function signature accounting
 
@@ -129,11 +133,9 @@ Clippy, formatting and bootstrap conformance. No outstanding failures remain. Lo
 `/tmp/meowy-signature-roots-library.log`, `/tmp/meowy-signature-integration.log`,
 `/tmp/meowy-signature-gate.log`.
 
-Next: actual type-value/ascription uses still share `symbol`/`type_literal`/`ty`
-lookup APIs. Trace value execution versus hints before assigning more roots. Do
-not count compiler metadata clones or body-local type reuse as source work.
-Pending query budgets, text/helper admission and phase/dependency tracking remain
-prerequisites; proof outcomes and full release qualification stay gated.
+Ascription and ordinary identity-binding execution is integrated above. Remaining
+computed-type/query probes and deferred-query budgets still need auditing; proof
+outcomes and full release qualification stay gated.
 
 ### Ordinary constructor roots
 
@@ -159,8 +161,8 @@ Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-alias-roots-library.log`,
 `/tmp/meowy-constructor-roots-gate.log`. No outstanding failures remain. Ordinary block checking still fails fast
 without scope recovery; statement-level tests verify root cleanup independently.
 
-Function signatures are now integrated above. Actual type-value/ascription uses
-still need their own execution/probe audit; pending queries need retained budgets.
+Function signatures and direct type-use execution are now integrated above.
+Computed-type/query probes and pending-query retained budgets remain open.
 
 ### Ordinary extent roots
 
@@ -726,20 +728,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 944
-  library/893 native tests (1837 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 950
+  library/895 native tests (1845 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-signature-gate.log`.
-- Six new checker groups cover checked parameter reuse, parameter shadowing,
-  definition/forward/re-export costs, computed modes, exact/overflow type limits
-  and source-order errors. Two native groups cover facade calls, forward bodies,
-  startup and original-file failures. Accepted programs run in debug/release.
-  Existing signature/documentation integration also passes. Log:
-  `/tmp/meowy-signature-integration.log`.
+  debug/release. Log: `/tmp/meowy-type-use-gate.log`.
+- Six new checker groups cover ascription/type-test target costs, type-identity
+  literals/copies/members/queries, grouping, nominal types, exact/overflow limits,
+  ordinary/computed modes, lookup isolation and first-error order. Two native
+  groups retain imported identities, startup, widths, ascription behavior and
+  original-file failures; accepted programs pass in debug/release. Logs:
+  `/tmp/meowy-type-binding-library.log`, `/tmp/meowy-type-use-integration.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Actual type-value/ascription execution roots, text/helper counters and
-  pending-query budget retention remain open. Proof outcomes stay gated;
-  unsupported queries are not conformance successes.
+  separate. Remaining computed-type/query probes, text/helper counters and pending
+  query budget retention still need work. Proof outcomes remain gated; unsupported
+  queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -813,15 +815,15 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Trace actual type-value/ascription execution in `check/statements.rs`,
-   `check/expressions.rs`, `check/names.rs` and hint/refinement callers of `symbol`
-   or `ty`. Function definition/forward/export roots are integrated; retain checked
-   parameter types and do not replay annotations during body setup. Distinguish
-   execution from probes before adding roots, then record ordered slices and test
-   repeated uses, skipped/type-query operands, mode restoration, exact limits and
-   original-file failures. Pending-query budget retention, text/helper admission
-   and phase/dependency tracking remain separate prerequisites. Run the compiler
-   gate after each completed series; keep proof outcomes gated.
+1. Audit remaining computed-type/query probe calls to `symbol`/`type_literal` in
+   `check/names.rs`, expression hints, function-call classification and exports.
+   Direct bindings and ascription/type-test targets now charge execution. Prove
+   whether remaining successful probe paths replay `type_value`, or split those
+   execution/probe paths before changing accounting. Preserve error order, query
+   operand isolation, ordinary/computed modes and original spans. Record ordered
+   slices and run the full compiler gate after integration. Then address pending
+   query argument construction and retained root budgets in `check/queries.rs`;
+   text/helper admission and phase/dependency tracking still gate proof outcomes.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep

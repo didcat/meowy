@@ -439,3 +439,50 @@ pub(crate) fn signature_roots_keep_forward_and_export_source_errors() {
         }
     }
 }
+
+#[test]
+pub(crate) fn type_use_roots_preserve_imported_identities_and_ascriptions() {
+    super::file_modules::case(
+        "m:@\"./facade.mwy\";d:@\"debug\";kind:((m).Kind);copy:kind;v<(copy)>:7;safe:v<(copy)>;d.print(safe);queried:(v/0)<>;w<(queried)>:9;d.print(w);|v<uint8>|d.print(3)",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);->Kind<Type>:<uint8>"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->Kind<Type>:m.Kind"),
+        ],
+    ).runs(b"1\n2\n7\n9\n3\n");
+    Case::new("d:@\"debug\";kind:<int32[1+1]>;copy:kind;v<(copy)>:[7,9];w:v<(kind)>;d.print(w[2])")
+        .runs(b"9\n");
+}
+
+#[test]
+pub(crate) fn type_use_roots_keep_original_binding_and_ascription_errors() {
+    for source in [
+        "kind:<uint8[1/0]><Missing>",
+        "value:7;->value:value<int32[1/0]>",
+    ] {
+        let case = super::file_modules::case(
+            "m:@\"./facade.mwy\"",
+            &[
+                ("data.mwy", source),
+                ("facade.mwy", "m:@\"./data.mwy\";->tag:1"),
+            ],
+        );
+        for action in ["check", "build", "run"] {
+            let output = case.command(action, &["--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!("\"start\":{}", source.find("1/0").unwrap())),
+                "{error}"
+            );
+        }
+    }
+}

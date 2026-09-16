@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-15. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-16. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -31,7 +31,9 @@ initializer work. Ordinary aliases and data annotations now have constructor
 roots; nested extents share their budgets and computed operands restore input
 mode afterward. Function definition/forward/export signatures now have roots;
 body locals reuse checked parameter types without replaying annotations. Standalone
-ordinary extents retain isolated roots and input gates.
+ordinary extents retain isolated roots and input gates. Ascription/type-test
+targets and ordinary type-identity bindings now charge execution separately from
+lookup, preserving ordinary extent restrictions and query operand isolation.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
@@ -75,20 +77,20 @@ remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 944
-  library/893 native tests (1837 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 950
+  library/895 native tests (1845 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-signature-gate.log`.
-- Six new checker groups cover checked parameter reuse, parameter shadowing,
-  definition/forward/re-export costs, computed modes, exact/overflow type limits
-  and source-order errors. Two native groups cover facade calls, forward bodies,
-  startup and original-file failures. Accepted programs run in debug/release.
-  Existing signature/documentation integration also passes. Log:
-  `/tmp/meowy-signature-integration.log`.
+  debug/release. Log: `/tmp/meowy-type-use-gate.log`.
+- Six new checker groups cover ascription/type-test target costs, type-identity
+  literals/copies/members/queries, grouping, nominal types, exact/overflow limits,
+  ordinary/computed modes, lookup isolation and first-error order. Two native
+  groups retain imported identities, startup, widths, ascription behavior and
+  original-file failures; accepted programs pass in debug/release. Logs:
+  `/tmp/meowy-type-binding-library.log`, `/tmp/meowy-type-use-integration.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Actual type-value/ascription execution roots, text/helper counters and
-  pending-query budget retention remain open. Proof outcomes stay gated;
-  unsupported queries are not conformance successes.
+  separate. Remaining computed-type/query probes, text/helper counters and pending
+  query budget retention still need work. Proof outcomes remain gated; unsupported
+  queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -133,12 +135,12 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Trace actual type-value/ascription execution versus lookup/hint probes in
-   `check/statements.rs`, `check/expressions.rs` and `check/names.rs`. Function
-   definition/forward/export roots are integrated and body parameter types are
-   reused. The [compiler handoff](compiler/STATUS.md#executable-proof-plan) records
-   next root, deferred-query, text/helper and phase/dependency work. Proof outcomes
-   and flags remain gated.
+1. Audit remaining computed-type/query symbol probes for replay before changing
+   shared lookup behavior. Direct type bindings and ascription/type-test targets
+   are integrated. Then address pending-query argument construction and retained
+   budgets. The [compiler handoff](compiler/STATUS.md#executable-proof-plan) records
+   the remaining probe, text/helper and phase/dependency work. Proof outcomes and
+   flags remain gated.
 
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.
