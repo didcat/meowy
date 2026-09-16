@@ -27,7 +27,19 @@ impl Checker {
     }
 
     pub(crate) fn list_extent(&mut self, expr: &ast::Expr) -> Result<usize> {
-        if self.type_work.is_some() && self.integer_blocks(expr)? {
+        if !self.proven_inputs() {
+            if !Self::extent_form(expr) {
+                return Err(Diagnostic::unsupported(
+                    "required evaluation of list extent expressions",
+                    expr.span,
+                ));
+            }
+            return self.required_root(expr.span, |checker| {
+                checker.type_work.as_mut().unwrap().extent_only = true;
+                checker.extent_value(expr)
+            });
+        }
+        if self.integer_blocks(expr)? {
             let Value::Static {
                 value: Constant::Int(value),
                 ..
@@ -43,15 +55,11 @@ impl Checker {
                 )
             });
         }
-        if self.type_work.is_some() {
-            self.scalar_input(expr)?;
-        }
-        if self.type_work.is_none() && !Self::extent_form(expr) {
-            return Err(Diagnostic::unsupported(
-                "required evaluation of list extent expressions",
-                expr.span,
-            ));
-        }
+        self.scalar_input(expr)?;
+        self.extent_value(expr)
+    }
+
+    pub(crate) fn extent_value(&mut self, expr: &ast::Expr) -> Result<usize> {
         let reach = std::mem::replace(&mut self.reach, crate::flow::TRUE);
         let required = std::mem::replace(&mut self.required, true);
         let result = self.expression(expr, None);

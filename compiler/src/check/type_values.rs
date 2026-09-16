@@ -5,6 +5,8 @@ mod booleans;
 mod comparisons;
 #[cfg(test)]
 mod expression_accounting;
+#[cfg(test)]
+mod extent_roots;
 mod fields;
 mod inferred;
 #[cfg(test)]

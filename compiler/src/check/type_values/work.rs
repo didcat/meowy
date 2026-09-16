@@ -6,6 +6,7 @@ use crate::hir::Type;
 
 #[derive(Default)]
 pub(crate) struct Work {
+    pub(crate) extent_only: bool,
     pub(crate) visits: usize,
     pub(crate) depth: usize,
     pub(crate) nodes: usize,
@@ -129,6 +130,12 @@ impl Work {
 }
 
 impl Checker {
+    pub(crate) fn proven_inputs(&self) -> bool {
+        self.type_work
+            .as_ref()
+            .is_some_and(|work| !work.extent_only)
+    }
+
     pub(crate) fn required_root<T>(
         &mut self,
         span: Span,

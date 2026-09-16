@@ -75,6 +75,27 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Ordinary extent roots in progress
+
+Audit: `list_extent` has separate ordinary and required-interpreter eligibility.
+Adding `Work` alone would enable retained initializer reads in `expressions.rs`.
+An extent-only root must preserve ordinary constant lookup and its form gate;
+existing required roots keep their broader scalar/block input path and shared budget.
+
+Dependency-ordered slices:
+
+1. Add ordinary extent roots with explicit input-mode separation, focused root,
+   count/limit, source-error and eligibility regressions. Preserve existing forms.
+2. Native extent integration, documentation and both handoffs after the compiler gate.
+
+Root/input-mode separation is implemented. Four new root/count/input-mode groups
+and all 929 library tests pass; Clippy with warnings denied and formatting pass.
+Ordinary constants retain their prior behavior; stored initializer proofs remain
+exclusive to the required interpreter. Logs: `/tmp/meowy-extent-roots-library.log`,
+`/tmp/meowy-extent-roots-clippy.log`. Next: native integration and the complete gate.
+Ordinary type constructors outside required evaluation and pending-query budgets
+remain later root-lifetime work. Text/helper values stay gated.
+
 ### Source-constructor accounting
 
 `source_spec` explicitly charges construction for required literals, aliases and

@@ -126,7 +126,7 @@ impl Checker {
                 Value::FileModule { id, ty } => {
                     let primary = Self::primary_type(&ty);
                     if self.required
-                        && self.type_work.is_some()
+                        && self.proven_inputs()
                         && matches!(primary, Type::Int { .. })
                         && (ty == primary || matches!(expected, Some(Type::Int { .. })))
                     {
@@ -161,7 +161,7 @@ impl Checker {
                 }
                 Value::Local { id, ty, .. } => {
                     if self.required
-                        && self.type_work.is_some()
+                        && self.proven_inputs()
                         && let Some(value) = self.inputs.get(&id).and_then(|input| input.value)
                     {
                         return Ok(hir::Expr {
@@ -273,7 +273,7 @@ impl Checker {
                 (hir::ExprKind::Block(block), ty)
             }
             ExprKind::Field { value, name } => {
-                if self.required && self.type_work.is_some() {
+                if self.required && self.proven_inputs() {
                     self.charge_ancestors(expr)?;
                     let (ty, input) = self.required_field(expr)?;
                     if let Some(error) = input.error {
