@@ -283,3 +283,53 @@ d.print(longer[2])
     assert_eq!(result.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&result.stderr).contains("\"code\":\"E101\""));
 }
+
+#[test]
+pub(crate) fn ordinary_extent_roots_preserve_capacity_and_required_inputs() {
+    Case::new(
+        "d:@\"debug\";n<uint8>:2;v<int32[n+1]>:[7,9];copy<int32[((n)+1)]>:v;d.print(copy[2]);<T>:{m:{->2};-><int32[m]>};other<T>:[3,4];d.print(other[2]);empty<int32[0]>:[];d.print(empty.size())",
+    ).runs(b"9\n4\n0\n");
+    for (source, code) in [
+        ("n<uint8>:255;|false|v<int32[n+1]>:[]", "E107"),
+        ("n:=2;f<null>:(){v<int32[n]>:[]}", "E104"),
+        ("v<int32[({->2})]>:[]", "B001"),
+    ] {
+        let case = Case::new(source);
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
+        }
+    }
+}
+
+#[test]
+pub(crate) fn ordinary_extent_roots_keep_original_imported_errors() {
+    let source = "limit<uint8>:255;-><Items>:<int32[limit+1]>";
+    let case = super::file_modules::case(
+        "m:@\"./facade.mwy\"",
+        &[
+            ("data.mwy", source),
+            ("facade.mwy", "m:@\"./data.mwy\";-><Items>:<m.Items>"),
+        ],
+    );
+    for action in ["check", "build", "run"] {
+        let output = case.command(action, &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        assert!(output.stdout.is_empty());
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"E107\""), "{error}");
+        assert!(
+            error.contains(&format!(
+                "\"path\":\"{}\"",
+                case.path.join("data.mwy").display()
+            )),
+            "{error}"
+        );
+        assert!(
+            error.contains(&format!("\"start\":{}", source.find("limit+1").unwrap())),
+            "{error}"
+        );
+    }
+}

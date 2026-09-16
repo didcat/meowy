@@ -27,7 +27,8 @@ literals, reads, queries and subtraction also charge expression steps;
 grouping and synthetic wrappers add no logical construction costs. Required record
 construction and recursive copies now charge aggregate slots; composition transfers
 charged slots without duplication. Retained record reads charge without replaying
-initializer work.
+initializer work. Ordinary list extents now have isolated logical roots while
+preserving their constant-input restrictions.
 Nested roots retain original spans
 and sticky failures; grouping, form checks and skipped branches spend no evaluation
 steps. Other accounting domains and proof evaluation remain incomplete.
@@ -71,20 +72,20 @@ remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 925
-  library/887 native tests (1812 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 929
+  library/889 native tests (1818 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-source-types-gate.log`.
-- Eleven source-constructor checker groups and two native groups pass: duplicate
-  union inputs, repeated/nested aliases and extents, implicit primaries, scalar
-  and record annotations, selected/skipped work, exact/overflow logical limits,
-  lookup isolation, source-order failures and scope/root restoration. Native
-  facades retain widths, startup order and original-file errors in debug/release.
-  Log: `/tmp/meowy-source-types-integration.log`.
+  debug/release. Log: `/tmp/meowy-extent-roots-gate.log`.
+- Four extent-root checker groups and two native groups cover independent resets,
+  shared required budgets, exact/overflow limits, grouping, constant/proof input
+  separation, mode/reach restoration, capacities, runtime-skipped checks and
+  original imported errors. Native programs and rejection checks pass in both
+  profiles. Logs: `/tmp/meowy-extent-roots-library.log`,
+  `/tmp/meowy-extent-roots-integration.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Ordinary source traversal outside required evaluation, rootless
-  extents, text/helper counters and pending-query budget retention remain open.
-  Proof outcomes remain gated; unsupported queries are not conformance successes.
+  separate. Ordinary type-constructor roots, text/helper counters and pending-query
+  budget retention remain open. Proof outcomes stay gated; unsupported queries
+  are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -129,12 +130,12 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Audit remaining root domains in `list.rs`, `check/names.rs` and `check/exports.rs`,
-   plus text/helper gates and deferred-query budgets. Required source construction
-   now retains duplicate inputs and failure prefixes; ordinary/rootless paths need
-   explicit root lifetimes. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
-   records the ordered accounting, phase/dependency and type-only query work.
-   Proof outcomes and flags remain gated.
+1. Define ordinary type-construction roots in `check/names.rs` and `check/exports.rs`
+   without charging lookup probes or broadening initializer eligibility. Ordinary
+   list extents now have isolated roots; enclosing constructor boundaries and mode
+   propagation remain open. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
+   records the next accounting, text/helper and deferred-query work. Proof outcomes
+   and flags remain gated.
 
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

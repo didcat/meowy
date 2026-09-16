@@ -1553,8 +1553,18 @@ constructing a list type does not construct its elements as values.
 
 Lookup and form checks do not enter this source-construction path. Completed
 literal/alias results retain bootstrap traversal without charging their logical
-construction twice. Text/helper counters, ordinary roots outside the required
-interpreter, rootless extents and pending-query budget retention remain incomplete.
+construction twice.
+
+Ordinary list extents now create an isolated logical budget root at the extent
+expression. Nested extents inside required evaluation share that root's counters.
+The ordinary path retains its existing syntax and constant-input rules; adding a
+budget does not enable helper calls, inline blocks, member projections or retained
+initializer proofs there. Reachability and required-evaluation state restore after
+success or failure. An extent root charges integer evaluation, not the surrounding
+list type or its elements.
+
+Text/helper counters, ordinary type-constructor roots outside the required
+interpreter and pending-query budget retention remain incomplete.
 This ledger does not yet qualify the full required-evaluation contract or execute
 proof queries.
 
