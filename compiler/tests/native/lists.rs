@@ -333,3 +333,58 @@ pub(crate) fn ordinary_extent_roots_keep_original_imported_errors() {
         );
     }
 }
+
+#[test]
+pub(crate) fn ordinary_constructor_roots_preserve_aliases_exports_and_computed_operands() {
+    super::file_modules::case(
+        "m:@\"./facade.mwy\";d:@\"debug\";copy<m.Items>:m.items;d.print(copy[2]);<C>:{-><uint8[({->1+1})]>};other<C>:[3,4];d.print(other[2])",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(1);-><Items>:<uint8[1+1]>;->items<Items>:[7,9]"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);-><Items>:<m.Items>;->items<m.Items>:m.items"),
+        ],
+    ).runs(b"1\n2\n9\n4\n");
+    for source in [
+        "<T>:<{a<({-><int32>})>;b<int32[({->2})]>}>",
+        "v<int32[({->2})]>:[]",
+        "->v<int32[({->2})]>:[]",
+    ] {
+        let case = Case::new(source);
+        for profile in ["debug", "release"] {
+            let output = case.command("check", &["--profile", profile, "--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"B001\""), "{error}");
+        }
+    }
+}
+
+#[test]
+pub(crate) fn ordinary_constructor_roots_preserve_source_errors_across_facades() {
+    for source in ["-><Items>:<int32[1/0]>", "->items<int32[1/0]>:[]"] {
+        let case = super::file_modules::case(
+            "m:@\"./facade.mwy\"",
+            &[
+                ("data.mwy", source),
+                ("facade.mwy", "m:@\"./data.mwy\";->tag:1"),
+            ],
+        );
+        for action in ["check", "build", "run"] {
+            let output = case.command(action, &["--json"]);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert!(error.contains("\"code\":\"E107\""), "{error}");
+            assert!(
+                error.contains(&format!(
+                    "\"path\":\"{}\"",
+                    case.path.join("data.mwy").display()
+                )),
+                "{error}"
+            );
+            assert!(
+                error.contains(&format!("\"start\":{}", source.find("1/0").unwrap())),
+                "{error}"
+            );
+        }
+    }
+}

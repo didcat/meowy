@@ -1555,16 +1555,22 @@ Lookup and form checks do not enter this source-construction path. Completed
 literal/alias results retain bootstrap traversal without charging their logical
 construction twice.
 
-Ordinary list extents now create an isolated logical budget root at the extent
-expression. Nested extents inside required evaluation share that root's counters.
+Ordinary aliases and data binding/emission annotations create a logical root at
+their type expression. Their nested constructors, substitutions and list extents
+share that root. Computed type operands temporarily enter required input mode and
+restore ordinary mode afterward, including on failure. Independent declarations
+reset their counters. Runtime initializer evaluation is outside the annotation root.
+
+Ordinary list extents without an enclosing constructor create their own root at
+the extent expression. Extents inside required evaluation share its counters.
 The ordinary path retains its existing syntax and constant-input rules; adding a
 budget does not enable helper calls, inline blocks, member projections or retained
 initializer proofs there. Reachability and required-evaluation state restore after
 success or failure. An extent root charges integer evaluation, not the surrounding
 list type or its elements.
 
-Text/helper counters, ordinary type-constructor roots outside the required
-interpreter and pending-query budget retention remain incomplete.
+Function declaration signatures, other type-use execution boundaries, text/helper
+counters and pending-query budget retention still need integration.
 This ledger does not yet qualify the full required-evaluation contract or execute
 proof queries.
 

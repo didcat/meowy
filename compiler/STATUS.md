@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-15. Ordinary list extents now have isolated logical budget roots.
+Updated: 2026-09-15. Ordinary aliases and data annotations now have constructor roots.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -75,35 +75,35 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Ordinary constructor roots in progress
+### Ordinary constructor roots
 
-Audit: ordinary aliases and data annotations are execution boundaries; `spec`,
-`ty` and symbol lookup also serve probes. Constructor roots must preserve ordinary
-extent eligibility while computed operands temporarily enter required input mode.
-The same logical budget/root must survive these transitions and restore mode on
-both success and failure.
+`construction_root` starts a budget at an ordinary alias or data annotation's type
+expression, or joins the current root. `mode_root` restores the prior ordinary/
+required mode on success or failure; `type_value` temporarily enables required
+input evaluation for computed operands. `Work.ordinary` controls input eligibility,
+not whether work is charged. Nested extents share the enclosing constructor budget.
 
-Dependency-ordered slices:
+Completed dependency-ordered slices:
 
-1. `b293502`: scoped ordinary/required modes with shared-budget and restoration regressions.
-2. `a22fbdc`: ordinary alias constructor roots and normalized-input/extent/failure tests.
-3. Data binding/emission annotation roots with focused order/input-gate tests.
-4. Native integration, guide and both handoffs after the complete compiler gate.
+1. `b293502`: scoped modes with shared-budget and restoration regressions.
+2. `a22fbdc`: ordinary alias roots, source-constructor and extent cost coverage.
+3. `5aa67cf`: data binding/emission annotation roots; runtime initialization stays
+   outside fresh annotation roots. `spec`, `ty` and symbol probes retain lookup mode.
+4. Native integration, guide and both handoffs; the complete compiler gate passes.
 
-Scoped modes pass all 931 library tests, Clippy and formatting; computed operands
-restore the enclosing ordinary mode and sticky failures retain the outer root.
-Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-constructor-modes-clippy.log`.
-Ordinary alias construction now enters a root at its type expression. Four new
-root/count/mode groups and all 935 library tests pass, with Clippy and formatting.
-Logs: `/tmp/meowy-alias-roots-focused.log`, `/tmp/meowy-alias-roots-library.log`,
-`/tmp/meowy-alias-roots-clippy.log`. Data binding/emission annotation roots pass all 938 library tests, Clippy and
-formatting. Execution counts, lookup isolation, extent modes and annotation-before-
-initializer errors are covered. Ordinary block checking still fails fast without
-recovering its scope; the focused statement test verifies root cleanup independently.
-Logs: `/tmp/meowy-data-roots-library.log`, `/tmp/meowy-data-roots-clippy.log`.
-Next: native integration and the complete compiler gate. Function signatures, pending
-queries and remaining type-use
-sites need their own execution-versus-probe audit. Proof outcomes stay gated.
+Two mode groups, four alias groups and three data-annotation groups pass. The full
+gate passes 938 library/891 native tests, Clippy and formatting. Native coverage passes in debug/release,
+retaining imported alias/export widths, startup, input gates and original errors.
+Logs: `/tmp/meowy-constructor-modes.log`, `/tmp/meowy-alias-roots-library.log`,
+`/tmp/meowy-data-roots-library.log`, `/tmp/meowy-constructor-roots-integration.log`,
+`/tmp/meowy-constructor-roots-gate.log`. No outstanding failures remain. Ordinary block checking still fails fast
+without scope recovery; statement-level tests verify root cleanup independently.
+
+Next: audit function declaration/forward/export signatures in `functions.rs` and
+`exports.rs`, plus actual type-value/ascription uses sharing `symbol` or `ty` probes.
+These sites are not yet explicitly rooted. Avoid charging a signature twice when
+forward declarations or body checks reuse it. Pending queries also need durable
+root budgets; text/helper admission and phase/dependency work still gate outcomes.
 
 ### Ordinary extent roots
 
@@ -128,8 +128,8 @@ No outstanding failures remain.
 
 Independent extents reset their budget; active required roots share counters and
 retain broader input eligibility. Extent roots do not charge surrounding type
-construction. Ordinary `spec`/`declare_type` still need explicit construction roots
-without accidentally enabling retained inputs. Pending-query budgets and the
+construction. Ordinary aliases and data annotations now supply enclosing roots;
+other execution sites still require a probe-versus-construction audit. Pending-query budgets and the
 text/helper admission gates remain separate; proof outcomes stay gated.
 
 ### Source-constructor accounting
@@ -160,9 +160,9 @@ Logs: `/tmp/meowy-source-types-focused.log`, `/tmp/meowy-source-types-library.lo
 `/tmp/meowy-source-aliases-library.log`, `/tmp/meowy-source-records-library.log`,
 `/tmp/meowy-source-types-integration.log`, `/tmp/meowy-source-types-gate.log`.
 
-Next: audit remaining root domains. Ordinary `spec`/`declare_type` outside the
-required interpreter still use uncharged source traversal. `list.rs::list_extent`
-now gives ordinary extents isolated roots while preserving their input mode. Text/helper values are
+Ordinary aliases/data annotations and their extents now have explicit roots;
+`spec` remains a lookup path. Function signatures and other type-use sites still
+need an execution-boundary audit. Text/helper values are
 not admitted by the bounded required interpreter; audit gates before adding unused
 counters. Pending queries still need shared/root budget retention. Keep outcomes
 gated until these accounting and phase/dependency prerequisites finish.
@@ -296,7 +296,7 @@ non-evaluation and imported widths/startup in debug/release. Logs:
 `/tmp/meowy-integer-charge-integration.log`. The full compiler gate passes.
 No outstanding failures remain.
 
-Remaining domains: ordinary type-constructor roots, text/helper counters and
+Remaining domains: other type-use roots, text/helper counters and
 pending-query budget retention. Proof evaluation stays gated.
 
 ### Statement and boolean logical charges
@@ -669,20 +669,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 929
-  library/889 native tests (1818 total), 20 Python tests, fmt, Clippy, build, links
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 938
+  library/891 native tests (1829 total), 20 Python tests, fmt, Clippy, build, links
   and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-extent-roots-gate.log`.
-- Four extent-root checker groups and two native groups cover independent resets,
-  shared required budgets, exact/overflow limits, grouping, constant/proof input
-  separation, mode/reach restoration, capacities, runtime-skipped checks and
-  original imported errors. Native programs and rejection checks pass in both
-  profiles. Logs: `/tmp/meowy-extent-roots-library.log`,
-  `/tmp/meowy-extent-roots-integration.log`.
+  debug/release. Log: `/tmp/meowy-constructor-roots-gate.log`.
+- Nine new checker groups cover scoped modes, alias/data roots, shared constructor
+  and extent costs, duplicate inputs, exact/overflow budgets, independent resets,
+  lookup isolation and original failure order. Two native groups cover imported
+  aliases, annotated exports, computed operands, startup and original-file errors.
+  Accepted programs and input-gate checks pass in debug/release. Logs:
+  `/tmp/meowy-data-roots-library.log`, `/tmp/meowy-constructor-roots-integration.log`.
 - Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Ordinary type-constructor roots, text/helper counters and pending-query
-  budget retention remain open. Proof outcomes stay gated; unsupported queries
-  are not conformance successes.
+  separate. Function declaration signatures, other type-use roots, text/helper
+  counters and pending-query budget retention remain open. Proof outcomes stay
+  gated; unsupported queries are not conformance successes.
 - Runtime implementation, reference fixtures, dependencies and versions are
   unchanged. Editor and separate runtime/sanitizer gates were not rerun.
   Full v0.0.1 release qualification remains incomplete.
@@ -756,14 +756,15 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Define ordinary type-construction roots in `check/names.rs` and
-   `check/exports.rs` without charging lookup/form probes or enabling retained
-   initializer inputs. Ordinary extents now have roots; integrate their counters
-   into enclosing constructor roots only after defining root boundaries and mode
-   propagation. Record dependency-ordered slices; test independent/nested budgets,
-   source order, original-file errors, query/skip isolation and input gates, then
-   run the compiler gate. Audit text/helper admission and pending-query budget
-   retention separately; phase/dependency prerequisites still gate proof outcomes.
+1. Audit remaining type-use execution boundaries in `check/functions.rs`,
+   `check/exports.rs` and `check/names.rs`: function declaration/forward/export
+   signatures and actual type-value/ascription uses still share lookup APIs.
+   Trace reuse before choosing roots; do not duplicate signature work during body
+   checking or charge lookup/type-query probes. Record ordered slices and test
+   repeated signatures, computed operands, extent/input modes, exact limits,
+   source-order errors and original-file spans, then run the compiler gate.
+   Alias and data-annotation roots are integrated. Pending-query budget retention,
+   text/helper admission and phase/dependency tracking remain separate prerequisites.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
