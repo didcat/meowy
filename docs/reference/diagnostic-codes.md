@@ -195,7 +195,11 @@ or consuming it in an action that runs earlier in cleanup order. Show the
 registration, invalidating move/release and delayed use. `E302` and `E303` retain
 their ordinary access/lifetime meanings at delayed execution; registration alone
 does not establish an implicit borrow. `E309` includes a required local that is
-uninitialized on a cleanup path. See [deferred actions](values-and-blocks.md#deferred-actions).
+uninitialized on a cleanup path. `E303` also covers a labeled action whose delayed
+access requires an inner binding after its scope ends, including copyable values
+that were not explicitly saved in longer-lived storage. Show the registration,
+target scope and shorter-lived binding. See
+[deferred actions](values-and-blocks.md#deferred-actions).
 
 ## Tasks and channels
 

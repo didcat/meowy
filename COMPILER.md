@@ -210,15 +210,24 @@ locals it can borrow. Full-statement temporary lifetimes and returned-borrow
 summaries belong here. See [memory](docs/reference/memory.md).
 
 The [deferred-action contract](docs/reference/values-and-blocks.md#deferred-actions)
-adds `<- expression` statements; bootstrap support remains unimplemented. Plan
-separate reviewable slices for parsing/registration, exit-path ownership analysis,
+adds `<- expression` and `'scope <- expression` statements; bootstrap support
+remains unimplemented. Plan separate reviewable slices for parsing/registration,
+exit-path ownership analysis,
 and cleanup lowering with native regressions. Resolve names at registration but
 evaluate receivers, arguments and bodies at cleanup; do not lower registration
 to an ordinary closure capture or eager call-argument evaluation.
 
-Track only reached registrations, interleave them with automatic releases in
-reverse order, and reset them on restart. Check delayed accesses against every
-exit path, including unwinding and effects of earlier cleanup actions. Child joins
+Resolve a labeled target within the current function/task while retaining the
+registration site's name environment. Reject delayed uses of shorter-lived inner
+bindings, even when copyable, and labeled registration outside an executing
+action's own scope boundary. Do not synthesize snapshots or extend storage lifetimes.
+
+Track only reached registrations in the selected target's sequence, interleave
+them with automatic releases in reverse order, and reset them on target restart.
+An inner restart can register repeatedly in an outer target; preserve every
+registration and account for its storage without introducing implicit heap allocation.
+Check delayed accesses against every exit path, including unwinding and effects
+of earlier cleanup actions. Child joins
 precede the sequence. Reject escaping control, unhandled recoverable errors and
 uses of moved exports; module initialization actions must not become shutdown
 callbacks. Required evaluation must retain the same cleanup ordering, effects
@@ -227,7 +236,10 @@ and work accounting rather than skipping deferred bodies.
 Focused execution evidence must cover LIFO ordering, conditional registration,
 nested scopes, latest-value reads versus explicit snapshots, restart/leave,
 owner consumption and automatic release, unwind/cancellation, and module/entry
-lifetime differences. Documentation examples alone do not qualify these behaviors.
+lifetime differences. Include mixed labeled/unqualified LIFO order, conditional
+outer registration, inner versus target restarts, rejected inner-local accesses
+and invalid target boundaries. Documentation examples alone do not qualify these
+behaviors.
 
 **Specialization.** Check generic bodies against their declared constraints,
 then materialize code instances and code-generation layouts for reachable uses,

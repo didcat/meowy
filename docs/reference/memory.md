@@ -269,8 +269,12 @@ initialized are released.
 [Deferred actions](values-and-blocks.md#deferred-actions) and automatic owner
 release share one cleanup sequence. Successful owner initialization and executed
 `<-` registration add entries; scope exit processes those entries in reverse
-order, after required child-task joins. An action can therefore access owners
-initialized before its registration, while later owners have already been released.
+order, after required child-task joins. Labeled registration adds an entry to
+the selected enclosing scope's sequence at registration time. An action can
+therefore access that scope's owners initialized before registration, while later
+owners in that scope have already been released. Owners in inner scopes are
+released when those scopes exit; registration in an outer scope does not retain
+them or their bindings, even when their values are copyable.
 
 For example, initializing `first`, registering `<- inspect(first)`, then
 initializing `second` releases `second`, runs `inspect(first)`, then releases

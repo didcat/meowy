@@ -30,7 +30,7 @@ statements that intentionally share a line. Do not pad empty delimiters: `()`, `
 | ---------------------------- | -------------------------------------------------------- |
 | Bindings and assignment      | `count <int32> : 4`, `count := 4`, `count = 5`           |
 | Emissions                    | `-> count : 4`, `-> count`, `'result -> count`           |
-| Deferred actions             | `<- release()`, `<- { release() }`                      |
+| Deferred actions             | `<- release()`, `<- { release() }`, `'work <- release()` |
 | Binary operations            | `count + 1`, `left == right`, `ready && active`          |
 | Calls and lists              | `read(path, limit)`, `[1, 2, 3]`                         |
 | Inline blocks                | `{ -> count : 4 }`, `(value <int32>) { -> value }`       |

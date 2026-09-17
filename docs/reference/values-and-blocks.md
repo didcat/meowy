@@ -256,6 +256,7 @@ retains the same function, task, and lifetime restrictions. A similarly named
 member on an ordinary record has only the behavior of the value stored there.
 
 - `'name -> value` initializes that scope's primary slot and keeps executing.
+- `'name <- expression` registers cleanup in that scope and keeps executing.
 - `'name.leave()` cleans up inner scopes, then completes the named scope with its
   emissions so far. A required uninitialized result is a static error.
 - `'name.restart()` cleans up inner scopes and the current iteration's locals and
@@ -274,7 +275,8 @@ released if the block fails rather than completing normally. See
 ## Deferred actions
 
 `<- expression` registers an action for cleanup of the innermost executing
-lexical scope. Registration does not evaluate the expression, its receiver,
+lexical scope. `'name <- expression` instead targets the named enclosing scope.
+Registration does not evaluate the expression, its receiver,
 arguments or block body. The action runs once when that scope exits, after its
 required child-task joins. The call and block forms have identical timing:
 
@@ -315,8 +317,70 @@ first
 
 Only executed registrations participate. A matcher with a direct `<-` body
 conditionally registers in the containing scope; a braced matcher body has its
-own scope and runs its actions when that block exits. Inner scopes finish their
-cleanup before outer scopes. There is no labeled registration into another scope.
+own scope and runs its unqualified actions when that block exits. Inner scopes
+finish their cleanup before outer scopes.
+
+### Named cleanup targets
+
+Like `'name -> value`, `'name <- expression` selects a lexically enclosing scope
+in the current function and task. It neither exits that scope nor evaluates the
+expression. An unknown, non-enclosing or cross-function/task label is invalid.
+
+```meowy
+debug : @"debug"
+condition : true
+
+'work {
+    <- debug.print("first")
+    | condition | {
+        'work <- debug.print("second")
+        <- debug.print("inner")
+    }
+    debug.print("body")
+    <- debug.print("third")
+}
+```
+
+Output:
+
+```text
+inner
+body
+third
+second
+first
+```
+
+The labeled action is registered only when the matcher arm executes. It survives
+that arm's block exit and joins the target's cleanup sequence at the instant of
+registration. Labeled and unqualified registrations targeting the same scope share
+one LIFO order; there is no separate queue for each registration site. If
+`condition` is false, neither `inner` nor `second` is printed.
+
+The label selects only the cleanup target. Names inside the delayed expression
+still resolve at the registration site. Every binding or reference accessed there
+must remain valid until the action executes; labeling does not copy or move inner
+locals into the target, or extend their lifetimes.
+
+**Invalid — an inner binding expires before the target cleans up:**
+
+```meowy
+debug : @"debug"
+
+'work {
+    {
+        value : 7
+        'work <- debug.print(value)
+    }
+}
+```
+
+This is invalid even though `value` is copyable: registration does not snapshot
+it. Declare the required binding in the target scope or another scope that
+outlives the action. The checker also accounts for inner cleanup that moves,
+releases or changes a value needed by the outer action.
+
+### Iteration cleanup
 
 Normal completion, `leave()`, `restart()` and recoverable panic all run the
 actions of scopes they exit. Each restart cleans up the current iteration before
@@ -336,7 +400,12 @@ count := 0
 ```
 
 This prints `iteration` then `iteration finished` three times, including on the
-final `leave()`. Registrations never accumulate across restarts.
+final `leave()`. Registrations targeting the restarted scope do not accumulate
+across its restarts. A labeled registration targeting an outer scope survives an
+inner restart: each executed registration adds another action to the outer
+sequence. All such actions read values when that outer scope exits, not snapshots
+of the registering iterations. Restarting the target itself runs and clears its
+current sequence before beginning the next iteration.
 
 ### Delayed reads and ownership
 
@@ -401,9 +470,11 @@ propagated from cleanup. A panic during cleanup is fatal under the existing
 
 An action cannot emit into an enclosing result, or call `leave()` or `restart()`
 on a scope outside that action. Blocks and labels created inside it retain their
-ordinary local emission and control rules. A nested deferred action belongs to
-its own executing block and finishes before that block returns. Fatal termination
-and abort do not promise execution of registered actions.
+ordinary local emission and control rules. A nested unqualified deferred action
+belongs to its own executing block and finishes before that block returns.
+Inside an action, labeled registration may target only scopes created inside
+that action; it cannot append work to an enclosing cleanup sequence being exited.
+Fatal termination and abort do not promise execution of registered actions.
 
 This syntax is a language contract; bootstrap parsing, ownership analysis and
 execution of deferred actions remain unimplemented.

@@ -145,7 +145,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `-> value`                                    | Primary emission                                                 |
 | `-> name : value`                             | Immutable named emission                                         |
 | `-> name := value`                            | Mutable named emission                                           |
-| `<- expression`                               | Register an expression for cleanup of the current scope           |
+| `<- expression`                               | Register an expression for cleanup of the current scope          |
 | `(x <T>) { ... }`                             | Function value                                                   |
 | `f <R> : (x <T>) { ... }`                     | Function declaration with result type `R`                        |
 | `f <(T) -> R>;`                               | Forward signature, completed by the following definition group   |
@@ -158,6 +158,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `\| condition \| statement`                   | Conditional matcher arm                                          |
 | `'scope { ... }`                              | Named, immediately evaluated block                               |
 | `'scope -> value`                             | Primary emission into a named enclosing block                    |
+| `'scope <- expression`                        | Register cleanup in a named enclosing block                      |
 | `'scope.leave()`                              | Finish that named block                                          |
 | `'scope.restart()`                            | Clean up and restart that named block                            |
 | `\| value <T> \| statement`                   | Type predicate in a matcher condition                            |
@@ -290,6 +291,9 @@ cannot be confused with an arm delimiter.
 call or a block: `<- release()` and `<- { release() }` both delay evaluation
 until scope exit. It has no value and cannot appear as a call argument or
 initializer. See [deferred actions](values-and-blocks.md#deferred-actions).
+The labeled statement `'scope <- expression` selects an enclosing cleanup target,
+symmetrically with `'scope -> value`; the expression's names still resolve at
+the registration site, and all delayed accesses must survive until target exit.
 
 Prefix borrowing and dereferencing consume the following prefix operators and
 one primary expression, before any unparenthesized postfix forms. A parenthesized

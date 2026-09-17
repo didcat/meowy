@@ -20,11 +20,24 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 ## Scope-exit action documentation
 
 The [deferred-action reference](docs/reference/values-and-blocks.md#deferred-actions)
-specifies `<- expression`: delayed reads, reached registrations only, LIFO cleanup
+specifies `<- expression` and `'scope <- expression`: delayed reads, reached
+registrations only, LIFO cleanup
 interleaved with owner release, per-iteration restart cleanup and static validation
 of every exit path. Emitting an owner needed by an action is invalid. Module-level
 actions run at initialization exit; entry-level actions run at entry exit. Neither
 form installs a module-shutdown callback. Task joins precede deferred actions.
+
+Labeled and unqualified registrations share the target's sequence. Names resolve
+at registration; inner locals cannot survive by implicit snapshot or lifetime
+extension. An inner restart can add repeated registrations to an outer target;
+restarting that target runs and clears its sequence. Actions cannot register into
+scopes outside their own execution boundary. Syntax, memory, diagnostics, style
+and compiler planning now include these rules. The unrelated syntax-table spacing
+edit remains unstaged.
+
+Labeled-action validation: `python3 -B tools/verify.py` passed all four default
+checks; log: `/tmp/meowy-labeled-cleanup-docs.log`. Staged whitespace checks passed.
+No compiler/runtime/editor execution was performed for this documentation slice.
 
 Documentation slices: `ca4b2a4` specifies the core syntax/value/ownership contract;
 the integration slice links module/task lifetimes, diagnostics, style and the
