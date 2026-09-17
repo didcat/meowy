@@ -209,6 +209,26 @@ restart, panic, and cancellation. A child's join must precede destruction of
 locals it can borrow. Full-statement temporary lifetimes and returned-borrow
 summaries belong here. See [memory](docs/reference/memory.md).
 
+The [deferred-action contract](docs/reference/values-and-blocks.md#deferred-actions)
+adds `<- expression` statements; bootstrap support remains unimplemented. Plan
+separate reviewable slices for parsing/registration, exit-path ownership analysis,
+and cleanup lowering with native regressions. Resolve names at registration but
+evaluate receivers, arguments and bodies at cleanup; do not lower registration
+to an ordinary closure capture or eager call-argument evaluation.
+
+Track only reached registrations, interleave them with automatic releases in
+reverse order, and reset them on restart. Check delayed accesses against every
+exit path, including unwinding and effects of earlier cleanup actions. Child joins
+precede the sequence. Reject escaping control, unhandled recoverable errors and
+uses of moved exports; module initialization actions must not become shutdown
+callbacks. Required evaluation must retain the same cleanup ordering, effects
+and work accounting rather than skipping deferred bodies.
+
+Focused execution evidence must cover LIFO ordering, conditional registration,
+nested scopes, latest-value reads versus explicit snapshots, restart/leave,
+owner consumption and automatic release, unwind/cancellation, and module/entry
+lifetime differences. Documentation examples alone do not qualify these behaviors.
+
 **Specialization.** Check generic bodies against their declared constraints,
 then materialize code instances and code-generation layouts for reachable uses,
 reusing the semantic instantiation and layout queries above. Cache by item

@@ -30,6 +30,7 @@ statements that intentionally share a line. Do not pad empty delimiters: `()`, `
 | ---------------------------- | -------------------------------------------------------- |
 | Bindings and assignment      | `count <int32> : 4`, `count := 4`, `count = 5`           |
 | Emissions                    | `-> count : 4`, `-> count`, `'result -> count`           |
+| Deferred actions             | `<- release()`, `<- { release() }`                      |
 | Binary operations            | `count + 1`, `left == right`, `ready && active`          |
 | Calls and lists              | `read(path, limit)`, `[1, 2, 3]`                         |
 | Inline blocks                | `{ -> count : 4 }`, `(value <int32>) { -> value }`       |
@@ -40,7 +41,7 @@ statements that intentionally share a line. Do not pad empty delimiters: `()`, `
 | Imports and scope access     | `@"debug"`, `'result.leave()`                            |
 | Task operations              | `>> work()`, `<< task`                                   |
 
-Keep punctuation belonging to one token intact, including `->`, `:=`, `&!`, `&&`,
+Keep punctuation belonging to one token intact, including `->`, `<-`, `:=`, `&!`, `&&`,
 `||`, `>>` and `<<`. Keep type suffix internals and generic arguments attached;
 space declaration annotations and matcher type tests according to their context.
 Spaces never distinguish an ascription from a type test.

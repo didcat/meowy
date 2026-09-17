@@ -189,6 +189,14 @@ survive until the owning join. `E309` concerns ordinary storage; missing block
 emissions use `E204`. No repair may extend a lifetime by silently moving storage
 to the heap or copying a non-copyable owner.
 
+Deferred actions participate in the same ownership diagnostics. `E301` includes
+moving an owner into an emission while a registered action still needs the local,
+or consuming it in an action that runs earlier in cleanup order. Show the
+registration, invalidating move/release and delayed use. `E302` and `E303` retain
+their ordinary access/lifetime meanings at delayed execution; registration alone
+does not establish an implicit borrow. `E309` includes a required local that is
+uninitialized on a cleanup path. See [deferred actions](values-and-blocks.md#deferred-actions).
+
 ## Tasks and channels
 
 See [tasks and channels](tasks-and-channels.md). These are contract violations;

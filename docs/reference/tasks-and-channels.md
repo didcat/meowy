@@ -159,6 +159,20 @@ children requests cancellation for all unfinished children, joins every child,
 and only then releases remaining local storage. It never detaches work to make
 cleanup faster. This also applies when a function has already emitted a result.
 
+After these joins, [deferred actions](values-and-blocks.md#deferred-actions) and
+automatic local releases execute in their shared reverse registration/initialization
+order. An action registered by a child belongs to that child's lexical scope and
+runs in that child; it is not transferred to the joining parent. Acknowledged
+cancellation runs registered actions during unwinding, subject to the same fatal
+cleanup-panic rule as automatic release.
+
+A deferred action cannot serve as the signal needed for an existing child to
+finish: the scope joins that child before running the action. Close a channel,
+send a stop signal or perform another required shutdown operation explicitly
+before the join when the child needs it. A deferred action may execute nested
+scopes, but their children must likewise settle before those scopes complete;
+cleanup cannot detach work or extend a borrowed owner's lifetime.
+
 Explicit joins observe outcomes. Implicit cleanup discards domain results after
 releasing their owners, but must report unobserved `tasks.Panicked` and
 `tasks.SpawnFailed` as a panic in the owner. Cancellation requested by cleanup is

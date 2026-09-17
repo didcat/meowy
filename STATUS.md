@@ -17,20 +17,27 @@ Documentation and 82 standalone examples retain the standardized readable layout
 The prior token/literal preservation audit is `/tmp/meowy-doc-style-audit.json`;
 Git preserves its completed commit series. Compiler guides remain in `compiler/docs/`.
 
-## Scope-exit action documentation plan
+## Scope-exit action documentation
 
-1. Complete: specify `<- expression` registration, delayed evaluation, LIFO cleanup
-   and ownership in syntax, values and memory references.
-2. Integrate module/entry lifetimes, task cleanup and documentation conventions;
-   record the compiler implementation boundary, validate and commit.
+The [deferred-action reference](docs/reference/values-and-blocks.md#deferred-actions)
+specifies `<- expression`: delayed reads, reached registrations only, LIFO cleanup
+interleaved with owner release, per-iteration restart cleanup and static validation
+of every exit path. Emitting an owner needed by an action is invalid. Module-level
+actions run at initialization exit; entry-level actions run at entry exit. Neither
+form installs a module-shutdown callback. Task joins precede deferred actions.
 
-This is documentation-only work. Deferred actions are not implemented or executed
-by this change. Use the default repository verification gate and staged whitespace
-checks for each slice; compiler/runtime/editor execution is outside this task.
+Documentation slices: `ca4b2a4` specifies the core syntax/value/ownership contract;
+the integration slice links module/task lifetimes, diagnostics, style and the
+implementation plan. Default verification passed for the core contract; log:
+`/tmp/meowy-deferred-docs-core.log`. Final integration validation passed all four
+default checks with `python3 -B tools/verify.py`; log:
+`/tmp/meowy-deferred-docs-final.log`. Staged whitespace checks passed for both
+slices. No meowy source was compiled or executed by these checks.
 
-Core contract validation: `python3 -B tools/verify.py` passed all four default
-checks. Log: `/tmp/meowy-deferred-docs-core.log`. Examples specify expected behavior;
-they have not been compiled or executed. Module/task integration remains next.
+Compiler parsing, registration, exit-path analysis and lowering remain unimplemented.
+The ordered implementation slices and required behavioral evidence are recorded in
+`COMPILER.md`. Compiler/runtime/editor execution and release qualification are not
+claimed. Existing proof implementation priorities below remain unchanged.
 
 ## Current milestone
 

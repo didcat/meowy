@@ -56,6 +56,48 @@ export constructors instead of a globally mutable resource. If initialization
 panics, already initialized modules are released in reverse order and startup
 fails before the entry file executes.
 
+### Deferred initialization cleanup
+
+A file-level [deferred action](values-and-blocks.md#deferred-actions) belongs to
+the executing file body. In an imported module, it runs when initialization exits,
+before the completed module is available to importers. It is not a program-shutdown
+hook. Repeated imports do not register the action again because the module
+initializes only once. If initialization unwinds, only registrations reached before
+the failure run, alongside cleanup of initialized local owners.
+
+For example, this module prints its initialization message before its cleanup
+message, and importers subsequently receive `answer`:
+
+```meowy
+debug : @"debug"
+<- debug.print("initialization finished")
+debug.print("initializing")
+-> answer : 42
+```
+
+Exported owners retain their program lifetime and automatic module teardown.
+Initialization actions remain attached to initialization; emitting a value does
+not transfer those actions into module storage.
+
+**Invalid resource-export sketch (`database.mwy`):**
+
+```meowy
+connection : open()
+<- connection.close()
+-> connection
+```
+
+Assuming `open()` returns a non-copyable owner, emission moves `connection` out
+of the local needed by the action. This is a static ownership error, not a
+runtime close of an exported live connection. Transfer the owner without that
+local close action, or export a constructor whose caller owns the connection.
+
+The entry file is executed separately after module initialization. Its top-level
+actions run when entry execution exits, after its required child joins and before
+imported module storage is released. A top-level action in an imported module
+does not inherit this entry lifetime. Arbitrary shutdown callbacks retained from
+module initialization are not introduced by `<-`.
+
 Importing a module does not require every function or data item in that module
 to survive in the executable. The compiler and linker retain reachable values
 and their dependencies while preserving observable module initialization,
