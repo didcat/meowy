@@ -266,9 +266,28 @@ Owners are released in reverse initialization order on normal completion,
 and survive normal completion. If construction fails, only the slots already
 initialized are released.
 
+[Deferred actions](values-and-blocks.md#deferred-actions) and automatic owner
+release share one cleanup sequence. Successful owner initialization and executed
+`<-` registration add entries; scope exit processes those entries in reverse
+order, after required child-task joins. An action can therefore access owners
+initialized before its registration, while later owners have already been released.
+
+For example, initializing `first`, registering `<- inspect(first)`, then
+initializing `second` releases `second`, runs `inspect(first)`, then releases
+`first`. If an action consumes an owner, its later automatic release is skipped.
+Explicit closure of an opaque resource follows that resource's existing contract;
+it must not produce a second release during automatic cleanup.
+
+Registration creates no persistent implicit borrow. The checker includes delayed
+reads, writes and moves in cleanup order on every exit path. Moving an owner into
+an emission does not move a registered action with it: an action that still needs
+the old local makes that transfer invalid. Cleanup cannot use a released owner,
+an invalid reference or a value consumed by an action that runs earlier.
+
 Cleanup is compiler-generated from the value's ownership structure. Opaque
-resource types supply an intrinsic release operation. Cleanup cannot emit values,
-restart a scope, or throw a recoverable error. A fallible operation such as flushing
+resource types supply an intrinsic release operation. Cleanup cannot emit into an
+enclosing result, restart an enclosing scope, or throw a recoverable error.
+Deferred actions may handle fallible operations internally. Otherwise, an operation such as flushing
 a file must be called explicitly before cleanup. Releasing an already explicitly
 closed endpoint has no further effect.
 

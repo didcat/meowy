@@ -17,6 +17,21 @@ Documentation and 82 standalone examples retain the standardized readable layout
 The prior token/literal preservation audit is `/tmp/meowy-doc-style-audit.json`;
 Git preserves its completed commit series. Compiler guides remain in `compiler/docs/`.
 
+## Scope-exit action documentation plan
+
+1. Complete: specify `<- expression` registration, delayed evaluation, LIFO cleanup
+   and ownership in syntax, values and memory references.
+2. Integrate module/entry lifetimes, task cleanup and documentation conventions;
+   record the compiler implementation boundary, validate and commit.
+
+This is documentation-only work. Deferred actions are not implemented or executed
+by this change. Use the default repository verification gate and staged whitespace
+checks for each slice; compiler/runtime/editor execution is outside this task.
+
+Core contract validation: `python3 -B tools/verify.py` passed all four default
+checks. Log: `/tmp/meowy-deferred-docs-core.log`. Examples specify expected behavior;
+they have not been compiled or executed. Module/task integration remains next.
+
 ## Current milestone
 
 The logical ledger now charges type materialization, evaluated required statements

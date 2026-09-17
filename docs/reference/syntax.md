@@ -145,6 +145,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `-> value`                                    | Primary emission                                                 |
 | `-> name : value`                             | Immutable named emission                                         |
 | `-> name := value`                            | Mutable named emission                                           |
+| `<- expression`                               | Register an expression for cleanup of the current scope           |
 | `(x <T>) { ... }`                             | Function value                                                   |
 | `f <R> : (x <T>) { ... }`                     | Function declaration with result type `R`                        |
 | `f <(T) -> R>;`                               | Forward signature, completed by the following definition group   |
@@ -283,6 +284,12 @@ chained. Assignment, emissions, and matchers are statement forms. Parentheses
 override precedence. `>>` and `<<` are never bit shifts; use `bits.shl` and
 `bits.shr`. Put a bitwise `|` expression in parentheses inside a matcher so it
 cannot be confused with an arm delimiter.
+
+`<- expression` is also a statement form, not a binary operator or a binding.
+`<-` is one token. Its operand is required on the same statement and can be a
+call or a block: `<- release()` and `<- { release() }` both delay evaluation
+until scope exit. It has no value and cannot appear as a call argument or
+initializer. See [deferred actions](values-and-blocks.md#deferred-actions).
 
 Prefix borrowing and dereferencing consume the following prefix operators and
 one primary expression, before any unparenthesized postfix forms. A parenthesized

@@ -270,3 +270,140 @@ tasks. A label on a function body provides an explicit early-result pattern.
 Cleanup also runs during a recoverable task panic. Already emitted values are
 released if the block fails rather than completing normally. See
 [memory](memory.md#cleanup) and [tasks](tasks-and-channels.md#scope-exit).
+
+## Deferred actions
+
+`<- expression` registers an action for cleanup of the innermost executing
+lexical scope. Registration does not evaluate the expression, its receiver,
+arguments or block body. The action runs once when that scope exits, after its
+required child-task joins. The call and block forms have identical timing:
+
+```meowy
+{
+    acquire()
+    <- release()
+    work()
+}
+```
+
+`release()` runs after `work()` on normal completion and during recoverable
+unwinding after registration. If `acquire()` fails before registration is
+reached, that action does not run. The acquisition API's ordinary success/error
+handling still applies; registration does not test whether acquisition succeeded.
+
+Actions run in reverse registration order:
+
+```meowy
+debug : @"debug"
+
+{
+    <- { debug.print("first") }
+    <- { debug.print("second") }
+    <- { debug.print("third") }
+    debug.print("body")
+}
+```
+
+Output:
+
+```text
+body
+third
+second
+first
+```
+
+Only executed registrations participate. A matcher with a direct `<-` body
+conditionally registers in the containing scope; a braced matcher body has its
+own scope and runs its actions when that block exits. Inner scopes finish their
+cleanup before outer scopes. There is no labeled registration into another scope.
+
+Normal completion, `leave()`, `restart()` and recoverable panic all run the
+actions of scopes they exit. Each restart cleans up the current iteration before
+creating fresh bindings and registrations:
+
+```meowy
+debug : @"debug"
+count := 0
+
+'loop {
+    <- { debug.print("iteration finished") }
+    debug.print("iteration")
+    count = count + 1
+    | count == 3 | 'loop.leave()
+    'loop.restart()
+}
+```
+
+This prints `iteration` then `iteration finished` three times, including on the
+final `leave()`. Registrations never accumulate across restarts.
+
+### Delayed reads and ownership
+
+Names resolve at the registration site, using bindings already visible there.
+Later shadowing does not retarget an action. Values are read at execution time:
+
+```meowy
+debug : @"debug"
+x <int32> := 1
+<- debug.print(x)
+x = 2
+```
+
+The action prints `2`. To retain the earlier value, bind an explicit snapshot:
+
+```meowy
+debug : @"debug"
+x <int32> := 1
+saved : x
+<- debug.print(saved)
+x = 2
+```
+
+This prints `1`. A snapshot follows normal copy/move rules; it does not clone a
+non-copyable owner. A later reassignment changes what a deferred read observes,
+including which resource a deferred operation uses.
+
+An action is a cleanup control-flow edge, not an escaping closure. Registering
+it does not immediately copy, move or borrow its referenced bindings. Ordinary
+mutation and temporary borrows may precede cleanup, provided the action's accesses
+are valid when it runs. Explicit references stored in bindings retain their
+ordinary lifetime and exclusivity restrictions.
+
+The checker validates every applicable exit path, including recoverable unwind
+paths and the effects of earlier actions in cleanup order. A deferred read cannot
+rely on a refinement invalidated by intervening mutation. A consumed or partially
+uninitialized value required by an action is a static ownership error; moving it
+and hoping to restore it later is insufficient if unwinding can occur in between.
+
+**Invalid — emission moves the owner needed by cleanup:**
+
+```meowy
+{
+    connection : open()
+    <- connection.close()
+    -> connection
+}
+```
+
+Here `open()` and consuming `close()` stand for a resource API. For a non-copyable
+connection, emission invalidates the local immediately. The action cannot use
+that moved local, even though the completed result has not yet been published.
+Remove the local close action when transferring ownership to the result.
+
+### Action boundaries
+
+An action runs in the exiting task; it does not start a task or install a listener.
+Its expression result is discarded with ordinary temporary cleanup. Recoverable
+errors must be handled inside the action rather than silently discarded or
+propagated from cleanup. A panic during cleanup is fatal under the existing
+[cleanup contract](memory.md#cleanup).
+
+An action cannot emit into an enclosing result, or call `leave()` or `restart()`
+on a scope outside that action. Blocks and labels created inside it retain their
+ordinary local emission and control rules. A nested deferred action belongs to
+its own executing block and finishes before that block returns. Fatal termination
+and abort do not promise execution of registered actions.
+
+This syntax is a language contract; bootstrap parsing, ownership analysis and
+execution of deferred actions remain unimplemented.
