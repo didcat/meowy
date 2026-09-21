@@ -62,8 +62,8 @@ outcome is constructed. The reference remains authoritative.
   type materialization, required statements/blocks and integer/boolean evaluation,
   including scalar/record projection ancestors and retained record reads. Type
   expression dispatch and required source constructors now charge separately.
-  Pending queries now retain outer-root budgets. Remaining descriptor execution
-  roots, text/helper admission and phase/dependency tracking remain prerequisites.
+  Pending queries retain statement/outer-root budgets. Descriptor materialization,
+  text/helper admission and phase/dependency tracking remain prerequisites.
   Never relabel B001 as E220.
 - `hir::Type::is_copy` is a reuse candidate for admitted concrete runtime types;
   audit its domain before dispatch. `<never>` and compile-time-only types are
@@ -76,53 +76,35 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Pending descriptor statement roots: current series
+### Pending descriptor statement roots
 
-Audit: `pending_query` combines recognition with argument construction. Ordinary
-pending bindings close the query root before constructing their annotation, and
-copies have no expression-read charge. Required-block descriptor values remain
-unsupported; do not change branch admission or produce outcomes in this series.
+`queries.rs::pending_form` separates recognition/arity checks from argument
+construction. `queries/statements.rs::pending_statement` starts a construction
+root at each admitted binding/expression statement, or joins the active root.
+The statement, call/copy read and explicit annotation share one ledger. Grouping
+adds no steps. Calls retain the final ledger, including annotation charges and
+sticky failures; independent statements reset budgets. Copies preserve the
+original query ID without requerying or altering its original ledger.
 
-Dependency-ordered commit plan:
+Completed dependency-ordered slices:
 
-1. Separate pending query recognition from preparation, preserving diagnostics,
-   queue identity and existing charges. Verify recognition creates no query/ledger.
-2. Wrap admitted pending bindings and expression statements in construction roots,
-   sharing statement, call/read and annotation work. Preserve unannotated copies'
-   original query identity, ordinary modes and first errors; test exact limits.
-3. Verify native origins and ordinary/unsupported boundaries, update the guide and
-   handoffs, and run the complete compiler gate.
+1. `84ba2bc`: separate recognition from preparation; no constructor work or query
+   reservation during admitted call recognition. All 964 library tests passed.
+2. `835386a`: share pending statement/annotation roots, charge reads and preserve
+   limits, error order and required-branch gates. All 967 then-current library
+   tests passed, plus the subsequent required-branch case in 27 focused tests.
+3. Native checked-body/origin and skipped-required-branch checks, guide and handoffs.
+   All ten compiler checks pass (`/tmp/meowy-pending-statement-gate.log`);
+   the unused test import found by Clippy has been removed.
 
-Recognition and preparation are now separate; direct/grouped calls retain arity
-validation without constructing arguments or reserving a query. All 964 library
-tests pass (`/tmp/meowy-pending-recognition.log`). Statement roots now wrap binding/call/read/annotation work; copy IDs remain
-unchanged and required-block admission is unchanged. All 967 then-current library tests passed (`/tmp/meowy-pending-statements.log`);
-the additional required-branch admission test also passes in the 27-test focused
-run (`/tmp/meowy-pending-statements-focused.log`). Native integration is next.
-Descriptor materialization and phase/dependency tracking remain separate.
+Logs: `/tmp/meowy-pending-recognition.log`, `/tmp/meowy-pending-statements.log`,
+`/tmp/meowy-pending-statements-focused.log`.
 
-### Descriptor annotation accounting
-
-Explicit pending-result annotations now use `construction_root` and charged
-`source_spec`, preserving lookup-only classification elsewhere. An active outer
-root supplies its ledger; otherwise the annotation starts an independent root.
-Aliases charge their constructed type, while unannotated copies do not reconstruct
-arguments or create another query. Ordinary extent restrictions remain intact.
-
-Dependency-ordered slices:
-
-1. `b43a23c`: annotation construction roots and three checker groups covering
-   aliases, exact/overflow limits, original errors and root restoration.
-2. Native file-origin/error checks, the foundation guide and both handoffs.
-
-All 963 library tests pass (`/tmp/meowy-descriptor-annotations-lib.log`). The new
-native group passes in debug/release (`/tmp/meowy-descriptor-annotations-native.log`)
-after correcting its expected annotation spans. The final compiler gate passes all ten checks.
-
-Audit: required text values and source-helper execution remain unsupported in
-`check/type_values`; text type queries do not materialize bytes. Add their counters
-when admitting execution. Pending descriptor execution roots and transitive
-proof data/control dependencies remain prerequisites before outcomes or flags.
+Required-block descriptor construction, descriptor outcome materialization and
+transitive proof data/control dependencies remain unimplemented. Pending metadata
+has no descriptor aggregate payload; do not claim materialization/analysis charges
+from these preparation roots. Text/helper execution remains unsupported and needs
+its own counters when admitted. Text type queries do not materialize bytes.
 
 ### Pending-query argument roots and retained budgets
 
@@ -158,7 +140,7 @@ conformance (`/tmp/meowy-query-budget-gate.log`).
 
 Required-block query syntax, evaluated outcomes, scalar flags, descriptor result
 construction and phase/dependency tracking remain gated. Annotation accounting
-is integrated; descriptor execution roots remain open before query analysis.
+and statement roots are integrated; descriptor materialization remains open.
 
 ### Symbol-probe audit and field-hint isolation
 
@@ -841,20 +823,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 963
-  library/900 native tests (1863 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 968
+  library/901 native tests (1869 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-descriptor-annotations-gate.log`.
-- Three checker groups cover descriptor annotation aliases/copies, exact and
-  exceeded step/type limits, retained outer failures, independent root restoration
-  and constructor error accounting. Log: `/tmp/meowy-descriptor-annotations-lib.log`.
-- A native group verifies original query/file locations, wrong alternatives,
-  missing names, arithmetic failures and ordinary extent gates in both profiles.
-  Log: `/tmp/meowy-descriptor-annotations-native.log`.
-- Valid queries still reach the pending-evaluation B001 gate. No proof outcome,
-  text/helper execution or full release qualification is claimed. Runtime source,
+  0 failed in debug/release. Log: `/tmp/meowy-pending-statement-gate.log`.
+- Five new checker groups cover recognition without construction, statement and
+  annotation ledgers, exact/overflow copy-read limits, ordinary classification
+  and selected/skipped required-branch admission. Existing annotation and shared
+  ledger tests now include statement/read costs.
+- Native checks preserve original query/file locations through grouped calls,
+  annotated copies, uncalled functions and runtime-skipped bodies. A skipped
+  required query permits ordinary execution with output `7` in both profiles.
+- Proof outcomes remain B001-gated; descriptor materialization, phase/dependency
+  tracking and text/helper execution are not implemented. Runtime source,
   reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun.
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -925,15 +908,15 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Establish pending descriptor execution roots in `check/statements.rs` and
-   `check/queries.rs` before enabling deferred query analysis. Argument roots,
-   annotation construction and shared budget retention are integrated. Text/helper
-   values remain unsupported; add their counters only when admitting execution.
-   Preserve unsupported gates. Record ordered
-   slices and test selected/skipped work, original errors and outer-root limits.
-   Then add transitive data/control proof dependencies before producing outcomes
-   or flags; type formation and query availability must retain E225 separation.
-   Run the full compiler gate after each integrated series.
+1. Add transitive proof data/control dependency tracking before producing outcomes
+   or flags. Inspect `check/inputs`, scalar folding and checked branch flow; preserve
+   ordinary typing/ownership in skipped runtime bodies and E225 separation for
+   type formation and observation availability. Plan independently reviewable
+   representation, propagation and enforcement slices, then run the compiler gate.
+   When enabling outcomes in `check/queries.rs`, charge descriptor construction and
+   type capability inspection to retained roots. Pending metadata has no result
+   payload yet. Required-block descriptor admission and text/helper execution stay
+   gated until their execution/accounting foundations exist.
 
 2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep

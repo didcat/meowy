@@ -57,7 +57,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::check::queries::accounting::checker;
     use crate::check::required::MAX_STEPS;
 

@@ -171,3 +171,38 @@ pub(crate) fn pending_annotations_preserve_file_errors_and_query_origins() {
         }
     }
 }
+
+#[test]
+pub(crate) fn pending_statement_roots_keep_original_calls_in_checked_bodies() {
+    for body in [
+        "r<p.Result>:((query<uint32>()));copy<p.Result>:((r));((copy))",
+        "f:(){r<p.Result>:((query<uint32>()));copy:r}",
+        "|false|{r<p.Result>:((query<uint32>()));copy:r}",
+        "((query<uint32>()))",
+    ] {
+        let source = format!(r#"p:@"proof";query:p.can_copy;{body}"#);
+        let case = case(r#"m:@"./query.mwy""#, &[("query.mwy", &source)]);
+        for profile in ["debug", "release"] {
+            let output = case.command("run", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            assert!(error.contains("\"code\":\"B001\""), "{error}");
+            assert!(error.contains("proof.can_copy evaluation"), "{error}");
+            assert!(
+                error.contains(&case.path.join("query.mwy").display().to_string()),
+                "{error}"
+            );
+            let start = source.find("query<uint32>()").unwrap();
+            assert!(error.contains(&format!("\"start\":{start}")), "{error}");
+            assert!(
+                error.contains(&format!("\"end\":{}", start + "query<uint32>()".len())),
+                "{error}"
+            );
+        }
+    }
+    Case::new(
+        r#"p:@"proof";<T>:{|false|r:p.can_copy<uint32>();-><int32>};n<T>:7;d:@"debug";d.print(n)"#,
+    )
+    .runs(b"7\n");
+}

@@ -113,37 +113,42 @@ charge argument construction and retain their shared outer logical budget throug
 root completion, including tail work and failures. Remaining descriptor execution,
 text/helper admission and phase/dependency work still gate query outcomes.
 
-## Pending descriptor annotation accounting
+## Pending descriptor statement accounting
 
-Explicit annotations now charge type construction in their own root or share an
-active outer ledger. Descriptor aliases and annotated copies charge without
-requerying. Ordinary extent restrictions and source diagnostics remain intact.
-`b43a23c` contains the correction and three checker groups. Native file diagnostics
-pass in debug/release; the full compiler gate passes. Proof outcomes, execution
-roots and transitive phase/dependency tracking remain unfinished.
+Pending bindings and expression statements now share one construction root across
+statement, call/read and annotation work. Query ledgers retain annotation charges
+and failures. Copies preserve their original query without replaying arguments;
+independent statements reset budgets. Required-block descriptor construction stays
+gated, and skipped required branches do not prepare queries.
+
+`84ba2bc` separates recognition from preparation; `835386a` integrates statement
+roots and copy reads. Native origin/admission coverage and all ten compiler
+checks pass. Descriptor outcomes and transitive phase/dependency tracking remain
+unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 963
-  library/900 native tests (1863 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 968
+  library/901 native tests (1869 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-descriptor-annotations-gate.log`.
-- Three checker groups cover descriptor annotation aliases/copies, exact and
-  exceeded step/type limits, retained outer failures, independent root restoration
-  and constructor error accounting. Log: `/tmp/meowy-descriptor-annotations-lib.log`.
-- A native group verifies original query/file locations, wrong alternatives,
-  missing names, arithmetic failures and ordinary extent gates in both profiles.
-  Log: `/tmp/meowy-descriptor-annotations-native.log`.
-- Valid queries still reach the pending-evaluation B001 gate. No proof outcome,
-  text/helper execution or full release qualification is claimed. Runtime source,
+  0 failed in debug/release. Log: `/tmp/meowy-pending-statement-gate.log`.
+- Five new checker groups cover recognition without construction, statement and
+  annotation ledgers, exact/overflow copy-read limits, ordinary classification
+  and selected/skipped required-branch admission. Existing annotation and shared
+  ledger tests now include statement/read costs.
+- Native checks preserve original query/file locations through grouped calls,
+  annotated copies, uncalled functions and runtime-skipped bodies. A skipped
+  required query permits ordinary execution with output `7` in both profiles.
+- Proof outcomes remain B001-gated; descriptor materialization, phase/dependency
+  tracking and text/helper execution are not implemented. Runtime source,
   reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun.
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 
 | Area | Current boundary |
 | --- | --- |
-| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; query argument/root budgets are retained; descriptor execution and phase tracking stay open. |
+| Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; query statement/annotation budgets are retained; descriptor outcomes and phase tracking stay open. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
 | Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
 | Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
@@ -179,12 +184,12 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Establish remaining descriptor execution roots before enabling query analysis.
-   Pending-query argument and annotation construction and shared budget retention
-   are integrated. Text/helper execution remains unsupported; add its counters
-   when admitting those values. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
-   records the remaining accounting and phase/dependency prerequisites. Proof
-   outcomes and flags remain gated.
+1. Add transitive proof data/control dependency tracking before enabling outcomes
+   or flags, preserving E225 separation and ordinary typing/ownership checks.
+   Pending statement and annotation roots are integrated; descriptor construction
+   and type inspection must charge the retained ledger when outcomes are admitted.
+   Required-block descriptors and text/helper execution remain gated. The
+   [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the boundaries.
 
 2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

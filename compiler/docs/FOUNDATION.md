@@ -90,11 +90,16 @@ Each admitted query retains an index into its outer root's logical ledger. That
 ledger is saved when the root exits, including work after the query and any sticky
 budget failure. Queries in the same root share it; independent calls start fresh
 ledgers. Copies reuse the query index without replaying argument construction.
-Explicit pending-result annotations construct their written type in a construction
-root at the annotation span, charging aliases as well as direct descriptor names.
-They share an active outer ledger; otherwise they start an independent annotation
-root. Copies without annotations add no constructor work and do not requery.
+Pending bindings and expression statements start a construction root at the
+statement span, or share an existing outer root. Each charges its statement and
+call or copy read; grouping is free. Explicit annotations construct their written
+type in that same root, charging aliases and direct descriptor names alike.
+For a new query, annotation work and budget failure remain in its retained
+ledger. Independent statements start fresh budgets; copied query IDs still refer
+to their original observations. Unannotated copies add no constructor work.
 Malformed annotations keep their original errors and ordinary extent restrictions.
+Required-block descriptor construction remains gated; skipped required branches
+do not prepare queries, while ordinary checked bodies still validate their queries.
 This retains accounting for future evaluation; no proof outcome is produced.
 
 The parser retains up to 64 explicit type arguments using supported type syntax;
