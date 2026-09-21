@@ -112,6 +112,26 @@ checks, including 994 library/903 native tests (`/tmp/meowy-proof-control-gate.l
 Control after conditional leave/restart, function summaries and mutable writes
 remain separate work; these slices do not enable source-level proof flags.
 
+### Mutable dependency slices
+
+1. Preserve dependency marks on direct mutable local writes from marked RHS values
+   or lexical proof control; keep ordinary type/mutability checks first. Test later
+   copies/guards/query availability and unrelated locals.
+2. Extend owned field/list path writes to include RHS, evaluated index and lexical
+   control dependencies. Test nested paths, ordinary failures and independent
+   storage; run the full compiler gate and update both handoffs.
+
+Investigation: `stmt_inner` clears ordinary refinements with `forget` after scalar
+writes; `write_path` uses `forget_field` after checking indices and RHS. Neither
+records dependency writes. These bounded slices use conservative whole-owner,
+monotone marks: a later independent overwrite does not yet erase a dependency.
+Alias/indirect-store propagation, precise path overwrite/join rules, function
+summaries and conditional-exit control remain prerequisites to enabling flags.
+No source-level proof flag becomes available in this series.
+Direct local write propagation passes four new checker groups and all 998 library
+tests (`/tmp/meowy-proof-writes-library.log`). Invalid immutable/type-mismatched
+writes retain E305/E207 and leave target marks unchanged. Owned paths are next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

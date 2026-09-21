@@ -137,6 +137,11 @@ report E225 after ordinary typing/ownership, including controlled queries follow
 an independent pending query. Four focused query groups pass; the full compiler
 gate passes all ten checks. Flags remain gated.
 
+Direct mutable assignments now preserve marked RHS and lexical-control
+dependencies for subsequent copies, guards and query availability. Four new groups
+and all 998 library tests pass. Marks are conservative and monotone; independent
+overwrites do not yet erase them. Owned paths are next; flags remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

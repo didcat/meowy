@@ -223,6 +223,9 @@ impl Checker {
                     ));
                 }
                 let value = self.expr(value, Some(&ty))?;
+                if self.control || self.derived_expr(&value) {
+                    self.derived.insert(id);
+                }
                 self.forget(id);
                 Ok(vec![hir::Stmt::Assign { id, value }])
             }

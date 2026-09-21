@@ -122,3 +122,6 @@ mod tests;
 
 #[cfg(test)]
 mod control;
+
+#[cfg(test)]
+mod writes;
