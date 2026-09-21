@@ -76,6 +76,28 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
+### Pending descriptor statement roots: current series
+
+Audit: `pending_query` combines recognition with argument construction. Ordinary
+pending bindings close the query root before constructing their annotation, and
+copies have no expression-read charge. Required-block descriptor values remain
+unsupported; do not change branch admission or produce outcomes in this series.
+
+Dependency-ordered commit plan:
+
+1. Separate pending query recognition from preparation, preserving diagnostics,
+   queue identity and existing charges. Verify recognition creates no query/ledger.
+2. Wrap admitted pending bindings and expression statements in construction roots,
+   sharing statement, call/read and annotation work. Preserve unannotated copies'
+   original query identity, ordinary modes and first errors; test exact limits.
+3. Verify native origins and ordinary/unsupported boundaries, update the guide and
+   handoffs, and run the complete compiler gate.
+
+Recognition and preparation are now separate; direct/grouped calls retain arity
+validation without constructing arguments or reserving a query. All 964 library
+tests pass (`/tmp/meowy-pending-recognition.log`). Next: statement-root integration.
+Descriptor materialization and phase/dependency tracking remain separate.
+
 ### Descriptor annotation accounting
 
 Explicit pending-result annotations now use `construction_root` and charged

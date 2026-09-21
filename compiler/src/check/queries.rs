@@ -1,7 +1,12 @@
 use super::{Checker, Result, Spec, Value};
-use crate::ast::{Expr, ExprKind, Span};
+use crate::ast::{Expr, ExprKind, Span, TypeExpr};
 use crate::diagnostic::Diagnostic;
 use crate::foundation::Item;
+
+pub(crate) enum Pending<'a> {
+    Copy(usize),
+    Call { ty: &'a TypeExpr, span: Span },
+}
 
 pub(crate) struct Query {
     pub(crate) ty: Spec,
@@ -30,11 +35,11 @@ impl Query {
 }
 
 impl Checker {
-    pub(crate) fn pending_query(&mut self, expr: &Expr) -> Result<Option<usize>> {
+    pub(crate) fn pending_form<'a>(&mut self, expr: &'a Expr) -> Result<Option<Pending<'a>>> {
         match &expr.kind {
-            ExprKind::Group(value) => self.pending_query(value),
+            ExprKind::Group(value) => self.pending_form(value),
             ExprKind::Name(_) => Ok(match self.symbol(expr)? {
-                Some(Value::Pending(id)) => Some(id),
+                Some(Value::Pending(id)) => Some(Pending::Copy(id)),
                 _ => None,
             }),
             ExprKind::Call { callee, args } => {
@@ -54,43 +59,60 @@ impl Checker {
                         expr.span,
                     ));
                 }
-                self.construction_root(expr.span, |checker| {
-                    checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
-                    let ty = checker.source_spec(&types[0], true)?;
-                    if matches!(ty, Spec::Function { .. }) {
-                        return Err(Diagnostic::unsupported(
-                            "proof queries on function signatures",
-                            types[0].span,
-                        ));
-                    }
-                    if checker.queries.len() == 4096 || !checker.flow.spend(1) {
-                        return Err(Diagnostic::unsupported(
-                            "pending proof query capacity exhausted",
-                            expr.span,
-                        ));
-                    }
-                    let root = match checker.type_work.as_ref().unwrap().query_root {
-                        Some(id) => id,
-                        None => {
-                            let id = checker.query_budgets.len();
-                            checker.query_budgets.push(None);
-                            checker.type_work.as_mut().unwrap().query_root = Some(id);
-                            id
-                        }
-                    };
-                    let id = checker.queries.len();
-                    checker.queries.push(Query {
-                        ty,
-                        span: expr.span,
-                        owner: checker.owner,
-                        target: crate::driver::TARGET,
-                        revision: 1,
-                        root,
-                    });
-                    Ok(Some(id))
-                })
+                Ok(Some(Pending::Call {
+                    ty: &types[0],
+                    span: expr.span,
+                }))
             }
             _ => Ok(None),
+        }
+    }
+
+    pub(crate) fn pending_query(&mut self, expr: &Expr) -> Result<Option<usize>> {
+        self.pending_form(expr)?
+            .map(|form| self.prepare_query(form))
+            .transpose()
+    }
+
+    pub(crate) fn prepare_query(&mut self, form: Pending<'_>) -> Result<usize> {
+        match form {
+            Pending::Copy(id) => Ok(id),
+            Pending::Call { ty, span } => self.construction_root(span, |checker| {
+                checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
+                let at = ty.span;
+                let ty = checker.source_spec(ty, true)?;
+                if matches!(ty, Spec::Function { .. }) {
+                    return Err(Diagnostic::unsupported(
+                        "proof queries on function signatures",
+                        at,
+                    ));
+                }
+                if checker.queries.len() == 4096 || !checker.flow.spend(1) {
+                    return Err(Diagnostic::unsupported(
+                        "pending proof query capacity exhausted",
+                        span,
+                    ));
+                }
+                let root = match checker.type_work.as_ref().unwrap().query_root {
+                    Some(id) => id,
+                    None => {
+                        let id = checker.query_budgets.len();
+                        checker.query_budgets.push(None);
+                        checker.type_work.as_mut().unwrap().query_root = Some(id);
+                        id
+                    }
+                };
+                let id = checker.queries.len();
+                checker.queries.push(Query {
+                    ty,
+                    span,
+                    owner: checker.owner,
+                    target: crate::driver::TARGET,
+                    revision: 1,
+                    root,
+                });
+                Ok(id)
+            }),
         }
     }
 

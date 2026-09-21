@@ -223,3 +223,42 @@ pub(crate) fn pending_budgets_retain_tail_failures_and_restore_next_root() {
     assert_eq!((budget.steps, budget.types), (2, 1));
     assert_eq!(checker.queries[1].unsupported(budget).code, "B001");
 }
+
+#[test]
+pub(crate) fn pending_recognition_does_not_construct_arguments_or_reserve_queries() {
+    for source in [
+        "r:p.can_copy<uint32>()",
+        "r:(p.can_copy<uint8[1/0]>())",
+        "r:p.can_copy<Missing>()",
+    ] {
+        let expr = call(source);
+        let mut checker = checker();
+        checker
+            .construction_root(expr.span, |checker| {
+                assert!(matches!(
+                    checker.pending_form(&expr)?,
+                    Some(super::Pending::Call { .. })
+                ));
+                let work = checker.type_work.as_ref().unwrap();
+                assert_eq!((work.logical.steps, work.logical.types), (0, 0));
+                assert!(checker.queries.is_empty());
+                assert!(checker.query_budgets.is_empty());
+                Ok(())
+            })
+            .unwrap();
+        assert!(checker.type_work.is_none());
+    }
+    let mut checker = checker();
+    for source in ["r:7", "r:p.revision", "r:p.can_copy<uint32>(missing)"] {
+        let result = checker
+            .pending_form(&call(source))
+            .map(|form| form.is_some());
+        if source.contains("missing") {
+            assert_eq!(result.unwrap_err().code, "E212");
+        } else {
+            assert!(!result.unwrap());
+        }
+        assert!(checker.type_work.is_none());
+        assert!(checker.queries.is_empty());
+    }
+}
