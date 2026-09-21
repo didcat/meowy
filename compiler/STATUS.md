@@ -60,6 +60,25 @@ The first slice necessarily updates all
 `Input` struct literals together to remain buildable; these small constructor edits
 span more than eight files and cannot be committed separately from the new field.
 
+### Current base-fact isolation slices
+
+1. Add a checked-HIR dependency walk over both expression operands and block
+   successors; retain local dependency marks separately from scalar constants.
+   Integrate immutable binding propagation and prevent marked constant folding.
+2. Make marked boolean guards opaque to base facts, preserving both successors
+   and preventing correlations from granting typing/ownership acceptance. Add
+   seeded checker/ownership regressions, then run the complete compiler gate.
+
+Investigation: `constant` follows ordinary local constants and short-circuits;
+`guard` additionally reuses local boolean identities and decomposes logical
+operators. Initializer evidence alone cannot protect either path. The HIR walk
+must include call arguments, indices and both block successors without executing
+anything. The HIR walk and binding/constant integration pass three focused groups and
+all 983 library tests (`/tmp/meowy-proof-base-library.log`). Binding evidence merges the structural mark even when initializer
+evaluation short-circuits before the derived operand.
+Function result summaries, mutable writes, control-dependent bindings
+and observation availability remain separate prerequisites; flags stay gated.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

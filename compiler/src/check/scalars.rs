@@ -411,6 +411,9 @@ impl Checker {
     }
 
     pub(crate) fn constant(&self, expr: &hir::Expr) -> Option<Constant> {
+        if self.derived_expr(expr) {
+            return None;
+        }
         match &expr.kind {
             hir::ExprKind::ListSize(value) => self
                 .list_length(value)

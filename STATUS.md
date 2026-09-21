@@ -123,6 +123,11 @@ groups pass. All ten compiler checks pass. Source-level flag projections
 remain gated. Base-graph propagation through both successors, calls and mutable
 state, plus observation-availability enforcement, still precede evaluated query outcomes.
 
+The next slice adds structural HIR dependency inspection across both operands and
+block successors, propagates local binding marks and prevents marked constant
+folding. Three new groups and all 983 library tests pass. Boolean guard isolation
+is next; the full compiler gate has not yet been rerun for this slice.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

@@ -1,5 +1,6 @@
 mod aliases;
 mod blocks;
+mod dependencies;
 mod documentation;
 mod exports;
 mod expressions;
@@ -143,6 +144,7 @@ pub(crate) struct Checker {
     pub(crate) places: BTreeSet<usize>,
     pub(crate) proofs: crate::borrow::Proofs,
     pub(crate) constants: BTreeMap<usize, Constant>,
+    pub(crate) derived: BTreeSet<usize>,
     pub(crate) inputs: BTreeMap<usize, inputs::Input>,
     pub(crate) bool_inputs: BTreeMap<usize, inputs::Input<bool>>,
     pub(crate) record_inputs: BTreeMap<usize, inputs::Record>,
@@ -275,6 +277,7 @@ impl Checker {
             places: BTreeSet::new(),
             proofs: crate::borrow::Proofs::default(),
             constants: BTreeMap::new(),
+            derived: BTreeSet::new(),
             inputs: BTreeMap::new(),
             bool_inputs: BTreeMap::new(),
             record_inputs: BTreeMap::new(),

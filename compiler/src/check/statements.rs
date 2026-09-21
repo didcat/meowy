@@ -109,6 +109,9 @@ impl Checker {
                     ));
                 }
                 let id = self.local(ty.clone());
+                if self.derived_expr(&value) {
+                    self.derived.insert(id);
+                }
                 if let Some(exports) = exports {
                     self.exports.insert(id, exports);
                 }
@@ -125,13 +128,16 @@ impl Checker {
                     self.constant(&value)
                 };
                 if !*mutable && !name.starts_with('\0') {
-                    if let Some(input) = self.integer_input(&value, &ty) {
+                    if let Some(mut input) = self.integer_input(&value, &ty) {
+                        input.derived |= self.derived.contains(&id);
                         self.inputs.insert(id, input);
                     }
-                    if let Some(input) = self.boolean_input(&value, &ty) {
+                    if let Some(mut input) = self.boolean_input(&value, &ty) {
+                        input.derived |= self.derived.contains(&id);
                         self.bool_inputs.insert(id, input);
                     }
-                    if let Some(input) = self.record_input(&value, &ty) {
+                    if let Some(mut input) = self.record_input(&value, &ty) {
+                        input.input.derived |= self.derived.contains(&id);
                         self.record_inputs.insert(id, input);
                     }
                 }
