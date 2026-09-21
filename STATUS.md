@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-16. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-21. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -32,8 +32,7 @@ at registration; inner locals cannot survive by implicit snapshot or lifetime
 extension. An inner restart can add repeated registrations to an outer target;
 restarting that target runs and clears its sequence. Actions cannot register into
 scopes outside their own execution boundary. Syntax, memory, diagnostics, style
-and compiler planning now include these rules. The unrelated syntax-table spacing
-edit remains unstaged.
+and compiler planning now include these rules.
 
 Labeled-action validation: `python3 -B tools/verify.py` passed all four default
 checks; log: `/tmp/meowy-labeled-cleanup-docs.log`. Staged whitespace checks passed.
@@ -114,27 +113,31 @@ charge argument construction and retain their shared outer logical budget throug
 root completion, including tail work and failures. Remaining descriptor execution,
 text/helper admission and phase/dependency work still gate query outcomes.
 
+## Pending descriptor annotation accounting
+
+Explicit annotations now charge type construction in their own root or share an
+active outer ledger. Descriptor aliases and annotated copies charge without
+requerying. Ordinary extent restrictions and source diagnostics remain intact.
+`b43a23c` contains the correction and three checker groups. Native file diagnostics
+pass in debug/release; the full compiler gate passes. Proof outcomes, execution
+roots and transitive phase/dependency tracking remain unfinished.
+
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 960
-  library/899 native tests (1859 total), 20 Python tests, fmt, Clippy, build, links
-  and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-query-budget-gate.log`.
-- Seven new checker groups cover invocation/type charges, descriptor/meta targets,
-  exact/overflow limits, arity/error order, ordinary/computed modes, shared root
-  identity, copies, tail work/failures and independent roots. Logs:
-  `/tmp/meowy-query-arguments.log`, `/tmp/meowy-query-budgets.log`.
-- Two native groups check facade targets, original query origins, argument modes
-  and source-file failures in debug/release. Valid arguments reach the intended
-  pending-evaluation B001 gate; no query execution is claimed. Log:
-  `/tmp/meowy-query-budget-native.log`.
-- Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Descriptor execution roots, text/helper admission and phase/dependency
-  tracking remain open. Proof outcomes stay gated; unsupported queries are not
-  conformance successes.
-- Runtime implementation, reference fixtures, dependencies and versions are
-  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
-  Full v0.0.1 release qualification remains incomplete.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 963
+  library/900 native tests (1863 total), 20 Python harness tests, fmt, Clippy,
+  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
+  0 failed in debug/release. Log: `/tmp/meowy-descriptor-annotations-gate.log`.
+- Three checker groups cover descriptor annotation aliases/copies, exact and
+  exceeded step/type limits, retained outer failures, independent root restoration
+  and constructor error accounting. Log: `/tmp/meowy-descriptor-annotations-lib.log`.
+- A native group verifies original query/file locations, wrong alternatives,
+  missing names, arithmetic failures and ordinary extent gates in both profiles.
+  Log: `/tmp/meowy-descriptor-annotations-native.log`.
+- Valid queries still reach the pending-evaluation B001 gate. No proof outcome,
+  text/helper execution or full release qualification is claimed. Runtime source,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun.
 
 ## Area handoff
 
@@ -176,9 +179,10 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Audit remaining descriptor execution roots and text/helper admission before
-   enabling query analysis. Pending-query argument construction and shared budget
-   retention are integrated. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
+1. Establish remaining descriptor execution roots before enabling query analysis.
+   Pending-query argument and annotation construction and shared budget retention
+   are integrated. Text/helper execution remains unsupported; add its counters
+   when admitting those values. The [compiler handoff](compiler/STATUS.md#executable-proof-plan)
    records the remaining accounting and phase/dependency prerequisites. Proof
    outcomes and flags remain gated.
 

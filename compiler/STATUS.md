@@ -76,25 +76,28 @@ outcome is constructed. The reference remains authoritative.
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
 
-### Descriptor annotation audit and commit plan
+### Descriptor annotation accounting
 
-The pending binding path in `check/statements.rs` resolves explicit annotations
-with uncharged `spec`, unlike ordinary annotations. Required text values and
-source-helper execution remain unsupported in `check/type_values`; type queries
-on text inspect its type without materializing bytes. Do not add counters for
-unimplemented execution or enable proof outcomes during this series.
+Explicit pending-result annotations now use `construction_root` and charged
+`source_spec`, preserving lookup-only classification elsewhere. An active outer
+root supplies its ledger; otherwise the annotation starts an independent root.
+Aliases charge their constructed type, while unannotated copies do not reconstruct
+arguments or create another query. Ordinary extent restrictions remain intact.
 
-1. Charge pending descriptor annotations through a construction root, with focused
-   tests for aliases, exact/overflow limits, original errors and root restoration.
-2. Verify the annotation boundary through native checks, update the foundation guide
-   and both handoffs, and run `python3 -B tools/verify.py --compiler`.
+Dependency-ordered slices:
 
-Descriptor execution roots and data/control dependency tracking remain separate
-prerequisites. Pending descriptor annotations now use `construction_root` and charged
-`source_spec`, preserving lookup-only classification elsewhere. All 963 library
-tests pass, including three annotation accounting groups; log:
-`/tmp/meowy-descriptor-annotations-lib.log`. Native verification and the final
-compiler gate are next. Text/helper execution and proof outcomes remain gated.
+1. `b43a23c`: annotation construction roots and three checker groups covering
+   aliases, exact/overflow limits, original errors and root restoration.
+2. Native file-origin/error checks, the foundation guide and both handoffs.
+
+All 963 library tests pass (`/tmp/meowy-descriptor-annotations-lib.log`). The new
+native group passes in debug/release (`/tmp/meowy-descriptor-annotations-native.log`)
+after correcting its expected annotation spans. The final compiler gate passes all ten checks.
+
+Audit: required text values and source-helper execution remain unsupported in
+`check/type_values`; text type queries do not materialize bytes. Add their counters
+when admitting execution. Pending descriptor execution roots and transitive
+proof data/control dependencies remain prerequisites before outcomes or flags.
 
 ### Pending-query argument roots and retained budgets
 
@@ -129,8 +132,8 @@ checks, including 960 library/899 native tests, formatting, Clippy and bootstrap
 conformance (`/tmp/meowy-query-budget-gate.log`).
 
 Required-block query syntax, evaluated outcomes, scalar flags, descriptor result
-construction and phase/dependency tracking remain gated. Next: audit text/helper
-admission and remaining descriptor annotation/execution roots before query analysis.
+construction and phase/dependency tracking remain gated. Annotation accounting
+is integrated; descriptor execution roots remain open before query analysis.
 
 ### Symbol-probe audit and field-hint isolation
 
@@ -813,25 +816,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 960
-  library/899 native tests (1859 total), 20 Python tests, fmt, Clippy, build, links
-  and catalog/schema checks. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-query-budget-gate.log`.
-- Seven new checker groups cover invocation/type charges, descriptor/meta targets,
-  exact/overflow limits, arity/error order, ordinary/computed modes, shared root
-  identity, copies, tail work/failures and independent roots. Logs:
-  `/tmp/meowy-query-arguments.log`, `/tmp/meowy-query-budgets.log`.
-- Two native groups check facade targets, original query origins, argument modes
-  and source-file failures in debug/release. Valid arguments reach the intended
-  pending-evaluation B001 gate; no query execution is claimed. Log:
-  `/tmp/meowy-query-budget-native.log`.
-- Logical E220 boundaries are tested internally; bootstrap B001 guards remain
-  separate. Descriptor execution roots, text/helper admission and phase/dependency
-  tracking remain open. Proof outcomes stay gated; unsupported queries are not
-  conformance successes.
-- Runtime implementation, reference fixtures, dependencies and versions are
-  unchanged. Editor and separate runtime/sanitizer gates were not rerun.
-  Full v0.0.1 release qualification remains incomplete.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 963
+  library/900 native tests (1863 total), 20 Python harness tests, fmt, Clippy,
+  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
+  0 failed in debug/release. Log: `/tmp/meowy-descriptor-annotations-gate.log`.
+- Three checker groups cover descriptor annotation aliases/copies, exact and
+  exceeded step/type limits, retained outer failures, independent root restoration
+  and constructor error accounting. Log: `/tmp/meowy-descriptor-annotations-lib.log`.
+- A native group verifies original query/file locations, wrong alternatives,
+  missing names, arithmetic failures and ordinary extent gates in both profiles.
+  Log: `/tmp/meowy-descriptor-annotations-native.log`.
+- Valid queries still reach the pending-evaluation B001 gate. No proof outcome,
+  text/helper execution or full release qualification is claimed. Runtime source,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun.
 
 ## Prior capabilities and other areas
 
@@ -902,10 +900,11 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Audit text/helper admission in `check/type_values` and descriptor annotation/
-   execution roots in `check/statements.rs` before enabling deferred query analysis.
-   Argument roots and shared budget retention are integrated. Preserve the current
-   unsupported gates; add counters only for admitted execution. Record ordered
+1. Establish pending descriptor execution roots in `check/statements.rs` and
+   `check/queries.rs` before enabling deferred query analysis. Argument roots,
+   annotation construction and shared budget retention are integrated. Text/helper
+   values remain unsupported; add their counters only when admitting execution.
+   Preserve unsupported gates. Record ordered
    slices and test selected/skipped work, original errors and outer-root limits.
    Then add transitive data/control proof dependencies before producing outcomes
    or flags; type formation and query availability must retain E225 separation.

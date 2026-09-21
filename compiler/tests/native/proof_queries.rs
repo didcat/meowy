@@ -140,3 +140,34 @@ pub(crate) fn pending_query_budgets_preserve_argument_modes_and_dependency_error
         }
     }
 }
+
+#[test]
+pub(crate) fn pending_annotations_preserve_file_errors_and_query_origins() {
+    for (ty, code, token) in [
+        ("p.Result", "B001", "p.can_copy<uint32>()"),
+        ("p.Always", "E207", "<p.Always>"),
+        ("Missing", "E202", "<Missing>"),
+        ("uint8[1/0]", "E107", "1/0"),
+        ("uint8[({->2})]", "B001", "({->2})"),
+    ] {
+        let source = format!(r#"p:@"proof";r:p.can_copy<uint32>();copy<{ty}>:r"#);
+        let case = case(r#"m:@"./query.mwy""#, &[("query.mwy", &source)]);
+        for profile in ["debug", "release"] {
+            let output = case.command("run", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            assert!(error.contains(&format!("\"code\":\"{code}\"")), "{error}");
+            assert!(
+                error.contains(&case.path.join("query.mwy").display().to_string()),
+                "{error}"
+            );
+            let start = source.find(token).unwrap();
+            assert!(error.contains(&format!("\"start\":{start}")), "{error}");
+            assert!(
+                error.contains(&format!("\"end\":{}", start + token.len())),
+                "{error}"
+            );
+        }
+    }
+}
