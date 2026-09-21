@@ -17,12 +17,20 @@ pub(crate) struct Query {
     pub(crate) target: &'static str,
     pub(crate) revision: u32,
     pub(crate) root: usize,
+    pub(crate) control: bool,
 }
 
 impl Query {
     pub(crate) fn unsupported(&self, budget: &super::required::Budget) -> Diagnostic {
         if let Some(error) = &budget.failure {
             return error.clone();
+        }
+        if self.control {
+            return Checker::error(
+                "E225",
+                "proof query availability depends on a proof answer",
+                self.span,
+            );
         }
         Diagnostic::unsupported(
             format!(
@@ -34,6 +42,24 @@ impl Query {
             self.span,
         )
     }
+}
+
+pub(crate) fn finish(queries: &[Query], budgets: &[Option<super::required::Budget>]) -> Result<()> {
+    for query in queries {
+        let budget = budgets[query.root].as_ref().expect("closed query root");
+        if let Some(error) = &budget.failure {
+            return Err(error.clone());
+        }
+    }
+    if let Some(query) = queries
+        .iter()
+        .find(|query| query.control)
+        .or_else(|| queries.first())
+    {
+        let budget = budgets[query.root].as_ref().expect("closed query root");
+        return Err(query.unsupported(budget));
+    }
+    Ok(())
 }
 
 impl Checker {
@@ -112,6 +138,7 @@ impl Checker {
                     target: crate::driver::TARGET,
                     revision: 1,
                     root,
+                    control: checker.control,
                 });
                 Ok(id)
             }),
@@ -287,3 +314,6 @@ mod tests {
         assert_eq!(crate::compile(source).unwrap_err()[0].code, "E201");
     }
 }
+
+#[cfg(test)]
+mod control;

@@ -126,13 +126,16 @@ under marked false conditions, including short-circuited expressions.
 `f0288d6` adds structural inspection and binding/constant isolation; the guard slice
 isolates boolean guards. All seven focused dependency groups and all ten compiler
 checks pass. Source-level flags remain gated. Function result summaries,
-mutable writes, control-dependent bindings and observation availability remain
-prerequisites to evaluated query outcomes.
+mutable writes and control dependence after conditional exits remain prerequisites
+to evaluated query outcomes.
 
 Matcher bodies now retain lexical proof-control marks on ordinary bindings and
 initializer evidence. Control and lexical scopes restore after errors; independent
 following statements remain unmarked. Three new groups and all 990 library tests
-pass. Deferred query-availability validation is next; flags remain gated.
+pass. `4ab86be` records that slice. Pending queries now retain lexical control and
+report E225 after ordinary typing/ownership, including controlled queries following
+an independent pending query. Four focused query groups pass; the full compiler
+gate passes all ten checks. Flags remain gated.
 
 ## Pending descriptor statement accounting
 
@@ -156,16 +159,15 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 987
-  library/903 native tests (1890 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 994
+  library/903 native tests (1897 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-base-gate.log`.
-- Seven new seeded checker groups cover structural dependencies, skipped operands,
-  binding copies, constant isolation, opaque guards, ordinary guard preservation,
-  E302 loan conflicts and E205 emission conflicts. The older evidence regression
-  now uses independently valid branch bindings and unconditional emissions.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-control-gate.log`.
+- Seven new seeded checker groups cover lexical control marks, nested bindings,
+  scope restoration, E225 required reads/query availability, original call spans,
+  descriptor copies, independent following queries and E207/E302/E220 precedence.
 - Source-level proof flags and outcomes remain B001-gated. Function result summaries,
-  mutable writes, control-dependent bindings and observation availability remain
+  mutable writes and continuation control after conditional leave/restart remain
   incomplete. Runtime sources, reference fixtures, dependencies and versions are
   unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.

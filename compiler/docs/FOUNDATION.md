@@ -95,9 +95,15 @@ these marks even when selected initializer evaluation skips the marked source.
 Marked expressions do not supply scalar constants or correlated boolean guards
 to base checking. Both branch successors remain possible, so marked conditions
 cannot hide loan conflicts. Ordinary constants and guard correlations are unchanged.
-Function result summaries, mutable writes, control-dependent bindings and
-observation availability still require phase analysis before evaluated answers
-can be admitted.
+Matcher bodies carry lexical proof-control marks into ordinary bindings and their
+initializer evidence, including nested ordinary conditions. Enclosing control and
+lexical scopes restore after success or error. Pending observation calls retain
+those control marks and report E225 after ordinary type/ownership validation,
+even if an earlier independent query still awaits evaluation. Descriptor copies
+create no observations; fixed flag type queries remain permitted. Later independent
+statements do not inherit a completed matcher body's control mark.
+Function result summaries, mutable writes and control dependence after conditional
+leave/restart still require phase analysis before evaluated answers can be admitted.
 
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query

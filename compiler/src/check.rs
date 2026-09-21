@@ -223,12 +223,8 @@ pub(crate) fn check_imports(
                 .map_err(|error| vec![error])?;
             let facts = crate::borrow::check(&program, &mut checker.flow, &checker.proofs)?;
             crate::loans::check(&program, &facts, &checker.proofs, &mut checker.flow)?;
-            if let Some(query) = checker.queries.first() {
-                let budget = checker.query_budgets[query.root]
-                    .as_ref()
-                    .expect("closed query root");
-                return Err(vec![query.unsupported(budget)]);
-            }
+            queries::finish(&checker.queries, &checker.query_budgets)
+                .map_err(|error| vec![error])?;
             let mut docs = checker.documentation;
             if let Some(model) = &mut docs {
                 model.finish().map_err(|error| vec![error])?;

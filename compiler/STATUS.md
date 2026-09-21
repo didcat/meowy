@@ -82,8 +82,8 @@ and copies using supported branch bindings and unconditional emissions; it passe
 All ten compiler checks pass after the test adaptation: 987 library/903 native
 tests (`/tmp/meowy-proof-base-gate.log`). No outstanding failures remain. Binding evidence merges the structural mark even when initializer
 evaluation short-circuits before the derived operand.
-Function result summaries, mutable writes, control-dependent bindings
-and observation availability remain separate prerequisites; flags stay gated.
+Lexical control and query availability are implemented below. Function result
+summaries, mutable writes and nonlexical control remain prerequisites; flags stay gated.
 
 ### Scoped control-dependency slices
 
@@ -103,6 +103,12 @@ The lexical control field and binding propagation pass all three new checker
 groups and all 990 library tests (`/tmp/meowy-proof-control-library.log`). Matcher
 control and lexical scopes restore on errors; unrelated following bindings remain
 unmarked. Compiler-created emission locals remain separate from source bindings.
+Binding/control slice committed as `4ab86be`. Query metadata now retains lexical
+control and the final gate inspects controlled queries before unsupported outcomes,
+after ordinary validation. Four focused query groups pass: nested/skipped control,
+original spans, descriptor copies, later independent queries, earlier B001 queries
+and ordinary E207/E302 precedence. The complete compiler gate passes all ten
+checks, including 994 library/903 native tests (`/tmp/meowy-proof-control-gate.log`).
 Control after conditional leave/restart, function summaries and mutable writes
 remain separate work; these slices do not enable source-level proof flags.
 
@@ -922,16 +928,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 987
-  library/903 native tests (1890 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 994
+  library/903 native tests (1897 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-base-gate.log`.
-- Seven new seeded checker groups cover structural dependencies, skipped operands,
-  binding copies, constant isolation, opaque guards, ordinary guard preservation,
-  E302 loan conflicts and E205 emission conflicts. The older evidence regression
-  now uses independently valid branch bindings and unconditional emissions.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-control-gate.log`.
+- Seven new seeded checker groups cover lexical control marks, nested bindings,
+  scope restoration, E225 required reads/query availability, original call spans,
+  descriptor copies, independent following queries and E207/E302/E220 precedence.
 - Source-level proof flags and outcomes remain B001-gated. Function result summaries,
-  mutable writes, control-dependent bindings and observation availability remain
+  mutable writes and continuation control after conditional leave/restart remain
   incomplete. Runtime sources, reference fixtures, dependencies and versions are
   unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
@@ -1005,14 +1010,14 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Extend `check/dependencies.rs` beyond structural operand/block inspection:
-   propagate function result dependencies, mutable writes/aliases and branch-control
-   dependence before producing outcomes or flags. `constant` and `guard` now isolate
-   marked expressions from base facts; binding evidence retains skipped operands.
-   Add scoped control tracking to `statements.rs` and observation-availability E225
-   checks to `queries.rs`, preserving ordinary error precedence. Inspect function
-   summaries and mutation paths before admitting either. Preserve
-   fixed flag type queries as answer-independent (`queries/signatures.rs`).
+1. Extend `check/dependencies.rs` and mutation/function checking with mutable
+   writes/aliases and function result dependencies before producing outcomes or
+   flags. Structural reads and lexical matcher control are tracked; required reads
+   and pending query availability enforce E225 for those marks. Conditional
+   leave/restart can control subsequent statements outside a matcher body; model
+   those continuation dependencies rather than treating lexical restoration as
+   complete control analysis. Add seeded write/call/continuation regressions and
+   run the full compiler gate. Preserve answer-independent fixed flag type queries.
    Preserve ordinary typing/ownership in skipped runtime bodies and E225 separation for
    type formation and observation availability. Plan independently reviewable
    representation, propagation and enforcement slices, then run the compiler gate.
