@@ -31,6 +31,26 @@ outcome is constructed. The reference remains authoritative.
 
 ### Prerequisites and current integration
 
+Current dependency-ordered slice plan:
+
+1. Admit fixed boolean flag signatures in unevaluated type queries on pending
+   descriptor bindings, with checker tests for aliases, budgets and preserved
+   gates. The phase contract permits these signatures independently of answers;
+   current field hints incorrectly reject them before dependency tracking exists.
+2. Add native origin/ordinary-error coverage and document the admitted boundary;
+   run the full compiler gate and commit the integration separately.
+
+Investigation: `expressions.rs::hint` probes fields through `symbol`, whose pending
+flag gate rejects value evaluation. Resolve only the fixed flag type through the
+existing safe binding lookup; do not prepare calls, expose answers or add constants.
+Transitive data/control tracking remains the next milestone after this prerequisite.
+The regression reproduced B001 at `((copy).always)<>` before the fix. All 972
+library tests now pass (`/tmp/meowy-proof-signatures-library.log`), including four
+new groups for fixed signatures, aliases, cost limits and preserved lookup/value
+gates. Type-query accounting charges dispatch plus boolean materialization
+(two steps, one type); no observation is prepared or recharged. No outstanding
+failures remain. Native coverage and the full gate are the next slice.
+
 - `src/foundation.rs` now includes partial `proof` module identity;
   `check/names.rs::symbol` provides typed revision metadata. Module/member aliases
   retain identity and same-spelling user bindings remain ordinary bindings.

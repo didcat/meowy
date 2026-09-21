@@ -491,6 +491,11 @@ impl Checker {
             }
             ExprKind::String(_) => Some(Type::String),
             ExprKind::Field { value, name } => {
+                if ["always", "never", "indeterminable"].contains(&name.as_str())
+                    && matches!(self.hint_symbol(value), Some(Value::Pending(_)))
+                {
+                    return Some(Type::Bool);
+                }
                 if let Some(Value::Static { ty, .. }) = self.hint_symbol(expr) {
                     return Some(ty);
                 }

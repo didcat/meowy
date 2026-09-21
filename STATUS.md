@@ -115,6 +115,12 @@ text/helper admission and phase/dependency work still gate query outcomes.
 
 ## Pending descriptor statement accounting
 
+Pending descriptor flag type queries now resolve their fixed `boolean` signature
+without exposing an answer or replaying a query. The checker accepts aliases and
+grouping while retaining value/capture gates and ordinary typing/ownership errors.
+All 972 library tests pass; native integration and the complete compiler gate are
+pending for this slice. Transitive proof data/control dependencies remain next.
+
 Pending bindings and expression statements now share one construction root across
 statement, call/read and annotation work. Query ledgers retain annotation charges
 and failures. Copies preserve their original query without replaying arguments;
