@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-16. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-21. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -75,6 +75,26 @@ outcome is constructed. The reference remains authoritative.
   to an owning source. E224 also needs deterministic query origins, required/actual
   alternatives, capability facts and revision. Preserve private file boundaries;
   any source-note support should be an independently validated prerequisite.
+
+### Descriptor annotation audit and commit plan
+
+The pending binding path in `check/statements.rs` resolves explicit annotations
+with uncharged `spec`, unlike ordinary annotations. Required text values and
+source-helper execution remain unsupported in `check/type_values`; type queries
+on text inspect its type without materializing bytes. Do not add counters for
+unimplemented execution or enable proof outcomes during this series.
+
+1. Charge pending descriptor annotations through a construction root, with focused
+   tests for aliases, exact/overflow limits, original errors and root restoration.
+2. Verify the annotation boundary through native checks, update the foundation guide
+   and both handoffs, and run `python3 -B tools/verify.py --compiler`.
+
+Descriptor execution roots and data/control dependency tracking remain separate
+prerequisites. Pending descriptor annotations now use `construction_root` and charged
+`source_spec`, preserving lookup-only classification elsewhere. All 963 library
+tests pass, including three annotation accounting groups; log:
+`/tmp/meowy-descriptor-annotations-lib.log`. Native verification and the final
+compiler gate are next. Text/helper execution and proof outcomes remain gated.
 
 ### Pending-query argument roots and retained budgets
 

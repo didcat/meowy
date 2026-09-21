@@ -113,6 +113,8 @@ impl Checker {
 
 #[cfg(test)]
 mod accounting;
+#[cfg(test)]
+mod annotations;
 
 #[cfg(test)]
 mod tests {

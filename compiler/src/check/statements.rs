@@ -43,7 +43,9 @@ impl Checker {
                         ));
                     }
                     if let Some(ty) = ty {
-                        match self.spec(ty)? {
+                        match self
+                            .construction_root(ty.span, |checker| checker.source_spec(ty, true))?
+                        {
                             super::Spec::Descriptor(crate::foundation::Descriptor::Result) => {}
                             super::Spec::Descriptor(_) => {
                                 return Err(Self::error(
