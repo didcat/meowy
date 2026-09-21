@@ -91,6 +91,7 @@ pub(crate) fn ordinary_extents_keep_forms_and_initializer_gates() {
     checker.inputs.insert(
         id,
         Input {
+            derived: false,
             value: Some(2),
             error: None,
             work: 1,

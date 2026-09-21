@@ -113,6 +113,14 @@ charge argument construction and retain their shared outer logical budget throug
 root completion, including tail work and failures. Remaining descriptor execution,
 text/helper admission and phase/dependency work still gate query outcomes.
 
+## Proof dependency evidence
+
+Initializer evidence now preserves a proof-dependency mark through evaluated
+scalar arithmetic, copies, conditions, tails and record projections. Five seeded
+checker groups and all 977 library tests pass; the final compiler gate is pending. Source-level flag projections
+remain gated. Base-graph propagation through both successors, calls and mutable
+state, plus E225 enforcement, still precede evaluated query outcomes.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

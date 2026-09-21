@@ -18,6 +18,7 @@ pub(crate) struct Sources {
 
 #[derive(Clone, Debug)]
 pub(crate) struct Input<T = i128> {
+    pub(crate) derived: bool,
     pub(crate) work: usize,
     pub(crate) error: Option<Diagnostic>,
     pub(crate) value: Option<T>,
@@ -25,6 +26,7 @@ pub(crate) struct Input<T = i128> {
 
 impl<T> Input<T> {
     pub(crate) fn add<U>(&mut self, source: &Input<U>) {
+        self.derived |= source.derived;
         self.work = self.work.saturating_add(source.work);
         self.error = self.error.take().or_else(|| source.error.clone());
     }
@@ -85,6 +87,7 @@ impl Checker {
             return None;
         }
         let mut input = Input {
+            derived: false,
             work: 1,
             error: None,
             value: None,
@@ -170,3 +173,6 @@ impl Checker {
 
 #[cfg(test)]
 pub(super) mod tests;
+
+#[cfg(test)]
+mod dependencies;

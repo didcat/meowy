@@ -48,6 +48,7 @@ impl Checker {
                         ..
                     }
                     | Value::Constant(Constant::Bool(value)) => Some(Input {
+                        derived: false,
                         value: Some(value),
                         error: None,
                         work: 0,

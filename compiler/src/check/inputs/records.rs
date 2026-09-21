@@ -54,6 +54,7 @@ impl Record {
             return None;
         };
         Some(Input {
+            derived: self.input.derived,
             work: self.input.work.saturating_add(path.len()),
             error: self.input.error.clone(),
             value: if self.input.error.is_none() {
@@ -169,6 +170,7 @@ impl Checker {
             fields,
             record: Record {
                 input: Input {
+                    derived: false,
                     work: 1,
                     error: None,
                     value: None,

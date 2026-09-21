@@ -29,6 +29,29 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
+### Proof dependency implementation slices
+
+1. Preserve a proof-dependency mark in initializer evidence, including scalar
+   copies, arithmetic, evaluated predicates, block conditions and record projections.
+   Validate with seeded checker evidence while actual flag projections stay gated.
+2. Add source/base-graph dependency propagation across skipped successors, calls
+   and mutable state; prevent proof-derived facts from narrowing ordinary checking.
+3. Enforce E225 at type formation and observation availability, retaining fixed
+   signature queries, then integrate native coverage before enabling outcomes.
+
+Current investigation: `Input::add` combines evaluated scalar and record evidence;
+boolean field projection reconstructs evidence and must explicitly preserve the
+mark. This is only an evidence prerequisite, not complete phase analysis: selected
+initializer traversal cannot replace base-graph analysis of both successors.
+The evidence field and five seeded checker groups pass: scalar copies/arithmetic,
+selected scalar conditions/tails, nested record projections, original failures and
+independent ordinary inputs. Fixed query signatures/revision remain unmarked.
+All 977 library tests pass (`/tmp/meowy-proof-dependencies-library.log`);
+formatting and whitespace checks pass. No source-level flag is admitted.
+The first slice necessarily updates all
+`Input` struct literals together to remain buildable; these small constructor edits
+span more than eight files and cannot be committed separately from the new field.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

@@ -175,6 +175,7 @@ impl Checker {
             ty,
             input: Box::new(Record {
                 input: Input {
+                    derived: false,
                     work: 0,
                     error: None,
                     value: None,

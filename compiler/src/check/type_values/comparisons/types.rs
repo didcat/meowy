@@ -242,6 +242,7 @@ mod work {
             checker.inputs.insert(
                 0,
                 Input {
+                    derived: false,
                     value: Some(4),
                     error: None,
                     work: MAX_WORK / 2,

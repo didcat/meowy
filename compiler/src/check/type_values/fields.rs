@@ -147,6 +147,7 @@ impl Checker {
             return Ok((
                 ty,
                 Input {
+                    derived: false,
                     work: 0,
                     error: None,
                     value: Some(value),

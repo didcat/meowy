@@ -17,6 +17,7 @@ impl Checker {
             target: block.id,
             locals: locals.clone(),
             input: Input {
+                derived: false,
                 work: 0,
                 error: None,
                 value: None,

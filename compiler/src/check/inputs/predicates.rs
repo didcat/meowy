@@ -30,6 +30,7 @@ impl Checker {
             return None;
         }
         let mut input = Input {
+            derived: false,
             work: 1,
             error: None,
             value: None,
