@@ -73,8 +73,14 @@ Investigation: `constant` follows ordinary local constants and short-circuits;
 `guard` additionally reuses local boolean identities and decomposes logical
 operators. Initializer evidence alone cannot protect either path. The HIR walk
 must include call arguments, indices and both block successors without executing
-anything. The HIR walk and binding/constant integration pass three focused groups and
-all 983 library tests (`/tmp/meowy-proof-base-library.log`). Binding evidence merges the structural mark even when initializer
+anything. `f0288d6` adds the HIR walk and binding/constant integration. Three focused groups and
+all 983 library tests pass (`/tmp/meowy-proof-base-library.log`).
+Opaque guard integration and complete-block borrow/loan checks pass: marked
+conditions retain E302 and cannot justify complementary emissions (E205).
+Ordinary guards remain unchanged. The prior evidence test now checks block results
+and copies using supported branch bindings and unconditional emissions; it passes.
+All ten compiler checks pass after the test adaptation: 987 library/903 native
+tests (`/tmp/meowy-proof-base-gate.log`). No outstanding failures remain. Binding evidence merges the structural mark even when initializer
 evaluation short-circuits before the derived operand.
 Function result summaries, mutable writes, control-dependent bindings
 and observation availability remain separate prerequisites; flags stay gated.
@@ -895,17 +901,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 980
-  library/903 native tests (1883 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 987
+  library/903 native tests (1890 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-dependencies-gate.log`.
-- Eight new seeded checker groups cover dependency propagation through evaluated
-  scalar/record evidence, E225 required-input rejection, fixed signatures,
-  original errors, budget precedence and root restoration. No source-level proof
-  flag is enabled; full base-graph/control propagation remains unfinished.
-- Proof outcomes remain B001-gated. Runtime source, reference fixtures,
-  dependencies and versions are unchanged; editor and separate runtime/sanitizer
-  gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-base-gate.log`.
+- Seven new seeded checker groups cover structural dependencies, skipped operands,
+  binding copies, constant isolation, opaque guards, ordinary guard preservation,
+  E302 loan conflicts and E205 emission conflicts. The older evidence regression
+  now uses independently valid branch bindings and unconditional emissions.
+- Source-level proof flags and outcomes remain B001-gated. Function result summaries,
+  mutable writes, control-dependent bindings and observation availability remain
+  incomplete. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -976,9 +984,13 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Extend the seeded initializer-evidence marks and required-input E225 guard
-   into source/base-graph data/control dependency tracking before producing outcomes
-   or flags. Inspect `check/inputs`, scalar folding and checked branch flow; preserve
+1. Extend `check/dependencies.rs` beyond structural operand/block inspection:
+   propagate function result dependencies, mutable writes/aliases and branch-control
+   dependence before producing outcomes or flags. `constant` and `guard` now isolate
+   marked expressions from base facts; binding evidence retains skipped operands.
+   Add scoped control tracking to `statements.rs` and observation-availability E225
+   checks to `queries.rs`, preserving ordinary error precedence. Inspect function
+   summaries and mutation paths before admitting either. Preserve
    fixed flag type queries as answer-independent (`queries/signatures.rs`).
    Preserve ordinary typing/ownership in skipped runtime bodies and E225 separation for
    type formation and observation availability. Plan independently reviewable

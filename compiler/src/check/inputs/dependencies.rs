@@ -33,14 +33,30 @@ pub(crate) fn proof_evidence_survives_scalar_copies_and_arithmetic() {
 pub(crate) fn proof_evidence_survives_selected_block_conditions_and_tails() {
     for flag in ["true", "false"] {
         for source in [
-            "n:{|flag|->3;|!flag|->4};copy:n",
-            "b:{|flag|->true;|!flag|->false};copy:b",
+            "n:{|flag|unused:3;->4};copy:n",
+            "b:{|flag|unused:true;->false};copy:b",
             "n:{->3;unused:flag};copy:n",
         ] {
             let mut checker = marked(&format!("flag:{flag}"));
             extend(&mut checker, source);
-            assert!(checker.inputs.values().all(|input| input.derived));
-            assert!(checker.bool_inputs.values().all(|input| input.derived));
+            let marks = if source.starts_with("n:") {
+                checker
+                    .inputs
+                    .values()
+                    .rev()
+                    .take(2)
+                    .map(|input| input.derived)
+                    .collect::<Vec<_>>()
+            } else {
+                checker
+                    .bool_inputs
+                    .values()
+                    .rev()
+                    .take(2)
+                    .map(|input| input.derived)
+                    .collect::<Vec<_>>()
+            };
+            assert_eq!(marks, [true, true], "{source}");
         }
     }
 }

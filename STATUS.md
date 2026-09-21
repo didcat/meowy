@@ -115,18 +115,19 @@ text/helper admission and phase/dependency work still gate query outcomes.
 
 ## Proof dependency evidence
 
-Initializer evidence now preserves a proof-dependency mark through evaluated
-scalar arithmetic, copies, conditions, tails and record projections. Five seeded
-checker groups and all 977 then-current library tests pass. The required-input
-boundary now rejects marked evidence with E225; three additional focused checker
-groups pass. All ten compiler checks pass. Source-level flag projections
-remain gated. Base-graph propagation through both successors, calls and mutable
-state, plus observation-availability enforcement, still precede evaluated query outcomes.
+Initializer evidence preserves proof-dependency marks through scalar operations,
+selected conditions, tails and record projections; required reads reject marked
+inputs with E225. Structural HIR inspection now also retains skipped operands,
+block successors and call arguments. Ordinary binding copies preserve those marks
+without turning them into constants. Marked guards provide neither fixed outcomes
+nor boolean correlations to base typing/ownership checks. Seeded tests retain E302
+under marked false conditions, including short-circuited expressions.
 
-The next slice adds structural HIR dependency inspection across both operands and
-block successors, propagates local binding marks and prevents marked constant
-folding. Three new groups and all 983 library tests pass. Boolean guard isolation
-is next; the full compiler gate has not yet been rerun for this slice.
+`f0288d6` adds structural inspection and binding/constant isolation; the guard slice
+isolates boolean guards. All seven focused dependency groups and all ten compiler
+checks pass. Source-level flags remain gated. Function result summaries,
+mutable writes, control-dependent bindings and observation availability remain
+prerequisites to evaluated query outcomes.
 
 ## Pending descriptor statement accounting
 
@@ -150,17 +151,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 980
-  library/903 native tests (1883 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 987
+  library/903 native tests (1890 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-dependencies-gate.log`.
-- Eight new seeded checker groups cover dependency propagation through evaluated
-  scalar/record evidence, E225 required-input rejection, fixed signatures,
-  original errors, budget precedence and root restoration. No source-level proof
-  flag is enabled; full base-graph/control propagation remains unfinished.
-- Proof outcomes remain B001-gated. Runtime source, reference fixtures,
-  dependencies and versions are unchanged; editor and separate runtime/sanitizer
-  gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-base-gate.log`.
+- Seven new seeded checker groups cover structural dependencies, skipped operands,
+  binding copies, constant isolation, opaque guards, ordinary guard preservation,
+  E302 loan conflicts and E205 emission conflicts. The older evidence regression
+  now uses independently valid branch bindings and unconditional emissions.
+- Source-level proof flags and outcomes remain B001-gated. Function result summaries,
+  mutable writes, control-dependent bindings and observation availability remain
+  incomplete. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Area handoff
 

@@ -171,7 +171,9 @@ impl Checker {
         if let Some(guard) = self.guards.get(&key) {
             return *guard;
         }
-        let guard = if let Some(Constant::Bool(value)) = self.constant(expr) {
+        let guard = if self.derived_expr(expr) {
+            self.flow.fresh()
+        } else if let Some(Constant::Bool(value)) = self.constant(expr) {
             if value { TRUE } else { FALSE }
         } else {
             match &expr.kind {
