@@ -1,6 +1,68 @@
 use super::{Case, file_modules::case};
 
 #[test]
+pub(crate) fn pending_flag_signatures_keep_query_origins_across_files() {
+    for flag in ["always", "never", "indeterminable"] {
+        let source = format!(
+            "#é🙂#\np:@\"proof\";r:p.can_copy<uint32>();copy:r;<Flag>:((copy).{flag})<>;v<Flag>:false;next:p.can_copy<Flag>()"
+        );
+        let case = case(
+            r#"m:@"./query.mwy";d:@"debug";d.print("entry")"#,
+            &[("query.mwy", &source)],
+        );
+        for profile in ["debug", "release"] {
+            let output = case.command("run", &["--profile", profile, "--json"]);
+            let error = String::from_utf8_lossy(&output.stderr);
+            assert_eq!(output.status.code(), Some(1));
+            assert!(output.stdout.is_empty());
+            assert!(error.contains("\"code\":\"B001\""), "{error}");
+            assert!(error.contains("proof.can_copy evaluation"), "{error}");
+            assert!(
+                error.contains(&format!("\"start\":{}", source.find("p.can_copy").unwrap())),
+                "{error}"
+            );
+            assert!(
+                error.contains(&case.path.join("query.mwy").display().to_string()),
+                "{error}"
+            );
+        }
+    }
+}
+
+#[test]
+pub(crate) fn pending_flag_signatures_preserve_checked_body_failures() {
+    for (tail, code) in [
+        ("v<Flag>:7", "E207"),
+        ("x:=7;view:&x;x=8;copy:*view", "E302"),
+    ] {
+        let mut bodies = vec![
+            format!("r:p.can_copy<uint32>();<Flag>:r.always<>;{tail}"),
+            format!("f:(){{r:p.can_copy<uint32>();<Flag>:r.never<>;{tail}}}"),
+            format!(
+                "f:(cond<boolean>){{|cond|{{r:p.can_copy<uint32>();<Flag>:r.indeterminable<>;{tail}}}}}"
+            ),
+        ];
+        if code == "E207" {
+            bodies.push(format!(
+                "|false|{{r:p.can_copy<uint32>();<Flag>:r.always<>;{tail}}}"
+            ));
+        }
+        for body in bodies {
+            let case = Case::new(&format!(r#"p:@"proof";{body}"#));
+            for profile in ["debug", "release"] {
+                let output = case.command("check", &["--profile", profile, "--json"]);
+                let error = String::from_utf8_lossy(&output.stderr);
+                assert_eq!(output.status.code(), Some(1));
+                assert!(
+                    error.contains(&format!("\"code\":\"{code}\"")),
+                    "{body}: {error}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
 pub(crate) fn pending_proof_queries_keep_file_origins_and_never_start_programs() {
     let source = "#é🙂#\np:@\"proof\";r:p.can_copy<uint32>();copy:r";
     let case = case(

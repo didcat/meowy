@@ -31,25 +31,26 @@ outcome is constructed. The reference remains authoritative.
 
 ### Prerequisites and current integration
 
-Current dependency-ordered slice plan:
+Completed dependency-ordered signature slices:
 
-1. Admit fixed boolean flag signatures in unevaluated type queries on pending
-   descriptor bindings, with checker tests for aliases, budgets and preserved
-   gates. The phase contract permits these signatures independently of answers;
-   current field hints incorrectly reject them before dependency tracking exists.
-2. Add native origin/ordinary-error coverage and document the admitted boundary;
-   run the full compiler gate and commit the integration separately.
+1. `b71feef`: admit fixed boolean flag signatures in unevaluated type queries on
+   pending descriptor bindings, with checker tests for aliases, budgets and preserved
+   gates. The phase contract permits these signatures independently of answers.
+2. Native origin/ordinary-error coverage and the admitted-boundary guide; the full
+   compiler gate passes all ten checks (`/tmp/meowy-proof-signatures-gate.log`).
 
-Investigation: `expressions.rs::hint` probes fields through `symbol`, whose pending
-flag gate rejects value evaluation. Resolve only the fixed flag type through the
-existing safe binding lookup; do not prepare calls, expose answers or add constants.
+`expressions.rs::hint` resolves fixed flag types through the existing safe binding
+lookup without entering `symbol`'s flag-value gate. It does not prepare calls,
+expose answers or add constants. Inline observation calls stay gated.
 Transitive data/control tracking remains the next milestone after this prerequisite.
 The regression reproduced B001 at `((copy).always)<>` before the fix. All 972
 library tests now pass (`/tmp/meowy-proof-signatures-library.log`), including four
 new groups for fixed signatures, aliases, cost limits and preserved lookup/value
 gates. Type-query accounting charges dispatch plus boolean materialization
-(two steps, one type); no observation is prepared or recharged. No outstanding
-failures remain. Native coverage and the full gate are the next slice.
+(two steps, one type); no observation is prepared or recharged. Both new native
+groups pass in debug/release (`/tmp/meowy-proof-signatures-native.log`). Coverage
+checks ownership in dynamic branches and types in literal-false branches: existing
+loan checking discards literal-false paths. No outstanding failures remain.
 
 - `src/foundation.rs` now includes partial `proof` module identity;
   `check/names.rs::symbol` provides typed revision metadata. Module/member aliases
@@ -843,17 +844,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 968
-  library/901 native tests (1869 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 972
+  library/903 native tests (1875 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-pending-statement-gate.log`.
-- Five new checker groups cover recognition without construction, statement and
-  annotation ledgers, exact/overflow copy-read limits, ordinary classification
-  and selected/skipped required-branch admission. Existing annotation and shared
-  ledger tests now include statement/read costs.
-- Native checks preserve original query/file locations through grouped calls,
-  annotated copies, uncalled functions and runtime-skipped bodies. A skipped
-  required query permits ordinary execution with output `7` in both profiles.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-signatures-gate.log`.
+- Four new checker groups cover fixed boolean flag signatures, aliases/grouping,
+  exact/overflow costs, unchanged query ledgers and preserved value/lookup gates.
+- Two native groups cover original query/file locations and ordinary type/loan
+  failures in debug/release. Dynamic branches retain ownership checks;
+  literal-false branches retain type checks but existing loan checking skips them.
 - Proof outcomes remain B001-gated; descriptor materialization, phase/dependency
   tracking and text/helper execution are not implemented. Runtime source,
   reference fixtures, dependencies and versions are unchanged; editor and separate
@@ -930,7 +929,8 @@ explicitly documented. No outstanding failures remain.
 
 1. Add transitive proof data/control dependency tracking before producing outcomes
    or flags. Inspect `check/inputs`, scalar folding and checked branch flow; preserve
-   ordinary typing/ownership in skipped runtime bodies and E225 separation for
+   fixed flag type queries as answer-independent (`queries/signatures.rs`).
+   Preserve ordinary typing/ownership in skipped runtime bodies and E225 separation for
    type formation and observation availability. Plan independently reviewable
    representation, propagation and enforcement slices, then run the compiler gate.
    When enabling outcomes in `check/queries.rs`, charge descriptor construction and

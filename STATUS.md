@@ -118,8 +118,9 @@ text/helper admission and phase/dependency work still gate query outcomes.
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
 without exposing an answer or replaying a query. The checker accepts aliases and
 grouping while retaining value/capture gates and ordinary typing/ownership errors.
-All 972 library tests pass; native integration and the complete compiler gate are
-pending for this slice. Transitive proof data/control dependencies remain next.
+`b71feef` implements this prerequisite; native coverage and the guide complete its
+integration. All ten compiler checks pass, including 972 library/903 native tests.
+Transitive proof data/control dependencies remain next.
 
 Pending bindings and expression statements now share one construction root across
 statement, call/read and annotation work. Query ledgers retain annotation charges
@@ -134,17 +135,15 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 968
-  library/901 native tests (1869 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 972
+  library/903 native tests (1875 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-pending-statement-gate.log`.
-- Five new checker groups cover recognition without construction, statement and
-  annotation ledgers, exact/overflow copy-read limits, ordinary classification
-  and selected/skipped required-branch admission. Existing annotation and shared
-  ledger tests now include statement/read costs.
-- Native checks preserve original query/file locations through grouped calls,
-  annotated copies, uncalled functions and runtime-skipped bodies. A skipped
-  required query permits ordinary execution with output `7` in both profiles.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-signatures-gate.log`.
+- Four new checker groups cover fixed boolean flag signatures, aliases/grouping,
+  exact/overflow costs, unchanged query ledgers and preserved value/lookup gates.
+- Two native groups cover original query/file locations and ordinary type/loan
+  failures in debug/release. Dynamic branches retain ownership checks;
+  literal-false branches retain type checks but existing loan checking skips them.
 - Proof outcomes remain B001-gated; descriptor materialization, phase/dependency
   tracking and text/helper execution are not implemented. Runtime source,
   reference fixtures, dependencies and versions are unchanged; editor and separate
@@ -192,6 +191,7 @@ execution was not part of this documentation edit.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
+   Fixed flag type queries are independent of answers and must remain admitted.
    Pending statement and annotation roots are integrated; descriptor construction
    and type inspection must charge the retained ledger when outcomes are admitted.
    Required-block descriptors and text/helper execution remain gated. The

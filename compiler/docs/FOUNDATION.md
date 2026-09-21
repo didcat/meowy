@@ -75,6 +75,16 @@ Annotations claiming a narrower alternative fail E207. Runtime storage, formatti
 truthiness, mutable bindings, captures and runtime-typed exports fail E223.
 Static descriptor metadata exports remain B001 until their implementation exists.
 
+Type queries on a pending binding's `always`, `never` and `indeterminable` fields
+resolve to `boolean` without evaluating the answer. For example,
+`<Flag> : result.always<>` declares an ordinary boolean type alias; that type may
+also be used as another query's type argument. Copies and grouped bindings keep
+these signatures. The type query charges dispatch and type materialization,
+without replaying the original observation. Direct flag values and queries on
+inline observation calls remain unavailable. Every pending observation still
+reaches the B001 evaluation gate after ordinary checks; this does not enable
+proof-derived scalar values or transitive dependency tracking.
+
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query
 copies do not replace the original diagnostic location. Type arguments discover
