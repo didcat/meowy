@@ -173,7 +173,7 @@ pub(crate) fn pending_budgets_keep_shared_root_tail_work_and_copy_identity() {
     assert_eq!(checker.query_budgets.len(), 1);
     let budget = checker.query_budgets[0].as_ref().unwrap();
     assert_eq!(budget.root, root);
-    assert_eq!((budget.steps, budget.types, budget.slots), (14, 8, 14));
+    assert_eq!((budget.steps, budget.types, budget.slots), (18, 8, 14));
     assert!(budget.failure.is_none());
 }
 

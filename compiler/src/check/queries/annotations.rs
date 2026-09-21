@@ -17,7 +17,7 @@ pub(crate) fn pending_annotations_charge_aliases_and_copies_without_requerying()
             .construction_root(root, |checker| {
                 checker.stmt(&block.stmts[2])?;
                 let work = checker.type_work.as_ref().unwrap();
-                assert_eq!((work.logical.steps, work.logical.types), (1, 1));
+                assert_eq!((work.logical.steps, work.logical.types), (3, 1));
                 assert_eq!(work.logical.root, root);
                 assert!(work.ordinary);
                 Ok(())
@@ -33,8 +33,8 @@ pub(crate) fn pending_annotations_charge_aliases_and_copies_without_requerying()
 #[test]
 pub(crate) fn pending_annotations_share_outer_limits_and_restore_roots() {
     for (steps, types, code) in [
-        (MAX_STEPS - 3, MAX_TYPES - 2, None),
-        (MAX_STEPS - 2, 0, Some("E220")),
+        (MAX_STEPS - 4, MAX_TYPES - 2, None),
+        (MAX_STEPS - 3, 0, Some("E220")),
         (0, MAX_TYPES - 1, Some("E220")),
     ] {
         let mut checker = checker();
@@ -83,7 +83,7 @@ pub(crate) fn pending_annotations_preserve_constructor_errors_and_work() {
                 let error = checker.stmt(&block.stmts[1]).unwrap_err();
                 assert_eq!(error.code, code, "{annotation}");
                 let work = checker.type_work.as_ref().unwrap();
-                assert_eq!((work.logical.steps, work.logical.types), (steps, types));
+                assert_eq!((work.logical.steps, work.logical.types), (steps + 2, types));
                 Ok(())
             })
             .unwrap();

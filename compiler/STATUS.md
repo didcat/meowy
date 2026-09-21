@@ -95,7 +95,10 @@ Dependency-ordered commit plan:
 
 Recognition and preparation are now separate; direct/grouped calls retain arity
 validation without constructing arguments or reserving a query. All 964 library
-tests pass (`/tmp/meowy-pending-recognition.log`). Next: statement-root integration.
+tests pass (`/tmp/meowy-pending-recognition.log`). Statement roots now wrap binding/call/read/annotation work; copy IDs remain
+unchanged and required-block admission is unchanged. All 967 then-current library tests passed (`/tmp/meowy-pending-statements.log`);
+the additional required-branch admission test also passes in the 27-test focused
+run (`/tmp/meowy-pending-statements-focused.log`). Native integration is next.
 Descriptor materialization and phase/dependency tracking remain separate.
 
 ### Descriptor annotation accounting
