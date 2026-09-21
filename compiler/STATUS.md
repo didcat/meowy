@@ -85,6 +85,27 @@ evaluation short-circuits before the derived operand.
 Function result summaries, mutable writes, control-dependent bindings
 and observation availability remain separate prerequisites; flags stay gated.
 
+### Scoped control-dependency slices
+
+1. Track lexical proof-controlled matcher bodies, restore enclosing control on
+   success/error, and mark ordinary bindings plus initializer evidence created
+   there. Prevent those bindings from supplying ordinary constants. Test nested
+   branches, independent following statements and E225 required reads.
+2. Retain control-dependent query availability in pending metadata and report
+   E225 after ordinary type/ownership checks, including when an earlier independent
+   query remains B001-gated. Test copies, nesting, spans and diagnostic precedence;
+   run the complete compiler gate and update both handoffs.
+
+Investigation: matcher bodies currently restore only reach/scope on success.
+Pending queries are finalized only after borrow/loan validation, but only the first
+query is inspected. Lexical control must not leak into later independent statements.
+The lexical control field and binding propagation pass all three new checker
+groups and all 990 library tests (`/tmp/meowy-proof-control-library.log`). Matcher
+control and lexical scopes restore on errors; unrelated following bindings remain
+unmarked. Compiler-created emission locals remain separate from source bindings.
+Control after conditional leave/restart, function summaries and mutable writes
+remain separate work; these slices do not enable source-level proof flags.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

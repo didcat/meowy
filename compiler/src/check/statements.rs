@@ -109,7 +109,7 @@ impl Checker {
                     ));
                 }
                 let id = self.local(ty.clone());
-                if self.derived_expr(&value) {
+                if self.control || self.derived_expr(&value) {
                     self.derived.insert(id);
                 }
                 if let Some(exports) = exports {
@@ -122,7 +122,7 @@ impl Checker {
                     self.proofs.mutable.insert(id);
                 }
                 self.places.insert(id);
-                let constant = if *mutable {
+                let constant = if *mutable || self.derived.contains(&id) {
                     None
                 } else {
                     self.constant(&value)
@@ -258,10 +258,15 @@ impl Checker {
                     let absent = self.flow.not(guard);
                     let skipped = self.flow.and(self.reach, absent);
                     self.reach = self.flow.and(self.reach, guard);
+                    let control = self.control;
+                    self.control |= self.derived_expr(&condition);
+                    let depth = self.scopes.len();
                     self.scopes.push(Scope::default());
-                    let then = self.stmt_inner(body)?;
-                    self.scopes.pop();
+                    let then = self.stmt_inner(body);
+                    self.scopes.truncate(depth);
+                    self.control = control;
                     self.reach = self.flow.or(self.reach, skipped);
+                    let then = then?;
                     stmts.push(hir::Stmt::If {
                         condition,
                         then,

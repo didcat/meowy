@@ -129,6 +129,11 @@ checks pass. Source-level flags remain gated. Function result summaries,
 mutable writes, control-dependent bindings and observation availability remain
 prerequisites to evaluated query outcomes.
 
+Matcher bodies now retain lexical proof-control marks on ordinary bindings and
+initializer evidence. Control and lexical scopes restore after errors; independent
+following statements remain unmarked. Three new groups and all 990 library tests
+pass. Deferred query-availability validation is next; flags remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
