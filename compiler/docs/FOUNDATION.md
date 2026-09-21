@@ -102,8 +102,13 @@ those control marks and report E225 after ordinary type/ownership validation,
 even if an earlier independent query still awaits evaluation. Descriptor copies
 create no observations; fixed flag type queries remain permitted. Later independent
 statements do not inherit a completed matcher body's control mark.
-Function result summaries, mutable writes and control dependence after conditional
-leave/restart still require phase analysis before evaluated answers can be admitted.
+Direct local assignments and owned field/list-element writes retain dependencies
+from the RHS, evaluated indices and lexical control. These marks conservatively
+cover the whole destination owner and survive later independent overwrites.
+Failed type/mutability checks do not mark a destination. Alias and indirect-store
+propagation, precise overwrite/join rules, function result summaries and control
+dependence after conditional leave/restart remain prerequisites to admitting flags
+or evaluated answers.
 
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query

@@ -130,7 +130,12 @@ summaries and conditional-exit control remain prerequisites to enabling flags.
 No source-level proof flag becomes available in this series.
 Direct local write propagation passes four new checker groups and all 998 library
 tests (`/tmp/meowy-proof-writes-library.log`). Invalid immutable/type-mismatched
-writes retain E305/E207 and leave target marks unchanged. Owned paths are next.
+writes retain E305/E207 and leave target marks unchanged. Committed as `aa89513`.
+Owned path writes now merge RHS/index/control dependencies after validation;
+three focused path groups pass, covering RHS/index/control propagation,
+subsequent query availability, unrelated owners and preserved E201/E207/E305
+errors. All ten compiler checks pass, including 1001 library/903 native tests
+(`/tmp/meowy-proof-writes-gate.log`).
 
 ### Prerequisites and current integration
 
@@ -948,15 +953,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 994
-  library/903 native tests (1897 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1001
+  library/903 native tests (1904 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-control-gate.log`.
-- Seven new seeded checker groups cover lexical control marks, nested bindings,
-  scope restoration, E225 required reads/query availability, original call spans,
-  descriptor copies, independent following queries and E207/E302/E220 precedence.
-- Source-level proof flags and outcomes remain B001-gated. Function result summaries,
-  mutable writes and continuation control after conditional leave/restart remain
+  0 failed in debug/release. Log: `/tmp/meowy-proof-writes-gate.log`.
+- Seven new seeded checker groups cover direct writes, nested owned paths, indices,
+  lexical control, copies/guards/query availability, unrelated owners, conservative
+  overwrite retention and unchanged E201/E207/E305 failures.
+- Source-level proof flags and outcomes remain B001-gated. Write marks are
+  conservative whole-owner and monotone; precise overwrite/join rules, aliases,
+  indirect stores, function result summaries and conditional-exit control remain
   incomplete. Runtime sources, reference fixtures, dependencies and versions are
   unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
@@ -1030,9 +1036,12 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Extend `check/dependencies.rs` and mutation/function checking with mutable
-   writes/aliases and function result dependencies before producing outcomes or
-   flags. Structural reads and lexical matcher control are tracked; required reads
+1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
+   direct local and owned-path writes now retain conservative whole-owner marks.
+   Add alias/indirect-store propagation and precise overwrite/branch-join rules;
+   independent overwrites currently retain marks. Function result dependencies
+   remain untracked. Keep flags gated until these analyses are complete.
+   Structural reads and lexical matcher control are tracked; required reads
    and pending query availability enforce E225 for those marks. Conditional
    leave/restart can control subsequent statements outside a matcher body; model
    those continuation dependencies rather than treating lexical restoration as

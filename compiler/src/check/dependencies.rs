@@ -125,3 +125,6 @@ mod control;
 
 #[cfg(test)]
 mod writes;
+
+#[cfg(test)]
+mod paths;

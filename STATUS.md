@@ -126,7 +126,7 @@ under marked false conditions, including short-circuited expressions.
 `f0288d6` adds structural inspection and binding/constant isolation; the guard slice
 isolates boolean guards. All seven focused dependency groups and all ten compiler
 checks pass. Source-level flags remain gated. Function result summaries,
-mutable writes and control dependence after conditional exits remain prerequisites
+aliased writes and control dependence after conditional exits remain prerequisites
 to evaluated query outcomes.
 
 Matcher bodies now retain lexical proof-control marks on ordinary bindings and
@@ -140,7 +140,11 @@ gate passes all ten checks. Flags remain gated.
 Direct mutable assignments now preserve marked RHS and lexical-control
 dependencies for subsequent copies, guards and query availability. Four new groups
 and all 998 library tests pass. Marks are conservative and monotone; independent
-overwrites do not yet erase them. Owned paths are next; flags remain gated.
+overwrites do not yet erase them. `aa89513` records the direct-write slice. Owned
+field/list writes now include RHS/index/control dependencies using whole-owner
+marks. Three focused path groups pass; all ten compiler checks pass. Alias
+and indirect-store propagation and precise overwrite/join rules remain pending;
+flags remain gated.
 
 ## Pending descriptor statement accounting
 
@@ -164,15 +168,16 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 994
-  library/903 native tests (1897 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1001
+  library/903 native tests (1904 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-control-gate.log`.
-- Seven new seeded checker groups cover lexical control marks, nested bindings,
-  scope restoration, E225 required reads/query availability, original call spans,
-  descriptor copies, independent following queries and E207/E302/E220 precedence.
-- Source-level proof flags and outcomes remain B001-gated. Function result summaries,
-  mutable writes and continuation control after conditional leave/restart remain
+  0 failed in debug/release. Log: `/tmp/meowy-proof-writes-gate.log`.
+- Seven new seeded checker groups cover direct writes, nested owned paths, indices,
+  lexical control, copies/guards/query availability, unrelated owners, conservative
+  overwrite retention and unchanged E201/E207/E305 failures.
+- Source-level proof flags and outcomes remain B001-gated. Write marks are
+  conservative whole-owner and monotone; precise overwrite/join rules, aliases,
+  indirect stores, function result summaries and conditional-exit control remain
   incomplete. Runtime sources, reference fixtures, dependencies and versions are
   unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.

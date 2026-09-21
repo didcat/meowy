@@ -134,7 +134,16 @@ impl Checker {
             ));
         }
         let value = self.expr(value, Some(&ty))?;
+        let derived = self.control
+            || self.derived_expr(&value)
+            || path.iter().any(|step| match step {
+                hir::WriteStep::Index(step) => self.derived_expr(&step.index),
+                hir::WriteStep::Field(_) => false,
+            });
         self.forget_field(id, &names, target.span)?;
+        if derived {
+            self.derived.insert(id);
+        }
         Ok(hir::Stmt::SetPath {
             id,
             path,
