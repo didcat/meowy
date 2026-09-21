@@ -43,6 +43,11 @@ impl Work {
         }
         match &input.error {
             Some(error) => Err(error.clone()),
+            None if input.derived => Err(Checker::error(
+                "E225",
+                "proof-derived input cannot determine type formation",
+                span,
+            )),
             None => Ok(()),
         }
     }

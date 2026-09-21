@@ -117,9 +117,11 @@ text/helper admission and phase/dependency work still gate query outcomes.
 
 Initializer evidence now preserves a proof-dependency mark through evaluated
 scalar arithmetic, copies, conditions, tails and record projections. Five seeded
-checker groups and all 977 library tests pass; the final compiler gate is pending. Source-level flag projections
+checker groups and all 977 then-current library tests pass. The required-input
+boundary now rejects marked evidence with E225; three additional focused checker
+groups pass. All ten compiler checks pass. Source-level flag projections
 remain gated. Base-graph propagation through both successors, calls and mutable
-state, plus E225 enforcement, still precede evaluated query outcomes.
+state, plus observation-availability enforcement, still precede evaluated query outcomes.
 
 ## Pending descriptor statement accounting
 
@@ -143,19 +145,17 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 972
-  library/903 native tests (1875 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 980
+  library/903 native tests (1883 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-signatures-gate.log`.
-- Four new checker groups cover fixed boolean flag signatures, aliases/grouping,
-  exact/overflow costs, unchanged query ledgers and preserved value/lookup gates.
-- Two native groups cover original query/file locations and ordinary type/loan
-  failures in debug/release. Dynamic branches retain ownership checks;
-  literal-false branches retain type checks but existing loan checking skips them.
-- Proof outcomes remain B001-gated; descriptor materialization, phase/dependency
-  tracking and text/helper execution are not implemented. Runtime source,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-dependencies-gate.log`.
+- Eight new seeded checker groups cover dependency propagation through evaluated
+  scalar/record evidence, E225 required-input rejection, fixed signatures,
+  original errors, budget precedence and root restoration. No source-level proof
+  flag is enabled; full base-graph/control propagation remains unfinished.
+- Proof outcomes remain B001-gated. Runtime source, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

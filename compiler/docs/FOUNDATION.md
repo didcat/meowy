@@ -83,7 +83,15 @@ these signatures. The type query charges dispatch and type materialization,
 without replaying the original observation. Direct flag values and queries on
 inline observation calls remain unavailable. Every pending observation still
 reaches the B001 evaluation gate after ordinary checks; this does not enable
-proof-derived scalar values or transitive dependency tracking.
+proof-derived scalar values or complete transitive dependency tracking.
+
+Initializer evidence carries an internal dependency mark through evaluated scalar
+operations, selected block conditions and record copies/projections. Required type
+construction rejects marked reads with E225 while fixed type queries remain
+answer-independent. Seeded checker tests validate this boundary; source programs
+cannot produce marked flag values yet. Both-successor base-graph propagation,
+calls, mutable state and observation availability still require phase analysis
+before evaluated answers can be admitted.
 
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query

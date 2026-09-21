@@ -34,9 +34,11 @@ outcome is constructed. The reference remains authoritative.
 1. Preserve a proof-dependency mark in initializer evidence, including scalar
    copies, arithmetic, evaluated predicates, block conditions and record projections.
    Validate with seeded checker evidence while actual flag projections stay gated.
-2. Add source/base-graph dependency propagation across skipped successors, calls
+2. Reject marked evidence at the shared required-input boundary with E225,
+   preserving existing source errors, budgets and fixed type signatures.
+3. Add source/base-graph dependency propagation across skipped successors, calls
    and mutable state; prevent proof-derived facts from narrowing ordinary checking.
-3. Enforce E225 at type formation and observation availability, retaining fixed
+4. Complete E225 enforcement at type formation and observation availability, retaining fixed
    signature queries, then integrate native coverage before enabling outcomes.
 
 Current investigation: `Input::add` combines evaluated scalar and record evidence;
@@ -48,6 +50,12 @@ selected scalar conditions/tails, nested record projections, original failures a
 independent ordinary inputs. Fixed query signatures/revision remain unmarked.
 All 977 library tests pass (`/tmp/meowy-proof-dependencies-library.log`);
 formatting and whitespace checks pass. No source-level flag is admitted.
+Evidence slice committed as `781ce60`. The shared `Work::input` boundary now
+rejects marked evidence with E225 after existing budget/source-error checks.
+Three focused checker groups pass, covering scalar copies, boolean selection,
+record/leaf reads and computed query arguments, fixed signatures, root restoration
+and diagnostic precedence. All ten compiler checks pass, including 980 library
+and 903 native tests (`/tmp/meowy-proof-dependencies-gate.log`).
 The first slice necessarily updates all
 `Input` struct literals together to remain buildable; these small constructor edits
 span more than eight files and cannot be committed separately from the new field.
@@ -96,8 +104,9 @@ loan checking discards literal-false paths. No outstanding failures remain.
   gate after borrow/loan validation prevents unresolved queries reaching codegen. Type capability answers need a type walk,
   not a scalar CFG analysis. They still must not discharge assertions early or
   suppress ordinary failures in uncalled/runtime-skipped checked bodies.
-- Scalar constants and initializer evidence currently have no proof-dependency
-  marks. Add transitive data/control dependency tracking before exposing flags;
+- Initializer evidence now retains proof-dependency marks and required reads
+  reject marked evidence with E225. Scalar constants and the ordinary base graph
+  still need transitive data/control dependency tracking before exposing flags;
   type formation and query availability must reject E225. Ordinary runtime
   conditions derived from flags retain both successors for base typing/ownership.
   Existing constant folding or `inputs` evidence cannot provide this guarantee.
@@ -867,19 +876,17 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 972
-  library/903 native tests (1875 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 980
+  library/903 native tests (1883 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-signatures-gate.log`.
-- Four new checker groups cover fixed boolean flag signatures, aliases/grouping,
-  exact/overflow costs, unchanged query ledgers and preserved value/lookup gates.
-- Two native groups cover original query/file locations and ordinary type/loan
-  failures in debug/release. Dynamic branches retain ownership checks;
-  literal-false branches retain type checks but existing loan checking skips them.
-- Proof outcomes remain B001-gated; descriptor materialization, phase/dependency
-  tracking and text/helper execution are not implemented. Runtime source,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-dependencies-gate.log`.
+- Eight new seeded checker groups cover dependency propagation through evaluated
+  scalar/record evidence, E225 required-input rejection, fixed signatures,
+  original errors, budget precedence and root restoration. No source-level proof
+  flag is enabled; full base-graph/control propagation remains unfinished.
+- Proof outcomes remain B001-gated. Runtime source, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -950,7 +957,8 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 The bounded subtraction series is complete; its syntax/representation limits remain
 explicitly documented. No outstanding failures remain.
 
-1. Add transitive proof data/control dependency tracking before producing outcomes
+1. Extend the seeded initializer-evidence marks and required-input E225 guard
+   into source/base-graph data/control dependency tracking before producing outcomes
    or flags. Inspect `check/inputs`, scalar folding and checked branch flow; preserve
    fixed flag type queries as answer-independent (`queries/signatures.rs`).
    Preserve ordinary typing/ownership in skipped runtime bodies and E225 separation for
