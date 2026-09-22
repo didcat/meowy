@@ -192,6 +192,11 @@ copies and unrelated field metadata. Three new groups and all ten compiler check
 pass. Nested/indexed aggregates and returned records remain incomplete; flags
 stay gated.
 
+Record origin metadata now uses ordered field paths. Seeded nested-field lookups
+preserve distinct owners and incomplete missing paths; all 13 focused record
+groups and all ten compiler checks pass. This is a representation prerequisite:
+nested source construction and subrecord writes remain untracked.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -214,19 +219,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1033
-  library/903 native tests (1936 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1035
+  library/903 native tests (1938 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-mutations-gate.log`.
-- Six new checker groups cover whole-record/direct field replacements, conditional
-  updates, prior copies, unrelated field origins, incomplete sources and preserved
-  E207/E305 errors. Accepted conditional writes pass ordinary borrow/loan validation.
-- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
-  nested/indexed aggregates, coercion/composition, returned records, precise joins,
-  function summaries and conditional-exit control remain unfinished. Runtime
-  sources, reference fixtures, dependencies and versions are unchanged; editor
-  and separate runtime/sanitizer gates were not rerun. Full release qualification
-  remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-paths-gate.log`.
+- Two new seeded checker groups cover ordered nested field paths, distinct owners,
+  later marks/query control and missing-path incompleteness. Existing flat record
+  construction, copies and writes retain their regression coverage.
+- This is a metadata representation prerequisite, not nested-source admission.
+  Nested construction/subrecord writes, indexed aggregates, coercion/composition,
+  returned records, precise joins, function summaries and conditional-exit control
+  remain unfinished. Flags/outcomes remain B001-gated. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

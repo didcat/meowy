@@ -146,7 +146,7 @@ pub(crate) struct Checker {
     pub(crate) constants: BTreeMap<usize, Constant>,
     pub(crate) derived: BTreeSet<usize>,
     pub(crate) pointees: BTreeMap<usize, dependencies::Origins>,
-    pub(crate) record_pointees: BTreeMap<usize, BTreeMap<usize, dependencies::Origins>>,
+    pub(crate) record_pointees: BTreeMap<usize, BTreeMap<Vec<usize>, dependencies::Origins>>,
     pub(crate) control: bool,
     pub(crate) inputs: BTreeMap<usize, inputs::Input>,
     pub(crate) bool_inputs: BTreeMap<usize, inputs::Input<bool>>,

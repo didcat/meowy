@@ -260,6 +260,20 @@ including ordinary compilation of conditional updates, copied snapshots, indepen
 fields and incomplete sources. All ten compiler checks pass
 (`/tmp/meowy-proof-record-mutations-gate.log`); no outstanding failures remain.
 
+### Nested record path prerequisite
+
+Replace scalar field-index metadata keys with ordered field paths and resolve
+checked field chains against those paths. Preserve flat construction, copies,
+updates, bounds and incomplete-source behavior. Validate seeded nested paths and
+run the full compiler gate before committing this representation slice.
+
+This is a prerequisite only: source-level nested record construction/writes remain
+untracked. The next slice must populate bounded nested paths and update or merge
+entire subrecord paths before admitting those forms. Flags stay gated.
+Two new seeded path groups and all 13 record dependency groups pass. Flat record
+construction/writes retain single-component paths. All ten compiler checks pass
+(`/tmp/meowy-proof-record-paths-gate.log`); no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1076,19 +1090,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1033
-  library/903 native tests (1936 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1035
+  library/903 native tests (1938 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-mutations-gate.log`.
-- Six new checker groups cover whole-record/direct field replacements, conditional
-  updates, prior copies, unrelated field origins, incomplete sources and preserved
-  E207/E305 errors. Accepted conditional writes pass ordinary borrow/loan validation.
-- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
-  nested/indexed aggregates, coercion/composition, returned records, precise joins,
-  function summaries and conditional-exit control remain unfinished. Runtime
-  sources, reference fixtures, dependencies and versions are unchanged; editor
-  and separate runtime/sanitizer gates were not rerun. Full release qualification
-  remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-paths-gate.log`.
+- Two new seeded checker groups cover ordered nested field paths, distinct owners,
+  later marks/query control and missing-path incompleteness. Existing flat record
+  construction, copies and writes retain their regression coverage.
+- This is a metadata representation prerequisite, not nested-source admission.
+  Nested construction/subrecord writes, indexed aggregates, coercion/composition,
+  returned records, precise joins, function summaries and conditional-exit control
+  remain unfinished. Flags/outcomes remain B001-gated. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1169,7 +1183,12 @@ explicitly documented. No outstanding failures remain.
    slot root. Flat ordinary record bindings now retain scalar-reference field
    origins through direct blocks/copies and local field projections. Whole-record
    replacement and direct mutable reference-field writes now merge those origins.
-   Extend nested/indexed aggregates, coercion/composition and call-returned origins; preserve explicit incomplete sets. Precise overwrite/branch-join rules
+   Metadata keys now carry ordered paths. Next extend
+   `dependencies/records.rs::track_record_references` to populate bounded nested
+   paths and `mutation.rs` to update/merge subrecord paths, with source-level
+   nested-copy/projection/write regressions. Keep nested admission incomplete until
+   those producers and updates agree. Indexed aggregates, coercion/composition and
+   call-returned origins remain separate; preserve explicit incomplete sets. Precise overwrite/branch-join rules
    remain separate;
    independent overwrites currently retain marks/owners. Function result
    dependencies remain untracked. Keep flags gated until these analyses complete.

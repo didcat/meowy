@@ -46,7 +46,7 @@ pub(crate) fn invalid_whole_record_replacements_keep_prior_metadata() {
     statements(&mut checker, "x:=false;row:={->r:&x}");
     let block = crate::parser::parse("row=7").unwrap();
     assert_eq!(checker.stmt(&block.stmts[0]).unwrap_err().code, "E207");
-    let origins = &checker.record_pointees[&id(&checker, "row")][&0];
+    let origins = &checker.record_pointees[&id(&checker, "row")][&vec![0]];
     assert!(origins.complete);
     assert_eq!(origins.roots, BTreeSet::from([0]));
 }
@@ -101,7 +101,7 @@ pub(crate) fn invalid_field_replacements_keep_prior_metadata() {
         statements(&mut checker, prefix);
         let block = crate::parser::parse("row.r=7").unwrap();
         assert_eq!(checker.stmt(&block.stmts[0]).unwrap_err().code, code);
-        let origins = &checker.record_pointees[&id(&checker, "row")][&0];
+        let origins = &checker.record_pointees[&id(&checker, "row")][&vec![0]];
         assert!(origins.complete);
         assert_eq!(origins.roots, BTreeSet::from([0]));
     }

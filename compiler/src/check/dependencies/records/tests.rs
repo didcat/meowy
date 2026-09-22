@@ -87,3 +87,66 @@ pub(crate) fn record_origin_capacity_preserves_existing_metadata() {
         );
     }
 }
+
+#[test]
+pub(crate) fn nested_field_paths_keep_distinct_origins_and_later_marks() {
+    let mut checker = Checker::new();
+    statements(
+        &mut checker,
+        "x:=false;y:=true;row:{->left:{->r:&x};->right:{->r:&y}}",
+    );
+    let row = super::writes::id(&checker, "row");
+    checker.record_pointees.insert(
+        row,
+        BTreeMap::from([
+            (
+                vec![0, 0],
+                Origins {
+                    roots: BTreeSet::from([0]),
+                    complete: true,
+                },
+            ),
+            (
+                vec![1, 0],
+                Origins {
+                    roots: BTreeSet::from([1]),
+                    complete: true,
+                },
+            ),
+        ]),
+    );
+    statements(&mut checker, "a:row.left.r;b:row.right.r");
+    let a = super::writes::id(&checker, "a");
+    let b = super::writes::id(&checker, "b");
+    assert_eq!(checker.pointees[&a].roots, BTreeSet::from([0]));
+    assert_eq!(checker.pointees[&b].roots, BTreeSet::from([1]));
+    checker.mark_derived(1);
+    assert!(!checker.derived_local(a));
+    assert!(checker.derived_local(b));
+    statements(
+        &mut checker,
+        r#"p:@"proof";|*(row.right.r)|q:p.can_copy<uint32>()"#,
+    );
+    assert!(checker.queries[0].control);
+}
+
+#[test]
+pub(crate) fn missing_nested_paths_do_not_reuse_flat_field_origins() {
+    let mut checker = Checker::new();
+    statements(&mut checker, "x:=false;row:{->inner:{->r:&x}}");
+    let row = super::writes::id(&checker, "row");
+    checker.record_pointees.insert(
+        row,
+        BTreeMap::from([(
+            vec![0],
+            Origins {
+                roots: BTreeSet::from([0]),
+                complete: true,
+            },
+        )]),
+    );
+    statements(&mut checker, "r:row.inner.r");
+    let r = super::writes::id(&checker, "r");
+    assert!(checker.pointees[&r].roots.is_empty());
+    assert!(!checker.pointees[&r].complete);
+}

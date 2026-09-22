@@ -8,14 +8,26 @@ pub(crate) const MAX_FIELDS: usize = 256;
 
 impl Checker {
     pub(crate) fn field_origins(&self, value: &Expr, index: usize) -> Origins {
-        let ExprKind::Local(id) = value.kind else {
-            return Origins::default();
-        };
-        self.record_pointees
-            .get(&id)
-            .and_then(|fields| fields.get(&index))
-            .cloned()
-            .unwrap_or_default()
+        let mut value = value;
+        let mut path = vec![index];
+        loop {
+            match &value.kind {
+                ExprKind::Field { value: base, index } => {
+                    path.push(*index);
+                    value = base;
+                }
+                ExprKind::Local(id) => {
+                    path.reverse();
+                    return self
+                        .record_pointees
+                        .get(id)
+                        .and_then(|fields| fields.get(&path))
+                        .cloned()
+                        .unwrap_or_default();
+                }
+                _ => return Origins::default(),
+            }
+        }
     }
 
     pub(crate) fn write_reference_field(
@@ -34,7 +46,7 @@ impl Checker {
         let prior = self
             .record_pointees
             .get(&id)
-            .and_then(|fields| fields.get(&index));
+            .and_then(|fields| fields.get([index].as_slice()));
         if index >= MAX_FIELDS
             || !self
                 .flow
@@ -58,7 +70,7 @@ impl Checker {
         self.record_pointees
             .entry(id)
             .or_default()
-            .insert(index, origins);
+            .insert(vec![index], origins);
         Ok(())
     }
 
@@ -111,7 +123,7 @@ impl Checker {
                 .then(|| {
                     self.record_pointees
                         .get(&id)
-                        .and_then(|fields| fields.get(&index))
+                        .and_then(|fields| fields.get([index].as_slice()))
                 })
                 .flatten();
             if !self
@@ -135,7 +147,7 @@ impl Checker {
                     value.span,
                 ));
             }
-            origins.insert(index, source);
+            origins.insert(vec![index], source);
         }
         if !origins.is_empty() {
             self.record_pointees.insert(id, origins);
