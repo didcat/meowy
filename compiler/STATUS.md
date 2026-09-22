@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-21. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-22. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -136,6 +136,23 @@ three focused path groups pass, covering RHS/index/control propagation,
 subsequent query availability, unrelated owners and preserved E201/E207/E305
 errors. All ten compiler checks pass, including 1001 library/903 native tests
 (`/tmp/meowy-proof-writes-gate.log`).
+
+### Emitted-slot dependency slice
+
+Preserve marked initializers/control on named emissions, canonicalize dependency
+writes through existing `Alias::root`, and consult that root for alias reads.
+Include sibling-alias and completed-record regressions plus ordinary validation
+failures. Run the full compiler gate and commit this storage-identity slice.
+
+Investigation: emitted names bypass ordinary Bind mark propagation. Their alias
+records already share a root keyed by target block and field; copying references
+is a different relation and must not be inferred from that root. Existing marks
+remain conservative and monotone. Borrowed aliases/indirect stores, precise
+writes/joins, function summaries and nonlexical control remain unfinished.
+Four focused emitted-alias groups pass. The library run found one older test
+counting only ordinary binding marks; its assertion now includes named emission
+bindings. All ten compiler checks pass, including 1005 library/903 native tests
+(`/tmp/meowy-proof-aliases-gate.log`).
 
 ### Prerequisites and current integration
 
@@ -953,19 +970,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1001
-  library/903 native tests (1904 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1005
+  library/903 native tests (1908 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-writes-gate.log`.
-- Seven new seeded checker groups cover direct writes, nested owned paths, indices,
-  lexical control, copies/guards/query availability, unrelated owners, conservative
-  overwrite retention and unchanged E201/E207/E305 failures.
-- Source-level proof flags and outcomes remain B001-gated. Write marks are
-  conservative whole-owner and monotone; precise overwrite/join rules, aliases,
-  indirect stores, function result summaries and conditional-exit control remain
-  incomplete. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-aliases-gate.log`.
+- Four new seeded checker groups cover emitted initializers/control, sibling slot
+  identities, later alias reads, completed-record copies, query control and
+  preserved E207/E305 errors. The older control regression now includes marks on
+  named emission bindings. No outstanding failures remain.
+- Source-level proof flags/outcomes remain B001-gated. Marks are conservative and
+  monotone. Borrowed-reference aliases, indirect stores, precise overwrite/join
+  rules, function summaries and conditional-exit control remain unfinished.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1038,7 +1056,8 @@ explicitly documented. No outstanding failures remain.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
-   Add alias/indirect-store propagation and precise overwrite/branch-join rules;
+   Emitted-slot aliases now share marks through `Alias::root`; extend borrowed
+   reference/indirect-store propagation and precise overwrite/branch-join rules;
    independent overwrites currently retain marks. Function result dependencies
    remain untracked. Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads

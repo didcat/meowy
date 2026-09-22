@@ -16,7 +16,9 @@ pub(crate) fn controlled_bindings_keep_marks_through_nested_ordinary_conditions(
     let plain = checker.locals.len() - 1;
     assert!(!checker.derived_local(plain));
     assert_eq!(checker.inputs[&plain].value, Some(6));
-    assert_eq!(checker.derived.len(), 5);
+    for id in 0..plain {
+        assert!(checker.derived_local(id));
+    }
     assert!(
         checker
             .inputs

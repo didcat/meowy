@@ -45,6 +45,9 @@ impl Checker {
                 exclusive: None,
             },
         );
+        if self.derived_local(id) {
+            self.mark_derived(id);
+        }
         if mutable {
             self.proofs.mutable.insert(id);
         }

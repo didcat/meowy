@@ -7,8 +7,20 @@ pub(crate) enum Node<'a> {
 }
 
 impl Checker {
+    pub(crate) fn mark_derived(&mut self, id: usize) {
+        self.derived.insert(id);
+        if let Some(alias) = self.proofs.aliases.get(&id) {
+            self.derived.insert(alias.root);
+        }
+    }
+
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived.contains(&id)
+            || self
+                .proofs
+                .aliases
+                .get(&id)
+                .is_some_and(|alias| self.derived.contains(&alias.root))
             || self.inputs.get(&id).is_some_and(|input| input.derived)
             || self.bool_inputs.get(&id).is_some_and(|input| input.derived)
             || self
@@ -128,3 +140,6 @@ mod writes;
 
 #[cfg(test)]
 mod paths;
+
+#[cfg(test)]
+mod aliases;

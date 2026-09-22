@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-21. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-22. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -146,6 +146,12 @@ marks. Three focused path groups pass; all ten compiler checks pass. Alias
 and indirect-store propagation and precise overwrite/join rules remain pending;
 flags remain gated.
 
+Named emitted bindings now preserve initializer/control dependencies. Emitted-slot
+aliases share marks through their existing canonical storage root, including
+later sibling aliases and completed record reads. Four focused groups pass;
+all ten compiler checks pass. Borrowed-reference aliases and indirect stores
+remain separate, and marks remain conservative. Source-level flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -168,19 +174,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1001
-  library/903 native tests (1904 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1005
+  library/903 native tests (1908 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-writes-gate.log`.
-- Seven new seeded checker groups cover direct writes, nested owned paths, indices,
-  lexical control, copies/guards/query availability, unrelated owners, conservative
-  overwrite retention and unchanged E201/E207/E305 failures.
-- Source-level proof flags and outcomes remain B001-gated. Write marks are
-  conservative whole-owner and monotone; precise overwrite/join rules, aliases,
-  indirect stores, function result summaries and conditional-exit control remain
-  incomplete. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-aliases-gate.log`.
+- Four new seeded checker groups cover emitted initializers/control, sibling slot
+  identities, later alias reads, completed-record copies, query control and
+  preserved E207/E305 errors. The older control regression now includes marks on
+  named emission bindings. No outstanding failures remain.
+- Source-level proof flags/outcomes remain B001-gated. Marks are conservative and
+  monotone. Borrowed-reference aliases, indirect stores, precise overwrite/join
+  rules, function summaries and conditional-exit control remain unfinished.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open.
 
 ## Area handoff
 

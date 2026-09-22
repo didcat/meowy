@@ -110,7 +110,7 @@ impl Checker {
                 }
                 let id = self.local(ty.clone());
                 if self.control || self.derived_expr(&value) {
-                    self.derived.insert(id);
+                    self.mark_derived(id);
                 }
                 if let Some(exports) = exports {
                     self.exports.insert(id, exports);
@@ -224,7 +224,7 @@ impl Checker {
                 }
                 let value = self.expr(value, Some(&ty))?;
                 if self.control || self.derived_expr(&value) {
-                    self.derived.insert(id);
+                    self.mark_derived(id);
                 }
                 self.forget(id);
                 Ok(vec![hir::Stmt::Assign { id, value }])
@@ -592,6 +592,9 @@ impl Checker {
         } else if let Some(name) = name {
             let ty = value.ty.clone();
             let id = self.local(ty.clone());
+            if self.control || self.derived_expr(&value) {
+                self.mark_derived(id);
+            }
             if !mutable && let Some(fact) = self.list_fact(&value) {
                 self.lengths.insert(id, fact);
             }
@@ -610,7 +613,11 @@ impl Checker {
                     ty: ty.clone(),
                     mutable,
                     owner: self.owner,
-                    constant: if mutable { None } else { self.constant(&value) },
+                    constant: if mutable || self.derived_local(id) {
+                        None
+                    } else {
+                        self.constant(&value)
+                    },
                 },
                 span,
             )?;

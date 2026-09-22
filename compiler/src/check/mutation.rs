@@ -142,7 +142,7 @@ impl Checker {
             });
         self.forget_field(id, &names, target.span)?;
         if derived {
-            self.derived.insert(id);
+            self.mark_derived(id);
         }
         Ok(hir::Stmt::SetPath {
             id,
