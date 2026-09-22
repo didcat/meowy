@@ -18,7 +18,12 @@ impl Checker {
             .unwrap_or_default()
     }
 
-    pub(crate) fn track_record_references(&mut self, id: usize, value: &Expr) -> Result<()> {
+    pub(crate) fn track_record_references(
+        &mut self,
+        id: usize,
+        value: &Expr,
+        merge: bool,
+    ) -> Result<()> {
         let Type::Record { fields, .. } = &value.ty else {
             return Ok(());
         };
@@ -41,7 +46,7 @@ impl Checker {
             {
                 continue;
             }
-            let source = match &value.kind {
+            let mut source = match &value.kind {
                 ExprKind::Local(_) => self.field_origins(value, index),
                 ExprKind::Block(block) => {
                     if !self.flow.spend(self.proofs.aliases.len()) {
@@ -60,9 +65,31 @@ impl Checker {
                 }
                 _ => Origins::default(),
             };
-            if !self.flow.spend(source.roots.len() + 1) {
+            let prior = merge
+                .then(|| {
+                    self.record_pointees
+                        .get(&id)
+                        .and_then(|fields| fields.get(&index))
+                })
+                .flatten();
+            if !self
+                .flow
+                .spend(source.roots.len() + prior.map_or(0, |prior| prior.roots.len()) + 1)
+            {
                 return Err(Diagnostic::unsupported(
                     "proof record origin budget exhausted",
+                    value.span,
+                ));
+            }
+            if let Some(prior) = prior {
+                source.complete &= prior.complete;
+                source.roots.extend(&prior.roots);
+            } else if merge {
+                source.complete = false;
+            }
+            if source.roots.len() > super::references::MAX_ROOTS {
+                return Err(Diagnostic::unsupported(
+                    "proof record origin capacity exhausted",
                     value.span,
                 ));
             }
@@ -77,3 +104,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod writes;

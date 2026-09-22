@@ -183,6 +183,12 @@ ordinary borrow validation and bounded metadata; all ten compiler checks pass.
 Mutable/nested/coerced/composed and call-returned record origins remain incomplete.
 Implementation: `0d45f39`; the foundation guide now documents this boundary.
 
+Mutable ordinary record bindings now retain flat reference origins through
+whole-record replacement. Old/new owners merge conservatively; earlier record
+copies keep snapshots. Three new groups and all 1030 library tests pass, including
+ordinary validation of conditional replacements. Direct reference-field writes
+are next; flags remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

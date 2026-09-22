@@ -239,6 +239,22 @@ Failed capacity checks retain prior metadata. All ten compiler checks pass
 the foundation guide describes the flat immutable boundary. All four default
 documentation checks pass (`/tmp/meowy-proof-record-origins-docs.log`).
 
+### Mutable flat-record origin slices
+
+1. Track flat reference origins for mutable record bindings and merge field origins
+   on whole-record assignments, preserving earlier copies, completeness, bounds
+   and ordinary assignment errors. Keep mutable reference fields outside this slice.
+2. Track mutable scalar-reference fields and update their metadata on direct field
+   writes. Retain conservative old/new owners, test incomplete sources and copies,
+   then run the full compiler gate and document the expanded boundary.
+
+Nested/indexed aggregate references, coercion/composition, returned records and
+precise overwrite/branch joins remain unfinished. Field metadata is analysis-only;
+ordinary type and ownership checking remain authoritative. Flags stay gated.
+Three new whole-record groups and all 1030 library tests pass
+(`/tmp/meowy-proof-record-writes-library.log`). Conditional replacements also pass
+ordinary borrow/loan validation. Direct mutable reference fields are next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

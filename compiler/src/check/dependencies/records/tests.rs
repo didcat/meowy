@@ -38,7 +38,6 @@ pub(crate) fn completed_reference_projections_preserve_ordinary_borrow_validatio
 pub(crate) fn mutable_fields_records_and_unknown_initializers_stay_incomplete() {
     for source in [
         "x:=false;row:{->r:=&x};r:row.r",
-        "x:=false;row:={->r:&x};r:row.r",
         "x:=false;row:{->r:{->&x}};r:row.r",
     ] {
         let mut checker = Checker::new();
@@ -77,7 +76,7 @@ pub(crate) fn record_origin_capacity_preserves_existing_metadata() {
             },
             span: crate::ast::Span::new(1, 2),
         };
-        let result = checker.track_record_references(0, &value);
+        let result = checker.track_record_references(0, &value, false);
         if count == MAX_FIELDS {
             result.unwrap();
         } else {
