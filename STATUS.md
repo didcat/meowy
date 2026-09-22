@@ -155,8 +155,10 @@ remain separate, and marks remain conservative. Source-level flags stay gated.
 Immutable scalar-reference bindings now retain known single-owner links through
 copies and reborrows. Later owner marks reach those reference reads without
 replacing borrow/loan validation. Three new groups and all 1008 library tests pass;
-indirect-store integration is next. Mutable/aggregate/call-returned reference
-origins remain untracked and source-level flags remain gated.
+`64dd1b0` records those links. Indirect stores now propagate marked RHS, target
+and control dependencies to known owners after ordinary checks; marked unknown
+origins report B001. Four focused store groups and all ten compiler checks pass. Mutable/aggregate/call-returned reference origins remain untracked and
+source-level flags remain gated.
 
 ## Pending descriptor statement accounting
 
@@ -180,20 +182,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1005
-  library/903 native tests (1908 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1012
+  library/903 native tests (1915 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-aliases-gate.log`.
-- Four new seeded checker groups cover emitted initializers/control, sibling slot
-  identities, later alias reads, completed-record copies, query control and
-  preserved E207/E305 errors. The older control regression now includes marks on
-  named emission bindings. No outstanding failures remain.
-- Source-level proof flags/outcomes remain B001-gated. Marks are conservative and
-  monotone. Borrowed-reference aliases, indirect stores, precise overwrite/join
-  rules, function summaries and conditional-exit control remain unfinished.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-references-gate.log`.
+- Seven new seeded checker groups cover scalar-reference owner links, copies,
+  reborrows, later owner marks, indirect RHS/control/index dependencies, unknown
+  origin gating and ordinary E305/E207 precedence. Marked store cases also pass
+  borrow/loan validation before deferred E225 query rejection.
+- Source-level flags/outcomes remain B001-gated. Marks remain conservative and
+  monotone; mutable reference retargeting, aggregate/call-returned origins,
+  overwrite/join rules, function summaries and conditional-exit control remain
+  unfinished. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Area handoff
 

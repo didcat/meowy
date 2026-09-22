@@ -105,10 +105,16 @@ statements do not inherit a completed matcher body's control mark.
 Direct local assignments and owned field/list-element writes retain dependencies
 from the RHS, evaluated indices and lexical control. These marks conservatively
 cover the whole destination owner and survive later independent overwrites.
-Failed type/mutability checks do not mark a destination. Alias and indirect-store
-propagation, precise overwrite/join rules, function result summaries and control
-dependence after conditional leave/restart remain prerequisites to admitting flags
-or evaluated answers.
+Failed type/mutability checks do not mark a destination. Emitted-slot aliases share
+marks through their canonical storage root. Immutable scalar-reference bindings
+retain known single-owner links through copies/reborrows and observe later owner
+marks. Indirect stores with marked RHS, target or lexical control mark that owner
+after ordinary checks. If the store's owner cannot be identified, dependency
+tracking reports B001 rather than treating it as independent. Ordinary stores
+retain existing behavior.
+Mutable reference retargeting, aggregate/call-returned origins, precise overwrite/
+join rules, function result summaries and control after conditional leave/restart
+remain prerequisites to admitting flags or evaluated answers.
 
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query

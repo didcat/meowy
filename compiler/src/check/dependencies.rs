@@ -153,3 +153,6 @@ mod paths;
 mod aliases;
 
 mod references;
+
+#[cfg(test)]
+mod stores;

@@ -186,6 +186,15 @@ impl Checker {
                         ));
                     };
                     let value = self.expr(value, Some(ty))?;
+                    if self.control || self.derived_expr(&target) || self.derived_expr(&value) {
+                        let root = self.reference_root(&target).ok_or_else(|| {
+                            Diagnostic::unsupported(
+                                "proof dependency tracking for indirect store origins",
+                                form.span,
+                            )
+                        })?;
+                        self.mark_derived(root);
+                    }
                     self.forget_mutable();
                     return Ok(vec![hir::Stmt::Store {
                         target,
