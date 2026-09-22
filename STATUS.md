@@ -195,13 +195,17 @@ stay gated.
 Record origin metadata now uses ordered field paths. Seeded nested-field lookups
 preserve distinct owners and incomplete missing paths; all 13 focused record
 groups and all ten compiler checks pass. This is a representation prerequisite:
-nested source construction and subrecord writes remain untracked.
+nested source construction and subrecord writes are integrated below.
 
 Record source-origin lookup is now separate from storage merging; all 1035
 library tests pass. Nested path construction and writes are the next integration
 slice. The supported source boundary is unchanged by this extraction. Nested source
 lookup and seeded subrecord-copy lookup now also pass all 1035 library tests;
-nested producers and write updates remain the next integration.
+nested producers and write updates are now integrated. Origin traversal is bounded
+to 32 levels and 256 visited record fields; scalar/subrecord writes merge selected
+paths and preserve sibling metadata and prior copies. All five nested-source
+groups and all ten compiler checks pass. Indexed/coerced/composed and returned origins
+remain incomplete; flags stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -225,19 +229,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1035
-  library/903 native tests (1938 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1040
+  library/903 native tests (1943 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-paths-gate.log`.
-- Two new seeded checker groups cover ordered nested field paths, distinct owners,
-  later marks/query control and missing-path incompleteness. Existing flat record
-  construction, copies and writes retain their regression coverage.
-- This is a metadata representation prerequisite, not nested-source admission.
-  Nested construction/subrecord writes, indexed aggregates, coercion/composition,
-  returned records, precise joins, function summaries and conditional-exit control
-  remain unfinished. Flags/outcomes remain B001-gated. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-nested-records-gate.log`.
+- Five new nested-source checker groups cover construction, record/subrecord
+  copies, projections, nested field writes, conditional subrecord replacements,
+  unknown sources, depth limits and ordinary E207/E305 preservation. Accepted
+  nested programs also pass ordinary compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone.
+  Indexed aggregates, coercion/composition, returned origins, precise joins,
+  function summaries and conditional-exit control remain unfinished. Runtime
+  sources, reference fixtures, dependencies and versions are unchanged; editor
+  and separate runtime/sanitizer gates were not rerun. Full release qualification
+  remains open.
 
 ## Area handoff
 

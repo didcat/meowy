@@ -118,15 +118,16 @@ Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
 fields: existing capability gates remain.
-Ordinary record bindings retain origins for flat scalar-reference fields initialized
+Ordinary record bindings retain origins for scalar-reference fields in nested records initialized
 by direct blocks or copied from another tracked record. Mutable whole-record
-replacement and direct reference-field writes conservatively merge old/new owners;
-previous record copies retain their snapshots. Field writes leave other field
-origin sets unchanged. Direct local-field projections and reference copies preserve
-those owners, and later owner marks reach reads. Metadata is capped at 256 record
+replacement, nested reference-field writes and subrecord replacements conservatively
+merge old/new owners at the selected path. Previous copies retain their snapshots,
+and unrelated sibling paths stay unchanged. Nested field/subrecord projections
+preserve those owners, and later owner marks reach reads. Named record emissions
+retain source snapshots. Traversal is capped at 32 levels and 256 visited record
 fields and uses the existing analysis budget. Unknown field origins retain known
 possibilities but remain incomplete. Ordinary type and ownership checks still apply.
-Nested/indexed aggregate references, record coercions, composition and call-returned
+Indexed aggregate references, record coercions, composition and call-returned
 record origins remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.

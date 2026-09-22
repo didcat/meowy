@@ -5,6 +5,7 @@ use crate::hir::{Expr, ExprKind, Type};
 use std::collections::BTreeMap;
 
 pub(crate) const MAX_FIELDS: usize = 256;
+pub(crate) const MAX_DEPTH: usize = 32;
 
 impl Checker {
     pub(crate) fn field_origins(&self, value: &Expr, index: usize) -> Origins {
@@ -37,7 +38,7 @@ impl Checker {
     pub(crate) fn write_reference_field(
         &mut self,
         id: usize,
-        index: usize,
+        path: &[usize],
         value: &Expr,
     ) -> Result<()> {
         if !matches!(
@@ -50,8 +51,9 @@ impl Checker {
         let prior = self
             .record_pointees
             .get(&id)
-            .and_then(|fields| fields.get([index].as_slice()));
-        if index >= MAX_FIELDS
+            .and_then(|fields| fields.get(path));
+        if path.len() > MAX_DEPTH
+            || path.iter().any(|index| *index >= MAX_FIELDS)
             || !self
                 .flow
                 .spend(origins.roots.len() + prior.map_or(0, |prior| prior.roots.len()) + 1)
@@ -74,8 +76,42 @@ impl Checker {
         self.record_pointees
             .entry(id)
             .or_default()
-            .insert(vec![index], origins);
+            .insert(path.to_vec(), origins);
         Ok(())
+    }
+
+    pub(crate) fn record_paths(&mut self, value: &Expr) -> Result<Vec<Vec<usize>>> {
+        let mut pending = vec![(Vec::new(), &value.ty)];
+        let mut paths = Vec::new();
+        let mut count = 0;
+        while let Some((path, ty)) = pending.pop() {
+            if !ty.has_reference() {
+                continue;
+            }
+            if let Type::Record { fields, .. } = ty {
+                count += fields.len();
+                if count > MAX_FIELDS
+                    || path.len() >= MAX_DEPTH
+                    || !self.flow.spend(fields.len() + 1)
+                {
+                    return Err(Diagnostic::unsupported(
+                        "proof record origin budget exhausted",
+                        value.span,
+                    ));
+                }
+                for (index, field) in fields.iter().enumerate() {
+                    let mut child = path.clone();
+                    child.push(index);
+                    pending.push((child, &field.ty));
+                }
+            } else if matches!(
+                ty.pointee(),
+                Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
+            ) {
+                paths.push(path);
+            }
+        }
+        Ok(paths)
     }
 
     pub(crate) fn track_record_references(
@@ -84,32 +120,52 @@ impl Checker {
         value: &Expr,
         merge: bool,
     ) -> Result<()> {
-        let Type::Record { fields, .. } = &value.ty else {
-            return Ok(());
-        };
-        if !fields.iter().any(|field| field.ty.pointee().is_some()) {
+        self.track_record_prefix(id, &[], value, merge)
+    }
+
+    pub(crate) fn track_record_prefix(
+        &mut self,
+        id: usize,
+        prefix: &[usize],
+        value: &Expr,
+        merge: bool,
+    ) -> Result<()> {
+        if !matches!(value.ty, Type::Record { .. }) || !value.ty.has_reference() {
             return Ok(());
         }
-        if fields.len() > MAX_FIELDS || !self.flow.spend(fields.len() + 1) {
-            return Err(Diagnostic::unsupported(
-                "proof record origin budget exhausted",
-                value.span,
-            ));
-        }
+        let paths = self.record_paths(value)?;
         let mut origins = BTreeMap::new();
-        for (index, field) in fields.iter().enumerate() {
-            if !matches!(
-                field.ty.pointee(),
-                Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
+        if !prefix.is_empty()
+            && let Some(prior) = self.record_pointees.get(&id)
+        {
+            if !self.flow.spend(
+                prior
+                    .iter()
+                    .map(|(path, origins)| path.len() + origins.roots.len() + 1)
+                    .sum(),
             ) {
-                continue;
+                return Err(Diagnostic::unsupported(
+                    "proof record origin budget exhausted",
+                    value.span,
+                ));
             }
-            let mut source = self.record_source_origins(value, &[index])?;
+            origins = prior.clone();
+        }
+        for path in paths {
+            let mut key = prefix.to_vec();
+            key.extend(&path);
+            if key.len() > MAX_DEPTH {
+                return Err(Diagnostic::unsupported(
+                    "proof record origin budget exhausted",
+                    value.span,
+                ));
+            }
+            let mut source = self.record_source_origins(value, &path)?;
             let prior = merge
                 .then(|| {
                     self.record_pointees
                         .get(&id)
-                        .and_then(|fields| fields.get([index].as_slice()))
+                        .and_then(|fields| fields.get(&key))
                 })
                 .flatten();
             if !self
@@ -133,7 +189,13 @@ impl Checker {
                     value.span,
                 ));
             }
-            origins.insert(vec![index], source);
+            origins.insert(key, source);
+        }
+        if origins.len() > MAX_FIELDS {
+            return Err(Diagnostic::unsupported(
+                "proof record origin capacity exhausted",
+                value.span,
+            ));
         }
         if !origins.is_empty() {
             self.record_pointees.insert(id, origins);
@@ -149,3 +211,6 @@ mod tests;
 mod writes;
 
 mod sources;
+
+#[cfg(test)]
+mod nested;

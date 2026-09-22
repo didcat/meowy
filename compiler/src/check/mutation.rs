@@ -141,8 +141,16 @@ impl Checker {
                 hir::WriteStep::Field(_) => false,
             });
         self.forget_field(id, &names, target.span)?;
-        if let [hir::WriteStep::Field(index)] = path.as_slice() {
-            self.write_reference_field(id, *index, &value)?;
+        let fields = path
+            .iter()
+            .map(|step| match step {
+                hir::WriteStep::Field(index) => Some(*index),
+                hir::WriteStep::Index(_) => None,
+            })
+            .collect::<Option<Vec<_>>>();
+        if let Some(fields) = fields {
+            self.write_reference_field(id, &fields, &value)?;
+            self.track_record_prefix(id, &fields, &value, true)?;
         }
         if derived {
             self.mark_derived(id);

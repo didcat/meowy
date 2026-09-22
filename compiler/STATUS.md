@@ -290,7 +290,11 @@ The source lookup extraction passes all 1035 library tests
 (`/tmp/meowy-record-source-library.log`), committed as `8585305`. Nested source
 lookup and subrecord snapshot lookup pass all 1035 library tests
 (`/tmp/meowy-nested-source-library.log`). Source-level nested construction remains
-next, together with matching write updates.
+next, together with matching write updates. Source lookup committed as `76a54b5`.
+Nested producers, named-emission snapshots and prefix updates are implemented.
+Focused checks pass for construction, copies, subrecords, conditional replacements,
+unknown sources, depth limits and ordinary errors. All ten compiler checks pass
+(`/tmp/meowy-proof-nested-records-gate.log`); no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1108,19 +1112,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1035
-  library/903 native tests (1938 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1040
+  library/903 native tests (1943 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-paths-gate.log`.
-- Two new seeded checker groups cover ordered nested field paths, distinct owners,
-  later marks/query control and missing-path incompleteness. Existing flat record
-  construction, copies and writes retain their regression coverage.
-- This is a metadata representation prerequisite, not nested-source admission.
-  Nested construction/subrecord writes, indexed aggregates, coercion/composition,
-  returned records, precise joins, function summaries and conditional-exit control
-  remain unfinished. Flags/outcomes remain B001-gated. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-nested-records-gate.log`.
+- Five new nested-source checker groups cover construction, record/subrecord
+  copies, projections, nested field writes, conditional subrecord replacements,
+  unknown sources, depth limits and ordinary E207/E305 preservation. Accepted
+  nested programs also pass ordinary compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone.
+  Indexed aggregates, coercion/composition, returned origins, precise joins,
+  function summaries and conditional-exit control remain unfinished. Runtime
+  sources, reference fixtures, dependencies and versions are unchanged; editor
+  and separate runtime/sanitizer gates were not rerun. Full release qualification
+  remains open.
 
 ## Prior capabilities and other areas
 
@@ -1201,15 +1206,12 @@ explicitly documented. No outstanding failures remain.
    slot root. Flat ordinary record bindings now retain scalar-reference field
    origins through direct blocks/copies and local field projections. Whole-record
    replacement and direct mutable reference-field writes now merge those origins.
-   Metadata keys now carry ordered paths. Next extend
-   `dependencies/records.rs::track_record_references` to populate bounded nested
-   paths and `mutation.rs` to update/merge subrecord paths, with source-level
-   nested-copy/projection/write regressions. Keep nested admission incomplete until
-   those producers and updates agree. Indexed aggregates, coercion/composition and
-   call-returned origins remain separate; preserve explicit incomplete sets. Precise overwrite/branch-join rules
-   remain separate;
-   independent overwrites currently retain marks/owners. Function result
-   dependencies remain untracked. Keep flags gated until these analyses complete.
+   Nested construction, named-emission snapshots, record/subrecord copies and
+   scalar/subrecord writes now share bounded ordered paths. Next extend indexed
+   aggregate origins, record coercion/composition and call-returned origins while
+   preserving explicit incomplete sets. Precise overwrite/branch joins and function
+   result dependencies remain separate; old owners/marks are retained conservatively.
+   Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads
    and pending query availability enforce E225 for those marks. Conditional
    leave/restart can control subsequent statements outside a matcher body; model
