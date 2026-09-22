@@ -109,9 +109,7 @@ impl Checker {
                     ));
                 }
                 let id = self.local(ty.clone());
-                if !mutable {
-                    self.track_reference(id, &value, false)?;
-                }
+                self.track_reference(id, &value, false)?;
                 if self.control || self.derived_expr(&value) {
                     self.mark_derived(id);
                 }
@@ -238,6 +236,7 @@ impl Checker {
                     ));
                 }
                 let value = self.expr(value, Some(&ty))?;
+                self.track_reference(id, &value, true)?;
                 if self.control || self.derived_expr(&value) {
                     self.mark_derived(id);
                 }

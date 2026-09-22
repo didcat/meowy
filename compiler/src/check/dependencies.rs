@@ -157,3 +157,6 @@ pub(crate) use references::Origins;
 
 #[cfg(test)]
 mod stores;
+
+#[cfg(test)]
+mod retargets;

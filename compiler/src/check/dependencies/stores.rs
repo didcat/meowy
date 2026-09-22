@@ -47,7 +47,7 @@ pub(crate) fn indirect_store_errors_preserve_unmodified_owner_marks() {
     for (source, code) in [
         ("seed:true;x:=false;r:&x;*r=seed", "E305"),
         ("seed:true;x:=7;r:&!x;*r=seed", "E207"),
-        ("seed:true;x:=false;r:=&!x;*r=seed", "B001"),
+        ("seed:true;x:=false;r:={->&!x};*r=seed", "B001"),
     ] {
         let mut checker = Checker::new();
         checker.derived.insert(0);

@@ -163,8 +163,11 @@ source-level flags remain gated.
 Reference links now use bounded owner sets with explicit completeness. Unknown
 origins preserve known possibilities without being treated as proof evidence;
 marked stores still gate incomplete origins. All 1014 library tests pass, including
-new merge/snapshot and capacity regressions. Mutable retargeting integration is
-next; source-level flags remain gated.
+new merge/snapshot and capacity regressions. `44a59fb` records this representation.
+Mutable scalar-reference assignments now merge old/new owner sets, preserving
+prior copies and incomplete origins. Four new retargeting groups pass, including
+borrow/loan validation; all ten compiler checks pass. Marks/owner sets remain
+conservative and source-level flags remain gated.
 
 ## Pending descriptor statement accounting
 
@@ -188,19 +191,18 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1012
-  library/903 native tests (1915 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1018
+  library/903 native tests (1921 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-references-gate.log`.
-- Seven new seeded checker groups cover scalar-reference owner links, copies,
-  reborrows, later owner marks, indirect RHS/control/index dependencies, unknown
-  origin gating and ordinary E305/E207 precedence. Marked store cases also pass
-  borrow/loan validation before deferred E225 query rejection.
-- Source-level flags/outcomes remain B001-gated. Marks remain conservative and
-  monotone; mutable reference retargeting, aggregate/call-returned origins,
-  overwrite/join rules, function summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-retargets-gate.log`.
+- Six new seeded checker groups cover bounded origin merging, copy snapshots,
+  capacity failures, mutable retargeting, conditional stores, incomplete origins
+  and failed assignment preservation. Retargeted stores pass borrow/loan checks.
+- Flags/outcomes remain B001-gated. Marks/owner sets remain conservative and
+  monotone. Emitted reference-valued slots, aggregate/call-returned origins,
+  precise overwrite/join rules, function summaries and conditional-exit control
+  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
+  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Area handoff

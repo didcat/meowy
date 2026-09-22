@@ -55,6 +55,8 @@ impl Checker {
         if let Some(prior) = prior {
             origins.complete &= prior.complete;
             origins.roots.extend(&prior.roots);
+        } else if merge {
+            origins.complete = false;
         }
         if origins.roots.len() > MAX_ROOTS {
             return Err(crate::diagnostic::Diagnostic::unsupported(
@@ -109,8 +111,8 @@ mod tests {
     }
 
     #[test]
-    pub(crate) fn mutable_and_aggregate_reference_origins_are_not_invented() {
-        for source in ["x:=false;r:=&x;copy:r", "x:{->n:7};r:&x;copy:r"] {
+    pub(crate) fn unsupported_reference_origins_are_not_invented() {
+        for source in ["x:=false;r:{->&x};copy:r", "x:{->n:7};r:&x;copy:r"] {
             let mut checker = Checker::new();
             statements(&mut checker, source);
             assert!(

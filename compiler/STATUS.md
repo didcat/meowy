@@ -193,7 +193,13 @@ stores cannot silently write only a known subset. Source-level flags stay gated.
 The bounded representation passes all 1014 library tests, including new merge/
 snapshot and capacity regressions (`/tmp/meowy-proof-origin-sets-library.log`).
 Owners are capped at 256 and merging spends the existing analysis budget; failed
-updates retain prior metadata. Mutable binding/assignment integration is next.
+updates retain prior metadata. Committed as `44a59fb`. Mutable bindings now
+record origins and assignments conservatively merge prior/new sets; missing or
+incomplete prior origins cannot become complete through a conditional update.
+Four focused retargeting groups pass, including borrow/loan validation for
+conditional stores, retained prior copies, incomplete-source gates and failed
+assignment metadata preservation. All 34 dependency groups and all ten compiler
+checks pass (`/tmp/meowy-proof-retargets-gate.log`); no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1011,19 +1017,18 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1012
-  library/903 native tests (1915 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1018
+  library/903 native tests (1921 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-references-gate.log`.
-- Seven new seeded checker groups cover scalar-reference owner links, copies,
-  reborrows, later owner marks, indirect RHS/control/index dependencies, unknown
-  origin gating and ordinary E305/E207 precedence. Marked store cases also pass
-  borrow/loan validation before deferred E225 query rejection.
-- Source-level flags/outcomes remain B001-gated. Marks remain conservative and
-  monotone; mutable reference retargeting, aggregate/call-returned origins,
-  overwrite/join rules, function summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-retargets-gate.log`.
+- Six new seeded checker groups cover bounded origin merging, copy snapshots,
+  capacity failures, mutable retargeting, conditional stores, incomplete origins
+  and failed assignment preservation. Retargeted stores pass borrow/loan checks.
+- Flags/outcomes remain B001-gated. Marks/owner sets remain conservative and
+  monotone. Emitted reference-valued slots, aggregate/call-returned origins,
+  precise overwrite/join rules, function summaries and conditional-exit control
+  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
+  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1099,9 +1104,11 @@ explicitly documented. No outstanding failures remain.
    direct local and owned-path writes now retain conservative whole-owner marks.
    Emitted-slot aliases share marks through `Alias::root`; immutable scalar
    references retain known owners and indirect stores propagate marks or gate
-   unknown dependency-bearing origins with B001. Extend mutable reference
-   retargeting, aggregate/call-returned origins and precise overwrite/branch-join
-   rules. Independent overwrites currently retain marks. Function result
+   unknown dependency-bearing origins with B001. Mutable scalar-reference
+   retargeting now retains bounded conservative owner sets and completeness.
+   Extend emitted reference-valued slots, aggregate/call-returned origins and
+   precise overwrite/branch-join rules;
+   independent overwrites currently retain marks/owners. Function result
    dependencies remain untracked. Keep flags gated until these analyses complete.
    Structural reads and lexical matcher control are tracked; required reads
    and pending query availability enforce E225 for those marks. Conditional
