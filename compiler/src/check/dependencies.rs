@@ -19,7 +19,7 @@ impl Checker {
             || self
                 .pointees
                 .get(&id)
-                .is_some_and(|root| self.derived_storage(*root))
+                .is_some_and(|origins| origins.roots.iter().any(|root| self.derived_storage(*root)))
     }
 
     pub(crate) fn derived_storage(&self, id: usize) -> bool {
@@ -153,6 +153,7 @@ mod paths;
 mod aliases;
 
 mod references;
+pub(crate) use references::Origins;
 
 #[cfg(test)]
 mod stores;

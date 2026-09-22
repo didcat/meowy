@@ -160,6 +160,12 @@ and control dependencies to known owners after ordinary checks; marked unknown
 origins report B001. Four focused store groups and all ten compiler checks pass. Mutable/aggregate/call-returned reference origins remain untracked and
 source-level flags remain gated.
 
+Reference links now use bounded owner sets with explicit completeness. Unknown
+origins preserve known possibilities without being treated as proof evidence;
+marked stores still gate incomplete origins. All 1014 library tests pass, including
+new merge/snapshot and capacity regressions. Mutable retargeting integration is
+next; source-level flags remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

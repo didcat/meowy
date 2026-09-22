@@ -109,8 +109,8 @@ impl Checker {
                     ));
                 }
                 let id = self.local(ty.clone());
-                if !mutable && let Some(root) = self.reference_root(&value) {
-                    self.pointees.insert(id, root);
+                if !mutable {
+                    self.track_reference(id, &value, false)?;
                 }
                 if self.control || self.derived_expr(&value) {
                     self.mark_derived(id);
@@ -187,13 +187,16 @@ impl Checker {
                     };
                     let value = self.expr(value, Some(ty))?;
                     if self.control || self.derived_expr(&target) || self.derived_expr(&value) {
-                        let root = self.reference_root(&target).ok_or_else(|| {
-                            Diagnostic::unsupported(
+                        let origins = self.reference_origins(&target);
+                        if !origins.complete {
+                            return Err(Diagnostic::unsupported(
                                 "proof dependency tracking for indirect store origins",
                                 form.span,
-                            )
-                        })?;
-                        self.mark_derived(root);
+                            ));
+                        }
+                        for root in origins.roots {
+                            self.mark_derived(root);
+                        }
                     }
                     self.forget_mutable();
                     return Ok(vec![hir::Stmt::Store {

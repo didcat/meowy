@@ -176,6 +176,25 @@ borrow/loan validation, reborrows, indexed targets, unknown-origin gating and
 ordinary E305/E207 precedence. All ten compiler checks pass, including 1012
 library/903 native tests (`/tmp/meowy-proof-references-gate.log`).
 
+### Mutable-reference origin slices
+
+1. Replace single-owner reference links with bounded owner sets and explicit
+   completeness. Preserve current immutable-reference admission and indirect-store
+   gating; unknown origins are not proof evidence. Validate multiple retained
+   owners, snapshots, and origin limits alongside the existing reference tests.
+2. Track mutable scalar-reference bindings and conservatively union old/new owners
+   on assignments. Preserve incomplete origins across updates, propagate store
+   marks to every retained owner, and test retargeting/copies/branches/errors.
+   Run the full compiler gate and commit each validated slice.
+
+Retargeting uses monotone owner sets rather than claiming precise overwrite or
+branch joins. Unknown call/aggregate origins retain an incomplete marker; dependent
+stores cannot silently write only a known subset. Source-level flags stay gated.
+The bounded representation passes all 1014 library tests, including new merge/
+snapshot and capacity regressions (`/tmp/meowy-proof-origin-sets-library.log`).
+Owners are capped at 256 and merging spends the existing analysis budget; failed
+updates retain prior metadata. Mutable binding/assignment integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
