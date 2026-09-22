@@ -197,6 +197,10 @@ preserve distinct owners and incomplete missing paths; all 13 focused record
 groups and all ten compiler checks pass. This is a representation prerequisite:
 nested source construction and subrecord writes remain untracked.
 
+Record source-origin lookup is now separate from storage merging; all 1035
+library tests pass. Nested path construction and writes are the next integration
+slice. The supported source boundary is unchanged by this extraction.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

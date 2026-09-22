@@ -100,25 +100,7 @@ impl Checker {
             ) {
                 continue;
             }
-            let mut source = match &value.kind {
-                ExprKind::Local(_) => self.field_origins(value, index),
-                ExprKind::Block(block) => {
-                    if !self.flow.spend(self.proofs.aliases.len()) {
-                        return Err(Diagnostic::unsupported(
-                            "proof record origin budget exhausted",
-                            value.span,
-                        ));
-                    }
-                    self.proofs
-                        .aliases
-                        .values()
-                        .find(|alias| alias.target == block.id && alias.field == field.name)
-                        .and_then(|alias| self.pointees.get(&alias.root))
-                        .cloned()
-                        .unwrap_or_default()
-                }
-                _ => Origins::default(),
-            };
+            let mut source = self.record_source_origins(value, &[index])?;
             let prior = merge
                 .then(|| {
                     self.record_pointees
@@ -161,3 +143,5 @@ mod tests;
 
 #[cfg(test)]
 mod writes;
+
+mod sources;
