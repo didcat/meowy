@@ -12,6 +12,10 @@ pub(crate) struct Origins {
 pub(crate) const MAX_ROOTS: usize = 256;
 
 impl Checker {
+    pub(crate) fn origin_id(&self, id: usize) -> usize {
+        self.proofs.aliases.get(&id).map_or(id, |alias| alias.root)
+    }
+
     pub(crate) fn reference_origins(&self, expr: &Expr) -> Origins {
         let mut value = expr;
         loop {
@@ -22,7 +26,13 @@ impl Checker {
                         complete: true,
                     };
                 }
-                ExprKind::Local(id) => return self.pointees.get(id).cloned().unwrap_or_default(),
+                ExprKind::Local(id) => {
+                    return self
+                        .pointees
+                        .get(&self.origin_id(*id))
+                        .cloned()
+                        .unwrap_or_default();
+                }
                 ExprKind::Reborrow { value: inner, .. } | ExprKind::Coerce { value: inner } => {
                     value = inner
                 }
@@ -43,13 +53,23 @@ impl Checker {
         ) {
             return Ok(());
         }
-        let mut origins = self.reference_origins(value);
+        let origins = self.reference_origins(value);
+        self.store_origins(self.origin_id(id), origins, merge, value.span)
+    }
+
+    pub(crate) fn store_origins(
+        &mut self,
+        id: usize,
+        mut origins: Origins,
+        merge: bool,
+        span: crate::ast::Span,
+    ) -> crate::check::Result<()> {
         let prior = merge.then(|| self.pointees.get(&id)).flatten();
         let work = origins.roots.len() + prior.map_or(0, |prior| prior.roots.len()) + 1;
         if !self.flow.spend(work) {
             return Err(crate::diagnostic::Diagnostic::unsupported(
                 "proof reference origin budget exhausted",
-                value.span,
+                span,
             ));
         }
         if let Some(prior) = prior {
@@ -61,7 +81,7 @@ impl Checker {
         if origins.roots.len() > MAX_ROOTS {
             return Err(crate::diagnostic::Diagnostic::unsupported(
                 "proof reference origin capacity exhausted",
-                value.span,
+                span,
             ));
         }
         self.pointees.insert(id, origins);

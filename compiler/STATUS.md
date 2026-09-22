@@ -201,6 +201,23 @@ conditional stores, retained prior copies, incomplete-source gates and failed
 assignment metadata preservation. All 34 dependency groups and all ten compiler
 checks pass (`/tmp/meowy-proof-retargets-gate.log`); no outstanding failures remain.
 
+### Emitted reference-origin slice
+
+Track scalar-reference origins on named emissions, canonicalize origin reads/writes
+through the emitted slot root, and merge sibling emission origins with existing
+bounds/completeness rules. Keep ordinary reference copies as snapshots. Validate
+initializers, alias retargets, later sibling reads and incomplete-source gates;
+run the complete compiler gate and commit this shared-storage slice.
+
+This slice covers lexical emitted names and shared storage identity; completed
+record projections and function-returned origins remain separate. Four focused
+groups pass. Shared-reference fixtures pass borrow/loan validation; exclusive-slot
+stores retain the existing B001 carrier gate, and mutable exclusive-reference
+fields remain gated. Incomplete origins still reject dependent stores. Marks and
+owner sets remain conservative and source-level flags stay gated. All ten compiler
+checks pass (`/tmp/meowy-proof-reference-slots-gate.log`); no outstanding failures
+remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1017,18 +1034,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1018
-  library/903 native tests (1921 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1022
+  library/903 native tests (1925 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-retargets-gate.log`.
-- Six new seeded checker groups cover bounded origin merging, copy snapshots,
-  capacity failures, mutable retargeting, conditional stores, incomplete origins
-  and failed assignment preservation. Retargeted stores pass borrow/loan checks.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-slots-gate.log`.
+- Four new seeded checker groups cover named reference emissions, canonical alias
+  origin merging, snapshot copies, later sibling reads and incomplete-origin gates.
+  Shared-reference fixtures pass borrow/loan checks. Exclusive reference carriers
+  retain their existing B001 gate; they are not claimed as admitted executions.
 - Flags/outcomes remain B001-gated. Marks/owner sets remain conservative and
-  monotone. Emitted reference-valued slots, aggregate/call-returned origins,
-  precise overwrite/join rules, function summaries and conditional-exit control
-  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
-  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  monotone. Completed-record projections, aggregate/call-returned origins, precise
+  overwrite/join rules, function summaries and conditional-exit control remain
+  unfinished. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1106,7 +1124,8 @@ explicitly documented. No outstanding failures remain.
    references retain known owners and indirect stores propagate marks or gate
    unknown dependency-bearing origins with B001. Mutable scalar-reference
    retargeting now retains bounded conservative owner sets and completeness.
-   Extend emitted reference-valued slots, aggregate/call-returned origins and
+   Named scalar-reference emissions now share bounded origins at their canonical
+   slot root. Extend completed-record projections, aggregate/call-returned origins and
    precise overwrite/branch-join rules;
    independent overwrites currently retain marks/owners. Function result
    dependencies remain untracked. Keep flags gated until these analyses complete.

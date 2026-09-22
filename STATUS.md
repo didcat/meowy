@@ -169,6 +169,13 @@ prior copies and incomplete origins. Four new retargeting groups pass, including
 borrow/loan validation; all ten compiler checks pass. Marks/owner sets remain
 conservative and source-level flags remain gated.
 
+Named scalar-reference emissions now retain origins at their canonical slot root.
+Sibling aliases merge possible owners/completeness and observe later retargets;
+ordinary copies preserve prior origin snapshots. Four focused groups pass, with
+borrow/loan checks for shared-reference fixtures and explicit preservation of the
+exclusive-reference-carrier B001 gate. All ten compiler checks pass. Completed
+record projections and function-returned origins remain separate; flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -191,18 +198,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1018
-  library/903 native tests (1921 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1022
+  library/903 native tests (1925 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-retargets-gate.log`.
-- Six new seeded checker groups cover bounded origin merging, copy snapshots,
-  capacity failures, mutable retargeting, conditional stores, incomplete origins
-  and failed assignment preservation. Retargeted stores pass borrow/loan checks.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-slots-gate.log`.
+- Four new seeded checker groups cover named reference emissions, canonical alias
+  origin merging, snapshot copies, later sibling reads and incomplete-origin gates.
+  Shared-reference fixtures pass borrow/loan checks. Exclusive reference carriers
+  retain their existing B001 gate; they are not claimed as admitted executions.
 - Flags/outcomes remain B001-gated. Marks/owner sets remain conservative and
-  monotone. Emitted reference-valued slots, aggregate/call-returned origins,
-  precise overwrite/join rules, function summaries and conditional-exit control
-  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
-  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  monotone. Completed-record projections, aggregate/call-returned origins, precise
+  overwrite/join rules, function summaries and conditional-exit control remain
+  unfinished. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Area handoff

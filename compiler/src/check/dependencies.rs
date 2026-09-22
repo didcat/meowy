@@ -18,7 +18,7 @@ impl Checker {
         self.derived_storage(id)
             || self
                 .pointees
-                .get(&id)
+                .get(&self.origin_id(id))
                 .is_some_and(|origins| origins.roots.iter().any(|root| self.derived_storage(*root)))
     }
 
@@ -160,3 +160,6 @@ mod stores;
 
 #[cfg(test)]
 mod retargets;
+
+#[cfg(test)]
+mod slots;

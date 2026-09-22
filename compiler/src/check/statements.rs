@@ -606,6 +606,7 @@ impl Checker {
         } else if let Some(name) = name {
             let ty = value.ty.clone();
             let id = self.local(ty.clone());
+            self.track_reference(id, &value, false)?;
             if self.control || self.derived_expr(&value) {
                 self.mark_derived(id);
             }

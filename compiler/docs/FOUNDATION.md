@@ -114,7 +114,11 @@ Unknown origins preserve known possibilities and explicitly remain incomplete.
 Indirect stores with marked RHS, target or lexical control mark all retained
 owners after ordinary checks, or report B001 if origins are incomplete. This does
 not replace borrow/loan validation.
-Emitted reference-valued slots, aggregate/call-returned origins, precise overwrite/join rules, function result
+Named scalar-reference emissions use the same bounded sets at their canonical
+slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
+This does not enable exclusive-reference carriers or mutable exclusive-reference
+fields: existing capability gates remain. Completed-record projections,
+aggregate/call-returned origins, precise overwrite/join rules, function result
 summaries and control after conditional leave/restart remain prerequisites to
 admitting flags or evaluated answers.
 

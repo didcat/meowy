@@ -31,6 +31,12 @@ impl Checker {
             .iter()
             .find_map(|(id, alias)| (alias.target == target && alias.field == field).then_some(*id))
             .unwrap_or(id);
+        if root != id
+            && let Some(origins) = self.pointees.get(&id).cloned()
+        {
+            self.store_origins(root, origins, true, span)?;
+            self.pointees.remove(&id);
+        }
         self.proofs.aliases.insert(
             id,
             Alias {
