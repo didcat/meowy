@@ -181,6 +181,7 @@ origins through direct block initialization and record copies. Direct local-fiel
 projections observe later pointee marks. Five focused groups pass, including
 ordinary borrow validation and bounded metadata; all ten compiler checks pass.
 Mutable/nested/coerced/composed and call-returned record origins remain incomplete.
+Implementation: `0d45f39`; the foundation guide now documents this boundary.
 
 ## Pending descriptor statement accounting
 

@@ -117,10 +117,16 @@ not replace borrow/loan validation.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
-fields: existing capability gates remain. Completed-record projections,
-aggregate/call-returned origins, precise overwrite/join rules, function result
-summaries and control after conditional leave/restart remain prerequisites to
-admitting flags or evaluated answers.
+fields: existing capability gates remain.
+Immutable ordinary record bindings retain origins for flat, immutable scalar-reference
+fields initialized by direct blocks or copied from another tracked record. Direct
+local-field projections and subsequent reference copies preserve those owners;
+later owner marks reach the reads. Metadata is capped at 256 record fields and
+uses the existing analysis budget. Unknown field origins remain incomplete.
+Mutable record bindings/reference fields, nested aggregates, record coercions,
+composition and call-returned record origins remain separate. Precise overwrite/
+join rules, function summaries and control after conditional leave/restart also
+remain prerequisites to admitting flags or evaluated answers.
 
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query

@@ -235,7 +235,9 @@ not proof evidence and dependent stores still gate incomplete sets. Flags stay g
 Five focused groups pass: direct projections, copies/later owner marks, ordinary
 borrow validation, incomplete-source boundaries and the 256-field metadata limit.
 Failed capacity checks retain prior metadata. All ten compiler checks pass
-(`/tmp/meowy-proof-record-origins-gate.log`); guide integration is next.
+(`/tmp/meowy-proof-record-origins-gate.log`). `0d45f39` records the implementation;
+the foundation guide describes the flat immutable boundary. All four default
+documentation checks pass (`/tmp/meowy-proof-record-origins-docs.log`).
 
 ### Prerequisites and current integration
 
@@ -1142,8 +1144,11 @@ explicitly documented. No outstanding failures remain.
    unknown dependency-bearing origins with B001. Mutable scalar-reference
    retargeting now retains bounded conservative owner sets and completeness.
    Named scalar-reference emissions now share bounded origins at their canonical
-   slot root. Extend completed-record projections, aggregate/call-returned origins and
-   precise overwrite/branch-join rules;
+   slot root. Flat immutable record bindings now retain scalar-reference field
+   origins through direct blocks/copies and local field projections. Extend mutable
+   records/reference fields, nested aggregates, coercion/composition and call-returned
+   origins; preserve explicit incomplete sets. Precise overwrite/branch-join rules
+   remain separate;
    independent overwrites currently retain marks/owners. Function result
    dependencies remain untracked. Keep flags gated until these analyses complete.
    Structural reads and lexical matcher control are tracked; required reads
