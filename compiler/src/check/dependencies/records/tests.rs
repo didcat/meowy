@@ -35,16 +35,11 @@ pub(crate) fn completed_reference_projections_preserve_ordinary_borrow_validatio
 }
 
 #[test]
-pub(crate) fn mutable_fields_records_and_unknown_initializers_stay_incomplete() {
-    for source in [
-        "x:=false;row:{->r:=&x};r:row.r",
-        "x:=false;row:{->r:{->&x}};r:row.r",
-    ] {
-        let mut checker = Checker::new();
-        statements(&mut checker, source);
-        let id = checker.locals.len() - 1;
-        assert!(!checker.pointees[&id].complete, "{source}");
-    }
+pub(crate) fn unknown_record_initializers_stay_incomplete() {
+    let mut checker = Checker::new();
+    statements(&mut checker, "x:=false;row:{->r:{->&x}};r:row.r");
+    let id = checker.locals.len() - 1;
+    assert!(!checker.pointees[&id].complete);
 }
 
 #[test]

@@ -18,6 +18,50 @@ impl Checker {
             .unwrap_or_default()
     }
 
+    pub(crate) fn write_reference_field(
+        &mut self,
+        id: usize,
+        index: usize,
+        value: &Expr,
+    ) -> Result<()> {
+        if !matches!(
+            value.ty.pointee(),
+            Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
+        ) {
+            return Ok(());
+        }
+        let mut origins = self.reference_origins(value);
+        let prior = self
+            .record_pointees
+            .get(&id)
+            .and_then(|fields| fields.get(&index));
+        if index >= MAX_FIELDS
+            || !self
+                .flow
+                .spend(origins.roots.len() + prior.map_or(0, |prior| prior.roots.len()) + 1)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof record origin budget exhausted",
+                value.span,
+            ));
+        }
+        origins.complete &= prior.is_some_and(|prior| prior.complete);
+        if let Some(prior) = prior {
+            origins.roots.extend(&prior.roots);
+        }
+        if origins.roots.len() > super::references::MAX_ROOTS {
+            return Err(Diagnostic::unsupported(
+                "proof record origin capacity exhausted",
+                value.span,
+            ));
+        }
+        self.record_pointees
+            .entry(id)
+            .or_default()
+            .insert(index, origins);
+        Ok(())
+    }
+
     pub(crate) fn track_record_references(
         &mut self,
         id: usize,
@@ -38,12 +82,10 @@ impl Checker {
         }
         let mut origins = BTreeMap::new();
         for (index, field) in fields.iter().enumerate() {
-            if field.mutable
-                || !matches!(
-                    field.ty.pointee(),
-                    Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
-                )
-            {
+            if !matches!(
+                field.ty.pointee(),
+                Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
+            ) {
                 continue;
             }
             let mut source = match &value.kind {

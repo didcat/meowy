@@ -180,14 +180,17 @@ Immutable ordinary records now retain flat immutable scalar-reference field
 origins through direct block initialization and record copies. Direct local-field
 projections observe later pointee marks. Five focused groups pass, including
 ordinary borrow validation and bounded metadata; all ten compiler checks pass.
-Mutable/nested/coerced/composed and call-returned record origins remain incomplete.
+Nested/coerced/composed and call-returned record origins remain incomplete.
 Implementation: `0d45f39`; the foundation guide now documents this boundary.
 
 Mutable ordinary record bindings now retain flat reference origins through
 whole-record replacement. Old/new owners merge conservatively; earlier record
 copies keep snapshots. Three new groups and all 1030 library tests pass, including
-ordinary validation of conditional replacements. Direct reference-field writes
-are next; flags remain gated.
+ordinary validation of conditional replacements. `d1d5f21` records that slice.
+Direct mutable reference-field writes now merge origins while preserving earlier
+copies and unrelated field metadata. Three new groups and all ten compiler checks
+pass. Nested/indexed aggregates and returned records remain incomplete; flags
+stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -211,18 +214,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1027
-  library/903 native tests (1930 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1033
+  library/903 native tests (1936 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-origins-gate.log`.
-- Five new checker groups cover flat immutable reference fields, completed-record
-  copies, direct projections/later owner marks, ordinary borrow validation,
-  incomplete mutable/unknown sources and capacity failure preservation.
-- Flags/outcomes remain B001-gated. Mutable/nested/coerced/composed and call-returned
-  record origins remain incomplete, as do precise overwrite/join rules, function
-  summaries and conditional-exit control. Runtime sources, reference fixtures,
-  dependencies and versions are unchanged; editor and separate runtime/sanitizer
-  gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-mutations-gate.log`.
+- Six new checker groups cover whole-record/direct field replacements, conditional
+  updates, prior copies, unrelated field origins, incomplete sources and preserved
+  E207/E305 errors. Accepted conditional writes pass ordinary borrow/loan validation.
+- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
+  nested/indexed aggregates, coercion/composition, returned records, precise joins,
+  function summaries and conditional-exit control remain unfinished. Runtime
+  sources, reference fixtures, dependencies and versions are unchanged; editor
+  and separate runtime/sanitizer gates were not rerun. Full release qualification
+  remains open.
 
 ## Area handoff
 

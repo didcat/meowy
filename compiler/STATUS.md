@@ -253,7 +253,12 @@ precise overwrite/branch joins remain unfinished. Field metadata is analysis-onl
 ordinary type and ownership checking remain authoritative. Flags stay gated.
 Three new whole-record groups and all 1030 library tests pass
 (`/tmp/meowy-proof-record-writes-library.log`). Conditional replacements also pass
-ordinary borrow/loan validation. Direct mutable reference fields are next.
+ordinary borrow/loan validation. Committed as `d1d5f21`. Direct mutable
+scalar-reference fields now retain initial origins and merge updates after ordinary
+validation. Three new field-write groups and all 11 record dependency groups pass,
+including ordinary compilation of conditional updates, copied snapshots, independent
+fields and incomplete sources. All ten compiler checks pass
+(`/tmp/meowy-proof-record-mutations-gate.log`); no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1071,18 +1076,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1027
-  library/903 native tests (1930 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1033
+  library/903 native tests (1936 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-origins-gate.log`.
-- Five new checker groups cover flat immutable reference fields, completed-record
-  copies, direct projections/later owner marks, ordinary borrow validation,
-  incomplete mutable/unknown sources and capacity failure preservation.
-- Flags/outcomes remain B001-gated. Mutable/nested/coerced/composed and call-returned
-  record origins remain incomplete, as do precise overwrite/join rules, function
-  summaries and conditional-exit control. Runtime sources, reference fixtures,
-  dependencies and versions are unchanged; editor and separate runtime/sanitizer
-  gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-mutations-gate.log`.
+- Six new checker groups cover whole-record/direct field replacements, conditional
+  updates, prior copies, unrelated field origins, incomplete sources and preserved
+  E207/E305 errors. Accepted conditional writes pass ordinary borrow/loan validation.
+- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
+  nested/indexed aggregates, coercion/composition, returned records, precise joins,
+  function summaries and conditional-exit control remain unfinished. Runtime
+  sources, reference fixtures, dependencies and versions are unchanged; editor
+  and separate runtime/sanitizer gates were not rerun. Full release qualification
+  remains open.
 
 ## Prior capabilities and other areas
 
@@ -1160,10 +1166,10 @@ explicitly documented. No outstanding failures remain.
    unknown dependency-bearing origins with B001. Mutable scalar-reference
    retargeting now retains bounded conservative owner sets and completeness.
    Named scalar-reference emissions now share bounded origins at their canonical
-   slot root. Flat immutable record bindings now retain scalar-reference field
-   origins through direct blocks/copies and local field projections. Extend mutable
-   records/reference fields, nested aggregates, coercion/composition and call-returned
-   origins; preserve explicit incomplete sets. Precise overwrite/branch-join rules
+   slot root. Flat ordinary record bindings now retain scalar-reference field
+   origins through direct blocks/copies and local field projections. Whole-record
+   replacement and direct mutable reference-field writes now merge those origins.
+   Extend nested/indexed aggregates, coercion/composition and call-returned origins; preserve explicit incomplete sets. Precise overwrite/branch-join rules
    remain separate;
    independent overwrites currently retain marks/owners. Function result
    dependencies remain untracked. Keep flags gated until these analyses complete.
