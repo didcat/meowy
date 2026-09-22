@@ -218,6 +218,25 @@ owner sets remain conservative and source-level flags stay gated. All ten compil
 checks pass (`/tmp/meowy-proof-reference-slots-gate.log`); no outstanding failures
 remain.
 
+### Completed record reference slices
+
+1. Retain bounded field-origin snapshots for immutable ordinary record bindings
+   whose fields hold immutable scalar references. Use existing emitted slot roots
+   for direct block initializers and clone snapshots for ordinary record copies.
+   Resolve direct local field projections and propagate later owner marks; test
+   accepted borrow/loan behavior, field identity and incomplete-source boundaries.
+2. Document the admitted flat-record boundary, refresh the root handoff, and run
+   the final compiler gate before committing the validated implementation; validate
+   the guide integration separately without repeating successful runtime checks.
+
+Mutable record bindings/fields, nested aggregate projection, record coercion,
+composition and function-returned origins remain incomplete. Unknown origins are
+not proof evidence and dependent stores still gate incomplete sets. Flags stay gated.
+Five focused groups pass: direct projections, copies/later owner marks, ordinary
+borrow validation, incomplete-source boundaries and the 256-field metadata limit.
+Failed capacity checks retain prior metadata. All ten compiler checks pass
+(`/tmp/meowy-proof-record-origins-gate.log`); guide integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1034,20 +1053,18 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1022
-  library/903 native tests (1925 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1027
+  library/903 native tests (1930 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-slots-gate.log`.
-- Four new seeded checker groups cover named reference emissions, canonical alias
-  origin merging, snapshot copies, later sibling reads and incomplete-origin gates.
-  Shared-reference fixtures pass borrow/loan checks. Exclusive reference carriers
-  retain their existing B001 gate; they are not claimed as admitted executions.
-- Flags/outcomes remain B001-gated. Marks/owner sets remain conservative and
-  monotone. Completed-record projections, aggregate/call-returned origins, precise
-  overwrite/join rules, function summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-origins-gate.log`.
+- Five new checker groups cover flat immutable reference fields, completed-record
+  copies, direct projections/later owner marks, ordinary borrow validation,
+  incomplete mutable/unknown sources and capacity failure preservation.
+- Flags/outcomes remain B001-gated. Mutable/nested/coerced/composed and call-returned
+  record origins remain incomplete, as do precise overwrite/join rules, function
+  summaries and conditional-exit control. Runtime sources, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 

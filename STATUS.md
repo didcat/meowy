@@ -176,6 +176,12 @@ borrow/loan checks for shared-reference fixtures and explicit preservation of th
 exclusive-reference-carrier B001 gate. All ten compiler checks pass. Completed
 record projections and function-returned origins remain separate; flags stay gated.
 
+Immutable ordinary records now retain flat immutable scalar-reference field
+origins through direct block initialization and record copies. Direct local-field
+projections observe later pointee marks. Five focused groups pass, including
+ordinary borrow validation and bounded metadata; all ten compiler checks pass.
+Mutable/nested/coerced/composed and call-returned record origins remain incomplete.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -198,20 +204,18 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1022
-  library/903 native tests (1925 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1027
+  library/903 native tests (1930 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-slots-gate.log`.
-- Four new seeded checker groups cover named reference emissions, canonical alias
-  origin merging, snapshot copies, later sibling reads and incomplete-origin gates.
-  Shared-reference fixtures pass borrow/loan checks. Exclusive reference carriers
-  retain their existing B001 gate; they are not claimed as admitted executions.
-- Flags/outcomes remain B001-gated. Marks/owner sets remain conservative and
-  monotone. Completed-record projections, aggregate/call-returned origins, precise
-  overwrite/join rules, function summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-origins-gate.log`.
+- Five new checker groups cover flat immutable reference fields, completed-record
+  copies, direct projections/later owner marks, ordinary borrow validation,
+  incomplete mutable/unknown sources and capacity failure preservation.
+- Flags/outcomes remain B001-gated. Mutable/nested/coerced/composed and call-returned
+  record origins remain incomplete, as do precise overwrite/join rules, function
+  summaries and conditional-exit control. Runtime sources, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

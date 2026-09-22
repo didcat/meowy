@@ -16,6 +16,11 @@ impl Checker {
 
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived_storage(id)
+            || self.record_pointees.get(&id).is_some_and(|fields| {
+                fields
+                    .values()
+                    .any(|origins| origins.roots.iter().any(|root| self.derived_storage(*root)))
+            })
             || self
                 .pointees
                 .get(&self.origin_id(id))
@@ -62,13 +67,23 @@ impl Checker {
                     ExprKind::Unary { value, .. }
                     | ExprKind::TemporaryBorrow { value, .. }
                     | ExprKind::Reborrow { value, .. }
-                    | ExprKind::Field { value, .. }
                     | ExprKind::Coerce { value }
                     | ExprKind::TypeTest { value, .. }
                     | ExprKind::Deref(value)
                     | ExprKind::Primary(value)
                     | ExprKind::ListSize(value)
                     | ExprKind::StringSize(value) => pending.push(Node::Expr(value)),
+                    ExprKind::Field { value, index } => {
+                        if self
+                            .field_origins(value, *index)
+                            .roots
+                            .iter()
+                            .any(|root| self.derived_storage(*root))
+                        {
+                            return true;
+                        }
+                        pending.push(Node::Expr(value));
+                    }
                     ExprKind::Binary { left, right, .. } => {
                         pending.extend([Node::Expr(left), Node::Expr(right)]);
                     }
@@ -163,3 +178,5 @@ mod retargets;
 
 #[cfg(test)]
 mod slots;
+
+mod records;

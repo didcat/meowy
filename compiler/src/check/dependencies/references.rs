@@ -33,6 +33,7 @@ impl Checker {
                         .cloned()
                         .unwrap_or_default();
                 }
+                ExprKind::Field { value, index } => return self.field_origins(value, *index),
                 ExprKind::Reborrow { value: inner, .. } | ExprKind::Coerce { value: inner } => {
                     value = inner
                 }
