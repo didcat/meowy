@@ -152,6 +152,12 @@ later sibling aliases and completed record reads. Four focused groups pass;
 all ten compiler checks pass. Borrowed-reference aliases and indirect stores
 remain separate, and marks remain conservative. Source-level flags stay gated.
 
+Immutable scalar-reference bindings now retain known single-owner links through
+copies and reborrows. Later owner marks reach those reference reads without
+replacing borrow/loan validation. Three new groups and all 1008 library tests pass;
+indirect-store integration is next. Mutable/aggregate/call-returned reference
+origins remain untracked and source-level flags remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

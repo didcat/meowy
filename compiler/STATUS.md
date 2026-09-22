@@ -154,6 +154,23 @@ counting only ordinary binding marks; its assertion now includes named emission
 bindings. All ten compiler checks pass, including 1005 library/903 native tests
 (`/tmp/meowy-proof-aliases-gate.log`).
 
+### Scalar-reference dependency slices
+
+1. Retain single-owner links for immutable scalar-reference bindings, direct
+   borrows and reborrows; consult current owner marks on reference reads. Cover
+   copies, independent owners and explicit unsupported origin shapes.
+2. Use known owner links for indirect scalar stores after ordinary permission/type
+   checks. Include RHS/control/target dependencies, preserve error precedence,
+   and run the full compiler gate before committing the store integration.
+
+The checker precedes borrow/loan replay, so this bounded metadata must not replace
+ownership analysis. Mutable reference retargeting, joins, aggregate/call-returned
+reference origins and wider alias graphs stay untracked; flags remain gated.
+Known owners retain the existing conservative whole-owner, monotone marks.
+Three new reference groups and all 1008 library tests pass
+(`/tmp/meowy-proof-pointees-library.log`). Immutable scalar reference copies and
+reborrows observe later owner marks; indirect-store integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

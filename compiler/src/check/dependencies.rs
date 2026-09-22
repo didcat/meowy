@@ -15,6 +15,14 @@ impl Checker {
     }
 
     pub(crate) fn derived_local(&self, id: usize) -> bool {
+        self.derived_storage(id)
+            || self
+                .pointees
+                .get(&id)
+                .is_some_and(|root| self.derived_storage(*root))
+    }
+
+    pub(crate) fn derived_storage(&self, id: usize) -> bool {
         self.derived.contains(&id)
             || self
                 .proofs
@@ -143,3 +151,5 @@ mod paths;
 
 #[cfg(test)]
 mod aliases;
+
+mod references;

@@ -109,6 +109,9 @@ impl Checker {
                     ));
                 }
                 let id = self.local(ty.clone());
+                if !mutable && let Some(root) = self.reference_root(&value) {
+                    self.pointees.insert(id, root);
+                }
                 if self.control || self.derived_expr(&value) {
                     self.mark_derived(id);
                 }
