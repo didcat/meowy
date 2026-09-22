@@ -115,7 +115,7 @@ pub(crate) fn nested_field_paths_keep_distinct_origins_and_later_marks() {
             ),
         ]),
     );
-    statements(&mut checker, "a:row.left.r;b:row.right.r");
+    statements(&mut checker, "a:row.left.r;part:row.right;b:part.r");
     let a = super::writes::id(&checker, "a");
     let b = super::writes::id(&checker, "b");
     assert_eq!(checker.pointees[&a].roots, BTreeSet::from([0]));

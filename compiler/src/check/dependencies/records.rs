@@ -8,8 +8,12 @@ pub(crate) const MAX_FIELDS: usize = 256;
 
 impl Checker {
     pub(crate) fn field_origins(&self, value: &Expr, index: usize) -> Origins {
+        self.record_path_origins(value, &[index])
+    }
+
+    pub(crate) fn record_path_origins(&self, value: &Expr, path: &[usize]) -> Origins {
         let mut value = value;
-        let mut path = vec![index];
+        let mut path = path.iter().rev().copied().collect::<Vec<_>>();
         loop {
             match &value.kind {
                 ExprKind::Field { value: base, index } => {

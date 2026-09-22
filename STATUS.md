@@ -199,7 +199,9 @@ nested source construction and subrecord writes remain untracked.
 
 Record source-origin lookup is now separate from storage merging; all 1035
 library tests pass. Nested path construction and writes are the next integration
-slice. The supported source boundary is unchanged by this extraction.
+slice. The supported source boundary is unchanged by this extraction. Nested source
+lookup and seeded subrecord-copy lookup now also pass all 1035 library tests;
+nested producers and write updates remain the next integration.
 
 ## Pending descriptor statement accounting
 
