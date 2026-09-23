@@ -62,3 +62,42 @@ pub(crate) fn unsupported_cell_aliases_and_unknown_contents_stay_incomplete() {
     let errors = crate::compile("x:=false;y:=true;r:=&x;cell:&r;r=&y;copy:*cell").unwrap_err();
     assert_eq!(errors[0].code, "E302");
 }
+
+#[test]
+pub(crate) fn cell_location_sets_preserve_snapshots_completeness_and_limits() {
+    use crate::ast::Span;
+    use crate::check::dependencies::{Cells, references::MAX_ROOTS};
+    use crate::hir::{Expr, ExprKind, Type};
+
+    let mut checker = Checker::new();
+    let expr = Expr {
+        kind: ExprKind::Local(0),
+        ty: Type::Reference(Box::new(Type::Reference(Box::new(Type::Bool)))),
+        span: Span::new(1, 2),
+    };
+    checker.reference_cells.insert(
+        0,
+        Cells {
+            places: (0..MAX_ROOTS).map(|id| (id, vec![])).collect(),
+            complete: true,
+        },
+    );
+    checker.track_reference_cell(1, &expr, false).unwrap();
+    checker.reference_cells.insert(
+        0,
+        Cells {
+            places: BTreeSet::from([(MAX_ROOTS, vec![0])]),
+            complete: false,
+        },
+    );
+    let error = checker.track_reference_cell(1, &expr, true).unwrap_err();
+    assert_eq!(error.code, "B001");
+    assert_eq!(checker.reference_cells[&1].places.len(), MAX_ROOTS);
+    assert!(checker.reference_cells[&1].complete);
+    checker.track_reference_cell(2, &expr, false).unwrap();
+    assert!(!checker.reference_cells[&2].complete);
+    assert_eq!(
+        checker.reference_cells[&2].places,
+        BTreeSet::from([(MAX_ROOTS, vec![0])])
+    );
+}

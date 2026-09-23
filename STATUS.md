@@ -249,6 +249,10 @@ prior value snapshots. Three focused groups pass, including ordinary ownership
 validation and E302 cell protection. Mutable carrier aliases and unknown contents
 stay incomplete; all ten compiler checks pass and proof flags stay gated.
 
+Reference-cell metadata now uses bounded location sets and completeness rather
+than a single location. All 1065 library tests pass, including capacity failure
+and snapshot coverage. Mutable carrier integration is next; flags remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

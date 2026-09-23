@@ -16,11 +16,13 @@ impl Checker {
 
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived_storage(id)
-            || self.reference_cells.get(&id).is_some_and(|cell| {
-                self.derived_storage(cell.root)
-                    || self.cell_origins(cell).is_some_and(|origins| {
-                        origins.roots.iter().any(|root| self.derived_storage(*root))
-                    })
+            || self.reference_cells.get(&id).is_some_and(|cells| {
+                cells.places.iter().any(|(root, path)| {
+                    self.derived_storage(*root)
+                        || self.cell_origins(*root, path).is_some_and(|origins| {
+                            origins.roots.iter().any(|root| self.derived_storage(*root))
+                        })
+                })
             })
             || self.record_pointees.get(&id).is_some_and(|fields| {
                 fields
@@ -179,7 +181,7 @@ mod paths;
 mod aliases;
 
 mod references;
-pub(crate) use references::Origins;
+pub(crate) use references::{Cells, Origins};
 
 #[cfg(test)]
 mod stores;

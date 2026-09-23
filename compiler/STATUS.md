@@ -414,6 +414,22 @@ prior snapshots, incomplete contents and E302 protection. A stored-view cell cas
 passes too. All ten compiler checks pass (`/tmp/meowy-proof-reference-cells-gate.log`);
 no outstanding failures remain.
 
+### Mutable reference-cell slices
+
+1. Replace single cell locations with bounded location sets and completeness;
+   preserve immutable aliases and merge dereferenced pointee origins without
+   confusing unknown cell locations with an empty known set. Validate and commit.
+2. Track mutable carrier bindings and conservatively merge retargeted locations,
+   preserving prior copies, incomplete alternatives, ordinary errors and bounds.
+   Run the complete compiler gate and update the guide/handoffs.
+
+Only one-level cells containing supported references are in scope. Deeper carrier
+chains, returned origins, heterogeneous record unions and precise joins remain
+unfinished; flags stay gated.
+Cell sets/completeness pass all 1065 library tests, including capacity failure
+and snapshot regressions (`/tmp/meowy-proof-cell-sets-library.log`). Mutable
+binding/retarget integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
