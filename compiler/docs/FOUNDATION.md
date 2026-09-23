@@ -232,10 +232,14 @@ discovery retains bounded record-shape selections at heterogeneous union boundar
 and marks unsupported borrowed alternatives. Positional origin storage excludes
 these qualified paths. Separate bounded snapshots own shape selections and retain
 ordinary origins and carrier locations without crossing shapes. Local narrowing
-reads select exact keys; absent entries stay incomplete. Source layouts currently
-register incomplete snapshots only, so known union-read evidence remains seeded
-checker coverage. Source widening/copy producers, whole-union dependency traversal,
-mutable updates and returned union origins remain unimplemented.
+reads select exact keys; absent entries stay incomplete. Immutable bindings with
+immutable fields capture root record-to-union widening and exact union copies.
+Known null contributes no owners, while unknown sources remain incomplete. Copies
+preserve their prior snapshots. Whole-container and addressed-prefix dependency
+traversal follows shaped origins and carrier locations, including later pointee
+marks; marked guards still cannot narrow ordinary types. Nested union-field
+construction/projections, mutable bindings/fields, emitted/temporary producers,
+returned unions and borrowed union views remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

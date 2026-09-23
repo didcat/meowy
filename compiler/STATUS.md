@@ -60,7 +60,8 @@ sources remain incomplete. All 258 dependency-filtered tests pass; log:
 exact copies, carrier origins, later marks/query control, null/unknown/mutable
 boundaries, prior snapshots, distinct field orders and work/depth/loan limits.
 All ten compiler checks pass; log: `/tmp/meowy-union-producers-gate.log`. No failures
-remain. The capability guide will be committed separately from this source slice.
+remain. Source capture is committed as `7cbcdfb`; the separately committed
+capability guide documents its supported immutable boundary and remaining gates.
 Next: nested immutable union-field construction/projections. Proof outcomes stay
 gated.
 
