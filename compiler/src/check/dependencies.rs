@@ -17,6 +17,15 @@ impl Checker {
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived_storage(id)
             || self.derived_cells(id)
+            || self.record_shapes.get(&id).is_some_and(|shapes| {
+                shapes.snapshots(&[]).any(|value| {
+                    value
+                        .origins
+                        .roots
+                        .iter()
+                        .any(|root| self.derived_storage(*root))
+                })
+            })
             || self.record_pointees.get(&id).is_some_and(|fields| {
                 fields
                     .values()
@@ -36,6 +45,11 @@ impl Checker {
         if let Some(fields) = self.record_cells.get(&id) {
             for cells in fields.values() {
                 pending.extend(&cells.places);
+            }
+        }
+        if let Some(shapes) = self.record_shapes.get(&id) {
+            for value in shapes.snapshots(&[]) {
+                pending.extend(&value.cells.places);
             }
         }
         let mut seen = std::collections::BTreeSet::new();
@@ -60,6 +74,19 @@ impl Checker {
                 })
             }) {
                 return true;
+            }
+            if let Some(shapes) = self.record_shapes.get(root) {
+                for value in shapes.snapshots(path) {
+                    if value
+                        .origins
+                        .roots
+                        .iter()
+                        .any(|root| self.derived_storage(*root))
+                    {
+                        return true;
+                    }
+                    pending.extend(&value.cells.places);
+                }
             }
             if let Some(fields) = self.record_cells.get(root) {
                 for (field, cells) in fields {

@@ -60,6 +60,13 @@ impl ShapeKey {
 }
 
 impl Shapes {
+    pub(crate) fn snapshots(&self, path: &[usize]) -> impl Iterator<Item = &Snapshot> {
+        self.entries
+            .iter()
+            .filter(move |(key, _)| key.fields.starts_with(path))
+            .map(|(_, value)| value)
+    }
+
     pub(crate) fn get(&self, key: &ShapeKey) -> Option<&Snapshot> {
         self.entries.get(key)
     }
@@ -122,3 +129,6 @@ impl Checker {
 mod tests;
 
 mod reads;
+
+#[cfg(test)]
+mod dependencies;

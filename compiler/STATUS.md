@@ -29,36 +29,31 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current shape-keyed snapshot series
+### Current immutable union producer series
 
-Investigation: qualified paths exist, but all stored origins/cells still use plain
-field indices. Narrowing across heterogeneous unions intentionally returns unknown.
+Investigation: local narrowing can read exact snapshots, but source layouts are
+incomplete and whole-container dependency traversal ignores shaped metadata.
+Known producers must follow dependency traversal, and must not admit mutable
+union storage before conservative write/merge rules exist.
 
 Commit plan:
-1. Add owned shape-qualified keys and bounded origin/carrier snapshots alongside
-   positional metadata. Register incomplete layouts only; test isolation, missing
-   entries, snapshot copies and capacity/budget failure before committing.
-2. Read exact shape-qualified snapshots through checked local narrowing and field
-   paths. Use seeded origins/cells to test same-index shape isolation and missing
-   alternatives, preserve ordinary validation, and run the full compiler gate.
+1. Include shaped ordinary origins and carrier locations in whole-container and
+   addressed-prefix dependency traversal. Validate seeded marks, carrier cycles,
+   guarded query control and independent siblings; commit separately.
+2. Capture snapshots for immutable bindings with immutable fields: direct root
+   record-to-union widening, known null and exact union copies. Reuse existing
+   concrete-record source readers; preserve unknown alternatives and snapshots.
+   Test later marks through copies/narrowing/guards, carriers and ordinary ownership;
+   run the full compiler gate. Nested shape construction, mutable bindings/fields,
+   emitted/temporary producers and returned unions remain separate.
 
-Source widening/copy producers, writes, returned unions and dependency traversal
-through whole union containers remain subsequent integration work. No actual
-source initializer will acquire known union origins in this series. Proof outcomes
-remain gated. Snapshot keys now own bounded shape selections, and layouts register
-only incomplete origins/cells. Four new groups cover distinct keys, missing
-alternatives, snapshot copies, atomic capacity/budget failure and source-level
-incompleteness. All 246 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shape-snapshots-focused.log`; committed as `95b0086`. Local narrowing
-reads now reconstruct exact shape selections for origin and carrier lookup, with
-bounded traversal and missing entries returning incomplete snapshots. Seeded
-integration tests now cover isolated ordinary/carrier fields, missing entries,
-nested selections and bounded reads. Source-path validation runs first to preserve
-existing depth diagnostics. All 251 dependency-filtered tests pass; log:
-`/tmp/meowy-shape-reads-focused.log`. Ordinary accepted fixtures and E302 loan
-rejection pass; known union origins remain seeded evidence only. All ten compiler
-checks pass; log: `/tmp/meowy-shape-reads-gate.log`. No failures remain. Next:
-immutable source producers and whole-container dependency traversal.
+Whole-container and addressed-prefix dependency traversal now includes shaped
+ordinary origins and carrier locations, retaining cycle detection and prefix
+isolation. All 253 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-shaped-dependencies-focused.log`. An existing seeded read test now
+performs narrowing before marks, because marked guards correctly cannot narrow
+base types; E201 and controlled-query coverage verify that boundary. Next: immutable
+source capture. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 

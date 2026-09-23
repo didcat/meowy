@@ -27,15 +27,15 @@ pub(crate) fn narrowed_shape_reads_select_origins_without_reusing_other_variants
     let out = checker.locals.len() - 1;
     assert_eq!(checker.pointees[&out].roots, BTreeSet::from([x]));
     assert!(checker.pointees[&out].complete);
-    checker.mark_derived(y);
-    assert!(!checker.derived_local(out));
-    checker.mark_derived(x);
-    assert!(checker.derived_local(out));
     statements(&mut checker, "|wide<B>|out:wide.r");
     assert_eq!(
         checker.pointees[&(checker.locals.len() - 1)].roots,
         BTreeSet::from([y])
     );
+    checker.mark_derived(y);
+    assert!(!checker.derived_local(out));
+    checker.mark_derived(x);
+    assert!(checker.derived_local(out));
 }
 
 #[test]
