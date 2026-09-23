@@ -29,35 +29,27 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current heterogeneous record path series
+### Current shape-keyed snapshot series
 
-Investigation: `record_pointees` and `record_cells` use positional field paths.
-`origin_record` admits one record shape (optionally null); widening its result
-would mix unrelated field indices. Union support needs shape-qualified discovery
-before storage, producers and readers can safely use alternatives.
+Investigation: qualified paths exist, but all stored origins/cells still use plain
+field indices. Narrowing across heterogeneous unions intentionally returns unknown.
 
-Dependency-ordered commit plan:
-1. Extract existing origin/carrier path discovery into `records/paths.rs` without
-   changing its admitted shapes. Run focused dependency tests and commit.
-2. Represent discovered paths with a record-shape selection at each heterogeneous
-   union boundary. Enumerate bounded alternatives, retain unsupported alternatives
-   explicitly, and test field order/type differences, nested/null members and
-   depth/work/capacity bounds. Keep the positional adapter restricted to paths with
-   no heterogeneous selections. Run the full compiler gate and commit.
+Commit plan:
+1. Add owned shape-qualified keys and bounded origin/carrier snapshots alongside
+   positional metadata. Register incomplete layouts only; test isolation, missing
+   entries, snapshot copies and capacity/budget failure before committing.
+2. Read exact shape-qualified snapshots through checked local narrowing and field
+   paths. Use seeded origins/cells to test same-index shape isolation and missing
+   alternatives, preserve ordinary validation, and run the full compiler gate.
 
-This series establishes path representation only. Shape-keyed stored snapshots,
-copy/narrowing propagation, writes and returned union origins are subsequent slices;
-proof outcomes remain gated. Step 1 moves path discovery unchanged into its own
-module. All 237 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-record-path-extract.log`; committed as `cdb2ed8`. Qualified paths now
-retain variant types at their field-depth boundary and explicit unsupported
-borrow-bearing alternatives. The positional adapter excludes those paths.
-All 242 dependency-filtered tests pass; log:
-`/tmp/meowy-record-variants-focused.log`. Five new groups cover shape identity,
-ordinary/carrier candidates, unsupported alternatives, nested selections, nullable
-paths, unaffected siblings and exact depth/capacity/work bounds. All ten compiler
-checks pass; log: `/tmp/meowy-record-variants-gate.log`. No failures remain. Next:
-bounded shape-keyed snapshots and seeded reads before source propagation.
+Source widening/copy producers, writes, returned unions and dependency traversal
+through whole union containers remain subsequent integration work. No actual
+source initializer will acquire known union origins in this series. Proof outcomes
+remain gated. Snapshot keys now own bounded shape selections, and layouts register
+only incomplete origins/cells. Four new groups cover distinct keys, missing
+alternatives, snapshot copies, atomic capacity/budget failure and source-level
+incompleteness. All 246 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-shape-snapshots-focused.log`. Next: seeded checked-narrowing reads.
 
 ### Proof dependency implementation slices
 

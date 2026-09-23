@@ -218,6 +218,7 @@ mod paths;
 mod aliases;
 
 mod references;
+pub(crate) use records::shapes::Shapes;
 pub(crate) use references::{Cells, Origins};
 
 #[cfg(test)]
