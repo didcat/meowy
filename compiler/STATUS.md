@@ -29,18 +29,18 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-argument origin slice
+### Current nullable record-argument origin slice
 
-Plan: extend returned shared-view origins to concrete record arguments with
-primaries without borrowed values and nested named shared-reference fields. Reuse contract
-projections and existing record-source metadata; preserve incomplete origins for
-unsupported borrowed shapes and unknown sources. Keep implementation and focused
-regressions together in one commit, then run the complete compiler gate.
-Implementation now walks bounded named record fields and reuses existing contract
-projections and origin snapshots. All 115 dependency groups pass, including four
-new groups for nested record arguments, list projections, all matching fields/
-arguments, unknown sources and budget exhaustion. The full compiler
-gate passed all ten checks (1100 library/903 native tests). No outcome is enabled.
+Plan: reuse `origin_record` to admit the single-record-plus-null input shape in
+call-origin traversal, including nested nullable record fields. Existing record
+snapshots and coercion handling provide complete empty origins for known nulls.
+Keep the behavior change and focused regressions in one reviewable commit; test
+wrapped/direct inputs, nulls, mixed completeness and heterogeneous-union exclusion,
+then run the complete compiler gate. No proof outcome is enabled.
+Implementation reuses existing nullable paths without a new representation.
+All 16 call-origin groups pass, including five new groups covering wrapped/copied
+inputs, direct and stored nulls, nested nullable fields, unknown sources and
+heterogeneous-union exclusion. All ten compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1368,15 +1368,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1100
-  library/903 native tests (2003 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1105
+  library/903 native tests (2008 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-call-gate.log`.
-- All 115 dependency groups pass. Four new groups cover nested record arguments,
-  projected list views, all matching fields/arguments, unknown source completeness
-  and budget exhaustion. Accepted fixtures pass ordinary compilation/ownership;
-  proof-dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Nullable/other borrowed aggregate arguments,
+  0 failed in debug/release. Log: `/tmp/meowy-nullable-call-gate.log`.
+- All 120 dependency groups pass, including 16 call-origin groups. Five new groups
+  cover nullable record arguments, copies/retargets, known null, nested nullable
+  fields, mixed completeness and heterogeneous-union exclusion. Accepted fixtures
+  pass ordinary compilation/ownership; dependency marks remain seeded evidence.
+- Flags/outcomes remain B001-gated. Other borrowed aggregate arguments,
   reference-bearing/allocator-bound pointees, broader returned shapes, heterogeneous
   record unions, precise joins, callee effect/data/control summaries and conditional-
   exit control remain unfinished. Runtime sources, reference fixtures, dependencies
@@ -1487,11 +1487,14 @@ explicitly documented. No outstanding failures remain.
    provide callee effect/data/control summaries. Shared returned scalar/list/record
    views now also reuse general-contract field/element projections when referenced
    components have no borrowed values. Concrete by-value record arguments now
-   retain nested named shared-reference fields. Next cover nullable borrowed
-   record arguments using variant-aware matching without silently dropping unknown
-   candidates; test known null, wrapped records and mixed completeness. Other
-   borrowed arguments and broader returned shapes remain separate. Precise
-   overwrite/branch joins and function result dependencies remain separate; old owners/marks are retained conservatively.
+   retain nested named shared-reference fields, including nullable record wrappers
+   and nested nullable fields. Known null contributes no owners; unknown matching
+   fields remain incomplete. Next extend reference-bearing pointee arguments in
+   `calls/inputs.rs` using existing record/cell metadata, preserving incomplete
+   unknown sources and ordinary ownership checks. Add direct/nested/shared-view
+   regressions before the full gate. Heterogeneous unions and broader returned
+   shapes remain separate. Precise overwrite/branch joins and function result
+   dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads
    and pending query availability enforce E225 for those marks. Conditional

@@ -173,7 +173,10 @@ origins through the general contract's
 record-field/list-element projections when referenced inputs/results have no
 borrowed components. Concrete by-value records also contribute shared-reference
 fields, including nested named fields, when their primaries have no borrowed
-components. Traversal uses bounded field paths and the existing analysis budget.
+components. A single record shape may be wrapped in a nullable union, including
+nested named fields. Known null contributes no owners; unknown matching fields
+keep results incomplete. Heterogeneous union layouts are not combined. Traversal
+uses bounded field paths and the existing analysis budget.
 Whole-container owners are retained conservatively, including direct record/list
 views and nested projections.
 Unknown matching arguments keep results incomplete. Calls with other borrowed

@@ -30,7 +30,7 @@ impl Checker {
             if !ty.has_borrowed() {
                 continue;
             }
-            match ty {
+            match Self::origin_record(ty).unwrap_or(ty) {
                 Type::Record { primary, fields } if !primary.has_borrowed() => {
                     if pending.len() + fields.len() > MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
@@ -158,3 +158,6 @@ mod tests {
         assert!(error.message.contains("call input budget"));
     }
 }
+
+#[cfg(test)]
+mod nullable;
