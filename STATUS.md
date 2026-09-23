@@ -319,7 +319,10 @@ borrowed-record arguments now also contribute projected reference-cell locations
 and stored carriers, reusing field projection from `a4686cb`. Shared input chains
 now expand to borrowed-record locations before returned-cell matching. Nested
 borrowed-view fields also contribute projected/stored cells through a shared
-bounded worklist. All 181 dependency groups and all ten compiler checks pass.
+bounded worklist. Direct returned borrowed-record views now retain exact-compatible
+argument locations through copies and nested calls; unknown contents remain
+incomplete in later origin queries. All 186 dependency groups and all ten compiler
+checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -343,21 +346,21 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1166
-  library/903 native tests (2069 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1171
+  library/903 native tests (2074 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nested-return-cells-gate.log`.
-- All 181 dependency groups pass. Five new nested-view groups cover projected/
-  stored cells, shared chains, subrecord paths, mixed owners, retargeted/unknown
-  views, nullable records and total depth with unknown locations. Accepted fixtures
-  pass ordinary compilation/ownership; dependency marks remain seeded evidence.
-  Existing unknown-source and E303 lifetime regressions remain green.
-- Flags/outcomes remain B001-gated. Returned borrowed-record views and broader
-  result shapes, allocator-bound pointees, heterogeneous unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain open.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-returned-record-views-gate.log`.
+- All 186 dependency groups pass. Five new returned-record groups cover identity/
+  nested calls, copies, all exact-compatible candidates, unknown locations and
+  contents, downstream origin queries, contained marks, lifetime rejection and
+  unsupported aggregate inputs. Accepted fixtures pass ordinary compilation/
+  ownership; dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Aggregate/projected candidates for returned
+  borrowed-record views, broader result shapes, allocator-bound analysis,
+  heterogeneous unions, precise joins, callee effect/data/control summaries and
+  conditional-exit control remain open. Runtime sources, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

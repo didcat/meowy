@@ -198,7 +198,11 @@ borrowed records expand to those locations before returned-cell matching, includ
 nullable targets. Temporary chains retain their ordinary statement lifetimes.
 Nested borrowed-view fields also participate in returned-cell matching through a
 bounded type/location worklist. Shared visit and depth limits apply across all
-descendants, even when their locations are unknown or empty.
+descendants, even when their locations are unknown or empty. Direct shared results
+pointing to concrete records containing references retain locations from all
+exact-compatible shared arguments, including copies and nested calls. Other
+borrowed input shapes remain incomplete for this result subset. Known record
+locations do not make unknown contained-reference origins complete.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

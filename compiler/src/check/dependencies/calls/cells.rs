@@ -1,3 +1,4 @@
+mod record_results;
 mod views;
 
 use super::{Checker, Diagnostic, Expr, Result};
@@ -15,6 +16,10 @@ impl Checker {
         args: &[Expr],
         depth: usize,
     ) -> Result<Cells> {
+        if matches!(&expr.ty, Type::Reference(target) if matches!(target.as_ref(), Type::Record { .. }) && target.has_reference())
+        {
+            return self.call_record_locations(expr, args, depth);
+        }
         let Some(result_depth) = self.shared_cell_depth(&expr.ty, expr)? else {
             return Ok(Cells::default());
         };
