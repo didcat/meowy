@@ -29,23 +29,18 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current projected returned-record view series
+### Current nullable returned-record view slice
 
-1. Make carrier-result depth optional in the existing record-location matcher so
-   record-view results can reuse its projected/nested locations. Keep existing
-   callers in carrier mode, validate focused checks and commit the prerequisite.
-2. Integrate projected/stored borrowed-record candidates for concrete record-view
-   results, preserving the exact-compatible fast path and incomplete unsupported
-   shapes. Test nested owned projections, stored views, mixed/unknown locations,
-   downstream origins and traversal limits; run the compiler gate before commit.
+Plan: recognize shared results whose target is a nullable single-record shape,
+then reuse existing exact/projected/stored location matching. Preserve real storage
+locations even when the pointed-to value is null, and keep contained-reference
+origins empty for that null value. Test direct/nested calls, stored/projected
+candidates, unknown inputs, lifetime errors and heterogeneous result exclusion.
+Keep behavior and regressions together; run the compiler gate before committing.
 
-Location and contents remain distinct. Proof outcomes stay gated. Existing callers
-now explicitly select carrier-depth mode. All 194 dependency groups and formatting
-pass (`/tmp/meowy-record-result-mode-focused.log`). Prerequisite committed as
-`136c9bf`.
-Integration now reuses the matcher for projected/stored view candidates. All 199
-dependency groups pass, including five new projection groups. All ten compiler
-checks pass; no failures remain.
+The existing nullable location metadata needs no new representation. Proof
+outcomes and broader result shapes remain gated. All 203 dependency groups pass,
+including four new nullable-result groups. All ten compiler checks pass.
 
 ### Proof dependency implementation slices
 
@@ -1373,20 +1368,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1184
-  library/903 native tests (2087 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1188
+  library/903 native tests (2091 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-projected-record-results-gate.log`.
-- All 199 dependency groups pass. Five new projected-result groups cover nested
-  owned locations, subrecords, stored shared chains, mixed/unknown candidates,
-  nullable inputs, downstream origins and depth bounds. Accepted fixtures pass
-  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
-  Matcher prerequisite: `136c9bf`; existing E303 regressions remain green.
-- Flags/outcomes remain B001-gated. Nullable returned record-view targets, broader
-  result shapes, allocator-bound analysis, heterogeneous unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain open.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-nullable-returned-record-views-gate.log`.
+- All 203 dependency groups pass. Four new nullable-result groups cover null/non-
+  null storage identity, copies/nested calls, stored/projected candidates, unknown
+  locations, E303 lifetime rejection and heterogeneous-result exclusion. Accepted
+  fixtures pass ordinary compilation/ownership; dependency marks remain seeded
+  checker evidence.
+- Flags/outcomes remain B001-gated. Returned carrier chains ending in borrowed
+  records, broader result shapes, allocator-bound analysis, heterogeneous unions,
+  precise joins, callee effect/data/control summaries and conditional-exit control
+  remain open. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1525,11 +1520,14 @@ explicitly documented. No outstanding failures remain.
    view candidates through existing cell snapshots. Shared input chains now expand
    to exact-compatible record-view locations, including record-stored chains.
    Returned concrete-record views now also retain projected/stored candidates from
-   borrowed-record arguments through the bounded location worklist. Next admit
-   returned shared views of nullable single-record targets in `calls/cells.rs`,
-   preserving exact nullable identity and stored locations without combining
-   heterogeneous layouts. Test null/non-null returns, nested calls, unknown inputs
-   and ordinary lifetime errors before the full gate. Heterogeneous
+   borrowed-record arguments through the bounded location worklist. Nullable
+   single-record result targets now retain their actual storage locations, even
+   when null, without inventing contained owners. Next retain returned shared
+   carrier chains ending in borrowed records. Match compatible carrier layers
+   before expanding to terminal record locations; do not silently omit stored
+   carrier candidates. Keep unsupported input shapes incomplete. Test direct/
+   nested returns, contained marks, unknown layers and lifetime/depth limits before
+   the full gate. Heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result

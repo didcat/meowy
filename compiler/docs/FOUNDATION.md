@@ -209,7 +209,10 @@ record fields. Unknown intermediate cells remain incomplete and temporary chains
 retain ordinary statement lifetimes. Borrowed-record inputs also contribute
 projected subrecord locations and nested stored views through the bounded
 location matcher, including mixed and unknown candidates. Known record
-locations do not make unknown contained-reference origins complete.
+locations do not make unknown contained-reference origins complete. Returned
+shared record views may target a nullable single-record shape as well: a null
+value still has its real storage location but contributes no contained reference
+owners. Heterogeneous record result layouts remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

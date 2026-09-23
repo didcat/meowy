@@ -16,7 +16,7 @@ impl Checker {
         args: &[Expr],
         depth: usize,
     ) -> Result<Cells> {
-        if matches!(&expr.ty, Type::Reference(target) if matches!(target.as_ref(), Type::Record { .. }) && target.has_reference())
+        if matches!(&expr.ty, Type::Reference(target) if Self::origin_record(target).is_some() && target.has_reference())
         {
             return self.call_record_locations(expr, args, depth);
         }
