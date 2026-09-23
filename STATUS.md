@@ -326,8 +326,10 @@ stored views through nested/nullable fields, copies and composition. Shared chai
 now supply exact-compatible inner locations for returned record views. Borrowed
 record arguments also supply projected and stored view candidates through the
 shared matcher (`136c9bf`). Returned views of nullable single-record targets now
-retain real storage locations for null and non-null values. All 203 dependency
-groups and all ten compiler checks pass.
+retain real storage locations for null and non-null values. Returned shared
+carrier chains ending in borrowed records now retain compatible intermediate
+cells as well as projected/stored candidates. All 208 dependency groups and
+all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -351,17 +353,17 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1188
-  library/903 native tests (2091 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1193
+  library/903 native tests (2096 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nullable-returned-record-views-gate.log`.
-- All 203 dependency groups pass. Four new nullable-result groups cover null/non-
-  null storage identity, copies/nested calls, stored/projected candidates, unknown
-  locations, E303 lifetime rejection and heterogeneous-result exclusion. Accepted
-  fixtures pass ordinary compilation/ownership; dependency marks remain seeded
-  checker evidence.
-- Flags/outcomes remain B001-gated. Returned carrier chains ending in borrowed
-  records, broader result shapes, allocator-bound analysis, heterogeneous unions,
+  0 failed in debug/release. Log: `/tmp/meowy-returned-record-carriers-gate.log`.
+- All 208 dependency groups pass. Five new record-carrier groups cover exact/
+  nested/deeper returns, stored and projected candidates, mixed/unknown locations,
+  nullable terminal records, contained marks, E303 rejection and type depth.
+  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
+  seeded checker evidence.
+- Flags/outcomes remain B001-gated. Reference-bearing fields of record-valued call
+  results, broader result shapes, allocator-bound analysis, heterogeneous unions,
   precise joins, callee effect/data/control summaries and conditional-exit control
   remain open. Runtime sources, reference fixtures, dependencies and versions are
   unchanged; editor and separate runtime/sanitizer gates were not rerun.

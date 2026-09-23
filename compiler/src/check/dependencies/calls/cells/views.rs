@@ -79,9 +79,9 @@ impl Checker {
                     .filter(|(view, _)| view.pointee().is_some_and(Type::has_borrowed));
                 if let Some((view, layers)) = record {
                     let mut source = self.call_field_cells(&locations, &path, expr)?;
-                    for _ in 0..=layers {
-                        source = self.expand_reference_cells(source, expr)?;
-                    }
+                    source = self.expand_reference_cells(source, expr)?;
+                    let (matched, source) = self.record_chain_cells(source, ty, layers, expr)?;
+                    self.merge_returned_cells(&mut cells, matched, expr)?;
                     if views.len() + pending.len() >= MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
                             "proof returned record cell capacity exhausted",

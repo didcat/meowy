@@ -1,3 +1,4 @@
+mod record_chains;
 mod record_results;
 mod views;
 
@@ -71,20 +72,20 @@ impl Checker {
                 .call_shared_view(ty, expr)?
                 .filter(|(view, _)| view.pointee().is_some_and(Type::has_borrowed));
             let source = if let Some((view, layers)) = record {
-                let mut locations = if path.is_empty() {
+                let locations = if path.is_empty() {
                     self.reference_cell_at(arg, depth + 1)?
                 } else {
                     self.record_source_cells(arg, &path)?
                 };
-                for _ in 0..layers {
-                    locations = self.expand_reference_cells(locations, expr)?;
-                }
+                let (mut matched, locations) =
+                    self.record_chain_cells(locations, ty, layers, expr)?;
                 let Some(source) =
                     self.returned_record_cells(locations, view, expr, Some(result_depth))?
                 else {
                     return Ok(Cells::default());
                 };
-                source
+                self.merge_returned_cells(&mut matched, source, expr)?;
+                matched
             } else {
                 let Some(arg_depth) = self.shared_cell_depth(ty, expr)? else {
                     return Ok(Cells::default());
@@ -157,7 +158,9 @@ impl Checker {
                     expr.span,
                 ));
             }
-            if !target.has_borrowed() {
+            if !target.has_borrowed()
+                || (Self::origin_record(target).is_some() && target.has_reference())
+            {
                 return Ok(Some(depth));
             }
             ty = target;

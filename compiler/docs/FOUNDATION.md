@@ -212,7 +212,10 @@ location matcher, including mixed and unknown candidates. Known record
 locations do not make unknown contained-reference origins complete. Returned
 shared record views may target a nullable single-record shape as well: a null
 value still has its real storage location but contributes no contained reference
-owners. Heterogeneous record result layouts remain separate.
+owners. Returned shared carrier chains may end in borrowed records as well.
+Compatible intermediate carrier locations are retained before terminal expansion,
+including carriers stored in borrowed records. Unknown layers remain incomplete.
+Heterogeneous record result layouts and record-valued call snapshots remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
