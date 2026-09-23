@@ -29,20 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current returned record-carrier chain slice
+### Current record-valued call-origin series
 
-Plan: admit all-shared carrier results ending in borrowed single-record targets.
-At each input chain, retain matching carrier locations before expanding to the
-terminal record; apply the same rule to record-stored chains so candidates cannot
-be silently dropped. Reuse bounded view traversal, merging and cell expansion.
-Keep exact/deeper/stored/projected/mixed/unknown and depth/lifetime regressions
-with this behavior slice, then run the full compiler gate. Outcomes stay gated.
+1. Separate result type/span matching from checked-call recognition, preserving
+   existing reference-result behavior. Run focused checks and commit this reusable
+   prerequisite separately.
+2. Retain ordinary shared-reference field origins for direct record-valued calls
+   through the public argument contract. Reuse bounded named-field paths and
+   snapshots, carry call depth through nested record arguments, and keep unknown
+   shapes incomplete. Test returned fields/copies/nesting, all candidates,
+   unknown inputs and depth limits; run the full compiler gate before commit.
 
-The location matcher already handles terminal record projections; this slice
-adds intermediate carrier candidates without treating locations as known contents.
-All 208 dependency groups pass, including five new record-carrier groups covering
-matching layers, stored candidates, nullable terminals, unknowns and limits. All
-ten compiler checks pass; no failures remain.
+Carrier-cell fields, direct projections from call expressions and wider record
+result shapes remain separate. No private function-body inference or proof
+outcomes are enabled. Result matching is now independent of the call expression;
+all 208 dependency groups and formatting pass
+(`/tmp/meowy-result-origin-matcher-focused.log`). Field integration and the final
+compiler gate remain next.
 
 ### Proof dependency implementation slices
 

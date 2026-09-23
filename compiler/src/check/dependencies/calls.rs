@@ -14,11 +14,20 @@ impl Checker {
         args: &[Expr],
         depth: usize,
     ) -> Result<Origins> {
-        let scalar =
-            crate::borrow_contract::reference_call(&expr.ty, args.iter().map(|arg| &arg.ty));
+        self.call_result_origins(&expr.ty, expr.span, args, depth)
+    }
+
+    pub(crate) fn call_result_origins(
+        &mut self,
+        result: &crate::hir::Type,
+        span: crate::ast::Span,
+        args: &[Expr],
+        depth: usize,
+    ) -> Result<Origins> {
+        let scalar = crate::borrow_contract::reference_call(result, args.iter().map(|arg| &arg.ty));
         if !scalar {
-            let shared = matches!(&expr.ty, crate::hir::Type::Reference(ty) if !ty.has_borrowed())
-                && Self::origin_reference(&expr.ty);
+            let shared = matches!(result, crate::hir::Type::Reference(ty) if !ty.has_borrowed())
+                && Self::origin_reference(result);
             if !shared {
                 return Ok(Origins::default());
             }
@@ -26,19 +35,19 @@ impl Checker {
         if !self.flow.spend(args.len() + 1) {
             return Err(Diagnostic::unsupported(
                 "proof reference call budget exhausted",
-                expr.span,
+                span,
             ));
         }
         let mut origins = Origins::default();
         let mut found = false;
         for arg in args {
             let source = if scalar {
-                if !crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty) {
+                if !crate::borrow_contract::returns::candidate(result, &arg.ty) {
                     continue;
                 }
                 self.reference_origins_at(arg, depth + 1)?
             } else {
-                match self.call_input_origins(arg, &expr.ty, depth)? {
+                match self.call_input_origins(arg, result, depth)? {
                     inputs::Input::Unsupported => return Ok(Origins::default()),
                     inputs::Input::Absent => continue,
                     inputs::Input::Known(source) => source,
@@ -47,7 +56,7 @@ impl Checker {
             if !self.flow.spend(source.roots.len() + 1) {
                 return Err(Diagnostic::unsupported(
                     "proof reference call budget exhausted",
-                    expr.span,
+                    span,
                 ));
             }
             origins.complete = if found {
@@ -60,7 +69,7 @@ impl Checker {
             if origins.roots.len() > super::references::MAX_ROOTS {
                 return Err(Diagnostic::unsupported(
                     "proof reference origin capacity exhausted",
-                    expr.span,
+                    span,
                 ));
             }
         }
