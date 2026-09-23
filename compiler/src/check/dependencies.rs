@@ -64,8 +64,13 @@ impl Checker {
                             }
                         }
                     }
+                    ExprKind::TemporaryBorrow { id, value, .. } => {
+                        if self.derived_local(*id) {
+                            return true;
+                        }
+                        pending.push(Node::Expr(value));
+                    }
                     ExprKind::Unary { value, .. }
-                    | ExprKind::TemporaryBorrow { value, .. }
                     | ExprKind::Reborrow { value, .. }
                     | ExprKind::Coerce { value }
                     | ExprKind::TypeTest { value, .. }
@@ -183,3 +188,6 @@ mod records;
 
 #[cfg(test)]
 mod indexed;
+
+#[cfg(test)]
+mod temporaries;

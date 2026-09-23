@@ -230,6 +230,12 @@ focused groups pass with ordinary ownership validation and snapshot checks.
 Mutable list-view fields retain their existing B001 gate; returned and reference-
 bearing aggregate origins remain incomplete. All ten compiler checks pass.
 
+Temporary borrows now retain their explicit statement-owned storage IDs as
+origins and preserve initializer/control marks. Three focused groups pass,
+including unchanged E303 expiry. Direct temporary reads consult those marks;
+all ten compiler checks pass. This does not resolve reference values copied
+out of temporary carriers or extend their lifetimes. Flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -252,20 +258,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1055
-  library/903 native tests (1958 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1058
+  library/903 native tests (1961 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-stored-views-gate.log`.
-- Three new checker groups cover stored list/record views, nested/composed/nullable
-  copies, supported mutable record-view fields, prior snapshots and incomplete
-  returned/reference-bearing sources. Accepted fixtures pass ordinary compilation/
-  ownership checks; mutable list-view fields retain their existing B001 gate.
-- Flags/outcomes remain B001-gated. Whole-owner sets remain conservative and
-  monotone. Reference-bearing aggregates, temporary/returned origins,
-  heterogeneous record unions, precise joins, function summaries and conditional-
-  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
-  and versions are unchanged; editor and separate runtime/sanitizer gates were
-  not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-origins-gate.log`.
+- Three new checker groups cover distinct temporary IDs, statement ownership,
+  initializer/control marks, later reads, element borrows over temporary lists and
+  preserved E303 expiry. Accepted temporary reads pass ordinary compilation.
+- Flags/outcomes remain B001-gated. Reference values copied out of temporary
+  carriers, reference-bearing aggregate/returned origins, heterogeneous record
+  unions, precise joins, function summaries and conditional-exit control remain
+  unfinished. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun. Full
+  release qualification remains open.
 
 ## Area handoff
 

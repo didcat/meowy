@@ -24,6 +24,9 @@ impl Checker {
             ));
         }
         let id = self.local(value.ty.clone());
+        if self.control || self.derived_expr(&value) {
+            self.mark_derived(id);
+        }
         self.proofs.temporaries.insert(id, statement);
         Ok(Expr {
             ty: self.reference_type(value.ty.clone(), span)?,

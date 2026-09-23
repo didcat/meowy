@@ -140,8 +140,12 @@ remain whole-container and conservative. Reference-free views retain these owner
 when stored in nested record fields, copied/composed or wrapped in nullable records.
 Supported mutable record-view fields merge old/new owners while earlier copies
 keep snapshots. Mutable list-view fields retain their existing bootstrap gate.
-Reference-bearing aggregates, temporary/returned origins and heterogeneous record
-unions remain separate. Precise overwrite/
+Temporary borrows retain their existing statement-owned storage IDs as origins,
+including shared element borrows over temporary lists. Initializer/control marks
+remain attached to that storage. These marks do not extend lifetimes or change
+ordinary expiry errors. Pointees of references copied out of temporary carriers,
+reference-bearing aggregates, returned origins and heterogeneous record unions
+remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

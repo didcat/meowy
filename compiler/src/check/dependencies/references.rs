@@ -40,6 +40,12 @@ impl Checker {
                         complete: true,
                     };
                 }
+                ExprKind::TemporaryBorrow { id, .. } => {
+                    return Origins {
+                        roots: BTreeSet::from([*id]),
+                        complete: true,
+                    };
+                }
                 ExprKind::Local(id) => {
                     return self
                         .pointees

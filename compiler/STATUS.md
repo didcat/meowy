@@ -363,6 +363,21 @@ nested/composed/nullable stored views and mutable record-view updates. Mutable
 list-view fields retain their existing B001 gate. All ten compiler checks pass
 (`/tmp/meowy-proof-stored-views-gate.log`); no outstanding failures remain.
 
+### Temporary storage origin slice
+
+Reuse existing temporary storage IDs as borrow origins and propagate initializer/
+lexical-control marks onto those owners. Cover distinct temporary identities,
+shared element borrows over temporaries, later marks and ordinary lifetime errors.
+Run the full compiler gate and commit this bounded storage-identity slice.
+
+This does not infer pointees of references copied out of temporary carriers or
+extend statement lifetimes. Returned/reference-bearing origins, heterogeneous
+record unions and precise phase joins remain unfinished; flags stay gated.
+Three focused groups pass, including distinct IDs, initializer/control marks and
+unchanged E303 expiry. Direct temporary-expression dependency lookup now consults
+the retained owner mark too. All ten compiler checks pass
+(`/tmp/meowy-proof-temporary-origins-gate.log`); no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1179,20 +1194,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1055
-  library/903 native tests (1958 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1058
+  library/903 native tests (1961 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-stored-views-gate.log`.
-- Three new checker groups cover stored list/record views, nested/composed/nullable
-  copies, supported mutable record-view fields, prior snapshots and incomplete
-  returned/reference-bearing sources. Accepted fixtures pass ordinary compilation/
-  ownership checks; mutable list-view fields retain their existing B001 gate.
-- Flags/outcomes remain B001-gated. Whole-owner sets remain conservative and
-  monotone. Reference-bearing aggregates, temporary/returned origins,
-  heterogeneous record unions, precise joins, function summaries and conditional-
-  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
-  and versions are unchanged; editor and separate runtime/sanitizer gates were
-  not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-origins-gate.log`.
+- Three new checker groups cover distinct temporary IDs, statement ownership,
+  initializer/control marks, later reads, element borrows over temporary lists and
+  preserved E303 expiry. Accepted temporary reads pass ordinary compilation.
+- Flags/outcomes remain B001-gated. Reference values copied out of temporary
+  carriers, reference-bearing aggregate/returned origins, heterogeneous record
+  unions, precise joins, function summaries and conditional-exit control remain
+  unfinished. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun. Full
+  release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1279,7 +1293,9 @@ explicitly documented. No outstanding failures remain.
    narrowing of a single record shape retains those paths; known null has no owners.
    Shared element borrows now retain container origins through reference-free
    list/record views and reborrows, including aggregate-stored views and supported
-   mutable record-view fields. Next extend reference-bearing aggregates,
+   mutable record-view fields. Temporary storage now retains its existing ID and
+   initializer/control marks without extending lifetime. Next extend reference
+   values copied from temporary carriers, reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
