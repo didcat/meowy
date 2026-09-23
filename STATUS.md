@@ -331,8 +331,10 @@ carrier chains ending in borrowed records now retain compatible intermediate
 cells as well as projected/stored candidates. All 208 dependency groups and
 all ten compiler checks pass. Direct record-valued calls now retain ordinary
 shared-reference field origins, including nested fields, copies and nested calls,
-using the extracted matcher (`7da170e`). All 212 dependency groups and all ten
-compiler checks pass.
+using the extracted matcher (`7da170e`). Carrier-cell fields now retain locations
+too, including record views, copies and nested calls. Explicit result-type and
+depth prerequisites are `ee3a574` and `862eea2`. All 216 dependency groups and
+all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -356,21 +358,22 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1197
-  library/903 native tests (2100 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1201
+  library/903 native tests (2104 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-call-fields-gate.log`.
-- All 212 dependency groups pass. Four new record-call groups cover shared scalar/
-  list views, nested fields, copies, all compatible arguments, nested calls,
-  unknown inputs, propagated call depth, invalid paths, no replay and E303 rejection.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
-  seeded checker evidence. Result matcher extraction is `7da170e`.
-- Flags/outcomes remain B001-gated. Carrier-cell fields of record-valued calls,
-  direct call-expression projections, coercion wrappers, broader result shapes,
-  allocator-bound analysis, heterogeneous unions, precise joins, callee effect/
-  data/control summaries and conditional-exit control remain open. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-record-call-carriers-gate.log`.
+- All 216 dependency groups pass. Four new carrier-field groups cover copied/
+  nested results, direct carrier-field access, deeper carriers, borrowed-record
+  views, all/unknown candidates, propagated depth, no replay, invalid paths and
+  E303 lifetime rejection. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded checker evidence. Prerequisites: `ee3a574`
+  (explicit result types) and `862eea2` (depth and field-type lookup).
+- Flags/outcomes remain B001-gated. Ordinary direct reference projections,
+  subrecord call projections, coercion wrappers, broader result shapes, allocator-
+  bound analysis, heterogeneous unions, precise joins, callee effect/data/control
+  summaries and conditional-exit control remain open. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

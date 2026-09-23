@@ -6,6 +6,7 @@ impl Checker {
         expr: &Expr,
         args: &[Expr],
         depth: usize,
+        result: &Type,
     ) -> Result<Cells> {
         if !self.flow.spend(args.len() + 1) {
             return Err(Diagnostic::unsupported(
@@ -51,7 +52,7 @@ impl Checker {
             let Some((view, layers)) = self.call_shared_view(ty, expr)? else {
                 return Ok(Cells::default());
             };
-            let exact = crate::borrow_contract::returns::candidate(&expr.ty, view);
+            let exact = crate::borrow_contract::returns::candidate(result, view);
             if !exact && !view.pointee().is_some_and(Type::has_borrowed) {
                 continue;
             }
@@ -65,7 +66,7 @@ impl Checker {
             }
             if !exact {
                 let Some(projected) =
-                    self.returned_record_cells(source, view, expr, None, &expr.ty)?
+                    self.returned_record_cells(source, view, expr, None, result)?
                 else {
                     return Ok(Cells::default());
                 };

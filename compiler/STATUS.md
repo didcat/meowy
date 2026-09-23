@@ -44,7 +44,10 @@ or private-body inference is needed; proof outcomes remain gated. Step 1 passes
 all 212 dependency groups and formatting (`/tmp/meowy-cell-result-types-focused.log`).
 Step 1 committed as `ee3a574`. Step 2 now carries cell-call depth and shares field
 type selection; all 212 dependency groups and formatting pass
-(`/tmp/meowy-record-cell-depth-focused.log`). Carrier-field integration remains next.
+(`/tmp/meowy-record-cell-depth-focused.log`); committed as `862eea2`. Carrier-field
+integration passes 216 dependency groups, including cross-call depth propagation.
+Direct carrier-field access on a call result also passes. All ten compiler checks
+pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1372,21 +1375,22 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1197
-  library/903 native tests (2100 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1201
+  library/903 native tests (2104 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-call-fields-gate.log`.
-- All 212 dependency groups pass. Four new record-call groups cover shared scalar/
-  list views, nested fields, copies, all compatible arguments, nested calls,
-  unknown inputs, propagated call depth, invalid paths, no replay and E303 rejection.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
-  seeded checker evidence. Result matcher extraction is `7da170e`.
-- Flags/outcomes remain B001-gated. Carrier-cell fields of record-valued calls,
-  direct call-expression projections, coercion wrappers, broader result shapes,
-  allocator-bound analysis, heterogeneous unions, precise joins, callee effect/
-  data/control summaries and conditional-exit control remain open. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-record-call-carriers-gate.log`.
+- All 216 dependency groups pass. Four new carrier-field groups cover copied/
+  nested results, direct carrier-field access, deeper carriers, borrowed-record
+  views, all/unknown candidates, propagated depth, no replay, invalid paths and
+  E303 lifetime rejection. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded checker evidence. Prerequisites: `ee3a574`
+  (explicit result types) and `862eea2` (depth and field-type lookup).
+- Flags/outcomes remain B001-gated. Ordinary direct reference projections,
+  subrecord call projections, coercion wrappers, broader result shapes, allocator-
+  bound analysis, heterogeneous unions, precise joins, callee effect/data/control
+  summaries and conditional-exit control remain open. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1530,12 +1534,13 @@ explicitly documented. No outstanding failures remain.
    ending in borrowed records now retain matching intermediate locations before
    terminal expansion, including stored/projected candidates. Direct
    record-valued calls now retain ordinary shared-reference field origins through
-   public argument matching, including nested calls and copies. Next retain carrier-
-   cell fields of record-valued results in `records/cells.rs`: separate reusable
-   cell result-type matching from call-expression identity, then integrate bounded
-   field snapshots. Preserve unknown sources and cross-call depth; test copied/
-   nested carrier fields and lifetimes before the full gate. Direct call-expression
-   field projections and coercion wrappers remain separate. Heterogeneous
+   public argument matching, including nested calls and copies. Carrier-cell fields
+   now retain bounded snapshots too, including record views and direct carrier-field
+   access on calls. Next normalize owned field paths from record call expressions
+   in `records/sources.rs` and use them for ordinary reference reads and subrecord
+   snapshots; share bounded path handling with cell reads. Test direct/nested call
+   projections, unknown arguments and cross-call depth before the full gate.
+   Coercion wrappers remain separate. Heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result

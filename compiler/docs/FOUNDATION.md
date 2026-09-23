@@ -218,8 +218,11 @@ including carriers stored in borrowed records. Unknown layers remain incomplete.
 Direct record-valued calls retain ordinary shared-reference field origins through
 public argument matching, including nested named fields, copies and nested calls.
 All compatible arguments remain candidates; unknown inputs keep snapshots
-incomplete. Carrier-cell fields, direct field projections from call expressions,
-coercion wrappers and heterogeneous result layouts remain separate.
+incomplete. Carrier-cell fields also retain locations through copied/nested results
+and later origin queries, including borrowed-record views. Direct carrier-field
+access on call expressions is supported. Cell queries share nested-call depth
+without replaying calls. Ordinary direct reference projections, subrecord call
+projections, coercion wrappers and heterogeneous result layouts remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

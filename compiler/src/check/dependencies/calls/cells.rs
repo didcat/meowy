@@ -17,14 +17,24 @@ impl Checker {
         args: &[Expr],
         depth: usize,
     ) -> Result<Cells> {
-        if matches!(&expr.ty, Type::Reference(target) if Self::origin_record(target).is_some() && target.has_reference())
+        self.call_result_cells(&expr.ty, expr, args, depth)
+    }
+
+    pub(crate) fn call_result_cells(
+        &mut self,
+        result: &Type,
+        expr: &Expr,
+        args: &[Expr],
+        depth: usize,
+    ) -> Result<Cells> {
+        if matches!(result, Type::Reference(target) if Self::origin_record(target).is_some() && target.has_reference())
         {
-            return self.call_record_locations(expr, args, depth);
+            return self.call_record_locations(expr, args, depth, result);
         }
-        let Some(result_depth) = self.shared_cell_depth(&expr.ty, expr)? else {
+        let Some(result_depth) = self.shared_cell_depth(result, expr)? else {
             return Ok(Cells::default());
         };
-        if result_depth < 2 || !self.origin_carrier(&expr.ty, expr.span)? {
+        if result_depth < 2 || !self.origin_carrier(result, expr.span)? {
             return Ok(Cells::default());
         }
         if !self.flow.spend(args.len() + 1) {
@@ -78,14 +88,9 @@ impl Checker {
                     self.record_source_cells_at(arg, &path, depth + 1)?
                 };
                 let (mut matched, locations) =
-                    self.record_chain_cells(locations, ty, layers, expr, &expr.ty)?;
-                let Some(source) = self.returned_record_cells(
-                    locations,
-                    view,
-                    expr,
-                    Some(result_depth),
-                    &expr.ty,
-                )?
+                    self.record_chain_cells(locations, ty, layers, expr, result)?;
+                let Some(source) =
+                    self.returned_record_cells(locations, view, expr, Some(result_depth), result)?
                 else {
                     return Ok(Cells::default());
                 };
@@ -103,7 +108,7 @@ impl Checker {
                 for _ in 0..layers {
                     ty = ty.pointee().unwrap();
                 }
-                if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
+                if !crate::borrow_contract::returns::candidate(result, ty) {
                     continue;
                 }
                 let mut source = if path.is_empty() {
