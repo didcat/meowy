@@ -227,7 +227,11 @@ depth without replaying calls. Shape-preserving nullable record wrapping and
 narrowing retain these call origins, including projected subrecords and carrier
 fields. Field and coercion traversal share the bounded path budget. Known null
 contributes no owners; unknown arguments remain incomplete. Wrappers that change
-record shape and heterogeneous result layouts remain separate.
+record shape and heterogeneous result layouts remain separate. Internal path
+discovery retains bounded record-shape selections at heterogeneous union boundaries
+and marks unsupported borrowed alternatives. Positional origin storage excludes
+these qualified paths until shape-keyed snapshots and propagation are implemented;
+this representation work does not admit additional source-level origins.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

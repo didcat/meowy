@@ -49,8 +49,15 @@ This series establishes path representation only. Shape-keyed stored snapshots,
 copy/narrowing propagation, writes and returned union origins are subsequent slices;
 proof outcomes remain gated. Step 1 moves path discovery unchanged into its own
 module. All 237 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-record-path-extract.log`. Next: qualified alternatives and bounded
-traversal regression coverage.
+`/tmp/meowy-record-path-extract.log`; committed as `cdb2ed8`. Qualified paths now
+retain variant types at their field-depth boundary and explicit unsupported
+borrow-bearing alternatives. The positional adapter excludes those paths.
+All 242 dependency-filtered tests pass; log:
+`/tmp/meowy-record-variants-focused.log`. Five new groups cover shape identity,
+ordinary/carrier candidates, unsupported alternatives, nested selections, nullable
+paths, unaffected siblings and exact depth/capacity/work bounds. All ten compiler
+checks pass; log: `/tmp/meowy-record-variants-gate.log`. No failures remain. Next:
+bounded shape-keyed snapshots and seeded reads before source propagation.
 
 ### Proof dependency implementation slices
 
@@ -1378,15 +1385,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1210
-  library/903 native tests (2113 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1215
+  library/903 native tests (2118 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-coercions-gate.log`.
-- All 237 dependency-filtered tests pass. Four new groups cover nullable call
-  wrapping/narrowing, nested fields/calls, carrier projections, unknown inputs,
-  null/incompatible shapes, exact traversal and call-depth limits, exhausted
-  analysis budgets, no replay and E302/E303 rejection. Accepted fixtures pass
-  ordinary compilation/ownership; dependency marks remain seeded evidence.
+  0 failed in debug/release. Log: `/tmp/meowy-record-variants-gate.log`.
+- All 242 dependency-filtered tests pass. Five new path-discovery groups cover
+  shape identity, nested selections, carrier candidates, unsupported alternatives,
+  nullable paths, unaffected siblings and exact depth/capacity/work limits. The
+  positional storage adapter still excludes heterogeneous paths; source-level
+  union origins remain incomplete. Extraction prerequisite: `cdb2ed8`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1541,13 +1548,15 @@ explicitly documented. No outstanding failures remain.
    and subrecord call snapshots, including composition and carrier fields.
    Shape-preserving record-call coercions now share that bounded walk, including
    nullable wrapping/narrowing and carrier fields. Unknown and null remain distinct.
-   Next investigate heterogeneous record-union origins in `records.rs` and
-   `records/sources.rs`: define bounded alternatives keyed by record shape before
-   merging any field paths. Preserve unknown alternatives and never reuse one
-   shape's positional indices for another. Plan representation and propagation
-   separately; cover distinct field orders/types, nullable members, copies and
-   call results before the full gate. Broader aggregate returned shapes remain
-   separate. Precise overwrite/branch joins and function result
+   Path discovery now retains bounded shape selections at each heterogeneous
+   union boundary in `records/paths.rs`, including unsupported alternatives.
+   The positional adapter intentionally excludes qualified paths. Next add bounded
+   shape-keyed origin/carrier snapshots alongside existing positional metadata,
+   with seeded storage/read tests before source producers. Then integrate immutable
+   widening, copies and narrowing; never merge paths across different selections.
+   Keep missing alternatives incomplete, preserve null, and cover distinct field
+   orders/types and ordinary ownership before expanding writes or call results.
+   Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads
