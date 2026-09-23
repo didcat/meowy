@@ -1,7 +1,10 @@
 use super::{Checker, Diagnostic, Expr, Origins};
 use crate::check::{
     Result,
-    dependencies::references::{MAX_CELL_DEPTH, MAX_ROOTS},
+    dependencies::{
+        Cells,
+        references::{MAX_CELL_DEPTH, MAX_ROOTS},
+    },
 };
 use crate::hir::Type;
 
@@ -37,12 +40,21 @@ impl Checker {
         path: &[usize],
         layers: usize,
     ) -> Result<Origins> {
-        let mut cells = if path.is_empty() {
+        let cells = if path.is_empty() {
             self.reference_cell(arg)?
         } else {
             self.record_source_cells(arg, path)?
         };
-        for _ in 1..layers {
+        self.call_stored_origins(cells, arg, layers - 1)
+    }
+
+    pub(super) fn call_stored_origins(
+        &mut self,
+        mut cells: Cells,
+        arg: &Expr,
+        layers: usize,
+    ) -> Result<Origins> {
+        for _ in 0..layers {
             cells = self.expand_reference_cells(cells, arg)?;
         }
         let mut origins = Origins {

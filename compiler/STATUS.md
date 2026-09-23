@@ -29,26 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current borrowed-record location series
+### Current borrowed-record carrier-field series
 
-1. Retain borrowed-record addresses in existing `Cells` metadata through named
-   references, copies, retargets and record-stored views. Extend cycle-safe
-   dependency reads through addressed record prefixes. Keep focused regressions
-   with this independently useful metadata prerequisite and run the compiler gate.
-2. Integrate those locations with call-input origin matching for stored reference
-   fields and owned-field projections. Preserve unknown candidates and separate
-   unsupported borrowed shapes; validate calls and run the full gate again.
+1. Extract the existing call cell-to-origin resolver so record-field locations can
+   reuse its bounded expansion, work charges and completeness. Run focused checks
+   and commit this behavior-preserving prerequisite separately.
+2. Match shared carrier fields using `call_shared_view`, then resolve their stored
+   locations with that helper. Keep focused regressions for nested/deep chains,
+   retargets, mixed owners, unknown cells and budgets with the behavior change.
+   Run the full compiler gate and update the handoff before committing.
 
-`origin_carrier` now retains record addresses in the existing root/field paths,
-and `derived_cells` inspects addressed record fields as well as scalar cells.
-The metadata prerequisite is complete (`e3b2530`). Proof outcomes stay gated.
-Current integration slice:
-resolve direct shared record views through those locations, matching both owned
-field projections and nested stored shared references. Preserve incomplete inputs
-and reject unsupported borrowed leaves from completeness. Keep focused call
-regressions with this slice, then run the full compiler gate. Carrier-valued fields
-and reference chains leading to borrowed records remain separate. All 137 dependency
-groups pass, including five new record-call groups. All ten compiler checks pass.
+Direct borrowed-record calls already match ordinary stored shared references and
+owned-field projections. Carrier fields still return incomplete metadata; their
+locations are available in `record_cells`. Chains ending in borrowed records and
+other borrowed shapes remain separate. Proof outcomes stay gated.
+Extraction preserves the existing expansion count and charges. All 137 dependency
+groups pass (`/tmp/meowy-stored-call-focused.log`); formatting passes. Field
+integration and the full compiler gate remain next.
 
 ### Proof dependency implementation slices
 
