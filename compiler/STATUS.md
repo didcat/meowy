@@ -397,6 +397,23 @@ no outstanding failures remain. Implementation committed as `f4c2031`; the guide
 now describes the direct-carrier boundary. All four default documentation checks
 pass (`/tmp/meowy-proof-temporary-carriers-docs.log`).
 
+### Named reference-cell slice
+
+Retain checked cell locations for immutable one-level reference-to-reference
+bindings and their copies/empty-path reborrows. Resolve direct or named cell reads
+through the current reference/record-field origin metadata, preserving pointee
+identity, snapshots and ordinary borrow/expiry errors. Test local and nested-field
+cells, mutable pointee-reference updates, unknown contents and unsupported mutable
+carrier aliases. Run the full compiler gate and commit the bounded integration.
+
+Mutable carrier aliases, deeper carrier chains, returned origins and broader
+reference-bearing aggregates stay incomplete. No lifetime or permission rule changes;
+flags remain gated.
+Three focused cell groups pass, including ordinary compilation, nested field cells,
+prior snapshots, incomplete contents and E302 protection. A stored-view cell case
+passes too. All ten compiler checks pass (`/tmp/meowy-proof-reference-cells-gate.log`);
+no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1213,19 +1230,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1061
-  library/903 native tests (1964 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1064
+  library/903 native tests (1967 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-carriers-gate.log`.
-- Three new checker groups cover copied temporary references, transparent reborrows,
-  nested record carriers/direct fields, distinct storage versus pointee IDs,
-  incomplete calls and preserved E303 expiry. Accepted fixtures pass ordinary
-  compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Indirect carrier chains, reference-bearing
-  aggregate/returned origins, heterogeneous record unions, precise joins, function
-  summaries and conditional-exit control remain unfinished. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-cells-gate.log`.
+- Three new checker groups cover direct/named reference-cell reads, immutable
+  aliases, empty-path reborrows, nested field cells, stored-view cells, prior value
+  snapshots, unknown contents and E302 cell protection. Accepted fixtures pass
+  ordinary compilation/ownership checks.
+- Flags/outcomes remain B001-gated. Mutable carrier aliases, deeper carrier chains,
+  reference-bearing aggregate/returned origins, heterogeneous record unions,
+  precise joins, function summaries and conditional-exit control remain unfinished.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1315,7 +1333,9 @@ explicitly documented. No outstanding failures remain.
    mutable record-view fields. Temporary storage now retains its existing ID and
    initializer/control marks without extending lifetime. Direct temporary-carrier
    copies now recover snapshotted reference/record pointees, including transparent
-   reborrows. Next extend indirect carrier chains, reference-bearing aggregates,
+   reborrows. Immutable one-level aliases to named reference cells now retain
+   root/field locations and recover stored pointee origins. Next extend mutable
+   carrier aliases, deeper carrier chains, reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.

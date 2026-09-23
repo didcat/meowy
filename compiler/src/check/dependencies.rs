@@ -16,6 +16,12 @@ impl Checker {
 
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived_storage(id)
+            || self.reference_cells.get(&id).is_some_and(|cell| {
+                self.derived_storage(cell.root)
+                    || self.cell_origins(cell).is_some_and(|origins| {
+                        origins.roots.iter().any(|root| self.derived_storage(*root))
+                    })
+            })
             || self.record_pointees.get(&id).is_some_and(|fields| {
                 fields
                     .values()
@@ -194,3 +200,6 @@ mod temporaries;
 
 #[cfg(test)]
 mod carriers;
+
+#[cfg(test)]
+mod cells;

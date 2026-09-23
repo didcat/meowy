@@ -243,6 +243,12 @@ groups pass, including nested fields, unknown calls and unchanged E303 expiry.
 All ten compiler checks pass; indirect carrier chains remain incomplete.
 Implementation: `f4c2031`; the foundation guide documents the boundary.
 
+Immutable one-level reference-cell aliases now retain their checked root/field
+location. Direct/named cell reads recover stored pointee origins and preserve
+prior value snapshots. Three focused groups pass, including ordinary ownership
+validation and E302 cell protection. Mutable carrier aliases and unknown contents
+stay incomplete; all ten compiler checks pass and proof flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -265,19 +271,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1061
-  library/903 native tests (1964 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1064
+  library/903 native tests (1967 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-carriers-gate.log`.
-- Three new checker groups cover copied temporary references, transparent reborrows,
-  nested record carriers/direct fields, distinct storage versus pointee IDs,
-  incomplete calls and preserved E303 expiry. Accepted fixtures pass ordinary
-  compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Indirect carrier chains, reference-bearing
-  aggregate/returned origins, heterogeneous record unions, precise joins, function
-  summaries and conditional-exit control remain unfinished. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-cells-gate.log`.
+- Three new checker groups cover direct/named reference-cell reads, immutable
+  aliases, empty-path reborrows, nested field cells, stored-view cells, prior value
+  snapshots, unknown contents and E302 cell protection. Accepted fixtures pass
+  ordinary compilation/ownership checks.
+- Flags/outcomes remain B001-gated. Mutable carrier aliases, deeper carrier chains,
+  reference-bearing aggregate/returned origins, heterogeneous record unions,
+  precise joins, function summaries and conditional-exit control remain unfinished.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open.
 
 ## Area handoff
 

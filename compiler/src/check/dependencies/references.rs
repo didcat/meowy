@@ -27,6 +27,58 @@ impl Checker {
         }
     }
 
+    pub(crate) fn reference_cell(&self, expr: &Expr) -> Option<crate::hir::Place> {
+        let mut value = expr;
+        loop {
+            match &value.kind {
+                ExprKind::Borrow(place) => return Some(place.clone()),
+                ExprKind::TemporaryBorrow { id, .. } => {
+                    return Some(crate::hir::Place {
+                        root: *id,
+                        fields: Vec::new(),
+                    });
+                }
+                ExprKind::Local(id) => return self.reference_cells.get(id).cloned(),
+                ExprKind::Reborrow {
+                    value: inner,
+                    fields,
+                    ..
+                } if fields.is_empty() => value = inner,
+                _ => return None,
+            }
+        }
+    }
+
+    pub(crate) fn cell_origins(&self, cell: &crate::hir::Place) -> Option<&Origins> {
+        if cell.fields.is_empty() {
+            self.pointees.get(&self.origin_id(cell.root))
+        } else {
+            self.record_pointees
+                .get(&cell.root)
+                .and_then(|fields| fields.get(&cell.fields))
+        }
+    }
+
+    pub(crate) fn track_reference_cell(
+        &mut self,
+        id: usize,
+        value: &Expr,
+    ) -> crate::check::Result<()> {
+        if !value.ty.pointee().is_some_and(Self::origin_reference) {
+            return Ok(());
+        }
+        if let Some(cell) = self.reference_cell(value) {
+            if !self.flow.spend(cell.fields.len() + 1) {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof reference cell budget exhausted",
+                    value.span,
+                ));
+            }
+            self.reference_cells.insert(id, cell);
+        }
+        Ok(())
+    }
+
     pub(crate) fn origin_reference(ty: &Type) -> bool {
         ty.pointee().is_some_and(|ty| {
             !ty.has_reference()
@@ -62,10 +114,10 @@ impl Checker {
                     };
                 }
                 ExprKind::Deref(inner) => {
-                    let Some(id) = Self::temporary_storage(inner) else {
+                    let Some(cell) = self.reference_cell(inner) else {
                         return Origins::default();
                     };
-                    return self.pointees.get(&id).cloned().unwrap_or_default();
+                    return self.cell_origins(&cell).cloned().unwrap_or_default();
                 }
                 ExprKind::Local(id) => {
                     return self
