@@ -29,19 +29,21 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-stored returned-cell slice
+### Current borrowed-record returned-cell series
 
-Plan: traverse named fields of by-value record arguments, including nested and
-nullable single-record shapes, under shared field/depth/work limits. Reuse
-`record_source_cells` and existing compatible-layer matching, retaining every
-candidate and incomplete alternatives. Keep behavior and focused regressions in
-one commit, then run the compiler gate. Borrowed-record argument projections and
-returned borrowed-record views remain separate; outcomes stay gated.
+1. Extract bounded field-location projection from the existing record-origin
+   traversal, preserving completeness, charges and diagnostics. Validate focused
+   checks and commit this reusable prerequisite separately.
+2. Resolve direct borrowed-record argument candidates: contract-owned field
+   projections plus stored shared carriers through nested/nullable owned records.
+   Reuse the projection helper and existing cell expansion; retain unknowns and
+   explicitly exclude nested borrowed-record view fields. Keep tests with the
+   behavior change and run the full compiler gate before committing.
 
-The existing record source resolver already preserves copies, emissions and
-nullable empty snapshots. No new location representation is required. All 167
-dependency groups pass, including five new record-return groups and the preserved
-borrowed-record/E303 boundary regression. All ten compiler checks pass.
+Returned borrowed-record views and broader borrowed inputs remain separate.
+Proof outcomes stay gated. The extraction preserves field-path checks and charges;
+all 167 dependency groups pass (`/tmp/meowy-call-field-cells-focused.log`) and
+formatting passes. Returned-cell integration and the full gate remain next.
 
 ### Proof dependency implementation slices
 

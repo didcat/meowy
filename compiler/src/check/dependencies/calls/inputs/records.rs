@@ -1,5 +1,5 @@
 use super::{Checker, Diagnostic, Expr, Input, MAX_DEPTH, MAX_FIELDS, Origins, Result, Type};
-use crate::check::dependencies::{Cells, references::MAX_ROOTS};
+use crate::check::dependencies::references::MAX_ROOTS;
 
 impl Checker {
     pub(super) fn call_record_view_origins(
@@ -98,23 +98,7 @@ impl Checker {
                 {
                     continue;
                 }
-                let mut fields = Cells {
-                    complete: cells.complete,
-                    ..Cells::default()
-                };
-                for (root, base) in &cells.places {
-                    if base.len() + path.len() > MAX_DEPTH
-                        || !self.flow.spend(base.len() + path.len() + 1)
-                    {
-                        return Err(Diagnostic::unsupported(
-                            "proof record call path budget exhausted",
-                            arg.span,
-                        ));
-                    }
-                    let mut field = base.clone();
-                    field.extend(&path);
-                    fields.places.insert((*root, field));
-                }
+                let mut fields = self.call_field_cells(&cells, &path, arg)?;
                 if nested {
                     for _ in 0..=layers {
                         fields = self.expand_reference_cells(fields, arg)?;
