@@ -29,25 +29,24 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-call carrier-field series
+### Current record-call projection series
 
-1. Make nested cell/location matchers accept an explicit result type, keeping all
-   current callers on their expression type. Validate and commit separately.
-2. Carry call depth through record-cell reads and extract bounded result-field
-   type selection without enabling calls there yet. Validate and commit.
-3. Match carrier-field result types against public call arguments and retain their
-   location snapshots. Test nested calls/copies, record views, all/unknown candidates,
-   depth/work bounds and lifetime rejection; run the full compiler gate.
+Investigation: ordinary reference reads still use local-only `field_origins`;
+record source readers recognize calls only at the expression root. Nested owned
+field projections therefore lose call-result origins and carrier snapshots.
 
-Ordinary shared-reference fields already retain origins. No fabricated call HIR
-or private-body inference is needed; proof outcomes remain gated. Step 1 passes
-all 212 dependency groups and formatting (`/tmp/meowy-cell-result-types-focused.log`).
-Step 1 committed as `ee3a574`. Step 2 now carries cell-call depth and shares field
-type selection; all 212 dependency groups and formatting pass
-(`/tmp/meowy-record-cell-depth-focused.log`); committed as `862eea2`. Carrier-field
-integration passes 216 dependency groups, including cross-call depth propagation.
-Direct carrier-field access on a call result also passes. All ten compiler checks
-pass; no failures remain.
+1. Add a bounded owned-field path normalizer in `records/sources.rs`, with focused
+   path/order/limit tests. Keep source readers unchanged; validate and commit.
+2. Use normalized call paths for ordinary reference reads and subrecord origin/cell
+   snapshots. Cover direct/nested projections, unknown arguments, cross-call depth
+   and ordinary lifetime checking. Run the full compiler gate and commit.
+
+Coercion wrappers and broader result shapes remain separate. Proof outcomes stay
+gated. Step 1 adds bounded ordered field paths and shares them with result-field
+selection. All 229 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-record-path-focused.log`. The initial fixture needed a record separator
+and alphabetically ordered field indices; both are corrected. No failures remain.
+Next: integrate normalized call paths into origin and cell source readers.
 
 ### Proof dependency implementation slices
 

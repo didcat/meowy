@@ -8,6 +8,37 @@ pub(crate) enum RecordSource {
 }
 
 impl Checker {
+    pub(crate) fn record_source_path<'a>(
+        &mut self,
+        value: &'a Expr,
+        path: &[usize],
+    ) -> Result<(&'a Expr, Vec<usize>)> {
+        if path.len() > super::MAX_DEPTH || !self.flow.spend(path.len() + 1) {
+            return Err(Diagnostic::unsupported(
+                "proof record source path budget exhausted",
+                value.span,
+            ));
+        }
+        let mut base = value;
+        let mut path = path.iter().rev().copied().collect::<Vec<_>>();
+        while let ExprKind::Field {
+            value: inner,
+            index,
+        } = &base.kind
+        {
+            if path.len() == super::MAX_DEPTH || !self.flow.spend(1) {
+                return Err(Diagnostic::unsupported(
+                    "proof record source path budget exhausted",
+                    value.span,
+                ));
+            }
+            path.push(*index);
+            base = inner;
+        }
+        path.reverse();
+        Ok((base, path))
+    }
+
     pub(crate) fn record_source_locations(
         &mut self,
         value: &Expr,

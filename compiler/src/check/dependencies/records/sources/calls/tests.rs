@@ -99,3 +99,28 @@ pub(crate) fn record_call_origin_traversal_keeps_depth_paths_and_lifetimes_check
         "<R>:<{r<&boolean>}>;f<R>:(p<&boolean>){local:false;->r:&local};x:=false;row:f(&x)";
     assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
 }
+
+#[test]
+pub(crate) fn record_call_source_paths_preserve_order_and_bounds() {
+    let mut checker = Checker::new();
+    let stmts = statements(
+        &mut checker,
+        "<R>:<{r<&boolean>}>;<N>:<{aaa<boolean>;inner<R>}>;f<N>:(p<&boolean>){->aaa:false;->inner:{->r:p}};x:=false;out:f(&x).inner.r",
+    );
+    let crate::hir::Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+        panic!()
+    };
+    let (base, path) = checker.record_source_path(value, &[]).unwrap();
+    assert!(matches!(base.kind, crate::hir::ExprKind::Call { .. }));
+    assert_eq!(path, vec![1, 0]);
+    assert_eq!(
+        checker.record_call_field_type(value, &[]).unwrap(),
+        Some(&value.ty)
+    );
+    let path = vec![0; super::super::super::MAX_DEPTH];
+    let error = checker.record_source_path(value, &path).err().unwrap();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("source path budget"));
+    assert!(checker.record_source_path(base, &path).is_ok());
+    assert!(checker.record_source_path(base, &[0; 33]).is_err());
+}
