@@ -81,37 +81,45 @@ impl Checker {
             }
         };
         for _ in 0..depth {
-            self.origin_visit(expr)?;
-            let mut next = Cells {
-                places: BTreeSet::new(),
-                complete: cells.complete,
-            };
-            for (root, path) in cells.places {
-                self.origin_visit(expr)?;
-                let work = self
-                    .stored_cells(root, &path)
-                    .map_or(0, |source| source.places.len());
-                if !self.flow.spend(work) {
-                    return Err(crate::diagnostic::Diagnostic::unsupported(
-                        "proof reference cell budget exhausted",
-                        expr.span,
-                    ));
-                }
-                let source = self.stored_cells(root, &path);
-                next.complete &= source.is_some_and(|source| source.complete);
-                if let Some(source) = source {
-                    next.places.extend(source.places.iter().cloned());
-                }
-                if next.places.len() > MAX_ROOTS {
-                    return Err(crate::diagnostic::Diagnostic::unsupported(
-                        "proof reference cell capacity exhausted",
-                        expr.span,
-                    ));
-                }
-            }
-            cells = next;
+            cells = self.expand_reference_cells(cells, expr)?;
         }
         Ok(cells)
+    }
+
+    pub(crate) fn expand_reference_cells(
+        &mut self,
+        cells: Cells,
+        expr: &Expr,
+    ) -> crate::check::Result<Cells> {
+        self.origin_visit(expr)?;
+        let mut next = Cells {
+            places: BTreeSet::new(),
+            complete: cells.complete,
+        };
+        for (root, path) in cells.places {
+            self.origin_visit(expr)?;
+            let work = self
+                .stored_cells(root, &path)
+                .map_or(0, |source| source.places.len());
+            if !self.flow.spend(work) {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof reference cell budget exhausted",
+                    expr.span,
+                ));
+            }
+            let source = self.stored_cells(root, &path);
+            next.complete &= source.is_some_and(|source| source.complete);
+            if let Some(source) = source {
+                next.places.extend(source.places.iter().cloned());
+            }
+            if next.places.len() > MAX_ROOTS {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof reference cell capacity exhausted",
+                    expr.span,
+                ));
+            }
+        }
+        Ok(next)
     }
 
     pub(crate) fn origin_visit(&mut self, expr: &Expr) -> crate::check::Result<()> {

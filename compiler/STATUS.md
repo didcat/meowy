@@ -29,20 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current reference-cell argument slice
+### Current deeper-carrier argument series
 
-Plan: first admit one-level shared reference carriers (`& &T`) whose inner shared
-view has no borrowed components. Resolve named/temporary cells and record-stored
-carriers using existing cell snapshots, then reuse contract projections to retain
-all matching owners. Keep implementation and focused regressions in one commit;
-cover aliases, retargets, list projections, unknown cells and lifetime rejection,
-then run the complete compiler gate. References to borrowed records and deeper
-carrier inputs remain separate. No proof outcome is enabled.
-Implementation uses `reference_cell`/`record_source_cells` for locations and
-`cell_origins` for stored owners/completeness, with bounded merging. All 125
-dependency groups pass, including five new carrier-call groups. Deeper carriers
-stay incomplete and invalid local returns retain E303. All ten compiler checks
-pass; no failures remain.
+1. Extract one-layer cell expansion from `reference_cell` without changing its
+   work charges, bounds or completeness. Validate the dependency tests and commit
+   this reusable prerequisite separately.
+2. Traverse shared carrier types and stored cell layers for call inputs, reusing
+   that expansion and contract projections. Keep behavior and regressions together;
+   test named/temporary/record chains, mixed unknowns, retargeting, depth/work limits
+   and unsupported borrowed shapes, then run the complete compiler gate.
+
+Investigation: named and record-stored cells already preserve deeper chains.
+The call-input filter and one-layer resolver are the remaining restrictions for
+shared chains ending in reference-free views. References to borrowed records and
+allocator-bound views remain separate. Proof outcomes stay gated.
+The extraction preserves the original traversal charges and diagnostics. All 125
+dependency groups pass (`/tmp/meowy-cell-expansion-focused.log`); formatting passes.
+Call behavior is unchanged; the second slice and final compiler gate remain next.
 
 ### Proof dependency implementation slices
 
