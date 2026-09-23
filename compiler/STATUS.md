@@ -347,6 +347,22 @@ compilation/ownership validation, nested list/record-element borrows, late owner
 marks, index dependencies and incomplete returned views. All ten compiler checks
 pass (`/tmp/meowy-proof-indexed-origins-gate.log`); no outstanding failures remain.
 
+### Aggregate-stored view origin slice
+
+Share the supported reference-pointee predicate between ordinary bindings and
+record field collection/updates. Retain reference-free list/record view owners
+through aggregate storage, nested/composed/nullable copies and mutable field
+replacement. Test ordinary ownership validation, prior snapshots and incomplete
+returned/reference-bearing origins; run the complete compiler gate and commit.
+
+This expands origin metadata only. References to reference-bearing aggregates,
+unknown returned/temporary origins and heterogeneous record unions remain
+incomplete. Owner sets stay conservative and source-level flags remain gated.
+All three focused view-field groups pass, including ordinary compilation of
+nested/composed/nullable stored views and mutable record-view updates. Mutable
+list-view fields retain their existing B001 gate. All ten compiler checks pass
+(`/tmp/meowy-proof-stored-views-gate.log`); no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1163,20 +1179,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1052
-  library/903 native tests (1955 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1055
+  library/903 native tests (1958 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-indexed-origins-gate.log`.
-- Three new indexed groups cover shared element borrows, view copies, nested lists,
-  reference-free record-element reborrows, late owner marks, index dependencies,
-  unrelated containers and incomplete returned views. Accepted fixtures pass
-  ordinary compilation/ownership checks; all 68 dependency groups pass.
-- Flags/outcomes remain B001-gated. Whole-container owner sets remain conservative
-  and monotone. Aggregate-stored views, reference-bearing aggregates, temporary/
-  returned origins, heterogeneous record unions, precise joins, function summaries
-  and conditional-exit control remain unfinished. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-stored-views-gate.log`.
+- Three new checker groups cover stored list/record views, nested/composed/nullable
+  copies, supported mutable record-view fields, prior snapshots and incomplete
+  returned/reference-bearing sources. Accepted fixtures pass ordinary compilation/
+  ownership checks; mutable list-view fields retain their existing B001 gate.
+- Flags/outcomes remain B001-gated. Whole-owner sets remain conservative and
+  monotone. Reference-bearing aggregates, temporary/returned origins,
+  heterogeneous record unions, precise joins, function summaries and conditional-
+  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
+  and versions are unchanged; editor and separate runtime/sanitizer gates were
+  not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1262,8 +1278,9 @@ explicitly documented. No outstanding failures remain.
    temporary snapshots and maps field names to source paths. Nullable wrapping/
    narrowing of a single record shape retains those paths; known null has no owners.
    Shared element borrows now retain container origins through reference-free
-   list/record views and reborrows. Next extend aggregate-stored views, broader
-   reference-bearing aggregates, heterogeneous record unions and returned origins while
+   list/record views and reborrows, including aggregate-stored views and supported
+   mutable record-view fields. Next extend reference-bearing aggregates,
+   heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

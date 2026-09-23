@@ -12,6 +12,20 @@ pub(crate) struct Origins {
 pub(crate) const MAX_ROOTS: usize = 256;
 
 impl Checker {
+    pub(crate) fn origin_reference(ty: &Type) -> bool {
+        ty.pointee().is_some_and(|ty| {
+            !ty.has_reference()
+                && matches!(
+                    ty,
+                    Type::Bool
+                        | Type::Int { .. }
+                        | Type::Float { .. }
+                        | Type::List { .. }
+                        | Type::Record { .. }
+                )
+        })
+    }
+
     pub(crate) fn origin_id(&self, id: usize) -> usize {
         self.proofs.aliases.get(&id).map_or(id, |alias| alias.root)
     }
@@ -48,17 +62,7 @@ impl Checker {
         value: &Expr,
         merge: bool,
     ) -> crate::check::Result<()> {
-        if !value.ty.pointee().is_some_and(|ty| {
-            !ty.has_reference()
-                && matches!(
-                    ty,
-                    Type::Bool
-                        | Type::Int { .. }
-                        | Type::Float { .. }
-                        | Type::List { .. }
-                        | Type::Record { .. }
-                )
-        }) {
+        if !Self::origin_reference(&value.ty) {
             return Ok(());
         }
         let origins = self.reference_origins(value);

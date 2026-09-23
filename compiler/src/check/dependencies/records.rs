@@ -59,10 +59,7 @@ impl Checker {
         path: &[usize],
         value: &Expr,
     ) -> Result<()> {
-        if !matches!(
-            value.ty.pointee(),
-            Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
-        ) {
+        if !Self::origin_reference(&value.ty) {
             return Ok(());
         }
         let mut origins = self.reference_origins(value);
@@ -122,10 +119,7 @@ impl Checker {
                     child.push(index);
                     pending.push((child, &field.ty));
                 }
-            } else if matches!(
-                ty.pointee(),
-                Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
-            ) {
+            } else if Self::origin_reference(ty) {
                 paths.push(path);
             }
         }
@@ -235,3 +229,6 @@ mod nested;
 
 #[cfg(test)]
 mod coercions;
+
+#[cfg(test)]
+mod views;

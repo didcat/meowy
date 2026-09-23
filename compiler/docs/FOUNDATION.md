@@ -136,8 +136,11 @@ nullable fields. Known null contributes no owners; unknown sources stay incomple
 Unions with different record shapes do not share field-index metadata. Shared
 list-element borrows retain the container owner through ordinary reference-free
 list/record views, copied views, nested indices and scalar reborrows. Owner sets
-remain whole-container and conservative. Reference-bearing aggregates, views
-stored in aggregate fields, temporary/returned origins and heterogeneous record
+remain whole-container and conservative. Reference-free views retain these owners
+when stored in nested record fields, copied/composed or wrapped in nullable records.
+Supported mutable record-view fields merge old/new owners while earlier copies
+keep snapshots. Mutable list-view fields retain their existing bootstrap gate.
+Reference-bearing aggregates, temporary/returned origins and heterogeneous record
 unions remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
