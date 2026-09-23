@@ -13,6 +13,15 @@ impl Snapshot {
 impl Checker {
     pub(super) fn record_shape_source(&mut self, value: &Expr, key: &ShapeKey) -> Result<Snapshot> {
         let mut base = value;
+        let mut key = ShapeKey::new(
+            &key.fields,
+            &key.variants
+                .iter()
+                .map(|(at, ty)| (*at, ty))
+                .collect::<Vec<_>>(),
+            &mut self.flow,
+            value.span,
+        )?;
         for _ in 0..MAX_DEPTH {
             if !self.flow.spend(1) {
                 return Err(Diagnostic::unsupported(
@@ -25,7 +34,7 @@ impl Checker {
                     let snapshot = self
                         .record_shapes
                         .get(id)
-                        .and_then(|shapes| shapes.get(key));
+                        .and_then(|shapes| shapes.get(&key));
                     let work = snapshot.map_or(1, |value| {
                         value.origins.roots.len()
                             + value
@@ -44,7 +53,44 @@ impl Checker {
                     }
                     return Ok(snapshot.cloned().unwrap_or_default());
                 }
+                ExprKind::Field {
+                    value: inner,
+                    index,
+                } => {
+                    let mut fields = vec![*index];
+                    fields.extend(&key.fields);
+                    let variants = key
+                        .variants
+                        .iter()
+                        .map(|(at, ty)| (at + 1, ty))
+                        .collect::<Vec<_>>();
+                    key = ShapeKey::new(&fields, &variants, &mut self.flow, value.span)?;
+                    base = inner;
+                }
                 ExprKind::Coerce { value: inner } => {
+                    if let Some(record) = Self::origin_record(&base.ty)
+                        && Self::origin_record(&inner.ty) != Some(record)
+                        && let Type::Union(members) = &inner.ty
+                    {
+                        if !self.flow.spend(members.len()) {
+                            return Err(Diagnostic::unsupported(
+                                "proof record shape source budget exhausted",
+                                value.span,
+                            ));
+                        }
+                        let Some(member) = members
+                            .iter()
+                            .find(|ty| Self::origin_record(ty) == Some(record))
+                        else {
+                            return Ok(Snapshot::default());
+                        };
+                        let mut variants = vec![(0, member)];
+                        variants.extend(key.variants.iter().map(|(at, ty)| (*at, ty)));
+                        key = ShapeKey::new(&key.fields, &variants, &mut self.flow, value.span)?;
+                        base = inner;
+                        continue;
+                    }
+
                     if inner.ty == Type::Null {
                         return Ok(Snapshot::empty());
                     }
@@ -89,3 +135,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod projections;

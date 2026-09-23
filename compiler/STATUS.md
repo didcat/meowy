@@ -29,41 +29,27 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current immutable union producer series
+### Current nested union snapshot series
 
-Investigation: local narrowing can read exact snapshots, but source layouts are
-incomplete and whole-container dependency traversal ignores shaped metadata.
-Known producers must follow dependency traversal, and must not admit mutable
-union storage before conservative write/merge rules exist.
+Investigation: source capture follows root widening and exact locals only. Field
+projections need prefixed field/shape offsets, and block fields need their checked
+initializer alternatives without replaying expressions or enabling mutable slots.
 
 Commit plan:
-1. Include shaped ordinary origins and carrier locations in whole-container and
-   addressed-prefix dependency traversal. Validate seeded marks, carrier cycles,
-   guarded query control and independent siblings; commit separately.
-2. Capture snapshots for immutable bindings with immutable fields: direct root
-   record-to-union widening, known null and exact union copies. Reuse existing
-   concrete-record source readers; preserve unknown alternatives and snapshots.
-   Test later marks through copies/narrowing/guards, carriers and ordinary ownership;
-   run the full compiler gate. Nested shape construction, mutable bindings/fields,
-   emitted/temporary producers and returned unions remain separate.
+1. Preserve qualified keys through subrecord projection and checked outer narrowing.
+   Validate seeded nested snapshots, sibling isolation and bounds; commit.
+2. Capture immutable nested fields from checked block bindings and preserve nested
+   selections through widening. Merge possible initializers conservatively, keep
+   unknown alternatives, and bound traversal/capacity. Test real sources, carriers,
+   copies, null, control dependencies and ordinary ownership; run the full gate.
+3. Document the supported boundary separately if needed to keep source slices
+   focused. Mutable/emitted/temporary storage and returned unions remain gated.
 
-Whole-container and addressed-prefix dependency traversal now includes shaped
-ordinary origins and carrier locations, retaining cycle detection and prefix
-isolation. All 253 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shaped-dependencies-focused.log`. An existing seeded read test now
-performs narrowing before marks, because marked guards correctly cannot narrow
-base types; E201 and controlled-query coverage verify that boundary. Prerequisite:
-`a67560b`. Immutable bindings with immutable fields now capture root widening and
-exact copy snapshots, including known null and carriers. Unsupported and mutable
-sources remain incomplete. All 258 dependency-filtered tests pass; log:
-`/tmp/meowy-union-producers-focused.log`. Five producer groups cover real widening,
-exact copies, carrier origins, later marks/query control, null/unknown/mutable
-boundaries, prior snapshots, distinct field orders and work/depth/loan limits.
-All ten compiler checks pass; log: `/tmp/meowy-union-producers-gate.log`. No failures
-remain. Source capture is committed as `7cbcdfb`; the separately committed
-capability guide documents its supported immutable boundary and remaining gates.
-Next: nested immutable union-field construction/projections. Proof outcomes stay
-gated.
+Projected fields now prefix field indices and shape depths, while checked outer
+narrowing adds its exact selection. Two seeded groups verify sibling isolation and
+combined outer/inner selections. All 260 dependency-filtered tests and formatting
+pass; log: `/tmp/meowy-union-projections-focused.log`. Existing key/source bounds
+remain checked. Next: real nested block construction. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
