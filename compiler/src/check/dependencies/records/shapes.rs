@@ -118,16 +118,21 @@ impl Checker {
         merge: bool,
     ) -> Result<()> {
         if merge
-            && self.places.contains(&id)
-            && !self.proofs.aliases.contains_key(&id)
+            && (self.places.contains(&id)
+                || self
+                    .proofs
+                    .aliases
+                    .get(&id)
+                    .is_some_and(|alias| alias.mutable))
             && !value.ty.has_mutable_fields()
         {
             let next = self.record_shape_values(value, true)?;
+            let root = self.origin_id(id);
             let empty = Shapes::default();
-            let prior = self.record_shapes.get(&id).unwrap_or(&empty);
+            let prior = self.record_shapes.get(&root).unwrap_or(&empty);
             let shapes = prior.merged(&next, &mut self.flow, value.span)?;
             if !shapes.entries.is_empty() {
-                self.record_shapes.insert(id, shapes);
+                self.record_shapes.insert(root, shapes);
             }
             return Ok(());
         }

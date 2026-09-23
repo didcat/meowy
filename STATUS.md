@@ -378,20 +378,23 @@ canonical slot roots, while ordinary copies retain their prior snapshots. Canoni
 storage prerequisite: `7ab6a30`. Ordinary mutable bindings with immutable fields
 now capture shapes and conservatively merge whole-value replacements, preserving
 prior copies and unknown alternatives. Construction prerequisite: `c915eeb`.
-All 286 dependency-filtered tests and all ten compiler checks pass. Mutable named
-slots are next; mutable fields, temporary producers and proof outcomes stay gated.
+Mutable named slots with immutable contents now capture shapes and merge retargets
+at their canonical roots. Siblings share possible owners; earlier copies remain
+independent. All 292 dependency-filtered tests and all ten compiler checks pass.
+Completed mutable fields/subrecords are next; temporary producers and proof outcomes
+stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1259
-  library/903 native tests (2162 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1265
+  library/903 native tests (2168 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-mutable-unions-gate.log`.
-- All 286 dependency-filtered tests pass. Five replacement groups cover old/new
-  owners, prior copies, conditional/self assignment, null/unknown inputs, nested
-  carriers, distinct shape/field layouts, later marks/query control, shape-merge
-  failure preservation and E302 loans. Accepted fixtures pass ordinary compilation/
-  ownership; dependency marks remain seeded. Construction prerequisite: `c915eeb`.
+  0 failed in debug/release. Log: `/tmp/meowy-mutable-slots-gate.log`.
+- All 292 dependency-filtered tests pass. Six slot groups cover direct,
+  conditional/self retargets, sibling visibility, prior copies, carriers,
+  null/unknown inputs, canonical shape-failure preservation, query control and
+  E302 loans. Accepted fixtures pass ordinary compilation/ownership; marks remain
+  seeded. Completed mutable record fields/subrecords remain incomplete.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

@@ -29,35 +29,29 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current mutable whole-value union series
+### Current mutable named union slot slice
 
-Ordinary mutable bindings with immutable fields now capture shaped snapshots.
-Whole-value replacement constructs RHS metadata before changing storage and merges
-possible owners conservatively, including self-assignment.
+Canonical alias storage and detached RHS construction are already implemented.
+Mutable named slots now capture initial snapshots and merge replacements through
+their shared root. Completed mutable record fields remain a separate boundary.
 
-Commit plan:
-1. Separate shape construction from storage without changing callers or behavior.
-   Run focused dependency checks and commit the prerequisite.
-2. Capture ordinary mutable bindings with immutable fields and merge whole-value
-   replacements before storing. Preserve old owners, unknown alternatives and prior
-   copies; test null, self/conditional assignment, nested shapes, carriers, later
-   marks, budgets and ordinary ownership. Run the full compiler gate and update
-   the capability guide and project handoff.
+Commit plan: enable capture for named slots whose contents have immutable fields,
+then merge mutable alias assignments at `Alias::root`. Keep this behavior change
+with focused regressions for direct/conditional/self retargets, sibling aliases,
+old copies, null/unknown inputs, carriers, atomic shape failures and ordinary loans.
+Run the full compiler gate and update the guide/root handoff in the same slice.
+No separate representation prerequisite is needed.
 
-Mutable named slots/fields, temporary-borrow producers and returned unions remain
-separate. Shape construction now returns a detached map; existing storage callers
-retain their behavior. All 281 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shape-build-focused.log`. Next: ordinary mutable capture and replacement
-merging. Prerequisite: `c915eeb`. Ordinary mutable bindings with immutable fields
-now capture initial snapshots; whole-value assignment builds RHS snapshots before
-merging with prior metadata. All 286 dependency-filtered tests pass; log:
-`/tmp/meowy-mutable-unions-focused.log`. Five new groups cover prior copies,
-conditional/self assignment, null/unknown inputs, nested carriers, different field
-orders, later marks/query control, atomic budget/capacity failures and E302 loans.
-All ten compiler checks pass; log: `/tmp/meowy-mutable-unions-gate.log`. No failures
-remain. Replacement integration is committed as `9696e6b`; the separate guide/root
-handoff documents its conservative boundary. Mutable named slots/fields remain
-incomplete; proof outcomes stay gated.
+Mutable fields/subrecords, temporary-borrow producers and returned unions remain
+separate. Mutable named capture now runs before alias registration, and slot
+assignments build RHS snapshots before merging into the canonical root. All 292
+dependency-filtered tests pass; log: `/tmp/meowy-mutable-slots-focused.log`. Six groups
+cover direct/conditional/self retargets, siblings, copies, carriers, null/unknown
+alternatives, canonical failure preservation, query control and E302 loans. Existing
+coverage retains the completed-mutable-record boundary. All ten compiler checks
+pass; log: `/tmp/meowy-mutable-slots-gate.log`. No failures remain. Next: bounded
+owned-field prefix merging and final-slot capture before admitting completed
+mutable record fields/subrecords. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1385,15 +1379,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1259
-  library/903 native tests (2162 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1265
+  library/903 native tests (2168 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-mutable-unions-gate.log`.
-- All 286 dependency-filtered tests pass. Five replacement groups cover old/new
-  owners, prior copies, conditional/self assignment, null/unknown inputs, nested
-  carriers, distinct shape/field layouts, later marks/query control, shape-merge
-  failure preservation and E302 loans. Accepted fixtures pass ordinary compilation/
-  ownership; dependency marks remain seeded. Construction prerequisite: `c915eeb`.
+  0 failed in debug/release. Log: `/tmp/meowy-mutable-slots-gate.log`.
+- All 292 dependency-filtered tests pass. Six slot groups cover direct,
+  conditional/self retargets, sibling visibility, prior copies, carriers,
+  null/unknown inputs, canonical shape-failure preservation, query control and
+  E302 loans. Accepted fixtures pass ordinary compilation/ownership; marks remain
+  seeded. Completed mutable record fields/subrecords remain incomplete.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1567,13 +1561,16 @@ explicitly documented. No outstanding failures remain.
    keep prior snapshots. Ordinary mutable bindings with immutable fields now capture
    initial shapes and merge whole-value replacements, retaining old/new owners and
    incomplete alternatives without replaying RHS work. Self-assignment reads prior
-   metadata; failed shape merges preserve it. Next add mutable named-slot capture
-   and whole-slot replacement using canonical `Alias::root` storage in
-   `track_record_shapes` and `statements.rs`. Preserve sibling alias visibility,
-   old copies, unknown alternatives and conservative owners; test retargeting,
-   conditional writes, carriers, budget failures and ordinary ownership.
-   Keep mutable fields/subrecords, temporary-borrow producers, returned unions and
-   borrowed union views separate.
+   metadata; failed shape merges preserve it. Mutable named slots with immutable
+   contents now capture initial snapshots and merge retargets at `Alias::root`;
+   siblings see the shared owners while prior copies remain independent. Next
+   implement completed mutable union fields/subrecords: add bounded prefix merging
+   for owned-path writes before removing the mutable-field capture gate. At block
+   completion, read mutable fields from their final canonical slot snapshots rather
+   than initializer expressions, so lexical retargets are retained. Preserve sibling
+   paths, shape offsets and prior copies; test direct/subrecord/conditional writes,
+   null/unknown values, marks, budgets and ordinary ownership before the full gate.
+   Keep temporary-borrow producers, returned unions and borrowed union views separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

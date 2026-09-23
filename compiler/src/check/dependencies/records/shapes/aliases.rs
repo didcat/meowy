@@ -58,3 +58,6 @@ mod tests;
 
 #[cfg(test)]
 mod emissions;
+
+#[cfg(test)]
+mod replacements;

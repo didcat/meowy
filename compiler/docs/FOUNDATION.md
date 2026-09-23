@@ -245,7 +245,8 @@ sources keep snapshots incomplete. Composition temporaries retain immutable
 snapshots and map destination field names to source indices and shape offsets.
 Mixed direct/composed alternatives share the same bounded merge; later source
 replacement does not change prior copies. Capture does not replay initializers.
-Immutable named emissions capture shaped snapshots before slot registration.
+Named emissions with immutable contents capture shaped snapshots before slot
+registration.
 Sibling aliases merge possible owners and carrier locations at the canonical slot
 root; missing alternatives remain incomplete. Lexical reads and later dependency
 marks use the shared root, while ordinary copies keep prior snapshots.
@@ -254,8 +255,12 @@ whole-value replacement, including nested union containers and carriers. RHS
 snapshots are built before storage changes, so self-assignment reads prior metadata
 and failed merges preserve it. Earlier copies retain their snapshots. Null or
 independent overwrites do not erase earlier owners; unknown alternatives remain
-incomplete. Mutable named slots/fields, temporary-borrow producers, returned unions
-and borrowed union views remain separate.
+incomplete. Mutable named slots with immutable contents also merge whole-slot
+retargets at the canonical root, preserving sibling visibility and earlier copies.
+This supports lexical slot reads; completed mutable record fields/subrecords still
+remain incomplete. Their construction must retain final slot snapshots, and owned
+field writes need prefix merging before capture can be enabled. Temporary-borrow
+producers, returned unions and borrowed union views remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
