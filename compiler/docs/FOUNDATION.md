@@ -196,7 +196,9 @@ locations and stored carriers through nested/nullable owned records. Unknown
 locations or matching fields remain incomplete. Shared input chains ending in
 borrowed records expand to those locations before returned-cell matching, including
 nullable targets. Temporary chains retain their ordinary statement lifetimes.
-Nested borrowed-view fields remain separate for returned cells.
+Nested borrowed-view fields also participate in returned-cell matching through a
+bounded type/location worklist. Shared visit and depth limits apply across all
+descendants, even when their locations are unknown or empty.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

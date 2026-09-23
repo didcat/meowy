@@ -317,8 +317,9 @@ dependency groups and all ten compiler checks pass. By-value record arguments
 now contribute stored carriers through nested/nullable fields and copies. Direct
 borrowed-record arguments now also contribute projected reference-cell locations
 and stored carriers, reusing field projection from `a4686cb`. Shared input chains
-now expand to borrowed-record locations before returned-cell matching. All 176
-dependency groups and all ten compiler checks pass.
+now expand to borrowed-record locations before returned-cell matching. Nested
+borrowed-view fields also contribute projected/stored cells through a shared
+bounded worklist. All 181 dependency groups and all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -342,21 +343,21 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1161
-  library/903 native tests (2064 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1166
+  library/903 native tests (2069 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-return-cell-record-chains-gate.log`.
-- All 176 dependency groups pass. Five new input-chain groups cover projected
-  locations, deeper/record-stored chains, mixed candidates, unknown intermediates,
-  nullable targets and depth bounds. Immediate temporary use passes; escaping a
-  temporary-backed returned cell retains E303. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Nested borrowed-view fields in returned-cell
-  matching, returned borrowed-record views, allocator-bound pointees, heterogeneous
-  unions, precise joins, callee effect/data/control summaries and conditional-exit
-  control remain open. Runtime sources, reference fixtures, dependencies and
-  versions are unchanged; editor and separate runtime/sanitizer gates were not
-  rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-nested-return-cells-gate.log`.
+- All 181 dependency groups pass. Five new nested-view groups cover projected/
+  stored cells, shared chains, subrecord paths, mixed owners, retargeted/unknown
+  views, nullable records and total depth with unknown locations. Accepted fixtures
+  pass ordinary compilation/ownership; dependency marks remain seeded evidence.
+  Existing unknown-source and E303 lifetime regressions remain green.
+- Flags/outcomes remain B001-gated. Returned borrowed-record views and broader
+  result shapes, allocator-bound pointees, heterogeneous unions, precise joins,
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Area handoff
 

@@ -29,20 +29,18 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current borrowed-record input-chain slice
+### Current nested-view returned-cell slice
 
-Plan: reuse the bounded shared-view type matcher for returned-cell inputs, expand
-shared-chain locations to a borrowed record, then run existing projected/stored
-cell matching. Preserve scalar-chain behavior and keep nested borrowed-view fields
-and returned borrowed-record views separate. Keep tests for direct/deeper chains,
-record-stored arguments, unknown cells, nullable records and depth limits with
-this change; run the full compiler gate before committing. Outcomes stay gated.
+Plan: extend returned record-cell matching with a bounded nested-view worklist.
+Share visit/depth/queue limits across projected locations and nested shared chains,
+including unknown/empty sources; retain all compatible projected and stored cells.
+Keep nested/mixed/retargeted/nullable and limit tests with this behavior slice,
+then run the full compiler gate before committing. Outcomes stay gated.
 
-The existing matcher and record resolver already enforce the needed shape and
-location boundaries; only sibling access and call integration are required.
-All 176 dependency groups pass, including five new input-chain groups. Temporary
-chains permit immediate use and retain E303 for a returned cell used after its
-temporary ends. All ten compiler checks pass; no failures remain.
+Existing shared-view matching, cell expansion and field projection are sufficient.
+Returned borrowed-record views and broader result shapes remain separate.
+All 181 dependency groups pass, including five new nested-view groups and the
+preserved unknown-nested-view/E303 regression. All ten compiler checks pass.
 
 ### Proof dependency implementation slices
 
@@ -1370,21 +1368,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1161
-  library/903 native tests (2064 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1166
+  library/903 native tests (2069 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-return-cell-record-chains-gate.log`.
-- All 176 dependency groups pass. Five new input-chain groups cover projected
-  locations, deeper/record-stored chains, mixed candidates, unknown intermediates,
-  nullable targets and depth bounds. Immediate temporary use passes; escaping a
-  temporary-backed returned cell retains E303. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Nested borrowed-view fields in returned-cell
-  matching, returned borrowed-record views, allocator-bound pointees, heterogeneous
-  unions, precise joins, callee effect/data/control summaries and conditional-exit
-  control remain open. Runtime sources, reference fixtures, dependencies and
-  versions are unchanged; editor and separate runtime/sanitizer gates were not
-  rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-nested-return-cells-gate.log`.
+- All 181 dependency groups pass. Five new nested-view groups cover projected/
+  stored cells, shared chains, subrecord paths, mixed owners, retargeted/unknown
+  views, nullable records and total depth with unknown locations. Accepted fixtures
+  pass ordinary compilation/ownership; dependency marks remain seeded evidence.
+  Existing unknown-source and E303 lifetime regressions remain green.
+- Flags/outcomes remain B001-gated. Returned borrowed-record views and broader
+  result shapes, allocator-bound pointees, heterogeneous unions, precise joins,
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1514,11 +1512,13 @@ explicitly documented. No outstanding failures remain.
    Direct borrowed-record arguments now contribute owned reference-cell projections
    and stored carriers through bounded nested/nullable field traversal. Shared
    chains ending in borrowed-record arguments now expand those locations before
-   returned-cell matching. Next add nested borrowed-view fields to
-   `calls/cells/views.rs` using a bounded type/location worklist; share visit/depth
-   limits across unknown and known descendants. Test nested chains, mixed owners,
-   retargets, nulls and capacity/depth limits before the full gate. Returned
-   borrowed-record views, heterogeneous
+   returned-cell matching. Nested borrowed-view fields now use a shared bounded
+   type/location worklist, including unknown/empty descendants and nullable views.
+   Next retain returned borrowed-record view locations in `calls/cells.rs`; begin
+   with an explicitly bounded exact-compatible argument subset and preserve
+   unsupported candidate shapes as incomplete. Test identity/copies/nested calls,
+   marked contained references, unknown candidates and ordinary lifetimes before
+   the full gate. Heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
