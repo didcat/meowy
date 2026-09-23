@@ -119,7 +119,7 @@ impl Checker {
         value: &Expr,
         merge: bool,
     ) -> Result<()> {
-        self.track_record_shapes(id, value)?;
+        self.track_record_shapes(id, value, merge)?;
         self.track_record_prefix(id, &[], value, merge)
     }
 

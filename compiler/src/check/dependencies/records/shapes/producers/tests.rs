@@ -47,7 +47,7 @@ pub(crate) fn union_producers_distinguish_null_unknown_and_mutable_sources() {
     for (init, mutable, complete) in [
         ("null", "", true),
         ("{->r:{->&x}}", "", false),
-        ("{->r:&x}", "=", false),
+        ("{->r:&x}", "=", true),
     ] {
         let source = format!(
             "<A>:<{{r<&boolean>}}>;<B>:<{{r<&int32>}}>;x:=false;source<A><null>:{init};wide<A><B><null>:{mutable}source;copy:wide;|copy<A>|out:copy.r"
@@ -57,7 +57,14 @@ pub(crate) fn union_producers_distinguish_null_unknown_and_mutable_sources() {
         statements(&mut checker, &source);
         let origins = &checker.pointees[&(checker.locals.len() - 1)];
         assert_eq!(origins.complete, complete, "{source}");
-        assert!(origins.roots.is_empty());
+        assert_eq!(
+            origins.roots,
+            if mutable.is_empty() {
+                BTreeSet::new()
+            } else {
+                BTreeSet::from([id(&checker, "x")])
+            }
+        );
     }
 }
 

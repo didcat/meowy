@@ -111,7 +111,26 @@ impl Checker {
         self.record_shapes.get(&self.origin_id(id))
     }
 
-    pub(crate) fn track_record_shapes(&mut self, id: usize, value: &Expr) -> Result<()> {
+    pub(crate) fn track_record_shapes(
+        &mut self,
+        id: usize,
+        value: &Expr,
+        merge: bool,
+    ) -> Result<()> {
+        if merge
+            && self.places.contains(&id)
+            && !self.proofs.aliases.contains_key(&id)
+            && !value.ty.has_mutable_fields()
+        {
+            let next = self.record_shape_values(value, true)?;
+            let empty = Shapes::default();
+            let prior = self.record_shapes.get(&id).unwrap_or(&empty);
+            let shapes = prior.merged(&next, &mut self.flow, value.span)?;
+            if !shapes.entries.is_empty() {
+                self.record_shapes.insert(id, shapes);
+            }
+            return Ok(());
+        }
         self.build_record_shapes(id, value, false)
     }
 
@@ -166,3 +185,6 @@ mod dependencies;
 mod producers;
 
 mod aliases;
+
+#[cfg(test)]
+mod replacements;

@@ -102,7 +102,7 @@ pub(crate) fn shape_keys_bound_paths_types_and_selection_order() {
 }
 
 #[test]
-pub(crate) fn mutable_union_source_layouts_register_only_incomplete_snapshots() {
+pub(crate) fn mutable_union_source_layouts_capture_known_origins() {
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;wide<A><B>:={->r:&x};copy:wide;|copy<A>|out:copy.r";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
@@ -110,12 +110,9 @@ pub(crate) fn mutable_union_source_layouts_register_only_incomplete_snapshots() 
     for name in ["wide", "copy"] {
         let shapes = &checker.record_shapes[&id(&checker, name)];
         assert_eq!(shapes.entries.len(), 2);
-        assert!(
-            shapes
-                .entries
-                .values()
-                .all(|value| !value.origins.complete && !value.cells.complete)
-        );
+        assert!(shapes.entries.values().all(|value| value.origins.complete));
     }
-    assert!(!checker.pointees[&(checker.locals.len() - 1)].complete);
+    let origins = &checker.pointees[&(checker.locals.len() - 1)];
+    assert!(origins.complete);
+    assert_eq!(origins.roots, BTreeSet::from([id(&checker, "x")]));
 }
