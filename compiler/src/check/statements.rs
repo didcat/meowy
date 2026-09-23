@@ -611,7 +611,10 @@ impl Checker {
                 ));
             }
             self.composed_inputs(target, &stmts)?;
-            if self.record_pointees.contains_key(&id) || self.record_cells.contains_key(&id) {
+            if self.record_pointees.contains_key(&id)
+                || self.record_cells.contains_key(&id)
+                || self.record_shapes.contains_key(&id)
+            {
                 self.record_compositions.entry(target).or_default().push(id);
             }
         } else if let Some(name) = name {

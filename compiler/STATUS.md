@@ -49,7 +49,15 @@ Projected fields now prefix field indices and shape depths, while checked outer
 narrowing adds its exact selection. Two seeded groups verify sibling isolation and
 combined outer/inner selections. All 260 dependency-filtered tests and formatting
 pass; log: `/tmp/meowy-union-projections-focused.log`. Existing key/source bounds
-remain checked. Next: real nested block construction. Proof outcomes stay gated.
+remain checked. Projection prerequisite: `73bac78`. Nested block fields now use
+bounded checked binding discovery and conservative alternative merging. Root
+widening consumes selections before traversing nested shapes. All 266 focused
+dependency tests pass; log: `/tmp/meowy-nested-unions-focused.log`. Six source groups
+cover nested selections, carriers, nullable fields, projections/copies, conditional
+known/unknown/null alternatives, sibling isolation, block budgets and E302 loans.
+Composed alternatives remain explicitly incomplete. All ten compiler checks pass;
+log: `/tmp/meowy-nested-unions-gate.log`. No failures remain. Capability documentation
+will be committed separately. Next: composition snapshots. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1377,16 +1385,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1231
-  library/903 native tests (2134 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1239
+  library/903 native tests (2142 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-producers-gate.log`.
-- All 258 dependency-filtered tests pass. Two traversal groups cover later marks,
-  prefix isolation, carrier cycles and guarded query/base-type separation. Five
-  producer groups cover real immutable widening/copies, carrier origins, known
-  null, unknown/mutable boundaries, prior snapshots, distinct field orders and
-  work/depth/loan limits. Marks remain seeded; origin capture now uses real checked
-  source values. Traversal prerequisite: `a67560b`.
+  0 failed in debug/release. Log: `/tmp/meowy-nested-unions-gate.log`.
+- All 266 dependency-filtered tests pass. Two projection groups cover shape
+  offsets and outer narrowing. Six source groups cover real nested construction,
+  conditional/nullable fields, carriers, copies/projections, unknown/composed
+  alternatives, independent siblings, block budgets, no replay and E302 loans.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  Projection prerequisite: `73bac78`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1549,12 +1557,17 @@ explicitly documented. No outstanding failures remain.
    fields now capture root record-to-union widening, known null and exact union
    copies. Whole-container/prefix traversal follows shaped origins and carrier
    locations, so later marks reach copies, guards and pending query control.
-   Next extend `records/shapes/producers.rs` to nested immutable union-field
-   construction and subrecord projections. Preserve shape offsets when composing
-   prefixes; test independent siblings, copies, null/unknown alternatives and
-   later marks before the full gate. Keep mutable bindings/fields, emitted and
-   temporary producers, returned unions and borrowed union views separate.
-   Establish conservative merge/write invalidation before admitting those writes.
+   Nested immutable union fields now capture checked binding alternatives, including
+   nullable fields and conditional sources. Subrecord projections preserve field
+   prefixes and outer/inner shape selections. Unknown or composed alternatives
+   keep snapshots incomplete. Next add composition snapshots in
+   `records/shapes/producers/blocks.rs` and composition-temporary capture in
+   `statements.rs`. Remap source field names and shape offsets, preserve prior
+   snapshots and unknown alternatives, and test mixed direct/composed branches,
+   sibling fields, budgets and ordinary ownership before the full gate.
+   Keep mutable bindings/fields, lexical emitted/temporary producers, returned
+   unions and borrowed union views separate; establish conservative merge/write
+   invalidation before admitting those writes.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

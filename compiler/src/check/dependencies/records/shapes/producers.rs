@@ -12,6 +12,15 @@ impl Snapshot {
 
 impl Checker {
     pub(super) fn record_shape_source(&mut self, value: &Expr, key: &ShapeKey) -> Result<Snapshot> {
+        self.record_shape_source_at(value, key, 0)
+    }
+
+    pub(super) fn record_shape_source_at(
+        &mut self,
+        value: &Expr,
+        key: &ShapeKey,
+        depth: usize,
+    ) -> Result<Snapshot> {
         let mut base = value;
         let mut key = ShapeKey::new(
             &key.fields,
@@ -22,7 +31,7 @@ impl Checker {
             &mut self.flow,
             value.span,
         )?;
-        for _ in 0..MAX_DEPTH {
+        for depth in depth..MAX_DEPTH {
             if !self.flow.spend(1) {
                 return Err(Diagnostic::unsupported(
                     "proof record shape source budget exhausted",
@@ -67,6 +76,9 @@ impl Checker {
                     key = ShapeKey::new(&fields, &variants, &mut self.flow, value.span)?;
                     base = inner;
                 }
+                ExprKind::Block(block) => {
+                    return self.block_shape_source(base, block, &key, depth + 1);
+                }
                 ExprKind::Coerce { value: inner } => {
                     if let Some(record) = Self::origin_record(&base.ty)
                         && Self::origin_record(&inner.ty) != Some(record)
@@ -94,8 +106,14 @@ impl Checker {
                     if inner.ty == Type::Null {
                         return Ok(Snapshot::empty());
                     }
+                    if Self::origin_record(&base.ty).is_some()
+                        && Self::origin_record(&base.ty) == Self::origin_record(&inner.ty)
+                    {
+                        base = inner;
+                        continue;
+                    }
                     if let Some(record) = Self::origin_record(&inner.ty) {
-                        let [(0, selected)] = key.variants.as_slice() else {
+                        let Some(((0, selected), remaining)) = key.variants.split_first() else {
                             return Ok(Snapshot::default());
                         };
                         let Type::Union(members) = &base.ty else {
@@ -115,6 +133,16 @@ impl Checker {
                         }
                         if Self::origin_record(selected) != Some(record) {
                             return Ok(Snapshot::empty());
+                        }
+                        if !remaining.is_empty() {
+                            let variants = remaining
+                                .iter()
+                                .map(|(at, ty)| (*at, ty))
+                                .collect::<Vec<_>>();
+                            key =
+                                ShapeKey::new(&key.fields, &variants, &mut self.flow, value.span)?;
+                            base = inner;
+                            continue;
                         }
                         return Ok(Snapshot {
                             origins: self.record_source_origins(inner, &key.fields)?,
@@ -138,3 +166,5 @@ mod tests;
 
 #[cfg(test)]
 mod projections;
+
+mod blocks;
