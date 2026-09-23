@@ -130,8 +130,12 @@ possibilities but remain incomplete. Ordinary type and ownership checks still ap
 Record composition retains the source temporary's origin snapshot and maps fields
 by name, including when destination positions differ. Conditional named/composed
 alternatives merge known owners and retain incompleteness from unknown sources.
-Later source writes do not change a composed snapshot. Indexed aggregate references,
-record coercions and call-returned record origins remain separate. Precise overwrite/
+Later source writes do not change a composed snapshot. Checked wrapping/narrowing
+of one record shape with null retains the same field paths, including nested
+nullable fields. Known null contributes no owners; unknown sources stay incomplete.
+Unions with different record shapes do not share field-index metadata. Indexed
+aggregate references, heterogeneous record unions and call-returned record origins
+remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

@@ -314,6 +314,23 @@ compilation of composed records and conditional mixed completeness
 (`/tmp/meowy-proof-composition-gate.log`). No outstanding failures remain.
 Composition snapshots and name-based lookup reuse existing origin limits.
 
+### Nullable record origin slice
+
+Track origins through checked wrapping/narrowing of one record shape with null.
+Use the same field paths for that shape; known null contributes no owners while
+unknown sources stay incomplete. Cover copies, mutable replacement, nested nullable
+fields and rejection of mixed record shapes, then run the full compiler gate.
+
+This slice does not interpret arbitrary union layouts or infer runtime tags.
+Ordinary typing/ownership and proof-derived guard isolation remain unchanged.
+Indexed/call-returned origins, heterogeneous record unions and precise joins stay
+unfinished; flags remain gated.
+Four focused nullable-record groups pass, including ordinary compilation of wrapping,
+narrowing, nested nullable fields and replacement. Known null retains empty complete
+origin sets; unknown and heterogeneous sources remain incomplete. All ten compiler
+checks pass (`/tmp/meowy-proof-nullable-records-gate.log`); no outstanding failures
+remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1130,19 +1147,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1045
-  library/903 native tests (1948 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1049
+  library/903 native tests (1952 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-composition-gate.log`.
-- Five new checker groups cover composition field-name mapping, nested fields,
-  conditional alternatives, snapshots after source writes, mixed completeness and
-  ordinary E205 duplicate-field preservation. Accepted fixtures pass ordinary
-  compilation/ownership validation.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-nullable-records-gate.log`.
+- Four new checker groups cover nullable wrapping/narrowing, copies/replacement,
+  nested nullable fields, known null, unknown sources and heterogeneous record
+  unions. Accepted nullable fixtures pass ordinary compilation/ownership checks.
 - Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
-  indexed aggregates, record coercions, returned origins, precise joins, function
-  summaries and conditional-exit control remain unfinished. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  indexed aggregates, heterogeneous record unions, returned origins, precise joins,
+  function summaries and conditional-exit control remain unfinished. Runtime
+  sources, reference fixtures, dependencies and versions are unchanged; editor
+  and separate runtime/sanitizer gates were not rerun. Full release qualification
+  remains open.
 
 ## Prior capabilities and other areas
 
@@ -1225,8 +1242,10 @@ explicitly documented. No outstanding failures remain.
    replacement and direct mutable reference-field writes now merge those origins.
    Nested construction, named-emission snapshots, record/subrecord copies and
    scalar/subrecord writes now share bounded ordered paths. Composition now retains
-   temporary snapshots and maps field names to source paths. Next extend indexed
-   aggregate origins, record coercions and call-returned origins while
+   temporary snapshots and maps field names to source paths. Nullable wrapping/
+   narrowing of a single record shape retains those paths; known null has no owners.
+   Next extend indexed
+   aggregate origins, heterogeneous record unions and call-returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

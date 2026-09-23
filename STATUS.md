@@ -213,6 +213,11 @@ retain possible owners and completeness; later source writes do not alter the
 snapshot. All five focused groups and all ten compiler checks pass. Indexed,
 coerced and call-returned origins remain incomplete, and flags stay gated.
 
+Nullable records with one record shape now retain origins through checked wrapping,
+narrowing, copies and replacement, including nested nullable fields. Known null
+contributes no owners; unknown sources and heterogeneous record unions remain
+incomplete. All four focused groups and all ten compiler checks pass. Flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -235,19 +240,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1045
-  library/903 native tests (1948 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1049
+  library/903 native tests (1952 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-composition-gate.log`.
-- Five new checker groups cover composition field-name mapping, nested fields,
-  conditional alternatives, snapshots after source writes, mixed completeness and
-  ordinary E205 duplicate-field preservation. Accepted fixtures pass ordinary
-  compilation/ownership validation.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-nullable-records-gate.log`.
+- Four new checker groups cover nullable wrapping/narrowing, copies/replacement,
+  nested nullable fields, known null, unknown sources and heterogeneous record
+  unions. Accepted nullable fixtures pass ordinary compilation/ownership checks.
 - Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
-  indexed aggregates, record coercions, returned origins, precise joins, function
-  summaries and conditional-exit control remain unfinished. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  indexed aggregates, heterogeneous record unions, returned origins, precise joins,
+  function summaries and conditional-exit control remain unfinished. Runtime
+  sources, reference fixtures, dependencies and versions are unchanged; editor
+  and separate runtime/sanitizer gates were not rerun. Full release qualification
+  remains open.
 
 ## Area handoff
 

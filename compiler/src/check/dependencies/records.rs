@@ -8,6 +8,18 @@ pub(crate) const MAX_FIELDS: usize = 256;
 pub(crate) const MAX_DEPTH: usize = 32;
 
 impl Checker {
+    pub(crate) fn origin_record(ty: &Type) -> Option<&Type> {
+        if matches!(ty, Type::Record { .. }) {
+            return Some(ty);
+        }
+        let Type::Union(members) = ty else {
+            return None;
+        };
+        let mut records = members.iter().filter(|ty| **ty != Type::Null);
+        let record = records.next()?;
+        (records.next().is_none() && matches!(record, Type::Record { .. })).then_some(record)
+    }
+
     pub(crate) fn field_origins(&self, value: &Expr, index: usize) -> Origins {
         self.record_path_origins(value, &[index])
     }
@@ -20,6 +32,12 @@ impl Checker {
                 ExprKind::Field { value: base, index } => {
                     path.push(*index);
                     value = base;
+                }
+                ExprKind::Coerce { value: inner }
+                    if Self::origin_record(&value.ty).is_some()
+                        && Self::origin_record(&value.ty) == Self::origin_record(&inner.ty) =>
+                {
+                    value = inner;
                 }
                 ExprKind::Local(id) => {
                     path.reverse();
@@ -88,7 +106,7 @@ impl Checker {
             if !ty.has_reference() {
                 continue;
             }
-            if let Type::Record { fields, .. } = ty {
+            if let Some(Type::Record { fields, .. }) = Self::origin_record(ty) {
                 count += fields.len();
                 if count > MAX_FIELDS
                     || path.len() >= MAX_DEPTH
@@ -130,7 +148,7 @@ impl Checker {
         value: &Expr,
         merge: bool,
     ) -> Result<()> {
-        if !matches!(value.ty, Type::Record { .. }) || !value.ty.has_reference() {
+        if Self::origin_record(&value.ty).is_none() || !value.ty.has_reference() {
             return Ok(());
         }
         let paths = self.record_paths(value)?;
@@ -214,3 +232,6 @@ mod sources;
 
 #[cfg(test)]
 mod nested;
+
+#[cfg(test)]
+mod coercions;

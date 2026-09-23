@@ -6,13 +6,29 @@ impl Checker {
         value: &Expr,
         path: &[usize],
     ) -> Result<Origins> {
+        let mut value = value;
+        while let ExprKind::Coerce { value: inner } = &value.kind {
+            let Some(record) = Self::origin_record(&value.ty) else {
+                return Ok(Origins::default());
+            };
+            if inner.ty == Type::Null {
+                return Ok(Origins {
+                    roots: Default::default(),
+                    complete: true,
+                });
+            }
+            if Self::origin_record(&inner.ty) != Some(record) {
+                return Ok(Origins::default());
+            }
+            value = inner;
+        }
         if matches!(value.kind, ExprKind::Local(_) | ExprKind::Field { .. }) {
             return Ok(self.record_path_origins(value, path));
         }
         let ExprKind::Block(block) = &value.kind else {
             return Ok(Origins::default());
         };
-        let Type::Record { fields, .. } = &value.ty else {
+        let Some(Type::Record { fields, .. }) = Self::origin_record(&value.ty) else {
             return Ok(Origins::default());
         };
         let Some((index, tail)) = path.split_first() else {
