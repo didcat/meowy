@@ -29,21 +29,20 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current borrowed-record chain slice
+### Current nested borrowed-record view slice
 
-Plan: let bounded shared-type traversal stop at a concrete record view, expand
-argument cells to that view, then reuse the existing record-origin resolver.
-Keep nested borrowed-record fields explicitly incomplete until their recursive
-matching is implemented. Add direct/deep/temporary/record-stored chain regressions,
-retargeted/unknown alternatives, mixed owned/stored candidates and depth/work
-boundaries with this behavior change. Run the compiler gate before committing.
+Plan: extend the record-call resolver with a bounded worklist of nested view
+locations. Share visit/depth/capacity limits across the traversal, including
+unknown or empty locations, and reuse contract projections and cell expansion.
+Keep implementation and focused regressions in one commit; cover nested views,
+reference chains, mixed candidates, retargets/unknowns and traversal limits.
+Run the full compiler gate before committing. Proof outcomes remain gated.
 
-The existing location metadata and cell expansion are sufficient; no new storage
-representation is required. Proof outcomes remain gated.
-Implementation expands argument locations by the matched shared-chain depth.
-All 145 dependency groups pass, including four new chain groups. The mixed
-owned-field fixture uses a named intermediate view, preserving the existing
-direct-dereference projection gate. All ten compiler checks pass; no failures remain.
+Existing record-cell snapshots provide the required field locations. Traversal
+must inspect unknown nested types without claiming complete origin metadata or
+silently skipping potentially matching descendants. All 149 dependency groups
+pass, including four new nested-view groups and the preserved unknown-view/E303
+regression. All ten compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1371,21 +1370,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1130
-  library/903 native tests (2033 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1134
+  library/903 native tests (2037 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-chain-gate.log`.
-- All 145 dependency groups pass. Four new record-chain groups cover direct/deep/
-  temporary/record-stored chains, owned and carried-reference candidates,
-  retargeted/unknown alternatives and depth/work bounds. Accepted fixtures pass
-  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
-  The mixed projection fixture uses a named view; the direct-dereference projection
-  gate is unchanged.
-- Flags/outcomes remain B001-gated. Nested borrowed-record view fields, allocator-
-  bound pointees, broader returned shapes, heterogeneous unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain open.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-nested-record-view-gate.log`.
+- All 149 dependency groups pass. Four new nested-view groups cover shared chains,
+  owned/external candidates, subrecord boundaries, retargeted/unknown views and
+  total traversal depth with unknown locations. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded checker evidence.
+  Existing unknown-view and E303 lifetime regressions remain green.
+- Flags/outcomes remain B001-gated. References to nullable record targets,
+  allocator-bound pointees, broader returned shapes, heterogeneous unions, precise
+  joins, callee effect/data/control summaries and conditional-exit control remain
+  open. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1505,10 +1503,11 @@ explicitly documented. No outstanding failures remain.
    resolve through bounded shared cell expansion, including nested fields and
    retargeted/unknown alternatives. Shared chains ending in concrete borrowed
    records now expand to record locations before matching stored/owned candidates.
-   Next support nested borrowed-record view fields in `calls/inputs/records.rs`
-   with bounded type/location traversal, preserving incomplete alternatives.
-   Test nested shared-view chains, mixed candidates and work/depth boundaries
-   before the full gate. Heterogeneous unions and broader returned shapes remain
+   Nested borrowed-record view fields now use a shared bounded type/location
+   worklist, including empty/unknown locations and mixed candidate owners. Next
+   support references to nullable single-record targets in `call_shared_view` and
+   the record resolver without combining heterogeneous layouts; test known-null,
+   wrapped records, nested views and incomplete alternatives before the full gate. Heterogeneous unions and broader returned shapes remain
    separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

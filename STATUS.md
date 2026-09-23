@@ -306,8 +306,9 @@ compiler checks pass. Direct shared record-view calls now retain matching stored
 reference owners and owned-field projection owners. Carrier-valued fields now
 reuse bounded shared cell expansion (`0cda5fa`), including nested and retargeted
 fields. Shared chains ending in concrete borrowed records now resolve those
-records before matching stored and owned-field candidates. All 145 dependency
-groups and all ten compiler checks pass.
+records before matching stored and owned-field candidates. Nested borrowed-record
+view fields now use a bounded type/location worklist, preserving unknown
+alternatives. All 149 dependency groups and all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -331,21 +332,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1130
-  library/903 native tests (2033 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1134
+  library/903 native tests (2037 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-chain-gate.log`.
-- All 145 dependency groups pass. Four new record-chain groups cover direct/deep/
-  temporary/record-stored chains, owned and carried-reference candidates,
-  retargeted/unknown alternatives and depth/work bounds. Accepted fixtures pass
-  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
-  The mixed projection fixture uses a named view; the direct-dereference projection
-  gate is unchanged.
-- Flags/outcomes remain B001-gated. Nested borrowed-record view fields, allocator-
-  bound pointees, broader returned shapes, heterogeneous unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain open.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-nested-record-view-gate.log`.
+- All 149 dependency groups pass. Four new nested-view groups cover shared chains,
+  owned/external candidates, subrecord boundaries, retargeted/unknown views and
+  total traversal depth with unknown locations. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded checker evidence.
+  Existing unknown-view and E303 lifetime regressions remain green.
+- Flags/outcomes remain B001-gated. References to nullable record targets,
+  allocator-bound pointees, broader returned shapes, heterogeneous unions, precise
+  joins, callee effect/data/control summaries and conditional-exit control remain
+  open. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Area handoff

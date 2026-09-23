@@ -172,8 +172,10 @@ shared-reference owners through the borrow contract. Matching ignores private bo
 choices and preserves unknown alternatives. Carrier-valued fields reuse bounded
 shared cell expansion, including nested fields and retargeted cells. Shared chains
 ending in concrete borrowed records expand their locations before matching both
-stored and owned-field candidates. Nested borrowed-record view fields remain
-separate. Calls covered by the scalar-reference
+stored and owned-field candidates. Nested borrowed-record view fields follow a
+bounded type/location worklist with shared visit and depth limits. Unknown nested
+locations remain incomplete and their types are still traversed for matching
+descendants and capacity checks. Calls covered by the scalar-reference
 borrow contract retain compatible argument origins using exact pointee types and
 reference modes. All matching arguments remain possible sources, regardless of a
 private function-body choice. Unknown candidates keep results incomplete; nested
