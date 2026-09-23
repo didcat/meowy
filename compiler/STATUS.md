@@ -29,31 +29,29 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-call projection series
+### Current record-call coercion slice
 
-Investigation: ordinary reference reads still use local-only `field_origins`;
-record source readers recognize calls only at the expression root. Nested owned
-field projections therefore lose call-result origins and carrier snapshots.
+`record_source_path` now follows owned fields and transparent nullable coercions
+when both types have the same single record shape. Wrapped calls retain argument
+origins and carrier locations. Known null and heterogeneous record unions retain
+their existing empty/unknown distinctions.
 
-1. Add a bounded owned-field path normalizer in `records/sources.rs`, with focused
-   path/order/limit tests. Keep source readers unchanged; validate and commit.
-2. Use normalized call paths for ordinary reference reads and subrecord origin/cell
-   snapshots. Cover direct/nested projections, unknown arguments, cross-call depth
-   and ordinary lifetime checking. Run the full compiler gate and commit.
+Commit plan: extend the shared bounded path walk to transparent same-shape record
+coercions, with focused ordinary-reference/carrier regressions and updated guides.
+This is one source-layer behavior change; the prior bounded path helper is already
+committed (`7ac361a`, integrated in `4d70400`). No separate representation change
+is needed. Test nested wrappers/projections, unknown inputs, invalid shapes, null,
+traversal/call-depth limits, no replay and ordinary lifetime checks; run the full
+compiler gate before committing. Proof outcomes remain gated.
 
-Coercion wrappers and broader result shapes remain separate. Proof outcomes stay
-gated. Step 1 adds bounded ordered field paths and shares them with result-field
-selection. All 229 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-record-path-focused.log`. The initial fixture needed a record separator
-and alphabetically ordered field indices; both are corrected. No failures remain.
-Prerequisite committed as `7ac361a`. Origin and cell source readers now normalize
-owned call projections; ordinary reference reads use the source reader with the
-current call depth. All 233 dependency-filtered tests pass, including four new
-integration groups for direct/nested/subrecord projections, composition, carriers,
-unknown arguments, call depth, no replay and E303 lifetime rejection. Log:
-`/tmp/meowy-record-projections-focused.log`. All ten compiler checks pass; log:
-`/tmp/meowy-record-projections-gate.log`. No outstanding failures remain. Next:
-shape-preserving record-call coercion wrappers; outcomes remain gated.
+The shared walker counts both field and wrapper traversal against its existing
+limit and analysis budget. All 237 dependency-filtered tests pass;
+log: `/tmp/meowy-record-coercions-focused.log`. Four new groups cover nullable
+wrapping, nested fields/calls, carrier projections, unknown inputs, null, incompatible
+shapes, exact traversal limits, exhausted analysis budgets, no replay and E302/E303
+rejections. All ten compiler checks pass; log:
+`/tmp/meowy-record-coercions-gate.log`. No outstanding failures remain. Next:
+heterogeneous record-union origin representation, preserving shape identity.
 
 ### Proof dependency implementation slices
 
@@ -1381,16 +1379,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1206
-  library/903 native tests (2109 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1210
+  library/903 native tests (2113 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-projections-gate.log`.
-- All 233 dependency-filtered tests pass. Five new groups cover ordered/bounded
-  paths, direct reference reads, nested subrecord copies/compositions, carrier
-  snapshots, all/unknown candidates, propagated call depth, no replay and E303
-  lifetime rejection. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded checker evidence. Path prerequisite: `7ac361a`.
-- Flags/outcomes remain B001-gated. Coercion wrappers, broader result shapes,
+  0 failed in debug/release. Log: `/tmp/meowy-record-coercions-gate.log`.
+- All 237 dependency-filtered tests pass. Four new groups cover nullable call
+  wrapping/narrowing, nested fields/calls, carrier projections, unknown inputs,
+  null/incompatible shapes, exact traversal and call-depth limits, exhausted
+  analysis budgets, no replay and E302/E303 rejection. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded evidence.
+- Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
   fixtures, dependencies and versions are unchanged; editor and separate runtime/
@@ -1542,12 +1540,14 @@ explicitly documented. No outstanding failures remain.
    now retain bounded snapshots too, including record views and direct carrier-field
    access on calls. Bounded owned-field paths now preserve direct reference reads
    and subrecord call snapshots, including composition and carrier fields.
-   Next support shape-preserving coercion wrappers around record calls in
-   `records/sources.rs`, sharing checked normalization with cell reads. Preserve
-   null/unknown distinctions, reject incompatible shapes, and test nested wrappers,
-   call-depth/work limits and ordinary lifetime errors before the full gate. Heterogeneous
-   unions and broader
-   aggregate returned shapes remain
+   Shape-preserving record-call coercions now share that bounded walk, including
+   nullable wrapping/narrowing and carrier fields. Unknown and null remain distinct.
+   Next investigate heterogeneous record-union origins in `records.rs` and
+   `records/sources.rs`: define bounded alternatives keyed by record shape before
+   merging any field paths. Preserve unknown alternatives and never reuse one
+   shape's positional indices for another. Plan representation and propagation
+   separately; cover distinct field orders/types, nullable members, copies and
+   call results before the full gate. Broader aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

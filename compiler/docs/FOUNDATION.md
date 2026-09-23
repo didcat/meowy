@@ -223,8 +223,11 @@ and later origin queries, including borrowed-record views. Direct carrier-field
 access on call expressions is supported. Direct ordinary reference projections and
 projected subrecord copies/compositions retain the same origins and carrier
 snapshots through bounded owned-field paths. Source queries share nested-call
-depth without replaying calls. Unknown arguments remain incomplete. Coercion
-wrappers and heterogeneous result layouts remain separate.
+depth without replaying calls. Shape-preserving nullable record wrapping and
+narrowing retain these call origins, including projected subrecords and carrier
+fields. Field and coercion traversal share the bounded path budget. Known null
+contributes no owners; unknown arguments remain incomplete. Wrappers that change
+record shape and heterogeneous result layouts remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

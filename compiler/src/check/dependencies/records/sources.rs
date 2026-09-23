@@ -21,18 +21,37 @@ impl Checker {
         }
         let mut base = value;
         let mut path = path.iter().rev().copied().collect::<Vec<_>>();
-        while let ExprKind::Field {
-            value: inner,
-            index,
-        } = &base.kind
-        {
-            if path.len() == super::MAX_DEPTH || !self.flow.spend(1) {
+        let mut steps = path.len();
+        loop {
+            let inner = match &base.kind {
+                ExprKind::Field {
+                    value: inner,
+                    index,
+                } => {
+                    if path.len() == super::MAX_DEPTH {
+                        return Err(Diagnostic::unsupported(
+                            "proof record source path budget exhausted",
+                            value.span,
+                        ));
+                    }
+                    path.push(*index);
+                    inner
+                }
+                ExprKind::Coerce { value: inner }
+                    if Self::origin_record(&base.ty).is_some()
+                        && Self::origin_record(&base.ty) == Self::origin_record(&inner.ty) =>
+                {
+                    inner
+                }
+                _ => break,
+            };
+            if steps == super::MAX_DEPTH || !self.flow.spend(1) {
                 return Err(Diagnostic::unsupported(
                     "proof record source path budget exhausted",
                     value.span,
                 ));
             }
-            path.push(*index);
+            steps += 1;
             base = inner;
         }
         path.reverse();
@@ -211,3 +230,6 @@ impl Checker {
 mod tests;
 
 mod calls;
+
+#[cfg(test)]
+mod coercions;
