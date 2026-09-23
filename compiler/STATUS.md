@@ -497,7 +497,11 @@ origins, heterogeneous unions and precise phase joins remain unfinished; flags s
 The read-side storage/classification slice passes all 1084 library tests
 (`/tmp/meowy-proof-record-cell-reads-library.log`), including seeded field cells,
 inline named-field sources and separation from pointee paths. Producer/write
-integration is next.
+integration follows `aaa2a07`. Record cell snapshot producers, prefix merges,
+scalar carrier-field writes and composition registration are now wired together;
+three focused source groups and all six record-cell groups pass. Capacity and
+depth failure preservation is covered. All ten compiler checks pass
+(`/tmp/meowy-proof-record-cells-gate.log`); no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1315,19 +1319,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1081
-  library/903 native tests (1984 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1088
+  library/903 native tests (1991 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-locations-gate.log`.
-- Two new checker groups distinguish direct/alternative storage, known null and
-  unknown calls. Direct lookup preserves its prior budget behavior and metadata
-  lookup does not replay calls. Existing record-origin regressions remain green.
-- This is a source-lookup prerequisite; completed-record carrier-field metadata
-  and updates remain incomplete. Flags/outcomes remain B001-gated. Returned/
-  reference-bearing origins, heterogeneous unions, precise joins, function summaries
-  and conditional-exit control remain unfinished. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-cells-gate.log`.
+- Seven new record-cell groups cover read-side classification, inline/completed
+  fields, nested/composed/nullable copies, deep reads, field/subrecord updates,
+  prior snapshots, incomplete sources, storage limits and ordinary errors.
+  Accepted fixtures pass ordinary compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Cell/owner sets remain conservative and
+  monotone. Broader reference-bearing aggregate/returned origins, heterogeneous
+  record unions, precise joins, function summaries and conditional-exit control
+  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
+  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1423,10 +1428,10 @@ explicitly documented. No outstanding failures remain.
    preserve prior copies. Bounded deeper named/temporary chains now resolve cell
    layers and preserve dependency marks with cycle-safe traversal. Lexical emitted
    carriers now register and share canonical cell sets through sibling aliases.
-   Next use `records.rs::record_location` and `sources.rs::record_source_locations`
-   for bounded completed-record `Cells` snapshots, then integrate field/subrecord
-   updates and projection reads together. Keep carrier-field admission incomplete
-   until those paths agree. Then extend reference-bearing aggregates,
+   Completed-record carrier fields now retain bounded `Cells` snapshots through
+   construction/copies, composition, nullable wrappers and field/subrecord updates.
+   Projection reads and deeper cell expansion use the same path metadata. Next
+   extend broader reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.

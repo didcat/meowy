@@ -61,10 +61,10 @@ pub(crate) fn sibling_emitted_carriers_share_canonical_cell_sets() {
 }
 
 #[test]
-pub(crate) fn unknown_emitted_cells_and_completed_record_carriers_stay_incomplete() {
+pub(crate) fn unknown_emitted_cell_contents_stay_incomplete() {
     for source in [
         "x:=false;r:&x;row:{->cell:{->&r};->copy:*cell};out:row.copy",
-        "x:=false;r:&x;row:{->cell:&r};cell:row.cell;out:*cell",
+        "x:=false;r:&x;row:{->cell:{->&r}};cell:row.cell;out:*cell",
     ] {
         crate::compile(source).unwrap();
         let mut checker = Checker::new();

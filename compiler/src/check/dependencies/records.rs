@@ -76,6 +76,7 @@ impl Checker {
         path: &[usize],
         value: &Expr,
     ) -> Result<()> {
+        self.write_carrier_field(id, path, value)?;
         if !Self::origin_reference(&value.ty) {
             return Ok(());
         }
@@ -174,6 +175,7 @@ impl Checker {
         if Self::origin_record(&value.ty).is_none() || !value.ty.has_reference() {
             return Ok(());
         }
+        self.track_record_cells(id, prefix, value, merge)?;
         let paths = self.record_paths(value)?;
         let mut origins = BTreeMap::new();
         if !prefix.is_empty()

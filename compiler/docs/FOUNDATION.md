@@ -159,9 +159,12 @@ reports B001 on exhaustion; dependency lookup visits each cell location once to
 avoid cycles. Unknown alternatives retain known possibilities without becoming
 complete. Lexical named carrier emissions retain cell sets at the emitted slot's
 canonical root, so sibling aliases share retargets while ordinary copies retain
-snapshots. Completed-record carrier-field lookup still requires separate location
-metadata. Those field-stored carriers, unknown call results, reference-bearing
-aggregates, returned origins and heterogeneous record unions remain separate. Precise overwrite/
+snapshots. Completed records retain carrier-cell locations by field path through
+construction, copying, composition, nullable wrappers and direct/nested reads.
+Field/subrecord writes merge selected cell sets while preserving sibling fields
+and prior copies. The existing depth, field-count, cell-count and work limits apply;
+unknown alternatives remain incomplete. Unknown call results, broader reference-
+bearing aggregates, returned origins and heterogeneous record unions remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

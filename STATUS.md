@@ -276,7 +276,10 @@ pass. Record carrier-field snapshots and updates remain the next integration.
 
 Record carrier-cell storage and location reads are in place. All 1084 library
 tests pass, including seeded completed fields and inline named-field sources.
-Snapshot producers and field/subrecord updates remain the next integration.
+`aaa2a07` records the read-side prerequisite. Snapshot producers and matching
+field/subrecord updates are now integrated, including nested/composed/nullable
+records and prior copies. All seven record-cell groups and all ten compiler checks
+pass. Returned origins and broader reference-bearing aggregates remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -300,19 +303,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1081
-  library/903 native tests (1984 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1088
+  library/903 native tests (1991 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-locations-gate.log`.
-- Two new checker groups distinguish direct/alternative storage, known null and
-  unknown calls. Direct lookup preserves its prior budget behavior and metadata
-  lookup does not replay calls. Existing record-origin regressions remain green.
-- This is a source-lookup prerequisite; completed-record carrier-field metadata
-  and updates remain incomplete. Flags/outcomes remain B001-gated. Returned/
-  reference-bearing origins, heterogeneous unions, precise joins, function summaries
-  and conditional-exit control remain unfinished. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-cells-gate.log`.
+- Seven new record-cell groups cover read-side classification, inline/completed
+  fields, nested/composed/nullable copies, deep reads, field/subrecord updates,
+  prior snapshots, incomplete sources, storage limits and ordinary errors.
+  Accepted fixtures pass ordinary compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Cell/owner sets remain conservative and
+  monotone. Broader reference-bearing aggregate/returned origins, heterogeneous
+  record unions, precise joins, function summaries and conditional-exit control
+  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
+  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Area handoff
 
