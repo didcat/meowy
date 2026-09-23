@@ -364,24 +364,27 @@ proof flags/outcomes stay gated.
 
 Record path discovery now retains bounded shape selections for heterogeneous
 unions and explicit unsupported alternatives. Existing positional storage excludes
-these paths. Bounded shape-keyed snapshots now register incomplete layouts, and
-local narrowing reads select exact shapes. Storage prerequisite: `95b0086`.
-All 251 dependency-filtered tests and all ten compiler checks pass. Known
-snapshot reads remain seeded evidence. Immutable source producers and whole-union
-dependency traversal are next; flags remain gated.
+these paths. Bounded shape-keyed snapshots retain distinct layouts, and local
+narrowing reads select exact shapes. Storage prerequisite: `95b0086`.
+Immutable bindings with immutable fields now capture root record-to-union widening,
+known null and exact union copies. Whole-container dependency traversal follows
+shaped origins/carriers, including later marks. Prerequisite: `a67560b`.
+All 258 dependency-filtered tests and all ten compiler checks pass. Nested
+construction/projections and mutable/emitted/temporary producers remain separate;
+proof flags stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1224
-  library/903 native tests (2127 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1231
+  library/903 native tests (2134 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-shape-reads-gate.log`.
-- All 251 dependency-filtered tests pass. Four storage groups cover bounded
-  shape keys, snapshot isolation/copies and capacity/budget failures. Five read
-  groups cover exact narrowing, nested selections, ordinary/carrier snapshots,
-  missing alternatives, budgets and E302 loan rejection. Known snapshot payloads
-  remain seeded; actual source layouts retain incomplete origins/cells.
-  Storage prerequisite: `95b0086`.
+  0 failed in debug/release. Log: `/tmp/meowy-union-producers-gate.log`.
+- All 258 dependency-filtered tests pass. Two traversal groups cover later marks,
+  prefix isolation, carrier cycles and guarded query/base-type separation. Five
+  producer groups cover real immutable widening/copies, carrier origins, known
+  null, unknown/mutable boundaries, prior snapshots, distinct field orders and
+  work/depth/loan limits. Marks remain seeded; origin capture now uses real checked
+  source values. Traversal prerequisite: `a67560b`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

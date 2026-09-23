@@ -108,6 +108,22 @@ impl Shapes {
 
 impl Checker {
     pub(crate) fn track_record_shapes(&mut self, id: usize, value: &Expr) -> Result<()> {
+        self.build_record_shapes(id, value, false)
+    }
+
+    pub(crate) fn capture_record_shapes(&mut self, id: usize, value: &Expr) -> Result<()> {
+        if value.ty.has_mutable_fields() {
+            return Ok(());
+        }
+        self.build_record_shapes(id, value, true)
+    }
+
+    pub(super) fn build_record_shapes(
+        &mut self,
+        id: usize,
+        value: &Expr,
+        capture: bool,
+    ) -> Result<()> {
         let mut shapes = Shapes::default();
         for carriers in [false, true] {
             for path in self.record_origin_paths(value, carriers)? {
@@ -115,7 +131,12 @@ impl Checker {
                     continue;
                 }
                 let key = ShapeKey::new(&path.fields, &path.variants, &mut self.flow, value.span)?;
-                shapes.insert(key, Snapshot::default(), &mut self.flow, value.span)?;
+                let snapshot = if capture {
+                    self.record_shape_source(value, &key)?
+                } else {
+                    Snapshot::default()
+                };
+                shapes.insert(key, snapshot, &mut self.flow, value.span)?;
             }
         }
         if !shapes.entries.is_empty() {
@@ -132,3 +153,5 @@ mod reads;
 
 #[cfg(test)]
 mod dependencies;
+
+mod producers;

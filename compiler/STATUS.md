@@ -52,8 +52,17 @@ ordinary origins and carrier locations, retaining cycle detection and prefix
 isolation. All 253 dependency-filtered tests and formatting pass; log:
 `/tmp/meowy-shaped-dependencies-focused.log`. An existing seeded read test now
 performs narrowing before marks, because marked guards correctly cannot narrow
-base types; E201 and controlled-query coverage verify that boundary. Next: immutable
-source capture. Proof outcomes remain gated.
+base types; E201 and controlled-query coverage verify that boundary. Prerequisite:
+`a67560b`. Immutable bindings with immutable fields now capture root widening and
+exact copy snapshots, including known null and carriers. Unsupported and mutable
+sources remain incomplete. All 258 dependency-filtered tests pass; log:
+`/tmp/meowy-union-producers-focused.log`. Five producer groups cover real widening,
+exact copies, carrier origins, later marks/query control, null/unknown/mutable
+boundaries, prior snapshots, distinct field orders and work/depth/loan limits.
+All ten compiler checks pass; log: `/tmp/meowy-union-producers-gate.log`. No failures
+remain. The capability guide will be committed separately from this source slice.
+Next: nested immutable union-field construction/projections. Proof outcomes stay
+gated.
 
 ### Proof dependency implementation slices
 
@@ -1381,16 +1390,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1224
-  library/903 native tests (2127 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1231
+  library/903 native tests (2134 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-shape-reads-gate.log`.
-- All 251 dependency-filtered tests pass. Four storage groups cover bounded
-  shape keys, snapshot isolation/copies and capacity/budget failures. Five read
-  groups cover exact narrowing, nested selections, ordinary/carrier snapshots,
-  missing alternatives, budgets and E302 loan rejection. Known snapshot payloads
-  remain seeded; actual source layouts retain incomplete origins/cells.
-  Storage prerequisite: `95b0086`.
+  0 failed in debug/release. Log: `/tmp/meowy-union-producers-gate.log`.
+- All 258 dependency-filtered tests pass. Two traversal groups cover later marks,
+  prefix isolation, carrier cycles and guarded query/base-type separation. Five
+  producer groups cover real immutable widening/copies, carrier origins, known
+  null, unknown/mutable boundaries, prior snapshots, distinct field orders and
+  work/depth/loan limits. Marks remain seeded; origin capture now uses real checked
+  source values. Traversal prerequisite: `a67560b`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1549,14 +1558,16 @@ explicitly documented. No outstanding failures remain.
    union boundary in `records/paths.rs`, including unsupported alternatives.
    The positional adapter intentionally excludes qualified paths. Bounded owned
    shape keys and origin/carrier snapshots now exist alongside positional metadata;
-   local narrowing reads select exact keys. Source layouts contain incomplete
-   snapshots only, and read-side evidence remains seeded. Next integrate immutable
-   widening and copy producers in `records/shapes.rs`, together with dependency
-   traversal through whole shaped containers in `dependencies.rs`. Preserve prior
-   snapshots, null/unknown distinctions and shape identity; test later pointee marks
-   reaching copies, guards and pending queries. Establish conservative merge/write
-   invalidation before admitting mutable fields or retargets. Keep returned union
-   origins and borrowed union views separate; run the full gate per series.
+   local narrowing reads select exact keys. Immutable bindings with immutable
+   fields now capture root record-to-union widening, known null and exact union
+   copies. Whole-container/prefix traversal follows shaped origins and carrier
+   locations, so later marks reach copies, guards and pending query control.
+   Next extend `records/shapes/producers.rs` to nested immutable union-field
+   construction and subrecord projections. Preserve shape offsets when composing
+   prefixes; test independent siblings, copies, null/unknown alternatives and
+   later marks before the full gate. Keep mutable bindings/fields, emitted and
+   temporary producers, returned unions and borrowed union views separate.
+   Establish conservative merge/write invalidation before admitting those writes.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

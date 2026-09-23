@@ -47,8 +47,8 @@ pub(crate) fn heterogeneous_record_unions_do_not_share_field_indices() {
     let mut checker = Checker::new();
     statements(&mut checker, source);
     let origins = &checker.pointees[&(checker.locals.len() - 1)];
-    assert!(!origins.complete);
-    assert!(origins.roots.is_empty());
+    assert!(origins.complete);
+    assert_eq!(origins.roots, BTreeSet::from([0]));
 }
 
 #[test]

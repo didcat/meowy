@@ -102,8 +102,8 @@ pub(crate) fn shape_keys_bound_paths_types_and_selection_order() {
 }
 
 #[test]
-pub(crate) fn union_source_layouts_register_only_incomplete_snapshots() {
-    let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;wide<A><B>:{->r:&x};copy:wide;|copy<A>|out:copy.r";
+pub(crate) fn mutable_union_source_layouts_register_only_incomplete_snapshots() {
+    let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;wide<A><B>:={->r:&x};copy:wide;|copy<A>|out:copy.r";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
