@@ -71,6 +71,7 @@ impl Checker {
             .map(|(at, ty)| (fields.len() - at, ty))
             .collect::<Vec<_>>();
         let key = ShapeKey::new(&fields, &variants, &mut self.flow, value.span)?;
+        let root = self.origin_id(root);
         let snapshot = self
             .record_shapes
             .get(&root)

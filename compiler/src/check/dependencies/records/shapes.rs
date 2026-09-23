@@ -107,6 +107,10 @@ impl Shapes {
 }
 
 impl Checker {
+    pub(crate) fn shaped(&self, id: usize) -> Option<&Shapes> {
+        self.record_shapes.get(&self.origin_id(id))
+    }
+
     pub(crate) fn track_record_shapes(&mut self, id: usize, value: &Expr) -> Result<()> {
         self.build_record_shapes(id, value, false)
     }
@@ -155,3 +159,5 @@ mod reads;
 mod dependencies;
 
 mod producers;
+
+mod aliases;

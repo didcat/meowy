@@ -70,9 +70,10 @@ impl Checker {
             }
             match &base.kind {
                 ExprKind::Local(id) => {
+                    let root = self.origin_id(*id);
                     let snapshot = self
                         .record_shapes
-                        .get(id)
+                        .get(&root)
                         .and_then(|shapes| shapes.get(&key));
                     let work = snapshot.map_or(1, |value| {
                         value.origins.roots.len()

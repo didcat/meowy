@@ -29,34 +29,27 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current composed union snapshot series
+### Current named union emission series
 
-Investigation: composition temporaries register incomplete shaped layouts, and block
-capture only marks matching composed fields unknown. The source field name/index
-and temporary ID are already available; no replay or new HIR representation is needed.
+Investigation: scalar origins/carriers already merge at `Alias::root`, but shaped
+snapshots remain attached to each initializer ID. Named capture must follow shared
+storage identity while ordinary copies retain their prior snapshots.
 
 Commit plan:
-1. Extract the existing bounded snapshot merge for reuse by direct and composed
-   alternatives. Preserve diagnostics and run dependency checks; commit separately.
-2. Capture immutable shaped snapshots on composition temporaries, remap field names
-   and shape offsets, and merge matching sources. Test different field orders,
-   nested/nullable/carrier fields, mixed branches, unknown alternatives, retained
-   snapshots, budgets and ownership; run the full compiler gate.
-3. Update the capability guide and root handoff as a separate documentation slice
-   if needed. Mutable fields/storage, lexical emitted/temporary-borrow producers,
-   returned unions and proof outcomes remain separate.
+1. Add bounded conservative shape-map merging and canonical alias lookup. Connect
+   slot registration and shaped reads/dependency traversal; validate seeded sibling
+   merges, missing alternatives, copies and failure preservation; commit.
+2. Capture immutable named emissions before alias registration. Test lexical reads,
+   sibling alternatives, carriers, old copies, later marks, unknown/null sources
+   and ordinary ownership. Run the full compiler gate and update the guide/handoff.
 
-Snapshot merging is now shared without changing its work/capacity checks or
-B001 diagnostics. All 266 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shape-merge-focused.log`; committed as `0bba0cb`. Composition temporaries
-now capture immutable shaped snapshots, and block capture remaps source field names
-and qualified paths before merging. All 272 dependency-filtered tests pass; log:
-`/tmp/meowy-union-compositions-focused.log`. Six groups cover field reordering,
-nested/nullable/carrier snapshots, unknown/mixed alternatives, prior copies,
-independent fields, exact candidate/payload limits, no replay and E302 loans.
-All ten compiler checks pass; log: `/tmp/meowy-union-compositions-gate.log`.
-No failures remain. The guide documents the composed snapshot boundary. Next:
-canonical immutable named-slot storage before emitted producers.
+Mutable bindings/fields and temporary-borrow/returned union origins remain separate.
+Canonical reads now use `Alias::root`, and sibling registration merges shape maps
+conservatively before replacing storage. Missing alternatives remain incomplete;
+failed merges preserve both inputs. Three seeded groups cover shared storage,
+old copies, missing keys, budgets and combined key/owner limits. All 275 focused
+dependency tests and formatting pass; log: `/tmp/meowy-shape-aliases-focused.log`.
+Next: immutable named capture. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

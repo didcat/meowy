@@ -17,7 +17,7 @@ impl Checker {
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived_storage(id)
             || self.derived_cells(id)
-            || self.record_shapes.get(&id).is_some_and(|shapes| {
+            || self.shaped(id).is_some_and(|shapes| {
                 shapes.snapshots(&[]).any(|value| {
                     value
                         .origins
@@ -47,7 +47,7 @@ impl Checker {
                 pending.extend(&cells.places);
             }
         }
-        if let Some(shapes) = self.record_shapes.get(&id) {
+        if let Some(shapes) = self.shaped(id) {
             for value in shapes.snapshots(&[]) {
                 pending.extend(&value.cells.places);
             }
@@ -75,7 +75,7 @@ impl Checker {
             }) {
                 return true;
             }
-            if let Some(shapes) = self.record_shapes.get(root) {
+            if let Some(shapes) = self.shaped(*root) {
                 for value in shapes.snapshots(path) {
                     if value
                         .origins

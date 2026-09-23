@@ -43,6 +43,7 @@ impl Checker {
             self.store_cells(root, cells, true, span)?;
             self.reference_cells.remove(&id);
         }
+        self.merge_shape_alias(id, root, span)?;
         self.proofs.aliases.insert(
             id,
             Alias {
