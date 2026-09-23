@@ -241,6 +241,7 @@ recover external pointee origins through direct dereferences and empty-path
 reborrows, without confusing them with the temporary cell's ID. Three focused
 groups pass, including nested fields, unknown calls and unchanged E303 expiry.
 All ten compiler checks pass; indirect carrier chains remain incomplete.
+Implementation: `f4c2031`; the foundation guide documents the boundary.
 
 ## Pending descriptor statement accounting
 

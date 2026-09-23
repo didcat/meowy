@@ -143,7 +143,10 @@ keep snapshots. Mutable list-view fields retain their existing bootstrap gate.
 Temporary borrows retain their existing statement-owned storage IDs as origins,
 including shared element borrows over temporary lists. Initializer/control marks
 remain attached to that storage. These marks do not extend lifetimes or change
-ordinary expiry errors. Pointees of references copied out of temporary carriers,
+ordinary expiry errors. Direct temporary carriers snapshot their reference/record
+contents. Copying those contents recovers external pointee origins, including
+nested record fields and empty-path reborrows, without treating the temporary
+cell as the pointee. Unknown call results stay incomplete. Indirect carrier chains,
 reference-bearing aggregates, returned origins and heterogeneous record unions
 remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also

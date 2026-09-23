@@ -393,7 +393,9 @@ identified empty-path reborrow wrappers; these now resolve to the same temporary
 storage ID. Nonempty projections/indirect carrier chains remain incomplete.
 All three focused carrier groups pass, including ordinary compilation and E303
 expiry. All ten compiler checks pass (`/tmp/meowy-proof-temporary-carriers-gate.log`);
-no outstanding failures remain. Guide integration is next.
+no outstanding failures remain. Implementation committed as `f4c2031`; the guide
+now describes the direct-carrier boundary. All four default documentation checks
+pass (`/tmp/meowy-proof-temporary-carriers-docs.log`).
 
 ### Prerequisites and current integration
 
@@ -1311,8 +1313,9 @@ explicitly documented. No outstanding failures remain.
    Shared element borrows now retain container origins through reference-free
    list/record views and reborrows, including aggregate-stored views and supported
    mutable record-view fields. Temporary storage now retains its existing ID and
-   initializer/control marks without extending lifetime. Next extend reference
-   values copied from temporary carriers, reference-bearing aggregates,
+   initializer/control marks without extending lifetime. Direct temporary-carrier
+   copies now recover snapshotted reference/record pointees, including transparent
+   reborrows. Next extend indirect carrier chains, reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
