@@ -31,9 +31,9 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current mutable whole-value union series
 
-Investigation: ordinary mutable bindings register incomplete shapes, and whole-value
-assignment replaces layouts before reading the RHS. Mutable capture needs detached
-snapshot construction followed by conservative merging, including self-assignment.
+Ordinary mutable bindings with immutable fields now capture shaped snapshots.
+Whole-value replacement constructs RHS metadata before changing storage and merges
+possible owners conservatively, including self-assignment.
 
 Commit plan:
 1. Separate shape construction from storage without changing callers or behavior.
@@ -55,9 +55,9 @@ merging with prior metadata. All 286 dependency-filtered tests pass; log:
 conditional/self assignment, null/unknown inputs, nested carriers, different field
 orders, later marks/query control, atomic budget/capacity failures and E302 loans.
 All ten compiler checks pass; log: `/tmp/meowy-mutable-unions-gate.log`. No failures
-remain. Documentation will be committed separately to keep this source slice
-focused. Mutable named slots/fields remain incomplete; proof
-outcomes stay gated.
+remain. Replacement integration is committed as `9696e6b`; the separate guide/root
+handoff documents its conservative boundary. Mutable named slots/fields remain
+incomplete; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

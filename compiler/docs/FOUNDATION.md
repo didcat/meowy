@@ -232,7 +232,7 @@ discovery retains bounded record-shape selections at heterogeneous union boundar
 and marks unsupported borrowed alternatives. Positional origin storage excludes
 these qualified paths. Separate bounded snapshots own shape selections and retain
 ordinary origins and carrier locations without crossing shapes. Local narrowing
-reads select exact keys; absent entries stay incomplete. Immutable bindings with
+reads select exact keys; absent entries stay incomplete. Ordinary bindings with
 immutable fields capture root record-to-union widening and exact union copies.
 Known null contributes no owners, while unknown sources remain incomplete. Copies
 preserve their prior snapshots. Whole-container and addressed-prefix dependency
@@ -249,8 +249,13 @@ Immutable named emissions capture shaped snapshots before slot registration.
 Sibling aliases merge possible owners and carrier locations at the canonical slot
 root; missing alternatives remain incomplete. Lexical reads and later dependency
 marks use the shared root, while ordinary copies keep prior snapshots.
-Mutable bindings/slots/fields, temporary-borrow producers, returned unions and
-borrowed union views remain separate.
+Ordinary mutable bindings with immutable fields retain old and new owners across
+whole-value replacement, including nested union containers and carriers. RHS
+snapshots are built before storage changes, so self-assignment reads prior metadata
+and failed merges preserve it. Earlier copies retain their snapshots. Null or
+independent overwrites do not erase earlier owners; unknown alternatives remain
+incomplete. Mutable named slots/fields, temporary-borrow producers, returned unions
+and borrowed union views remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
