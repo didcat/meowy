@@ -128,6 +128,14 @@ impl Checker {
         value: &Expr,
         capture: bool,
     ) -> Result<()> {
+        let shapes = self.record_shape_values(value, capture)?;
+        if !shapes.entries.is_empty() {
+            self.record_shapes.insert(id, shapes);
+        }
+        Ok(())
+    }
+
+    pub(super) fn record_shape_values(&mut self, value: &Expr, capture: bool) -> Result<Shapes> {
         let mut shapes = Shapes::default();
         for carriers in [false, true] {
             for path in self.record_origin_paths(value, carriers)? {
@@ -143,10 +151,7 @@ impl Checker {
                 shapes.insert(key, snapshot, &mut self.flow, value.span)?;
             }
         }
-        if !shapes.entries.is_empty() {
-            self.record_shapes.insert(id, shapes);
-        }
-        Ok(())
+        Ok(shapes)
     }
 }
 

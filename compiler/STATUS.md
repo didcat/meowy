@@ -29,34 +29,26 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current named union emission series
+### Current mutable whole-value union series
 
-Investigation: scalar origins/carriers already merge at `Alias::root`, but shaped
-snapshots remain attached to each initializer ID. Named capture must follow shared
-storage identity while ordinary copies retain their prior snapshots.
+Investigation: ordinary mutable bindings register incomplete shapes, and whole-value
+assignment replaces layouts before reading the RHS. Mutable capture needs detached
+snapshot construction followed by conservative merging, including self-assignment.
 
 Commit plan:
-1. Add bounded conservative shape-map merging and canonical alias lookup. Connect
-   slot registration and shaped reads/dependency traversal; validate seeded sibling
-   merges, missing alternatives, copies and failure preservation; commit.
-2. Capture immutable named emissions before alias registration. Test lexical reads,
-   sibling alternatives, carriers, old copies, later marks, unknown/null sources
-   and ordinary ownership. Run the full compiler gate and update the guide/handoff.
+1. Separate shape construction from storage without changing callers or behavior.
+   Run focused dependency checks and commit the prerequisite.
+2. Capture ordinary mutable bindings with immutable fields and merge whole-value
+   replacements before storing. Preserve old owners, unknown alternatives and prior
+   copies; test null, self/conditional assignment, nested shapes, carriers, later
+   marks, budgets and ordinary ownership. Run the full compiler gate and update
+   the capability guide and project handoff.
 
-Mutable bindings/fields and temporary-borrow/returned union origins remain separate.
-Canonical reads now use `Alias::root`, and sibling registration merges shape maps
-conservatively before replacing storage. Missing alternatives remain incomplete;
-failed merges preserve both inputs. Three seeded groups cover shared storage,
-old copies, missing keys, budgets and combined key/owner limits. All 275 focused
-dependency tests and formatting pass; log: `/tmp/meowy-shape-aliases-focused.log`.
-Canonical storage prerequisite: `7ab6a30`. Immutable named emissions now capture
-snapshots before alias registration. All 281 dependency-filtered tests pass; log:
-`/tmp/meowy-named-unions-focused.log`. Six source groups cover lexical/nested reads,
-sibling alternatives, carriers, old copies, later marks, null/unknown alternatives,
-mutable-slot exclusion and query/loan boundaries. All ten compiler checks pass;
-log: `/tmp/meowy-named-unions-gate.log`. No failures remain. Next: conservative
-ordinary whole-union replacement before enabling mutable initial capture.
-Proof outcomes stay gated.
+Mutable named slots/fields, temporary-borrow producers and returned unions remain
+separate. Shape construction now returns a detached map; existing storage callers
+retain their behavior. All 281 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-shape-build-focused.log`. Next: ordinary mutable capture and replacement
+merging. The tree was clean at investigation. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
