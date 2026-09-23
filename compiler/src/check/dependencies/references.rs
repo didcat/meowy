@@ -33,33 +33,44 @@ impl Checker {
         }
     }
 
-    pub(crate) fn reference_cell(&self, expr: &Expr) -> Cells {
+    pub(crate) fn reference_cell(&mut self, expr: &Expr) -> crate::check::Result<Cells> {
         let mut value = expr;
         loop {
+            self.origin_visit(expr)?;
             match &value.kind {
                 ExprKind::Borrow(place) => {
-                    return Cells {
+                    return Ok(Cells {
                         places: BTreeSet::from([(place.root, place.fields.clone())]),
                         complete: true,
-                    };
+                    });
                 }
                 ExprKind::TemporaryBorrow { id, .. } => {
-                    return Cells {
+                    return Ok(Cells {
                         places: BTreeSet::from([(*id, Vec::new())]),
                         complete: true,
-                    };
+                    });
                 }
                 ExprKind::Local(id) => {
-                    return self.reference_cells.get(id).cloned().unwrap_or_default();
+                    return Ok(self.reference_cells.get(id).cloned().unwrap_or_default());
                 }
                 ExprKind::Reborrow {
                     value: inner,
                     fields,
                     ..
                 } if fields.is_empty() => value = inner,
-                _ => return Cells::default(),
+                _ => return Ok(Cells::default()),
             }
         }
+    }
+
+    pub(crate) fn origin_visit(&mut self, expr: &Expr) -> crate::check::Result<()> {
+        if !self.flow.spend(1) {
+            return Err(crate::diagnostic::Diagnostic::unsupported(
+                "proof reference origin traversal budget exhausted",
+                expr.span,
+            ));
+        }
+        Ok(())
     }
 
     pub(crate) fn cell_origins(&self, root: usize, path: &[usize]) -> Option<&Origins> {
@@ -81,7 +92,7 @@ impl Checker {
         if !value.ty.pointee().is_some_and(Self::origin_reference) {
             return Ok(());
         }
-        let mut cells = self.reference_cell(value);
+        let mut cells = self.reference_cell(value)?;
         let prior = merge.then(|| self.reference_cells.get(&id)).flatten();
         let work = cells
             .places
@@ -130,49 +141,57 @@ impl Checker {
         self.proofs.aliases.get(&id).map_or(id, |alias| alias.root)
     }
 
-    pub(crate) fn reference_origins(&self, expr: &Expr) -> Origins {
+    pub(crate) fn reference_origins(&mut self, expr: &Expr) -> crate::check::Result<Origins> {
         let mut value = expr;
         loop {
+            self.origin_visit(expr)?;
             match &value.kind {
                 ExprKind::Borrow(place) | ExprKind::ExclusivePath { place, .. } => {
-                    return Origins {
+                    return Ok(Origins {
                         roots: BTreeSet::from([place.root]),
                         complete: true,
-                    };
+                    });
                 }
                 ExprKind::TemporaryBorrow { id, .. } => {
-                    return Origins {
+                    return Ok(Origins {
                         roots: BTreeSet::from([*id]),
                         complete: true,
-                    };
+                    });
                 }
                 ExprKind::Deref(inner) => {
-                    let cells = self.reference_cell(inner);
+                    let cells = self.reference_cell(inner)?;
                     let mut origins = Origins {
                         roots: BTreeSet::new(),
                         complete: cells.complete,
                     };
                     for (root, path) in cells.places {
+                        self.origin_visit(expr)?;
                         let source = self.cell_origins(root, &path);
                         origins.complete &= source.is_some_and(|source| source.complete);
                         if let Some(source) = source {
                             origins.roots.extend(&source.roots);
                         }
+                        if origins.roots.len() > MAX_ROOTS {
+                            return Err(crate::diagnostic::Diagnostic::unsupported(
+                                "proof reference origin capacity exhausted",
+                                expr.span,
+                            ));
+                        }
                     }
-                    return origins;
+                    return Ok(origins);
                 }
                 ExprKind::Local(id) => {
-                    return self
+                    return Ok(self
                         .pointees
                         .get(&self.origin_id(*id))
                         .cloned()
-                        .unwrap_or_default();
+                        .unwrap_or_default());
                 }
-                ExprKind::Field { value, index } => return self.field_origins(value, *index),
+                ExprKind::Field { value, index } => return Ok(self.field_origins(value, *index)),
                 ExprKind::Reborrow { value: inner, .. }
                 | ExprKind::ElementBorrow { value: inner, .. }
                 | ExprKind::Coerce { value: inner } => value = inner,
-                _ => return Origins::default(),
+                _ => return Ok(Origins::default()),
             }
         }
     }
@@ -186,7 +205,7 @@ impl Checker {
         if !Self::origin_reference(&value.ty) {
             return Ok(());
         }
-        let origins = self.reference_origins(value);
+        let origins = self.reference_origins(value)?;
         self.store_origins(self.origin_id(id), origins, merge, value.span)
     }
 

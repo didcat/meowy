@@ -21,9 +21,15 @@ pub(crate) fn temporary_borrows_keep_distinct_statement_owned_origins() {
     };
     let a = borrow(&mut checker, value.clone());
     let b = borrow(&mut checker, value);
-    assert_eq!(checker.reference_origins(&a).roots, BTreeSet::from([0]));
-    assert_eq!(checker.reference_origins(&b).roots, BTreeSet::from([1]));
-    assert!(checker.reference_origins(&a).complete);
+    assert_eq!(
+        checker.reference_origins(&a).unwrap().roots,
+        BTreeSet::from([0])
+    );
+    assert_eq!(
+        checker.reference_origins(&b).unwrap().roots,
+        BTreeSet::from([1])
+    );
+    assert!(checker.reference_origins(&a).unwrap().complete);
     assert_eq!(checker.proofs.temporaries[&0], 7);
     assert_eq!(checker.proofs.temporaries[&1], 7);
     checker.mark_derived(0);
@@ -53,7 +59,7 @@ pub(crate) fn temporary_owners_retain_initializer_and_control_dependencies() {
             }
         };
         let expr = borrow(&mut checker, value);
-        let origins = checker.reference_origins(&expr);
+        let origins = checker.reference_origins(&expr).unwrap();
         assert_eq!(origins.roots, BTreeSet::from([1]));
         assert!(checker.derived_local(1));
         checker.control = false;

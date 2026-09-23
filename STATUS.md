@@ -256,6 +256,10 @@ carrier retargets now merge possible cell locations while preserving earlier
 carrier/value copies and incomplete alternatives. Four new source groups and all
 eight cell groups and all ten compiler checks pass. Flags remain gated.
 
+Reference-origin traversal now charges the analysis budget and rejects oversized
+merged pointee sets explicitly. All 1070 library tests pass, including new budget
+and capacity coverage. Bounded deeper carrier chains are next; flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

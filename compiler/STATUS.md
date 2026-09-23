@@ -433,6 +433,21 @@ all eight cell groups, including ordinary compilation of conditional updates.
 All ten compiler checks pass (`/tmp/meowy-proof-cell-retargets-gate.log`);
 no outstanding failures remain.
 
+### Bounded carrier-chain slices
+
+1. Make reference-cell/origin traversal fallible and charge wrapper/cell expansion
+   to the existing analysis budget; reject oversized pointee unions before storing
+   them. Preserve unknown-source incompleteness and validate/commit this prerequisite.
+2. Resolve bounded deeper cell dereferences and admit matching carrier types,
+   preserving snapshot/completeness and ordinary ownership checks. Add depth,
+   fan-out and source-chain regressions, then run the complete compiler gate.
+
+Deeper field-stored carriers, returned origins and precise joins remain separate.
+Resource failures remain B001, never proof outcomes; flags stay gated.
+Fallible traversal and explicit budget/merged-pointee capacity regressions pass
+all 1070 library tests (`/tmp/meowy-proof-origin-traversal-library.log`). Bounded
+deeper-chain integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

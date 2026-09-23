@@ -74,7 +74,7 @@ impl Checker {
         if !Self::origin_reference(&value.ty) {
             return Ok(());
         }
-        let mut origins = self.reference_origins(value);
+        let mut origins = self.reference_origins(value)?;
         let prior = self
             .record_pointees
             .get(&id)

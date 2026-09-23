@@ -187,7 +187,7 @@ impl Checker {
                     };
                     let value = self.expr(value, Some(ty))?;
                     if self.control || self.derived_expr(&target) || self.derived_expr(&value) {
-                        let origins = self.reference_origins(&target);
+                        let origins = self.reference_origins(&target)?;
                         if !origins.complete {
                             return Err(Diagnostic::unsupported(
                                 "proof dependency tracking for indirect store origins",

@@ -101,3 +101,51 @@ pub(crate) fn cell_location_sets_preserve_snapshots_completeness_and_limits() {
         BTreeSet::from([(MAX_ROOTS, vec![0])])
     );
 }
+
+#[test]
+pub(crate) fn origin_traversal_reports_budget_and_pointee_capacity_failures() {
+    use crate::check::dependencies::{Cells, Origins, references::MAX_ROOTS};
+    use crate::{
+        ast::Span,
+        hir::{Expr, ExprKind, Type},
+    };
+    let value = Expr {
+        kind: ExprKind::Local(2),
+        ty: Type::Reference(Box::new(Type::Reference(Box::new(Type::Bool)))),
+        span: Span::new(1, 2),
+    };
+    let mut checker = Checker::new();
+    checker.flow.work = crate::flow::MAX_PROOF_WORK;
+    assert_eq!(checker.reference_cell(&value).err().unwrap().code, "B001");
+    let mut checker = Checker::new();
+    checker.reference_cells.insert(
+        2,
+        Cells {
+            places: BTreeSet::from([(0, vec![]), (1, vec![])]),
+            complete: true,
+        },
+    );
+    checker.pointees.insert(
+        0,
+        Origins {
+            roots: (10..10 + MAX_ROOTS).collect(),
+            complete: true,
+        },
+    );
+    checker.pointees.insert(
+        1,
+        Origins {
+            roots: BTreeSet::from([10 + MAX_ROOTS]),
+            complete: true,
+        },
+    );
+    let expr = Expr {
+        kind: ExprKind::Deref(Box::new(value)),
+        ty: Type::Reference(Box::new(Type::Bool)),
+        span: Span::new(1, 4),
+    };
+    let error = checker.reference_origins(&expr).err().unwrap();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("origin capacity"));
+    assert_eq!(error.span, expr.span);
+}
