@@ -205,3 +205,6 @@ mod carriers;
 
 #[cfg(test)]
 mod cells;
+
+#[cfg(test)]
+mod cell_writes;

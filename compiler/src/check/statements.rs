@@ -110,9 +110,7 @@ impl Checker {
                 }
                 let id = self.local(ty.clone());
                 self.track_reference(id, &value, false)?;
-                if !mutable {
-                    self.track_reference_cell(id, &value, false)?;
-                }
+                self.track_reference_cell(id, &value, false)?;
                 self.track_record_references(id, &value, false)?;
                 if self.control || self.derived_expr(&value) {
                     self.mark_derived(id);
@@ -241,6 +239,7 @@ impl Checker {
                 }
                 let value = self.expr(value, Some(&ty))?;
                 self.track_reference(id, &value, true)?;
+                self.track_reference_cell(id, &value, true)?;
                 self.track_record_references(id, &value, true)?;
                 if self.control || self.derived_expr(&value) {
                     self.mark_derived(id);

@@ -146,11 +146,14 @@ remain attached to that storage. These marks do not extend lifetimes or change
 ordinary expiry errors. Direct temporary carriers snapshot their reference/record
 contents. Copying those contents recovers external pointee origins, including
 nested record fields and empty-path reborrows, without treating the temporary
-cell as the pointee. Immutable one-level aliases to named reference cells retain
-the checked root/field location, including nested record fields and transparent
-reborrows. Reading a cell recovers its stored pointee origins; earlier value copies
-keep their snapshots. Ordinary cell-borrow and expiry checks remain unchanged.
-Mutable carrier aliases, deeper carrier chains, unknown call results,
+cell as the pointee. One-level aliases to named reference cells retain bounded
+sets of checked root/field locations, including nested fields and transparent
+reborrows. Mutable carrier retargets conservatively merge old/new locations;
+earlier carrier copies retain their sets and earlier value copies retain their
+pointee snapshots. Unknown alternatives preserve known locations but remain
+incomplete. Cell sets are capped at 256 locations and use the analysis budget.
+Ordinary cell-borrow and expiry checks remain unchanged.
+Deeper carrier chains, unknown call results,
 reference-bearing aggregates, returned origins and heterogeneous record unions
 remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also

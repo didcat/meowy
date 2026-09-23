@@ -428,7 +428,10 @@ chains, returned origins, heterogeneous record unions and precise joins remain
 unfinished; flags stay gated.
 Cell sets/completeness pass all 1065 library tests, including capacity failure
 and snapshot regressions (`/tmp/meowy-proof-cell-sets-library.log`). Mutable
-binding/retarget integration is next.
+binding/retarget integration after `393b939` passes four new source groups and
+all eight cell groups, including ordinary compilation of conditional updates.
+All ten compiler checks pass (`/tmp/meowy-proof-cell-retargets-gate.log`);
+no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1246,20 +1249,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1064
-  library/903 native tests (1967 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1069
+  library/903 native tests (1972 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-cells-gate.log`.
-- Three new checker groups cover direct/named reference-cell reads, immutable
-  aliases, empty-path reborrows, nested field cells, stored-view cells, prior value
-  snapshots, unknown contents and E302 cell protection. Accepted fixtures pass
-  ordinary compilation/ownership checks.
-- Flags/outcomes remain B001-gated. Mutable carrier aliases, deeper carrier chains,
-  reference-bearing aggregate/returned origins, heterogeneous record unions,
-  precise joins, function summaries and conditional-exit control remain unfinished.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-cell-retargets-gate.log`.
+- Five new checker groups cover bounded cell sets, capacity failure preservation,
+  mutable/conditional retargets, prior carrier/value snapshots, distinct field-cell
+  locations, incomplete alternatives and E207/E305 preservation. Accepted source
+  fixtures pass ordinary compilation/ownership checks; all eight cell groups pass.
+- Flags/outcomes remain B001-gated. Cell/owner sets remain conservative and
+  monotone. Deeper carrier chains, reference-bearing aggregate/returned origins,
+  heterogeneous record unions, precise joins, function summaries and conditional-
+  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
+  and versions are unchanged; editor and separate runtime/sanitizer gates were
+  not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1350,8 +1353,9 @@ explicitly documented. No outstanding failures remain.
    initializer/control marks without extending lifetime. Direct temporary-carrier
    copies now recover snapshotted reference/record pointees, including transparent
    reborrows. Immutable one-level aliases to named reference cells now retain
-   root/field locations and recover stored pointee origins. Next extend mutable
-   carrier aliases, deeper carrier chains, reference-bearing aggregates,
+   root/field locations and recover stored pointee origins. Mutable one-level
+   carriers now retain bounded location sets/completeness through retargets and
+   preserve prior copies. Next extend deeper carrier chains, reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.

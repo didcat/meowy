@@ -251,7 +251,10 @@ stay incomplete; all ten compiler checks pass and proof flags stay gated.
 
 Reference-cell metadata now uses bounded location sets and completeness rather
 than a single location. All 1065 library tests pass, including capacity failure
-and snapshot coverage. Mutable carrier integration is next; flags remain gated.
+and snapshot coverage. `393b939` records that representation. Mutable one-level
+carrier retargets now merge possible cell locations while preserving earlier
+carrier/value copies and incomplete alternatives. Four new source groups and all
+eight cell groups and all ten compiler checks pass. Flags remain gated.
 
 ## Pending descriptor statement accounting
 
@@ -275,20 +278,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1064
-  library/903 native tests (1967 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1069
+  library/903 native tests (1972 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-reference-cells-gate.log`.
-- Three new checker groups cover direct/named reference-cell reads, immutable
-  aliases, empty-path reborrows, nested field cells, stored-view cells, prior value
-  snapshots, unknown contents and E302 cell protection. Accepted fixtures pass
-  ordinary compilation/ownership checks.
-- Flags/outcomes remain B001-gated. Mutable carrier aliases, deeper carrier chains,
-  reference-bearing aggregate/returned origins, heterogeneous record unions,
-  precise joins, function summaries and conditional-exit control remain unfinished.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-cell-retargets-gate.log`.
+- Five new checker groups cover bounded cell sets, capacity failure preservation,
+  mutable/conditional retargets, prior carrier/value snapshots, distinct field-cell
+  locations, incomplete alternatives and E207/E305 preservation. Accepted source
+  fixtures pass ordinary compilation/ownership checks; all eight cell groups pass.
+- Flags/outcomes remain B001-gated. Cell/owner sets remain conservative and
+  monotone. Deeper carrier chains, reference-bearing aggregate/returned origins,
+  heterogeneous record unions, precise joins, function summaries and conditional-
+  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
+  and versions are unchanged; editor and separate runtime/sanitizer gates were
+  not rerun. Full release qualification remains open.
 
 ## Area handoff
 
