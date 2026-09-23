@@ -36,9 +36,6 @@ impl Checker {
             .filter(|(_, alias)| alias.target == block.id && alias.field == field.name)
             .map(|(id, _)| *id)
             .collect::<BTreeSet<_>>();
-        if ids.is_empty() {
-            return Ok(Snapshot::default());
-        }
         if ids.len() > MAX_FIELDS || depth > MAX_DEPTH {
             return Err(Diagnostic::unsupported(
                 "proof record shape block budget exhausted",
@@ -51,7 +48,11 @@ impl Checker {
             .map(|(at, ty)| (at - 1, ty))
             .collect::<Vec<_>>();
         let key = ShapeKey::new(tail, &variants, &mut self.flow, value.span)?;
-        let mut pending = vec![(&block.stmts[..], 0)];
+        let mut pending = if ids.is_empty() {
+            Vec::new()
+        } else {
+            vec![(&block.stmts[..], 0)]
+        };
         let mut found = BTreeSet::new();
         let mut snapshot = Snapshot::empty();
         let mut visits = 0;
@@ -89,6 +90,12 @@ impl Checker {
         }
         let mut composed = false;
         if let Some(sources) = self.record_compositions.get(&block.id) {
+            if sources.len() > MAX_FIELDS {
+                return Err(Diagnostic::unsupported(
+                    "proof record shape composition budget exhausted",
+                    value.span,
+                ));
+            }
             for id in sources {
                 let Some(Type::Record { fields, .. }) = Self::origin_record(&self.locals[*id])
                 else {
@@ -100,10 +107,28 @@ impl Checker {
                         value.span,
                     ));
                 }
-                composed |= fields.iter().any(|source| source.name == field.name);
+                let Some(index) = fields.iter().position(|source| source.name == field.name) else {
+                    continue;
+                };
+                composed = true;
+                let mut path = vec![index];
+                path.extend(&key.fields);
+                let variants = key
+                    .variants
+                    .iter()
+                    .map(|(at, ty)| (at + 1, ty))
+                    .collect::<Vec<_>>();
+                let source_key = ShapeKey::new(&path, &variants, &mut self.flow, value.span)?;
+                let next = self
+                    .record_shapes
+                    .get(id)
+                    .and_then(|shapes| shapes.get(&source_key))
+                    .cloned()
+                    .unwrap_or_default();
+                snapshot.merge(next, &mut self.flow, value.span)?;
             }
         }
-        if found != ids || composed {
+        if found != ids || (found.is_empty() && !composed) {
             snapshot.origins.complete = false;
             snapshot.cells.complete = false;
         }
@@ -113,3 +138,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod compositions;

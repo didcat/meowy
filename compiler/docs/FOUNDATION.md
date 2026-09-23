@@ -241,9 +241,12 @@ marks; marked guards still cannot narrow ordinary types. Nested immutable
 union-field construction captures checked initializer alternatives, including
 conditional and nullable fields. Subrecord copies/projections preserve field and
 shape offsets through outer narrowing. Alternative owners are combined; unknown
-or composed sources keep snapshots incomplete. Capture does not replay initializers.
-Composition snapshots, mutable bindings/fields, lexical emitted/temporary producers,
-returned unions and borrowed union views remain separate.
+sources keep snapshots incomplete. Composition temporaries retain immutable
+snapshots and map destination field names to source indices and shape offsets.
+Mixed direct/composed alternatives share the same bounded merge; later source
+replacement does not change prior copies. Capture does not replay initializers.
+Mutable bindings/fields, lexical emitted/temporary-borrow producers, returned unions
+and borrowed union views remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

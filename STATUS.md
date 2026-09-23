@@ -370,23 +370,24 @@ Immutable bindings with immutable fields now capture root record-to-union wideni
 known null and exact union copies. Whole-container dependency traversal follows
 shaped origins/carriers, including later marks. Prerequisite: `a67560b`.
 Nested immutable union-field construction and subrecord projections now preserve
-shape selections and merge checked initializer alternatives. Composed and unknown
-alternatives keep snapshots incomplete. Projection prerequisite: `73bac78`.
-All 266 dependency-filtered tests and all ten compiler checks pass. Composition
-snapshots are next; mutable/emitted/temporary producers and proof flags stay gated.
+shape selections and merge checked initializer alternatives. Composition temporaries
+now retain immutable snapshots; destination fields map to source names and shape
+paths. Unknown alternatives stay incomplete. Merge prerequisite: `0bba0cb`.
+All 272 dependency-filtered tests and all ten compiler checks pass. Immutable named
+emissions and sibling aliases are next; mutable/temporary producers and proof flags
+stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1239
-  library/903 native tests (2142 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1245
+  library/903 native tests (2148 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nested-unions-gate.log`.
-- All 266 dependency-filtered tests pass. Two projection groups cover shape
-  offsets and outer narrowing. Six source groups cover real nested construction,
-  conditional/nullable fields, carriers, copies/projections, unknown/composed
-  alternatives, independent siblings, block budgets, no replay and E302 loans.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
-  Projection prerequisite: `73bac78`.
+  0 failed in debug/release. Log: `/tmp/meowy-union-compositions-gate.log`.
+- All 272 dependency-filtered tests pass. Six composition groups cover reordered
+  and nested fields, nullable/carrier snapshots, mixed/unknown alternatives,
+  independent siblings, prior snapshots, exact candidate/payload limits, no replay
+  and E302 loan rejection. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded. Merge prerequisite: `0bba0cb`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

@@ -48,8 +48,15 @@ Commit plan:
 
 Snapshot merging is now shared without changing its work/capacity checks or
 B001 diagnostics. All 266 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shape-merge-focused.log`. Next: composition temporary capture and
-field-name remapping. The tree was clean at investigation.
+`/tmp/meowy-shape-merge-focused.log`; committed as `0bba0cb`. Composition temporaries
+now capture immutable shaped snapshots, and block capture remaps source field names
+and qualified paths before merging. All 272 dependency-filtered tests pass; log:
+`/tmp/meowy-union-compositions-focused.log`. Six groups cover field reordering,
+nested/nullable/carrier snapshots, unknown/mixed alternatives, prior copies,
+independent fields, exact candidate/payload limits, no replay and E302 loans.
+All ten compiler checks pass; log: `/tmp/meowy-union-compositions-gate.log`.
+No failures remain. The guide documents the composed snapshot boundary. Next:
+canonical immutable named-slot storage before emitted producers.
 
 ### Proof dependency implementation slices
 
@@ -1377,16 +1384,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1239
-  library/903 native tests (2142 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1245
+  library/903 native tests (2148 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nested-unions-gate.log`.
-- All 266 dependency-filtered tests pass. Two projection groups cover shape
-  offsets and outer narrowing. Six source groups cover real nested construction,
-  conditional/nullable fields, carriers, copies/projections, unknown/composed
-  alternatives, independent siblings, block budgets, no replay and E302 loans.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
-  Projection prerequisite: `73bac78`.
+  0 failed in debug/release. Log: `/tmp/meowy-union-compositions-gate.log`.
+- All 272 dependency-filtered tests pass. Six composition groups cover reordered
+  and nested fields, nullable/carrier snapshots, mixed/unknown alternatives,
+  independent siblings, prior snapshots, exact candidate/payload limits, no replay
+  and E302 loan rejection. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded. Merge prerequisite: `0bba0cb`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1551,15 +1557,17 @@ explicitly documented. No outstanding failures remain.
    locations, so later marks reach copies, guards and pending query control.
    Nested immutable union fields now capture checked binding alternatives, including
    nullable fields and conditional sources. Subrecord projections preserve field
-   prefixes and outer/inner shape selections. Unknown or composed alternatives
-   keep snapshots incomplete. Next add composition snapshots in
-   `records/shapes/producers/blocks.rs` and composition-temporary capture in
-   `statements.rs`. Remap source field names and shape offsets, preserve prior
-   snapshots and unknown alternatives, and test mixed direct/composed branches,
-   sibling fields, budgets and ordinary ownership before the full gate.
-   Keep mutable bindings/fields, lexical emitted/temporary producers, returned
-   unions and borrowed union views separate; establish conservative merge/write
-   invalidation before admitting those writes.
+   prefixes and outer/inner shape selections. Unknown alternatives keep snapshots
+   incomplete. Composition temporaries now capture immutable shapes;
+   block reads remap source field names/indices and merge their snapshots with
+   direct alternatives. Unknown inputs stay incomplete. Next implement immutable
+   named union emissions and sibling aliases in `statements.rs` and
+   `records/shapes`: define canonical `Alias::root` storage and conservative merging
+   before enabling producers. Preserve prior copies and distinct shape keys; test
+   lexical reads, alternative emissions, later marks and ordinary ownership.
+   Keep mutable bindings/fields, temporary-borrow producers, returned unions and
+   borrowed union views separate; establish conservative merge/write invalidation
+   before admitting those writes.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

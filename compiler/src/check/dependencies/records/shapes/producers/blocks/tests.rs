@@ -63,14 +63,17 @@ pub(crate) fn conditional_nested_union_sources_merge_known_and_unknown_alternati
 }
 
 #[test]
-pub(crate) fn composed_union_alternatives_stay_incomplete_and_keep_known_sources() {
+pub(crate) fn composed_union_alternatives_merge_all_known_sources() {
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;y:=true;c:=false;other:{->inner<A><B>:{->r:&y}};row:{|c|->inner<A><B>:{->r:&x};|!c|->other};copy:row.inner;|copy<A>|out:copy.r";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
     let origins = &checker.pointees[&(checker.locals.len() - 1)];
-    assert!(!origins.complete);
-    assert_eq!(origins.roots, BTreeSet::from([id(&checker, "x")]));
+    assert!(origins.complete);
+    assert_eq!(
+        origins.roots,
+        BTreeSet::from([id(&checker, "x"), id(&checker, "y")])
+    );
 }
 
 #[test]

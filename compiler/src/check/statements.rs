@@ -569,6 +569,7 @@ impl Checker {
             let ty = value.ty.clone();
             let id = self.local(ty.clone());
             self.track_record_references(id, &value, false)?;
+            self.capture_record_shapes(id, &value)?;
             let local = hir::Expr {
                 kind: hir::ExprKind::Local(id),
                 ty: ty.clone(),
