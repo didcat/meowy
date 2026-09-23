@@ -230,8 +230,12 @@ contributes no owners; unknown arguments remain incomplete. Wrappers that change
 record shape and heterogeneous result layouts remain separate. Internal path
 discovery retains bounded record-shape selections at heterogeneous union boundaries
 and marks unsupported borrowed alternatives. Positional origin storage excludes
-these qualified paths until shape-keyed snapshots and propagation are implemented;
-this representation work does not admit additional source-level origins.
+these qualified paths. Separate bounded snapshots own shape selections and retain
+ordinary origins and carrier locations without crossing shapes. Local narrowing
+reads select exact keys; absent entries stay incomplete. Source layouts currently
+register incomplete snapshots only, so known union-read evidence remains seeded
+checker coverage. Source widening/copy producers, whole-union dependency traversal,
+mutable updates and returned union origins remain unimplemented.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

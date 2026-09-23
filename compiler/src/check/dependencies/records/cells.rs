@@ -139,6 +139,9 @@ impl Checker {
             ));
         }
         let (base, fields) = self.record_source_path(value, path)?;
+        if let Some(snapshot) = self.record_shape_snapshot(value, path)? {
+            return Ok(snapshot.cells);
+        }
         if let crate::hir::ExprKind::Call { args, .. } = &base.kind {
             let Some(ty) = self.record_call_field_type(base, &fields)? else {
                 return Ok(Cells::default());

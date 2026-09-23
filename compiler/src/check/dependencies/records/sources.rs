@@ -170,6 +170,9 @@ impl Checker {
             ));
         }
         let (base, fields) = self.record_source_path(value, path)?;
+        if let Some(snapshot) = self.record_shape_snapshot(value, path)? {
+            return Ok(snapshot.origins);
+        }
         if let ExprKind::Call { args, .. } = &base.kind {
             return self.record_call_field_origins(base, args, &fields, depth);
         }

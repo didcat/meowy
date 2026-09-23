@@ -49,7 +49,16 @@ remain gated. Snapshot keys now own bounded shape selections, and layouts regist
 only incomplete origins/cells. Four new groups cover distinct keys, missing
 alternatives, snapshot copies, atomic capacity/budget failure and source-level
 incompleteness. All 246 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shape-snapshots-focused.log`. Next: seeded checked-narrowing reads.
+`/tmp/meowy-shape-snapshots-focused.log`; committed as `95b0086`. Local narrowing
+reads now reconstruct exact shape selections for origin and carrier lookup, with
+bounded traversal and missing entries returning incomplete snapshots. Seeded
+integration tests now cover isolated ordinary/carrier fields, missing entries,
+nested selections and bounded reads. Source-path validation runs first to preserve
+existing depth diagnostics. All 251 dependency-filtered tests pass; log:
+`/tmp/meowy-shape-reads-focused.log`. Ordinary accepted fixtures and E302 loan
+rejection pass; known union origins remain seeded evidence only. All ten compiler
+checks pass; log: `/tmp/meowy-shape-reads-gate.log`. No failures remain. Next:
+immutable source producers and whole-container dependency traversal.
 
 ### Proof dependency implementation slices
 
@@ -1377,15 +1386,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1215
-  library/903 native tests (2118 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1224
+  library/903 native tests (2127 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-variants-gate.log`.
-- All 242 dependency-filtered tests pass. Five new path-discovery groups cover
-  shape identity, nested selections, carrier candidates, unsupported alternatives,
-  nullable paths, unaffected siblings and exact depth/capacity/work limits. The
-  positional storage adapter still excludes heterogeneous paths; source-level
-  union origins remain incomplete. Extraction prerequisite: `cdb2ed8`.
+  0 failed in debug/release. Log: `/tmp/meowy-shape-reads-gate.log`.
+- All 251 dependency-filtered tests pass. Four storage groups cover bounded
+  shape keys, snapshot isolation/copies and capacity/budget failures. Five read
+  groups cover exact narrowing, nested selections, ordinary/carrier snapshots,
+  missing alternatives, budgets and E302 loan rejection. Known snapshot payloads
+  remain seeded; actual source layouts retain incomplete origins/cells.
+  Storage prerequisite: `95b0086`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1542,12 +1552,16 @@ explicitly documented. No outstanding failures remain.
    nullable wrapping/narrowing and carrier fields. Unknown and null remain distinct.
    Path discovery now retains bounded shape selections at each heterogeneous
    union boundary in `records/paths.rs`, including unsupported alternatives.
-   The positional adapter intentionally excludes qualified paths. Next add bounded
-   shape-keyed origin/carrier snapshots alongside existing positional metadata,
-   with seeded storage/read tests before source producers. Then integrate immutable
-   widening, copies and narrowing; never merge paths across different selections.
-   Keep missing alternatives incomplete, preserve null, and cover distinct field
-   orders/types and ordinary ownership before expanding writes or call results.
+   The positional adapter intentionally excludes qualified paths. Bounded owned
+   shape keys and origin/carrier snapshots now exist alongside positional metadata;
+   local narrowing reads select exact keys. Source layouts contain incomplete
+   snapshots only, and read-side evidence remains seeded. Next integrate immutable
+   widening and copy producers in `records/shapes.rs`, together with dependency
+   traversal through whole shaped containers in `dependencies.rs`. Preserve prior
+   snapshots, null/unknown distinctions and shape identity; test later pointee marks
+   reaching copies, guards and pending queries. Establish conservative merge/write
+   invalidation before admitting mutable fields or retargets. Keep returned union
+   origins and borrowed union views separate; run the full gate per series.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
