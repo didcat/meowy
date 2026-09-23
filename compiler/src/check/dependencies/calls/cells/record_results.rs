@@ -48,19 +48,25 @@ impl Checker {
                 }
                 continue;
             }
-            let supported =
-                *ty == expr.ty || matches!(ty, Type::Reference(target) if !target.has_borrowed());
+            let Some((view, layers)) = self.call_shared_view(ty, expr)? else {
+                return Ok(Cells::default());
+            };
+            let supported = *view == expr.ty
+                || matches!(view, Type::Reference(target) if !target.has_borrowed());
             if !supported {
                 return Ok(Cells::default());
             }
-            if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
+            if !crate::borrow_contract::returns::candidate(&expr.ty, view) {
                 continue;
             }
-            let source = if path.is_empty() {
+            let mut source = if path.is_empty() {
                 self.reference_cell_at(arg, depth + 1)?
             } else {
                 self.record_source_cells(arg, &path)?
             };
+            for _ in 0..layers {
+                source = self.expand_reference_cells(source, expr)?;
+            }
             if !found {
                 cells.complete = true;
                 found = true;
@@ -76,3 +82,6 @@ mod tests;
 
 #[cfg(test)]
 mod records;
+
+#[cfg(test)]
+mod chains;

@@ -29,19 +29,18 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-stored returned-view slice
+### Current shared-chain returned-view slice
 
-Plan: extend exact returned record-view candidates through named fields of
-by-value records, including nested/nullable single-record containers. Reuse stored
-cell snapshots, preserve incomplete alternatives and retain shared field/depth/work
-limits. Keep tests for inline/copy/composition, nested/null containers, multiple
-candidates, unknown fields and capacity with this change; run the compiler gate.
+Plan: reuse bounded shared-view matching to find exact-compatible inner record
+views in direct and record-stored input chains. Expand the retained locations by
+that shared depth, preserving unknown alternatives and unsupported record shapes.
+Keep direct/deep/stored/mixed/unknown, lifetime and depth-limit tests with this
+change; run the full compiler gate before committing. Outcomes remain gated.
 
-Projected borrowed-record candidates and shared-chain candidates remain separate.
-Known locations still do not imply known contents. Proof outcomes stay gated.
-All 190 dependency groups pass, including four new record-container groups and
-the preserved projected-input/E303 boundary regression. All ten compiler checks
-pass; no failures remain.
+Projected borrowed-record candidates remain separate; known locations do not
+imply known contained-reference origins. All 194 dependency groups pass, including
+four new chain groups. Temporary views allow immediate use and retain E303 for
+statement escapes. All ten compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1369,21 +1368,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1175
-  library/903 native tests (2078 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1179
+  library/903 native tests (2082 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-stored-result-views-gate.log`.
-- All 190 dependency groups pass. Four new container groups cover inline/copied/
-  composed views, nested/nullable records, nulls, multiple and unknown candidates,
-  contained dependency marks and input capacity. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded checker evidence.
-  Existing E303 and unsupported-projection regressions remain green.
-- Flags/outcomes remain B001-gated. Shared-chain/projected input candidates for
-  returned record views, broader result shapes, allocator-bound analysis,
-  heterogeneous unions, precise joins, callee effect/data/control summaries and
-  conditional-exit control remain open. Runtime sources, reference fixtures,
-  dependencies and versions are unchanged; editor and separate runtime/sanitizer
-  gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-returned-record-input-chains-gate.log`.
+- All 194 dependency groups pass. Four new shared-chain groups cover direct/deep/
+  record-stored inputs, mixed and unknown locations, contained marks, type depth,
+  immediate temporary use and E303 statement escapes. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Projected borrowed-record candidates for
+  returned views, broader result shapes, allocator-bound analysis, heterogeneous
+  unions, precise joins, callee effect/data/control summaries and conditional-exit
+  control remain open. Runtime sources, reference fixtures, dependencies and
+  versions are unchanged; editor and separate runtime/sanitizer gates were not
+  rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1518,12 +1516,13 @@ explicitly documented. No outstanding failures remain.
    Direct shared concrete-record results now retain exact-compatible argument
    locations through copies/nested calls; known locations do not imply known
    contents. By-value nested/nullable record containers now supply stored exact
-   view candidates through existing cell snapshots. Next support shared input
-   chains ending in the exact returned record-view type in
-   `calls/cells/record_results.rs`; expand compatible inner locations with bounded
-   depth/work and preserve other borrowed-record shapes as incomplete. Test
-   direct/stored/deep chains, unknown intermediates and lifetimes before the full
-   gate. Projected borrowed-record candidates, heterogeneous
+   view candidates through existing cell snapshots. Shared input chains now expand
+   to exact-compatible record-view locations, including record-stored chains.
+   Next support projected/stored record-view candidates from borrowed-record
+   arguments using the existing bounded view/location traversal and public contract
+   projections. Keep reusable matcher changes separate from integration where
+   useful; test nested owned projections, stored views, mixed/unknown locations and
+   lifetime/depth limits before the full gate. Heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result

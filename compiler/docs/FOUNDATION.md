@@ -203,8 +203,11 @@ pointing to concrete records containing references retain locations from all
 exact-compatible shared arguments, including copies and nested calls. By-value
 record containers also contribute matching stored views through nested/nullable
 fields, copies and composition; null containers contribute no locations. Unknown
-matching fields stay incomplete. Shared-chain and projected borrowed-record inputs
-remain separate for this result subset. Known record
+matching fields stay incomplete. Shared input chains can supply exact-compatible
+inner record-view locations through bounded expansion, including chains stored in
+record fields. Unknown intermediate cells remain incomplete and temporary chains
+retain ordinary statement lifetimes. Projected borrowed-record inputs remain
+separate for this result subset. Known record
 locations do not make unknown contained-reference origins complete.
 Shared returns of supported
 scalar/list/record views retain
