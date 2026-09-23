@@ -220,9 +220,11 @@ public argument matching, including nested named fields, copies and nested calls
 All compatible arguments remain candidates; unknown inputs keep snapshots
 incomplete. Carrier-cell fields also retain locations through copied/nested results
 and later origin queries, including borrowed-record views. Direct carrier-field
-access on call expressions is supported. Cell queries share nested-call depth
-without replaying calls. Ordinary direct reference projections, subrecord call
-projections, coercion wrappers and heterogeneous result layouts remain separate.
+access on call expressions is supported. Direct ordinary reference projections and
+projected subrecord copies/compositions retain the same origins and carrier
+snapshots through bounded owned-field paths. Source queries share nested-call
+depth without replaying calls. Unknown arguments remain incomplete. Coercion
+wrappers and heterogeneous result layouts remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

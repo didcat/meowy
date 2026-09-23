@@ -124,3 +124,60 @@ pub(crate) fn record_call_source_paths_preserve_order_and_bounds() {
     assert!(checker.record_source_path(base, &path).is_ok());
     assert!(checker.record_source_path(base, &[0; 33]).is_err());
 }
+
+#[test]
+pub(crate) fn record_call_projections_keep_reference_and_subrecord_origins() {
+    for tail in [
+        "out:f(&x).inner.r",
+        "row:f(&x).inner;out:row.r",
+        "row:{->f(&x).inner};out:row.r",
+        "out:g(f(&x).inner).r",
+    ] {
+        let source = format!(
+            "<R>:<{{r<&boolean>}}>;<N>:<{{inner<R>}}>;f<N>:(p<&boolean>){{->inner:{{->r:p}}}};g<R>:(p<R>){{->r:p.r}};x:=false;{tail}"
+        );
+        crate::compile(&source).unwrap();
+        let mut checker = Checker::new();
+        statements(&mut checker, &source);
+        let x = id(&checker, "x");
+        let out = id(&checker, "out");
+        assert!(checker.pointees[&out].complete, "{tail}");
+        assert_eq!(checker.pointees[&out].roots, BTreeSet::from([x]));
+        checker.mark_derived(x);
+        assert!(checker.derived_local(out));
+    }
+}
+
+#[test]
+pub(crate) fn record_call_projections_preserve_unknowns_and_call_depth() {
+    for (arg, complete) in [("&y", true), ("{->&y}", false)] {
+        let source = format!(
+            "<R>:<{{r<&boolean>}}>;<N>:<{{inner<R>}}>;f<N>:(a<&boolean>,b<&boolean>){{->inner:{{->r:a}}}};g<R>:(p<R>){{->r:p.r}};x:=false;y:=true;out:g(f(&x,{arg}).inner).r"
+        );
+        crate::compile(&source).unwrap();
+        let mut checker = Checker::new();
+        let stmts = statements(&mut checker, &source);
+        let origins = &checker.pointees[&id(&checker, "out")];
+        assert_eq!(origins.complete, complete);
+        let mut roots = BTreeSet::from([id(&checker, "x")]);
+        if complete {
+            roots.insert(id(&checker, "y"));
+        }
+        assert_eq!(origins.roots, roots);
+        let crate::hir::Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+            panic!()
+        };
+        let calls = checker.calls;
+        checker.reference_origins(value).unwrap();
+        assert_eq!(checker.calls, calls);
+        let error = checker
+            .reference_origins_at(value, crate::check::dependencies::calls::MAX_DEPTH)
+            .err()
+            .unwrap();
+        assert_eq!(error.code, "B001");
+        assert!(error.message.contains("call depth"));
+    }
+    let source =
+        "<R>:<{r<&boolean>}>;f<R>:(p<&boolean>){local:false;->r:&local};x:=false;out:f(&x).r";
+    assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
+}

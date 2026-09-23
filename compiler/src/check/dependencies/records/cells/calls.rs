@@ -93,3 +93,59 @@ pub(crate) fn nested_record_carrier_calls_share_depth_and_keep_lifetime_errors()
         "<R>:<{c<& &boolean>}>;f<R>:(p<& &boolean>){local:*p;->c:&local};x:=false;a:&x;row:f(&a)";
     assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
 }
+
+#[test]
+pub(crate) fn record_call_subrecord_projections_keep_carrier_snapshots() {
+    for tail in [
+        "out:*(f(&a).inner.c)",
+        "row:f(&a).inner;out:*(row.c)",
+        "row:g(f(&a).inner);out:*(row.c)",
+    ] {
+        let source = format!(
+            "<R>:<{{c<& &boolean>}}>;<N>:<{{inner<R>}}>;f<N>:(p<& &boolean>){{->inner:{{->c:p}}}};g<R>:(p<R>){{->c:p.c}};x:=false;a:&x;{tail}"
+        );
+        crate::compile(&source).unwrap();
+        let mut checker = Checker::new();
+        statements(&mut checker, &source);
+        let x = id(&checker, "x");
+        let out = id(&checker, "out");
+        assert!(checker.pointees[&out].complete, "{tail}");
+        assert_eq!(checker.pointees[&out].roots, BTreeSet::from([x]));
+        checker.mark_derived(x);
+        assert!(checker.derived_local(out));
+    }
+}
+
+#[test]
+pub(crate) fn projected_carrier_calls_keep_unknowns_and_depth_limits() {
+    for (arg, complete) in [("&a", true), ("{->&a}", false)] {
+        let source = format!(
+            "<R>:<{{c<& &boolean>}}>;<N>:<{{inner<R>}}>;f<N>:(p<& &boolean>){{->inner:{{->c:p}}}};g<N>:(p<R>){{->inner:{{->c:p.c}}}};x:=false;a:&x;row:g(f({arg}).inner).inner"
+        );
+        crate::compile(&source).unwrap();
+        let mut checker = Checker::new();
+        let stmts = statements(&mut checker, &source);
+        let cells = &checker.record_cells[&id(&checker, "row")][&vec![0]];
+        assert_eq!(cells.complete, complete);
+        assert_eq!(
+            cells.places,
+            if complete {
+                BTreeSet::from([(id(&checker, "a"), vec![])])
+            } else {
+                BTreeSet::new()
+            }
+        );
+        let crate::hir::Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+            panic!()
+        };
+        let calls = checker.calls;
+        checker.record_source_cells(value, &[0]).unwrap();
+        assert_eq!(checker.calls, calls);
+        let error = checker
+            .record_source_cells_at(value, &[0], crate::check::dependencies::calls::MAX_DEPTH)
+            .err()
+            .unwrap();
+        assert_eq!(error.code, "B001");
+        assert!(error.message.contains("call depth"));
+    }
+}

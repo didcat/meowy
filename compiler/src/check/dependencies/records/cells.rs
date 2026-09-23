@@ -138,8 +138,9 @@ impl Checker {
                 value.span,
             ));
         }
-        if let crate::hir::ExprKind::Call { args, .. } = &value.kind {
-            let Some(ty) = self.record_call_field_type(value, path)? else {
+        let (base, fields) = self.record_source_path(value, path)?;
+        if let crate::hir::ExprKind::Call { args, .. } = &base.kind {
+            let Some(ty) = self.record_call_field_type(base, &fields)? else {
                 return Ok(Cells::default());
             };
             if !matches!(ty, crate::hir::Type::Reference(_))
@@ -147,7 +148,7 @@ impl Checker {
             {
                 return Ok(Cells::default());
             }
-            return self.call_result_cells(ty, value, args, depth);
+            return self.call_result_cells(ty, base, args, depth);
         }
         let sources = match self.record_source_locations(value, path)? {
             RecordSource::Unknown => return Ok(Cells::default()),

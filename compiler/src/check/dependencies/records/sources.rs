@@ -150,8 +150,9 @@ impl Checker {
                 value.span,
             ));
         }
-        if let ExprKind::Call { args, .. } = &value.kind {
-            return self.record_call_field_origins(value, args, path, depth);
+        let (base, fields) = self.record_source_path(value, path)?;
+        if let ExprKind::Call { args, .. } = &base.kind {
+            return self.record_call_field_origins(base, args, &fields, depth);
         }
         let sources = match self.record_source_locations(value, path)? {
             RecordSource::Unknown => return Ok(Origins::default()),

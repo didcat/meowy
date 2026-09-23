@@ -356,21 +356,25 @@ roots and copy reads. Native origin/admission coverage and all ten compiler
 checks pass. Descriptor outcomes and transitive phase/dependency tracking remain
 unfinished; no descriptor payload is materialized by pending metadata.
 
+Record-call projections now share bounded owned-field paths. Direct reference
+reads and projected subrecord copies/compositions retain ordinary origins and
+carrier snapshots. All 233 dependency-filtered tests and all ten compiler checks
+pass. Path prerequisite: `7ac361a`. Coercion wrappers remain the next slice;
+proof flags/outcomes stay gated.
+
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1201
-  library/903 native tests (2104 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1206
+  library/903 native tests (2109 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-call-carriers-gate.log`.
-- All 216 dependency groups pass. Four new carrier-field groups cover copied/
-  nested results, direct carrier-field access, deeper carriers, borrowed-record
-  views, all/unknown candidates, propagated depth, no replay, invalid paths and
-  E303 lifetime rejection. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded checker evidence. Prerequisites: `ee3a574`
-  (explicit result types) and `862eea2` (depth and field-type lookup).
-- Flags/outcomes remain B001-gated. Ordinary direct reference projections,
-  subrecord call projections, coercion wrappers, broader result shapes, allocator-
-  bound analysis, heterogeneous unions, precise joins, callee effect/data/control
+  0 failed in debug/release. Log: `/tmp/meowy-record-projections-gate.log`.
+- All 233 dependency-filtered tests pass. Five new groups cover ordered/bounded
+  paths, direct reference reads, nested subrecord copies/compositions, carrier
+  snapshots, all/unknown candidates, propagated call depth, no replay and E303
+  lifetime rejection. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded checker evidence. Path prerequisite: `7ac361a`.
+- Flags/outcomes remain B001-gated. Coercion wrappers, broader result shapes,
+  allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
   fixtures, dependencies and versions are unchanged; editor and separate runtime/
   sanitizer gates were not rerun. Full release qualification remains open.

@@ -331,7 +331,9 @@ impl Checker {
                         .cloned()
                         .unwrap_or_default());
                 }
-                ExprKind::Field { value, index } => return Ok(self.field_origins(value, *index)),
+                ExprKind::Field { value, index } => {
+                    return self.record_source_origins_at(value, &[*index], depth);
+                }
                 ExprKind::Reborrow { value: inner, .. }
                 | ExprKind::ElementBorrow { value: inner, .. }
                 | ExprKind::Coerce { value: inner } => value = inner,
