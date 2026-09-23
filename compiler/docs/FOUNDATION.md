@@ -127,8 +127,11 @@ preserve those owners, and later owner marks reach reads. Named record emissions
 retain source snapshots. Traversal is capped at 32 levels and 256 visited record
 fields and uses the existing analysis budget. Unknown field origins retain known
 possibilities but remain incomplete. Ordinary type and ownership checks still apply.
-Indexed aggregate references, record coercions, composition and call-returned
-record origins remain separate. Precise overwrite/
+Record composition retains the source temporary's origin snapshot and maps fields
+by name, including when destination positions differ. Conditional named/composed
+alternatives merge known owners and retain incompleteness from unknown sources.
+Later source writes do not change a composed snapshot. Indexed aggregate references,
+record coercions and call-returned record origins remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

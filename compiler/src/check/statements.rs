@@ -563,6 +563,7 @@ impl Checker {
         {
             let ty = value.ty.clone();
             let id = self.local(ty.clone());
+            self.track_record_references(id, &value, false)?;
             let local = hir::Expr {
                 kind: hir::ExprKind::Local(id),
                 ty: ty.clone(),
@@ -605,6 +606,9 @@ impl Checker {
                 ));
             }
             self.composed_inputs(target, &stmts)?;
+            if self.record_pointees.contains_key(&id) {
+                self.record_compositions.entry(target).or_default().push(id);
+            }
         } else if let Some(name) = name {
             let ty = value.ty.clone();
             let id = self.local(ty.clone());

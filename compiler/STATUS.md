@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-22. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-23. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -295,6 +295,24 @@ Nested producers, named-emission snapshots and prefix updates are implemented.
 Focused checks pass for construction, copies, subrecords, conditional replacements,
 unknown sources, depth limits and ordinary errors. All ten compiler checks pass
 (`/tmp/meowy-proof-nested-records-gate.log`); no outstanding failures remain.
+
+### Record composition origin slice
+
+Snapshot origins on the existing composition temporary and retain successful
+composition sources per target block. Resolve destination field names back to
+source field paths, merging named/composed alternatives with existing origin
+bounds/completeness. Test reordered fields, nested records, conditional composition,
+copy snapshots and unknown sources, then run the full compiler gate and commit.
+
+Inspection: record acceptance uses exact alternatives; general union coercion
+metadata needs separate work. Composition is an immediate origin gap because its
+temporary is not an ordinary binding and composed fields have no named aliases.
+Indexed/coerced/call-returned origins and precise joins remain unfinished. Flags
+stay gated. No ownership or runtime layout rules change in this slice.
+All five composition groups and all ten compiler checks pass, including ordinary
+compilation of composed records and conditional mixed completeness
+(`/tmp/meowy-proof-composition-gate.log`). No outstanding failures remain.
+Composition snapshots and name-based lookup reuse existing origin limits.
 
 ### Prerequisites and current integration
 
@@ -1112,20 +1130,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1040
-  library/903 native tests (1943 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1045
+  library/903 native tests (1948 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-nested-records-gate.log`.
-- Five new nested-source checker groups cover construction, record/subrecord
-  copies, projections, nested field writes, conditional subrecord replacements,
-  unknown sources, depth limits and ordinary E207/E305 preservation. Accepted
-  nested programs also pass ordinary compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone.
-  Indexed aggregates, coercion/composition, returned origins, precise joins,
-  function summaries and conditional-exit control remain unfinished. Runtime
-  sources, reference fixtures, dependencies and versions are unchanged; editor
-  and separate runtime/sanitizer gates were not rerun. Full release qualification
-  remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-composition-gate.log`.
+- Five new checker groups cover composition field-name mapping, nested fields,
+  conditional alternatives, snapshots after source writes, mixed completeness and
+  ordinary E205 duplicate-field preservation. Accepted fixtures pass ordinary
+  compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
+  indexed aggregates, record coercions, returned origins, precise joins, function
+  summaries and conditional-exit control remain unfinished. Runtime sources,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1207,8 +1224,9 @@ explicitly documented. No outstanding failures remain.
    origins through direct blocks/copies and local field projections. Whole-record
    replacement and direct mutable reference-field writes now merge those origins.
    Nested construction, named-emission snapshots, record/subrecord copies and
-   scalar/subrecord writes now share bounded ordered paths. Next extend indexed
-   aggregate origins, record coercion/composition and call-returned origins while
+   scalar/subrecord writes now share bounded ordered paths. Composition now retains
+   temporary snapshots and maps field names to source paths. Next extend indexed
+   aggregate origins, record coercions and call-returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

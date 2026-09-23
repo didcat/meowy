@@ -24,8 +24,7 @@ impl Checker {
                 value.span,
             ));
         }
-        let mut origins = Origins::default();
-        let mut found = false;
+        let mut sources = Vec::new();
         for (id, alias) in &self.proofs.aliases {
             if alias.target != block.id || alias.field != fields[*index].name {
                 continue;
@@ -37,6 +36,46 @@ impl Checker {
                     .get(id)
                     .and_then(|fields| fields.get(tail))
             };
+            sources.push(source);
+        }
+        if let Some(compositions) = self.record_compositions.get(&block.id) {
+            if !self.flow.spend(compositions.len()) {
+                return Err(Diagnostic::unsupported(
+                    "proof record origin budget exhausted",
+                    value.span,
+                ));
+            }
+            for id in compositions {
+                let Type::Record {
+                    fields: source_fields,
+                    ..
+                } = &self.locals[*id]
+                else {
+                    unreachable!()
+                };
+                if !self.flow.spend(source_fields.len()) {
+                    return Err(Diagnostic::unsupported(
+                        "proof record origin budget exhausted",
+                        value.span,
+                    ));
+                }
+                if let Some(source_index) = source_fields
+                    .iter()
+                    .position(|field| field.name == fields[*index].name)
+                {
+                    let mut source_path = vec![source_index];
+                    source_path.extend(tail);
+                    sources.push(
+                        self.record_pointees
+                            .get(id)
+                            .and_then(|fields| fields.get(&source_path)),
+                    );
+                }
+            }
+        }
+        let mut origins = Origins::default();
+        let mut found = false;
+        for source in sources {
             if !self
                 .flow
                 .spend(source.map_or(0, |source| source.roots.len()) + 1)
@@ -66,3 +105,6 @@ impl Checker {
         Ok(origins)
     }
 }
+
+#[cfg(test)]
+mod tests;

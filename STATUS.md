@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-22. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-23. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -204,8 +204,14 @@ lookup and seeded subrecord-copy lookup now also pass all 1035 library tests;
 nested producers and write updates are now integrated. Origin traversal is bounded
 to 32 levels and 256 visited record fields; scalar/subrecord writes merge selected
 paths and preserve sibling metadata and prior copies. All five nested-source
-groups and all ten compiler checks pass. Indexed/coerced/composed and returned origins
+groups and all ten compiler checks pass. Indexed/coerced and returned origins
 remain incomplete; flags stay gated.
+
+Record composition now snapshots reference origins on its existing temporary and
+maps destination fields to source names/paths. Nested/conditional compositions
+retain possible owners and completeness; later source writes do not alter the
+snapshot. All five focused groups and all ten compiler checks pass. Indexed,
+coerced and call-returned origins remain incomplete, and flags stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -229,20 +235,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1040
-  library/903 native tests (1943 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1045
+  library/903 native tests (1948 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-nested-records-gate.log`.
-- Five new nested-source checker groups cover construction, record/subrecord
-  copies, projections, nested field writes, conditional subrecord replacements,
-  unknown sources, depth limits and ordinary E207/E305 preservation. Accepted
-  nested programs also pass ordinary compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone.
-  Indexed aggregates, coercion/composition, returned origins, precise joins,
-  function summaries and conditional-exit control remain unfinished. Runtime
-  sources, reference fixtures, dependencies and versions are unchanged; editor
-  and separate runtime/sanitizer gates were not rerun. Full release qualification
-  remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-composition-gate.log`.
+- Five new checker groups cover composition field-name mapping, nested fields,
+  conditional alternatives, snapshots after source writes, mixed completeness and
+  ordinary E205 duplicate-field preservation. Accepted fixtures pass ordinary
+  compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
+  indexed aggregates, record coercions, returned origins, precise joins, function
+  summaries and conditional-exit control remain unfinished. Runtime sources,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 
