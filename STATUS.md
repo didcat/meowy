@@ -310,7 +310,9 @@ records before matching stored and owned-field candidates. Nested borrowed-recor
 view fields now use a bounded type/location worklist, preserving unknown
 alternatives. References to nullable single-record targets now reuse this
 traversal, including known-null and nested views. All 153 dependency groups and
-all ten compiler checks pass.
+all ten compiler checks pass. One-level returned shared carriers now retain exact
+argument cell locations through copies and nested calls, preserving unknown
+alternatives. All 158 dependency groups and all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -334,20 +336,21 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1138
-  library/903 native tests (2041 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1143
+  library/903 native tests (2046 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nullable-record-target-gate.log`.
-- All 153 dependency groups pass. Four new nullable-target groups cover direct/
-  copied references, shared chains, nested views, wrapped/null values, unknown
-  fields/locations and heterogeneous-union exclusion. Accepted fixtures pass
-  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Returned shared carrier cells and broader
-  returned shapes, allocator-bound pointees, heterogeneous unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain open.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-returned-cells-gate.log`.
+- All 158 dependency groups pass. Five new returned-cell groups cover direct/
+  nested calls, copies, all exact-compatible candidates, unknown inputs, no call
+  replay, depth/work limits, E303 lifetime rejection and aggregate-input exclusion.
+  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
+  seeded checker evidence.
+- Flags/outcomes remain B001-gated. Deeper returned carriers, aggregate-stored
+  return candidates, returned borrowed-record views, allocator-bound pointees,
+  heterogeneous unions, precise joins, callee effect/data/control summaries and
+  conditional-exit control remain open. Runtime sources, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

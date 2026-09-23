@@ -35,6 +35,20 @@ impl Checker {
     }
 
     pub(crate) fn reference_cell(&mut self, expr: &Expr) -> crate::check::Result<Cells> {
+        self.reference_cell_at(expr, 0)
+    }
+
+    pub(crate) fn reference_cell_at(
+        &mut self,
+        expr: &Expr,
+        calls: usize,
+    ) -> crate::check::Result<Cells> {
+        if calls > super::calls::MAX_DEPTH {
+            return Err(crate::diagnostic::Diagnostic::unsupported(
+                "proof reference cell call depth exhausted",
+                expr.span,
+            ));
+        }
         let mut value = expr;
         let mut depth = 0;
         let mut cells = loop {
@@ -51,6 +65,9 @@ impl Checker {
                         places: BTreeSet::from([(*id, Vec::new())]),
                         complete: true,
                     };
+                }
+                ExprKind::Call { args, .. } => {
+                    break self.call_reference_cells(value, args, calls)?;
                 }
                 ExprKind::Local(id) => {
                     break self

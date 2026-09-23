@@ -1,3 +1,4 @@
+mod cells;
 mod inputs;
 
 use super::{Checker, Origins};
