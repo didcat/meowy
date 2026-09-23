@@ -29,18 +29,20 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current shared-chain returned-view slice
+### Current projected returned-record view series
 
-Plan: reuse bounded shared-view matching to find exact-compatible inner record
-views in direct and record-stored input chains. Expand the retained locations by
-that shared depth, preserving unknown alternatives and unsupported record shapes.
-Keep direct/deep/stored/mixed/unknown, lifetime and depth-limit tests with this
-change; run the full compiler gate before committing. Outcomes remain gated.
+1. Make carrier-result depth optional in the existing record-location matcher so
+   record-view results can reuse its projected/nested locations. Keep existing
+   callers in carrier mode, validate focused checks and commit the prerequisite.
+2. Integrate projected/stored borrowed-record candidates for concrete record-view
+   results, preserving the exact-compatible fast path and incomplete unsupported
+   shapes. Test nested owned projections, stored views, mixed/unknown locations,
+   downstream origins and traversal limits; run the compiler gate before commit.
 
-Projected borrowed-record candidates remain separate; known locations do not
-imply known contained-reference origins. All 194 dependency groups pass, including
-four new chain groups. Temporary views allow immediate use and retain E303 for
-statement escapes. All ten compiler checks pass; no failures remain.
+Location and contents remain distinct. Proof outcomes stay gated. Existing callers
+now explicitly select carrier-depth mode. All 194 dependency groups and formatting
+pass (`/tmp/meowy-record-result-mode-focused.log`); record-result integration and
+the final compiler gate remain next.
 
 ### Proof dependency implementation slices
 

@@ -80,7 +80,7 @@ impl Checker {
                     locations = self.expand_reference_cells(locations, expr)?;
                 }
                 let Some(source) =
-                    self.returned_record_cells(locations, view, expr, result_depth)?
+                    self.returned_record_cells(locations, view, expr, Some(result_depth))?
                 else {
                     return Ok(Cells::default());
                 };

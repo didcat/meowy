@@ -7,7 +7,7 @@ impl Checker {
         locations: Cells,
         ty: &Type,
         expr: &Expr,
-        result_depth: usize,
+        result_depth: Option<usize>,
     ) -> Result<Option<Cells>> {
         let mut cells = Cells {
             complete: true,
@@ -93,6 +93,9 @@ impl Checker {
                 }
                 let Some(field_depth) = self.shared_cell_depth(ty, expr)? else {
                     return Ok(None);
+                };
+                let Some(result_depth) = result_depth else {
+                    continue;
                 };
                 if field_depth < result_depth {
                     continue;

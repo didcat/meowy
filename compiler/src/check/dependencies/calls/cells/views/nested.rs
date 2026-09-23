@@ -111,7 +111,12 @@ pub(crate) fn unknown_nested_returned_cell_views_keep_total_depth_bounded() {
         }));
     }
     let error = checker
-        .returned_record_cells(crate::check::dependencies::Cells::default(), &ty, value, 2)
+        .returned_record_cells(
+            crate::check::dependencies::Cells::default(),
+            &ty,
+            value,
+            Some(2),
+        )
         .err()
         .unwrap();
     assert_eq!(error.code, "B001");
