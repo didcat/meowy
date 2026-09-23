@@ -373,21 +373,24 @@ Nested immutable union-field construction and subrecord projections now preserve
 shape selections and merge checked initializer alternatives. Composition temporaries
 now retain immutable snapshots; destination fields map to source names and shape
 paths. Unknown alternatives stay incomplete. Merge prerequisite: `0bba0cb`.
-All 272 dependency-filtered tests and all ten compiler checks pass. Immutable named
-emissions and sibling aliases are next; mutable/temporary producers and proof flags
-stay gated.
+Immutable named emissions now retain shaped snapshots. Sibling aliases merge at
+canonical slot roots, while ordinary copies retain their prior snapshots. Canonical
+storage prerequisite: `7ab6a30`. All 281 dependency-filtered tests and all ten
+compiler checks pass. Ordinary mutable whole-union replacement is next; mutable slots/fields,
+temporary producers and proof outcomes remain separate.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1245
-  library/903 native tests (2148 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1254
+  library/903 native tests (2157 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-compositions-gate.log`.
-- All 272 dependency-filtered tests pass. Six composition groups cover reordered
-  and nested fields, nullable/carrier snapshots, mixed/unknown alternatives,
-  independent siblings, prior snapshots, exact candidate/payload limits, no replay
-  and E302 loan rejection. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded. Merge prerequisite: `0bba0cb`.
+  0 failed in debug/release. Log: `/tmp/meowy-named-unions-gate.log`.
+- All 281 dependency-filtered tests pass. Three storage groups cover canonical
+  alias merging, prior copies, missing keys, atomic failures and combined limits.
+  Six emission groups cover lexical/nested copies, sibling alternatives, carriers,
+  later marks, null/unknown sources, mutable-slot exclusion and query/loan checks.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  Canonical-storage prerequisite: `7ab6a30`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
