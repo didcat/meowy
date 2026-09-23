@@ -104,6 +104,24 @@ impl Checker {
         value: &Expr,
         path: &[usize],
     ) -> Result<Origins> {
+        self.record_source_origins_at(value, path, 0)
+    }
+
+    pub(crate) fn record_source_origins_at(
+        &mut self,
+        value: &Expr,
+        path: &[usize],
+        depth: usize,
+    ) -> Result<Origins> {
+        if depth > crate::check::dependencies::calls::MAX_DEPTH {
+            return Err(Diagnostic::unsupported(
+                "proof record origin call depth exhausted",
+                value.span,
+            ));
+        }
+        if let ExprKind::Call { args, .. } = &value.kind {
+            return self.record_call_field_origins(value, args, path, depth);
+        }
         let sources = match self.record_source_locations(value, path)? {
             RecordSource::Unknown => return Ok(Origins::default()),
             RecordSource::Empty => {
@@ -159,3 +177,5 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+mod calls;

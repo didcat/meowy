@@ -215,7 +215,11 @@ value still has its real storage location but contributes no contained reference
 owners. Returned shared carrier chains may end in borrowed records as well.
 Compatible intermediate carrier locations are retained before terminal expansion,
 including carriers stored in borrowed records. Unknown layers remain incomplete.
-Heterogeneous record result layouts and record-valued call snapshots remain separate.
+Direct record-valued calls retain ordinary shared-reference field origins through
+public argument matching, including nested named fields, copies and nested calls.
+All compatible arguments remain candidates; unknown inputs keep snapshots
+incomplete. Carrier-cell fields, direct field projections from call expressions,
+coercion wrappers and heterogeneous result layouts remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

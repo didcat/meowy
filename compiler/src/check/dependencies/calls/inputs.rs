@@ -74,7 +74,7 @@ impl Checker {
                         } else if path.is_empty() {
                             self.reference_origins_at(arg, depth + 1)?
                         } else {
-                            self.record_source_origins(arg, &path)?
+                            self.record_source_origins_at(arg, &path, depth + 1)?
                         }
                     }
                 }
