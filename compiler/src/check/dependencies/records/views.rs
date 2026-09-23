@@ -52,7 +52,7 @@ pub(crate) fn mutable_view_field_updates_keep_prior_record_snapshots() {
 
 #[test]
 pub(crate) fn returned_and_reference_bearing_view_fields_remain_incomplete() {
-    let source = "f<&boolean[2]>:(v<&boolean[2]>){->v};x<boolean[2]>:=[false,true];row:{->view:f(&x)};r:&(row.view[1])";
+    let source = "f<&boolean[2]>:(v<&boolean[2]>){->v};x<boolean[2]>:=[false,true];row:{->view:f({->&x})};r:&(row.view[1])";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);

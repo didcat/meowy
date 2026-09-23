@@ -10,8 +10,18 @@ impl Checker {
         args: &[Expr],
         depth: usize,
     ) -> Result<Origins> {
-        if !crate::borrow_contract::reference_call(&expr.ty, args.iter().map(|arg| &arg.ty)) {
-            return Ok(Origins::default());
+        let scalar =
+            crate::borrow_contract::reference_call(&expr.ty, args.iter().map(|arg| &arg.ty));
+        if !scalar {
+            let shared = matches!(&expr.ty, crate::hir::Type::Reference(ty) if !ty.has_borrowed())
+                && Self::origin_reference(&expr.ty);
+            let inputs = args.iter().all(|arg| {
+                !arg.ty.has_borrowed()
+                    || matches!(&arg.ty, crate::hir::Type::Reference(ty) if !ty.has_borrowed())
+            });
+            if !shared || !inputs {
+                return Ok(Origins::default());
+            }
         }
         if !self.flow.spend(args.len() + 1) {
             return Err(Diagnostic::unsupported(
@@ -22,7 +32,13 @@ impl Checker {
         let mut origins = Origins::default();
         let mut found = false;
         for arg in args {
-            if !crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty) {
+            let candidate = if scalar {
+                crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty)
+            } else {
+                !crate::borrow_contract::projections(&arg.ty, &expr.ty, &mut self.flow, expr.span)?
+                    .is_empty()
+            };
+            if !candidate {
                 continue;
             }
             let source = self.reference_origins_at(arg, depth + 1)?;
@@ -121,5 +137,67 @@ mod tests {
             .unwrap();
         assert_eq!(error.code, "B001");
         assert!(error.message.contains("call depth"));
+    }
+}
+
+#[cfg(test)]
+mod views {
+    use crate::check::{
+        Checker,
+        dependencies::{carriers::id, tests::statements},
+    };
+    use std::collections::BTreeSet;
+
+    #[test]
+    pub(crate) fn returned_shared_views_preserve_container_and_projected_owners() {
+        for source in [
+            "f<&boolean[2]>:(p<&boolean[2]>){->p};x<boolean[2]>:=[false,true];r:f(&x)",
+            "f<&boolean[2]>:(p<&boolean[2]>){->p};x<boolean[2]>:=[false,true];r:f(f(&x))",
+            "f<&boolean>:(p<&boolean[2]>){->&(p[1])};x<boolean[2]>:=[false,true];r:f(&x)",
+            "f<&boolean[2]>:(p<&boolean[2][2]>){->&(p[1])};x<boolean[2][2]>:=[[false,true],[true,false]];r:f(&x)",
+            "<R>:<{flag<boolean>}>;f<&R>:(p<&R>){->p};x<R>:{->flag:false};r:f(&x)",
+            "<R>:<{flag<boolean>}>;f<&boolean>:(p<&R>){->p.&flag};x<R>:{->flag:false};r:f(&x)",
+        ] {
+            crate::compile(source).unwrap();
+            let mut checker = Checker::new();
+            statements(&mut checker, source);
+            let owner = id(&checker, "x");
+            let r = id(&checker, "r");
+            assert_eq!(
+                checker.pointees[&r].roots,
+                BTreeSet::from([owner]),
+                "{source}"
+            );
+            assert!(checker.pointees[&r].complete);
+            checker.mark_derived(owner);
+            assert!(checker.derived_local(r));
+        }
+    }
+
+    #[test]
+    pub(crate) fn projected_call_candidates_keep_all_compatible_argument_owners() {
+        let source = "<R>:<{flag<boolean>}>;f<&boolean>:(a<&R>,b<&boolean[1]>){->a.&flag};x<R>:{->flag:false};y<boolean[1]>:=[true];r:f(&x,&y)";
+        crate::compile(source).unwrap();
+        let mut checker = Checker::new();
+        statements(&mut checker, source);
+        let origins = &checker.pointees[&id(&checker, "r")];
+        assert!(origins.complete);
+        assert_eq!(
+            origins.roots,
+            BTreeSet::from([id(&checker, "x"), id(&checker, "y")])
+        );
+    }
+
+    #[test]
+    pub(crate) fn shared_view_calls_preserve_incomplete_inputs_and_borrowed_shape_gates() {
+        for source in [
+            "f<&boolean[1]>:(p<&boolean[1]>){->p};x<boolean[1]>:=[true];r:f({->&x})",
+            "<R>:<{r<&boolean>}>;f<&boolean>:(p<R>){->p.r};x:=false;r:f({->r:&x})",
+        ] {
+            crate::compile(source).unwrap();
+            let mut checker = Checker::new();
+            statements(&mut checker, source);
+            assert!(!checker.pointees[&id(&checker, "r")].complete);
+        }
     }
 }

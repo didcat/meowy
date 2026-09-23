@@ -521,6 +521,22 @@ fixtures now use untracked block-produced references rather than known direct
 arguments. All ten compiler checks pass (`/tmp/meowy-proof-return-origins-gate.log`);
 no outstanding failures remain.
 
+### Shared aggregate-view return origins
+
+Extend call-origin tracking to the bounded general borrow-contract subset whose
+shared-reference inputs/results have no borrowed components. Reuse the existing
+`borrow_contract::projections` relation for record fields/list elements, retaining
+whole-container owners and all compatible candidates. Test direct/nested views,
+projected returns, mixed completeness and preserved ordinary checks, then run the
+full compiler gate and commit.
+
+By-value borrowed aggregates, reference-bearing/allocator-bound pointees, returned
+carriers/records and function effect/data/control summaries remain separate.
+No private body is evaluated or used to narrow candidates; flags stay gated.
+Three focused return-view groups and all 111 dependency groups pass. Direct record
+views and nested-list projections also pass. All ten compiler checks pass
+(`/tmp/meowy-proof-return-views-gate.log`); no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1337,19 +1353,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1093
-  library/903 native tests (1996 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1096
+  library/903 native tests (1999 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-return-origins-gate.log`.
-- Five new groups cover shared return-candidate matching, scalar shared/exclusive
-  calls, nested calls, conservative argument unions, unknown inputs, traversal
-  limits/no call replay and preserved E303 invalid-return errors. Accepted fixtures
-  pass ordinary compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Calls outside the scalar-reference contract,
-  heterogeneous record unions, precise joins, function effect/data/control summaries
-  and conditional-exit control remain unfinished. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-return-views-gate.log`.
+- Three new checker groups cover direct/nested returned views, record-field/list-
+  element projections, conservative multiple-argument candidates, unknown inputs
+  and borrowed-shape gates. Accepted fixtures pass ordinary compilation/ownership
+  checks; all 111 dependency groups pass.
+- Flags/outcomes remain B001-gated. Borrowed aggregate arguments, reference-bearing/
+  allocator-bound pointees, broader returned shapes, heterogeneous record unions,
+  precise joins, function effect/data/control summaries and conditional-exit control
+  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
+  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1452,7 +1469,10 @@ explicitly documented. No outstanding failures remain.
    heterogeneous record unions and broader returned origins while
    preserving explicit incomplete sets. Scalar-reference return origins now reuse
    compatible argument candidates from the existing borrow contract; this does not
-   provide callee effect/data/control summaries. Precise overwrite/branch joins and function
+   provide callee effect/data/control summaries. Shared returned scalar/list/record
+   views now also reuse general-contract field/element projections when referenced
+   components have no borrowed values. Borrowed arguments and broader returned
+   shapes remain separate. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads

@@ -54,8 +54,7 @@ pub(crate) fn element_selection_marks_and_unrelated_containers_remain_separate()
 
 #[test]
 pub(crate) fn returned_list_views_do_not_invent_known_owners() {
-    let source =
-        "f<&boolean[2]>:(v<&boolean[2]>){->v};x<boolean[2]>:=[false,true];view:f(&x);r:&(view[1])";
+    let source = "f<&boolean[2]>:(v<&boolean[2]>){->v};x<boolean[2]>:=[false,true];view:f({->&x});r:&(view[1])";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);

@@ -288,6 +288,12 @@ nested-call traversal and unknown-input completeness. Four call groups and all 1
 dependency groups and all ten compiler checks pass. No function body is evaluated
 or specialized by this analysis, and proof flags remain gated.
 
+Shared returned views of lists/records without borrowed components now retain
+compatible projected argument owners using the existing borrow-contract relation.
+Three focused groups and all 111 dependency groups pass. Unknown inputs stay
+incomplete; all ten compiler checks pass. Callee effect/data/control summaries
+remain separate and proof flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -310,19 +316,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1093
-  library/903 native tests (1996 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1096
+  library/903 native tests (1999 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-return-origins-gate.log`.
-- Five new groups cover shared return-candidate matching, scalar shared/exclusive
-  calls, nested calls, conservative argument unions, unknown inputs, traversal
-  limits/no call replay and preserved E303 invalid-return errors. Accepted fixtures
-  pass ordinary compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Calls outside the scalar-reference contract,
-  heterogeneous record unions, precise joins, function effect/data/control summaries
-  and conditional-exit control remain unfinished. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-return-views-gate.log`.
+- Three new checker groups cover direct/nested returned views, record-field/list-
+  element projections, conservative multiple-argument candidates, unknown inputs
+  and borrowed-shape gates. Accepted fixtures pass ordinary compilation/ownership
+  checks; all 111 dependency groups pass.
+- Flags/outcomes remain B001-gated. Borrowed aggregate arguments, reference-bearing/
+  allocator-bound pointees, broader returned shapes, heterogeneous record unions,
+  precise joins, function effect/data/control summaries and conditional-exit control
+  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
+  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Area handoff
 
