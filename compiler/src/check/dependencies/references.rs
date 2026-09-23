@@ -34,9 +34,9 @@ impl Checker {
                         .unwrap_or_default();
                 }
                 ExprKind::Field { value, index } => return self.field_origins(value, *index),
-                ExprKind::Reborrow { value: inner, .. } | ExprKind::Coerce { value: inner } => {
-                    value = inner
-                }
+                ExprKind::Reborrow { value: inner, .. }
+                | ExprKind::ElementBorrow { value: inner, .. }
+                | ExprKind::Coerce { value: inner } => value = inner,
                 _ => return Origins::default(),
             }
         }
@@ -48,10 +48,17 @@ impl Checker {
         value: &Expr,
         merge: bool,
     ) -> crate::check::Result<()> {
-        if !matches!(
-            value.ty.pointee(),
-            Some(Type::Bool | Type::Int { .. } | Type::Float { .. })
-        ) {
+        if !value.ty.pointee().is_some_and(|ty| {
+            !ty.has_reference()
+                && matches!(
+                    ty,
+                    Type::Bool
+                        | Type::Int { .. }
+                        | Type::Float { .. }
+                        | Type::List { .. }
+                        | Type::Record { .. }
+                )
+        }) {
             return Ok(());
         }
         let origins = self.reference_origins(value);
@@ -133,14 +140,14 @@ mod tests {
 
     #[test]
     pub(crate) fn unsupported_reference_origins_are_not_invented() {
-        for source in ["x:=false;r:{->&x};copy:r", "x:{->n:7};r:&x;copy:r"] {
+        for source in ["x:=false;r:{->&x};copy:r", "n:7;x:{->r:&n};r:&x;copy:r"] {
             let mut checker = Checker::new();
             statements(&mut checker, source);
             assert!(
                 checker
                     .pointees
-                    .values()
-                    .all(|origins| !origins.complete && origins.roots.is_empty())
+                    .get(&(checker.locals.len() - 1))
+                    .is_none_or(|origins| !origins.complete)
             );
         }
     }

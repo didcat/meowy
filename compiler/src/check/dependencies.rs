@@ -180,3 +180,6 @@ mod retargets;
 mod slots;
 
 mod records;
+
+#[cfg(test)]
+mod indexed;

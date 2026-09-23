@@ -218,6 +218,12 @@ narrowing, copies and replacement, including nested nullable fields. Known null
 contributes no owners; unknown sources and heterogeneous record unions remain
 incomplete. All four focused groups and all ten compiler checks pass. Flags stay gated.
 
+Shared element borrows now retain their container origin through reference-free
+list/record views, copies, nested indices and scalar reborrows. Three new groups
+and all 68 dependency groups pass, including ordinary ownership validation.
+Returned/temporary and reference-bearing aggregate origins remain incomplete;
+all ten compiler checks pass and flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -240,19 +246,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1049
-  library/903 native tests (1952 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1052
+  library/903 native tests (1955 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-nullable-records-gate.log`.
-- Four new checker groups cover nullable wrapping/narrowing, copies/replacement,
-  nested nullable fields, known null, unknown sources and heterogeneous record
-  unions. Accepted nullable fixtures pass ordinary compilation/ownership checks.
-- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
-  indexed aggregates, heterogeneous record unions, returned origins, precise joins,
-  function summaries and conditional-exit control remain unfinished. Runtime
-  sources, reference fixtures, dependencies and versions are unchanged; editor
-  and separate runtime/sanitizer gates were not rerun. Full release qualification
-  remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-indexed-origins-gate.log`.
+- Three new indexed groups cover shared element borrows, view copies, nested lists,
+  reference-free record-element reborrows, late owner marks, index dependencies,
+  unrelated containers and incomplete returned views. Accepted fixtures pass
+  ordinary compilation/ownership checks; all 68 dependency groups pass.
+- Flags/outcomes remain B001-gated. Whole-container owner sets remain conservative
+  and monotone. Aggregate-stored views, reference-bearing aggregates, temporary/
+  returned origins, heterogeneous record unions, precise joins, function summaries
+  and conditional-exit control remain unfinished. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

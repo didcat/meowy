@@ -133,9 +133,12 @@ alternatives merge known owners and retain incompleteness from unknown sources.
 Later source writes do not change a composed snapshot. Checked wrapping/narrowing
 of one record shape with null retains the same field paths, including nested
 nullable fields. Known null contributes no owners; unknown sources stay incomplete.
-Unions with different record shapes do not share field-index metadata. Indexed
-aggregate references, heterogeneous record unions and call-returned record origins
-remain separate. Precise overwrite/
+Unions with different record shapes do not share field-index metadata. Shared
+list-element borrows retain the container owner through ordinary reference-free
+list/record views, copied views, nested indices and scalar reborrows. Owner sets
+remain whole-container and conservative. Reference-bearing aggregates, views
+stored in aggregate fields, temporary/returned origins and heterogeneous record
+unions remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

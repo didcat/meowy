@@ -331,6 +331,22 @@ origin sets; unknown and heterogeneous sources remain incomplete. All ten compil
 checks pass (`/tmp/meowy-proof-nullable-records-gate.log`); no outstanding failures
 remain.
 
+### Indexed borrow origin slice
+
+Unwrap shared element-borrow expressions to their checked container origin and
+retain ordinary reference bindings to reference-free lists/records. Preserve
+whole-owner identity through view copies, nested indices and reborrowed scalar
+fields. Test ordinary borrow validation, later marks, independent owners, indexed
+control dependencies and incomplete returned/reference-bearing aggregate origins;
+run the full compiler gate and commit this bounded slice.
+
+This does not admit reference-bearing list elements or resolve call/temporary
+origins. Existing lifetime/ownership checks remain authoritative. Flags stay gated.
+Three indexed groups and all 68 dependency groups pass, including ordinary
+compilation/ownership validation, nested list/record-element borrows, late owner
+marks, index dependencies and incomplete returned views. All ten compiler checks
+pass (`/tmp/meowy-proof-indexed-origins-gate.log`); no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1147,19 +1163,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1049
-  library/903 native tests (1952 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1052
+  library/903 native tests (1955 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-nullable-records-gate.log`.
-- Four new checker groups cover nullable wrapping/narrowing, copies/replacement,
-  nested nullable fields, known null, unknown sources and heterogeneous record
-  unions. Accepted nullable fixtures pass ordinary compilation/ownership checks.
-- Flags/outcomes remain B001-gated. Owner sets remain conservative and monotone;
-  indexed aggregates, heterogeneous record unions, returned origins, precise joins,
-  function summaries and conditional-exit control remain unfinished. Runtime
-  sources, reference fixtures, dependencies and versions are unchanged; editor
-  and separate runtime/sanitizer gates were not rerun. Full release qualification
-  remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-indexed-origins-gate.log`.
+- Three new indexed groups cover shared element borrows, view copies, nested lists,
+  reference-free record-element reborrows, late owner marks, index dependencies,
+  unrelated containers and incomplete returned views. Accepted fixtures pass
+  ordinary compilation/ownership checks; all 68 dependency groups pass.
+- Flags/outcomes remain B001-gated. Whole-container owner sets remain conservative
+  and monotone. Aggregate-stored views, reference-bearing aggregates, temporary/
+  returned origins, heterogeneous record unions, precise joins, function summaries
+  and conditional-exit control remain unfinished. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1244,8 +1261,9 @@ explicitly documented. No outstanding failures remain.
    scalar/subrecord writes now share bounded ordered paths. Composition now retains
    temporary snapshots and maps field names to source paths. Nullable wrapping/
    narrowing of a single record shape retains those paths; known null has no owners.
-   Next extend indexed
-   aggregate origins, heterogeneous record unions and call-returned origins while
+   Shared element borrows now retain container origins through reference-free
+   list/record views and reborrows. Next extend aggregate-stored views, broader
+   reference-bearing aggregates, heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
