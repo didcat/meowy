@@ -206,8 +206,9 @@ fields, copies and composition; null containers contribute no locations. Unknown
 matching fields stay incomplete. Shared input chains can supply exact-compatible
 inner record-view locations through bounded expansion, including chains stored in
 record fields. Unknown intermediate cells remain incomplete and temporary chains
-retain ordinary statement lifetimes. Projected borrowed-record inputs remain
-separate for this result subset. Known record
+retain ordinary statement lifetimes. Borrowed-record inputs also contribute
+projected subrecord locations and nested stored views through the bounded
+location matcher, including mixed and unknown candidates. Known record
 locations do not make unknown contained-reference origins complete.
 Shared returns of supported
 scalar/list/record views retain

@@ -41,8 +41,11 @@ outcome is constructed. The reference remains authoritative.
 
 Location and contents remain distinct. Proof outcomes stay gated. Existing callers
 now explicitly select carrier-depth mode. All 194 dependency groups and formatting
-pass (`/tmp/meowy-record-result-mode-focused.log`); record-result integration and
-the final compiler gate remain next.
+pass (`/tmp/meowy-record-result-mode-focused.log`). Prerequisite committed as
+`136c9bf`.
+Integration now reuses the matcher for projected/stored view candidates. All 199
+dependency groups pass, including five new projection groups. All ten compiler
+checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1370,20 +1373,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1179
-  library/903 native tests (2082 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1184
+  library/903 native tests (2087 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-returned-record-input-chains-gate.log`.
-- All 194 dependency groups pass. Four new shared-chain groups cover direct/deep/
-  record-stored inputs, mixed and unknown locations, contained marks, type depth,
-  immediate temporary use and E303 statement escapes. Accepted fixtures pass
+  0 failed in debug/release. Log: `/tmp/meowy-projected-record-results-gate.log`.
+- All 199 dependency groups pass. Five new projected-result groups cover nested
+  owned locations, subrecords, stored shared chains, mixed/unknown candidates,
+  nullable inputs, downstream origins and depth bounds. Accepted fixtures pass
   ordinary compilation/ownership; dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Projected borrowed-record candidates for
-  returned views, broader result shapes, allocator-bound analysis, heterogeneous
-  unions, precise joins, callee effect/data/control summaries and conditional-exit
-  control remain open. Runtime sources, reference fixtures, dependencies and
-  versions are unchanged; editor and separate runtime/sanitizer gates were not
-  rerun. Full release qualification remains open.
+  Matcher prerequisite: `136c9bf`; existing E303 regressions remain green.
+- Flags/outcomes remain B001-gated. Nullable returned record-view targets, broader
+  result shapes, allocator-bound analysis, heterogeneous unions, precise joins,
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1520,11 +1524,12 @@ explicitly documented. No outstanding failures remain.
    contents. By-value nested/nullable record containers now supply stored exact
    view candidates through existing cell snapshots. Shared input chains now expand
    to exact-compatible record-view locations, including record-stored chains.
-   Next support projected/stored record-view candidates from borrowed-record
-   arguments using the existing bounded view/location traversal and public contract
-   projections. Keep reusable matcher changes separate from integration where
-   useful; test nested owned projections, stored views, mixed/unknown locations and
-   lifetime/depth limits before the full gate. Heterogeneous
+   Returned concrete-record views now also retain projected/stored candidates from
+   borrowed-record arguments through the bounded location worklist. Next admit
+   returned shared views of nullable single-record targets in `calls/cells.rs`,
+   preserving exact nullable identity and stored locations without combining
+   heterogeneous layouts. Test null/non-null returns, nested calls, unknown inputs
+   and ordinary lifetime errors before the full gate. Heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result

@@ -51,12 +51,8 @@ impl Checker {
             let Some((view, layers)) = self.call_shared_view(ty, expr)? else {
                 return Ok(Cells::default());
             };
-            let supported = *view == expr.ty
-                || matches!(view, Type::Reference(target) if !target.has_borrowed());
-            if !supported {
-                return Ok(Cells::default());
-            }
-            if !crate::borrow_contract::returns::candidate(&expr.ty, view) {
+            let exact = crate::borrow_contract::returns::candidate(&expr.ty, view);
+            if !exact && !view.pointee().is_some_and(Type::has_borrowed) {
                 continue;
             }
             let mut source = if path.is_empty() {
@@ -66,6 +62,12 @@ impl Checker {
             };
             for _ in 0..layers {
                 source = self.expand_reference_cells(source, expr)?;
+            }
+            if !exact {
+                let Some(projected) = self.returned_record_cells(source, view, expr, None)? else {
+                    return Ok(Cells::default());
+                };
+                source = projected;
             }
             if !found {
                 cells.complete = true;
@@ -85,3 +87,6 @@ mod records;
 
 #[cfg(test)]
 mod chains;
+
+#[cfg(test)]
+mod projections;

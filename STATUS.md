@@ -323,8 +323,10 @@ bounded worklist. Direct returned borrowed-record views now retain exact-compati
 argument locations through copies and nested calls; unknown contents remain
 incomplete in later origin queries. By-value record containers now supply matching
 stored views through nested/nullable fields, copies and composition. Shared chains
-now supply exact-compatible inner locations for returned record views. All 194
-dependency groups and all ten compiler checks pass.
+now supply exact-compatible inner locations for returned record views. Borrowed
+record arguments also supply projected and stored view candidates through the
+shared matcher (`136c9bf`). All 199 dependency groups and all ten compiler
+checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -348,20 +350,21 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1179
-  library/903 native tests (2082 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1184
+  library/903 native tests (2087 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-returned-record-input-chains-gate.log`.
-- All 194 dependency groups pass. Four new shared-chain groups cover direct/deep/
-  record-stored inputs, mixed and unknown locations, contained marks, type depth,
-  immediate temporary use and E303 statement escapes. Accepted fixtures pass
+  0 failed in debug/release. Log: `/tmp/meowy-projected-record-results-gate.log`.
+- All 199 dependency groups pass. Five new projected-result groups cover nested
+  owned locations, subrecords, stored shared chains, mixed/unknown candidates,
+  nullable inputs, downstream origins and depth bounds. Accepted fixtures pass
   ordinary compilation/ownership; dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Projected borrowed-record candidates for
-  returned views, broader result shapes, allocator-bound analysis, heterogeneous
-  unions, precise joins, callee effect/data/control summaries and conditional-exit
-  control remain open. Runtime sources, reference fixtures, dependencies and
-  versions are unchanged; editor and separate runtime/sanitizer gates were not
-  rerun. Full release qualification remains open.
+  Matcher prerequisite: `136c9bf`; existing E303 regressions remain green.
+- Flags/outcomes remain B001-gated. Nullable returned record-view targets, broader
+  result shapes, allocator-bound analysis, heterogeneous unions, precise joins,
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Area handoff
 
