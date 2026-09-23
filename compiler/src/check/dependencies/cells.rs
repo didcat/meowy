@@ -52,7 +52,7 @@ pub(crate) fn reference_cell_reads_preserve_earlier_value_snapshots() {
 pub(crate) fn unknown_cell_aliases_and_contents_stay_incomplete() {
     for source in [
         "x:=false;r:&x;cell:{->&r};copy:*cell",
-        "f<&boolean>:(v<&boolean>){->v};x:=false;r:f(&x);cell:&r;copy:*cell",
+        "f<&boolean>:(v<&boolean>){->v};x:=false;r:f({->&x});cell:&r;copy:*cell",
     ] {
         crate::compile(source).unwrap();
         let mut checker = Checker::new();

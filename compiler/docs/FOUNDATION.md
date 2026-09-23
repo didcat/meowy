@@ -163,8 +163,14 @@ snapshots. Completed records retain carrier-cell locations by field path through
 construction, copying, composition, nullable wrappers and direct/nested reads.
 Field/subrecord writes merge selected cell sets while preserving sibling fields
 and prior copies. The existing depth, field-count, cell-count and work limits apply;
-unknown alternatives remain incomplete. Unknown call results, broader reference-
-bearing aggregates, returned origins and heterogeneous record unions remain separate. Precise overwrite/
+unknown alternatives remain incomplete. Calls covered by the scalar-reference
+borrow contract retain compatible argument origins using exact pointee types and
+reference modes. All matching arguments remain possible sources, regardless of a
+private function-body choice. Unknown candidates keep results incomplete; nested
+argument traversal is bounded and never replays calls. Ordinary return/ownership
+checks still run. Broader call signatures, reference-bearing aggregates and
+heterogeneous record unions remain separate. Callee effects and data/control
+summaries are not supplied by this origin mapping. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

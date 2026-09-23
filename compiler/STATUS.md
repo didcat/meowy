@@ -515,7 +515,11 @@ depth failure preservation is covered. All ten compiler checks pass
 No private function-body inference or proof-answer evaluation is added. Broader
 return shapes and function data/control summaries remain separate; flags stay gated.
 The shared return-candidate predicate and mode/type regression pass all 1089
-library tests (`/tmp/meowy-return-candidates-library.log`). Origin integration is next.
+library tests (`/tmp/meowy-return-candidates-library.log`), committed as `173d285`.
+Four call-origin groups and all 108 dependency groups pass. Existing unknown-input
+fixtures now use untracked block-produced references rather than known direct
+arguments. All ten compiler checks pass (`/tmp/meowy-proof-return-origins-gate.log`);
+no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1333,20 +1337,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1088
-  library/903 native tests (1991 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1093
+  library/903 native tests (1996 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-record-cells-gate.log`.
-- Seven new record-cell groups cover read-side classification, inline/completed
-  fields, nested/composed/nullable copies, deep reads, field/subrecord updates,
-  prior snapshots, incomplete sources, storage limits and ordinary errors.
-  Accepted fixtures pass ordinary compilation/ownership validation.
-- Flags/outcomes remain B001-gated. Cell/owner sets remain conservative and
-  monotone. Broader reference-bearing aggregate/returned origins, heterogeneous
-  record unions, precise joins, function summaries and conditional-exit control
-  remain unfinished. Runtime sources, reference fixtures, dependencies and versions
-  are unchanged; editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-return-origins-gate.log`.
+- Five new groups cover shared return-candidate matching, scalar shared/exclusive
+  calls, nested calls, conservative argument unions, unknown inputs, traversal
+  limits/no call replay and preserved E303 invalid-return errors. Accepted fixtures
+  pass ordinary compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Calls outside the scalar-reference contract,
+  heterogeneous record unions, precise joins, function effect/data/control summaries
+  and conditional-exit control remain unfinished. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1446,8 +1449,10 @@ explicitly documented. No outstanding failures remain.
    construction/copies, composition, nullable wrappers and field/subrecord updates.
    Projection reads and deeper cell expansion use the same path metadata. Next
    extend broader reference-bearing aggregates,
-   heterogeneous record unions and returned origins while
-   preserving explicit incomplete sets. Precise overwrite/branch joins and function
+   heterogeneous record unions and broader returned origins while
+   preserving explicit incomplete sets. Scalar-reference return origins now reuse
+   compatible argument candidates from the existing borrow contract; this does not
+   provide callee effect/data/control summaries. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads

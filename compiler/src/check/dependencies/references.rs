@@ -242,6 +242,20 @@ impl Checker {
     }
 
     pub(crate) fn reference_origins(&mut self, expr: &Expr) -> crate::check::Result<Origins> {
+        self.reference_origins_at(expr, 0)
+    }
+
+    pub(crate) fn reference_origins_at(
+        &mut self,
+        expr: &Expr,
+        depth: usize,
+    ) -> crate::check::Result<Origins> {
+        if depth > super::calls::MAX_DEPTH {
+            return Err(crate::diagnostic::Diagnostic::unsupported(
+                "proof reference call depth exhausted",
+                expr.span,
+            ));
+        }
         let mut value = expr;
         loop {
             self.origin_visit(expr)?;
@@ -257,6 +271,9 @@ impl Checker {
                         roots: BTreeSet::from([*id]),
                         complete: true,
                     });
+                }
+                ExprKind::Call { args, .. } => {
+                    return self.call_reference_origins(value, args, depth);
                 }
                 ExprKind::Deref(inner) => {
                     let cells = self.reference_cell(inner)?;

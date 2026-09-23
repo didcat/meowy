@@ -43,7 +43,7 @@ pub(crate) fn copied_temporary_records_and_direct_fields_keep_external_origins()
 
 #[test]
 pub(crate) fn temporary_carriers_preserve_unknown_calls_and_expiry() {
-    let source = "f<&boolean>:(p<&boolean>){->p};x:=false;r:*(&(f(&x)))";
+    let source = "f<&boolean>:(p<&boolean>){->p};x:=false;r:*(&(f({->&x})))";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
