@@ -20,6 +20,9 @@ impl Checker {
             let Type::Reference(target) = ty else {
                 return Ok(None);
             };
+            if matches!(target.as_ref(), Type::Record { .. }) && target.has_borrowed() {
+                return Ok(Some((ty, layers)));
+            }
             if !target.has_borrowed() {
                 return Ok((layers == 0 || Self::origin_reference(ty)).then_some((ty, layers)));
             }

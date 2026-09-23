@@ -48,30 +48,34 @@ impl Checker {
                     }
                     continue;
                 }
-                Type::Reference(target)
-                    if target.has_borrowed() && matches!(target.as_ref(), Type::Record { .. }) =>
-                {
-                    match self.call_record_view_origins(arg, &path, ty, result)? {
-                        Input::Unsupported => return Ok(Input::Unsupported),
-                        Input::Absent => continue,
-                        Input::Known(source) => source,
-                    }
-                }
                 Type::Reference(_) => {
                     let Some((ty, layers)) = self.call_shared_view(ty, arg)? else {
                         return Ok(Input::Unsupported);
                     };
-                    if crate::borrow_contract::projections(ty, result, &mut self.flow, arg.span)?
-                        .is_empty()
-                    {
-                        continue;
-                    }
-                    if layers > 0 {
-                        self.call_carrier_origins(arg, &path, layers)?
-                    } else if path.is_empty() {
-                        self.reference_origins_at(arg, depth + 1)?
+                    if ty.pointee().is_some_and(Type::has_borrowed) {
+                        match self.call_record_view_origins(arg, &path, ty, result, layers)? {
+                            Input::Unsupported => return Ok(Input::Unsupported),
+                            Input::Absent => continue,
+                            Input::Known(source) => source,
+                        }
                     } else {
-                        self.record_source_origins(arg, &path)?
+                        if crate::borrow_contract::projections(
+                            ty,
+                            result,
+                            &mut self.flow,
+                            arg.span,
+                        )?
+                        .is_empty()
+                        {
+                            continue;
+                        }
+                        if layers > 0 {
+                            self.call_carrier_origins(arg, &path, layers)?
+                        } else if path.is_empty() {
+                            self.reference_origins_at(arg, depth + 1)?
+                        } else {
+                            self.record_source_origins(arg, &path)?
+                        }
                     }
                 }
                 _ => return Ok(Input::Unsupported),

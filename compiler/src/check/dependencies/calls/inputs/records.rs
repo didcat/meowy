@@ -8,12 +8,16 @@ impl Checker {
         path: &[usize],
         ty: &Type,
         result: &Type,
+        layers: usize,
     ) -> Result<Input> {
-        let cells = if path.is_empty() {
+        let mut cells = if path.is_empty() {
             self.reference_cell(arg)?
         } else {
             self.record_source_cells(arg, path)?
         };
+        for _ in 0..layers {
+            cells = self.expand_reference_cells(cells, arg)?;
+        }
         let mut origins = Origins {
             complete: cells.complete,
             ..Origins::default()
@@ -63,6 +67,9 @@ impl Checker {
                     let Some(view) = self.call_shared_view(ty, arg)? else {
                         return Ok(Input::Unsupported);
                     };
+                    if view.0.pointee().is_some_and(Type::has_borrowed) {
+                        return Ok(Input::Unsupported);
+                    }
                     view
                 }
                 _ => return Ok(Input::Unsupported),
@@ -114,3 +121,6 @@ mod tests;
 
 #[cfg(test)]
 mod carriers;
+
+#[cfg(test)]
+mod chains;
