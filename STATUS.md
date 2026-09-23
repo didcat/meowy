@@ -281,6 +281,10 @@ field/subrecord updates are now integrated, including nested/composed/nullable
 records and prior copies. All seven record-cell groups and all ten compiler checks
 pass. Returned origins and broader reference-bearing aggregates remain incomplete.
 
+The scalar-reference return-candidate rule is now shared with origin analysis.
+All 1089 library tests pass, including exact pointee/mode matching. Call-origin
+integration is next; ownership behavior is unchanged by this extraction.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

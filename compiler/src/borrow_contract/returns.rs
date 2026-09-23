@@ -9,6 +9,12 @@ pub(crate) struct Transfer {
     pub(crate) guard: Guard,
 }
 
+pub(crate) fn candidate(result: &Type, input: &Type) -> bool {
+    input.pointee() == result.pointee()
+        && (result.reference_mode() == Some(ReferenceMode::Shared)
+            || input.reference_mode() == Some(ReferenceMode::Exclusive))
+}
+
 pub(crate) fn call(
     ty: &Type,
     args: &[(&Type, State)],
@@ -21,10 +27,7 @@ pub(crate) fn call(
     let mut result = State::unknown(ty, flow, span)?;
     let mut candidates = Vec::new();
     for (input, (from, state)) in args.iter().enumerate() {
-        if from.pointee() == ty.pointee()
-            && (ty.reference_mode() == Some(ReferenceMode::Shared)
-                || from.reference_mode() == Some(ReferenceMode::Exclusive))
-        {
+        if candidate(ty, from) {
             if candidates.len() == MAX_PARTS {
                 return Err(State::budget(span));
             }

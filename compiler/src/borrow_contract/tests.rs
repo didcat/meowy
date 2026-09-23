@@ -514,3 +514,24 @@ pub(crate) fn transitive_return_bounds_stop_at_the_shared_origin_budget() {
     assert_eq!(error.code, "B001");
     assert!(error.message.contains("budget"));
 }
+
+#[test]
+pub(crate) fn reference_return_candidates_preserve_modes_and_exact_pointee_types() {
+    use crate::hir::Type;
+    let shared = Type::Reference(Box::new(Type::Bool));
+    let exclusive = Type::Exclusive(Box::new(Type::Bool));
+    let other = Type::Reference(Box::new(Type::Int {
+        bits: 32,
+        signed: true,
+    }));
+    for (result, input, expected) in [
+        (&shared, &shared, true),
+        (&shared, &exclusive, true),
+        (&exclusive, &exclusive, true),
+        (&exclusive, &shared, false),
+        (&shared, &other, false),
+        (&shared, &Type::Bool, false),
+    ] {
+        assert_eq!(super::returns::candidate(result, input), expected);
+    }
+}

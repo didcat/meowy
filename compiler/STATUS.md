@@ -503,6 +503,20 @@ three focused source groups and all six record-cell groups pass. Capacity and
 depth failure preservation is covered. All ten compiler checks pass
 (`/tmp/meowy-proof-record-cells-gate.log`); no outstanding failures remain.
 
+### Scalar-reference return origin slices
+
+1. Extract the existing borrow-contract return-candidate rule without changing
+   ownership behavior; validate mode/type matching and commit the prerequisite.
+2. Resolve scalar-reference call origins from those compatible checked arguments,
+   with bounded nested-call traversal and completeness preservation. Test multiple
+   candidates, exclusive modes, unknown inputs and ordinary error precedence;
+   run the full compiler gate and update the guide/handoffs.
+
+No private function-body inference or proof-answer evaluation is added. Broader
+return shapes and function data/control summaries remain separate; flags stay gated.
+The shared return-candidate predicate and mode/type regression pass all 1089
+library tests (`/tmp/meowy-return-candidates-library.log`). Origin integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
