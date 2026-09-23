@@ -175,7 +175,10 @@ ending in concrete borrowed records expand their locations before matching both
 stored and owned-field candidates. Nested borrowed-record view fields follow a
 bounded type/location worklist with shared visit and depth limits. Unknown nested
 locations remain incomplete and their types are still traversed for matching
-descendants and capacity checks. Calls covered by the scalar-reference
+descendants and capacity checks. Shared targets may also be a single record shape
+plus null, including through chains and nested views. Known null contributes no
+stored owners; unknown fields or locations remain incomplete and heterogeneous
+record layouts stay separate. Calls covered by the scalar-reference
 borrow contract retain compatible argument origins using exact pointee types and
 reference modes. All matching arguments remain possible sources, regardless of a
 private function-body choice. Unknown candidates keep results incomplete; nested

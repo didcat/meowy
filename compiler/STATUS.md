@@ -29,20 +29,21 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current nested borrowed-record view slice
+### Current nullable record-target slice
 
-Plan: extend the record-call resolver with a bounded worklist of nested view
-locations. Share visit/depth/capacity limits across the traversal, including
-unknown or empty locations, and reuse contract projections and cell expansion.
-Keep implementation and focused regressions in one commit; cover nested views,
-reference chains, mixed candidates, retargets/unknowns and traversal limits.
-Run the full compiler gate before committing. Proof outcomes remain gated.
+Plan: reuse `origin_record` to admit references whose borrowed target is a single
+record shape plus null. Existing record snapshots and the nested-view worklist
+provide stored-field locations; contract projections remain authoritative.
+Keep the change and regressions together: wrapped/null values, shared chains,
+nested views, unknown fields and heterogeneous-union exclusion. Run the full
+compiler gate before committing. Proof outcomes remain gated.
 
-Existing record-cell snapshots provide the required field locations. Traversal
-must inspect unknown nested types without claiming complete origin metadata or
-silently skipping potentially matching descendants. All 149 dependency groups
-pass, including four new nested-view groups and the preserved unknown-view/E303
-regression. All ten compiler checks pass; no failures remain.
+Shared call-type traversal now recognizes nullable record targets and reuses
+existing record-cell metadata. No new layout or variant representation is needed
+for this bounded shape. All 153 dependency
+groups pass, including four new nullable-target groups covering direct/copied
+views, chains, nested views, nulls, unknowns and heterogeneous exclusion. All ten
+compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1370,20 +1371,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1134
-  library/903 native tests (2037 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1138
+  library/903 native tests (2041 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nested-record-view-gate.log`.
-- All 149 dependency groups pass. Four new nested-view groups cover shared chains,
-  owned/external candidates, subrecord boundaries, retargeted/unknown views and
-  total traversal depth with unknown locations. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded checker evidence.
-  Existing unknown-view and E303 lifetime regressions remain green.
-- Flags/outcomes remain B001-gated. References to nullable record targets,
-  allocator-bound pointees, broader returned shapes, heterogeneous unions, precise
-  joins, callee effect/data/control summaries and conditional-exit control remain
-  open. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-nullable-record-target-gate.log`.
+- All 153 dependency groups pass. Four new nullable-target groups cover direct/
+  copied references, shared chains, nested views, wrapped/null values, unknown
+  fields/locations and heterogeneous-union exclusion. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Returned shared carrier cells and broader
+  returned shapes, allocator-bound pointees, heterogeneous unions, precise joins,
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1504,10 +1504,14 @@ explicitly documented. No outstanding failures remain.
    retargeted/unknown alternatives. Shared chains ending in concrete borrowed
    records now expand to record locations before matching stored/owned candidates.
    Nested borrowed-record view fields now use a shared bounded type/location
-   worklist, including empty/unknown locations and mixed candidate owners. Next
-   support references to nullable single-record targets in `call_shared_view` and
-   the record resolver without combining heterogeneous layouts; test known-null,
-   wrapped records, nested views and incomplete alternatives before the full gate. Heterogeneous unions and broader returned shapes remain
+   worklist, including empty/unknown locations and mixed candidate owners. Shared
+   references to nullable single-record targets now reuse those locations; known
+   null contributes no stored owners and heterogeneous layouts remain incomplete.
+   Next retain returned shared carrier cells in `calls`/`reference_cell`, reusing
+   borrow-contract candidate matching and bounded location sets. Begin with simple
+   reference-cell returns, test copies/nested calls/unknown inputs and ordinary
+   lifetime rejection, then run the full gate. Heterogeneous unions and broader
+   aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
