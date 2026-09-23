@@ -1,4 +1,5 @@
 mod carriers;
+mod records;
 
 use super::{Checker, Diagnostic, Expr, Origins};
 use crate::check::dependencies::records::{MAX_DEPTH, MAX_FIELDS};
@@ -32,7 +33,7 @@ impl Checker {
             if !ty.has_borrowed() {
                 continue;
             }
-            let (ty, layers) = match Self::origin_record(ty).unwrap_or(ty) {
+            let source = match Self::origin_record(ty).unwrap_or(ty) {
                 Type::Record { primary, fields } if !primary.has_borrowed() => {
                     if pending.len() + fields.len() > MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
@@ -47,24 +48,33 @@ impl Checker {
                     }
                     continue;
                 }
+                Type::Reference(target)
+                    if target.has_borrowed() && matches!(target.as_ref(), Type::Record { .. }) =>
+                {
+                    match self.call_record_view_origins(arg, &path, ty, result)? {
+                        Input::Unsupported => return Ok(Input::Unsupported),
+                        Input::Absent => continue,
+                        Input::Known(source) => source,
+                    }
+                }
                 Type::Reference(_) => {
-                    let Some(view) = self.call_shared_view(ty, arg)? else {
+                    let Some((ty, layers)) = self.call_shared_view(ty, arg)? else {
                         return Ok(Input::Unsupported);
                     };
-                    view
+                    if crate::borrow_contract::projections(ty, result, &mut self.flow, arg.span)?
+                        .is_empty()
+                    {
+                        continue;
+                    }
+                    if layers > 0 {
+                        self.call_carrier_origins(arg, &path, layers)?
+                    } else if path.is_empty() {
+                        self.reference_origins_at(arg, depth + 1)?
+                    } else {
+                        self.record_source_origins(arg, &path)?
+                    }
                 }
                 _ => return Ok(Input::Unsupported),
-            };
-            if crate::borrow_contract::projections(ty, result, &mut self.flow, arg.span)?.is_empty()
-            {
-                continue;
-            }
-            let source = if layers > 0 {
-                self.call_carrier_origins(arg, &path, layers)?
-            } else if path.is_empty() {
-                self.reference_origins_at(arg, depth + 1)?
-            } else {
-                self.record_source_origins(arg, &path)?
             };
             if !self.flow.spend(source.roots.len() + 1) {
                 return Err(Diagnostic::unsupported(

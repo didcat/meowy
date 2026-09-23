@@ -166,8 +166,11 @@ and prior copies. The existing depth, field-count, cell-count and work limits ap
 unknown alternatives remain incomplete. References to records containing borrowed
 fields also retain root/field locations through copies, retargets and record-stored
 views. Dependency reads follow only addressed record prefixes, including nested
-reference cells; unknown locations remain incomplete. Call-return matching for
-these record references remains separate. Calls covered by the scalar-reference
+reference cells; unknown locations remain incomplete. Direct shared record-view
+arguments now retain both matching owned-field projection owners and nested stored
+shared-reference owners through the borrow contract. Matching ignores private body
+choices and preserves unknown alternatives. Carrier-valued fields and chains
+ending in borrowed records remain separate. Calls covered by the scalar-reference
 borrow contract retain compatible argument origins using exact pointee types and
 reference modes. All matching arguments remain possible sources, regardless of a
 private function-body choice. Unknown candidates keep results incomplete; nested
@@ -189,7 +192,7 @@ and cell expansion retain depth, capacity and analysis-work limits.
 Whole-container owners are retained conservatively, including direct record/list
 views and nested projections.
 Unknown matching arguments keep results incomplete. Calls with other borrowed
-aggregate shapes, references to borrowed records,
+aggregate shapes, unsupported borrowed-record contents and reference chains,
 allocator-bound pointees or broader return shapes,
 and heterogeneous record unions remain separate. Callee effects and data/control
 summaries are not supplied by this origin mapping. Precise overwrite/

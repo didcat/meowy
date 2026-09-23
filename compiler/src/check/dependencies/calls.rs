@@ -192,7 +192,7 @@ mod views {
     pub(crate) fn shared_view_calls_preserve_incomplete_inputs_and_borrowed_shape_gates() {
         for source in [
             "f<&boolean[1]>:(p<&boolean[1]>){->p};x<boolean[1]>:=[true];r:f({->&x})",
-            "<R>:<{r<&boolean>}>;f<&boolean>:(p<&R>){->p.r};x:=false;a<R>:{->r:&x};r:f(&a)",
+            "<R>:<{r<&boolean>}>;f<&boolean>:(p<&R>){->p.r};x:=false;a<R>:{->r:&x};r:f({->&a})",
         ] {
             crate::compile(source).unwrap();
             let mut checker = Checker::new();
