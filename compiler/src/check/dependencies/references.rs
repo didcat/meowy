@@ -59,6 +59,9 @@ impl Checker {
                         .cloned()
                         .unwrap_or_default();
                 }
+                ExprKind::Field { value, index } => {
+                    break self.record_source_cells(value, &[*index])?;
+                }
                 ExprKind::Deref(inner) => {
                     depth += 1;
                     if depth > MAX_CELL_DEPTH {
@@ -85,20 +88,16 @@ impl Checker {
             };
             for (root, path) in cells.places {
                 self.origin_visit(expr)?;
-                let root = self.origin_id(root);
-                let source = path
-                    .is_empty()
-                    .then(|| self.reference_cells.get(&root))
-                    .flatten();
-                if !self
-                    .flow
-                    .spend(source.map_or(0, |source| source.places.len()))
-                {
+                let work = self
+                    .stored_cells(root, &path)
+                    .map_or(0, |source| source.places.len());
+                if !self.flow.spend(work) {
                     return Err(crate::diagnostic::Diagnostic::unsupported(
                         "proof reference cell budget exhausted",
                         expr.span,
                     ));
                 }
+                let source = self.stored_cells(root, &path);
                 next.complete &= source.is_some_and(|source| source.complete);
                 if let Some(source) = source {
                     next.places.extend(source.places.iter().cloned());
@@ -135,28 +134,53 @@ impl Checker {
         }
     }
 
+    pub(crate) fn origin_carrier(
+        &mut self,
+        ty: &Type,
+        span: crate::ast::Span,
+    ) -> crate::check::Result<bool> {
+        let mut ty = ty.pointee();
+        let mut depth = 0;
+        loop {
+            let Some(inner) = ty else { return Ok(false) };
+            if !self.flow.spend(1) {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof reference origin traversal budget exhausted",
+                    span,
+                ));
+            }
+            if Self::origin_reference(inner) {
+                return Ok(true);
+            }
+            depth += 1;
+            if depth > MAX_CELL_DEPTH {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof reference cell depth exhausted",
+                    span,
+                ));
+            }
+            ty = inner.pointee();
+        }
+    }
+
+    pub(crate) fn stored_cells(&self, root: usize, path: &[usize]) -> Option<&Cells> {
+        if path.is_empty() {
+            self.reference_cells.get(&self.origin_id(root))
+        } else {
+            self.record_cells
+                .get(&root)
+                .and_then(|fields| fields.get(path))
+        }
+    }
+
     pub(crate) fn track_reference_cell(
         &mut self,
         id: usize,
         value: &Expr,
         merge: bool,
     ) -> crate::check::Result<()> {
-        let mut ty = value.ty.pointee();
-        let mut depth = 0;
-        loop {
-            let Some(inner) = ty else { return Ok(()) };
-            self.origin_visit(value)?;
-            if Self::origin_reference(inner) {
-                break;
-            }
-            depth += 1;
-            if depth > MAX_CELL_DEPTH {
-                return Err(crate::diagnostic::Diagnostic::unsupported(
-                    "proof reference cell depth exhausted",
-                    value.span,
-                ));
-            }
-            ty = inner.pointee();
+        if !self.origin_carrier(&value.ty, value.span)? {
+            return Ok(());
         }
         let cells = self.reference_cell(value)?;
         self.store_cells(self.origin_id(id), cells, merge, value.span)

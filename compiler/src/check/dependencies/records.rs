@@ -113,6 +113,14 @@ impl Checker {
     }
 
     pub(crate) fn record_paths(&mut self, value: &Expr) -> Result<Vec<Vec<usize>>> {
+        self.record_paths_for(value, false)
+    }
+
+    pub(crate) fn record_paths_for(
+        &mut self,
+        value: &Expr,
+        carriers: bool,
+    ) -> Result<Vec<Vec<usize>>> {
         let mut pending = vec![(Vec::new(), &value.ty)];
         let mut paths = Vec::new();
         let mut count = 0;
@@ -136,7 +144,11 @@ impl Checker {
                     child.push(index);
                     pending.push((child, &field.ty));
                 }
-            } else if Self::origin_reference(ty) {
+            } else if if carriers {
+                self.origin_carrier(ty, value.span)?
+            } else {
+                Self::origin_reference(ty)
+            } {
                 paths.push(path);
             }
         }
@@ -249,3 +261,5 @@ mod coercions;
 
 #[cfg(test)]
 mod views;
+
+mod cells;

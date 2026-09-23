@@ -483,6 +483,22 @@ unknown calls without replaying calls. Both new groups and all seven source-look
 groups and all ten compiler checks pass (`/tmp/meowy-proof-record-locations-gate.log`);
 no outstanding failures remain.
 
+### Record carrier-cell integration slices
+
+1. Add bounded record-cell storage, source/location reads and carrier path
+   classification, preserving ordinary pointee paths. Validate seeded field reads
+   and inline named-field sources before committing this read-side prerequisite.
+2. Populate snapshots on record construction/copies and merge field/subrecord
+   updates through the existing hooks. Include composition, nullable records,
+   snapshots, limits and ordinary errors; run the complete compiler gate.
+
+Do not treat missing record-cell metadata as complete. Returned/reference-bearing
+origins, heterogeneous unions and precise phase joins remain unfinished; flags stay gated.
+The read-side storage/classification slice passes all 1084 library tests
+(`/tmp/meowy-proof-record-cell-reads-library.log`), including seeded field cells,
+inline named-field sources and separation from pointee paths. Producer/write
+integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:

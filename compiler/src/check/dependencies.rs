@@ -29,10 +29,15 @@ impl Checker {
     }
 
     pub(crate) fn derived_cells(&self, id: usize) -> bool {
-        let Some(cells) = self.reference_cells.get(&self.origin_id(id)) else {
-            return false;
-        };
-        let mut pending = cells.places.iter().collect::<Vec<_>>();
+        let mut pending = Vec::new();
+        if let Some(cells) = self.reference_cells.get(&self.origin_id(id)) {
+            pending.extend(&cells.places);
+        }
+        if let Some(fields) = self.record_cells.get(&id) {
+            for cells in fields.values() {
+                pending.extend(&cells.places);
+            }
+        }
         let mut seen = std::collections::BTreeSet::new();
         while let Some((root, path)) = pending.pop() {
             if !seen.insert((root, path)) {
@@ -45,9 +50,7 @@ impl Checker {
             {
                 return true;
             }
-            if path.is_empty()
-                && let Some(cells) = self.reference_cells.get(&self.origin_id(*root))
-            {
+            if let Some(cells) = self.stored_cells(*root, path) {
                 pending.extend(&cells.places);
             }
         }

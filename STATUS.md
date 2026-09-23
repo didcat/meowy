@@ -274,6 +274,10 @@ known-null, unknown, direct-path and alternative-source distinctions. Both new
 classification groups, all seven source-lookup groups and all ten compiler checks
 pass. Record carrier-field snapshots and updates remain the next integration.
 
+Record carrier-cell storage and location reads are in place. All 1084 library
+tests pass, including seeded completed fields and inline named-field sources.
+Snapshot producers and field/subrecord updates remain the next integration.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
