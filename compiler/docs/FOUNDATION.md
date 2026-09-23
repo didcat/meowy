@@ -152,10 +152,13 @@ reborrows. Mutable carrier retargets conservatively merge old/new locations;
 earlier carrier copies retain their sets and earlier value copies retain their
 pointee snapshots. Unknown alternatives preserve known locations but remain
 incomplete. Cell sets are capped at 256 locations and use the analysis budget.
-Ordinary cell-borrow and expiry checks remain unchanged.
-Deeper carrier chains, unknown call results,
-reference-bearing aggregates, returned origins and heterogeneous record unions
-remain separate. Precise overwrite/
+Ordinary cell-borrow and expiry checks remain unchanged. Named and temporary
+carrier chains resolve one stored cell layer per dereference, with at most 64
+layers and 256 locations per expansion. Traversal uses the analysis budget and
+reports B001 on exhaustion; dependency lookup visits each cell location once to
+avoid cycles. Unknown alternatives retain known possibilities without becoming
+complete. Deeper field-stored carriers, unknown call results, reference-bearing
+aggregates, returned origins and heterogeneous record unions remain separate. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
 remain prerequisites to admitting flags or evaluated answers.
 

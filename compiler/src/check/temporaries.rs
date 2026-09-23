@@ -25,6 +25,7 @@ impl Checker {
         }
         let id = self.local(value.ty.clone());
         self.track_reference(id, &value, false)?;
+        self.track_reference_cell(id, &value, false)?;
         self.track_record_references(id, &value, false)?;
         if self.control || self.derived_expr(&value) {
             self.mark_derived(id);

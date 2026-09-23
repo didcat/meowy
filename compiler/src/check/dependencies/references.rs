@@ -16,6 +16,7 @@ pub(crate) struct Cells {
 }
 
 pub(crate) const MAX_ROOTS: usize = 256;
+pub(crate) const MAX_CELL_DEPTH: usize = 64;
 
 impl Checker {
     pub(crate) fn temporary_storage(expr: &Expr) -> Option<usize> {
@@ -35,32 +36,78 @@ impl Checker {
 
     pub(crate) fn reference_cell(&mut self, expr: &Expr) -> crate::check::Result<Cells> {
         let mut value = expr;
-        loop {
+        let mut depth = 0;
+        let mut cells = loop {
             self.origin_visit(expr)?;
             match &value.kind {
                 ExprKind::Borrow(place) => {
-                    return Ok(Cells {
+                    break Cells {
                         places: BTreeSet::from([(place.root, place.fields.clone())]),
                         complete: true,
-                    });
+                    };
                 }
                 ExprKind::TemporaryBorrow { id, .. } => {
-                    return Ok(Cells {
+                    break Cells {
                         places: BTreeSet::from([(*id, Vec::new())]),
                         complete: true,
-                    });
+                    };
                 }
                 ExprKind::Local(id) => {
-                    return Ok(self.reference_cells.get(id).cloned().unwrap_or_default());
+                    break self.reference_cells.get(id).cloned().unwrap_or_default();
+                }
+                ExprKind::Deref(inner) => {
+                    depth += 1;
+                    if depth > MAX_CELL_DEPTH {
+                        return Err(crate::diagnostic::Diagnostic::unsupported(
+                            "proof reference cell depth exhausted",
+                            expr.span,
+                        ));
+                    }
+                    value = inner;
                 }
                 ExprKind::Reborrow {
                     value: inner,
                     fields,
                     ..
                 } if fields.is_empty() => value = inner,
-                _ => return Ok(Cells::default()),
+                _ => break Cells::default(),
             }
+        };
+        for _ in 0..depth {
+            self.origin_visit(expr)?;
+            let mut next = Cells {
+                places: BTreeSet::new(),
+                complete: cells.complete,
+            };
+            for (root, path) in cells.places {
+                self.origin_visit(expr)?;
+                let source = path
+                    .is_empty()
+                    .then(|| self.reference_cells.get(&root))
+                    .flatten();
+                if !self
+                    .flow
+                    .spend(source.map_or(0, |source| source.places.len()))
+                {
+                    return Err(crate::diagnostic::Diagnostic::unsupported(
+                        "proof reference cell budget exhausted",
+                        expr.span,
+                    ));
+                }
+                next.complete &= source.is_some_and(|source| source.complete);
+                if let Some(source) = source {
+                    next.places.extend(source.places.iter().cloned());
+                }
+                if next.places.len() > MAX_ROOTS {
+                    return Err(crate::diagnostic::Diagnostic::unsupported(
+                        "proof reference cell capacity exhausted",
+                        expr.span,
+                    ));
+                }
+            }
+            cells = next;
         }
+        Ok(cells)
     }
 
     pub(crate) fn origin_visit(&mut self, expr: &Expr) -> crate::check::Result<()> {
@@ -89,8 +136,22 @@ impl Checker {
         value: &Expr,
         merge: bool,
     ) -> crate::check::Result<()> {
-        if !value.ty.pointee().is_some_and(Self::origin_reference) {
-            return Ok(());
+        let mut ty = value.ty.pointee();
+        let mut depth = 0;
+        loop {
+            let Some(inner) = ty else { return Ok(()) };
+            self.origin_visit(value)?;
+            if Self::origin_reference(inner) {
+                break;
+            }
+            depth += 1;
+            if depth > MAX_CELL_DEPTH {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof reference cell depth exhausted",
+                    value.span,
+                ));
+            }
+            ty = inner.pointee();
         }
         let mut cells = self.reference_cell(value)?;
         let prior = merge.then(|| self.reference_cells.get(&id)).flatten();

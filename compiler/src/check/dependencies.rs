@@ -16,14 +16,7 @@ impl Checker {
 
     pub(crate) fn derived_local(&self, id: usize) -> bool {
         self.derived_storage(id)
-            || self.reference_cells.get(&id).is_some_and(|cells| {
-                cells.places.iter().any(|(root, path)| {
-                    self.derived_storage(*root)
-                        || self.cell_origins(*root, path).is_some_and(|origins| {
-                            origins.roots.iter().any(|root| self.derived_storage(*root))
-                        })
-                })
-            })
+            || self.derived_cells(id)
             || self.record_pointees.get(&id).is_some_and(|fields| {
                 fields
                     .values()
@@ -33,6 +26,32 @@ impl Checker {
                 .pointees
                 .get(&self.origin_id(id))
                 .is_some_and(|origins| origins.roots.iter().any(|root| self.derived_storage(*root)))
+    }
+
+    pub(crate) fn derived_cells(&self, id: usize) -> bool {
+        let Some(cells) = self.reference_cells.get(&id) else {
+            return false;
+        };
+        let mut pending = cells.places.iter().collect::<Vec<_>>();
+        let mut seen = std::collections::BTreeSet::new();
+        while let Some((root, path)) = pending.pop() {
+            if !seen.insert((root, path)) {
+                continue;
+            }
+            if self.derived_storage(*root)
+                || self.cell_origins(*root, path).is_some_and(|origins| {
+                    origins.roots.iter().any(|root| self.derived_storage(*root))
+                })
+            {
+                return true;
+            }
+            if path.is_empty()
+                && let Some(cells) = self.reference_cells.get(root)
+            {
+                pending.extend(&cells.places);
+            }
+        }
+        false
     }
 
     pub(crate) fn derived_storage(&self, id: usize) -> bool {
@@ -208,3 +227,6 @@ mod cells;
 
 #[cfg(test)]
 mod cell_writes;
+
+#[cfg(test)]
+mod chains;

@@ -446,7 +446,11 @@ Deeper field-stored carriers, returned origins and precise joins remain separate
 Resource failures remain B001, never proof outcomes; flags stay gated.
 Fallible traversal and explicit budget/merged-pointee capacity regressions pass
 all 1070 library tests (`/tmp/meowy-proof-origin-traversal-library.log`). Bounded
-deeper-chain integration is next.
+deeper-chain integration follows `ea02215`. Iterative dereference expansion,
+carrier-type admission, temporary content snapshots and cycle-safe dependency
+lookup pass all five chain groups, including depth/fan-out bounds and ordinary
+E302/E303 preservation. All ten compiler checks pass
+(`/tmp/meowy-proof-carrier-chains-gate.log`); no outstanding failures remain.
 
 ### Prerequisites and current integration
 
@@ -1264,20 +1268,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1069
-  library/903 native tests (1972 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1075
+  library/903 native tests (1978 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-cell-retargets-gate.log`.
-- Five new checker groups cover bounded cell sets, capacity failure preservation,
-  mutable/conditional retargets, prior carrier/value snapshots, distinct field-cell
-  locations, incomplete alternatives and E207/E305 preservation. Accepted source
-  fixtures pass ordinary compilation/ownership checks; all eight cell groups pass.
-- Flags/outcomes remain B001-gated. Cell/owner sets remain conservative and
-  monotone. Deeper carrier chains, reference-bearing aggregate/returned origins,
-  heterogeneous record unions, precise joins, function summaries and conditional-
-  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
-  and versions are unchanged; editor and separate runtime/sanitizer gates were
-  not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-carrier-chains-gate.log`.
+- Six new groups cover fallible origin traversal, depth/capacity budgets, named/
+  temporary carrier chains, retarget/copy snapshots, incomplete alternatives,
+  cycle-safe dependency lookup and preserved E302/E303 errors. Accepted source
+  fixtures pass ordinary compilation/ownership checks.
+- Flags/outcomes remain B001-gated. Deeper field-stored carriers, reference-bearing
+  aggregate/returned origins, heterogeneous record unions, precise joins, function
+  summaries and conditional-exit control remain unfinished. Runtime sources,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1370,7 +1373,9 @@ explicitly documented. No outstanding failures remain.
    reborrows. Immutable one-level aliases to named reference cells now retain
    root/field locations and recover stored pointee origins. Mutable one-level
    carriers now retain bounded location sets/completeness through retargets and
-   preserve prior copies. Next extend deeper carrier chains, reference-bearing aggregates,
+   preserve prior copies. Bounded deeper named/temporary chains now resolve cell
+   layers and preserve dependency marks with cycle-safe traversal. Next extend
+   deeper field-stored carriers, reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.
