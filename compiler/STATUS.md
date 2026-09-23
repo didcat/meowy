@@ -40,12 +40,13 @@ outcome is constructed. The reference remains authoritative.
    Run the full compiler gate and update the handoff before committing.
 
 Direct borrowed-record calls already match ordinary stored shared references and
-owned-field projections. Carrier fields still return incomplete metadata; their
-locations are available in `record_cells`. Chains ending in borrowed records and
+owned-field projections. Carrier fields now reuse `record_cells` and the shared
+resolver, preserving incomplete alternatives. Chains ending in borrowed records and
 other borrowed shapes remain separate. Proof outcomes stay gated.
 Extraction preserves the existing expansion count and charges. All 137 dependency
-groups pass (`/tmp/meowy-stored-call-focused.log`); formatting passes. Field
-integration and the full compiler gate remain next.
+groups pass (`/tmp/meowy-stored-call-focused.log`); formatting passes. Extraction
+committed as `0cda5fa`. Field integration passes all 141 dependency groups,
+including four new carrier-field groups. All ten compiler checks pass.
 
 ### Proof dependency implementation slices
 
@@ -1373,21 +1374,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1122
-  library/903 native tests (2025 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1126
+  library/903 native tests (2029 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-call-integration-gate.log`.
-- All 137 dependency groups pass. Five new record-call groups cover direct/copied/
-  temporary/subrecord views, nested stored references, owned-field candidates,
-  retargets, unknown locations/fields, record-stored views and preserved E303.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
-  seeded checker evidence.
-- Flags/outcomes remain B001-gated. Carrier-valued fields and reference chains
-  leading to borrowed records remain separate, as do allocator-bound pointees,
-  broader returned shapes, heterogeneous unions, precise joins, callee effect/
-  data/control summaries and conditional-exit control. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-record-carrier-fields-gate.log`.
+- All 141 dependency groups pass. Four new carrier-field groups cover nested/deep
+  chains, list projections, owned/external candidates, retargeted/unknown cells,
+  unknown pointees and budget exhaustion. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded checker evidence.
+  Resolver extraction is `0cda5fa`; existing lifetime regressions remain green.
+- Flags/outcomes remain B001-gated. Reference chains leading to borrowed records,
+  nested borrowed-record views, allocator-bound pointees, broader returned shapes,
+  heterogeneous unions, precise joins, callee effect/data/control summaries and
+  conditional-exit control remain open. Runtime sources, reference fixtures,
+  dependencies and versions are unchanged; editor and separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1502,11 +1503,13 @@ explicitly documented. No outstanding failures remain.
    references to borrowed records now survive aliases, copies, retargets and
    record-stored views; dependency reads traverse addressed field prefixes. Direct
    shared borrowed-record arguments now match nested stored shared-reference fields
-   and owned-field projections using those locations. Next extend carrier-valued
-   fields in `calls/inputs/records.rs` through existing bounded cell expansion;
-   preserve unknown alternatives and test retargets, nested fields and budgets
-   before the full compiler gate. Reference chains ending in borrowed records,
-   heterogeneous unions and broader returned shapes remain separate. Precise overwrite/branch joins and function result
+   and owned-field projections using those locations. Carrier-valued fields now
+   resolve through bounded shared cell expansion, including nested fields and
+   retargeted/unknown alternatives. Next integrate reference chains ending in
+   borrowed records with `call_shared_view` and the record-view resolver; test
+   direct, record-stored, temporary and incomplete chains plus depth/work bounds
+   before the full gate. Heterogeneous unions and broader returned shapes remain
+   separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads

@@ -1,5 +1,5 @@
 use super::{Checker, Diagnostic, Expr, Input, MAX_DEPTH, MAX_FIELDS, Origins, Result, Type};
-use crate::check::dependencies::references::MAX_ROOTS;
+use crate::check::dependencies::{Cells, references::MAX_ROOTS};
 
 impl Checker {
     pub(super) fn call_record_view_origins(
@@ -44,7 +44,7 @@ impl Checker {
             if !ty.has_borrowed() {
                 continue;
             }
-            match Self::origin_record(ty).unwrap_or(ty) {
+            let (ty, layers) = match Self::origin_record(ty).unwrap_or(ty) {
                 Type::Record { primary, fields } if !primary.has_borrowed() => {
                     if pending.len() + fields.len() > MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
@@ -59,9 +59,14 @@ impl Checker {
                     }
                     continue;
                 }
-                Type::Reference(target) if !target.has_borrowed() => {}
+                Type::Reference(_) => {
+                    let Some(view) = self.call_shared_view(ty, arg)? else {
+                        return Ok(Input::Unsupported);
+                    };
+                    view
+                }
                 _ => return Ok(Input::Unsupported),
-            }
+            };
             if crate::borrow_contract::projections(ty, result, &mut self.flow, arg.span)?.is_empty()
             {
                 continue;
@@ -78,20 +83,16 @@ impl Checker {
                 }
                 let mut field = base.clone();
                 field.extend(&path);
-                let work = self
-                    .cell_origins(*root, &field)
-                    .map_or(0, |source| source.roots.len());
-                if !self.flow.spend(work + 1) {
-                    return Err(Diagnostic::unsupported(
-                        "proof record call budget exhausted",
-                        arg.span,
-                    ));
-                }
-                let source = self.cell_origins(*root, &field);
-                origins.complete &= source.is_some_and(|source| source.complete);
-                if let Some(source) = source {
-                    origins.roots.extend(&source.roots);
-                }
+                let source = self.call_stored_origins(
+                    Cells {
+                        places: std::collections::BTreeSet::from([(*root, field)]),
+                        complete: true,
+                    },
+                    arg,
+                    layers,
+                )?;
+                origins.complete &= source.complete;
+                origins.roots.extend(source.roots);
                 if origins.roots.len() > MAX_ROOTS {
                     return Err(Diagnostic::unsupported(
                         "proof reference origin capacity exhausted",
@@ -110,3 +111,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod carriers;

@@ -72,8 +72,8 @@ pub(crate) fn borrowed_record_retargets_and_unknown_sources_remain_conservative(
 }
 
 #[test]
-pub(crate) fn borrowed_record_calls_keep_carrier_field_gates_and_lifetime_errors() {
-    let source = "<R>:<{r<& &boolean>}>;f<&boolean>:(p<&R>){->*(p.r)};x:=false;a:&x;row<R>:{->r:&a};r:f(&row)";
+pub(crate) fn borrowed_record_calls_keep_nested_record_view_gates_and_lifetime_errors() {
+    let source = "<N>:<{r<&boolean>}>;<R>:<{inner<&N>}>;f<&boolean>:(p<&R>){->p.inner.r};x:=false;a<N>:{->r:&x};row<R>:{->inner:&a};r:f(&row)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
