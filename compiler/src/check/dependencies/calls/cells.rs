@@ -62,14 +62,20 @@ impl Checker {
                 }
                 continue;
             }
-            let source = if matches!(ty, Type::Reference(target) if Self::origin_record(target).is_some() && target.has_borrowed())
-            {
-                let locations = if path.is_empty() {
+            let record = self
+                .call_shared_view(ty, expr)?
+                .filter(|(view, _)| view.pointee().is_some_and(Type::has_borrowed));
+            let source = if let Some((view, layers)) = record {
+                let mut locations = if path.is_empty() {
                     self.reference_cell_at(arg, depth + 1)?
                 } else {
                     self.record_source_cells(arg, &path)?
                 };
-                let Some(source) = self.returned_record_cells(locations, ty, expr, result_depth)?
+                for _ in 0..layers {
+                    locations = self.expand_reference_cells(locations, expr)?;
+                }
+                let Some(source) =
+                    self.returned_record_cells(locations, view, expr, result_depth)?
                 else {
                     return Ok(Cells::default());
                 };

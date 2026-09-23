@@ -9,7 +9,7 @@ use crate::check::{
 use crate::hir::Type;
 
 impl Checker {
-    pub(super) fn call_shared_view<'a>(
+    pub(in crate::check::dependencies::calls) fn call_shared_view<'a>(
         &mut self,
         mut ty: &'a Type,
         expr: &Expr,

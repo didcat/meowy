@@ -193,8 +193,10 @@ nested and nullable fields, including inline construction, copies and compositio
 Known null contributes no cells; unknown matching fields keep results incomplete.
 Direct borrowed-record arguments also contribute contract-projected reference-cell
 locations and stored carriers through nested/nullable owned records. Unknown
-locations or matching fields remain incomplete. Nested borrowed-view fields and
-chains ending in borrowed-record arguments remain separate for returned cells.
+locations or matching fields remain incomplete. Shared input chains ending in
+borrowed records expand to those locations before returned-cell matching, including
+nullable targets. Temporary chains retain their ordinary statement lifetimes.
+Nested borrowed-view fields remain separate for returned cells.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

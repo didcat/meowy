@@ -29,24 +29,20 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current borrowed-record returned-cell series
+### Current borrowed-record input-chain slice
 
-1. Extract bounded field-location projection from the existing record-origin
-   traversal, preserving completeness, charges and diagnostics. Validate focused
-   checks and commit this reusable prerequisite separately.
-2. Resolve direct borrowed-record argument candidates: contract-owned field
-   projections plus stored shared carriers through nested/nullable owned records.
-   Reuse the projection helper and existing cell expansion; retain unknowns and
-   explicitly exclude nested borrowed-record view fields. Keep tests with the
-   behavior change and run the full compiler gate before committing.
+Plan: reuse the bounded shared-view type matcher for returned-cell inputs, expand
+shared-chain locations to a borrowed record, then run existing projected/stored
+cell matching. Preserve scalar-chain behavior and keep nested borrowed-view fields
+and returned borrowed-record views separate. Keep tests for direct/deeper chains,
+record-stored arguments, unknown cells, nullable records and depth limits with
+this change; run the full compiler gate before committing. Outcomes stay gated.
 
-Returned borrowed-record views and broader borrowed inputs remain separate.
-Proof outcomes stay gated. The extraction preserves field-path checks and charges;
-all 167 dependency groups pass (`/tmp/meowy-call-field-cells-focused.log`) and
-formatting passes. Extraction committed as `a4686cb`. Integration now resolves
-owned-field projections and stored carriers. All 171 dependency groups pass,
-including four new borrowed-record groups; field-index expectations now match
-canonical layouts. All ten compiler checks pass; no failures remain.
+The existing matcher and record resolver already enforce the needed shape and
+location boundaries; only sibling access and call integration are required.
+All 176 dependency groups pass, including five new input-chain groups. Temporary
+chains permit immediate use and retain E303 for a returned cell used after its
+temporary ends. All ten compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1374,22 +1370,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1156
-  library/903 native tests (2059 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1161
+  library/903 native tests (2064 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-borrowed-record-return-cells-gate.log`.
-- All 171 dependency groups pass. Four new borrowed-record groups cover exact
-  projected locations, copied/subrecord views, stored/deeper carriers, mixed and
-  unknown candidates, and nullable/null inputs. Accepted fixtures pass ordinary
+  0 failed in debug/release. Log: `/tmp/meowy-return-cell-record-chains-gate.log`.
+- All 176 dependency groups pass. Five new input-chain groups cover projected
+  locations, deeper/record-stored chains, mixed candidates, unknown intermediates,
+  nullable targets and depth bounds. Immediate temporary use passes; escaping a
+  temporary-backed returned cell retains E303. Accepted fixtures pass ordinary
   compilation/ownership; dependency marks remain seeded checker evidence.
-  Projection extraction is `a4686cb`; existing lifetime regressions remain green.
-- Flags/outcomes remain B001-gated. Returned-cell matching through shared chains
-  to borrowed-record arguments or nested borrowed views, returned borrowed-record
-  views, allocator-bound pointees, heterogeneous unions, precise joins, callee
-  effect/data/control summaries and conditional-exit control remain open.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun.
-  Full release qualification remains open.
+- Flags/outcomes remain B001-gated. Nested borrowed-view fields in returned-cell
+  matching, returned borrowed-record views, allocator-bound pointees, heterogeneous
+  unions, precise joins, callee effect/data/control summaries and conditional-exit
+  control remain open. Runtime sources, reference fixtures, dependencies and
+  versions are unchanged; editor and separate runtime/sanitizer gates were not
+  rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1517,11 +1512,13 @@ explicitly documented. No outstanding failures remain.
    type/cell traversal. By-value record arguments now contribute nested/nullable
    stored carrier candidates through bounded field traversal and existing snapshots.
    Direct borrowed-record arguments now contribute owned reference-cell projections
-   and stored carriers through bounded nested/nullable field traversal. Next extend
-   returned-cell matching across shared chains ending in borrowed-record arguments,
-   reusing the existing view-location expansion; keep nested borrowed-view fields
-   separate initially. Test shared depth, unknown intermediate cells, mixed sources
-   and budgets before the full gate. Returned borrowed-record views, heterogeneous
+   and stored carriers through bounded nested/nullable field traversal. Shared
+   chains ending in borrowed-record arguments now expand those locations before
+   returned-cell matching. Next add nested borrowed-view fields to
+   `calls/cells/views.rs` using a bounded type/location worklist; share visit/depth
+   limits across unknown and known descendants. Test nested chains, mixed owners,
+   retargets, nulls and capacity/depth limits before the full gate. Returned
+   borrowed-record views, heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
