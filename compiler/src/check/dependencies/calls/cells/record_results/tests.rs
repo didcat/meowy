@@ -72,10 +72,10 @@ pub(crate) fn returned_record_locations_feed_later_origin_queries() {
 }
 
 #[test]
-pub(crate) fn returned_record_views_preserve_lifetimes_and_unsupported_candidates() {
+pub(crate) fn returned_record_views_preserve_lifetimes_and_unsupported_projections() {
     let source = "<R>:<{c<&boolean>}>;f<&R>:(p<&R>){row<R>:{->c:p.c};->&row};x:=false;row<R>:{->c:&x};r:f(&row)";
     assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
-    let source = "<R>:<{c<&boolean>}>;<W>:<{v<&R>}>;f<&R>:(p<W>){->p.v};x:=false;row<R>:{->c:&x};r:f({->v:&row})";
+    let source = "<R>:<{c<&boolean>}>;<W>:<{inner<R>}>;f<&R>:(p<&W>){->p.&inner};x:=false;row<W>:{->inner<R>:{->c:&x}};r:f(&row)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     let stmts = statements(&mut checker, source);

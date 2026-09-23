@@ -200,8 +200,11 @@ Nested borrowed-view fields also participate in returned-cell matching through a
 bounded type/location worklist. Shared visit and depth limits apply across all
 descendants, even when their locations are unknown or empty. Direct shared results
 pointing to concrete records containing references retain locations from all
-exact-compatible shared arguments, including copies and nested calls. Other
-borrowed input shapes remain incomplete for this result subset. Known record
+exact-compatible shared arguments, including copies and nested calls. By-value
+record containers also contribute matching stored views through nested/nullable
+fields, copies and composition; null containers contribute no locations. Unknown
+matching fields stay incomplete. Shared-chain and projected borrowed-record inputs
+remain separate for this result subset. Known record
 locations do not make unknown contained-reference origins complete.
 Shared returns of supported
 scalar/list/record views retain

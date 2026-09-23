@@ -1,4 +1,4 @@
-use super::{Cells, Checker, Diagnostic, Expr, Result, Type};
+use super::{Cells, Checker, Diagnostic, Expr, MAX_DEPTH, MAX_FIELDS, Result, Type};
 
 impl Checker {
     pub(super) fn call_record_locations(
@@ -15,17 +15,52 @@ impl Checker {
         }
         let mut cells = Cells::default();
         let mut found = false;
-        for arg in args {
-            let supported = arg.ty == expr.ty
-                || !arg.ty.has_borrowed()
-                || matches!(&arg.ty, Type::Reference(target) if !target.has_borrowed());
+        let mut pending = args
+            .iter()
+            .map(|arg| (arg, &arg.ty, Vec::new()))
+            .collect::<Vec<_>>();
+        let mut visits = 0;
+        while let Some((arg, ty, path)) = pending.pop() {
+            visits += 1;
+            if visits > MAX_FIELDS || path.len() > MAX_DEPTH || !self.flow.spend(path.len() + 1) {
+                return Err(Diagnostic::unsupported(
+                    "proof returned record input budget exhausted",
+                    expr.span,
+                ));
+            }
+            if !ty.has_borrowed() {
+                continue;
+            }
+            if let Some(Type::Record { primary, fields }) = Self::origin_record(ty) {
+                if primary.has_borrowed() {
+                    return Ok(Cells::default());
+                }
+                if pending.len() + fields.len() > MAX_FIELDS {
+                    return Err(Diagnostic::unsupported(
+                        "proof returned record input capacity exhausted",
+                        expr.span,
+                    ));
+                }
+                for (index, field) in fields.iter().enumerate() {
+                    let mut path = path.clone();
+                    path.push(index);
+                    pending.push((arg, &field.ty, path));
+                }
+                continue;
+            }
+            let supported =
+                *ty == expr.ty || matches!(ty, Type::Reference(target) if !target.has_borrowed());
             if !supported {
                 return Ok(Cells::default());
             }
-            if !crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty) {
+            if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
                 continue;
             }
-            let source = self.reference_cell_at(arg, depth + 1)?;
+            let source = if path.is_empty() {
+                self.reference_cell_at(arg, depth + 1)?
+            } else {
+                self.record_source_cells(arg, &path)?
+            };
             if !found {
                 cells.complete = true;
                 found = true;
@@ -38,3 +73,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod records;

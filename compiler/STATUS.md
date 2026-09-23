@@ -29,20 +29,19 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current returned borrowed-record view slice
+### Current record-stored returned-view slice
 
-Plan: retain returned locations for direct shared references to concrete records
-containing references. Admit exact-compatible record-view arguments plus inputs
-without borrowed values and reference-free shared views; keep other candidate
-shapes explicitly incomplete. Reuse contract matching and bounded cell merging.
-Test identities/copies/nested calls, all candidates, unknown sources, contained
-marks and ordinary lifetime rejection, then run the full compiler gate.
+Plan: extend exact returned record-view candidates through named fields of
+by-value records, including nested/nullable single-record containers. Reuse stored
+cell snapshots, preserve incomplete alternatives and retain shared field/depth/work
+limits. Keep tests for inline/copy/composition, nested/null containers, multiple
+candidates, unknown fields and capacity with this change; run the compiler gate.
 
-Location retention does not implement record-value returns or general result
-summaries. Proof outcomes stay gated. All 186 dependency groups pass, including
-five new returned-record groups. Later origin queries retain incomplete contained
-references rather than treating known locations as known contents. All ten compiler
-checks pass; no failures remain.
+Projected borrowed-record candidates and shared-chain candidates remain separate.
+Known locations still do not imply known contents. Proof outcomes stay gated.
+All 190 dependency groups pass, including four new record-container groups and
+the preserved projected-input/E303 boundary regression. All ten compiler checks
+pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1370,17 +1369,17 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1171
-  library/903 native tests (2074 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1175
+  library/903 native tests (2078 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-returned-record-views-gate.log`.
-- All 186 dependency groups pass. Five new returned-record groups cover identity/
-  nested calls, copies, all exact-compatible candidates, unknown locations and
-  contents, downstream origin queries, contained marks, lifetime rejection and
-  unsupported aggregate inputs. Accepted fixtures pass ordinary compilation/
-  ownership; dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Aggregate/projected candidates for returned
-  borrowed-record views, broader result shapes, allocator-bound analysis,
+  0 failed in debug/release. Log: `/tmp/meowy-record-stored-result-views-gate.log`.
+- All 190 dependency groups pass. Four new container groups cover inline/copied/
+  composed views, nested/nullable records, nulls, multiple and unknown candidates,
+  contained dependency marks and input capacity. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded checker evidence.
+  Existing E303 and unsupported-projection regressions remain green.
+- Flags/outcomes remain B001-gated. Shared-chain/projected input candidates for
+  returned record views, broader result shapes, allocator-bound analysis,
   heterogeneous unions, precise joins, callee effect/data/control summaries and
   conditional-exit control remain open. Runtime sources, reference fixtures,
   dependencies and versions are unchanged; editor and separate runtime/sanitizer
@@ -1518,10 +1517,13 @@ explicitly documented. No outstanding failures remain.
    type/location worklist, including unknown/empty descendants and nullable views.
    Direct shared concrete-record results now retain exact-compatible argument
    locations through copies/nested calls; known locations do not imply known
-   contents. Next broaden returned record-view candidates to by-value records in
-   `calls/cells/record_results.rs`, reusing bounded field traversal and stored-cell
-   snapshots. Preserve unknown/unsupported alternatives; test nested/nullable
-   containers, multiple candidates and ordinary lifetimes before the full gate. Heterogeneous
+   contents. By-value nested/nullable record containers now supply stored exact
+   view candidates through existing cell snapshots. Next support shared input
+   chains ending in the exact returned record-view type in
+   `calls/cells/record_results.rs`; expand compatible inner locations with bounded
+   depth/work and preserve other borrowed-record shapes as incomplete. Test
+   direct/stored/deep chains, unknown intermediates and lifetimes before the full
+   gate. Projected borrowed-record candidates, heterogeneous
    unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
