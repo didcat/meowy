@@ -8,6 +8,7 @@ impl Checker {
         ty: &Type,
         expr: &Expr,
         result_depth: Option<usize>,
+        result: &Type,
     ) -> Result<Option<Cells>> {
         let mut cells = Cells {
             complete: true,
@@ -23,8 +24,7 @@ impl Checker {
                 ));
             }
             cells.complete &= locations.complete;
-            let paths =
-                crate::borrow_contract::projections(ty, &expr.ty, &mut self.flow, expr.span)?;
+            let paths = crate::borrow_contract::projections(ty, result, &mut self.flow, expr.span)?;
             if paths.len() > MAX_FIELDS {
                 return Err(Diagnostic::unsupported(
                     "proof returned record cell capacity exhausted",
@@ -80,7 +80,8 @@ impl Checker {
                 if let Some((view, layers)) = record {
                     let mut source = self.call_field_cells(&locations, &path, expr)?;
                     source = self.expand_reference_cells(source, expr)?;
-                    let (matched, source) = self.record_chain_cells(source, ty, layers, expr)?;
+                    let (matched, source) =
+                        self.record_chain_cells(source, ty, layers, expr, result)?;
                     self.merge_returned_cells(&mut cells, matched, expr)?;
                     if views.len() + pending.len() >= MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
@@ -105,7 +106,7 @@ impl Checker {
                 for _ in 0..layers {
                     ty = ty.pointee().unwrap();
                 }
-                if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
+                if !crate::borrow_contract::returns::candidate(result, ty) {
                     continue;
                 }
                 let mut source = self.call_field_cells(&locations, &path, expr)?;

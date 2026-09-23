@@ -29,26 +29,20 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-valued call-origin series
+### Current record-call carrier-field series
 
-1. Separate result type/span matching from checked-call recognition, preserving
-   existing reference-result behavior. Run focused checks and commit this reusable
-   prerequisite separately.
-2. Retain ordinary shared-reference field origins for direct record-valued calls
-   through the public argument contract. Reuse bounded named-field paths and
-   snapshots, carry call depth through nested record arguments, and keep unknown
-   shapes incomplete. Test returned fields/copies/nesting, all candidates,
-   unknown inputs and depth limits; run the full compiler gate before commit.
+1. Make nested cell/location matchers accept an explicit result type, keeping all
+   current callers on their expression type. Validate and commit separately.
+2. Carry call depth through record-cell reads and extract bounded result-field
+   type selection without enabling calls there yet. Validate and commit.
+3. Match carrier-field result types against public call arguments and retain their
+   location snapshots. Test nested calls/copies, record views, all/unknown candidates,
+   depth/work bounds and lifetime rejection; run the full compiler gate.
 
-Carrier-cell fields, direct projections from call expressions and wider record
-result shapes remain separate. No private function-body inference or proof
-outcomes are enabled. Result matching is now independent of the call expression;
-all 208 dependency groups and formatting pass
-(`/tmp/meowy-result-origin-matcher-focused.log`). Prerequisite committed as
-`7da170e`. Ordinary shared field snapshots now resolve direct call results and
-copies via public argument contracts. All 212 dependency groups pass, including
-shared nested-call depth propagation. All ten compiler checks pass; no failures
-remain.
+Ordinary shared-reference fields already retain origins. No fabricated call HIR
+or private-body inference is needed; proof outcomes remain gated. Step 1 passes
+all 212 dependency groups and formatting (`/tmp/meowy-cell-result-types-focused.log`).
+Depth plumbing and carrier-field integration remain next.
 
 ### Proof dependency implementation slices
 

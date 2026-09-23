@@ -64,7 +64,9 @@ impl Checker {
                 source = self.expand_reference_cells(source, expr)?;
             }
             if !exact {
-                let Some(projected) = self.returned_record_cells(source, view, expr, None)? else {
+                let Some(projected) =
+                    self.returned_record_cells(source, view, expr, None, &expr.ty)?
+                else {
                     return Ok(Cells::default());
                 };
                 source = projected;

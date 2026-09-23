@@ -116,6 +116,7 @@ pub(crate) fn unknown_nested_returned_cell_views_keep_total_depth_bounded() {
             &ty,
             value,
             Some(2),
+            &value.ty,
         )
         .err()
         .unwrap();

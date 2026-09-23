@@ -78,9 +78,14 @@ impl Checker {
                     self.record_source_cells(arg, &path)?
                 };
                 let (mut matched, locations) =
-                    self.record_chain_cells(locations, ty, layers, expr)?;
-                let Some(source) =
-                    self.returned_record_cells(locations, view, expr, Some(result_depth))?
+                    self.record_chain_cells(locations, ty, layers, expr, &expr.ty)?;
+                let Some(source) = self.returned_record_cells(
+                    locations,
+                    view,
+                    expr,
+                    Some(result_depth),
+                    &expr.ty,
+                )?
                 else {
                     return Ok(Cells::default());
                 };

@@ -114,6 +114,7 @@ pub(crate) fn returned_record_projection_traversal_keeps_unknown_depth_bounded()
             &ty,
             value,
             None,
+            &value.ty,
         )
         .err()
         .unwrap();

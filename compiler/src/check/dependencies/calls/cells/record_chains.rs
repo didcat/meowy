@@ -7,6 +7,7 @@ impl Checker {
         mut ty: &Type,
         layers: usize,
         expr: &Expr,
+        result: &Type,
     ) -> Result<(Cells, Cells)> {
         let mut matched = Cells {
             complete: true,
@@ -14,7 +15,7 @@ impl Checker {
         };
         for layer in 0..=layers {
             self.origin_visit(expr)?;
-            if crate::borrow_contract::returns::candidate(&expr.ty, ty) {
+            if crate::borrow_contract::returns::candidate(result, ty) {
                 self.merge_returned_cells(&mut matched, locations.clone(), expr)?;
             }
             if layer < layers {
