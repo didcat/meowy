@@ -29,21 +29,19 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current deeper returned-cell slice
+### Current record-stored returned-cell slice
 
-Plan: recognize bounded all-shared reference chains ending in reference-free
-values, match compatible return layers using the existing contract predicate,
-and expand source cells when a deeper input can supply an inner returned carrier.
-Preserve incomplete candidates, mode/aggregate exclusions, capacities and budgets.
-Keep deeper/nested return, inner-candidate, unknown and limit regressions with
-this behavior slice; run the compiler gate before committing.
+Plan: traverse named fields of by-value record arguments, including nested and
+nullable single-record shapes, under shared field/depth/work limits. Reuse
+`record_source_cells` and existing compatible-layer matching, retaining every
+candidate and incomplete alternatives. Keep behavior and focused regressions in
+one commit, then run the compiler gate. Borrowed-record argument projections and
+returned borrowed-record views remain separate; outcomes stay gated.
 
-Exact-depth matching alone would omit compatible inner cells from deeper inputs.
-Their candidates must be traversed or explicitly incomplete. Aggregate-stored
-candidates and returned borrowed-record views remain separate. Outcomes stay gated.
-All 162 dependency groups pass, including four new groups for deeper returns,
-inner candidates, unknown cell layers and type-depth/mode/work limits. All ten
-compiler checks pass; no failures remain.
+The existing record source resolver already preserves copies, emissions and
+nullable empty snapshots. No new location representation is required. All 167
+dependency groups pass, including five new record-return groups and the preserved
+borrowed-record/E303 boundary regression. All ten compiler checks pass.
 
 ### Proof dependency implementation slices
 
@@ -1371,19 +1369,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1147
-  library/903 native tests (2050 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1152
+  library/903 native tests (2055 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-deeper-returned-cells-gate.log`.
-- All 162 dependency groups pass. Four new returned-chain groups cover deeper/
-  nested calls, copies, compatible inner input cells, unknown intermediate cells,
-  type depth, mode exclusion and work exhaustion. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded checker evidence.
-  Existing E303 lifetime and nested-call depth regressions remain green.
-- Flags/outcomes remain B001-gated. Aggregate-stored return candidates, returned
-  borrowed-record views, allocator-bound pointees, heterogeneous unions, precise
-  joins, callee effect/data/control summaries and conditional-exit control remain
-  open. Runtime sources, reference fixtures, dependencies and versions are
+  0 failed in debug/release. Log: `/tmp/meowy-record-return-cells-gate.log`.
+- All 167 dependency groups pass. Five new record-return groups cover inline/
+  copied/composed/nested records, deeper field carriers, nullable/null inputs,
+  multiple/unknown candidates, heterogeneous exclusion and field capacity.
+  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
+  seeded checker evidence. Existing lifetime and call-depth checks remain green.
+- Flags/outcomes remain B001-gated. Borrowed-record returned-cell candidates,
+  returned borrowed-record views, allocator-bound pointees, heterogeneous unions,
+  precise joins, callee effect/data/control summaries and conditional-exit control
+  remain open. Runtime sources, reference fixtures, dependencies and versions are
   unchanged; editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
@@ -1510,11 +1508,13 @@ explicitly documented. No outstanding failures remain.
    null contributes no stored owners and heterogeneous layouts remain incomplete.
    Returned shared chains now retain exact and compatible inner argument cells
    through copies and nested calls, preserving unknown alternatives and bounded
-   type/cell traversal. Next add aggregate-stored returned-cell candidates in
-   `calls/cells.rs`, reusing record locations and contract projection matching.
-   Separate any reusable location traversal from integration; test stored carriers,
-   owned reference-cell projections, mixed/unknown candidates and lifetime errors
-   before the full gate. Returned borrowed-record views, heterogeneous unions and broader
+   type/cell traversal. By-value record arguments now contribute nested/nullable
+   stored carrier candidates through bounded field traversal and existing snapshots.
+   Next add borrowed-record argument candidates in `calls/cells.rs`: owned
+   reference-cell projections and stored carriers, using existing view locations
+   and contract projections. Separate reusable traversal from integration where
+   useful; test nested/unknown/mixed candidates and lifetime errors before the full
+   gate. Returned borrowed-record views, heterogeneous unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

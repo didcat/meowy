@@ -188,7 +188,10 @@ compatible shared argument layers, including copies and nested calls. Deeper
 inputs contribute compatible inner cells through bounded expansion. The terminal
 view must have no borrowed components. Unknown arguments or intermediate cells
 keep sets incomplete; type/call depth, capacity and work limits remain explicit.
-Aggregate-stored return candidates remain separate. Shared returns of supported
+By-value record arguments also contribute stored carrier candidates through
+nested and nullable fields, including inline construction, copies and composition.
+Known null contributes no cells; unknown matching fields keep results incomplete.
+Borrowed-record argument candidates remain separate. Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
 record-field/list-element projections when referenced inputs/results have no

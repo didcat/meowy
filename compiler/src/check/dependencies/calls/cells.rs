@@ -1,4 +1,5 @@
 use super::{Checker, Diagnostic, Expr, Result};
+use crate::check::dependencies::records::{MAX_DEPTH, MAX_FIELDS};
 use crate::check::dependencies::{
     Cells,
     references::{MAX_CELL_DEPTH, MAX_ROOTS},
@@ -26,25 +27,58 @@ impl Checker {
         }
         let mut cells = Cells::default();
         let mut found = false;
-        for arg in args {
-            if !arg.ty.has_borrowed() {
+        let mut pending = args
+            .iter()
+            .map(|arg| (arg, &arg.ty, Vec::new()))
+            .collect::<Vec<_>>();
+        let mut visits = 0;
+        while let Some((arg, ty, path)) = pending.pop() {
+            visits += 1;
+            if visits > MAX_FIELDS || path.len() > MAX_DEPTH || !self.flow.spend(path.len() + 1) {
+                return Err(Diagnostic::unsupported(
+                    "proof returned cell input budget exhausted",
+                    expr.span,
+                ));
+            }
+            if !ty.has_borrowed() {
                 continue;
             }
-            let Some(arg_depth) = self.shared_cell_depth(&arg.ty, expr)? else {
+            if let Some(Type::Record { primary, fields }) = Self::origin_record(ty) {
+                if primary.has_borrowed() {
+                    return Ok(Cells::default());
+                }
+                if pending.len() + fields.len() > MAX_FIELDS {
+                    return Err(Diagnostic::unsupported(
+                        "proof returned cell input capacity exhausted",
+                        expr.span,
+                    ));
+                }
+                for (index, field) in fields.iter().enumerate() {
+                    let mut path = path.clone();
+                    path.push(index);
+                    pending.push((arg, &field.ty, path));
+                }
+                continue;
+            }
+            let Some(arg_depth) = self.shared_cell_depth(ty, expr)? else {
                 return Ok(Cells::default());
             };
             if arg_depth < result_depth {
                 continue;
             }
             let layers = arg_depth - result_depth;
-            let mut ty = &arg.ty;
+            let mut ty = ty;
             for _ in 0..layers {
                 ty = ty.pointee().unwrap();
             }
             if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
                 continue;
             }
-            let mut source = self.reference_cell_at(arg, depth + 1)?;
+            let mut source = if path.is_empty() {
+                self.reference_cell_at(arg, depth + 1)?
+            } else {
+                self.record_source_cells(arg, &path)?
+            };
             for _ in 0..layers {
                 source = self.expand_reference_cells(source, expr)?;
             }
@@ -108,3 +142,6 @@ mod tests;
 
 #[cfg(test)]
 mod chains;
+
+#[cfg(test)]
+mod records;
