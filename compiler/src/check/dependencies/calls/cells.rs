@@ -1,3 +1,5 @@
+mod views;
+
 use super::{Checker, Diagnostic, Expr, Result};
 use crate::check::dependencies::records::{MAX_DEPTH, MAX_FIELDS};
 use crate::check::dependencies::{
@@ -60,28 +62,43 @@ impl Checker {
                 }
                 continue;
             }
-            let Some(arg_depth) = self.shared_cell_depth(ty, expr)? else {
-                return Ok(Cells::default());
-            };
-            if arg_depth < result_depth {
-                continue;
-            }
-            let layers = arg_depth - result_depth;
-            let mut ty = ty;
-            for _ in 0..layers {
-                ty = ty.pointee().unwrap();
-            }
-            if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
-                continue;
-            }
-            let mut source = if path.is_empty() {
-                self.reference_cell_at(arg, depth + 1)?
+            let source = if matches!(ty, Type::Reference(target) if Self::origin_record(target).is_some() && target.has_borrowed())
+            {
+                let locations = if path.is_empty() {
+                    self.reference_cell_at(arg, depth + 1)?
+                } else {
+                    self.record_source_cells(arg, &path)?
+                };
+                let Some(source) = self.returned_record_cells(locations, ty, expr, result_depth)?
+                else {
+                    return Ok(Cells::default());
+                };
+                source
             } else {
-                self.record_source_cells(arg, &path)?
+                let Some(arg_depth) = self.shared_cell_depth(ty, expr)? else {
+                    return Ok(Cells::default());
+                };
+                if arg_depth < result_depth {
+                    continue;
+                }
+                let layers = arg_depth - result_depth;
+                let mut ty = ty;
+                for _ in 0..layers {
+                    ty = ty.pointee().unwrap();
+                }
+                if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
+                    continue;
+                }
+                let mut source = if path.is_empty() {
+                    self.reference_cell_at(arg, depth + 1)?
+                } else {
+                    self.record_source_cells(arg, &path)?
+                };
+                for _ in 0..layers {
+                    source = self.expand_reference_cells(source, expr)?;
+                }
+                source
             };
-            for _ in 0..layers {
-                source = self.expand_reference_cells(source, expr)?;
-            }
             let work = source
                 .places
                 .iter()

@@ -82,11 +82,10 @@ pub(crate) fn returned_cell_analysis_is_bounded_and_does_not_replay_calls() {
 }
 
 #[test]
-pub(crate) fn returned_cell_lifetimes_and_borrowed_record_boundaries_remain_checked() {
+pub(crate) fn returned_cell_lifetimes_and_nested_borrowed_record_boundaries_remain_checked() {
     let source = "f<& &boolean>:(p<& &boolean>){local:*p;->&local};x:=false;a:&x;r:f(&a)";
     assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
-    let source =
-        "<R>:<{c<&boolean>}>;f<& &boolean>:(p<&R>){->p.&c};x:=false;row<R>:{->c:&x};r:f(&row)";
+    let source = "<N>:<{c<&boolean>}>;<R>:<{inner<&N>}>;f<& &boolean>:(p<&R>){view:p.inner;->view.&c};x:=false;a<N>:{->c:&x};row<R>:{->inner:&a};r:f(&row)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);

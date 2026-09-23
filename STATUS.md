@@ -314,8 +314,10 @@ all ten compiler checks pass. Returned shared chains now retain compatible
 argument cell locations through copies and nested calls, including matching inner
 layers of deeper inputs. Unknown alternatives remain incomplete. All 162
 dependency groups and all ten compiler checks pass. By-value record arguments
-now contribute stored carriers through nested/nullable fields and copies. All 167
-dependency groups and all ten compiler checks pass.
+now contribute stored carriers through nested/nullable fields and copies. Direct
+borrowed-record arguments now also contribute projected reference-cell locations
+and stored carriers, reusing field projection from `a4686cb`. All 171 dependency
+groups and all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -339,20 +341,21 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1152
-  library/903 native tests (2055 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1156
+  library/903 native tests (2059 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-record-return-cells-gate.log`.
-- All 167 dependency groups pass. Five new record-return groups cover inline/
-  copied/composed/nested records, deeper field carriers, nullable/null inputs,
-  multiple/unknown candidates, heterogeneous exclusion and field capacity.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
-  seeded checker evidence. Existing lifetime and call-depth checks remain green.
-- Flags/outcomes remain B001-gated. Borrowed-record returned-cell candidates,
-  returned borrowed-record views, allocator-bound pointees, heterogeneous unions,
-  precise joins, callee effect/data/control summaries and conditional-exit control
-  remain open. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  0 failed in debug/release. Log: `/tmp/meowy-borrowed-record-return-cells-gate.log`.
+- All 171 dependency groups pass. Four new borrowed-record groups cover exact
+  projected locations, copied/subrecord views, stored/deeper carriers, mixed and
+  unknown candidates, and nullable/null inputs. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded checker evidence.
+  Projection extraction is `a4686cb`; existing lifetime regressions remain green.
+- Flags/outcomes remain B001-gated. Returned-cell matching through shared chains
+  to borrowed-record arguments or nested borrowed views, returned borrowed-record
+  views, allocator-bound pointees, heterogeneous unions, precise joins, callee
+  effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Area handoff

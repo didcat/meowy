@@ -191,7 +191,11 @@ keep sets incomplete; type/call depth, capacity and work limits remain explicit.
 By-value record arguments also contribute stored carrier candidates through
 nested and nullable fields, including inline construction, copies and composition.
 Known null contributes no cells; unknown matching fields keep results incomplete.
-Borrowed-record argument candidates remain separate. Shared returns of supported
+Direct borrowed-record arguments also contribute contract-projected reference-cell
+locations and stored carriers through nested/nullable owned records. Unknown
+locations or matching fields remain incomplete. Nested borrowed-view fields and
+chains ending in borrowed-record arguments remain separate for returned cells.
+Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
 record-field/list-element projections when referenced inputs/results have no
