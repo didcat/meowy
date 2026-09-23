@@ -176,12 +176,15 @@ fields, including nested named fields, when their primaries have no borrowed
 components. A single record shape may be wrapped in a nullable union, including
 nested named fields. Known null contributes no owners; unknown matching fields
 keep results incomplete. Heterogeneous union layouts are not combined. Traversal
-uses bounded field paths and the existing analysis budget.
+uses bounded field paths and the existing analysis budget. One-level shared
+reference carriers can also supply their stored view owners, including named,
+temporary and record-stored carriers. Their inner shared view must have no borrowed
+components; unknown cells or stored origins keep matching candidates incomplete.
 Whole-container owners are retained conservatively, including direct record/list
 views and nested projections.
 Unknown matching arguments keep results incomplete. Calls with other borrowed
-aggregate shapes,
-reference-bearing/allocator-bound pointees or broader return shapes,
+aggregate shapes, deeper carriers, references to borrowed records,
+allocator-bound pointees or broader return shapes,
 and heterogeneous record unions remain separate. Callee effects and data/control
 summaries are not supplied by this origin mapping. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also

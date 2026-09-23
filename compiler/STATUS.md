@@ -29,18 +29,20 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current nullable record-argument origin slice
+### Current reference-cell argument slice
 
-Plan: reuse `origin_record` to admit the single-record-plus-null input shape in
-call-origin traversal, including nested nullable record fields. Existing record
-snapshots and coercion handling provide complete empty origins for known nulls.
-Keep the behavior change and focused regressions in one reviewable commit; test
-wrapped/direct inputs, nulls, mixed completeness and heterogeneous-union exclusion,
-then run the complete compiler gate. No proof outcome is enabled.
-Implementation reuses existing nullable paths without a new representation.
-All 16 call-origin groups pass, including five new groups covering wrapped/copied
-inputs, direct and stored nulls, nested nullable fields, unknown sources and
-heterogeneous-union exclusion. All ten compiler checks pass; no failures remain.
+Plan: first admit one-level shared reference carriers (`& &T`) whose inner shared
+view has no borrowed components. Resolve named/temporary cells and record-stored
+carriers using existing cell snapshots, then reuse contract projections to retain
+all matching owners. Keep implementation and focused regressions in one commit;
+cover aliases, retargets, list projections, unknown cells and lifetime rejection,
+then run the complete compiler gate. References to borrowed records and deeper
+carrier inputs remain separate. No proof outcome is enabled.
+Implementation uses `reference_cell`/`record_source_cells` for locations and
+`cell_origins` for stored owners/completeness, with bounded merging. All 125
+dependency groups pass, including five new carrier-call groups. Deeper carriers
+stay incomplete and invalid local returns retain E303. All ten compiler checks
+pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1368,19 +1370,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1105
-  library/903 native tests (2008 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1110
+  library/903 native tests (2013 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nullable-call-gate.log`.
-- All 120 dependency groups pass, including 16 call-origin groups. Five new groups
-  cover nullable record arguments, copies/retargets, known null, nested nullable
-  fields, mixed completeness and heterogeneous-union exclusion. Accepted fixtures
-  pass ordinary compilation/ownership; dependency marks remain seeded evidence.
-- Flags/outcomes remain B001-gated. Other borrowed aggregate arguments,
-  reference-bearing/allocator-bound pointees, broader returned shapes, heterogeneous
-  record unions, precise joins, callee effect/data/control summaries and conditional-
-  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
-  and versions are unchanged; editor and separate runtime/sanitizer gates were not
+  0 failed in debug/release. Log: `/tmp/meowy-carrier-call-gate.log`.
+- All 125 dependency groups pass, including five new carrier-call groups covering
+  named/copied/temporary cells, record-stored carriers, projected list views,
+  retargeted owners, unknown cells/pointees, E303 local-return rejection and the
+  deeper-carrier boundary. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Deeper carrier arguments, references to borrowed
+  records, allocator-bound pointees, broader returned shapes, heterogeneous record
+  unions, precise joins, callee effect/data/control summaries and conditional-exit
+  control remain unfinished. Runtime sources, reference fixtures, dependencies and
+  versions are unchanged; editor and separate runtime/sanitizer gates were not
   rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1489,10 +1492,12 @@ explicitly documented. No outstanding failures remain.
    components have no borrowed values. Concrete by-value record arguments now
    retain nested named shared-reference fields, including nullable record wrappers
    and nested nullable fields. Known null contributes no owners; unknown matching
-   fields remain incomplete. Next extend reference-bearing pointee arguments in
-   `calls/inputs.rs` using existing record/cell metadata, preserving incomplete
-   unknown sources and ordinary ownership checks. Add direct/nested/shared-view
-   regressions before the full gate. Heterogeneous unions and broader returned
+   fields remain incomplete. One-level shared carrier arguments now resolve stored
+   view owners through named/temporary cells and record-stored carrier snapshots.
+   Next extend deeper shared carrier arguments in `calls/inputs.rs` using bounded
+   cell-layer traversal; test depth limits, mixed completeness and contract
+   candidates before the full gate. References to borrowed records still need
+   storage-location metadata through named aliases. Heterogeneous unions and broader returned
    shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

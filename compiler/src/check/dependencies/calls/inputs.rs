@@ -1,3 +1,5 @@
+mod carriers;
+
 use super::{Checker, Diagnostic, Expr, Origins};
 use crate::check::dependencies::records::{MAX_DEPTH, MAX_FIELDS};
 use crate::{check::Result, hir::Type};
@@ -30,7 +32,7 @@ impl Checker {
             if !ty.has_borrowed() {
                 continue;
             }
-            match Self::origin_record(ty).unwrap_or(ty) {
+            let (ty, carrier) = match Self::origin_record(ty).unwrap_or(ty) {
                 Type::Record { primary, fields } if !primary.has_borrowed() => {
                     if pending.len() + fields.len() > MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
@@ -45,14 +47,22 @@ impl Checker {
                     }
                     continue;
                 }
-                Type::Reference(target) if !target.has_borrowed() => {}
+                Type::Reference(target) if !target.has_borrowed() => (ty, false),
+                Type::Reference(target)
+                    if matches!(target.as_ref(), Type::Reference(inner) if !inner.has_borrowed())
+                        && Self::origin_reference(target) =>
+                {
+                    (target.as_ref(), true)
+                }
                 _ => return Ok(Input::Unsupported),
-            }
+            };
             if crate::borrow_contract::projections(ty, result, &mut self.flow, arg.span)?.is_empty()
             {
                 continue;
             }
-            let source = if path.is_empty() {
+            let source = if carrier {
+                self.call_carrier_origins(arg, &path)?
+            } else if path.is_empty() {
                 self.reference_origins_at(arg, depth + 1)?
             } else {
                 self.record_source_origins(arg, &path)?

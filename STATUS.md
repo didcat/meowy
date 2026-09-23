@@ -296,7 +296,9 @@ remain separate and proof flags stay gated. Concrete by-value record arguments
 now retain nested named shared-reference fields using the same contract. Nullable
 record wrappers and nested nullable fields reuse those snapshots; known null adds
 no owners and unknown matching fields stay incomplete. All 16 call-origin groups
-and all ten compiler checks pass.
+and all ten compiler checks pass. One-level shared carrier arguments now resolve
+stored view owners through named, temporary and record-stored cells. All 125
+dependency groups and all ten compiler checks pass.
 
 ## Pending descriptor statement accounting
 
@@ -320,19 +322,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1105
-  library/903 native tests (2008 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1110
+  library/903 native tests (2013 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-nullable-call-gate.log`.
-- All 120 dependency groups pass, including 16 call-origin groups. Five new groups
-  cover nullable record arguments, copies/retargets, known null, nested nullable
-  fields, mixed completeness and heterogeneous-union exclusion. Accepted fixtures
-  pass ordinary compilation/ownership; dependency marks remain seeded evidence.
-- Flags/outcomes remain B001-gated. Other borrowed aggregate arguments,
-  reference-bearing/allocator-bound pointees, broader returned shapes, heterogeneous
-  record unions, precise joins, callee effect/data/control summaries and conditional-
-  exit control remain unfinished. Runtime sources, reference fixtures, dependencies
-  and versions are unchanged; editor and separate runtime/sanitizer gates were not
+  0 failed in debug/release. Log: `/tmp/meowy-carrier-call-gate.log`.
+- All 125 dependency groups pass, including five new carrier-call groups covering
+  named/copied/temporary cells, record-stored carriers, projected list views,
+  retargeted owners, unknown cells/pointees, E303 local-return rejection and the
+  deeper-carrier boundary. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Deeper carrier arguments, references to borrowed
+  records, allocator-bound pointees, broader returned shapes, heterogeneous record
+  unions, precise joins, callee effect/data/control summaries and conditional-exit
+  control remain unfinished. Runtime sources, reference fixtures, dependencies and
+  versions are unchanged; editor and separate runtime/sanitizer gates were not
   rerun. Full release qualification remains open.
 
 ## Area handoff
