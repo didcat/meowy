@@ -123,6 +123,21 @@ impl Checker {
     }
 
     pub(crate) fn record_source_cells(&mut self, value: &Expr, path: &[usize]) -> Result<Cells> {
+        self.record_source_cells_at(value, path, 0)
+    }
+
+    pub(crate) fn record_source_cells_at(
+        &mut self,
+        value: &Expr,
+        path: &[usize],
+        depth: usize,
+    ) -> Result<Cells> {
+        if depth > crate::check::dependencies::calls::MAX_DEPTH {
+            return Err(Diagnostic::unsupported(
+                "proof record cell call depth exhausted",
+                value.span,
+            ));
+        }
         let sources = match self.record_source_locations(value, path)? {
             RecordSource::Unknown => return Ok(Cells::default()),
             RecordSource::Empty => {

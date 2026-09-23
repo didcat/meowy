@@ -42,7 +42,9 @@ outcome is constructed. The reference remains authoritative.
 Ordinary shared-reference fields already retain origins. No fabricated call HIR
 or private-body inference is needed; proof outcomes remain gated. Step 1 passes
 all 212 dependency groups and formatting (`/tmp/meowy-cell-result-types-focused.log`).
-Depth plumbing and carrier-field integration remain next.
+Step 1 committed as `ee3a574`. Step 2 now carries cell-call depth and shares field
+type selection; all 212 dependency groups and formatting pass
+(`/tmp/meowy-record-cell-depth-focused.log`). Carrier-field integration remains next.
 
 ### Proof dependency implementation slices
 

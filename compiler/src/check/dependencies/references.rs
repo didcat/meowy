@@ -77,7 +77,7 @@ impl Checker {
                         .unwrap_or_default();
                 }
                 ExprKind::Field { value, index } => {
-                    break self.record_source_cells(value, &[*index])?;
+                    break self.record_source_cells_at(value, &[*index], calls)?;
                 }
                 ExprKind::Deref(inner) => {
                     depth += 1;

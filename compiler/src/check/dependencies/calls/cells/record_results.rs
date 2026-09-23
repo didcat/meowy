@@ -58,7 +58,7 @@ impl Checker {
             let mut source = if path.is_empty() {
                 self.reference_cell_at(arg, depth + 1)?
             } else {
-                self.record_source_cells(arg, &path)?
+                self.record_source_cells_at(arg, &path, depth + 1)?
             };
             for _ in 0..layers {
                 source = self.expand_reference_cells(source, expr)?;
