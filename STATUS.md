@@ -264,6 +264,11 @@ snapshots and follow dependency marks without cycling. All five chain groups pas
 all ten compiler checks pass. Deeper field-stored carriers and returned origins
 remain incomplete; flags stay gated.
 
+Lexical named carrier emissions now register cell locations and share canonical
+cell sets across sibling aliases and retargets. Ordinary copies keep snapshots.
+Four focused groups pass; completed-record carrier-field lookup remains incomplete.
+All ten compiler checks pass; proof flags stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -286,19 +291,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1075
-  library/903 native tests (1978 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1079
+  library/903 native tests (1982 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-carrier-chains-gate.log`.
-- Six new groups cover fallible origin traversal, depth/capacity budgets, named/
-  temporary carrier chains, retarget/copy snapshots, incomplete alternatives,
-  cycle-safe dependency lookup and preserved E302/E303 errors. Accepted source
-  fixtures pass ordinary compilation/ownership checks.
-- Flags/outcomes remain B001-gated. Deeper field-stored carriers, reference-bearing
-  aggregate/returned origins, heterogeneous record unions, precise joins, function
-  summaries and conditional-exit control remain unfinished. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-emitted-cells-gate.log`.
+- Four new checker groups cover lexical emitted carriers, deeper aliases,
+  canonical sibling merges/retargets, preserved copies and incomplete unknown/
+  completed-record carrier sources. Accepted fixtures pass ordinary compilation/
+  ownership checks; no outstanding failures remain.
+- Flags/outcomes remain B001-gated. Completed-record carrier-field lookup,
+  reference-bearing aggregate/returned origins, heterogeneous record unions,
+  precise joins, function summaries and conditional-exit control remain unfinished.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open.
 
 ## Area handoff
 

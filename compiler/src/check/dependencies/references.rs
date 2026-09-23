@@ -53,7 +53,11 @@ impl Checker {
                     };
                 }
                 ExprKind::Local(id) => {
-                    break self.reference_cells.get(id).cloned().unwrap_or_default();
+                    break self
+                        .reference_cells
+                        .get(&self.origin_id(*id))
+                        .cloned()
+                        .unwrap_or_default();
                 }
                 ExprKind::Deref(inner) => {
                     depth += 1;
@@ -81,6 +85,7 @@ impl Checker {
             };
             for (root, path) in cells.places {
                 self.origin_visit(expr)?;
+                let root = self.origin_id(root);
                 let source = path
                     .is_empty()
                     .then(|| self.reference_cells.get(&root))
@@ -153,7 +158,17 @@ impl Checker {
             }
             ty = inner.pointee();
         }
-        let mut cells = self.reference_cell(value)?;
+        let cells = self.reference_cell(value)?;
+        self.store_cells(self.origin_id(id), cells, merge, value.span)
+    }
+
+    pub(crate) fn store_cells(
+        &mut self,
+        id: usize,
+        mut cells: Cells,
+        merge: bool,
+        span: crate::ast::Span,
+    ) -> crate::check::Result<()> {
         let prior = merge.then(|| self.reference_cells.get(&id)).flatten();
         let work = cells
             .places
@@ -165,7 +180,7 @@ impl Checker {
         if !self.flow.spend(work) {
             return Err(crate::diagnostic::Diagnostic::unsupported(
                 "proof reference cell budget exhausted",
-                value.span,
+                span,
             ));
         }
         if let Some(prior) = prior {
@@ -177,7 +192,7 @@ impl Checker {
         if cells.places.len() > MAX_ROOTS {
             return Err(crate::diagnostic::Diagnostic::unsupported(
                 "proof reference cell capacity exhausted",
-                value.span,
+                span,
             ));
         }
         self.reference_cells.insert(id, cells);

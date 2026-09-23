@@ -29,7 +29,7 @@ impl Checker {
     }
 
     pub(crate) fn derived_cells(&self, id: usize) -> bool {
-        let Some(cells) = self.reference_cells.get(&id) else {
+        let Some(cells) = self.reference_cells.get(&self.origin_id(id)) else {
             return false;
         };
         let mut pending = cells.places.iter().collect::<Vec<_>>();
@@ -46,7 +46,7 @@ impl Checker {
                 return true;
             }
             if path.is_empty()
-                && let Some(cells) = self.reference_cells.get(root)
+                && let Some(cells) = self.reference_cells.get(&self.origin_id(*root))
             {
                 pending.extend(&cells.places);
             }
@@ -230,3 +230,6 @@ mod cell_writes;
 
 #[cfg(test)]
 mod chains;
+
+#[cfg(test)]
+mod cell_slots;

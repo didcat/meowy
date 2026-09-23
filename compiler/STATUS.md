@@ -452,6 +452,21 @@ lookup pass all five chain groups, including depth/fan-out bounds and ordinary
 E302/E303 preservation. All ten compiler checks pass
 (`/tmp/meowy-proof-carrier-chains-gate.log`); no outstanding failures remain.
 
+### Emitted carrier-cell prerequisite
+
+Register carrier contents on named emissions and canonicalize cell metadata through
+`Alias::root`, including sibling emission merges and subsequent retargets. Preserve
+ordinary carrier-copy snapshots, bounds and unknown alternatives. Test named/deep
+emitted carrier reads and sibling aliases, then run the full compiler gate.
+
+Completed-record carrier-field lookup still needs its own field-location metadata;
+this slice covers lexical emitted names only. Returned/reference-bearing origins,
+heterogeneous unions and precise joins remain unfinished; flags stay gated.
+All four focused emitted-cell groups pass. Named/deep aliases and retargets pass
+ordinary compilation; snapshots and canonical sibling locations remain distinct.
+Unknown contents/completed-record carriers retain incomplete metadata. All ten
+compiler checks pass (`/tmp/meowy-proof-emitted-cells-gate.log`).
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1268,19 +1283,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1075
-  library/903 native tests (1978 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1079
+  library/903 native tests (1982 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-carrier-chains-gate.log`.
-- Six new groups cover fallible origin traversal, depth/capacity budgets, named/
-  temporary carrier chains, retarget/copy snapshots, incomplete alternatives,
-  cycle-safe dependency lookup and preserved E302/E303 errors. Accepted source
-  fixtures pass ordinary compilation/ownership checks.
-- Flags/outcomes remain B001-gated. Deeper field-stored carriers, reference-bearing
-  aggregate/returned origins, heterogeneous record unions, precise joins, function
-  summaries and conditional-exit control remain unfinished. Runtime sources,
-  reference fixtures, dependencies and versions are unchanged; editor and separate
-  runtime/sanitizer gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-emitted-cells-gate.log`.
+- Four new checker groups cover lexical emitted carriers, deeper aliases,
+  canonical sibling merges/retargets, preserved copies and incomplete unknown/
+  completed-record carrier sources. Accepted fixtures pass ordinary compilation/
+  ownership checks; no outstanding failures remain.
+- Flags/outcomes remain B001-gated. Completed-record carrier-field lookup,
+  reference-bearing aggregate/returned origins, heterogeneous record unions,
+  precise joins, function summaries and conditional-exit control remain unfinished.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun. Full release
+  qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1374,8 +1390,10 @@ explicitly documented. No outstanding failures remain.
    root/field locations and recover stored pointee origins. Mutable one-level
    carriers now retain bounded location sets/completeness through retargets and
    preserve prior copies. Bounded deeper named/temporary chains now resolve cell
-   layers and preserve dependency marks with cycle-safe traversal. Next extend
-   deeper field-stored carriers, reference-bearing aggregates,
+   layers and preserve dependency marks with cycle-safe traversal. Lexical emitted
+   carriers now register and share canonical cell sets through sibling aliases.
+   Next add completed-record carrier-field location metadata and matching copy/
+   update handling, then extend reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.

@@ -37,6 +37,12 @@ impl Checker {
             self.store_origins(root, origins, true, span)?;
             self.pointees.remove(&id);
         }
+        if root != id
+            && let Some(cells) = self.reference_cells.get(&id).cloned()
+        {
+            self.store_cells(root, cells, true, span)?;
+            self.reference_cells.remove(&id);
+        }
         self.proofs.aliases.insert(
             id,
             Alias {
