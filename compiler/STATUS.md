@@ -29,26 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current deeper-carrier argument series
+### Current borrowed-record location series
 
-1. Extract one-layer cell expansion from `reference_cell` without changing its
-   work charges, bounds or completeness. Validate the dependency tests and commit
-   this reusable prerequisite separately.
-2. Traverse shared carrier types and stored cell layers for call inputs, reusing
-   that expansion and contract projections. Keep behavior and regressions together;
-   test named/temporary/record chains, mixed unknowns, retargeting, depth/work limits
-   and unsupported borrowed shapes, then run the complete compiler gate.
+1. Retain borrowed-record addresses in existing `Cells` metadata through named
+   references, copies, retargets and record-stored views. Extend cycle-safe
+   dependency reads through addressed record prefixes. Keep focused regressions
+   with this independently useful metadata prerequisite and run the compiler gate.
+2. Integrate those locations with call-input origin matching for stored reference
+   fields and owned-field projections. Preserve unknown candidates and separate
+   unsupported borrowed shapes; validate calls and run the full gate again.
 
-Investigation: named and record-stored cells already preserve deeper chains.
-The call-input filter and one-layer resolver are the remaining restrictions for
-shared chains ending in reference-free views. References to borrowed records and
-allocator-bound views remain separate. Proof outcomes stay gated.
-The extraction preserves the original traversal charges and diagnostics. All 125
-dependency groups pass (`/tmp/meowy-cell-expansion-focused.log`); formatting passes.
-Extraction committed as `020d736`. The behavior slice now follows bounded shared
-chains to a reference-free view and expands stored cells with the shared helper.
-All 128 dependency groups pass, including four chain groups replacing the old
-deeper-carrier boundary test. All ten compiler checks pass; no failures remain.
+`origin_carrier` now retains record addresses in the existing root/field paths,
+and `derived_cells` inspects addressed record fields as well as scalar cells.
+Call integration remains next;
+proof outcomes stay gated. All 132 dependency groups pass, including four new
+record-location groups for copies, nested cells, retargets, unknown alternatives,
+subrecord boundaries and nested carrier marks. All ten compiler checks pass.
+The metadata prerequisite is complete; call integration remains next.
 
 ### Proof dependency implementation slices
 
@@ -1376,20 +1373,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1113
-  library/903 native tests (2016 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1117
+  library/903 native tests (2020 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-deep-carrier-call-gate.log`.
-- All 128 dependency groups pass. Four chain groups replace the former deeper-
-  carrier boundary test, covering named/temporary/record chains, list projections,
-  retargeted owners, unknown intermediate cells, depth/work bounds and shared-mode
-  limits. Accepted fixtures pass ordinary compilation/ownership; dependency marks
-  remain seeded checker evidence. The cell-expansion refactor is `020d736`.
-- Flags/outcomes remain B001-gated. References to borrowed records, allocator-bound
+  0 failed in debug/release. Log: `/tmp/meowy-record-locations-gate.log`.
+- All 132 dependency groups pass. Four new groups cover borrowed-record locations
+  through copies/nested cells, record-stored views, retargets, unknown alternatives,
+  subrecord boundaries and nested carrier dependencies. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Borrowed-record call-origin matching remains
+  next; retaining locations does not complete that integration. Allocator-bound
   pointees, broader returned shapes, heterogeneous record unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Prior capabilities and other areas
@@ -1501,11 +1498,12 @@ explicitly documented. No outstanding failures remain.
    fields remain incomplete. One-level shared carrier arguments now resolve stored
    view owners through named/temporary cells and record-stored carrier snapshots.
    Deeper shared chains now use bounded type/cell-layer traversal with complete
-   known owner sets and preserved unknown alternatives. Next add storage-location
-   metadata for references to borrowed records through named aliases, then extend
-   `calls/inputs.rs` to match stored reference fields and owned-field projections.
-   Keep metadata prerequisites separate from call integration, with focused
-   copy/retarget/unknown-source tests and the full compiler gate. Heterogeneous
+   known owner sets and preserved unknown alternatives. Storage locations for
+   references to borrowed records now survive aliases, copies, retargets and
+   record-stored views; dependency reads traverse addressed field prefixes. Next
+   extend `calls/inputs.rs` to match stored reference fields and owned-field
+   projections using these locations. Test direct/copied/subrecord/unknown inputs
+   and ordinary lifetime errors, then run the full compiler gate. Heterogeneous
    unions and broader returned
    shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

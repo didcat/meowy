@@ -163,7 +163,11 @@ snapshots. Completed records retain carrier-cell locations by field path through
 construction, copying, composition, nullable wrappers and direct/nested reads.
 Field/subrecord writes merge selected cell sets while preserving sibling fields
 and prior copies. The existing depth, field-count, cell-count and work limits apply;
-unknown alternatives remain incomplete. Calls covered by the scalar-reference
+unknown alternatives remain incomplete. References to records containing borrowed
+fields also retain root/field locations through copies, retargets and record-stored
+views. Dependency reads follow only addressed record prefixes, including nested
+reference cells; unknown locations remain incomplete. Call-return matching for
+these record references remains separate. Calls covered by the scalar-reference
 borrow contract retain compatible argument origins using exact pointee types and
 reference modes. All matching arguments remain possible sources, regardless of a
 private function-body choice. Unknown candidates keep results incomplete; nested

@@ -157,7 +157,9 @@ impl Checker {
                     span,
                 ));
             }
-            if Self::origin_reference(inner) {
+            if Self::origin_reference(inner)
+                || (Self::origin_record(inner).is_some() && inner.has_reference())
+            {
                 return Ok(true);
             }
             depth += 1;

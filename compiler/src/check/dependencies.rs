@@ -53,6 +53,21 @@ impl Checker {
             if let Some(cells) = self.stored_cells(*root, path) {
                 pending.extend(&cells.places);
             }
+            if self.record_pointees.get(root).is_some_and(|fields| {
+                fields.iter().any(|(field, origins)| {
+                    field.starts_with(path)
+                        && origins.roots.iter().any(|root| self.derived_storage(*root))
+                })
+            }) {
+                return true;
+            }
+            if let Some(fields) = self.record_cells.get(root) {
+                for (field, cells) in fields {
+                    if field.starts_with(path) {
+                        pending.extend(&cells.places);
+                    }
+                }
+            }
         }
         false
     }
@@ -238,3 +253,6 @@ mod chains;
 mod cell_slots;
 
 mod calls;
+
+#[cfg(test)]
+mod record_locations;

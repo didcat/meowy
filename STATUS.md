@@ -299,7 +299,10 @@ no owners and unknown matching fields stay incomplete. All 16 call-origin groups
 and all ten compiler checks pass. Bounded shared carrier chains now resolve
 stored view owners through named, temporary and record-stored cells. Cell-layer
 expansion is shared with ordinary dereferences (`020d736`). All 128 dependency
-groups and all ten compiler checks pass.
+groups and all ten compiler checks pass. Borrowed-record references now retain
+root/field locations through copies, retargets and record-stored views. Dependency
+reads follow addressed record prefixes. All 132 dependency groups and all ten
+compiler checks pass. Call-return matching remains next.
 
 ## Pending descriptor statement accounting
 
@@ -323,20 +326,20 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1113
-  library/903 native tests (2016 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1117
+  library/903 native tests (2020 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-deep-carrier-call-gate.log`.
-- All 128 dependency groups pass. Four chain groups replace the former deeper-
-  carrier boundary test, covering named/temporary/record chains, list projections,
-  retargeted owners, unknown intermediate cells, depth/work bounds and shared-mode
-  limits. Accepted fixtures pass ordinary compilation/ownership; dependency marks
-  remain seeded checker evidence. The cell-expansion refactor is `020d736`.
-- Flags/outcomes remain B001-gated. References to borrowed records, allocator-bound
+  0 failed in debug/release. Log: `/tmp/meowy-record-locations-gate.log`.
+- All 132 dependency groups pass. Four new groups cover borrowed-record locations
+  through copies/nested cells, record-stored views, retargets, unknown alternatives,
+  subrecord boundaries and nested carrier dependencies. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded checker evidence.
+- Flags/outcomes remain B001-gated. Borrowed-record call-origin matching remains
+  next; retaining locations does not complete that integration. Allocator-bound
   pointees, broader returned shapes, heterogeneous record unions, precise joins,
-  callee effect/data/control summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  callee effect/data/control summaries and conditional-exit control remain open.
+  Runtime sources, reference fixtures, dependencies and versions are unchanged;
+  editor and separate runtime/sanitizer gates were not rerun.
   Full release qualification remains open.
 
 ## Area handoff
