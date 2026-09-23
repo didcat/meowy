@@ -369,22 +369,24 @@ narrowing reads select exact shapes. Storage prerequisite: `95b0086`.
 Immutable bindings with immutable fields now capture root record-to-union widening,
 known null and exact union copies. Whole-container dependency traversal follows
 shaped origins/carriers, including later marks. Prerequisite: `a67560b`.
-All 258 dependency-filtered tests and all ten compiler checks pass. Nested
-construction/projections and mutable/emitted/temporary producers remain separate;
-proof flags stay gated.
+Nested immutable union-field construction and subrecord projections now preserve
+shape selections and merge checked initializer alternatives. Composed and unknown
+alternatives keep snapshots incomplete. Projection prerequisite: `73bac78`.
+All 266 dependency-filtered tests and all ten compiler checks pass. Composition
+snapshots are next; mutable/emitted/temporary producers and proof flags stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1231
-  library/903 native tests (2134 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1239
+  library/903 native tests (2142 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-producers-gate.log`.
-- All 258 dependency-filtered tests pass. Two traversal groups cover later marks,
-  prefix isolation, carrier cycles and guarded query/base-type separation. Five
-  producer groups cover real immutable widening/copies, carrier origins, known
-  null, unknown/mutable boundaries, prior snapshots, distinct field orders and
-  work/depth/loan limits. Marks remain seeded; origin capture now uses real checked
-  source values. Traversal prerequisite: `a67560b`.
+  0 failed in debug/release. Log: `/tmp/meowy-nested-unions-gate.log`.
+- All 266 dependency-filtered tests pass. Two projection groups cover shape
+  offsets and outer narrowing. Six source groups cover real nested construction,
+  conditional/nullable fields, carriers, copies/projections, unknown/composed
+  alternatives, independent siblings, block budgets, no replay and E302 loans.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  Projection prerequisite: `73bac78`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

@@ -56,8 +56,9 @@ dependency tests pass; log: `/tmp/meowy-nested-unions-focused.log`. Six source g
 cover nested selections, carriers, nullable fields, projections/copies, conditional
 known/unknown/null alternatives, sibling isolation, block budgets and E302 loans.
 Composed alternatives remain explicitly incomplete. All ten compiler checks pass;
-log: `/tmp/meowy-nested-unions-gate.log`. No failures remain. Capability documentation
-will be committed separately. Next: composition snapshots. Proof outcomes stay gated.
+log: `/tmp/meowy-nested-unions-gate.log`. No failures remain. Nested capture is
+committed as `c023de2`; the separate guide/root handoff records its supported
+boundary. Next: composition snapshots. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

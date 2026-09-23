@@ -237,8 +237,12 @@ immutable fields capture root record-to-union widening and exact union copies.
 Known null contributes no owners, while unknown sources remain incomplete. Copies
 preserve their prior snapshots. Whole-container and addressed-prefix dependency
 traversal follows shaped origins and carrier locations, including later pointee
-marks; marked guards still cannot narrow ordinary types. Nested union-field
-construction/projections, mutable bindings/fields, emitted/temporary producers,
+marks; marked guards still cannot narrow ordinary types. Nested immutable
+union-field construction captures checked initializer alternatives, including
+conditional and nullable fields. Subrecord copies/projections preserve field and
+shape offsets through outer narrowing. Alternative owners are combined; unknown
+or composed sources keep snapshots incomplete. Capture does not replay initializers.
+Composition snapshots, mutable bindings/fields, lexical emitted/temporary producers,
 returned unions and borrowed union views remain separate.
 Shared returns of supported
 scalar/list/record views retain
