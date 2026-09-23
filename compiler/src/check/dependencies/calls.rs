@@ -1,3 +1,5 @@
+mod inputs;
+
 use super::{Checker, Origins};
 use crate::{check::Result, diagnostic::Diagnostic, hir::Expr};
 
@@ -15,11 +17,7 @@ impl Checker {
         if !scalar {
             let shared = matches!(&expr.ty, crate::hir::Type::Reference(ty) if !ty.has_borrowed())
                 && Self::origin_reference(&expr.ty);
-            let inputs = args.iter().all(|arg| {
-                !arg.ty.has_borrowed()
-                    || matches!(&arg.ty, crate::hir::Type::Reference(ty) if !ty.has_borrowed())
-            });
-            if !shared || !inputs {
+            if !shared {
                 return Ok(Origins::default());
             }
         }
@@ -32,16 +30,18 @@ impl Checker {
         let mut origins = Origins::default();
         let mut found = false;
         for arg in args {
-            let candidate = if scalar {
-                crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty)
+            let source = if scalar {
+                if !crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty) {
+                    continue;
+                }
+                self.reference_origins_at(arg, depth + 1)?
             } else {
-                !crate::borrow_contract::projections(&arg.ty, &expr.ty, &mut self.flow, expr.span)?
-                    .is_empty()
+                match self.call_input_origins(arg, &expr.ty, depth)? {
+                    inputs::Input::Unsupported => return Ok(Origins::default()),
+                    inputs::Input::Absent => continue,
+                    inputs::Input::Known(source) => source,
+                }
             };
-            if !candidate {
-                continue;
-            }
-            let source = self.reference_origins_at(arg, depth + 1)?;
             if !self.flow.spend(source.roots.len() + 1) {
                 return Err(Diagnostic::unsupported(
                     "proof reference call budget exhausted",
@@ -192,7 +192,7 @@ mod views {
     pub(crate) fn shared_view_calls_preserve_incomplete_inputs_and_borrowed_shape_gates() {
         for source in [
             "f<&boolean[1]>:(p<&boolean[1]>){->p};x<boolean[1]>:=[true];r:f({->&x})",
-            "<R>:<{r<&boolean>}>;f<&boolean>:(p<R>){->p.r};x:=false;r:f({->r:&x})",
+            "<R>:<{r<&boolean>}>;f<&boolean>:(p<&R>){->p.r};x:=false;a<R>:{->r:&x};r:f(&a)",
         ] {
             crate::compile(source).unwrap();
             let mut checker = Checker::new();

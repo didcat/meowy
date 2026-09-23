@@ -171,10 +171,14 @@ argument traversal is bounded and never replays calls. Ordinary return/ownership
 checks still run. Shared returns of supported scalar/list/record views retain
 origins through the general contract's
 record-field/list-element projections when referenced inputs/results have no
-borrowed components and other arguments have none. Whole-container owners are
-retained conservatively, including direct record/list views and nested projections.
-Unknown matching arguments keep results incomplete. Calls with by-value borrowed
-aggregates, reference-bearing/allocator-bound pointees or broader return shapes,
+borrowed components. Concrete by-value records also contribute shared-reference
+fields, including nested named fields, when their primaries have no borrowed
+components. Traversal uses bounded field paths and the existing analysis budget.
+Whole-container owners are retained conservatively, including direct record/list
+views and nested projections.
+Unknown matching arguments keep results incomplete. Calls with other borrowed
+aggregate shapes,
+reference-bearing/allocator-bound pointees or broader return shapes,
 and heterogeneous record unions remain separate. Callee effects and data/control
 summaries are not supplied by this origin mapping. Precise overwrite/
 join rules, function summaries and control after conditional leave/restart also
