@@ -45,7 +45,10 @@ shared chains ending in reference-free views. References to borrowed records and
 allocator-bound views remain separate. Proof outcomes stay gated.
 The extraction preserves the original traversal charges and diagnostics. All 125
 dependency groups pass (`/tmp/meowy-cell-expansion-focused.log`); formatting passes.
-Call behavior is unchanged; the second slice and final compiler gate remain next.
+Extraction committed as `020d736`. The behavior slice now follows bounded shared
+chains to a reference-free view and expands stored cells with the shared helper.
+All 128 dependency groups pass, including four chain groups replacing the old
+deeper-carrier boundary test. All ten compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1373,21 +1376,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1110
-  library/903 native tests (2013 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1113
+  library/903 native tests (2016 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-carrier-call-gate.log`.
-- All 125 dependency groups pass, including five new carrier-call groups covering
-  named/copied/temporary cells, record-stored carriers, projected list views,
-  retargeted owners, unknown cells/pointees, E303 local-return rejection and the
-  deeper-carrier boundary. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded checker evidence.
-- Flags/outcomes remain B001-gated. Deeper carrier arguments, references to borrowed
-  records, allocator-bound pointees, broader returned shapes, heterogeneous record
-  unions, precise joins, callee effect/data/control summaries and conditional-exit
-  control remain unfinished. Runtime sources, reference fixtures, dependencies and
-  versions are unchanged; editor and separate runtime/sanitizer gates were not
-  rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-deep-carrier-call-gate.log`.
+- All 128 dependency groups pass. Four chain groups replace the former deeper-
+  carrier boundary test, covering named/temporary/record chains, list projections,
+  retargeted owners, unknown intermediate cells, depth/work bounds and shared-mode
+  limits. Accepted fixtures pass ordinary compilation/ownership; dependency marks
+  remain seeded checker evidence. The cell-expansion refactor is `020d736`.
+- Flags/outcomes remain B001-gated. References to borrowed records, allocator-bound
+  pointees, broader returned shapes, heterogeneous record unions, precise joins,
+  callee effect/data/control summaries and conditional-exit control remain
+  unfinished. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1497,10 +1500,13 @@ explicitly documented. No outstanding failures remain.
    and nested nullable fields. Known null contributes no owners; unknown matching
    fields remain incomplete. One-level shared carrier arguments now resolve stored
    view owners through named/temporary cells and record-stored carrier snapshots.
-   Next extend deeper shared carrier arguments in `calls/inputs.rs` using bounded
-   cell-layer traversal; test depth limits, mixed completeness and contract
-   candidates before the full gate. References to borrowed records still need
-   storage-location metadata through named aliases. Heterogeneous unions and broader returned
+   Deeper shared chains now use bounded type/cell-layer traversal with complete
+   known owner sets and preserved unknown alternatives. Next add storage-location
+   metadata for references to borrowed records through named aliases, then extend
+   `calls/inputs.rs` to match stored reference fields and owned-field projections.
+   Keep metadata prerequisites separate from call integration, with focused
+   copy/retarget/unknown-source tests and the full compiler gate. Heterogeneous
+   unions and broader returned
    shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

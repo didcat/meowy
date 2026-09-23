@@ -1,13 +1,50 @@
 use super::{Checker, Diagnostic, Expr, Origins};
-use crate::check::{Result, dependencies::references::MAX_ROOTS};
+use crate::check::{
+    Result,
+    dependencies::references::{MAX_CELL_DEPTH, MAX_ROOTS},
+};
+use crate::hir::Type;
 
 impl Checker {
-    pub(super) fn call_carrier_origins(&mut self, arg: &Expr, path: &[usize]) -> Result<Origins> {
-        let cells = if path.is_empty() {
+    pub(super) fn call_shared_view<'a>(
+        &mut self,
+        mut ty: &'a Type,
+        expr: &Expr,
+    ) -> Result<Option<(&'a Type, usize)>> {
+        let mut layers = 0;
+        loop {
+            self.origin_visit(expr)?;
+            let Type::Reference(target) = ty else {
+                return Ok(None);
+            };
+            if !target.has_borrowed() {
+                return Ok((layers == 0 || Self::origin_reference(ty)).then_some((ty, layers)));
+            }
+            layers += 1;
+            if layers > MAX_CELL_DEPTH {
+                return Err(Diagnostic::unsupported(
+                    "proof reference call cell depth exhausted",
+                    expr.span,
+                ));
+            }
+            ty = target;
+        }
+    }
+
+    pub(super) fn call_carrier_origins(
+        &mut self,
+        arg: &Expr,
+        path: &[usize],
+        layers: usize,
+    ) -> Result<Origins> {
+        let mut cells = if path.is_empty() {
             self.reference_cell(arg)?
         } else {
             self.record_source_cells(arg, path)?
         };
+        for _ in 1..layers {
+            cells = self.expand_reference_cells(cells, arg)?;
+        }
         let mut origins = Origins {
             roots: Default::default(),
             complete: cells.complete,
@@ -114,13 +151,7 @@ mod tests {
         let source = "f<&boolean>:(p<& &boolean>){local:false;->&local};x:=false;p:&x;r:f(&p)";
         assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
     }
-
-    #[test]
-    pub(crate) fn deeper_carrier_arguments_remain_incomplete() {
-        let source = "f<&boolean>:(p<& & &boolean>){->**p};x:=false;a:&x;b:&a;r:f(&b)";
-        crate::compile(source).unwrap();
-        let mut checker = Checker::new();
-        statements(&mut checker, source);
-        assert!(!checker.pointees[&id(&checker, "r")].complete);
-    }
 }
+
+#[cfg(test)]
+mod chains;

@@ -32,7 +32,7 @@ impl Checker {
             if !ty.has_borrowed() {
                 continue;
             }
-            let (ty, carrier) = match Self::origin_record(ty).unwrap_or(ty) {
+            let (ty, layers) = match Self::origin_record(ty).unwrap_or(ty) {
                 Type::Record { primary, fields } if !primary.has_borrowed() => {
                     if pending.len() + fields.len() > MAX_FIELDS {
                         return Err(Diagnostic::unsupported(
@@ -47,12 +47,11 @@ impl Checker {
                     }
                     continue;
                 }
-                Type::Reference(target) if !target.has_borrowed() => (ty, false),
-                Type::Reference(target)
-                    if matches!(target.as_ref(), Type::Reference(inner) if !inner.has_borrowed())
-                        && Self::origin_reference(target) =>
-                {
-                    (target.as_ref(), true)
+                Type::Reference(_) => {
+                    let Some(view) = self.call_shared_view(ty, arg)? else {
+                        return Ok(Input::Unsupported);
+                    };
+                    view
                 }
                 _ => return Ok(Input::Unsupported),
             };
@@ -60,8 +59,8 @@ impl Checker {
             {
                 continue;
             }
-            let source = if carrier {
-                self.call_carrier_origins(arg, &path)?
+            let source = if layers > 0 {
+                self.call_carrier_origins(arg, &path, layers)?
             } else if path.is_empty() {
                 self.reference_origins_at(arg, depth + 1)?
             } else {
