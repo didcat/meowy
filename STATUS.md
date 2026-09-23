@@ -236,6 +236,12 @@ including unchanged E303 expiry. Direct temporary reads consult those marks;
 all ten compiler checks pass. This does not resolve reference values copied
 out of temporary carriers or extend their lifetimes. Flags stay gated.
 
+Direct temporary carriers now snapshot their reference/record contents. Copies
+recover external pointee origins through direct dereferences and empty-path
+reborrows, without confusing them with the temporary cell's ID. Three focused
+groups pass, including nested fields, unknown calls and unchanged E303 expiry.
+All ten compiler checks pass; indirect carrier chains remain incomplete.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -258,19 +264,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1058
-  library/903 native tests (1961 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1061
+  library/903 native tests (1964 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-origins-gate.log`.
-- Three new checker groups cover distinct temporary IDs, statement ownership,
-  initializer/control marks, later reads, element borrows over temporary lists and
-  preserved E303 expiry. Accepted temporary reads pass ordinary compilation.
-- Flags/outcomes remain B001-gated. Reference values copied out of temporary
-  carriers, reference-bearing aggregate/returned origins, heterogeneous record
-  unions, precise joins, function summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun. Full
-  release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-carriers-gate.log`.
+- Three new checker groups cover copied temporary references, transparent reborrows,
+  nested record carriers/direct fields, distinct storage versus pointee IDs,
+  incomplete calls and preserved E303 expiry. Accepted fixtures pass ordinary
+  compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Indirect carrier chains, reference-bearing
+  aggregate/returned origins, heterogeneous record unions, precise joins, function
+  summaries and conditional-exit control remain unfinished. Runtime sources,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

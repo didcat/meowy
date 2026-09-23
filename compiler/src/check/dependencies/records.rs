@@ -39,6 +39,18 @@ impl Checker {
                 {
                     value = inner;
                 }
+                ExprKind::Deref(inner) => {
+                    let Some(id) = Self::temporary_storage(inner) else {
+                        return Origins::default();
+                    };
+                    path.reverse();
+                    return self
+                        .record_pointees
+                        .get(&id)
+                        .and_then(|fields| fields.get(&path))
+                        .cloned()
+                        .unwrap_or_default();
+                }
                 ExprKind::Local(id) => {
                     path.reverse();
                     return self

@@ -12,6 +12,21 @@ pub(crate) struct Origins {
 pub(crate) const MAX_ROOTS: usize = 256;
 
 impl Checker {
+    pub(crate) fn temporary_storage(expr: &Expr) -> Option<usize> {
+        let mut value = expr;
+        loop {
+            match &value.kind {
+                ExprKind::TemporaryBorrow { id, .. } => return Some(*id),
+                ExprKind::Reborrow {
+                    value: inner,
+                    fields,
+                    ..
+                } if fields.is_empty() => value = inner,
+                _ => return None,
+            }
+        }
+    }
+
     pub(crate) fn origin_reference(ty: &Type) -> bool {
         ty.pointee().is_some_and(|ty| {
             !ty.has_reference()
@@ -45,6 +60,12 @@ impl Checker {
                         roots: BTreeSet::from([*id]),
                         complete: true,
                     };
+                }
+                ExprKind::Deref(inner) => {
+                    let Some(id) = Self::temporary_storage(inner) else {
+                        return Origins::default();
+                    };
+                    return self.pointees.get(&id).cloned().unwrap_or_default();
                 }
                 ExprKind::Local(id) => {
                     return self

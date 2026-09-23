@@ -22,7 +22,10 @@ impl Checker {
             }
             value = inner;
         }
-        if matches!(value.kind, ExprKind::Local(_) | ExprKind::Field { .. }) {
+        if matches!(
+            value.kind,
+            ExprKind::Local(_) | ExprKind::Field { .. } | ExprKind::Deref(_)
+        ) {
             return Ok(self.record_path_origins(value, path));
         }
         let ExprKind::Block(block) = &value.kind else {

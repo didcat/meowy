@@ -378,6 +378,23 @@ unchanged E303 expiry. Direct temporary-expression dependency lookup now consult
 the retained owner mark too. All ten compiler checks pass
 (`/tmp/meowy-proof-temporary-origins-gate.log`); no outstanding failures remain.
 
+### Direct temporary-carrier slices
+
+1. Snapshot reference/record contents when temporary storage is created, then
+   resolve direct dereferences of that temporary through the content snapshot.
+   Keep storage IDs distinct from pointee IDs; test copied references, nested
+   record fields, unknown calls and existing expiry errors. Run the full gate.
+2. Document the direct-carrier boundary and refresh the handoff separately.
+
+Indirect carrier chains and returned/reference-bearing aggregate origins stay
+incomplete. This metadata must not extend statement lifetimes. Flags stay gated.
+Content snapshots and direct dereference lookup are implemented. Focused tests
+identified empty-path reborrow wrappers; these now resolve to the same temporary
+storage ID. Nonempty projections/indirect carrier chains remain incomplete.
+All three focused carrier groups pass, including ordinary compilation and E303
+expiry. All ten compiler checks pass (`/tmp/meowy-proof-temporary-carriers-gate.log`);
+no outstanding failures remain. Guide integration is next.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1194,19 +1211,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1058
-  library/903 native tests (1961 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1061
+  library/903 native tests (1964 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-origins-gate.log`.
-- Three new checker groups cover distinct temporary IDs, statement ownership,
-  initializer/control marks, later reads, element borrows over temporary lists and
-  preserved E303 expiry. Accepted temporary reads pass ordinary compilation.
-- Flags/outcomes remain B001-gated. Reference values copied out of temporary
-  carriers, reference-bearing aggregate/returned origins, heterogeneous record
-  unions, precise joins, function summaries and conditional-exit control remain
-  unfinished. Runtime sources, reference fixtures, dependencies and versions are
-  unchanged; editor and separate runtime/sanitizer gates were not rerun. Full
-  release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-temporary-carriers-gate.log`.
+- Three new checker groups cover copied temporary references, transparent reborrows,
+  nested record carriers/direct fields, distinct storage versus pointee IDs,
+  incomplete calls and preserved E303 expiry. Accepted fixtures pass ordinary
+  compilation/ownership validation.
+- Flags/outcomes remain B001-gated. Indirect carrier chains, reference-bearing
+  aggregate/returned origins, heterogeneous record unions, precise joins, function
+  summaries and conditional-exit control remain unfinished. Runtime sources,
+  reference fixtures, dependencies and versions are unchanged; editor and separate
+  runtime/sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
