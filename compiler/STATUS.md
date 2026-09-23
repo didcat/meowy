@@ -29,36 +29,27 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current nested union snapshot series
+### Current composed union snapshot series
 
-Investigation: source capture follows root widening and exact locals only. Field
-projections need prefixed field/shape offsets, and block fields need their checked
-initializer alternatives without replaying expressions or enabling mutable slots.
+Investigation: composition temporaries register incomplete shaped layouts, and block
+capture only marks matching composed fields unknown. The source field name/index
+and temporary ID are already available; no replay or new HIR representation is needed.
 
 Commit plan:
-1. Preserve qualified keys through subrecord projection and checked outer narrowing.
-   Validate seeded nested snapshots, sibling isolation and bounds; commit.
-2. Capture immutable nested fields from checked block bindings and preserve nested
-   selections through widening. Merge possible initializers conservatively, keep
-   unknown alternatives, and bound traversal/capacity. Test real sources, carriers,
-   copies, null, control dependencies and ordinary ownership; run the full gate.
-3. Document the supported boundary separately if needed to keep source slices
-   focused. Mutable/emitted/temporary storage and returned unions remain gated.
+1. Extract the existing bounded snapshot merge for reuse by direct and composed
+   alternatives. Preserve diagnostics and run dependency checks; commit separately.
+2. Capture immutable shaped snapshots on composition temporaries, remap field names
+   and shape offsets, and merge matching sources. Test different field orders,
+   nested/nullable/carrier fields, mixed branches, unknown alternatives, retained
+   snapshots, budgets and ownership; run the full compiler gate.
+3. Update the capability guide and root handoff as a separate documentation slice
+   if needed. Mutable fields/storage, lexical emitted/temporary-borrow producers,
+   returned unions and proof outcomes remain separate.
 
-Projected fields now prefix field indices and shape depths, while checked outer
-narrowing adds its exact selection. Two seeded groups verify sibling isolation and
-combined outer/inner selections. All 260 dependency-filtered tests and formatting
-pass; log: `/tmp/meowy-union-projections-focused.log`. Existing key/source bounds
-remain checked. Projection prerequisite: `73bac78`. Nested block fields now use
-bounded checked binding discovery and conservative alternative merging. Root
-widening consumes selections before traversing nested shapes. All 266 focused
-dependency tests pass; log: `/tmp/meowy-nested-unions-focused.log`. Six source groups
-cover nested selections, carriers, nullable fields, projections/copies, conditional
-known/unknown/null alternatives, sibling isolation, block budgets and E302 loans.
-Composed alternatives remain explicitly incomplete. All ten compiler checks pass;
-log: `/tmp/meowy-nested-unions-gate.log`. No failures remain. Nested capture is
-committed as `c023de2`; the separate guide/root handoff records its supported
-boundary. Next: composition snapshots. Proof outcomes stay gated.
+Snapshot merging is now shared without changing its work/capacity checks or
+B001 diagnostics. All 266 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-shape-merge-focused.log`. Next: composition temporary capture and
+field-name remapping. The tree was clean at investigation.
 
 ### Proof dependency implementation slices
 

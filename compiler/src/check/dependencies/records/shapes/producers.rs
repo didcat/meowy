@@ -1,7 +1,37 @@
 use super::{Checker, Diagnostic, Expr, MAX_DEPTH, Result, ShapeKey, Snapshot, Type};
+use crate::check::dependencies::references::MAX_ROOTS;
 use crate::hir::ExprKind;
+use crate::{ast::Span, flow::Flow};
 
 impl Snapshot {
+    pub(super) fn merge(&mut self, next: Self, flow: &mut Flow, span: Span) -> Result<()> {
+        let work = next.origins.roots.len()
+            + next
+                .cells
+                .places
+                .iter()
+                .map(|(_, path)| path.len() + 1)
+                .sum::<usize>()
+            + 1;
+        if !flow.spend(work) {
+            return Err(Diagnostic::unsupported(
+                "proof record shape block budget exhausted",
+                span,
+            ));
+        }
+        self.origins.complete &= next.origins.complete;
+        self.origins.roots.extend(next.origins.roots);
+        self.cells.complete &= next.cells.complete;
+        self.cells.places.extend(next.cells.places);
+        if self.origins.roots.len() > MAX_ROOTS || self.cells.places.len() > MAX_ROOTS {
+            return Err(Diagnostic::unsupported(
+                "proof record shape block capacity exhausted",
+                span,
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn empty() -> Self {
         let mut value = Self::default();
         value.origins.complete = true;

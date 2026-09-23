@@ -1,6 +1,5 @@
 use super::{Checker, Diagnostic, Expr, MAX_DEPTH, Result, ShapeKey, Snapshot, Type};
 use crate::check::dependencies::records::MAX_FIELDS;
-use crate::check::dependencies::references::MAX_ROOTS;
 use crate::hir::{Block, Stmt};
 use std::collections::BTreeSet;
 
@@ -82,32 +81,7 @@ impl Checker {
                     Stmt::Bind { id, value: source } if ids.contains(id) => {
                         found.insert(*id);
                         let next = self.record_shape_source_at(source, &key, depth)?;
-                        let work = next.origins.roots.len()
-                            + next
-                                .cells
-                                .places
-                                .iter()
-                                .map(|(_, path)| path.len() + 1)
-                                .sum::<usize>()
-                            + 1;
-                        if !self.flow.spend(work) {
-                            return Err(Diagnostic::unsupported(
-                                "proof record shape block budget exhausted",
-                                value.span,
-                            ));
-                        }
-                        snapshot.origins.complete &= next.origins.complete;
-                        snapshot.origins.roots.extend(next.origins.roots);
-                        snapshot.cells.complete &= next.cells.complete;
-                        snapshot.cells.places.extend(next.cells.places);
-                        if snapshot.origins.roots.len() > MAX_ROOTS
-                            || snapshot.cells.places.len() > MAX_ROOTS
-                        {
-                            return Err(Diagnostic::unsupported(
-                                "proof record shape block capacity exhausted",
-                                value.span,
-                            ));
-                        }
+                        snapshot.merge(next, &mut self.flow, value.span)?;
                     }
                     _ => {}
                 }
