@@ -29,29 +29,28 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-call coercion slice
+### Current heterogeneous record path series
 
-`record_source_path` now follows owned fields and transparent nullable coercions
-when both types have the same single record shape. Wrapped calls retain argument
-origins and carrier locations. Known null and heterogeneous record unions retain
-their existing empty/unknown distinctions.
+Investigation: `record_pointees` and `record_cells` use positional field paths.
+`origin_record` admits one record shape (optionally null); widening its result
+would mix unrelated field indices. Union support needs shape-qualified discovery
+before storage, producers and readers can safely use alternatives.
 
-Commit plan: extend the shared bounded path walk to transparent same-shape record
-coercions, with focused ordinary-reference/carrier regressions and updated guides.
-This is one source-layer behavior change; the prior bounded path helper is already
-committed (`7ac361a`, integrated in `4d70400`). No separate representation change
-is needed. Test nested wrappers/projections, unknown inputs, invalid shapes, null,
-traversal/call-depth limits, no replay and ordinary lifetime checks; run the full
-compiler gate before committing. Proof outcomes remain gated.
+Dependency-ordered commit plan:
+1. Extract existing origin/carrier path discovery into `records/paths.rs` without
+   changing its admitted shapes. Run focused dependency tests and commit.
+2. Represent discovered paths with a record-shape selection at each heterogeneous
+   union boundary. Enumerate bounded alternatives, retain unsupported alternatives
+   explicitly, and test field order/type differences, nested/null members and
+   depth/work/capacity bounds. Keep the positional adapter restricted to paths with
+   no heterogeneous selections. Run the full compiler gate and commit.
 
-The shared walker counts both field and wrapper traversal against its existing
-limit and analysis budget. All 237 dependency-filtered tests pass;
-log: `/tmp/meowy-record-coercions-focused.log`. Four new groups cover nullable
-wrapping, nested fields/calls, carrier projections, unknown inputs, null, incompatible
-shapes, exact traversal limits, exhausted analysis budgets, no replay and E302/E303
-rejections. All ten compiler checks pass; log:
-`/tmp/meowy-record-coercions-gate.log`. No outstanding failures remain. Next:
-heterogeneous record-union origin representation, preserving shape identity.
+This series establishes path representation only. Shape-keyed stored snapshots,
+copy/narrowing propagation, writes and returned union origins are subsequent slices;
+proof outcomes remain gated. Step 1 moves path discovery unchanged into its own
+module. All 237 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-record-path-extract.log`. Next: qualified alternatives and bounded
+traversal regression coverage.
 
 ### Proof dependency implementation slices
 
