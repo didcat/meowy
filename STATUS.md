@@ -269,6 +269,11 @@ cell sets across sibling aliases and retargets. Ordinary copies keep snapshots.
 Four focused groups pass; completed-record carrier-field lookup remains incomplete.
 All ten compiler checks pass; proof flags stay gated.
 
+Checked record source locations are now separate from pointee merging, preserving
+known-null, unknown, direct-path and alternative-source distinctions. Both new
+classification groups, all seven source-lookup groups and all ten compiler checks
+pass. Record carrier-field snapshots and updates remain the next integration.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
@@ -291,20 +296,19 @@ unfinished; no descriptor payload is materialized by pending metadata.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1079
-  library/903 native tests (1982 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1081
+  library/903 native tests (1984 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-emitted-cells-gate.log`.
-- Four new checker groups cover lexical emitted carriers, deeper aliases,
-  canonical sibling merges/retargets, preserved copies and incomplete unknown/
-  completed-record carrier sources. Accepted fixtures pass ordinary compilation/
-  ownership checks; no outstanding failures remain.
-- Flags/outcomes remain B001-gated. Completed-record carrier-field lookup,
-  reference-bearing aggregate/returned origins, heterogeneous record unions,
-  precise joins, function summaries and conditional-exit control remain unfinished.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-locations-gate.log`.
+- Two new checker groups distinguish direct/alternative storage, known null and
+  unknown calls. Direct lookup preserves its prior budget behavior and metadata
+  lookup does not replay calls. Existing record-origin regressions remain green.
+- This is a source-lookup prerequisite; completed-record carrier-field metadata
+  and updates remain incomplete. Flags/outcomes remain B001-gated. Returned/
+  reference-bearing origins, heterogeneous unions, precise joins, function summaries
+  and conditional-exit control remain unfinished. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

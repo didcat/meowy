@@ -467,6 +467,22 @@ ordinary compilation; snapshots and canonical sibling locations remain distinct.
 Unknown contents/completed-record carriers retain incomplete metadata. All ten
 compiler checks pass (`/tmp/meowy-proof-emitted-cells-gate.log`).
 
+### Record carrier-field source prerequisite
+
+Separate checked record source locations from pointee-origin merging. Preserve
+explicit unknown, known-null, direct-path and alternative-source distinctions,
+including existing budget charging. Validate the old origins and new location
+classification, then run the full compiler gate and commit this prerequisite.
+
+The next slice will use these locations for bounded record carrier-cell snapshots
+and matching field/subrecord updates. Completed-record carrier fields remain
+incomplete until that storage and update integration is present. Flags stay gated.
+All 30 existing record dependency groups pass after extraction. Explicit source
+classification regressions now cover direct storage/alternatives, known null and
+unknown calls without replaying calls. Both new groups and all seven source-lookup
+groups and all ten compiler checks pass (`/tmp/meowy-proof-record-locations-gate.log`);
+no outstanding failures remain.
+
 ### Prerequisites and current integration
 
 Completed dependency-ordered signature slices:
@@ -1283,20 +1299,19 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1079
-  library/903 native tests (1982 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1081
+  library/903 native tests (1984 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-proof-emitted-cells-gate.log`.
-- Four new checker groups cover lexical emitted carriers, deeper aliases,
-  canonical sibling merges/retargets, preserved copies and incomplete unknown/
-  completed-record carrier sources. Accepted fixtures pass ordinary compilation/
-  ownership checks; no outstanding failures remain.
-- Flags/outcomes remain B001-gated. Completed-record carrier-field lookup,
-  reference-bearing aggregate/returned origins, heterogeneous record unions,
-  precise joins, function summaries and conditional-exit control remain unfinished.
-  Runtime sources, reference fixtures, dependencies and versions are unchanged;
-  editor and separate runtime/sanitizer gates were not rerun. Full release
-  qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-proof-record-locations-gate.log`.
+- Two new checker groups distinguish direct/alternative storage, known null and
+  unknown calls. Direct lookup preserves its prior budget behavior and metadata
+  lookup does not replay calls. Existing record-origin regressions remain green.
+- This is a source-lookup prerequisite; completed-record carrier-field metadata
+  and updates remain incomplete. Flags/outcomes remain B001-gated. Returned/
+  reference-bearing origins, heterogeneous unions, precise joins, function summaries
+  and conditional-exit control remain unfinished. Runtime sources, reference
+  fixtures, dependencies and versions are unchanged; editor and separate runtime/
+  sanitizer gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1392,8 +1407,10 @@ explicitly documented. No outstanding failures remain.
    preserve prior copies. Bounded deeper named/temporary chains now resolve cell
    layers and preserve dependency marks with cycle-safe traversal. Lexical emitted
    carriers now register and share canonical cell sets through sibling aliases.
-   Next add completed-record carrier-field location metadata and matching copy/
-   update handling, then extend reference-bearing aggregates,
+   Next use `records.rs::record_location` and `sources.rs::record_source_locations`
+   for bounded completed-record `Cells` snapshots, then integrate field/subrecord
+   updates and projection reads together. Keep carrier-field admission incomplete
+   until those paths agree. Then extend reference-bearing aggregates,
    heterogeneous record unions and returned origins while
    preserving explicit incomplete sets. Precise overwrite/branch joins and function
    result dependencies remain separate; old owners/marks are retained conservatively.

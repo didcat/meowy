@@ -69,3 +69,59 @@ pub(crate) fn conditional_composition_keeps_known_owners_when_an_alternative_is_
     assert_eq!(origins.roots, BTreeSet::from([0]));
     assert!(!origins.complete);
 }
+
+#[test]
+pub(crate) fn record_source_locations_distinguish_direct_and_alternative_storage() {
+    use super::RecordSource;
+    use crate::hir::Stmt;
+    let mut checker = Checker::new();
+    let stmts = statements(&mut checker, "x:=false;row:{->r:&x};copy:row");
+    let Stmt::Bind { value, .. } = &stmts[2] else {
+        panic!()
+    };
+    let work = checker.flow.work;
+    let RecordSource::Direct(place) = checker.record_source_locations(value, &[0]).unwrap() else {
+        panic!()
+    };
+    assert_eq!(place.root, id(&checker, "row"));
+    assert_eq!(place.fields, [0]);
+    assert_eq!(checker.flow.work, work);
+    let Stmt::Bind { value, .. } = &stmts[1] else {
+        panic!()
+    };
+    let RecordSource::Alternatives(places) = checker.record_source_locations(value, &[0]).unwrap()
+    else {
+        panic!()
+    };
+    assert_eq!(places.len(), 1);
+    assert!(places[0].fields.is_empty());
+    assert_eq!(checker.pointees[&places[0].root].roots, BTreeSet::from([0]));
+}
+
+#[test]
+pub(crate) fn record_source_locations_distinguish_known_null_from_unknown_calls() {
+    use super::RecordSource;
+    use crate::hir::Stmt;
+    let mut checker = Checker::new();
+    let stmts = statements(&mut checker, "<R>:<{r<&boolean>}>;none<R><null>:null");
+    let Stmt::Bind { value, .. } = &stmts[0] else {
+        panic!()
+    };
+    assert!(matches!(
+        checker.record_source_locations(value, &[0]).unwrap(),
+        RecordSource::Empty
+    ));
+    let mut checker = Checker::new();
+    let source = "f<{r<&boolean>}>:(v<&boolean>){->r:v};x:=false;row:f(&x)";
+    crate::compile(source).unwrap();
+    let stmts = statements(&mut checker, source);
+    let Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+        panic!()
+    };
+    let calls = checker.calls;
+    assert!(matches!(
+        checker.record_source_locations(value, &[0]).unwrap(),
+        RecordSource::Unknown
+    ));
+    assert_eq!(checker.calls, calls);
+}

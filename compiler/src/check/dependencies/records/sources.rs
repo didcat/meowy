@@ -1,24 +1,28 @@
 use super::{Checker, Diagnostic, Expr, ExprKind, Origins, Result, Type};
 
+pub(crate) enum RecordSource {
+    Unknown,
+    Empty,
+    Direct(crate::hir::Place),
+    Alternatives(Vec<crate::hir::Place>),
+}
+
 impl Checker {
-    pub(crate) fn record_source_origins(
+    pub(crate) fn record_source_locations(
         &mut self,
         value: &Expr,
         path: &[usize],
-    ) -> Result<Origins> {
+    ) -> Result<RecordSource> {
         let mut value = value;
         while let ExprKind::Coerce { value: inner } = &value.kind {
             let Some(record) = Self::origin_record(&value.ty) else {
-                return Ok(Origins::default());
+                return Ok(RecordSource::Unknown);
             };
             if inner.ty == Type::Null {
-                return Ok(Origins {
-                    roots: Default::default(),
-                    complete: true,
-                });
+                return Ok(RecordSource::Empty);
             }
             if Self::origin_record(&inner.ty) != Some(record) {
-                return Ok(Origins::default());
+                return Ok(RecordSource::Unknown);
             }
             value = inner;
         }
@@ -26,16 +30,17 @@ impl Checker {
             value.kind,
             ExprKind::Local(_) | ExprKind::Field { .. } | ExprKind::Deref(_)
         ) {
-            return Ok(self.record_path_origins(value, path));
+            return Ok(Self::record_location(value, path)
+                .map_or(RecordSource::Unknown, RecordSource::Direct));
         }
         let ExprKind::Block(block) = &value.kind else {
-            return Ok(Origins::default());
+            return Ok(RecordSource::Unknown);
         };
         let Some(Type::Record { fields, .. }) = Self::origin_record(&value.ty) else {
-            return Ok(Origins::default());
+            return Ok(RecordSource::Unknown);
         };
         let Some((index, tail)) = path.split_first() else {
-            return Ok(Origins::default());
+            return Ok(RecordSource::Unknown);
         };
         if !self.flow.spend(self.proofs.aliases.len()) {
             return Err(Diagnostic::unsupported(
@@ -48,14 +53,10 @@ impl Checker {
             if alias.target != block.id || alias.field != fields[*index].name {
                 continue;
             }
-            let source = if tail.is_empty() {
-                self.pointees.get(&alias.root)
-            } else {
-                self.record_pointees
-                    .get(id)
-                    .and_then(|fields| fields.get(tail))
-            };
-            sources.push(source);
+            sources.push(crate::hir::Place {
+                root: if tail.is_empty() { alias.root } else { *id },
+                fields: tail.to_vec(),
+            });
         }
         if let Some(compositions) = self.record_compositions.get(&block.id) {
             if !self.flow.spend(compositions.len()) {
@@ -84,26 +85,57 @@ impl Checker {
                 {
                     let mut source_path = vec![source_index];
                     source_path.extend(tail);
-                    sources.push(
-                        self.record_pointees
-                            .get(id)
-                            .and_then(|fields| fields.get(&source_path)),
-                    );
+                    sources.push(crate::hir::Place {
+                        root: *id,
+                        fields: source_path,
+                    });
                 }
             }
         }
+        Ok(if sources.is_empty() {
+            RecordSource::Unknown
+        } else {
+            RecordSource::Alternatives(sources)
+        })
+    }
+
+    pub(crate) fn record_source_origins(
+        &mut self,
+        value: &Expr,
+        path: &[usize],
+    ) -> Result<Origins> {
+        let sources = match self.record_source_locations(value, path)? {
+            RecordSource::Unknown => return Ok(Origins::default()),
+            RecordSource::Empty => {
+                return Ok(Origins {
+                    roots: Default::default(),
+                    complete: true,
+                });
+            }
+            RecordSource::Direct(place) => {
+                return Ok(self
+                    .record_pointees
+                    .get(&place.root)
+                    .and_then(|fields| fields.get(&place.fields))
+                    .cloned()
+                    .unwrap_or_default());
+            }
+            RecordSource::Alternatives(sources) => sources,
+        };
         let mut origins = Origins::default();
         let mut found = false;
-        for source in sources {
-            if !self
-                .flow
-                .spend(source.map_or(0, |source| source.roots.len()) + 1)
-            {
+        for place in sources {
+            let work = self
+                .cell_origins(place.root, &place.fields)
+                .map_or(0, |source| source.roots.len())
+                + 1;
+            if !self.flow.spend(work) {
                 return Err(Diagnostic::unsupported(
                     "proof record origin budget exhausted",
                     value.span,
                 ));
             }
+            let source = self.cell_origins(place.root, &place.fields);
             let complete = source.is_some_and(|source| source.complete);
             origins.complete = if found {
                 origins.complete && complete

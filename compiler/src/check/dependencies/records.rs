@@ -25,6 +25,17 @@ impl Checker {
     }
 
     pub(crate) fn record_path_origins(&self, value: &Expr, path: &[usize]) -> Origins {
+        Self::record_location(value, path)
+            .and_then(|place| {
+                self.record_pointees
+                    .get(&place.root)
+                    .and_then(|fields| fields.get(&place.fields))
+            })
+            .cloned()
+            .unwrap_or_default()
+    }
+
+    pub(crate) fn record_location(value: &Expr, path: &[usize]) -> Option<crate::hir::Place> {
         let mut value = value;
         let mut path = path.iter().rev().copied().collect::<Vec<_>>();
         loop {
@@ -40,27 +51,21 @@ impl Checker {
                     value = inner;
                 }
                 ExprKind::Deref(inner) => {
-                    let Some(id) = Self::temporary_storage(inner) else {
-                        return Origins::default();
-                    };
+                    let id = Self::temporary_storage(inner)?;
                     path.reverse();
-                    return self
-                        .record_pointees
-                        .get(&id)
-                        .and_then(|fields| fields.get(&path))
-                        .cloned()
-                        .unwrap_or_default();
+                    return Some(crate::hir::Place {
+                        root: id,
+                        fields: path,
+                    });
                 }
                 ExprKind::Local(id) => {
                     path.reverse();
-                    return self
-                        .record_pointees
-                        .get(id)
-                        .and_then(|fields| fields.get(&path))
-                        .cloned()
-                        .unwrap_or_default();
+                    return Some(crate::hir::Place {
+                        root: *id,
+                        fields: path,
+                    });
                 }
-                _ => return Origins::default(),
+                _ => return None,
             }
         }
     }
