@@ -1,5 +1,8 @@
 use super::{Checker, Diagnostic, Expr, Result};
-use crate::check::dependencies::{Cells, references::MAX_ROOTS};
+use crate::check::dependencies::{
+    Cells,
+    references::{MAX_CELL_DEPTH, MAX_ROOTS},
+};
 use crate::hir::Type;
 
 impl Checker {
@@ -9,12 +12,10 @@ impl Checker {
         args: &[Expr],
         depth: usize,
     ) -> Result<Cells> {
-        let Type::Reference(inner) = &expr.ty else {
+        let Some(result_depth) = self.shared_cell_depth(&expr.ty, expr)? else {
             return Ok(Cells::default());
         };
-        if !matches!(inner.as_ref(), Type::Reference(leaf) if !leaf.has_borrowed())
-            || !Self::origin_reference(inner)
-        {
+        if result_depth < 2 || !self.origin_carrier(&expr.ty, expr.span)? {
             return Ok(Cells::default());
         }
         if !self.flow.spend(args.len() + 1) {
@@ -26,16 +27,27 @@ impl Checker {
         let mut cells = Cells::default();
         let mut found = false;
         for arg in args {
-            let supported = !arg.ty.has_borrowed()
-                || matches!(&arg.ty, Type::Reference(target) if !target.has_borrowed()
-                    || matches!(target.as_ref(), Type::Reference(leaf) if !leaf.has_borrowed()));
-            if !supported {
-                return Ok(Cells::default());
-            }
-            if !crate::borrow_contract::returns::candidate(&expr.ty, &arg.ty) {
+            if !arg.ty.has_borrowed() {
                 continue;
             }
-            let source = self.reference_cell_at(arg, depth + 1)?;
+            let Some(arg_depth) = self.shared_cell_depth(&arg.ty, expr)? else {
+                return Ok(Cells::default());
+            };
+            if arg_depth < result_depth {
+                continue;
+            }
+            let layers = arg_depth - result_depth;
+            let mut ty = &arg.ty;
+            for _ in 0..layers {
+                ty = ty.pointee().unwrap();
+            }
+            if !crate::borrow_contract::returns::candidate(&expr.ty, ty) {
+                continue;
+            }
+            let mut source = self.reference_cell_at(arg, depth + 1)?;
+            for _ in 0..layers {
+                source = self.expand_reference_cells(source, expr)?;
+            }
             let work = source
                 .places
                 .iter()
@@ -64,7 +76,35 @@ impl Checker {
         }
         Ok(cells)
     }
+
+    pub(super) fn shared_cell_depth(
+        &mut self,
+        mut ty: &Type,
+        expr: &Expr,
+    ) -> Result<Option<usize>> {
+        let mut depth = 0;
+        loop {
+            self.origin_visit(expr)?;
+            let Type::Reference(target) = ty else {
+                return Ok(None);
+            };
+            depth += 1;
+            if depth > MAX_CELL_DEPTH + 1 {
+                return Err(Diagnostic::unsupported(
+                    "proof returned cell type depth exhausted",
+                    expr.span,
+                ));
+            }
+            if !target.has_borrowed() {
+                return Ok(Some(depth));
+            }
+            ty = target;
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod chains;

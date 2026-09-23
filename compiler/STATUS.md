@@ -29,21 +29,21 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current returned shared-cell slice
+### Current deeper returned-cell slice
 
-Plan: retain call-result `Cells` for one-level shared carriers whose inner view
-has no borrowed components. Match all exact compatible shared arguments through
-the existing public borrow-contract predicate. Preserve incomplete alternatives,
-capacity/work limits and bounded nested-call traversal without replaying calls.
-Keep implementation and tests together, then run the compiler gate before commit.
+Plan: recognize bounded all-shared reference chains ending in reference-free
+values, match compatible return layers using the existing contract predicate,
+and expand source cells when a deeper input can supply an inner returned carrier.
+Preserve incomplete candidates, mode/aggregate exclusions, capacities and budgets.
+Keep deeper/nested return, inner-candidate, unknown and limit regressions with
+this behavior slice; run the compiler gate before committing.
 
-Limit this first result slice to reference-free values, reference-free shared
-views and one-level shared carriers as inputs. Aggregate-stored return candidates,
-deeper returned carriers and returned borrowed-record views remain separate.
-Proof outcomes stay gated. Implementation retains exact carrier candidates with
-charged merges and explicit nested-call depth. All 158 dependency groups pass,
-including five new returned-cell groups; no calls are replayed. All ten compiler
-checks pass; no failures remain.
+Exact-depth matching alone would omit compatible inner cells from deeper inputs.
+Their candidates must be traversed or explicitly incomplete. Aggregate-stored
+candidates and returned borrowed-record views remain separate. Outcomes stay gated.
+All 162 dependency groups pass, including four new groups for deeper returns,
+inner candidates, unknown cell layers and type-depth/mode/work limits. All ten
+compiler checks pass; no failures remain.
 
 ### Proof dependency implementation slices
 
@@ -1371,21 +1371,21 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1143
-  library/903 native tests (2046 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1147
+  library/903 native tests (2050 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-returned-cells-gate.log`.
-- All 158 dependency groups pass. Five new returned-cell groups cover direct/
-  nested calls, copies, all exact-compatible candidates, unknown inputs, no call
-  replay, depth/work limits, E303 lifetime rejection and aggregate-input exclusion.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks remain
-  seeded checker evidence.
-- Flags/outcomes remain B001-gated. Deeper returned carriers, aggregate-stored
-  return candidates, returned borrowed-record views, allocator-bound pointees,
-  heterogeneous unions, precise joins, callee effect/data/control summaries and
-  conditional-exit control remain open. Runtime sources, reference fixtures,
-  dependencies and versions are unchanged; editor and separate runtime/sanitizer
-  gates were not rerun. Full release qualification remains open.
+  0 failed in debug/release. Log: `/tmp/meowy-deeper-returned-cells-gate.log`.
+- All 162 dependency groups pass. Four new returned-chain groups cover deeper/
+  nested calls, copies, compatible inner input cells, unknown intermediate cells,
+  type depth, mode exclusion and work exhaustion. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded checker evidence.
+  Existing E303 lifetime and nested-call depth regressions remain green.
+- Flags/outcomes remain B001-gated. Aggregate-stored return candidates, returned
+  borrowed-record views, allocator-bound pointees, heterogeneous unions, precise
+  joins, callee effect/data/control summaries and conditional-exit control remain
+  open. Runtime sources, reference fixtures, dependencies and versions are
+  unchanged; editor and separate runtime/sanitizer gates were not rerun.
+  Full release qualification remains open.
 
 ## Prior capabilities and other areas
 
@@ -1508,12 +1508,13 @@ explicitly documented. No outstanding failures remain.
    worklist, including empty/unknown locations and mixed candidate owners. Shared
    references to nullable single-record targets now reuse those locations; known
    null contributes no stored owners and heterogeneous layouts remain incomplete.
-   One-level returned shared carriers now retain all exact-compatible argument
-   cells through copies and nested calls, preserving unknown alternatives. Next
-   extend exact candidate retention to deeper returned shared chains in
-   `calls/cells.rs`, with bounded type traversal, mode exclusions, nested-call
-   depth and ordinary lifetime regressions before the full gate. Aggregate-stored
-   return candidates, heterogeneous unions and broader
+   Returned shared chains now retain exact and compatible inner argument cells
+   through copies and nested calls, preserving unknown alternatives and bounded
+   type/cell traversal. Next add aggregate-stored returned-cell candidates in
+   `calls/cells.rs`, reusing record locations and contract projection matching.
+   Separate any reusable location traversal from integration; test stored carriers,
+   owned reference-cell projections, mixed/unknown candidates and lifetime errors
+   before the full gate. Returned borrowed-record views, heterogeneous unions and broader
    aggregate returned shapes remain
    separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

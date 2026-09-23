@@ -183,11 +183,13 @@ borrow contract retain compatible argument origins using exact pointee types and
 reference modes. All matching arguments remain possible sources, regardless of a
 private function-body choice. Unknown candidates keep results incomplete; nested
 argument traversal is bounded and never replays calls. Ordinary return/ownership
-checks still run. One-level returned shared carriers also retain cell locations
-from all exact-compatible shared arguments, including copies and nested calls.
-Their inner view must have no borrowed components. Unknown arguments keep cell
-sets incomplete; argument-shape, depth, capacity and work limits remain explicit.
-Deeper returned carriers and aggregate-stored return candidates remain separate. Shared returns of supported scalar/list/record views retain
+checks still run. Returned shared carrier chains retain cell locations from all
+compatible shared argument layers, including copies and nested calls. Deeper
+inputs contribute compatible inner cells through bounded expansion. The terminal
+view must have no borrowed components. Unknown arguments or intermediate cells
+keep sets incomplete; type/call depth, capacity and work limits remain explicit.
+Aggregate-stored return candidates remain separate. Shared returns of supported
+scalar/list/record views retain
 origins through the general contract's
 record-field/list-element projections when referenced inputs/results have no
 borrowed components. Concrete by-value records also contribute shared-reference
