@@ -61,7 +61,9 @@ Bare type suffixes now parse as predicates everywhere at comparison precedence;
 generic-call fallback remains available in higher-precedence operands. All 1447
 library/909 native tests pass (`/tmp/meowy-uniform-predicates-tests.log`). Generated
 fixture fragments and required-target costs were migrated without weakening checks.
-Old bitwise parser operators and obsolete matcher mode are next to remove. Migration
+Old bitwise parser spellings are removed; all 1447 library/910 native tests pass
+(`/tmp/meowy-bits-only-tests.log`). Borrows, matchers, boolean operators and remainder
+retain their behavior. Obsolete matcher-mode parameters are next to remove. Migration
 commits are grouped by checker, ownership, loans, native values, native
 slots, restart headers and reference returns (at most eight files each).
 Ordinary host-language self/bitwise syntax and unrelated user

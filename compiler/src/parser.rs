@@ -210,9 +210,6 @@ pub(crate) fn precedence(op: &str) -> Option<u8> {
     match op {
         "*" | "/" | "%" => Some(80),
         "+" | "-" => Some(70),
-        "&" => Some(60),
-        "^" => Some(55),
-        "|" => Some(50),
         "<" | "<=" | ">" | ">=" => Some(40),
         "==" | "!=" => Some(30),
         "&&" => Some(20),

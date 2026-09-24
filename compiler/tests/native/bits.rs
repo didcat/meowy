@@ -34,3 +34,27 @@ d.print(b.and(mark(0),mark(3)))
         assert!(output.stderr.is_empty());
     }
 }
+
+#[test]
+pub(crate) fn bitwise_operator_spellings_are_rejected_but_other_punctuation_remains() {
+    for source in ["x:1&2", "x:1|2", "x:1^2", "x:~1"] {
+        let result = Case::new(source).command("check", &["--json"]);
+        assert_eq!(result.status.code(), Some(1), "{source}");
+        assert!(
+            String::from_utf8_lossy(&result.stderr).contains("E004"),
+            "{source}"
+        );
+    }
+    Case::new(
+        r#"
+d:@"debug"
+x:=7
+r:&x
+d.print(*r)
+d.print(true&&(!false||false))
+|x<int32>|d.print(x~<int32>)
+d.print(x%3)
+"#,
+    )
+    .runs(b"7\ntrue\n7\n1\n");
+}

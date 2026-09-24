@@ -343,7 +343,7 @@ impl Parser {
                         Span::new(start, self.token().span.end),
                     ));
                 }
-                "!" | "-" | "~" | "*" | "&" | "&!" | ">>" | "<<" => {
+                "!" | "-" | "*" | "&" | "&!" | ">>" | "<<" => {
                     self.newlines();
                     let level = if matches!(token.text.as_str(), "&" | "&!" | "*") {
                         101
