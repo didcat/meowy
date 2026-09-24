@@ -100,7 +100,7 @@ sum <uint32> : (values <uint8[]>) {
         | index > values.size() | 'loop.leave()
         widened : numbers.convert<uint32>(values[index])
         # uint8 to uint32 is always representable; use the proven conversion #
-        total = total + widened<uint32>
+        total = total + widened~<uint32>
         index = index + 1
         'loop.restart()
     }

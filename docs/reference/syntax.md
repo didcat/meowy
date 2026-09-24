@@ -164,7 +164,8 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `'scope.restart()`                            | Clean up and restart that named block                            |
 | `\| value <T> \| statement`                   | Type predicate in a matcher condition                            |
 | `value<>`                                     | Compile-time type query                                          |
-| `value<T>`                                    | Proven type ascription in a value expression; no conversion      |
+| `value<T>`                                    | Boolean type predicate in any expression                         |
+| `value~<T>`                                   | Proven type ascription; no conversion                             |
 | `name <(expression)> : value`                 | Binding annotated by a computed type                             |
 | `@"name"`                                     | Module import                                                    |
 | `&value`, `&!value`                           | Shared or exclusive borrow                                       |
@@ -182,7 +183,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 
 The escaped pipes in the table stand for literal `|` characters. Spaces around
 angle brackets do not change their role: `value<T>` and `value <T>` have the same
-meaning in the same grammatical position. See the contextual rules below.
+meaning everywhere. `~` explicitly introduces an ascription; see the rules below.
 
 `<T><U>` is a union in a type position, and `!<U>` subtracts members from a type.
 Generic arguments name types without an extra pair of angle brackets:
@@ -202,50 +203,55 @@ These forms retain the same meaning without spaces.
 ## Angle brackets in context
 
 Declarations establish an annotation position: `name <T> : value` annotates the
-binding, including inside a matcher body. Elsewhere, parse a complete type form
-after an expression by these rules, independently of spacing:
+binding. After an expression, these forms keep their meaning in every expression
+position, independently of spacing:
 
-1. Empty `<>` is always a type query.
+1. Empty `<>` is a type query.
 2. Type arguments followed by call parentheses specialize that call:
-   `accepts<T>(value)`. This rule also applies in a matcher condition.
-3. In a matcher condition, a nonempty type suffix is a type predicate, taking
-   precedence over the ascription interpretation. It has comparison precedence.
-   `| value <T><U> | use(value)` tests membership in the union `<T><U>`.
-4. In an ordinary value expression, that suffix is a proven ascription, with
-   postfix precedence. `copy : value<T>` requests no conversion or runtime check.
+   `accepts<T>(value)`.
+3. A nonempty type suffix is a boolean type predicate, with comparison precedence.
+   `value<T><U>` tests membership in the union `<T><U>`.
+4. `~<T>` is a proven ascription, with postfix precedence. `copy : value~<T>`
+   requests no conversion or runtime check; the current flow type must already
+   satisfy `T` (`E208` otherwise).
 
-Grouping parentheses in a condition retain its condition context. Boolean
-operands of `&&`, `||`, and `!` do too. Call arguments, index expressions, and
-the bodies of blocks and functions are ordinary value contexts; a nested matcher
-starts its own condition context. Thus a predicate inside an argument must be
-expressed through a matcher, not inferred from its distance to an outer `|`.
-
-| Form                                 | Interpretation                                 |
-| ------------------------------------ | ---------------------------------------------- |
-| `\| value <T> \| use(value)`         | Test `value` and refine it in the arm          |
-| `\| !(value <T>) \| reject()`        | Negate the type test                           |
-| `\| accepts<T>(value) \| use(value)` | Call a specialized boolean function            |
-| `\| accepts(value<T>) \| use(value)` | Pass a proven ascription to a boolean function |
-| `\| flag \| copy : value<T>`         | Test `flag`; the body contains an ascription   |
-| `copy : value <T>`                   | Ascription, even with a space                  |
-
-The contexts compose through dispatch too:
+An ascription consumes exactly one bracketed type. A following `<U>` is a predicate
+on the ascribed value: `value~<T><U>`. To ascribe a union, name the union first:
 
 ```meowy
-| t.{ -> $<MyCoolType> } <MyCoolType> | matched()
+<Choice> : <A><B>
+copy : value~<Choice>
 ```
 
-The dispatched block is an ordinary value context: `$<MyCoolType>` is an
-ascription, and `->` emits that value. After `}`, the surrounding matcher context
-resumes, so the outer `<MyCoolType>` is a predicate. This requires the flow type
-of `$` to satisfy the ascription before the block emits; an outer test cannot
-prove an earlier operation. With this exact block, the outer test succeeds if
-evaluation completes normally. Dispatch still follows its usual move/borrow
-rules. The receiver sigil does not change ascription or predicate rules; spaces do not
-select either meaning.
+Generic type arguments remain inside the target type: `obj~<D<S, K, T, V>>`.
+`obj~<S, K, T, V>` does not name one target type and is invalid. Generic function
+calls retain `f<S, K, T, V>(args)`; `value<>` retains its type-query meaning.
 
-For an ascription directly used as a condition, bind it first and match the
-boolean binding. Parenthesizing `value<T>` alone still gives a type test there.
+| Form                                   | Interpretation                                  |
+| -------------------------------------- | ----------------------------------------------- |
+| `\| value <T> \| use(value)`           | Test `value` and refine it in the arm            |
+| `matches : value<T>`                    | Store the boolean test result                   |
+| `accepts(value<T>)`                     | Pass the boolean test result                    |
+| `accepts(value~<T>)`                    | Pass the proven ascribed value                  |
+| `\| accepts<T>(value) \| use(value)`   | Call a specialized boolean function             |
+| `copy : value ~ <T>`                    | Ascribe, with optional spaces                   |
+
+A nullable boolean makes the distinction useful:
+
+```meowy
+debug : @"debug"
+
+show <null> : (enabled <boolean><null>) {
+    | enabled<boolean> && enabled~<boolean> | {
+        debug.print("Enabled")
+    }
+}
+```
+
+The first operand establishes that `enabled` is boolean. Short-circuiting carries
+that proof into the second operand, which reads its boolean value. Both `null`
+and `false` skip the body. A stored boolean test result does not itself carry a
+narrowing proof into a later matcher; use the predicate where the proof is needed.
 Because unary operators bind more tightly than predicates, write `!(value<T>)`
 to negate a test; `!value<T>` tests the result of `!value`.
 
@@ -264,7 +270,7 @@ are not part of the grammar. See [type queries](types.md#type-queries).
 A computed type atom accepts ordinary extent suffixes before the final type
 delimiter: `<(element)[capacity]>` and `<(element)[]>`. The expression must
 produce `core.Type`; see [compile-time evaluation](compile-time.md). This does
-not change the contextual rule for a type suffix after a runtime expression.
+not change the meaning of a type suffix after a runtime expression.
 
 ## Operators and evaluation order
 
@@ -274,14 +280,13 @@ From highest to lowest precedence:
 | ----- | ------------------------------------------------------------------------------------ |
 | 1     | Prefix borrow `&`, `&!` and dereference `*`                                          |
 | 2     | Calls, field selection/borrow/dereference, indexing, dispatch, type query/ascription |
-| 3     | Unary `!`, `-`, `~`, task start `>>`, join `<<`                                      |
+| 3     | Unary `!`, `-`, task start `>>`, join `<<`                                      |
 | 4     | `*`, `/`, `%`                                                                        |
 | 5     | `+`, `-`                                                                             |
-| 6     | Integer bitwise `&`, then `^`, then `\|`                                             |
-| 7     | `<`, `<=`, `>`, `>=`, type predicates                                                |
-| 8     | `==`, `!=`                                                                           |
-| 9     | `&&`                                                                                 |
-| 10    | `\|\|`                                                                               |
+| 6     | `<`, `<=`, `>`, `>=`, type predicates                                                |
+| 7     | `==`, `!=`                                                                           |
+| 8     | `&&`                                                                                 |
+| 9     | `\|\|`                                                                               |
 
 `%name` is a task-group primary expression, not a borrow or a general unary
 operator. Its following calls and field selections use the usual postfix rules.
@@ -290,9 +295,11 @@ forms by operand position, not whitespace.
 
 Binary arithmetic operators associate left-to-right; comparisons cannot be
 chained. Assignment, emissions, and matchers are statement forms. Parentheses
-override precedence. `>>` and `<<` are never bit shifts; use `bits.shl` and
-`bits.shr`. Put a bitwise `|` expression in parentheses inside a matcher so it
-cannot be confused with an arm delimiter.
+override precedence. Integer bit operations belong to `@"bits"`: use `bits.and`,
+`bits.or`, `bits.xor`, and `bits.not`. There are no binary `&`, `|`, `^` or unary
+`~` bitwise operators. `>>` and `<<` are never bit shifts; use `bits.shl` and
+`bits.shr`. Shared borrowing still uses prefix `&`; capability conjunction still
+uses `&` in type binders. Boolean `&&`, `||`, and `!` are unchanged.
 
 `<- expression` is also a statement form, not a binary operator or a binding.
 `<-` is one token. Its operand is required on the same statement and can be a
@@ -377,8 +384,9 @@ requiring a safety proof; it does not disable type checking.
 An annotation-only statement `name <(Parameters) -> Result>;` reserves an immutable,
 non-capturing function in the current value scope. It is recognized at statement
 start when an identifier and a complete function-type annotation reach a statement
-terminator without a binding operator. It is not an ascription expression statement;
-parenthesize such an expression to discard an ascribed function value instead.
+terminator without a binding operator. It is not a type-predicate expression statement;
+parenthesize such an expression to discard a predicate result instead. An explicit
+`f~<(T) -> R>` ascribes a function value.
 
 One or more consecutive forward signatures must be followed immediately by exactly
 one function definition for each reserved name, in any order. Comments and blank

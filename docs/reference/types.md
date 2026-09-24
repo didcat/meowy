@@ -134,15 +134,16 @@ value <string><null> : null
 present <(value<>!<null>)> : value
 ```
 
-Within a proven branch, an ascription such as `value<string>` is permitted. It
+Within a proven branch, an ascription such as `value~<string>` is permitted. It
 does not insert a trap, parse, or unchecked cast. If the current flow type is not
-assignable to the requested type, the ascription is rejected.
+assignable to the requested type, the ascription is rejected (`E208`).
 
-The surrounding grammar chooses the operation, not a space: `value<T>` and
-`value <T>` are both predicates in matcher conditions and both ascriptions in
-ordinary value expressions. Grouping a condition does not turn a predicate into
-an ascription. Generic calls and type queries retain their own forms; see
-[angle brackets in context](syntax.md#angle-brackets-in-context).
+`value<T>` and `value <T>` are boolean predicates in every expression position.
+`value~<T>` is an ascription in every expression position. An ascription consumes
+one bracketed type; name union targets with an alias such as `<Choice> : <A><B>`
+and use `value~<Choice>`. Generic targets retain their arguments inside that type,
+as in `value~<D<S, K, T, V>>`. Generic calls and type queries retain their forms;
+see [angle-bracket forms](syntax.md#angle-brackets-in-context).
 
 ## Type queries
 
@@ -551,7 +552,7 @@ record function fields remain ordinary fields and receive no implicit receiver.
 
 Generic functions are templates, not first-class runtime values. To pass a
 specialization, use a wrapper such as `f : (x <int32>) { -> identity<int32>(x) }`; `identity<int32>`
-without call parentheses remains an ascription. No hidden specialization or
+without call parentheses is a type predicate, not a specialization. No hidden specialization or
 boxing is inferred from an expected callback type. Public functions accepting
 closures use the capability constraints above; local adapter results may preserve
 their inferred environment type. No general dynamically dispatched callable
@@ -568,11 +569,15 @@ expected type before defaulting.
 | Operation                             | Accepted types and result                                                                                                                |
 | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `+`, `-`, `*`, `/`                    | Same integer or float type; result has that type.                                                                                        |
-| `%`, binary `&`, `^`, `\|`, unary `~` | Integers; binary operands have the same type and the result preserves it.                                                                |
+| `%`                                  | Integers; operands have the same type and the result preserves it.                                                                |
 | Unary `-`                             | Signed integers or floats; same result type.                                                                                             |
 | `!`, `&&`, `\|\|`                     | Booleans; boolean result, with short-circuiting as specified by syntax.                                                                  |
 | `<`, `<=`, `>`, `>=`                  | Same numeric type or two strings; boolean result. Strings compare unsigned UTF-8 bytes lexicographically; floats with NaN compare false. |
 | `==`, `!=`                            | Compatible equality types below; boolean result, and `!=` negates `==`.                                                                  |
+
+Integer bitwise operations are module functions: `bits.and`, `bits.or`,
+`bits.xor`, and `bits.not` from `@"bits"`. They preserve the integer operand type;
+see [numeric utilities](stdlib/text-and-data.md#numeric-conversions-and-shifts).
 
 Equality is defined for null, booleans, numbers, strings (exact bytes), and safe
 references/raw pointers of the same type (address equality, no dereference).
@@ -601,7 +606,7 @@ performed. `testing.equal` uses this exact eligibility and comparison contract.
 NaN, and infinities. `numbers.truncate<T>` and `numbers.wrapping<T>` are separately
 named operations for deliberately different behavior.
 
-`strings.to_uint8(text)` parses text and returns a union. `value<uint8>` does
+`strings.to_uint8(text)` parses text and returns a union. `value~<uint8>` does
 neither parsing nor numeric conversion. Pointer reinterpretation is a separate
 unsafe operation with alignment and lifetime obligations.
 

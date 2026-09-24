@@ -108,7 +108,7 @@ means `(*object).field`, while `object.*field` means `*(object.field)`.
 `*items[index]` indexes a dereferenced list; `*(items[index])` dereferences the
 selected element. To dereference a returned reference, write `*(get())`.
 An ascription of the reference belongs inside that grouping, as in
-`*(value<&int32>)`; `*value<&int32>` ascribes the dereferenced result instead.
+`*(value~<&int32>)`; `*value~<&int32>` ascribes the dereferenced result instead.
 The field modifier evaluates its receiver once and preserves ordinary reference
 permissions, storage lifetimes and compiler capability checks.
 

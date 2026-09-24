@@ -222,11 +222,11 @@ capability checks still apply.
 `null`, zero, empty strings, and errors cannot stand in for booleans. Every matcher
 is independent and evaluated when execution reaches it.
 
-In the condition, `value<T>` is a type predicate regardless of spacing.
-`|value<T>|statement` and `| value <T> | statement` mean the same thing. The
-matcher body resumes ordinary expression syntax, where `value<T>` is a proven
-ascription. [Contextual angle-bracket rules](syntax.md#angle-brackets-in-context)
-also cover nested parentheses, generic calls, and arguments.
+`value<T>` is a boolean type predicate in every expression position, regardless
+of spacing. `|value<T>|statement` and `| value <T> | statement` mean the same
+thing. Proven ascription uses the explicit `value~<T>` form.
+[Angle-bracket forms](syntax.md#angle-brackets-in-context) also cover generic calls,
+type queries, and union targets.
 
 A type predicate refines a stable binding inside the matching arm. `&&` carries
 the left side's refinement into its right side. A failed arm refines later code
