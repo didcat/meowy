@@ -130,7 +130,15 @@ All 1521 existing library tests pass after updating containment assertions and
 keeping synthetic capacity keys disjoint from live IDs;
 `/tmp/meowy-general-statements-lib.log`. The new full-statement root group also
 passes for erased/runtime results, site association and failed-site restoration.
-No failures remain. Ordered block statement sequences are next.
+No failures remain. General-statement prerequisite: `aaffd39`. Core block checking
+now retains ordered statement roots and normal-to-next-entry edges, with explicit
+forward-group barriers. Source validation and edge publication are bounded and
+atomic; the shared budget includes sequence edges. All four block-sequence groups
+pass, covering erased statements, barriers, nested/functions, duplicate/changed
+identity and work/item/edge limits. All 1526 library tests pass;
+`/tmp/meowy-block-sequences-lib.log`. No failures remain. Ordinary binary operand
+sequences are next, followed by the full compiler gate.
+Contextual list/effect block builders remain outside this sequence integration.
 Unknown effects remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices

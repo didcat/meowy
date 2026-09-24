@@ -36,6 +36,7 @@ impl Checker {
             .len()
             .saturating_mul(6)
             .saturating_add(self.region_edges.len().saturating_mul(2))
+            .saturating_add(self.sequence_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)
     }

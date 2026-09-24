@@ -23,16 +23,26 @@ impl Checker {
         partial: bool,
     ) -> Result<hir::Block> {
         let mut stmts = self.block_start(block, expected, receiver, partial)?;
+        let mut points = Vec::new();
         let mut index = 0;
         while index < block.stmts.len() {
             if matches!(block.stmts[index].kind, StmtKind::Forward { .. }) {
                 index = self.forward(&block.stmts, index)?;
+                points.push(None);
             } else {
-                stmts.extend(self.stmt(&block.stmts[index])?);
+                let (point, checked) = self.checked_stmt(&block.stmts[index])?;
+                points.push(Some(point));
+                stmts.extend(checked);
                 index += 1;
             }
         }
-        self.block_end(block, stmts)
+        let body = self.block_end(block, stmts)?;
+        self.sequence(
+            super::dependencies::SequenceSource::Block(body.id),
+            points,
+            block.span,
+        )?;
+        Ok(body)
     }
 
     pub(crate) fn block_start(

@@ -459,8 +459,11 @@ exit/result transfers and outcomes stay gated.
 General statements now retain exact root IDs through their existing lifetime
 boundary, and completed sites identify those roots. All 1521 existing library tests
 and the new erased/runtime/failure root group pass;
-`/tmp/meowy-general-statements-lib.log`. Ordered block sequences are next; normal
-ports remain conditional and propagation/outcomes stay gated.
+`/tmp/meowy-general-statements-lib.log`. Core block sequences now retain exact
+statement order, including erased uses and explicit forward-group barriers. Four
+focused groups and all 1526 library tests pass; `/tmp/meowy-block-sequences-lib.log`.
+Ordinary binary operand sequences are next. Contextual list/effect block builders,
+explicit exits/results and propagation/outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

@@ -302,3 +302,6 @@ pub(crate) use points::{Kind as PointKind, Point};
 
 mod edges;
 pub(crate) use edges::Edge;
+
+mod sequences;
+pub(crate) use sequences::{Sequence, Source as SequenceSource};
