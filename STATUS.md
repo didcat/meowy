@@ -505,7 +505,10 @@ operations are next; value-flow propagation and proof evaluation stay gated.
 
 The 4096-alias stress gate now accepts the shared control-flow B001 budget as well
 as the origin-specific cap; the 2048 case still requires the loan-analysis budget.
-Focused stress validation passed. Binding-operation integration remains in progress.
+Focused stress validation passed (`1f7abb7`). Ordinary binding operations now
+retain exact value roots, canonical storage IDs and explicit effect ports. Four
+focused groups and all 1557 library tests pass; `/tmp/meowy-binding-operations-lib.log`.
+Direct assignments are next; module roots without exact producers remain unknown.
 
 ## Pending descriptor statement accounting
 

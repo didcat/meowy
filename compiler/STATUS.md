@@ -105,10 +105,12 @@ Dependency-ordered commit plan:
 1. Connect matcher statement roots to exact checked branch IDs in source order,
    preserving independent decisions and conditional normal completion. Reuse the
    sequence/endpoints ledgers and shared budgets; validate nested/error paths.
-2. Retain explicit ordinary binding operations with exact initializer roots and
+2. Accept the shared control-flow B001 budget in the 4096-alias stress case,
+   preserving the 2048-alias loan-budget assertion and all language diagnostics.
+3. Retain explicit ordinary binding operations with exact initializer roots and
    canonical storage IDs. Separate evaluating the value from performing the bind;
    module producers without exact roots remain explicitly unknown.
-3. Add direct local/slot-alias assignment operations after ordinary checking,
+4. Add direct local/slot-alias assignment operations after ordinary checking,
    keeping reference retargeting and source diagnostics intact. Validate and run
    the full compiler gate. Field/index/indirect stores and emissions remain next.
 
@@ -126,7 +128,15 @@ Matcher statements now retain exact branch sequences and endpoint links. All
 three focused groups pass for independent arms, conditional exits, original errors
 and endpoint budgets. All 1553 library tests pass;
 `/tmp/meowy-matcher-roots-lib.log`. The multi-arm regression now reuses parsed
-AST arms, preserving the same coverage. Ordinary binding operations are next.
+AST arms, preserving the same coverage. Matcher slice: `ed3baf3`. Ordinary binds
+now retain explicit storage operations, exact initializer roots and canonical
+local/storage identities. Unknown module roots remain explicit. Focused binding
+groups pass for storage effects, control/function ownership, unknown roots,
+identity and budgets. The 4096-alias stress gate now accepts its shared control-flow
+limit (`1f7abb7`); the 2048 loan-budget check stays strict. All 1557 library tests
+pass; `/tmp/meowy-binding-operations-lib.log`. No failures remain. Direct assignment
+operations are next; language diagnostics and conformance fixtures are unchanged.
+Annotations/required-use links remain separate.
 Unknown effects and missing operand/producer coverage remain incomplete; propagation
 and proof evaluation stay gated.
 

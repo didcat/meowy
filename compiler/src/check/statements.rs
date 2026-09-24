@@ -102,11 +102,12 @@ impl Checker {
                     return Ok(Vec::new());
                 }
                 let expected = ty.as_ref().map(|ty| self.construct_type(ty)).transpose()?;
-                let (value, exports) = if name.starts_with('\0') {
+                let (input, value, exports) = if name.starts_with('\0') {
                     let (value, module) = self.module_value(value, expected.as_ref())?;
-                    (value, Some(module))
+                    (None, value, Some(module))
                 } else {
-                    (self.expr(value, expected.as_ref())?, None)
+                    let (input, value) = self.expr_point(value, expected.as_ref())?;
+                    (Some(input), value, None)
                 };
                 let ty = expected.unwrap_or_else(|| value.ty.clone());
                 if name.starts_with('\0')
@@ -177,6 +178,13 @@ impl Checker {
                         owner: self.owner,
                         constant,
                     },
+                    stmt.span,
+                )?;
+                self.storage_operation(
+                    self.point.expect("binding statement"),
+                    super::dependencies::OperationKind::Bind,
+                    id,
+                    input,
                     stmt.span,
                 )?;
                 Ok(vec![hir::Stmt::Bind { id, value }])

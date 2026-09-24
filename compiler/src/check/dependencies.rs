@@ -308,3 +308,6 @@ pub(crate) use sequences::{Sequence, Source as SequenceSource};
 
 mod scope_exits;
 pub(crate) use scope_exits::ScopeExit;
+
+mod operations;
+pub(crate) use operations::{Kind as OperationKind, Operation};
