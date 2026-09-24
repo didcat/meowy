@@ -145,8 +145,10 @@ required/type-only calls retain separate coverage boundaries.
 List literals retain ordered element roots by source position, including scalar
 elements checked later for contextual inference. Empty construction is explicit;
 nonreturning elements do not publish a list result. Union candidate selection and
-coercions remain unchanged. Custom effect-block elements retain unknown sequence
-entries until their exact roots are supported; graph edges never skip those gaps.
+coercions remain unchanged. Custom effect-block elements capture exact grouped
+roots after form recognition, then connect checked prefix/emission statements and
+block results. Candidate probes allocate no roots and effects are checked once.
+Failed checks restore the active point, scope/frame depths, owner and reach.
 Construction links do not establish complete value provenance or proof outcomes.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.

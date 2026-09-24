@@ -5,6 +5,7 @@ use crate::flow::FALSE;
 use crate::hir::{self, Type};
 
 impl Checker {
+    #[cfg(test)]
     pub(crate) fn stmt(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
         self.checked_stmt(stmt).map(|(_, stmts)| stmts)
     }

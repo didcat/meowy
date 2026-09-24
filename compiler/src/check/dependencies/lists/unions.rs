@@ -53,7 +53,7 @@ pub(crate) fn custom_effect_elements_retain_exact_roots_without_replayed_effects
     let span = checker.points[element].span;
     assert_eq!(&source[span.start..span.end], "{x:300;d.print(1);->x}");
     assert!(
-        !checker
+        checker
             .endpoints
             .contains_key(&SequenceSource::Expr(element))
     );
@@ -113,4 +113,75 @@ pub(crate) fn union_list_failures_keep_capacity_ambiguity_and_effect_boundaries(
             "{source}"
         );
     }
+}
+
+#[test]
+pub(crate) fn custom_effect_body_roots_connect_checked_prefix_and_emission_statements() {
+    let source = "d:@\"debug\";f:(){xs<uint8[1]><int32[1]>:[({x:300;d.print(x);->x})]}";
+    crate::compile(source).unwrap();
+    let checker = check(source);
+    let element = checker
+        .sequences
+        .iter()
+        .find_map(|(key, sequence)| {
+            let SequenceSource::Expr(id) = *key else {
+                return None;
+            };
+            source[checker.points[id].span.start..checker.points[id].span.end]
+                .starts_with('[')
+                .then(|| sequence.items[0].unwrap())
+        })
+        .unwrap();
+    let (&block, body) = checker
+        .bodies
+        .iter()
+        .find(|(_, body)| body.parent == Some(element))
+        .unwrap();
+    assert_ne!(body.owner, 0);
+    assert_eq!(body.owner, checker.points[element].owner);
+    let sequence = &checker.sequences[&SequenceSource::Block(block)];
+    assert_eq!(sequence.items.len(), 3);
+    for point in sequence.items.iter().flatten() {
+        let point = &checker.points[*point];
+        let site = &checker.sites[&point.site.unwrap()];
+        assert!(site.complete);
+        assert_eq!(point.block, Some(block));
+        assert_eq!(point.parent, Some(element));
+    }
+    for pair in sequence.items.windows(2) {
+        assert!(sequence.edges.contains(&Edge::new(
+            Port::Normal(pair[0].unwrap()),
+            Port::Entry(pair[1].unwrap()),
+            Route::Next
+        )));
+    }
+    assert_eq!(
+        checker.endpoints[&SequenceSource::Expr(element)],
+        [
+            Edge::new(Port::Entry(element), Port::BlockEntry(block), Route::Next),
+            Edge::new(
+                Port::BlockResult(block),
+                Port::Normal(element),
+                Route::Result
+            ),
+        ]
+    );
+}
+
+#[test]
+pub(crate) fn custom_body_graph_budget_failures_do_not_complete_element_roots() {
+    let mut checker = Checker::new();
+    checker.index_edges = super::super::edges::MAX_EDGES;
+    let block = crate::parser::parse("xs<uint8[1]><int32[1]>:[{x:300;->x}]").unwrap();
+    let error = checker.block(&block, None, None).unwrap_err();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("budget"));
+    assert!(
+        checker
+            .points
+            .iter()
+            .filter(|point| point.kind == super::super::PointKind::Expr && point.parent.is_some())
+            .any(|point| !point.complete)
+    );
+    assert!(checker.point.is_none());
 }

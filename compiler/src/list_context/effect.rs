@@ -1,5 +1,5 @@
 use crate::ast::{self, ExprKind, StmtKind};
-use crate::check::{Checker, PointKind, Result};
+use crate::check::{Checker, PointKind, Result, SequenceSource};
 use crate::diagnostic::Diagnostic;
 use crate::hir::{self, Type};
 
@@ -84,8 +84,11 @@ impl Checker {
             unreachable!()
         };
         let mut stmts = self.block_start(block, None, None, false)?;
+        let mut points = Vec::new();
         for stmt in &block.stmts[..start] {
-            stmts.extend(self.stmt(stmt)?);
+            let (point, checked) = self.checked_stmt(stmt)?;
+            points.push(Some(point));
+            stmts.extend(checked);
         }
         let mut collision = None;
         let mut nodes = 1usize;
@@ -202,9 +205,14 @@ impl Checker {
         };
         self.frames.last_mut().expect("block frame").expected = Some(*element.clone());
         for stmt in &block.stmts[start..] {
-            stmts.extend(self.stmt(stmt)?);
+            let (point, checked) = self.checked_stmt(stmt)?;
+            points.push(Some(point));
+            stmts.extend(checked);
         }
         let block = self.block_end(block, stmts)?;
+        self.sequence(SequenceSource::Block(block.id), points, form.span)?;
+        self.block_endpoints(&block, form.span)?;
+        self.block_result(self.point.expect("custom list element"), block.id, span)?;
         let ty = block.ty.clone();
         *choices = matching;
         Ok(hir::Expr {
