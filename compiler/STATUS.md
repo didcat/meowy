@@ -133,7 +133,13 @@ have explicit points, including erased type/query statements, without allocating
 new lifetime scopes. The ancestry assertions now include this boundary. Both
 statement-point groups and all 1514 library tests pass;
 `/tmp/meowy-statement-points-lib.log`. No failures remain. Shared-budget region
-links and matcher-content integration are next.
+links now connect matcher condition/body regions to their returned root IDs.
+The shared edge budget covers branch and content links, with atomic identity
+validation. Matcher-body prerequisite: `ee6c2bc`. All four region-edge groups
+pass, including erased bodies, functions/leaves, invalid provenance and shared
+capacity exhaustion. All 1518 library tests pass;
+`/tmp/meowy-matcher-content-lib.log`. No failures remain. Short-circuit region
+contents are next, followed by the full compiler gate.
 Unknown effects and unlinked normal ports remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices

@@ -289,10 +289,10 @@ impl Checker {
                         return Err(Diagnostic::unsupported("matcher fallback arms", stmt.span));
                     };
                     let branch = self.with_point(PointKind::Match, condition.span, |checker| {
-                        let (test, condition) = checker.with_point_id(
+                        let (test, (input, condition)) = checker.with_point_id(
                             PointKind::Condition,
                             condition.span,
-                            |checker| checker.expr(condition, None),
+                            |checker| checker.expr_point(condition, None),
                         )?;
                         if condition.ty != Type::Bool {
                             return Err(Self::error(
@@ -310,15 +310,17 @@ impl Checker {
                         let depth = checker.scopes.len();
                         checker.scopes.push(Scope::default());
                         let then = checker.with_point_id(PointKind::Then, body.span, |checker| {
-                            checker.stmt_point(body).map(|(_, stmts)| stmts)
+                            checker.stmt_point(body)
                         });
                         checker.scopes.truncate(depth);
                         checker.control = control;
                         checker.reach = checker.flow.or(checker.reach, skipped);
-                        let (taken, then) = then?;
+                        let (taken, (content, then)) = then?;
                         let (skipped, ()) =
                             checker.with_point_id(PointKind::Else, condition.span, |_| Ok(()))?;
                         let point = checker.point.expect("matcher point");
+                        checker.region_edges(test, input, condition.span)?;
+                        checker.region_edges(taken, content, body.span)?;
                         checker.branch_edges(point, test, taken, skipped, condition.span)?;
                         Ok(hir::Stmt::If {
                             point: Some(point),

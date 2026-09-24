@@ -446,8 +446,11 @@ or changing diagnostics/accounting. Both focused groups and all 1512 library tes
 pass; `/tmp/meowy-expression-roots-lib.log`. Matcher-body statement identities are
 now retained for erased and runtime bodies, without new lifetime scopes. Both
 statement-point groups and all 1514 library tests pass;
-`/tmp/meowy-statement-points-lib.log`. Region-content edges are next; general
-sequencing and outcomes stay gated.
+`/tmp/meowy-statement-points-lib.log`. Matcher condition/body regions now link
+to their exact checked contents; normal region exits depend on child normal exits.
+The shared branch/content edge budget is bounded and atomic. Four focused groups
+and all 1518 library tests pass; `/tmp/meowy-matcher-content-lib.log`. Short-circuit
+contents are next; general sequencing and outcomes stay gated.
 
 ## Pending descriptor statement accounting
 

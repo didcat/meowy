@@ -31,6 +31,15 @@ impl Edge {
 }
 
 impl Checker {
+    pub(crate) fn edge_room(&self, count: usize) -> bool {
+        self.branch_edges
+            .len()
+            .saturating_mul(6)
+            .saturating_add(self.region_edges.len().saturating_mul(2))
+            .checked_add(count)
+            .is_some_and(|total| total <= MAX_EDGES)
+    }
+
     pub(crate) fn branch_edges(
         &mut self,
         id: PointId,
@@ -93,13 +102,15 @@ impl Checker {
                 Err(invalid())
             };
         }
-        if self.branch_edges.len() >= MAX_EDGES / edges.len() {
+        if !self.edge_room(edges.len()) {
             return Err(budget());
         }
         self.branch_edges.insert(id, edges);
         Ok(())
     }
 }
+
+mod regions;
 
 #[cfg(test)]
 mod tests;
