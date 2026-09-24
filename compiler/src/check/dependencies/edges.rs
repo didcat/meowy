@@ -7,6 +7,11 @@ pub(crate) const MAX_EDGES: usize = 262_144;
 pub(crate) enum Port {
     Entry(PointId),
     Normal(PointId),
+    Leave(crate::hir::BlockId),
+    Restart {
+        target: crate::hir::BlockId,
+        site: crate::hir::RestartId,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -15,6 +20,7 @@ pub(crate) enum Route {
     True,
     False,
     Join,
+    Exit,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -37,6 +43,7 @@ impl Checker {
             .saturating_mul(6)
             .saturating_add(self.region_edges.len().saturating_mul(2))
             .saturating_add(self.sequence_edges)
+            .saturating_add(self.scope_exits.len())
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)
     }

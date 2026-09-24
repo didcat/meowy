@@ -99,56 +99,37 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current statement and operand sequence slices
+### Current scope-exit slices
 
-Completed dependency-ordered commit plan:
-1. Retain exact checked points for general lifetime-scoped statements, associating
-   completed sites with their roots. Preserve temporary lifetimes and errors;
-   update ancestry regressions atomically with the new statement containment.
-2. Retain bounded source-ordered block statement inventories and explicit normal-
-   to-next-entry edges using returned IDs. Keep forward groups as opaque barriers;
-   share the existing edge budget and validate ownership/site identity.
-3. Retain exact ordinary binary operand roots and their sequence edges. Leave
-   unsupported composed roots explicit and keep short-circuit routing separate.
-   Run focused regressions and the full compiler gate.
+Dependency-ordered commit plan:
+1. Record bounded leave/restart exit edges from checked statement entries to
+   explicit target ports after ordinary scope validation. Preserve target/function,
+   RestartId, source span and control metadata; share the edge budget.
+2. Carry optional source points on HIR leaves, retaining explicit unknowns for
+   synthetic leaves. Keep restart provenance associated through existing RestartId.
+3. Validate and attach scope-exit sources to body facts, then run the compiler gate.
 
-Investigation: block checking already visits statements in order, but `stmt`
-returns only HIR and forward groups bypass it. General statement roots should use
-`stmt_point` without adding HIR lifetime wrappers. Completed site-to-point links
-will distinguish full statements from matcher-body points sharing a site. Sequence
-edges connect normal ports only; they do not establish reachability or completion.
-Split review: the first representation change may touch more than eight files
-because existing ancestry assertions must change with the single new containment
-boundary; separating those fixtures would leave a failing intermediate commit.
-Explicit exits, result transfer and propagation remain separate.
+Investigation: scope operations already validate arity, owner, active target and
+restart ownership before producing HIR. Their active statement points give exact
+source identity. Exit edges must never target the statement normal port. Leave
+ports name the target block; restart ports retain both target and RestartId, without
+enabling backedge propagation. HIR leaves need a source field to avoid matching
+multiple exits by target or span.
+Split review: the HIR leave migration must update its exhaustive consumers and
+synthetic constructors atomically; more than eight files may be required to keep
+that enum change buildable. Edge recording and body-fact integration stay separate.
 
-The preceding series (`ba3debb`, `ee6c2bc`, `e981b0b`, `8677817`) passed all ten
-checks: 1521 library/910 native tests; conformance 10 passed, 13 unsupported,
-0 failed in debug/release. Log: `/tmp/meowy-region-contents-gate.log`.
-General statements now return checked root IDs and completed sites retain them.
-All 1521 existing library tests pass after updating containment assertions and
-keeping synthetic capacity keys disjoint from live IDs;
-`/tmp/meowy-general-statements-lib.log`. The new full-statement root group also
-passes for erased/runtime results, site association and failed-site restoration.
-No failures remain. General-statement prerequisite: `aaffd39`. Core block checking
-now retains ordered statement roots and normal-to-next-entry edges, with explicit
-forward-group barriers. Source validation and edge publication are bounded and
-atomic; the shared budget includes sequence edges. All four block-sequence groups
-pass, covering erased statements, barriers, nested/functions, duplicate/changed
-identity and work/item/edge limits. All 1526 library tests pass;
-`/tmp/meowy-block-sequences-lib.log`. No failures remain. Ordinary binary operand
-sequences now retain exact direct operand roots; composed equality operands
-remain explicit unknowns and short-circuit routes stay separate. Block prerequisite:
-`4286bae`. All four operand groups pass, including effectful blocks/erased uses,
-nested functions, short-circuit separation, unknown composed roots and ordinary
-errors/unknown call completion. All ten compiler checks pass, including 1530
-library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release). Log: `/tmp/meowy-sequences-gate.log`.
-No failures remain. These are conditional normal-to-next-entry links, not evidence
-of runtime completion. Explicit scope exits and block/statement/result endpoints
-remain prerequisites; other operand families and contextual block builders remain
-coverage gaps.
-Unknown effects remain incomplete; outcomes stay gated.
+The preceding series (`aaffd39`, `4286bae`, `b2ba9be`) passed all ten checks:
+1530 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-sequences-gate.log`.
+
+Scope exits now retain checked statement entries, explicit leave/restart target
+ports, owner, span and control marks. All four focused groups pass for aliases,
+nested/function targets, ordinary errors, stable identities and shared budgets.
+All 1534 library tests pass; `/tmp/meowy-scope-exits-lib.log`. No failures remain.
+HIR source provenance is next.
+Block/statement/result endpoint links, remaining operand coverage and propagation
+remain incomplete. Outcomes stay gated.
 
 ### Proof dependency implementation slices
 

@@ -305,3 +305,6 @@ pub(crate) use edges::Edge;
 
 mod sequences;
 pub(crate) use sequences::{Sequence, Source as SequenceSource};
+
+mod scope_exits;
+pub(crate) use scope_exits::ScopeExit;

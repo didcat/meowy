@@ -467,8 +467,20 @@ impl Checker {
                                 entered,
                             },
                         );
+                        self.scope_exit(
+                            self.point.expect("restart statement"),
+                            target,
+                            Some(site),
+                            value.span,
+                        )?;
                         hir::Stmt::Restart { target, site }
                     } else {
+                        self.scope_exit(
+                            self.point.expect("leave statement"),
+                            target,
+                            None,
+                            value.span,
+                        )?;
                         hir::Stmt::Leave(target)
                     }]);
                 }

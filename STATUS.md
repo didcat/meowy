@@ -472,6 +472,12 @@ All ten compiler checks pass, including 1530 library/910 native tests;
 Other operand families, contextual list/effect blocks, explicit exits/results and
 propagation/outcomes remain incomplete.
 
+Scope operations now retain explicit exit edges from checked statement entries to
+leave targets or target/RestartId ports. Ownership, spans and control marks are
+preserved after ordinary validation; exit edges share the existing budget and do
+not grant normal fallthrough. Four focused groups and all 1534 library tests pass;
+`/tmp/meowy-scope-exits-lib.log`. HIR/body-fact source links are next.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

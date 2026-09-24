@@ -10,6 +10,7 @@ pub(crate) fn check(source: &str) -> Checker {
 pub(crate) fn id(port: Port) -> PointId {
     match port {
         Port::Entry(id) | Port::Normal(id) => id,
+        Port::Leave(_) | Port::Restart { .. } => panic!("point port expected"),
     }
 }
 
