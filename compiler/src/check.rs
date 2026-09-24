@@ -120,6 +120,7 @@ pub(crate) struct Slot {
 }
 
 pub(crate) struct Frame {
+    pub(crate) continuation: bool,
     pub(crate) id: usize,
     pub(crate) expected: Option<Type>,
     pub(crate) leaves: Guard,

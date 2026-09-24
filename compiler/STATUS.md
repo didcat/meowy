@@ -29,28 +29,25 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current by-value union returned-cell series
+### Current conditional-leave successor slice
 
 Commit plan:
-1. Extract shared cell-layer/continuation resolution for an already selected
-   hidden candidate without changing lookup or admission. Run focused checks and commit.
-2. Resolve by-value union argument candidates from expression-backed variant
-   snapshots and integrate both returned-cell matchers. Test layouts, all/unknown/
-   null, nested fields/calls, result kinds, bounds/no replay and lifetimes. Run the
-   full gate and update both handoffs.
+1. Retain per-frame derived continuation state for forward leave targets and
+   intervening scopes. Apply it to subsequent statements and matcher arms, restore
+   lexical control on errors and stop at the target's join. Keep seeded read/write,
+   pending-query/E225, nested-target and ordinary-error regressions with propagation.
+   Run the full compiler gate and update both handoffs.
 
-Investigation: hidden candidate discovery already retains exact keys, shared
-layers and typed continuations. Reuse its resolver after `record_shape_source_at`
-reads a by-value argument; offset keys only through concrete owned record prefixes.
-Never manufacture a concrete field address inside a union variant. Preserve
-caller and structural depth bounds. Resolver prerequisite `1e97d1d` passed all 435
-focused tests before admission. Integration and five new groups pass all 440
-dependency-filtered tests; log: `/tmp/meowy-owned-union-cells-focused.log`.
-Earlier candidate expectations now check known cells. Exact layouts/null/unknowns,
-nested fields/calls, result kinds, continuations, bounds/no replay and E302/E303 pass.
-All ten compiler checks pass, including 1413 library/903 native tests; log:
-`/tmp/meowy-owned-union-cells-gate.log`. No failures remain.
-User changes remain preserved; proof outcomes stay gated.
+Investigation: matcher bodies restore lexical control after checking, so a derived
+leave does not currently mark later statements. Scope frames can retain that
+continuation state until their join. This first slice covers statement successors;
+restart backedges, termination dependence and intra-expression operand successors
+remain separate. Seven forward-leave groups pass all 447 dependency-filtered tests;
+log: `/tmp/meowy-leave-successors-focused.log`. Successor marks, target joins,
+pending-query/E225 availability, source-error precedence, rollback, sibling arms
+and work bounds pass. All ten compiler checks pass, including 1420 library/903
+native tests; log: `/tmp/meowy-leave-successors-gate.log`. No failures remain.
+Proof outcomes stay gated; user changes remain preserved.
 
 ### Proof dependency implementation slices
 
@@ -1378,16 +1375,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1413
-  library/903 native tests (2316 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1420
+  library/903 native tests (2323 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-owned-union-cells-gate.log`.
-- All 440 dependency-filtered tests pass. Five by-value union cell groups cover
-  exact layouts, all/unknown/null candidates, copies, nested fields and inline
-  calls, record/union/carrier results, typed continuations, no replay, depth/work
-  limits and E302/E303 lifetimes. Earlier heterogeneous candidate tests now verify
-  known locations. Accepted fixtures pass ordinary compilation/ownership; marks
-  remain seeded. Proof outcomes and unselected variant-address projections stay gated.
+  0 failed in debug/release. Log: `/tmp/meowy-leave-successors-gate.log`.
+- All 447 dependency-filtered tests pass. Seven forward-leave groups cover
+  successor reads/writes, nested targets and joins, pending-query/E225 availability,
+  required-input error precedence, rollback after errors, sibling matcher arms,
+  ordinary unmarked leaves and continuation-budget exhaustion. Marks are seeded;
+  runtime proof outcomes remain unavailable. Intra-expression successors and restart
+  backedges are not implemented by this slice.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1656,22 +1653,25 @@ explicitly documented. No outstanding failures remain.
    union views, deeper carriers and typed continuations. Resolver prerequisite:
    `1e97d1d`. Unknown candidates preserve incompleteness; no variant positions are
    manufactured as ordinary storage paths.
-   Next audit conditional leave/restart continuation dependencies in
-   `dependencies.rs` and the statement/block control handlers. Its structural walk
-   currently ignores Leave/Restart; lexical control restoration does not by itself
-   account for which later statements can execute. Record a short plan separating
-   exit/control representation, propagation and E225 enforcement. Start with seeded
-   successor read/write/query regressions, preserve original typing/ownership errors,
-   and run the full gate before changing proof-outcome admission.
+   Forward derived leaves now retain per-frame continuation control across
+   subsequent statements and matcher arms until the target scope joins. Intervening
+   successors, writes and pending queries retain marks; enclosing control and
+   continuation state restore on errors, and independent joined successors stay clear.
+   Next extend leave continuation handling to intra-expression operand successors
+   in `check/expressions.rs` and expression evaluation helpers. A leave inside an
+   earlier operand can affect later operands before another statement boundary.
+   Preserve evaluation order, required-input error precedence and target joins;
+   test seeded calls/indexes/initializers before the full gate. Then handle restart
+   backedges and loop-carried control with a separate bounded propagation plan.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads
    and pending query availability enforce E225 for those marks. Conditional
-   leave/restart can control subsequent statements outside a matcher body; model
-   those continuation dependencies rather than treating lexical restoration as
-   complete control analysis. Add seeded write/call/continuation regressions and
+   leave control is now retained at statement boundaries. Intra-expression
+   successors, restart backedges and termination dependence remain incomplete;
+   lexical restoration alone is not complete control analysis. Add seeded write/call/continuation regressions and
    run the full compiler gate. Preserve answer-independent fixed flag type queries.
    Preserve ordinary typing/ownership in skipped runtime bodies and E225 separation for
    type formation and observation availability. Plan independently reviewable

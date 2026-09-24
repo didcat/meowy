@@ -54,6 +54,7 @@ impl Checker {
                 .insert(label.clone(), id);
         }
         self.frames.push(Frame {
+            continuation: false,
             id,
             expected,
             leaves: FALSE,

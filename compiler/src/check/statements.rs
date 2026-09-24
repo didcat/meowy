@@ -27,6 +27,10 @@ impl Checker {
     }
 
     pub(crate) fn stmt_inner(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
+        self.continuation_statement(stmt)
+    }
+
+    pub(crate) fn stmt_body(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
         if self.pending_statement(stmt)? {
             return Ok(Vec::new());
         }
@@ -265,6 +269,7 @@ impl Checker {
             StmtKind::Match { arms } => {
                 let mut stmts = Vec::new();
                 for (condition, body) in arms {
+                    self.control |= self.continuation_control();
                     let Some(condition) = condition else {
                         return Err(Diagnostic::unsupported("matcher fallback arms", stmt.span));
                     };
@@ -399,6 +404,7 @@ impl Checker {
                         }
                         self.forget_mutable();
                     } else {
+                        self.track_leave_control(index, value.span)?;
                         let leaves = self.frames[index].leaves;
                         self.frames[index].leaves = self.flow.or(leaves, self.reach);
                     }

@@ -440,22 +440,25 @@ borrowed-union origin arguments now retain variant-aware origins while preservin
 caller depth. Prerequisite: `d600bb6`. All 435 focused tests and all ten compiler checks pass.
 Returned cell locations from by-value union arguments now use exact expression
 snapshots, preserving unknowns and typed continuations. Resolver prerequisite:
-`1e97d1d`. All 440 focused tests and all ten compiler checks pass. Conditional leave/restart
-continuation dependencies are next.
+`1e97d1d`. All 440 focused tests and all ten compiler checks pass. Forward conditional-
+leave continuation state now marks statement successors,
+including writes and query availability, until the target scope joins.
+All 447 focused tests and all ten compiler checks pass. Intra-expression successors are
+next; restart backedges and termination dependence remain incomplete.
 Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1413
-  library/903 native tests (2316 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1420
+  library/903 native tests (2323 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-owned-union-cells-gate.log`.
-- All 440 dependency-filtered tests pass. Five by-value union cell groups cover
-  exact layouts, all/unknown/null candidates, copies, nested fields and inline
-  calls, record/union/carrier results, typed continuations, no replay, depth/work
-  limits and E302/E303 lifetimes. Earlier heterogeneous candidate tests now verify
-  known locations. Accepted fixtures pass ordinary compilation/ownership; marks
-  remain seeded. Proof outcomes and unselected variant-address projections stay gated.
+  0 failed in debug/release. Log: `/tmp/meowy-leave-successors-gate.log`.
+- All 447 dependency-filtered tests pass. Seven forward-leave groups cover
+  successor reads/writes, nested targets and joins, pending-query/E225 availability,
+  required-input error precedence, rollback after errors, sibling matcher arms,
+  ordinary unmarked leaves and continuation-budget exhaustion. Marks are seeded;
+  runtime proof outcomes remain unavailable. Intra-expression successors and restart
+  backedges are not implemented by this slice.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
