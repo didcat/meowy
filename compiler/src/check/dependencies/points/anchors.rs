@@ -151,3 +151,65 @@ pub(crate) fn expression_roots_preserve_coercion_and_budget_failure_precedence()
     assert!(error.message.contains("continuation expression budget"));
     assert_eq!(checker.points.len(), count);
 }
+
+pub(crate) fn scope_body(body: &hir::Block) -> &hir::Block {
+    let hir::Stmt::Expr(expr) = &body.stmts[0] else {
+        panic!()
+    };
+    let hir::ExprKind::Block(block) = &expr.kind else {
+        panic!()
+    };
+    block
+}
+
+#[test]
+pub(crate) fn hir_exit_sources_preserve_leave_clones_and_repeated_source_spans() {
+    let source = crate::parser::parse("'out{'out.leave()}").unwrap();
+    let mut checker = Checker::new();
+    let mut points = Vec::new();
+    for _ in 0..2 {
+        let body = checker.block(&source, None, None).unwrap();
+        let scope = scope_body(&body);
+        let hir::Stmt::Leave {
+            target,
+            point: Some(point),
+        } = scope.stmts[0].clone()
+        else {
+            panic!()
+        };
+        assert_eq!(target, scope.id);
+        assert_eq!(checker.points[point].block, Some(target));
+        assert_eq!(checker.points[point].kind, Kind::Stmt);
+        assert!(checker.scope_exits.contains_key(&point));
+        points.push(point);
+    }
+    assert_ne!(points[0], points[1]);
+    assert_eq!(
+        checker.points[points[0]].span,
+        checker.points[points[1]].span
+    );
+}
+
+#[test]
+pub(crate) fn hir_exit_sources_link_restart_ids_without_inventing_seeded_origins() {
+    let source = crate::parser::parse("'loop{|false|'loop.restart()}").unwrap();
+    let mut checker = Checker::new();
+    let body = checker.block(&source, None, None).unwrap();
+    let scope = scope_body(&body);
+    let hir::Stmt::If { then, .. } = &scope.stmts[0] else {
+        panic!()
+    };
+    let hir::Stmt::Restart { site, target } = then[0].clone() else {
+        panic!()
+    };
+    let input = &checker.restart_inputs[&site];
+    assert_eq!(target, input.target);
+    assert_eq!(target, scope.id);
+    assert_eq!(checker.points[input.point.unwrap()].kind, Kind::Stmt);
+    assert!(checker.scope_exits.contains_key(&input.point.unwrap()));
+    let mut checker = Checker::new();
+    checker
+        .track_restart_input(0, 7, crate::ast::Span::default())
+        .unwrap();
+    assert!(checker.restart_inputs[&0].point.is_none());
+}

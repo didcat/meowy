@@ -311,7 +311,10 @@ pub(crate) fn nested_field_writes_preserve_layout_and_skip_stores_on_leave_or_pa
                     field: None,
                     value: integer(99, 64, true),
                 },
-                1 => Stmt::Leave(1),
+                1 => Stmt::Leave {
+                    target: 1,
+                    point: None,
+                },
                 _ => Stmt::Expr(Expr {
                     kind: ExprKind::Panic {
                         parts: vec![expr(ExprKind::String("stop".into()), Type::String)],

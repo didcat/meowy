@@ -268,7 +268,7 @@ impl<'a> Walk<'a> {
                         self.push([Node::Expr(condition)])?;
                     }
                     S::SlotAlias { id, .. } => self.fact(Fact::Alias(*id), self.span)?,
-                    S::Leave(target) => self.fact(Fact::Leave(*target), self.span)?,
+                    S::Leave { target, .. } => self.fact(Fact::Leave(*target), self.span)?,
                     S::Restart { site, .. } => self.fact(Fact::Restart(*site), self.span)?,
                     S::Expr(expr) => self.push([Node::Expr(expr)])?,
                 },

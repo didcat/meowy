@@ -479,7 +479,10 @@ pub(crate) fn discarded_aliases_keep_valid_local_storage_until_exit() {
                 value: expr(ExprKind::String("changed".into()), Type::String),
             });
             then.push(print(vec![local(0, &Type::String)]));
-            then.push(Stmt::Leave(0));
+            then.push(Stmt::Leave {
+                target: 0,
+                point: None,
+            });
             let result = local(1, &ty);
             let result = if name.is_some() {
                 field(result, 0)

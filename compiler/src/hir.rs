@@ -368,7 +368,10 @@ pub enum Stmt {
         then: Vec<Stmt>,
         otherwise: Vec<Stmt>,
     },
-    Leave(BlockId),
+    Leave {
+        target: BlockId,
+        point: Option<PointId>,
+    },
     Restart {
         target: BlockId,
         site: RestartId,

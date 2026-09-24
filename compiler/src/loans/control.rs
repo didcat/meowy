@@ -414,7 +414,7 @@ impl<'a> Graph<'a> {
                     self.end_scopes(Some((life, true)))?;
                     self.restart(*target, *site)?;
                 }
-                Stmt::Leave(id) | Stmt::Restart { target: id, .. } => {
+                Stmt::Leave { target: id, .. } | Stmt::Restart { target: id, .. } => {
                     let restart = matches!(statement, Stmt::Restart { .. });
                     if self.merging && !restart {
                         self.refresh_published(*id)?;

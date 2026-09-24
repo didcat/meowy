@@ -475,13 +475,12 @@ impl Checker {
                         )?;
                         hir::Stmt::Restart { target, site }
                     } else {
-                        self.scope_exit(
-                            self.point.expect("leave statement"),
+                        let point = self.point.expect("leave statement");
+                        self.scope_exit(point, target, None, value.span)?;
+                        hir::Stmt::Leave {
                             target,
-                            None,
-                            value.span,
-                        )?;
-                        hir::Stmt::Leave(target)
+                            point: Some(point),
+                        }
                     }]);
                 }
                 Ok(vec![hir::Stmt::Expr(self.expr(value, None)?)])

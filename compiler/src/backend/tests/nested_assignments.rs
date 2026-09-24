@@ -377,7 +377,10 @@ pub(crate) fn nested_assignment_leaves_skip_remaining_indices_rhs_and_stores() {
                         stmts: vec![
                             print(text),
                             if index == leave {
-                                Stmt::Leave(1)
+                                Stmt::Leave {
+                                    target: 1,
+                                    point: None,
+                                }
                             } else {
                                 Stmt::Emit {
                                     id,

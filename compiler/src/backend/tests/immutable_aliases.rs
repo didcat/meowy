@@ -458,7 +458,10 @@ pub(crate) fn immutable_discarded_aliases_keep_mutability_matched_transient_stor
                 ExprKind::Deref(Box::new(local(1, &reference))),
                 int.clone(),
             )]),
-            Stmt::Leave(0),
+            Stmt::Leave {
+                target: 0,
+                point: None,
+            },
         ];
         let program = Program {
             body: Block {

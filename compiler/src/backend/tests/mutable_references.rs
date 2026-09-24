@@ -47,7 +47,17 @@ pub(crate) fn reference_assignment_loads_new_cells_without_retargeting_prior_val
         vec![
             Stmt::Assign {
                 id: 2,
-                value: block(4, &Type::Never, vec![message("skip"), Stmt::Leave(3)]),
+                value: block(
+                    4,
+                    &Type::Never,
+                    vec![
+                        message("skip"),
+                        Stmt::Leave {
+                            target: 3,
+                            point: None,
+                        },
+                    ],
+                ),
             },
             message("unreachable"),
         ],

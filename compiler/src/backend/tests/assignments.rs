@@ -249,7 +249,10 @@ pub(crate) fn element_assignments_keep_selected_index_and_skip_stores_after_leav
                     stmts: vec![
                         print("index"),
                         if leave == 1 {
-                            Stmt::Leave(1)
+                            Stmt::Leave {
+                                target: 1,
+                                point: None,
+                            }
                         } else {
                             Stmt::Emit {
                                 id: 0,
@@ -274,7 +277,10 @@ pub(crate) fn element_assignments_keep_selected_index_and_skip_stores_after_leav
                             value: integer(2, 32, true),
                         },
                         if leave == 2 {
-                            Stmt::Leave(1)
+                            Stmt::Leave {
+                                target: 1,
+                                point: None,
+                            }
                         } else {
                             Stmt::Emit {
                                 id: 1,

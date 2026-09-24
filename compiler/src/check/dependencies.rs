@@ -222,7 +222,7 @@ impl Checker {
                             return true;
                         }
                     }
-                    Stmt::Leave(_) | Stmt::Restart { .. } => {}
+                    Stmt::Leave { .. } | Stmt::Restart { .. } => {}
                 },
             }
         }

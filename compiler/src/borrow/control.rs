@@ -295,8 +295,8 @@ impl Checker<'_> {
                     }
                     result
                 }
-                Stmt::Leave(id) | Stmt::Restart { target: id, .. } => {
-                    if self.merging && matches!(stmt, Stmt::Leave(_)) {
+                Stmt::Leave { target: id, .. } | Stmt::Restart { target: id, .. } => {
+                    if self.merging && matches!(stmt, Stmt::Leave { .. }) {
                         self.leave_target(*id, Span::default())?;
                     } else if self.merging {
                         let Stmt::Restart { site, .. } = stmt else {
@@ -306,7 +306,7 @@ impl Checker<'_> {
                     }
                     Flow {
                         next: false,
-                        exits: BTreeSet::from([if matches!(stmt, Stmt::Leave(_)) {
+                        exits: BTreeSet::from([if matches!(stmt, Stmt::Leave { .. }) {
                             Exit::Leave(*id)
                         } else {
                             Exit::Restart(*id)

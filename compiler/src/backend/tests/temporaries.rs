@@ -205,7 +205,17 @@ pub(crate) fn temporary_bounds_and_exits_skip_later_evaluation() {
         };
         let owner = match mode {
             0 => block(1, &Type::Never, vec![message("owner"), Stmt::Expr(panic())]),
-            3 => block(1, &Type::Never, vec![message("owner"), Stmt::Leave(0)]),
+            3 => block(
+                1,
+                &Type::Never,
+                vec![
+                    message("owner"),
+                    Stmt::Leave {
+                        target: 0,
+                        point: None,
+                    },
+                ],
+            ),
             _ => effect(1, "owner", values.clone()),
         };
         let owner = temporary(0, owner);
@@ -285,7 +295,10 @@ pub(crate) fn restart_reinitializes_temporary_values_in_entry_allocated_cells() 
                     point: None,
                     condition: binary("<", local(1, &int), integer(3, 32, true), Type::Bool),
                     then: vec![Stmt::Restart { target: 1, site: 0 }],
-                    otherwise: vec![Stmt::Leave(1)],
+                    otherwise: vec![Stmt::Leave {
+                        target: 1,
+                        point: None,
+                    }],
                 },
                 message("unreachable"),
             ],

@@ -59,7 +59,10 @@ pub(crate) fn effect(id: usize, text: &str, changes: Vec<Stmt>, value: Expr, lea
     )])];
     stmts.extend(changes);
     stmts.push(if leave {
-        Stmt::Leave(1)
+        Stmt::Leave {
+            target: 1,
+            point: None,
+        }
     } else {
         Stmt::Emit {
             id,

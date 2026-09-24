@@ -157,7 +157,7 @@ pub(crate) fn check(
                     }
                     restarts.insert(*target);
                 }
-                Stmt::Leave(_) => {}
+                Stmt::Leave { .. } => {}
                 Stmt::SlotAlias { .. } => {}
             },
             Item::Expression(expr) => {

@@ -5,6 +5,7 @@ pub(crate) const MAX_RESTART_INPUTS: usize = 65_536;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct RestartInput {
+    pub(crate) point: Option<hir::PointId>,
     pub(crate) target: usize,
     pub(crate) owner: usize,
     pub(crate) span: Span,
@@ -29,6 +30,10 @@ impl Checker {
             ));
         }
         let input = RestartInput {
+            point: self.point.filter(|id| {
+                self.points[*id].kind == super::PointKind::Stmt
+                    && self.points[*id].owner == self.owner
+            }),
             target,
             owner: self.owner,
             span,

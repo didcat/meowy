@@ -197,7 +197,10 @@ pub(crate) fn temporary_reference_call_arguments_stop_before_nonreturning_calls(
                             span: Span { start: 30, end: 40 },
                         })
                     } else {
-                        Stmt::Leave(0)
+                        Stmt::Leave {
+                            target: 0,
+                            point: None,
+                        }
                     },
                 ],
             )
@@ -333,7 +336,10 @@ pub(crate) fn restarted_reference_temporaries_replace_active_union_payloads() {
                     },
                     Stmt::Restart { target: 1, site: 0 },
                 ],
-                otherwise: vec![Stmt::Leave(1)],
+                otherwise: vec![Stmt::Leave {
+                    target: 1,
+                    point: None,
+                }],
             },
         ],
     );

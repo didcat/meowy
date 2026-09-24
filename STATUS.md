@@ -476,7 +476,10 @@ Scope operations now retain explicit exit edges from checked statement entries t
 leave targets or target/RestartId ports. Ownership, spans and control marks are
 preserved after ordinary validation; exit edges share the existing budget and do
 not grant normal fallthrough. Four focused groups and all 1534 library tests pass;
-`/tmp/meowy-scope-exits-lib.log`. HIR/body-fact source links are next.
+`/tmp/meowy-scope-exits-lib.log`. HIR leaves now retain optional source IDs, and
+restart metadata retains checked points through RestartId. Both provenance groups
+and all 1536 library tests pass; `/tmp/meowy-exit-hir-lib.log`. Body-fact source
+validation is next. Exit-edge slice: `1f26948`.
 
 ## Pending descriptor statement accounting
 

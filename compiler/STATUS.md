@@ -127,7 +127,11 @@ Scope exits now retain checked statement entries, explicit leave/restart target
 ports, owner, span and control marks. All four focused groups pass for aliases,
 nested/function targets, ordinary errors, stable identities and shared budgets.
 All 1534 library tests pass; `/tmp/meowy-scope-exits-lib.log`. No failures remain.
-HIR source provenance is next.
+Exit-edge implementation: `1f26948`. HIR leaves now carry optional checked
+point IDs; restart metadata retains matching statement points alongside RestartId.
+Both HIR-exit provenance groups and all 1536 library tests pass, covering clones,
+repeated spans and unknown seeded restart origins; `/tmp/meowy-exit-hir-lib.log`.
+No failures remain. Body-fact source validation is next.
 Block/statement/result endpoint links, remaining operand coverage and propagation
 remain incomplete. Outcomes stay gated.
 
