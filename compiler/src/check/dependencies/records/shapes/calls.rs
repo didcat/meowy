@@ -11,13 +11,17 @@ impl Checker {
         let Some(ty) = self.shape_field_type(&value.ty, key, value.span)? else {
             return Ok(Snapshot::default());
         };
-        if !matches!(ty, Type::Reference(target) if !target.has_borrowed()) {
+        let Type::Reference(target) = ty else {
             return Ok(Snapshot::default());
+        };
+        let mut snapshot = Snapshot::default();
+        if !target.has_borrowed() {
+            snapshot.origins = self.call_result_origins(ty, value.span, args, depth)?;
         }
-        Ok(Snapshot {
-            origins: self.call_result_origins(ty, value.span, args, depth)?,
-            ..Snapshot::default()
-        })
+        if self.origin_carrier(ty, value.span)? {
+            snapshot.cells = self.call_result_cells(ty, value, args, depth)?;
+        }
+        Ok(snapshot)
     }
 }
 
@@ -114,12 +118,14 @@ mod tests {
     }
 
     #[test]
-    pub(crate) fn union_call_results_keep_carriers_incomplete_and_preserve_lifetimes() {
+    pub(crate) fn union_call_results_retain_carriers_and_preserve_lifetimes() {
         let source = "<A>:<{c<& &boolean>}>;<B>:<{other<boolean>}>;<U>:<A><B>;f<U>:(p<& &boolean>){->{->c:p}};x:=false;a:&x;row:f(&a);|row<A>|cell:row.c";
         crate::compile(source).unwrap();
         let mut checker = Checker::new();
         statements(&mut checker, source);
-        assert!(!checker.reference_cells[&(checker.locals.len() - 1)].complete);
+        let cells = &checker.reference_cells[&(checker.locals.len() - 1)];
+        assert!(cells.complete);
+        assert_eq!(cells.places, BTreeSet::from([(id(&checker, "a"), vec![])]));
         let prefix =
             "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;f<U>:(p<&boolean>){->{->r:p}}";
         let source = format!("{prefix};x:=false;row:f(&x);x=true;|row<A>|out:row.r");
@@ -128,3 +134,6 @@ mod tests {
         assert_eq!(crate::compile(&source).unwrap_err()[0].code, "E303");
     }
 }
+
+#[cfg(test)]
+mod carriers;
