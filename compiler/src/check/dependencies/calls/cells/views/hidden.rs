@@ -38,24 +38,38 @@ impl Checker {
                     expr.span,
                 ));
             }
-            let mut source = self
+            let source = self
                 .location_shape_source(locations, prefix, &path.key, expr.span)?
                 .cells;
-            for _ in 0..path.layers {
-                source = self.expand_reference_cells(source, expr)?;
-            }
-            if let Some(view) = path.view {
-                let depth = self.shared_cell_depth(result, expr)?;
-                let Some(resolved) =
-                    self.returned_record_cells_at(source, view, expr, depth, result, next + 1)?
-                else {
-                    return Ok(None);
-                };
-                source = resolved;
-            }
+            let Some(source) = self.hidden_path_cells(source, &path, result, expr, next)? else {
+                return Ok(None);
+            };
             self.merge_returned_cells(&mut cells, source, expr)?;
         }
         Ok(Some(cells))
+    }
+
+    pub(super) fn hidden_path_cells(
+        &mut self,
+        mut source: Cells,
+        path: &HiddenPath<'_>,
+        result: &Type,
+        expr: &Expr,
+        next: usize,
+    ) -> Result<Option<Cells>> {
+        for _ in 0..path.layers {
+            source = self.expand_reference_cells(source, expr)?;
+        }
+        if let Some(view) = path.view {
+            let depth = self.shared_cell_depth(result, expr)?;
+            let Some(resolved) =
+                self.returned_record_cells_at(source, view, expr, depth, result, next + 1)?
+            else {
+                return Ok(None);
+            };
+            source = resolved;
+        }
+        Ok(Some(source))
     }
 
     pub(super) fn hidden_union_paths<'a>(

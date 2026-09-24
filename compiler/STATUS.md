@@ -29,26 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current direct borrowed-union origin series
+### Current by-value union returned-cell series
 
 Commit plan:
-1. Carry caller depth through record-view argument cell lookup instead of resetting
-   it; add a focused depth regression, run focused checks and commit.
-2. Route outer reference arguments through the bounded union-aware classifier.
-   Test direct/deeper/stored views, all/unknown/null layouts, nested calls, modes,
-   budgets/no replay and lifetimes. Run the full gate and update both handoffs.
+1. Extract shared cell-layer/continuation resolution for an already selected
+   hidden candidate without changing lookup or admission. Run focused checks and commit.
+2. Resolve by-value union argument candidates from expression-backed variant
+   snapshots and integrate both returned-cell matchers. Test layouts, all/unknown/
+   null, nested fields/calls, result kinds, bounds/no replay and lifetimes. Run the
+   full gate and update both handoffs.
 
-Investigation: the existing outer reference branch uses `call_shared_view`, which
-excludes heterogeneous unions. `call_origin_view` and location traversal already
-support those targets. The shared record-view helper must also preserve call depth
-when obtaining input locations. Returned carrier-cell matching stays separate.
-Caller-depth prerequisite `d600bb6` passed all 430 focused tests before admission.
-Direct union-view support and five new groups pass all 435 dependency-filtered
-tests; log: `/tmp/meowy-direct-union-origins-focused.log`. Distinct/deeper/stored/
-null/unknown views, nested calls, preserved caller depth, modes/work limits and
-E302/E303 pass. All ten compiler checks pass, including 1408 library/903 native
-tests; log: `/tmp/meowy-direct-union-origins-gate.log`. No failures remain.
-User changes remain preserved; proof outcomes stay gated.
+Investigation: hidden candidate discovery already retains exact keys, shared
+layers and typed continuations. Reuse its resolver after `record_shape_source_at`
+reads a by-value argument; offset keys only through concrete owned record prefixes.
+Never manufacture a concrete field address inside a union variant. Preserve
+caller and structural depth bounds. Resolver extraction passes all 435 dependency-
+filtered tests and formatting; log: `/tmp/meowy-hidden-cell-resolution-focused.log`.
+By-value snapshot integration is next. User changes remain preserved.
 
 ### Proof dependency implementation slices
 
