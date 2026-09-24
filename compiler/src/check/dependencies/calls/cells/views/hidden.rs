@@ -8,14 +8,21 @@ pub(super) struct HiddenPath<'a> {
 }
 
 impl Checker {
-    pub(in crate::check::dependencies::calls::cells) fn hidden_union_cells(
+    pub(in crate::check::dependencies::calls::cells) fn hidden_union_cells_at(
         &mut self,
         locations: &Cells,
         prefix: &[usize],
         ty: &Type,
         result: &Type,
         expr: &Expr,
+        level: usize,
     ) -> Result<Option<Cells>> {
+        if level > MAX_DEPTH {
+            return Err(Diagnostic::unsupported(
+                "proof union continuation depth exhausted",
+                expr.span,
+            ));
+        }
         let Some(paths) = self.hidden_union_paths(ty, result, expr)? else {
             return Ok(None);
         };

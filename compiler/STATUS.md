@@ -29,28 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current typed union continuation prerequisite
+### Current bounded union continuation series
 
 Commit plan:
-1. Retain a variant-qualified key, shared-layer count and optional borrowed-record
-   view type in hidden candidate discovery. Test direct/deeper/nullable continuations,
-   mixed candidates, unsupported modes/targets and budgets. Keep resolution explicitly
-   incomplete when continuations exist; run the full gate and commit this prerequisite.
-2. In the next slice, resolve typed continuations through concrete borrowed-record
-   traversal with a shared depth/work bound across union-to-record transitions.
-   Test nested/all/unknown origins, null and lifetimes before enabling admission.
+1. Thread cumulative traversal levels through record, union and shared-layer
+   resolution while retaining existing public entry points and admission. Add
+   boundary regressions, run focused checks and commit this prerequisite.
+2. Resolve typed borrowed-record continuations through the bounded record walker.
+   Keep nested/all/unknown/null, budgets/no replay and lifetime regressions with
+   admission. Run the full gate and update both handoffs.
 
-Investigation: `(ShapeKey, layers)` only describes terminal candidates. A borrowed
-record continuation must retain its terminal view type for safe field traversal.
-Calling `returned_record_cells` recursively now would reset its local depth counter;
-continuation discovery is separated from that integration to avoid unbounded recursion.
-Typed continuation discovery and three new groups pass all 387 dependency-filtered
-tests; log: `/tmp/meowy-union-continuations-focused.log`. Direct/deeper/nullable
-view types, mixed terminal/continuation keys, unsupported modes/owned targets,
-no replay and exhausted work remain covered. The resolver rejects continuation
-plans before reading snapshots; admission is unchanged. All ten compiler checks pass, including 1360 library/903
-native tests; log: `/tmp/meowy-union-continuations-gate.log`. No failures remain.
-User proposal changes remain preserved; outcomes stay gated.
+Investigation: the compiler flow ledger already bounds total work; local record
+counters do not bound recursive transitions. Carry a cumulative record/variant
+level separately from existing shared-reference layer limits. Unknown plans stay
+incomplete until this guard is validated. Cumulative levels and boundary regressions
+pass all 388 dependency-filtered tests; log:
+`/tmp/meowy-continuation-depth-focused.log`. Admission remains unchanged; integration
+is next. User proposal changes remain preserved.
 
 ### Proof dependency implementation slices
 

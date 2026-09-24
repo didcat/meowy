@@ -99,3 +99,39 @@ pub(crate) fn hidden_continuations_do_not_cross_exclusive_edges_or_owned_targets
             .is_none()
     );
 }
+
+#[test]
+pub(crate) fn continuation_entry_points_share_the_cumulative_depth_limit() {
+    use crate::check::dependencies::Cells;
+    let mut checker = Checker::new();
+    let stmts = statements(
+        &mut checker,
+        "<R>:<{r<&boolean>}>;x:=false;row<R>:{->r:&x};view:&row",
+    );
+    let Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+        panic!()
+    };
+    let ty = value.ty.pointee().unwrap();
+    assert!(
+        checker
+            .returned_record_cells_at(Cells::default(), &value.ty, value, None, &value.ty, 31)
+            .is_ok()
+    );
+    let error = checker
+        .returned_record_cells_at(Cells::default(), &value.ty, value, None, &value.ty, 32)
+        .err()
+        .unwrap();
+    assert_eq!(error.code, "B001");
+    let error = checker
+        .hidden_union_cells_at(&Cells::default(), &[], ty, &value.ty, value, 33)
+        .err()
+        .unwrap();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("continuation depth"));
+    let error = checker
+        .union_location_cells_at(Cells::default(), &value.ty, &value.ty, 0, value, 33)
+        .err()
+        .unwrap();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("continuation depth"));
+}

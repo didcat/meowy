@@ -33,18 +33,36 @@ impl Checker {
 
     pub(super) fn union_location_cells(
         &mut self,
+        locations: Cells,
+        ty: &Type,
+        result: &Type,
+        layers: usize,
+        input: &Expr,
+    ) -> Result<Option<Cells>> {
+        self.union_location_cells_at(locations, ty, result, layers, input, 0)
+    }
+
+    pub(super) fn union_location_cells_at(
+        &mut self,
         mut locations: Cells,
         mut ty: &Type,
         result: &Type,
         layers: usize,
         input: &Expr,
+        level: usize,
     ) -> Result<Option<Cells>> {
         for _ in 0..layers {
             locations = self.expand_reference_cells(locations, input)?;
             ty = ty.pointee().unwrap();
         }
-        let Some(mut cells) =
-            self.hidden_union_cells(&locations, &[], ty.pointee().unwrap(), result, input)?
+        let Some(mut cells) = self.hidden_union_cells_at(
+            &locations,
+            &[],
+            ty.pointee().unwrap(),
+            result,
+            input,
+            level,
+        )?
         else {
             return Ok(None);
         };

@@ -10,6 +10,18 @@ impl Checker {
         result_depth: Option<usize>,
         result: &Type,
     ) -> Result<Option<Cells>> {
+        self.returned_record_cells_at(locations, ty, expr, result_depth, result, 0)
+    }
+
+    pub(super) fn returned_record_cells_at(
+        &mut self,
+        locations: Cells,
+        ty: &Type,
+        expr: &Expr,
+        result_depth: Option<usize>,
+        result: &Type,
+        level: usize,
+    ) -> Result<Option<Cells>> {
         let mut cells = Cells {
             complete: true,
             ..Cells::default()
@@ -17,7 +29,7 @@ impl Checker {
         let mut views = vec![(ty, locations, 0)];
         let mut visits = 0;
         while let Some((ty, locations, depth)) = views.pop() {
-            if depth > MAX_DEPTH || !self.flow.spend(1) {
+            if level.saturating_add(depth) > MAX_DEPTH || !self.flow.spend(1) {
                 return Err(Diagnostic::unsupported(
                     "proof returned record cell depth exhausted",
                     expr.span,
@@ -46,7 +58,7 @@ impl Checker {
             while let Some((ty, path)) = pending.pop() {
                 visits += 1;
                 if visits > MAX_FIELDS
-                    || depth + path.len() > MAX_DEPTH
+                    || level.saturating_add(depth + path.len()) > MAX_DEPTH
                     || !self.flow.spend(path.len() + 1)
                 {
                     return Err(Diagnostic::unsupported(
@@ -80,8 +92,14 @@ impl Checker {
                     continue;
                 }
                 if matches!(ty, Type::Union(_)) {
-                    let Some(source) =
-                        self.hidden_union_cells(&locations, &path, ty, result, expr)?
+                    let Some(source) = self.hidden_union_cells_at(
+                        &locations,
+                        &path,
+                        ty,
+                        result,
+                        expr,
+                        level + depth + path.len() + 1,
+                    )?
                     else {
                         return Ok(None);
                     };
@@ -117,8 +135,14 @@ impl Checker {
                 ) {
                     let source = self.call_field_cells(&locations, &path, expr)?;
                     let source = self.expand_reference_cells(source, expr)?;
-                    let Some(source) =
-                        self.union_location_cells(source, ty, result, field_depth - 1, expr)?
+                    let Some(source) = self.union_location_cells_at(
+                        source,
+                        ty,
+                        result,
+                        field_depth - 1,
+                        expr,
+                        level + depth + path.len() + 1,
+                    )?
                     else {
                         return Ok(None);
                     };
