@@ -84,23 +84,23 @@ pub(crate) fn nested_restart_expiry_preserves_ancestor_owners_and_bounds() {
         "a:1;p:=&a;i:=0;'outer{local:i;j:=0;'inner{value:*p;p=&local;j=j+1;|j<2|'inner.restart()};i=i+1;|i<2|'outer.restart()}",
         "E303",
     );
-    accepts("value:(&7).{p:=self;i:=0;'inner{v:*p;p=self;i=i+1;|i<2|'inner.restart()};->*p}");
+    accepts("value:(&7).{p:=$;i:=0;'inner{v:*p;p=$;i=i+1;|i<2|'inner.restart()};->*p}");
 }
 
 #[test]
 pub(crate) fn expired_transitive_payloads_remain_lazy_and_keep_field_paths() {
     accepts(
-        "<C>:<{view<&int32>;count<int32>}>;a:=1;holder<C>:(&2).{->view:self;->count:3};p:=&holder;i:=0;'again{a=4;value:p.count;p=&holder;i=i+1;|i<2|'again.restart()}",
+        "<C>:<{view<&int32>;count<int32>}>;a:=1;holder<C>:(&2).{->view:$;->count:3};p:=&holder;i:=0;'again{a=4;value:p.count;p=&holder;i=i+1;|i<2|'again.restart()}",
     );
     rejects(
-        "<C>:<{view<&int32>;count<int32>}>;holder<C>:(&2).{->view:self;->count:3};p:=&holder;i:=0;'again{value:*(p.view);p=&holder;i=i+1;|i<2|'again.restart()}",
+        "<C>:<{view<&int32>;count<int32>}>;holder<C>:(&2).{->view:$;->count:3};p:=&holder;i:=0;'again{value:*(p.view);p=&holder;i=i+1;|i<2|'again.restart()}",
         "E303",
     );
     accepts(
-        "a:=1;holder:(&2).{->old:self;->live:&a};p:=&holder;i:=0;'again{value:*(p.live);p=&holder;i=i+1;|i<2|'again.restart()}",
+        "a:=1;holder:(&2).{->old:$;->live:&a};p:=&holder;i:=0;'again{value:*(p.live);p=&holder;i=i+1;|i<2|'again.restart()}",
     );
     rejects(
-        "a:=1;holder:(&2).{->old:self;->live:&a};p:=&holder;i:=0;'again{a=3;value:*(p.live);p=&holder;i=i+1;|i<2|'again.restart()}",
+        "a:=1;holder:(&2).{->old:$;->live:&a};p:=&holder;i:=0;'again{a=3;value:*(p.live);p=&holder;i=i+1;|i<2|'again.restart()}",
         "E302",
     );
 }

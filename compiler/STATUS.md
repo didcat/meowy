@@ -42,8 +42,8 @@ interpolation gates remain unchanged. All migrated compiler fixtures pass 1432 l
 (debug/release); log: `/tmp/meowy-receiver-migration-tests.log`. Migration is split
 into checker/borrow, native field/dispatch, and lifetime/restart batches (seven
 fixture files each). Checker/borrow batch committed as `eeb3b73`; native dispatch
-and field fixtures retain the same validated behavior. Temporary `self` alias
-removal follows the remaining migration commits.
+and field fixtures are committed as `7af7755`. The validated lifetime/restart
+fixtures complete source migration; temporary `self` alias removal is next.
 
 ## Executable proof plan
 

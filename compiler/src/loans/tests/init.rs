@@ -166,7 +166,7 @@ pub(crate) fn named_leaves_keep_completed_moves_and_skip_unfinished_reinitializa
 #[test]
 pub(crate) fn statement_temporaries_do_not_own_the_surviving_reference_holder() {
     inspect(
-        "a:1;p:=&a;(&2).{p=self;v:*p};p=&a;v:*p",
+        "a:1;p:=&a;(&2).{p=$;v:*p};p=&a;v:*p",
         &[],
         |graph, reach| {
             graph.solve_init(reach).unwrap();
@@ -185,7 +185,7 @@ pub(crate) fn statement_temporaries_do_not_own_the_surviving_reference_holder() 
         },
     );
     accepts(
-        "value:(&7).{p:=self;i:=0;'inner{v:*p;p=self;i=i+1;|i<2|'inner.restart()};->*p}",
+        "value:(&7).{p:=$;i:=0;'inner{v:*p;p=$;i=i+1;|i<2|'inner.restart()};->*p}",
         &[],
     );
 }

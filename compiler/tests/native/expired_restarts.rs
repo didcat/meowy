@@ -53,9 +53,9 @@ pub fn reinitializing_a_static_site_never_revives_an_expired_header_value() {
     for source in [
         "a:1;p:=&a;i:=0;'loop{local:i;|i>0|v:*p;p=&local;i=i+1;|i<2|'loop.restart()}",
         "a:1;p:=&a;i:=0;'loop{->n:i;|i>0|v:*p;p=&n;i=i+1;|i<2|'loop.restart()}",
-        "a:1;p:=&a;i:=0;'loop{p=(&2).{|i>0|v:*p;->self};i=i+1;|i<2|'loop.restart()}",
+        "a:1;p:=&a;i:=0;'loop{p=(&2).{|i>0|v:*p;->$};i=i+1;|i<2|'loop.restart()}",
         "first<&int32>:(p<&int32>,text<&string>){->p};a:1;p:=&a;i:=0;'loop{text:\"local\";|i>0|v:*p;p=first(&a,&text);i=i+1;|i<2|'loop.restart()}",
-        "first<&int32>:(p<&int32>,text<&string>){->p};a:1;p:=&a;i:=0;'loop{p=first(&a,&\"short\").{|i>0|v:*p;->self};i=i+1;|i<2|'loop.restart()}",
+        "first<&int32>:(p<&int32>,text<&string>){->p};a:1;p:=&a;i:=0;'loop{p=first(&a,&\"short\").{|i>0|v:*p;->$};i=i+1;|i<2|'loop.restart()}",
     ] {
         rejects(source);
     }
@@ -126,14 +126,14 @@ pub fn inner_restarts_preserve_live_enclosing_statement_temporaries_and_bounds()
         r#"
 d:@"debug"
 (&7).{
-    p:=self;i:=0
-    'loop{d.print(*p);p=self;i=i+1;|i<2|'loop.restart()}
+    p:=$;i:=0
+    'loop{d.print(*p);p=$;i=i+1;|i<2|'loop.restart()}
 }
 first<&int32>:(p<&int32>,text<&string>){->p}
 a:9
 first(&a,&"live").{
-    p:=self;i:=0
-    'loop{d.print(*p);p=self;i=i+1;|i<2|'loop.restart()}
+    p:=$;i:=0
+    'loop{d.print(*p);p=$;i=i+1;|i<2|'loop.restart()}
 }
 "#,
     )
@@ -146,7 +146,7 @@ pub fn expired_nested_payloads_allow_tags_and_scalars_but_reject_active_reads() 
         r#"
 d:@"debug"
 <H>:<{view<&int32><null>;count<int32>}>
-expired<H>:(&7).{->view<&int32><null>:self;->count:2}
+expired<H>:(&7).{->view<&int32><null>:$;->count:2}
 empty<H>:{->count:1}
 p:=&expired;i:=0
 'loop{
@@ -165,7 +165,7 @@ p:=&expired;i:=0
 d:@"debug"
 <Row>:<{view<&int32><null>;n<int32>}>
 <H>:<{item<Row><null>}>
-expired<H>:(&7).{->item<Row><null>:{->view<&int32><null>:self;->n:2}}
+expired<H>:(&7).{->item<Row><null>:{->view<&int32><null>:$;->n:2}}
 empty<H>:{}
 blank<H>:{->item<Row><null>:{->n:1}}
 p:=&expired;i:=0
@@ -187,7 +187,7 @@ p:=&expired;i:=0
     .runs(b"blank\nempty\nblank\nempty\n");
     for read in ["copy:*p", "view:p.view;|view<&int32>|v:*(view<&int32>)"] {
         rejects(&format!(
-            "<H>:<{{view<&int32><null>;count<int32>}}>;expired<H>:(&7).{{->view<&int32><null>:self;->count:2}};empty<H>:{{->count:1}};p:=&expired;i:=0;'loop{{{read};p=&empty;i=i+1;|i<2|'loop.restart()}}"
+            "<H>:<{{view<&int32><null>;count<int32>}}>;expired<H>:(&7).{{->view<&int32><null>:$;->count:2}};empty<H>:{{->count:1}};p:=&expired;i:=0;'loop{{{read};p=&empty;i=i+1;|i<2|'loop.restart()}}"
         ));
     }
 }

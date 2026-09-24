@@ -37,7 +37,7 @@ value:{
     d.print(*item)
 }
 d.print(value.holder.count)
-value.holder.{p:&(self.count);d.print(*p)}
+value.holder.{p:&($.count);d.print(*p)}
 <Carrier>:<{view<&{n<int32>}>;count<int32>;items<int32[3]>}>
 show<null>:(input<Carrier>){p:&(input.count);d.print(*p)}
 show(value.holder)
@@ -162,7 +162,7 @@ pub fn reference_slot_views_preserve_write_and_publication_rejections() {
             "E303",
         ),
         (
-            "owner:1;holder:{->view:&owner;->count:3};p:holder.{->&(self.count)}",
+            "owner:1;holder:{->view:&owner;->count:3};p:holder.{->&($.count)}",
             "E303",
         ),
     ] {

@@ -28,7 +28,7 @@ make<R>:(){d.print("owner");->value:4;->items:[5,6]}
 d.print(*(&(make().value)))
 d.print(*(&(make().items[2])))
 d.print(*(&([7,8][2])))
-d.print((&(make())).{->*(&(self.value))})
+d.print((&(make())).{->*(&($.value))})
 id<&int32>:(p<&int32>){->p}
 owner:=9
 view:&(*(id(&owner)))
@@ -48,10 +48,10 @@ d:@"debug"
 id<&int32>:(p<&int32>){->p}
 positive<boolean>:(p<&int32>){d.print("condition");->*p>0}
 d.print(*(id(&(1+2))))
-d.print(*((&{->n:4}).{->&(self.n)}))
+d.print(*((&{->n:4}).{->&($.n)}))
 |positive(&5)|d.print("body")
 |*(&true)|d.print("true")
-copy:(&6).{->*self}
+copy:(&6).{->*$}
 d.print(copy)
 "#,
     )
@@ -69,8 +69,8 @@ pub fn temporary_owners_end_at_their_actual_complete_statement() {
         "value:*({->&{->1}})",
         "value:*({p:&1;->p})",
         "f<&int32>:(){->&1}",
-        "p:(&{->n:1}).{->&(self.n)};v:*p",
-        "v:({->n:1}).{->&(self.n)}",
+        "p:(&{->n:1}).{->&($.n)};v:*p",
+        "v:({->n:1}).{->&($.n)}",
         "read<int32>:(p<& &int32>){->**p};cell:&1;value:read(&cell)",
     ] {
         let case = Case::new(source);
@@ -199,7 +199,7 @@ pub fn temporary_payload_tags_do_not_read_expired_reference_values() {
     Case::new(
         r#"
 d:@"debug"
-holder:(&1).{->ref<&int32><null>:self;->count:2}
+holder:(&1).{->ref<&int32><null>:$;->count:2}
 outer:&holder
 |outer.ref<&int32>|d.print("reference")
 next:&outer
@@ -212,7 +212,7 @@ view:&3
     .runs(b"reference\nnested\n2\ntype\n");
     for source in [
         "view:&{->tag<int32><null>:null};|view.tag<int32>|value:1",
-        "holder:(&1).{->ref:self};|({copy:holder.ref;->copy})<&int32>|value:1",
+        "holder:(&1).{->ref:$};|({copy:holder.ref;->copy})<&int32>|value:1",
     ] {
         let output = Case::new(source).command("check", &["--json"]);
         assert_eq!(output.status.code(), Some(1), "{source}");

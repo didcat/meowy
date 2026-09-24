@@ -202,7 +202,7 @@ pub fn wider_shapes_and_named_results_remain_gated() {
         "id<&int32>:(p<&int32>){->p};x:=1;p:&!x;r:{->view:id(p)}",
         "f<&!int32>:(p<&!int32>){'again{'again.restart()};->p}",
         "id<&!int32>:(p<&!int32>){->p};x:=1;r:id(&!x);s:&r",
-        "id<&!int32>:(p<&!int32>){->p};x:=1;r:id(&!x);r.{v:*self}",
+        "id<&!int32>:(p<&!int32>){->p};x:=1;r:id(&!x);r.{v:*$}",
     ] {
         rejects(source, "B001");
     }

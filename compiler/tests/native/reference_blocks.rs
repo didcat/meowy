@@ -186,7 +186,7 @@ pub fn named_carriers_cells_dispatch_and_restart_results_stay_gated() {
         "x:=1;p:&!x;r:{->&*p};s:&r",
         "x:=1;p:&!x;r:1.{->p}",
         "x:=1;p:&!x;r:1.{->&*p}",
-        "x:=1;p:&!x;r:p.{->self}",
+        "x:=1;p:&!x;r:p.{->$}",
         "x:=1;p:&!x;r:'again{->p;'again.restart()}",
     ] {
         rejects(source, "B001");
