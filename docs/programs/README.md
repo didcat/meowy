@@ -18,7 +18,7 @@ together across a complete application.
 | [Age validation](age/README.md)            | Typed policy module, decimal parsing, union narrowing, named exits                          | Four fixed inputs; diagnostic output                       |
 | [Custom errors](custom-errors/README.md)   | Nominal failure types, typed causes, common inspection, specific and broad matching         | Fixed `"24"`, `"16"`, and `"twenty"` inputs; no allocation |
 | [Testing](testing/README.md)               | Shared helper, typed errors, adapters, dynamic JSON, expected panics, and channel ownership | Ten cases; explicit executor for the channel case          |
-| [Block composition](composition/README.md) | Primary values, exact record shapes, dispatch, matcher/ascription contexts                  | Fixed sensor reading; no allocation                        |
+| [Block composition](composition/README.md) | Primary values, exact record shapes, dispatch, type predicates and explicit ascriptions                  | Fixed sensor reading; no allocation                        |
 | [Packet decoder](packet/README.md)         | Import aliases, package exports, borrowed wire bytes, explicit widening/shifts              | Valid and truncated inline headers                         |
 | [Unicode text lab](text-lab/README.md)     | Bytes, scalars, graphemes, normalization, borrowed output buffers                           | Fixed Unicode text; no allocator                           |
 | [Word count](word-count/README.md)         | Text cursors, explicit map hashing/equality, mutation and borrow lifetimes                  | Fixed text; allocator-backed map                           |

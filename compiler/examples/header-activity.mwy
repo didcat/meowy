@@ -9,7 +9,7 @@ count := 0
 'loop {
     copy : *current
     | copy.view <null> | debug.print("empty")
-    | copy.view <&int32> | debug.print(*(copy.view<&int32>))
+    | copy.view <&int32> | debug.print(*(copy.view~<&int32>))
     count = count + 1
     | count == 1 | current = &full
     | count == 2 | current = &empty

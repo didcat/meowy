@@ -26,11 +26,10 @@ result's shape includes the original sensor, unit, and integer primary; no dynam
 lookup table is created. Its scalar range comparisons inspect the primary. A type
 predicate instead checks the complete Checked shape.
 
-The matcher with `reading.{ -> $<readings.Checked> } <readings.Checked>` uses
-the composition from the language reference: the inner value context ascribes an
-already proven type, and the outer matcher tests the complete result. Whitespace
-never chooses which operation occurs. Copying the integer primary into `value`
-leaves the copyable aggregate intact.
+The matcher `reading<readings.Checked>` tests the complete result. Its body can
+then bind `checked : reading~<readings.Checked>` using that proof. The predicate
+and ascription have distinct punctuation in every expression position. Copying
+the integer primary into `value` leaves the copyable aggregate intact.
 
 Change the reading to 120 to see `checked` become false without changing its type
 or discarding fields. The other three output lines still run: matchers are

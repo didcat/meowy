@@ -145,7 +145,7 @@ entered guard.
   source moved at the evaluation point. Initialization, assignment and discarded
   value expressions consume non-Copy values. Consuming a moved value is E301.
   Grouping and same-type ascriptions preserve that consuming context; `(p)` or
-  `p<&!int32>` cannot bypass the move.
+  `p~<&!int32>` cannot bypass the move.
 - `*p`, `&*p` and `&!*p` inspect `p` without moving it. A read of `*p` copies the
   scalar referent. Exclusive-to-shared conversion must create a shared reborrow;
   it is not a type relabel or pointer copy granting another exclusive owner.
@@ -220,7 +220,7 @@ native regression groups in both profiles. Wider excluded shapes remain B001.
 | Accept parent authority transfer when proved | `x := 1; p : &!x; s : &*p; q : p; v : *s; *q = 2` |
 | Accept captured target despite handle replacement | `a := 1; b := 2; p := &!a; *p = { p = &!b; -> 3 }; v : a; w : *p` |
 | E301 through grouping | `x := 1; p : &!x; q : (p); v : *p` |
-| E301 through ascription | `x := 1; p : &!x; q : p<&!int32>; v : *p` |
+| E301 through ascription | `x := 1; p : &!x; q : p~<&!int32>; v : *p` |
 
 Use scalar function parameters for unknown branch conditions. The first program
 reports E309; reinitializing `p` after the move inside that branch must accept:

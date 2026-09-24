@@ -1348,7 +1348,7 @@ permission to replace an immutable root or store a value beyond its owner lifeti
   positive signed-minimum magnitudes are not folded into compact negative literals.
 - Unary operators use the operand's type or a unique literal context before
   assignment injects their result into a union. Expected unions do not turn a
-  scalar operand into a union before applying `!`, `-` or `~`.
+  scalar operand into a union before applying `!` or `-`.
 - Extents use existing checked scalar expression/constant rules. Typed width
   overflow remains E107, mixed widths remain E213, and negative or nonconstant
   extents are E104. Required extent checks run even on dead runtime paths. Effectful

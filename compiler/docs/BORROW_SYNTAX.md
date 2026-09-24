@@ -27,7 +27,7 @@ remain unchanged. All migration stages completed on 2026-09-09;
 | `&f()` | `(&f)()`: call the borrowed value, subject to callable support |
 | `&(f())` | Borrow the call result, subject to temporary lifetime rules |
 | `&value<>` | Query the reference's type |
-| `&value<T>` | Ascribe the resulting reference, using normal type-context rules |
+| `&value~<T>` | Ascribe the resulting reference, using an explicit type target |
 | `&object.&!field` | `(&object).&!field`; exclusive access through a shared receiver stays restricted |
 | `&(object.&!field)` | Borrow the produced exclusive reference; existing nested-reference gates apply |
 
@@ -41,7 +41,7 @@ Postfix `.&`, `.&!` and `.*` require one field name and then resume the ordinary
 chain. They do not introduce indexed or dispatch borrowing syntax. Field names
 retain ordinary lookup; no intrinsic-name or whitespace exceptions are added.
 Newlines/comments retain existing continuation rules. Types `<&T>`/`<&!T>`,
-bitwise/logical operators, task groups and all other syntax keep their roles.
+boolean operators, task groups and all other syntax keep their roles.
 Different expression structure does not promise pointer inequality or new supported
 types: receiver selection can copy a Copy field/element in a value context.
 

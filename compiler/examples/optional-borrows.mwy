@@ -7,7 +7,7 @@ show <null> : (present <boolean>) {
         owner = 9
         debug.print("missing")
     }
-    | record.view <&int32> | debug.print(*(record.view<&int32>))
+    | record.view <&int32> | debug.print(*(record.view~<&int32>))
     owner = 8
     debug.print(owner)
 }
@@ -20,5 +20,5 @@ text : "text"
 <View> : <&int32><&string>
 first <View> : &number
 second <View><null> : &text
-| first <&int32> | debug.print(*(first<&int32>))
-| second <&string> | debug.print(*(second<&string>))
+| first <&int32> | debug.print(*(first~<&int32>))
+| second <&string> | debug.print(*(second~<&string>))
