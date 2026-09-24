@@ -90,8 +90,8 @@ choose:(flag<boolean>)'out{
 }
 one:choose(true).n
 two:choose(false).n
-|one<int32>|d.print(one<int32>)
-|two<string>|d.print(two<string>)
+|one<int32>|d.print(one~<int32>)
+|two<string>|d.print(two~<string>)
 maybe:(flag<boolean>)'out{|flag|{'out->row:{->n:2};view:&(row.n);d.print(*view)}}
 present:maybe(true).row
 absent:maybe(false).row

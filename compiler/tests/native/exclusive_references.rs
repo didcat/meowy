@@ -144,11 +144,11 @@ pub fn moved_handles_fail_through_every_consuming_form() {
         "x:=1;p:&!x;q:p;v:*p",
         "x:=1;p:&!x;p;v:*p",
         "x:=1;p:&!x;q:(p);v:*p",
-        "x:=1;p:&!x;q:p<&!int32>;v:*p",
+        "x:=1;p:&!x;q:p~<&!int32>;v:*p",
         "x:=1;p:&!x;q:p;*p=2",
         "x:=1;p:&!x;q:p;s:&*p",
         "x:=1;p:&!x;q:p;s:&!*p",
-        "x:=1;p:&!x;q:p;v:p<&!int32>",
+        "x:=1;p:&!x;q:p;v:p~<&!int32>",
     ] {
         rejects(source, "E301");
     }

@@ -84,8 +84,8 @@ choose:(flag<boolean>)'result{
 }
 one:choose(true).n
 two:choose(false).n
-|one<int32>|d.print(one<int32>)
-|two<string>|d.print(two<string>)
+|one<int32>|d.print(one~<int32>)
+|two<string>|d.print(two~<string>)
 maybe:(flag<boolean>)'result{
     |flag|{'result->child:={->n:=3};view:&(child.n);d.print(*view);child.n=4}
 }
@@ -94,7 +94,7 @@ absent:maybe(false).child
 |present<{n<int32>:=}>|d.print(present.n)
 |absent<null>|d.print("absent")
 value:{->n<int32><null>:=null;view:&n;copy:*view;|copy<null>|d.print("null");n=5}
-|value.n<int32>|d.print(value.n<int32>)
+|value.n<int32>|d.print(value.n~<int32>)
 "#,
     )
     .runs(b"1\nbefore\n2\nafter\n3\n4\nabsent\nnull\n5\n");

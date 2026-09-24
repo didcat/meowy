@@ -87,8 +87,8 @@ choose:(flag<boolean>,input<&int32>)'out{
 owner:=7
 one:choose(true,&owner).view
 two:choose(false,&owner).view
-|one<&int32>|d.print(*(one<&int32>))
-|two<string>|d.print(two<string>)
+|one<&int32>|d.print(*(one~<&int32>))
+|two<string>|d.print(two~<string>)
 maybe:(flag<boolean>,input<&int32>)'out{
     |flag|{'out->holder:{->view:input;->count:8};p:&(holder.count);d.print(*p)}
 }

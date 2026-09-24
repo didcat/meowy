@@ -131,7 +131,7 @@ pub fn element_borrows_enforce_bounds_lifetimes_and_remaining_boundaries() {
         ),
         ("values:=[1];view:&!(values[1]);values[1]=2;v:*view", "E302"),
         ("owner:1;values:[&owner];view:&(values[1])", "B001"),
-        ("values:[{->1;->name:2}];view:&(values[1]<int32>)", "E208"),
+        ("values:[{->1;->name:2}];view:&(values[1]~<int32>)", "E208"),
     ] {
         let case = Case::new(source);
         for profile in ["debug", "release"] {

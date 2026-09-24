@@ -244,7 +244,7 @@ choose<null>:(flag<boolean>){
     p:=&empty
     |flag|p=&full
     copy:*p
-    |copy.view<&int32>|d.print(*(copy.view<&int32>))
+    |copy.view<&int32>|d.print(*(copy.view~<&int32>))
     d.print(copy.count)
 }
 choose(false);choose(true)

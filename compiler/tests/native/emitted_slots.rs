@@ -54,8 +54,8 @@ choose:(flag<boolean>)'result{
 }
 one:choose(true).n
 two:choose(false).n
-|one<int32>|d.print(one<int32>)
-|two<string>|d.print(two<string>)
+|one<int32>|d.print(one~<int32>)
+|two<string>|d.print(two~<string>)
 maybe:(flag<boolean>)'result{|flag|{'result->child:={->n:=3};child.n=4;d.print(child.n)}}
 present:maybe(true).child
 absent:maybe(false).child
