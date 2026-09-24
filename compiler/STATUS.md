@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current region-content edge slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Expose exact root IDs from coerced and uncoerced runtime expression checking,
    keeping the existing value-only APIs and diagnostic/budget precedence intact.
 2. Give matcher-body statements explicit checked point IDs, preserving statement
@@ -139,7 +139,14 @@ validation. Matcher-body prerequisite: `ee6c2bc`. All four region-edge groups
 pass, including erased bodies, functions/leaves, invalid provenance and shared
 capacity exhaustion. All 1518 library tests pass;
 `/tmp/meowy-matcher-content-lib.log`. No failures remain. Short-circuit region
-contents are next, followed by the full compiler gate.
+contents now retain the exact condition/RHS expression roots. Matcher-content
+prerequisite: `e981b0b`. All three short-circuit content groups pass, including
+skipped RHS queries, original logical roots, grouped roots, nested functions,
+ordinary failures and unknown call completion. All ten compiler checks pass,
+including 1521 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-region-contents-gate.log`. No failures remain. General statement/
+operand sequencing and explicit exit/result transfers remain prerequisites.
 Unknown effects and unlinked normal ports remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices
@@ -1468,11 +1475,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Explicit matcher/short-circuit decision and normal-join edges passed all ten
-  checks in `python3 -B tools/verify.py --compiler`: 1510 library/910 native tests,
+- Matcher/short-circuit region-content links and shared edge budgets passed all
+  ten checks in `python3 -B tools/verify.py --compiler`: 1521 library/910 native tests,
   formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
-  in debug/release). Log: `/tmp/meowy-branch-edges-gate.log`. Region-content links,
-  general sequences, exit/result transfers and restart propagation remain pending.
+  in debug/release). Log: `/tmp/meowy-region-contents-gate.log`. General sequences,
+  exit/result transfers and restart propagation remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1793,8 +1800,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    explicit entry, true/false, empty bypass and normal-join ports in
    `dependencies/edges.rs` (matcher prerequisite: `1e30544`). Both structural
    alternatives remain, and normal ports do not imply reachable completion.
-   Next connect region entry/normal ports to checked contents and consecutive
-   statement/operand boundaries using returned point IDs and body source links.
+   Expression roots (`ba3debb`) and matcher-body statement points (`ee6c2bc`)
+   now link region entry/normal ports to checked contents through a shared bounded
+   edge ledger (matcher-content prerequisite: `e981b0b`). Empty bypasses remain
+   separate; child normal ports are not presumed reachable.
+   Next retain general statement boundaries and explicit consecutive statement/
+   operand edges in `dependencies/points.rs`, `dependencies/edges.rs` and block/
+   statement/expression checking. Use returned IDs and actual checking boundaries;
+   general statements outside matcher bodies do not yet receive statement points.
    Add explicit leave/restart exit ports in `dependencies/exits.rs` and scope
    checking, preserving BlockId/RestartId targets; never add a generic entry-to-
    normal bypass for a region containing control exits or unknown effects.

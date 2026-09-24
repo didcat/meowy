@@ -84,3 +84,87 @@ pub(crate) fn logic_edges_preserve_failures_without_claiming_completed_regions()
     assert!(checker.point.is_none());
     assert!(check("x:1+2;y:1==2").branch_edges.is_empty());
 }
+
+#[test]
+pub(crate) fn logic_contents_link_skipped_rhs_expression_roots_and_erased_queries() {
+    for (left, op) in [("false", "&&"), ("true", "||")] {
+        let source =
+            format!("p:@\"proof\";n:3;x:{left}{op}{{q:p.can_copy<({{-><uint8[n]>}})>();->true}}");
+        let checker = check(&source);
+        assert_eq!(checker.region_edges.len(), 2);
+        let query = &checker.queries[0];
+        let root = checker.points[query.point].parent.unwrap();
+        let region = checker.points[root].parent.unwrap();
+        let edges = checker.region_edges[&region];
+        assert_eq!(
+            edges[0],
+            Edge::new(Port::Entry(region), Port::Entry(root), Route::Next)
+        );
+        assert_eq!(
+            edges[1],
+            Edge::new(Port::Normal(root), Port::Normal(region), Route::Next)
+        );
+        assert!(checker.points[root].complete);
+        assert!(!edges.contains(&Edge::new(
+            Port::Entry(region),
+            Port::Normal(region),
+            Route::Next
+        )));
+        let read = checker.body_inputs.values().flatten().next().unwrap();
+        assert_eq!(
+            read.root,
+            checker.query_budgets[query.root].as_ref().unwrap().root
+        );
+        assert_eq!(crate::compile(&source).unwrap_err()[0].code, "B001");
+    }
+}
+
+#[test]
+pub(crate) fn logic_contents_keep_group_roots_and_nested_function_owners() {
+    let source = "x:((true&&false))||{f<boolean>:(){->true&&false};->true}";
+    crate::compile(source).unwrap();
+    let checker = check(source);
+    assert_eq!(checker.region_edges.len(), 6);
+    let outer = checker
+        .points
+        .iter()
+        .position(|point| point.kind == PointKind::Or)
+        .unwrap();
+    let condition = id(checker.branch_edges[&outer][0].to);
+    let root = id(checker.region_edges[&condition][0].to);
+    assert_eq!(checker.points[root].kind, PointKind::Expr);
+    assert_eq!(checker.points[root].parent, Some(condition));
+    for edges in checker.region_edges.values() {
+        let region = &checker.points[id(edges[0].from)];
+        let child = &checker.points[id(edges[0].to)];
+        assert_eq!(region.owner, child.owner);
+        assert_eq!(region.block, child.block);
+    }
+}
+
+#[test]
+pub(crate) fn logic_contents_preserve_errors_and_unknown_call_completion() {
+    let mut checker = Checker::new();
+    let block = crate::parser::parse("true||1").unwrap();
+    assert_eq!(checker.block(&block, None, None).unwrap_err().code, "E222");
+    assert!(checker.region_edges.is_empty());
+    let mut checker = Checker::new();
+    let block = crate::parser::parse("x<int32>:false&&true").unwrap();
+    assert_eq!(checker.block(&block, None, None).unwrap_err().code, "E207");
+    assert_eq!(checker.region_edges.len(), 2);
+    let branch = *checker.branch_edges.keys().next().unwrap();
+    assert!(!checker.points[branch].complete);
+    assert!(checker.bodies.is_empty());
+    let checker = check("f<boolean>:(){->true};x:false&&f()");
+    let routes = checker.branch_edges.values().next().unwrap();
+    let region = id(routes[1].to);
+    let call = id(checker.region_edges[&region][0].to);
+    assert!(
+        !checker
+            .region_edges
+            .values()
+            .flatten()
+            .chain(checker.branch_edges.values().flatten())
+            .any(|edge| { edge.from == Port::Entry(call) && edge.to == Port::Normal(call) })
+    );
+}

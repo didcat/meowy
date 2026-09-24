@@ -259,10 +259,11 @@ impl Checker {
                 })
         };
         let (test, left) = if boolean {
-            let (id, value) = self.with_point_id(PointKind::Condition, left.span, |checker| {
-                checker.expression(left, context.as_ref())
-            })?;
-            (Some(id), value)
+            let (id, (root, value)) =
+                self.with_point_id(PointKind::Condition, left.span, |checker| {
+                    checker.expression_point(left, context.as_ref())
+                })?;
+            (Some((id, root)), value)
         } else if equality && matches!(context, Some(Type::Record { .. })) {
             let record = context.clone().expect("record context");
             let primary = Self::primary_type(&record);
@@ -295,10 +296,10 @@ impl Checker {
             } else {
                 PointKind::Else
             };
-            let (id, value) = self.with_point_id(kind, right.span, |checker| {
-                checker.expression(right, Some(&right_context))
+            let (id, (root, value)) = self.with_point_id(kind, right.span, |checker| {
+                checker.expression_point(right, Some(&right_context))
             })?;
-            (Some(id), value)
+            (Some((id, root)), value)
         } else if equality && matches!(right_context, Type::Record { .. }) {
             let primary = Self::primary_type(&right_context);
             (None, self.composed(right, right_context, Some(&primary))?)
@@ -321,14 +322,16 @@ impl Checker {
             point: Some(point), ..
         } = &value.kind
         {
-            let test = test.expect("short-circuit condition");
-            let arm = arm.expect("short-circuit operand");
+            let (test, input) = test.expect("short-circuit condition");
+            let (arm, content) = arm.expect("short-circuit operand");
             let skipped = skipped.expect("short-circuit skipped path");
             let (then, otherwise) = if op == "&&" {
                 (arm, skipped)
             } else {
                 (skipped, arm)
             };
+            self.region_edges(test, input, span)?;
+            self.region_edges(arm, content, span)?;
             self.branch_edges(*point, test, then, otherwise, span)?;
         }
         Ok(value)

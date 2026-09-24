@@ -450,7 +450,11 @@ statement-point groups and all 1514 library tests pass;
 to their exact checked contents; normal region exits depend on child normal exits.
 The shared branch/content edge budget is bounded and atomic. Four focused groups
 and all 1518 library tests pass; `/tmp/meowy-matcher-content-lib.log`. Short-circuit
-contents are next; general sequencing and outcomes stay gated.
+condition/RHS regions now retain exact expression roots, including grouped and
+skipped operands. All ten compiler checks pass, including 1521 library/910 native
+tests; `/tmp/meowy-region-contents-gate.log`. Expression roots: `ba3debb`; matcher
+body points: `ee6c2bc`; matcher contents: `e981b0b`. General sequencing, explicit
+exit/result transfers and outcomes stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -580,10 +584,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Explicit branch decision/bypass/normal-join edges passed all ten checks
-  in `python3 -B tools/verify.py --compiler`, including 1510 library/910 native tests.
+- Region-content links and shared branch/content budgets passed all ten checks
+  in `python3 -B tools/verify.py --compiler`, including 1521 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-branch-edges-gate.log`. The transfer graph remains partial;
+  `/tmp/meowy-region-contents-gate.log`. The transfer graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -645,8 +649,9 @@ execution was not part of this documentation edit.
    Expression/read/query points and explicit runtime branch regions now distinguish
    uses within a statement. HIR branches and body facts now retain validated
    source links. Branch decision/bypass/normal-join edges are now explicit.
-   Next connect region ports to their checked contents and consecutive statement/
-   operand boundaries, then model leave/restart exits and result transfers.
+   Region ports now link to exact checked contents. Next record consecutive
+   statement/operand boundaries and their explicit sequence edges, then model
+   leave/restart exits and result transfers.
    Normal ports do not imply reachability. Preserve independent matcher arms,
    nested targets and unknown effects; do not
    infer runtime order from point IDs or source spans. Bounded backedge/header
