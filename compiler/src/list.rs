@@ -191,15 +191,25 @@ impl Checker {
                 ));
             }
             let list = self.list_type(*element.clone(), *capacity, span)?;
-            let values = values
+            let checked = values
                 .iter()
-                .map(|value| self.expr(value, Some(element)))
+                .map(|value| self.expr_point(value, Some(element)))
                 .collect::<Result<Vec<_>>>()?;
+            let (points, values): (Vec<_>, Vec<_>) = checked
+                .into_iter()
+                .map(|(point, value)| (Some(point), value))
+                .unzip();
             let ty = if values.iter().any(|value| value.ty == Type::Never) {
                 Type::Never
             } else {
                 list.clone()
             };
+            self.list_sequence(
+                self.point.expect("list literal"),
+                points,
+                ty != Type::Never,
+                span,
+            )?;
             return Ok(hir::Expr {
                 kind: hir::ExprKind::List { values, list },
                 ty,
@@ -221,13 +231,15 @@ impl Checker {
         }
         let mut common = None;
         let mut items = vec![None; values.len()];
+        let mut points = vec![None; values.len()];
         let mut deferred = Vec::new();
         for (index, value) in values.iter().enumerate() {
             if self.scalar_literal(value) {
                 deferred.push((index, self.reach));
                 continue;
             }
-            let value = self.expr(value, None)?;
+            let (point, value) = self.expr_point(value, None)?;
+            points[index] = Some(point);
             if value.ty != Type::Never {
                 if common.as_ref().is_some_and(|ty| ty != &value.ty) {
                     return Err(Self::error(
@@ -243,7 +255,8 @@ impl Checker {
         let reached = self.reach;
         for (index, reach) in deferred {
             self.reach = reach;
-            let value = self.expr(&values[index], common.as_ref())?;
+            let (point, value) = self.expr_point(&values[index], common.as_ref())?;
+            points[index] = Some(point);
             if common.is_none() {
                 common = Some(value.ty.clone());
             }
@@ -261,6 +274,12 @@ impl Checker {
         } else {
             list.clone()
         };
+        self.list_sequence(
+            self.point.expect("list literal"),
+            points,
+            ty != Type::Never,
+            span,
+        )?;
         Ok(hir::Expr {
             kind: hir::ExprKind::List { values, list },
             ty,

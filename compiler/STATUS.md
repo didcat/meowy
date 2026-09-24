@@ -99,45 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current list-index slices
+### Current list-literal slices
 
 Dependency-ordered commit plan:
-1. Expose the exact checked receiver root while preserving the value-only API and
-   implicit shared-list dereference. Verify identity and unchanged HIR behavior.
-2. Retain receiver/position roots and explicit list-value/length capture before
-   index evaluation. Link successful bounds checks to result availability, keep
-   nonreturning operands explicit, and validate order, diagnostics and budgets.
-   Run the full compiler gate and update the handoff.
+1. Capture concrete/inferred list element roots by source slot, preserving deferred
+   scalar checking. Reuse ordered sequences and add construction/result endpoints,
+   including empty lists and nonreturning elements. Validate focused regressions.
+2. Extend union-context lists with exact ordinary/deferred roots and explicit
+   unknown entries for custom effect builders. Preserve candidate selection,
+   coercions, capacity/error precedence and budgets. Run the full compiler gate.
 
-Investigation: `list_index` checks the receiver first and skips the index entirely
-when its type is `never`. Shared list receivers get a synthetic dereference; the
-backend copies the list value and extracts its length before evaluating the index.
-This is a value snapshot, not a reservation of the original owner's storage.
-The existing one-based bounds/borrow checks remain authoritative. Element-borrow,
-list literal/method and contextual builder paths remain separate.
+Investigation: `list_literal` and `list_union` defer some scalar checks to discover
+an element context. Runtime order follows source slots, not point allocation.
+Custom union effect blocks do not currently expose an exact element root; retain
+that gap without skipping over it. Existing HIR list types/coercions remain the
+layout contract. These links do not implement value propagation or proof outcomes.
 
-Baseline: direct-call commits `fdeb312`, `5555325` passed all ten compiler checks:
-1597 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-debug/release. Log: `/tmp/meowy-call-order-gate.log`.
+Baseline: `77a4a7e`, `95d6fd6` passed all ten compiler checks: 1603 library/910 native
+tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
+Log: `/tmp/meowy-index-order-gate.log`.
 
-`list_receiver_point` now exposes the existing checked root; its value-only wrapper
-and implicit shared-list dereference remain unchanged. Both focused groups and
-all 1599 library tests pass; formatting also passes. Logs:
-`/tmp/meowy-list-receiver-focused.log`, `/tmp/meowy-list-receiver-lib.log`.
-Receiver prerequisite: `77a4a7e`. Index metadata now captures exact receiver/position
-roots, static capacity/known length and explicit snapshot/bounds/result stages.
-Nonreturning receivers retain no checked index, and nonreturning positions have
-no projection/result edge. Identity and shared edge budgets guard publication.
-All four focused index groups pass, including owned/shared snapshots, nested
-owners, nonreturning operands, bounds/type errors, element loans and atomic
-identity/budget checks. Whole-list exclusive borrows retain B001. Log:
-`/tmp/meowy-index-order-focused.log`. Known immutable lengths and unknown
-mutable/shared lengths remain distinct. All ten compiler checks pass:
-1603 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-index-order-gate.log`. Post-handoff link checks pass:
-1208 local links in 110 Markdown files. List literal element sequencing is next;
-remaining graph coverage, propagation and proof outcomes remain incomplete.
+Concrete/inferred literals now capture element roots by original slot and reuse
+the sequence/endpoint ledgers. Normal construction follows the final element;
+empty lists have an explicit construction stage and `never` lists have no result
+edge. Combined edge-budget preflight prevents partial sequence publication.
+All four focused groups and all 1607 library tests pass; formatting also passes.
+Logs: `/tmp/meowy-list-literals-focused.log`, `/tmp/meowy-list-literals-lib.log`.
+Union-context integration follows separately; the final gate covers both slices.
 
 ### Proof dependency implementation slices
 

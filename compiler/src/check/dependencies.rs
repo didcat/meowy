@@ -324,5 +324,7 @@ pub(crate) use invocations::Invocation;
 mod indices;
 pub(crate) use indices::{Access as IndexAccess, Index};
 
+mod lists;
+
 mod emissions;
 pub(crate) use emissions::Emission;
