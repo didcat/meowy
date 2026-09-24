@@ -342,4 +342,7 @@ pub(crate) fn dispatch_receiver_sigil_has_scoped_immutable_identity() {
     rejects("out:$", "E201");
     rejects("value:3;out:value.{$=4;->$}", "E305");
     rejects("$:3", "E004");
+    rejects("value:3;out:value.{->self}", "E201");
+    accepts("self:9;value:3;out:value.{->$+self}");
+    accepts("value:3;out:value.{self:9;->$+self}");
 }

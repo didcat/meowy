@@ -43,7 +43,13 @@ interpolation gates remain unchanged. All migrated compiler fixtures pass 1432 l
 into checker/borrow, native field/dispatch, and lifetime/restart batches (seven
 fixture files each). Checker/borrow batch committed as `eeb3b73`; native dispatch
 and field fixtures are committed as `7af7755`. The validated lifetime/restart
-fixtures complete source migration; temporary `self` alias removal is next.
+fixtures are committed as `4deba7b`. The alias is removed and ordinary `self`
+names coexist with `$`. The first removal run passed 1432 library/905 native tests
+but found two still-legacy standalone compiler examples; those now use `$`.
+Dollar-only checking now passes all 1432 library and 906 native tests in both
+profiles; log: `/tmp/meowy-dollar-only-tests.log`. Legacy implicit `self` is E201;
+ordinary outer/inner/parameter names `self` remain valid beside `$`. Documentation
+and editor migration remain before the final compiler/editor gate.
 
 ## Executable proof plan
 

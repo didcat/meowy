@@ -216,3 +216,18 @@ d.print("{result} {row.n}")
         assert!(String::from_utf8_lossy(&result.stderr).contains(code));
     }
 }
+
+#[test]
+pub fn receiver_sigil_is_independent_of_ordinary_self_names() {
+    Case::new(
+        r#"
+d:@"debug"
+self:9
+d.print(3.{->$+self})
+d.print(3.{self:4;->$+self})
+identity<int32>:(self<int32>){->self}
+d.print(identity(5))
+"#,
+    )
+    .runs(b"12\n7\n5\n");
+}

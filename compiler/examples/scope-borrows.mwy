@@ -9,10 +9,10 @@ same <boolean> : (value <int32>, original <&int32>) { -> &value == original }
 owner := 7
 debug.print(same(owner, &owner))
 debug.print(read(owner))
-next : owner.{ view : &self; -> *view + 1 }
+next : owner.{ view : &$; -> *view + 1 }
 debug.print(next)
 owner = 9
-view : (&owner).{ -> &*self }
+view : (&owner).{ -> &*$ }
 debug.print(view == &owner)
 debug.print(*view)
 owner = 10

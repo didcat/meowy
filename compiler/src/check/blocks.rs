@@ -78,8 +78,7 @@ impl Checker {
                 owner: self.owner,
                 constant: self.constant(&value),
             };
-            self.declare("$", binding.clone(), block.span)?;
-            self.declare("self", binding, block.span)?;
+            self.declare("$", binding, block.span)?;
             stmts.push(hir::Stmt::Bind { id: local, value });
         }
         Ok(stmts)

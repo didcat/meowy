@@ -15,11 +15,11 @@ view = &base
 debug.print(*view)
 
 (&9).{
-    current := self
+    current := $
     count := 0
     'inner {
         debug.print(*current)
-        current = self
+        current = $
         count = count + 1
         | count < 2 | 'inner.restart()
     }
