@@ -195,3 +195,5 @@ mod prefixes;
 mod temporary;
 
 mod views;
+
+mod paths;

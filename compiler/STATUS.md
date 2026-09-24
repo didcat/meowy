@@ -29,27 +29,25 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current heterogeneous-union continuation slice
+### Current by-value union result series
 
 Commit plan:
-1. Admit supported record/null-union terminals as typed continuations using the
-   existing bounded classifier. Reuse cumulative resolution and variant-qualified
-   snapshots; test differing layouts, unknown/null contents, deeper/mixed chains,
-   result kinds, depth/work bounds and lifetimes. Run the full gate and update
-   both handoffs and the guide.
+1. Add bounded variant-qualified result-leaf type lookup and reuse its concrete
+   field path for existing record-call typing. Test exact variants, nested/null
+   paths, invalid keys and budgets; run focused checks and commit the prerequisite.
+2. Use selected reference-leaf types to match by-value union call origins against
+   public inputs. Preserve all/unknown candidates and keep carrier cells separate.
+   Test copies, nested calls, layouts/null, budgets/no replay and lifetimes, then
+   run the full gate and update both handoffs.
 
-Investigation: the continuation resolver already routes union view contents back
-through bounded variant discovery; only terminal admission excludes heterogeneous
-unions. Keep unsupported members, exclusive edges and owned variant addresses
-incomplete. Unrelated `assets/` and proposal changes remain untouched.
-Admission and five new groups pass all 397 dependency-filtered tests; log:
-`/tmp/meowy-union-terminal-continuations-focused.log`. Unknown references use
-explicitly typed bindings where union constructor inference remains E207-gated.
-Layouts/null/unknowns, deeper chains, result kinds, cumulative bounds, no replay,
-unsupported members and E302/E303 pass. All ten compiler checks pass, including
-1370 library/903 native tests; log: `/tmp/meowy-union-terminal-continuations-gate.log`.
-No failures remain. Unrelated `assets/` and proposal changes are preserved;
-proof outcomes stay gated.
+Investigation: shaped call results currently fall through to unknown snapshots.
+Resolve declared result types with exact variant keys without selecting a runtime
+variant or reading callee bodies. Existing record call lookup can share the
+concrete-path branch; original path charges remain with its caller.
+Variant-qualified lookup and existing record-call integration pass all 399
+dependency-filtered tests and formatting; log:
+`/tmp/meowy-result-shape-types-focused.log`. Call-origin admission is next.
+Unrelated README/assets/proposal changes remain untouched.
 
 ### Proof dependency implementation slices
 

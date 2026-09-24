@@ -26,17 +26,11 @@ impl Checker {
         if path.is_empty() {
             return Ok(None);
         }
-        let mut ty = &value.ty;
-        for index in path {
-            let Some(Type::Record { fields, .. }) = Self::origin_record(ty) else {
-                return Ok(None);
-            };
-            let Some(field) = fields.get(index) else {
-                return Ok(None);
-            };
-            ty = &field.ty;
-        }
-        Ok(Some(ty))
+        let key = crate::check::dependencies::records::shapes::ShapeKey {
+            fields: path,
+            variants: Vec::new(),
+        };
+        self.shape_field_type(&value.ty, &key, value.span)
     }
 }
 
