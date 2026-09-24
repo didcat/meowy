@@ -12,6 +12,17 @@ impl Checker {
         choices: &mut Vec<&Type>,
         unresolved: bool,
     ) -> Result<Option<hir::Expr>> {
+        let Some((form, start)) = self.list_effect_form(value)? else {
+            return Ok(None);
+        };
+        self.list_effect_body(form, start, choices, unresolved, value.span)
+            .map(Some)
+    }
+
+    pub(crate) fn list_effect_form<'a>(
+        &mut self,
+        value: &'a ast::Expr,
+    ) -> Result<Option<(&'a ast::Expr, usize)>> {
         let mut form = value;
         while let ExprKind::Group(value) = &form.kind {
             form = value;
@@ -43,8 +54,19 @@ impl Checker {
                 _ => return Ok(None),
             }
         }
-        let Some(start) = start.filter(|start| *start > 0) else {
-            return Ok(None);
+        Ok(start.filter(|start| *start > 0).map(|start| (form, start)))
+    }
+
+    pub(crate) fn list_effect_body(
+        &mut self,
+        form: &ast::Expr,
+        start: usize,
+        choices: &mut Vec<&Type>,
+        unresolved: bool,
+        span: ast::Span,
+    ) -> Result<hir::Expr> {
+        let ExprKind::Block(block) = &form.kind else {
+            unreachable!()
         };
         let mut stmts = self.block_start(block, None, None, false)?;
         for stmt in &block.stmts[..start] {
@@ -170,10 +192,13 @@ impl Checker {
         let block = self.block_end(block, stmts)?;
         let ty = block.ty.clone();
         *choices = matching;
-        Ok(Some(hir::Expr {
+        Ok(hir::Expr {
             kind: hir::ExprKind::Block(block),
             ty,
-            span: value.span,
-        }))
+            span,
+        })
     }
 }
+
+#[cfg(test)]
+mod tests;

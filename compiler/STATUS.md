@@ -99,44 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current list-literal slices
+### Current custom list-element slices
 
 Dependency-ordered commit plan:
-1. Capture concrete/inferred list element roots by source slot, preserving deferred
-   scalar checking. Reuse ordered sequences and add construction/result endpoints,
-   including empty lists and nonreturning elements. Validate focused regressions.
-2. Extend union-context lists with exact ordinary/deferred roots and explicit
-   unknown entries for custom effect builders. Preserve candidate selection,
-   coercions, capacity/error precedence and budgets. Run the full compiler gate.
+1. Separate effect-block form recognition from actual checking, preserving scan
+   budgets, original spans and diagnostics. Test that recognition creates no
+   points, scopes, bindings or effects.
+2. Capture an exact element root only after recognition, retain it in union list
+   sequences and restore active points/scopes on failure. Validate grouped spans,
+   ownership, errors and once-only effects.
+3. Retain checked statement roots for custom bodies and connect their block
+   endpoints/results to the element root. Validate ordering, budgets and existing
+   runtime behavior with the full compiler gate.
 
-Investigation: `list_literal` and `list_union` defer some scalar checks to discover
-an element context. Runtime order follows source slots, not point allocation.
-Custom union effect blocks do not currently expose an exact element root; retain
-that gap without skipping over it. Existing HIR list types/coercions remain the
-layout contract. These links do not implement value propagation or proof outcomes.
+Investigation: `list_effect_block` scans the supported prefix/emission-suffix shape
+before opening a block. Its statements already use checked lifetimes through
+`stmt`, but their root IDs and body sequence endpoints are discarded. Candidate
+suffix probing is separate and must not allocate expression roots. Existing
+candidate selection and coercion rules remain authoritative; no proof evaluation
+or complete effect propagation is introduced.
 
-Baseline: `77a4a7e`, `95d6fd6` passed all ten compiler checks: 1603 library/910 native
+Baseline: `18f8e70`, `d06fd10` passed all ten compiler checks: 1610 library/910 native
 tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-index-order-gate.log`.
+Log: `/tmp/meowy-list-literals-gate.log`.
 
-Concrete/inferred literals now capture element roots by original slot and reuse
-the sequence/endpoint ledgers. Normal construction follows the final element;
-empty lists have an explicit construction stage and `never` lists have no result
-edge. Combined edge-budget preflight prevents partial sequence publication.
-All four focused groups and all 1607 library tests pass; formatting also passes.
-Logs: `/tmp/meowy-list-literals-focused.log`, `/tmp/meowy-list-literals-lib.log`.
-Concrete/inferred slice: `18f8e70`. Union-context checking now stores ordinary and
-deferred roots in original slots; custom effect builders retain explicit `None`
-barriers. Adjacent known elements can link, but no edge skips an unknown element.
-Candidate filtering, expected-value coercion and once-only checking are unchanged.
-All seven focused groups pass, including union selection, deferred slots, custom
-effect gaps and original ambiguity/capacity errors. Log:
-`/tmp/meowy-list-unions-focused.log`. All ten compiler checks pass:
-1610 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-list-literals-gate.log`. Post-documentation link checks pass:
-1208 local links in 110 Markdown files. Exact custom effect-element roots are next;
-remaining graph coverage, propagation and proof evaluation stay incomplete.
+Recognition and body checking are now separate helpers with the original scan
+budget, ungrouped diagnostic spans and outer result span preserved. New tests
+cover grouped recognition, rejected forms and budget failure without points or
+effects. Formatting and all 1613 library tests pass, including all three new
+recognition groups. Log: `/tmp/meowy-effect-form-lib.log`. Root capture is next.
 
 ### Proof dependency implementation slices
 
