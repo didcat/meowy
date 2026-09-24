@@ -500,15 +500,20 @@ Remaining statement/value transfers and dependency propagation stay incomplete.
 
 Matcher statement roots now connect to exact branch IDs in source order, with
 independent decisions and conditional normal completion. Three focused groups and
-all 1553 library tests pass; `/tmp/meowy-matcher-roots-lib.log`. Ordinary binding
-operations are next; value-flow propagation and proof evaluation stay gated.
+all 1553 library tests pass; `/tmp/meowy-matcher-roots-lib.log`. Matcher slice:
+`ed3baf3`. The storage operations below extend these roots; propagation stays gated.
 
 The 4096-alias stress gate now accepts the shared control-flow B001 budget as well
 as the origin-specific cap; the 2048 case still requires the loan-analysis budget.
 Focused stress validation passed (`1f7abb7`). Ordinary binding operations now
 retain exact value roots, canonical storage IDs and explicit effect ports. Four
 focused groups and all 1557 library tests pass; `/tmp/meowy-binding-operations-lib.log`.
-Direct assignments are next; module roots without exact producers remain unknown.
+Direct assignments now retain write operations with exact RHS roots and canonical
+storage IDs, preserving slot aliases, reference cells and control marks. All ten
+compiler checks pass, including 1561 library/910 native tests;
+`/tmp/meowy-storage-operations-gate.log`. Binding slice: `0e93b48`. Module roots
+without exact producers remain unknown. Emission operations and remaining
+store/address links are next; complete value-flow and proof outcomes stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -638,10 +643,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Core block endpoints, plain block consumers, expression statements and marked
-  restart backedges passed all ten checks in `python3 -B tools/verify.py --compiler`:
-  1550 library/910 native tests. Conformance: 10 passed, 13 unsupported, 0 failed in
-  debug/release. Log: `/tmp/meowy-block-results-gate.log`. The graph remains partial;
+- Matcher roots, binding operations and direct writes passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1561 library/910 native tests.
+  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+  Log: `/tmp/meowy-storage-operations-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -707,8 +712,9 @@ execution was not part of this documentation edit.
    operands retain explicit sequence edges. Leave/restart exits now preserve exact
    target ports and checked sources. Core block ports, plain block consumers and
    expression statements now connect; restart reentry is marked separately.
-   Next connect matcher statement roots, then binding/write/emission operations
-   and value transfers. Result availability is not value provenance.
+   Matcher roots, ordinary bindings and direct writes now retain explicit operation
+   links. Next add emissions and remaining store/address transfers, preserving
+   slot identities and operand order. Result availability is not value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.
    Normal ports do not imply reachability. Preserve independent matcher arms,

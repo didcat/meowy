@@ -269,7 +269,7 @@ impl Checker {
                         target.span,
                     ));
                 }
-                let value = self.expr(value, Some(&ty))?;
+                let (input, value) = self.expr_point(value, Some(&ty))?;
                 self.track_reference(id, &value, true)?;
                 self.track_reference_cell(id, &value, true)?;
                 self.track_record_references(id, &value, true)?;
@@ -277,6 +277,13 @@ impl Checker {
                     self.mark_derived(id);
                 }
                 self.forget(id);
+                self.storage_operation(
+                    self.point.expect("assignment statement"),
+                    super::dependencies::OperationKind::Write,
+                    id,
+                    Some(input),
+                    stmt.span,
+                )?;
                 Ok(vec![hir::Stmt::Assign { id, value }])
             }
             StmtKind::Emit {

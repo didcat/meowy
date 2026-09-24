@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current matcher and storage-operation slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Connect matcher statement roots to exact checked branch IDs in source order,
    preserving independent decisions and conditional normal completion. Reuse the
    sequence/endpoints ledgers and shared budgets; validate nested/error paths.
@@ -134,8 +134,15 @@ local/storage identities. Unknown module roots remain explicit. Focused binding
 groups pass for storage effects, control/function ownership, unknown roots,
 identity and budgets. The 4096-alias stress gate now accepts its shared control-flow
 limit (`1f7abb7`); the 2048 loan-budget check stays strict. All 1557 library tests
-pass; `/tmp/meowy-binding-operations-lib.log`. No failures remain. Direct assignment
-operations are next; language diagnostics and conformance fixtures are unchanged.
+pass; `/tmp/meowy-binding-operations-lib.log`. No failures remain. Binding slice:
+`0e93b48`. Direct assignments now retain write operations and exact RHS roots after
+existing checks/retargeting. All four write groups pass for repeated writes,
+canonical slot aliases, reference cells, control marks and E305/E207/E302 errors.
+Path/index/indirect stores remain outside these direct links. All ten compiler
+checks pass, including 1561 library/910 native tests, formatting, Clippy, build and
+conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-storage-operations-gate.log`. No failures remain. Emission operations,
+remaining store/address links and complete value-flow transfers are next.
 Annotations/required-use links remain separate.
 Unknown effects and missing operand/producer coverage remain incomplete; propagation
 and proof evaluation stay gated.
@@ -1466,12 +1473,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Core block endpoints, plain block consumers, expression statements and marked
-  restart backedges passed all ten checks in `python3 -B tools/verify.py --compiler`:
-  1550 library/910 native tests, formatting, Clippy, build and conformance
+- Matcher statement roots, ordinary binding operations and direct assignment
+  operations passed all ten checks in `python3 -B tools/verify.py --compiler`:
+  1561 library/910 native tests, formatting, Clippy, build and conformance
   (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-block-results-gate.log`. Remaining statement/value transfers,
-  operand coverage and restart dependency propagation stay pending.
+  Log: `/tmp/meowy-storage-operations-gate.log`. Emission/store/address transfers,
+  remaining operand coverage and restart dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1810,11 +1817,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    Plain block consumers and expression statements use exact source links
    (`4f266e4`); body producer IDs remain function-owned. Restart reentry edges are
    separately marked Backedge and publish atomically with their exit source.
-   Next connect matcher statement roots to their checked branch points in source
-   order, then model binding/write/emission operations and value transfers in
-   `dependencies/edges.rs`, `dependencies/sequences.rs` and statement checking.
-   Emission initializes a component; it must not become an exit. Preserve EmitId,
-   target slots, owners and retained required roots. Keep result availability
+   Matcher statement roots now connect ordered branch points (`ed3baf3`). Ordinary
+   bindings (`0e93b48`) and direct local/slot-alias writes retain explicit operations
+   between value-normal and statement-normal ports, preserving source roots,
+   canonical storage IDs, owner and control metadata. Unknown module producers
+   remain explicit; annotations/required-use links are still separate.
+   Next model emission operations in `dependencies/operations.rs` and
+   `statements.rs::emit`, preserving EmitId, named/outer target slots and source
+   origins before composition. Emission initializes a component; it is not an exit.
+   Then cover field/index/indirect store address and value ordering without
+   bypassing reservation/loan validation. Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.

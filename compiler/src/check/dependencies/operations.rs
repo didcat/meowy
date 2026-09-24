@@ -12,6 +12,7 @@ use crate::{
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Kind {
     Bind,
+    Write,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -221,3 +222,6 @@ mod tests {
         assert_eq!(checker.operation_edges, count);
     }
 }
+
+#[cfg(test)]
+mod writes;
