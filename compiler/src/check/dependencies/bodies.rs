@@ -213,6 +213,7 @@ impl<'a> Walk<'a> {
                         condition,
                         then,
                         otherwise,
+                        ..
                     } => {
                         self.fact(Fact::Branch, condition.span)?;
                         self.role(Role::Else);

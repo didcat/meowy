@@ -7,6 +7,7 @@ pub type EmitId = usize;
 pub type CallId = usize;
 pub type ReborrowId = usize;
 pub type StatementId = usize;
+pub type PointId = usize;
 pub type RestartId = usize;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -362,6 +363,7 @@ pub enum Stmt {
         value: Expr,
     },
     If {
+        point: Option<PointId>,
         condition: Expr,
         then: Vec<Stmt>,
         otherwise: Vec<Stmt>,

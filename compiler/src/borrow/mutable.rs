@@ -132,6 +132,7 @@ pub(crate) fn check(
                     condition,
                     then,
                     otherwise,
+                    ..
                 } => {
                     for stmt in otherwise.iter().chain(then).rev() {
                         add(Item::Statement(stmt))?;

@@ -63,6 +63,7 @@ impl Checker {
                     condition,
                     then,
                     otherwise,
+                    ..
                 } => {
                     let input = self.predicate_expr(condition, depth + 1, count, &block.locals)?;
                     block.input.add(&input);
@@ -113,6 +114,7 @@ mod tests {
             }];
             for _ in 0..depth {
                 stmts = vec![hir::Stmt::If {
+                    point: None,
                     condition: condition.clone(),
                     then: stmts,
                     otherwise: Vec::new(),

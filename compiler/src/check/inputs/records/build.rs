@@ -154,6 +154,7 @@ impl Checker {
                     condition,
                     then,
                     otherwise,
+                    ..
                 } => {
                     let input = self.predicate_expr(condition, depth + 1, count, &build.locals)?;
                     build.record.input.add(&input);

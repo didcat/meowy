@@ -138,6 +138,7 @@ pub(crate) fn temporary_carrier_and_union_copies_preserve_nested_reference_conte
                         },
                         print(vec![type_test(returned.clone(), pointer.clone())]),
                         Stmt::If {
+                            point: None,
                             condition: type_test(returned.clone(), pointer.clone()),
                             then: vec![print(separated(vec![
                                 binary(
@@ -293,6 +294,7 @@ pub(crate) fn restarted_reference_temporaries_replace_active_union_payloads() {
         vec![
             message("init"),
             Stmt::If {
+                point: None,
                 condition: local(1, &Type::Bool),
                 then: vec![Stmt::Emit {
                     id: 0,
@@ -316,11 +318,13 @@ pub(crate) fn restarted_reference_temporaries_replace_active_union_payloads() {
                 }],
             },
             Stmt::If {
+                point: None,
                 condition: type_test(local(3, &optional), pointer.clone()),
                 then: vec![print(vec![deref(coerce(local(3, &optional), &pointer))])],
                 otherwise: vec![message("null")],
             },
             Stmt::If {
+                point: None,
                 condition: local(1, &Type::Bool),
                 then: vec![
                     Stmt::Assign {

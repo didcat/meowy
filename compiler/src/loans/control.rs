@@ -394,6 +394,7 @@ impl<'a> Graph<'a> {
                     condition,
                     then,
                     otherwise,
+                    ..
                 } => {
                     self.expression(condition)?;
                     if self.current.is_empty() {

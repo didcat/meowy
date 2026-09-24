@@ -212,6 +212,7 @@ impl Checker {
                         condition,
                         then,
                         otherwise,
+                        ..
                     } => {
                         pending.push(Node::Expr(condition));
                         pending.extend(then.iter().chain(otherwise).map(Node::Stmt));

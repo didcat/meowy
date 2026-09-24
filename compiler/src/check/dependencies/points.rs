@@ -87,6 +87,9 @@ mod uses;
 mod branches;
 
 #[cfg(test)]
+mod anchors;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

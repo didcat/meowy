@@ -264,6 +264,7 @@ pub(crate) fn inspect(value: Expr, reference: &Type, record: &Type) -> Vec<Stmt>
             type_test(value.clone(), record.clone()),
         ])),
         Stmt::If {
+            point: None,
             condition: type_test(value.clone(), Type::Null),
             then: vec![print(vec![expr(
                 ExprKind::String("empty".into()),
@@ -272,6 +273,7 @@ pub(crate) fn inspect(value: Expr, reference: &Type, record: &Type) -> Vec<Stmt>
             otherwise: Vec::new(),
         },
         Stmt::If {
+            point: None,
             condition: type_test(value.clone(), reference.clone()),
             then: vec![print(separated(vec![
                 binary("==", direct.clone(), borrow(0, int.clone()), Type::Bool),
@@ -280,6 +282,7 @@ pub(crate) fn inspect(value: Expr, reference: &Type, record: &Type) -> Vec<Stmt>
             otherwise: Vec::new(),
         },
         Stmt::If {
+            point: None,
             condition: type_test(value, record.clone()),
             then: vec![print(separated(vec![
                 binary("==", carried.clone(), borrow(0, int), Type::Bool),
@@ -452,6 +455,7 @@ pub(crate) fn reference_alias_restart_reloads_the_current_referent() {
         vec![
             print(vec![expr(ExprKind::String("init".into()), Type::String)]),
             Stmt::If {
+                point: None,
                 condition: local(3, &Type::Bool),
                 then: vec![Stmt::Emit {
                     id: 0,
@@ -471,6 +475,7 @@ pub(crate) fn reference_alias_restart_reloads_the_current_referent() {
     let mut stmts = slot_alias(2, 1, "view", initializer, false);
     stmts.push(print(vec![deref(local(2, &reference))]));
     stmts.push(Stmt::If {
+        point: None,
         condition: local(3, &Type::Bool),
         then: vec![
             Stmt::Assign {

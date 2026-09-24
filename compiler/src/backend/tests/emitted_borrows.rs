@@ -355,6 +355,7 @@ pub(crate) fn target_restart_reinitializes_borrowable_result_and_transient_cells
             int.clone(),
         )]));
         stmts.push(Stmt::If {
+            point: None,
             condition: local(1, &Type::Bool),
             then: vec![
                 Stmt::Assign {

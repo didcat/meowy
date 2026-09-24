@@ -282,6 +282,7 @@ pub(crate) fn restart_reinitializes_temporary_values_in_entry_allocated_cells() 
                     value: binary("+", local(1, &int), integer(1, 32, true), int.clone()),
                 },
                 Stmt::If {
+                    point: None,
                     condition: binary("<", local(1, &int), integer(3, 32, true), Type::Bool),
                     then: vec![Stmt::Restart { target: 1, site: 0 }],
                     otherwise: vec![Stmt::Leave(1)],

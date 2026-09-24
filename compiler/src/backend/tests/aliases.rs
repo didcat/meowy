@@ -157,6 +157,7 @@ pub(crate) fn mutable_emissions_alias_same_outer_and_function_result_cells() {
                 stmts: vec![
                     Stmt::Bind { id: 1, value },
                     Stmt::If {
+                        point: None,
                         condition: type_test(local(1, &stored), ty.clone()),
                         then: vec![print(separated(vec![
                             field(coerce(local(1, &stored), &ty), 1),
@@ -327,6 +328,7 @@ pub(crate) fn guarded_alias_initializers_preserve_optional_defaults() {
                             1,
                             &ty,
                             vec![Stmt::If {
+                                point: None,
                                 condition: local(0, &Type::Bool),
                                 then,
                                 otherwise: Vec::new(),
@@ -384,6 +386,7 @@ pub(crate) fn restart_reinitializes_alias_cells_and_discarded_defaults() {
         value: binary("+", local(0, &int), integer(1, 32, true), int.clone()),
     });
     stmts.push(Stmt::If {
+        point: None,
         condition: local(1, &Type::Bool),
         then: vec![
             Stmt::Emit {
@@ -498,6 +501,7 @@ pub(crate) fn discarded_aliases_keep_valid_local_storage_until_exit() {
                                 1,
                                 &ty,
                                 vec![Stmt::If {
+                                    point: None,
                                     condition: local(2, &Type::Bool),
                                     then,
                                     otherwise: vec![Stmt::Emit {

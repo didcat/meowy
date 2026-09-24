@@ -268,6 +268,7 @@ impl Checker<'_> {
                     condition,
                     then,
                     otherwise,
+                    ..
                 } => {
                     let mut result = self.expression(condition)?.flow;
                     if result.next {

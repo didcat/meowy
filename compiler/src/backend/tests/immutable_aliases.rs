@@ -341,6 +341,7 @@ pub(crate) fn immutable_alias_defaults_and_restart_preserve_initializer_snapshot
                             1,
                             &result,
                             vec![Stmt::If {
+                                point: None,
                                 condition: local(0, &Type::Bool),
                                 then,
                                 otherwise: Vec::new(),
@@ -384,6 +385,7 @@ pub(crate) fn immutable_alias_defaults_and_restart_preserve_initializer_snapshot
     };
     stmts.push(read());
     stmts.push(Stmt::If {
+        point: None,
         condition: local(2, &Type::Bool),
         then: vec![
             Stmt::Assign {
@@ -473,6 +475,7 @@ pub(crate) fn immutable_discarded_aliases_keep_mutability_matched_transient_stor
                             1,
                             &result,
                             vec![Stmt::If {
+                                point: None,
                                 condition: local(3, &Type::Bool),
                                 then,
                                 otherwise: vec![Stmt::Emit {

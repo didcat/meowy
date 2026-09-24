@@ -307,6 +307,7 @@ impl Checker {
                         let then = then?;
                         checker.with_point(PointKind::Else, condition.span, |_| Ok(()))?;
                         Ok(hir::Stmt::If {
+                            point: checker.point,
                             condition,
                             then,
                             otherwise: Vec::new(),

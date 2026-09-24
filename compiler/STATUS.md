@@ -99,50 +99,40 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current expression and branch identity slices
+### Current HIR branch provenance slices
 
-Completed dependency-ordered commit plan:
-1. Add a bounded expression-point inventory with explicit parent, statement,
-   function and block identities. Capture successful/failed runtime expression
-   checking boundaries without using spans as identity; test restoration and bounds.
-2. Give each retained required read and original pending query its own point.
-   Preserve logical roots, source diagnostics, recognition purity, skipped reads
-   and query-copy identity. Keep the regressions with the integration.
-3. Capture matcher condition/taken/skipped regions and short-circuit operand roles
-   under explicit branch points. Preserve both structural alternatives, ordinary
-   checking and function isolation; run the full compiler gate.
+Dependency-ordered commit plan:
+1. Carry optional checked point IDs on HIR matcher branches, assigning them at
+   checked construction and preserving explicit absence in synthetic HIR. Update
+   all exhaustive consumers/constructors and test identity preservation through clones.
+2. Retain matcher sources alongside body facts. Validate bounded source lookup,
+   point kind, owner, block and completion; keep unknown synthetic sources explicit.
+3. Carry optional checked point IDs on HIR binary expressions, assigning only
+   short-circuit branch points. Keep ordinary/synthetic binaries without provenance.
+4. Link short-circuit body facts to their checked points, verify mixed/nested and
+   erased-use associations, and run the full compiler gate.
 
-Investigation: `expr` and `expression` are the runtime expression boundaries.
-Matcher bodies may use `stmt_inner`, so statement IDs alone cannot distinguish
-inline arms. Required reads bypass runtime expression checking; they need their
-own identities. These points retain checking containment, not inferred runtime
-execution order. Explicit continuation/result-transfer links and HIR branch anchors
-remain separate prerequisites to backedge propagation.
+Investigation: `Stmt::If` and `ExprKind::Binary` currently have no stable source
+identity. They are consumed by checking, ownership, loans and lowering; clones
+must preserve provenance without span matching or address-based side tables.
+Split review: each HIR variant migration exceeds eight files because Rust requires
+its exhaustive patterns and every constructor (including native backend fixtures)
+to change atomically with the field. Splitting those by file would not compile.
+Matchers and binary expressions remain separate buildable slices, and body-fact
+integration follows each representation change separately. No runtime behavior or
+new language capability is intended.
 
-The preceding statement-site series (`d8f7f64`, `8a38c02`) passed all ten checks:
-1478 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-debug/release. Log: `/tmp/meowy-checked-sites-gate.log`.
+The previous point series (`10a45ec`, `b4a79de`, `a962406`) passed all ten checks:
+1490 library/910 native tests, conformance 10 passed, 13 unsupported, 0 failed in
+debug/release; `/tmp/meowy-branch-points-gate.log`.
 
-Runtime expression points now retain bounded IDs, same-function parents, statement
-and block links, and completion state. All four focused expression-point groups
-pass, including duplicate spans, nested functions, coercion failure restoration
-and capacity limits. All 1482 library tests pass;
-`/tmp/meowy-expression-points-lib.log`. The existing continuation-budget diagnostic
-precedence is preserved. Expression prerequisite: `10a45ec`. Required reads and
-query construction now enter their own points; repeated reads get distinct IDs
-and query arguments retain their query parent. All four required-point groups
-pass, including failed enclosing queries, recognition purity, skipped reads and
-function isolation. All 1486 library tests pass;
-`/tmp/meowy-required-points-lib.log`. No failures remain. Runtime branch/operand
-region capture now wraps matcher conditions/bodies and short-circuit operands,
-including explicit empty alternatives. Required/query point prerequisite: `b4a79de`.
-All four branch-point groups pass, including inline matcher uses, skipped RHS
-queries, nested boolean conditions, function isolation and E215/E207/E222 errors.
-All ten compiler checks pass, including 1490 library/910 native tests, formatting,
-Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-branch-points-gate.log`. No failures remain. Next connect these
-points to HIR branches/body facts and explicit continuation/join/result edges.
-Proof outcomes remain gated; unknown reference/store/call effects remain explicit.
+HIR matchers now carry optional point IDs; checked construction assigns them and
+synthetic constructors use None. Both provenance groups and all 1492 library
+tests pass, including clones, repeated spans and function/block ownership;
+`/tmp/meowy-hir-matchers-lib.log`. No failures remain. Matcher body-fact
+association and source validation are next.
+Explicit continuation/join/result transfers and restart propagation remain pending.
+Proof outcomes stay gated; unknown reference/store/call effects stay explicit.
 
 ### Proof dependency implementation slices
 

@@ -418,6 +418,12 @@ library/910 native tests; `/tmp/meowy-branch-points-gate.log`. HIR branch links,
 explicit continuation/result transfers and restart propagation remain incomplete.
 Expression prerequisite: `10a45ec`; required/query integration: `b4a79de`.
 
+HIR matcher branches now retain optional checked point IDs. Checked construction
+assigns them; synthetic branches explicitly retain no source. Both provenance
+groups and all 1492 library tests pass; `/tmp/meowy-hir-matchers-lib.log`.
+Matcher body-fact association is next; continuation/result edges and proof outcomes
+remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

@@ -115,6 +115,7 @@ pub(crate) fn inferred_union_emissions_and_nullable_defaults_execute() {
                 id,
                 ty: shape.clone(),
                 stmts: vec![Stmt::If {
+                    point: None,
                     condition: expr(ExprKind::Bool(present), Type::Bool),
                     then: vec![Stmt::Emit {
                         id: 0,
@@ -188,6 +189,7 @@ pub(crate) fn union_storage_and_restart_defaults_execute() {
             id: 1,
             ty: shape.clone(),
             stmts: vec![Stmt::If {
+                point: None,
                 condition: expr(
                     ExprKind::Unary {
                         op: "!".into(),
@@ -411,6 +413,7 @@ pub(crate) fn discarded_emission_slots_preserve_operand_effects() {
             ty: ty.clone(),
             stmts: vec![
                 Stmt::If {
+                    point: None,
                     condition: expr(
                         ExprKind::Unary {
                             op: "!".into(),

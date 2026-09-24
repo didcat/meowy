@@ -443,6 +443,7 @@ impl<'a> Generator<'a> {
                     condition,
                     then,
                     otherwise,
+                    ..
                 } => {
                     let condition = self.expression(condition)?;
                     if self.ended {
