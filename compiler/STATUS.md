@@ -99,50 +99,38 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current branch continuation and join slices
+### Current region-content edge slices
 
-Completed dependency-ordered commit plan:
-1. Return the exact allocated ID from a checked point boundary while preserving
-   the existing value-only API, restoration, completion and budget behavior.
-2. Add bounded explicit branch edges and integrate matcher condition/arm/normal-join
-   ports. Retain both labeled successors and the empty skipped path; validate
-   source identities and test atomic budgets, failures and independent arms.
-3. Integrate short-circuit true/false operand routes and normal joins using IDs
-   returned by checking. Cover nested/skipped RHS uses and source errors; run the
-   full compiler gate.
+Dependency-ordered commit plan:
+1. Expose exact root IDs from coerced and uncoerced runtime expression checking,
+   keeping the existing value-only APIs and diagnostic/budget precedence intact.
+2. Give matcher-body statements explicit checked point IDs, preserving statement
+   lifetime IDs, existing continuation control and ordinary diagnostics. Keep the
+   required ancestry-test updates with this representation prerequisite.
+3. Add bounded entry-to-child and child-normal-to-region-normal links, sharing the
+   edge budget with branch decisions. Integrate matcher conditions and bodies;
+   test identity, failure and budgets without inventing completion for exits.
+4. Link short-circuit condition/RHS regions to their exact expression roots, then
+   validate nested/skipped uses, error restoration and the full compiler gate.
 
-Investigation: current parent links identify containment, not successors. Branch
-regions must return their IDs directly so edge construction never scans spans or
-infers ordering from allocation. Entry and normal-completion ports are distinct:
-a checked region does not imply that its normal port is reachable. Leave/restart
-and generic statement/operand sequencing will need separate edges before this
-partial graph can support propagation. Block/emission result transfers remain
-separate; no query evaluation or backedge E225 enforcement is enabled here.
+Investigation: region IDs are already retained, but expression APIs discard the
+root ID and matcher bodies can be erased statements without any point of their
+own. Return the root IDs directly and create a statement point at the matcher-body
+boundary. General statement/operand sequencing remains a separate next slice.
+Region normal exits must depend on child normal exits; never insert a direct
+entry-to-normal bypass for a nonempty region. Explicit leaves/restarts and
+block/emission result transfer still precede any propagation or query outcomes.
 
-The HIR source series (`1038bbc`, `f2dcfcf`, `a66a363`, `671b2b6`) passed all ten
-checks: 1501 library/910 native tests; conformance 10 passed, 13 unsupported,
-0 failed in debug/release. Log: `/tmp/meowy-hir-branch-sources-gate.log`.
-Checked point boundaries now return their exact allocated ID alongside the
-result. Nested checking and failures restore the enclosing active point; the
-value-only API and existing budgets are preserved. Both new point-result groups
-and all 1503 library tests pass; `/tmp/meowy-point-results-lib.log`. No failures
-remain. Point-result prerequisite: `e201bd7`. Matcher branches now record bounded
-entry, true/false, skipped-path and normal-join edges using returned IDs. Source
-validation and publication are atomic; repeated identical registrations are stable.
-All four focused matcher-edge groups pass, including independent decisions,
-leave boundaries, functions, repeated registrations, ordinary errors and budgets.
-All 1507 library tests pass, including invalid parent/owner/block cases;
-`/tmp/meowy-matcher-edges-lib.log`. No failures remain. Short-circuit edge
-integration now records the true route for && and false route for ||, their
-empty bypasses and normal joins after operand validation. Matcher prerequisite:
-`1e30544`. All three logic-edge groups pass, including skipped RHS query/read
-chains, nested/function identities, E222 operand errors and incomplete E207
-coercions. All ten compiler checks pass, including 1510 library/910 native tests,
-formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
-in debug/release). Log: `/tmp/meowy-branch-edges-gate.log`. No failures remain.
-Region-content links, statement/operand sequences and explicit exit/result edges
-remain prerequisites to propagation. Unknown sources/effects remain explicit
-and proof outcomes stay gated.
+The prior series (`e201bd7`, `1e30544`, `398cb7b`) passed all ten checks:
+1510 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-branch-edges-gate.log`.
+
+Coerced/uncoerced expression APIs now return their exact outer point IDs while
+value-only callers keep their existing behavior. Both new expression-root groups
+and all 1512 library tests pass; `/tmp/meowy-expression-roots-lib.log`. No failures
+remain. The matcher-body point prerequisite is next. It is split from region-edge
+integration so ancestry changes and new graph behavior remain separately reviewable.
+Unknown effects and unlinked normal ports remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices
 

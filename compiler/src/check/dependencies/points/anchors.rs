@@ -94,3 +94,58 @@ pub(crate) fn hir_logic_points_do_not_invent_origins_for_synthetic_binaries() {
         assert!(binary(&[hir::Stmt::Expr(expr)]).is_none());
     }
 }
+
+#[test]
+pub(crate) fn expression_roots_return_outer_ids_through_nested_groups_and_coercions() {
+    let stmt = crate::parser::parse("((false&&true))")
+        .unwrap()
+        .stmts
+        .remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let mut checker = Checker::new();
+    let (first, value) = checker.expr_point(&expr, Some(&hir::Type::Bool)).unwrap();
+    let (second, _) = checker.expression_point(&expr, None).unwrap();
+    assert_ne!(first, second);
+    assert_eq!(checker.points[first].span, checker.points[second].span);
+    assert!(checker.points[first].parent.is_none());
+    assert!(checker.points[second].parent.is_none());
+    let hir::ExprKind::Binary {
+        point: Some(inner), ..
+    } = value.kind
+    else {
+        panic!()
+    };
+    let group = checker.points[inner].parent.unwrap();
+    assert_eq!(checker.points[group].parent, Some(first));
+    assert!(checker.point.is_none());
+}
+
+#[test]
+pub(crate) fn expression_roots_preserve_coercion_and_budget_failure_precedence() {
+    let stmt = crate::parser::parse("1+2").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let mut checker = Checker::new();
+    assert_eq!(
+        checker
+            .expr_point(&expr, Some(&hir::Type::Bool))
+            .unwrap_err()
+            .code,
+        "E207"
+    );
+    assert!(!checker.points[0].complete);
+    assert!(checker.point.is_none());
+    let (_, value) = checker
+        .expression_point(&expr, Some(&hir::Type::Bool))
+        .unwrap();
+    assert_ne!(value.ty, hir::Type::Bool);
+    assert!(!checker.flow.spend(usize::MAX));
+    let count = checker.points.len();
+    let error = checker.expr_point(&expr, None).unwrap_err();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("continuation expression budget"));
+    assert_eq!(checker.points.len(), count);
+}

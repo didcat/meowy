@@ -441,6 +441,11 @@ Point-result prerequisite: `e201bd7`; matcher edges: `1e30544`. Region-content l
 generic sequences and explicit exit/result transfers remain incomplete. Propagation
 and outcomes stay gated.
 
+Coerced/uncoerced expression APIs now return exact root IDs without adding points
+or changing diagnostics/accounting. Both focused groups and all 1512 library tests
+pass; `/tmp/meowy-expression-roots-lib.log`. Matcher-body statement identities are
+next, followed by region-content edges. General sequencing and outcomes stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

@@ -6,8 +6,16 @@ use crate::hir::{self, Type};
 
 impl Checker {
     pub(crate) fn expr(&mut self, expr: &ast::Expr, expected: Option<&Type>) -> Result<hir::Expr> {
+        self.expr_point(expr, expected).map(|(_, value)| value)
+    }
+
+    pub(crate) fn expr_point(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<(hir::PointId, hir::Expr)> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.with_point(PointKind::expression(expr), expr.span, |checker| {
+            checker.with_point_id(PointKind::expression(expr), expr.span, |checker| {
                 checker.coerced_expression(expr, expected)
             })
         })
@@ -84,8 +92,17 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
+        self.expression_point(expr, expected)
+            .map(|(_, value)| value)
+    }
+
+    pub(crate) fn expression_point(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<(hir::PointId, hir::Expr)> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.with_point(PointKind::expression(expr), expr.span, |checker| {
+            checker.with_point_id(PointKind::expression(expr), expr.span, |checker| {
                 checker.expression_value(expr, expected)
             })
         })
