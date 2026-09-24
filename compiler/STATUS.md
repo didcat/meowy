@@ -42,9 +42,13 @@ Investigation: frame continuation marks survive an earlier operand, but later
 expressions do not refresh lexical control until another statement begins. This
 misses availability marks on later temporary owners. Share the existing scope
 transaction across expressions, preserving original source errors and evaluation
-order. The scope extraction passes all 447 dependency-filtered tests and formatting;
-log: `/tmp/meowy-continuation-scope-focused.log`. Expression integration is next.
-User changes remain preserved; proof outcomes stay gated.
+order. Scope prerequisite `bac55cf` passed all 447 focused tests before integration.
+Expression boundaries and six new groups pass all 453 dependency-filtered tests;
+log: `/tmp/meowy-expression-successors-focused.log`. Later temporary owners,
+indexed RHS writes, target joins, pending queries, original E212/E207 diagnostics,
+final coercion rollback and work bounds pass. All ten compiler checks pass,
+including 1426 library/903 native tests; log: `/tmp/meowy-expression-successors-gate.log`.
+No failures remain. User changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1372,16 +1376,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1420
-  library/903 native tests (2323 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1426
+  library/903 native tests (2329 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-leave-successors-gate.log`.
-- All 447 dependency-filtered tests pass. Seven forward-leave groups cover
-  successor reads/writes, nested targets and joins, pending-query/E225 availability,
-  required-input error precedence, rollback after errors, sibling matcher arms,
-  ordinary unmarked leaves and continuation-budget exhaustion. Marks are seeded;
-  runtime proof outcomes remain unavailable. Intra-expression successors and restart
-  backedges are not implemented by this slice.
+  0 failed in debug/release. Log: `/tmp/meowy-expression-successors-gate.log`.
+- All 453 dependency-filtered tests pass. Six expression-successor groups cover
+  later call operands, indexed RHS temporaries/writes, target joins, pending-query
+  E225, ordinary unmarked behavior, call-argument/source-error precedence, final
+  coercion rollback and expression-budget exhaustion. Marks are seeded; runtime
+  proof outcomes remain unavailable. Restart backedges and termination dependence
+  remain incomplete.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1654,20 +1658,25 @@ explicitly documented. No outstanding failures remain.
    subsequent statements and matcher arms until the target scope joins. Intervening
    successors, writes and pending queries retain marks; enclosing control and
    continuation state restore on errors, and independent joined successors stay clear.
-   Next extend leave continuation handling to intra-expression operand successors
-   in `check/expressions.rs` and expression evaluation helpers. A leave inside an
-   earlier operand can affect later operands before another statement boundary.
-   Preserve evaluation order, required-input error precedence and target joins;
-   test seeded calls/indexes/initializers before the full gate. Then handle restart
-   backedges and loop-carried control with a separate bounded propagation plan.
+   Expression boundaries now refresh leave continuation control, including later
+   call operands, indexed assignment RHS temporaries and pending-query blocks.
+   Operand-local target joins remain independent; final coercion errors restore
+   enclosing control. Scope prerequisite: `bac55cf`.
+   Next audit restart backedges and loop-carried proof control in the scope-operation
+   handlers and dependency walk. Record RestartId/target/control evidence separately
+   from forward leaves, then plan bounded propagation over the source graph without
+   re-evaluating initializers or resetting logical budgets. A frame flag only affects
+   later source statements and cannot by itself cover earlier statements on the next
+   iteration. Start with seeded pre-restart writes/reads/query availability and
+   nested targets; retain ordinary errors and keep outcomes gated through the full gate.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.
    Structural reads and lexical matcher control are tracked; required reads
    and pending query availability enforce E225 for those marks. Conditional
-   leave control is now retained at statement boundaries. Intra-expression
-   successors, restart backedges and termination dependence remain incomplete;
+   leave control is now retained at statement and expression boundaries.
+   Restart backedges and termination dependence remain incomplete;
    lexical restoration alone is not complete control analysis. Add seeded write/call/continuation regressions and
    run the full compiler gate. Preserve answer-independent fixed flag type queries.
    Preserve ordinary typing/ownership in skipped runtime bodies and E225 separation for

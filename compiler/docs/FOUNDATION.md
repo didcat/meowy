@@ -105,8 +105,11 @@ statements do not inherit a completed matcher body's control mark unless a deriv
 leave changes their availability. Forward leave continuations mark subsequent
 statements and matcher arms until the target scope joins, including intervening
 scopes, writes and pending query availability. Errors restore enclosing control;
-independent statements after that join remain unmarked. Restart backedges and
-intra-expression operand continuations remain separate.
+independent statements after that join remain unmarked. Expression evaluation
+boundaries also refresh continuation control, so later call operands and indexed
+assignment operands mark temporary availability correctly. Final coercion errors
+restore enclosing control, and operand-local joins do not taint later independent
+temporaries. Restart backedges and termination dependence remain separate.
 Direct local assignments and owned field/list-element writes retain dependencies
 from the RHS, evaluated indices and lexical control. These marks conservatively
 cover the whole destination owner and survive later independent overwrites.
@@ -353,8 +356,8 @@ aggregate shapes, unsupported borrowed-record contents and reference chains,
 allocator-bound pointees or broader return shapes,
 and heterogeneous record unions remain separate. Callee effects and data/control
 summaries are not supplied by this origin mapping. Precise overwrite/
-join rules, function summaries, restart backedges and intra-expression continuation
-control remain prerequisites to admitting flags or evaluated answers.
+join rules, function summaries, restart backedges and termination dependence
+remain prerequisites to admitting flags or evaluated answers.
 
 Ordinary typing and ownership validation finish before the pending-evaluation gate,
 including uncalled function bodies and runtime-skipped branches. Earlier query

@@ -6,7 +6,17 @@ use crate::hir::{self, Type};
 
 impl Checker {
     pub(crate) fn expr(&mut self, expr: &ast::Expr, expected: Option<&Type>) -> Result<hir::Expr> {
-        let mut value = self.expression(expr, expected)?;
+        self.with_continuation(expr.span, "expression", |checker| {
+            checker.coerced_expression(expr, expected)
+        })
+    }
+
+    pub(crate) fn coerced_expression(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<hir::Expr> {
+        let mut value = self.expression_value(expr, expected)?;
         if value.ty == Type::Never {
             self.reach = FALSE;
             return Ok(value);
@@ -68,6 +78,16 @@ impl Checker {
     }
 
     pub(crate) fn expression(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<hir::Expr> {
+        self.with_continuation(expr.span, "expression", |checker| {
+            checker.expression_value(expr, expected)
+        })
+    }
+
+    pub(crate) fn expression_value(
         &mut self,
         expr: &ast::Expr,
         expected: Option<&Type>,
