@@ -289,3 +289,25 @@ empty<View><null>:'drop {
     )
     .runs(b"42\n7\ntrue\n9\n7\nok\n255\n43\ndiscarded\n");
 }
+
+#[test]
+pub fn explicit_ascription_uses_prior_narrowing_inside_matchers() {
+    Case::new(
+        r#"
+d:@"debug"
+show<null>:(enabled<boolean><null>){|enabled<boolean> && enabled~<boolean>|d.print("enabled")}
+show(true)
+show(false)
+show(null)
+<U>:<int32><null>
+x<int32>:7
+copy:x~<U>
+|copy<int32>|d.print(copy~<int32>)
+"#,
+    )
+    .runs(b"enabled\n7\n");
+    let result =
+        Case::new("bad<null>:(x<int32><null>){value:x~<int32>}").command("check", &["--json"]);
+    assert_eq!(result.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&result.stderr).contains("E208"));
+}

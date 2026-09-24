@@ -337,3 +337,55 @@ pub(crate) fn explicit_type_calls_preserve_suffix_context_and_limits() {
     assert_eq!(parse("f<int32><null>()").unwrap_err()[0].code, "B001");
     assert!(parse("f<int32,>()").is_err());
 }
+
+#[test]
+pub(crate) fn explicit_ascription_consumes_one_target_before_predicates() {
+    for source in [
+        "|value~<T><U>|matched()",
+        "| value ~ < T > < U > | matched()",
+    ] {
+        let block = parse(source).unwrap();
+        let StmtKind::Match { arms } = &block.stmts[0].kind else {
+            panic!()
+        };
+        let ExprKind::Ascribe {
+            value,
+            predicate: true,
+            ..
+        } = &arms[0].0.as_ref().unwrap().kind
+        else {
+            panic!()
+        };
+        assert!(matches!(
+            value.kind,
+            ExprKind::Ascribe {
+                predicate: false,
+                ..
+            }
+        ));
+    }
+}
+
+#[test]
+pub(crate) fn explicit_ascription_preserves_generic_calls_and_type_queries() {
+    let block = parse("out:f<T>(value~<T>);ty:value~<T><>").unwrap();
+    let StmtKind::Bind { value, .. } = &block.stmts[0].kind else {
+        panic!()
+    };
+    let ExprKind::Call { callee, args } = &value.kind else {
+        panic!()
+    };
+    assert!(matches!(callee.kind, ExprKind::Specialize { .. }));
+    assert!(matches!(
+        args[0].kind,
+        ExprKind::Ascribe {
+            predicate: false,
+            ..
+        }
+    ));
+    let StmtKind::Bind { value, .. } = &block.stmts[1].kind else {
+        panic!()
+    };
+    assert!(matches!(value.kind, ExprKind::TypeQuery(_)));
+    assert!(parse("out:value~T").is_err());
+}

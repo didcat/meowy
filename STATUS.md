@@ -17,6 +17,15 @@ Documentation and 82 standalone examples retain the standardized readable layout
 The prior token/literal preservation audit is `/tmp/meowy-doc-style-audit.json`;
 Git preserves its completed commit series. Compiler guides remain in `compiler/docs/`.
 
+## Explicit ascription and bits-module migration
+
+Adopt `value~<T>` for proven ascription and make `value<T>` a type predicate in all
+expression positions. Generic calls and type queries retain their syntax; union
+ascriptions use one target type such as a named alias. Move integer bitwise syntax
+into `@"bits"` functions while preserving integer widths and required evaluation.
+Compiler, docs and editor work proceeds in the compiler handoff's reviewed slices.
+Validation pending; restart/proof implementation remains separate.
+
 ## Dispatch receiver sigil migration
 
 `$` now denotes the nearest dispatch receiver in the compiler, documentation,

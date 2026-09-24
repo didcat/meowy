@@ -129,6 +129,19 @@ impl Parser {
                     };
                     continue;
                 }
+                if self.take("~") {
+                    self.newlines();
+                    let ty = self.type_bracket()?;
+                    left = Expr {
+                        kind: ExprKind::Ascribe {
+                            value: Box::new(left),
+                            ty,
+                            predicate: false,
+                        },
+                        span: Span::new(start, self.end()),
+                    };
+                    continue;
+                }
                 if self.at("<") {
                     if self.specialized_call() {
                         self.need("<")?;

@@ -36,6 +36,26 @@ The full composition project still hits existing manifest/module-composition gat
 no full-language example execution or release qualification is claimed.
 The restart/proof implementation handoff below remains the next compiler task.
 
+## Explicit ascription and bits-module migration
+
+Commit plan:
+1. Add postfix `~<T>` as proven ascription (one bracketed target), preserving old
+   syntax during fixture migration. Test proof-before-use, boolean matcher operands,
+   union aliases, whitespace and generic-call parsing.
+2. Add lexically resolved `bits.and/or/xor/not` backed by existing integer HIR and
+   required evaluation, then migrate bitwise fixtures before removing operators.
+3. Migrate existing ascription fixtures in bounded subsystem batches and make bare
+   `value<T>` a predicate everywhere. Keep generic calls and empty type queries.
+4. Update docs/examples and Vim/Neovim in separate reviewed slices. Run the complete
+   compiler/editor gate, retaining E208 and ownership behavior and existing gates.
+
+Root owns both STATUS files; parallel agents own bits-module code, documentation,
+and editor support. Explicit ~ ascription passes two parser tests and a native
+debug/release test; logs: `/tmp/meowy-explicit-ascription-parser.log`,
+`/tmp/meowy-explicit-ascription-native.log`. Legacy context-sensitive suffixes remain
+only during fixture migration. Ordinary host-language self/bitwise syntax and unrelated user
+work are preserved. The restart/proof handoff remains unchanged.
+
 ## Executable proof plan
 
 The next milestone is bounded type-only `proof.can_copy<T>()`, with opaque static
