@@ -10,7 +10,8 @@ pub(crate) fn logic_edges_route_erased_rhs_uses_on_the_correct_boolean_successor
             format!("p:@\"proof\";n:3;x:{left}{op}{{q:p.can_copy<({{-><uint8[n]>}})>();->true}}");
         let checker = check(&source);
         let query = &checker.queries[0];
-        let expr = checker.points[query.point].parent.unwrap();
+        let stmt = checker.points[query.point].parent.unwrap();
+        let expr = checker.points[stmt].parent.unwrap();
         let arm = checker.points[expr].parent.unwrap();
         let branch = checker.points[arm].parent.unwrap();
         let edges = &checker.branch_edges[&branch];
@@ -93,7 +94,8 @@ pub(crate) fn logic_contents_link_skipped_rhs_expression_roots_and_erased_querie
         let checker = check(&source);
         assert_eq!(checker.region_edges.len(), 2);
         let query = &checker.queries[0];
-        let root = checker.points[query.point].parent.unwrap();
+        let stmt = checker.points[query.point].parent.unwrap();
+        let root = checker.points[stmt].parent.unwrap();
         let region = checker.points[root].parent.unwrap();
         let edges = checker.region_edges[&region];
         assert_eq!(

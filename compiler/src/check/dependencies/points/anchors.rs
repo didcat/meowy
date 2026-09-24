@@ -40,7 +40,9 @@ pub(crate) fn hir_matcher_points_keep_function_and_block_ownership() {
     assert_ne!(outer.owner, inner.owner);
     assert_eq!(outer.block, Some(body.id));
     assert_eq!(inner.block, Some(function.id));
-    assert!(inner.parent.is_none());
+    let stmt = &checker.points[inner.parent.unwrap()];
+    assert_eq!(stmt.kind, Kind::Stmt);
+    assert!(stmt.parent.is_none());
 }
 
 pub(crate) fn binary(stmts: &[hir::Stmt]) -> Option<hir::PointId> {

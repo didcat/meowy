@@ -113,7 +113,12 @@ mod tests {
         let bodies = checker
             .points
             .iter()
-            .filter(|point| point.kind == Kind::Stmt)
+            .filter(|point| {
+                point.kind == Kind::Stmt
+                    && point
+                        .parent
+                        .is_some_and(|id| checker.points[id].kind == Kind::Then)
+            })
             .collect::<Vec<_>>();
         assert_eq!(bodies.len(), 2);
         assert!(bodies.iter().all(|point| point.complete));
@@ -205,16 +210,24 @@ mod tests {
         let stmt = crate::parser::parse("1+2").unwrap().stmts.remove(0);
         checker.stmt(&stmt).unwrap();
         checker.stmt(&stmt).unwrap();
-        assert_eq!(checker.points.len(), 6);
-        let points = &checker.points;
-        assert_eq!(points[0].span, points[3].span);
-        assert_eq!(points[0].site, Some(0));
-        assert_eq!(points[3].site, Some(1));
-        assert_eq!(points[1].parent, Some(0));
-        assert_eq!(points[2].parent, Some(0));
-        assert_eq!(points[4].parent, Some(3));
-        assert_eq!(points[5].parent, Some(3));
-        assert!(points.iter().all(|point| point.complete));
+        assert_eq!(checker.points.len(), 8);
+        let points = checker
+            .points
+            .iter()
+            .enumerate()
+            .filter(|(_, point)| point.kind == Kind::Expr)
+            .collect::<Vec<_>>();
+        assert_eq!(points.len(), 6);
+        assert_eq!(points[0].1.span, points[3].1.span);
+        assert_eq!(points[0].1.site, Some(0));
+        assert_eq!(points[3].1.site, Some(1));
+        assert_eq!(points[0].1.parent, checker.sites[&0].point);
+        assert_eq!(points[3].1.parent, checker.sites[&1].point);
+        assert_eq!(points[1].1.parent, Some(points[0].0));
+        assert_eq!(points[2].1.parent, Some(points[0].0));
+        assert_eq!(points[4].1.parent, Some(points[3].0));
+        assert_eq!(points[5].1.parent, Some(points[3].0));
+        assert!(points.iter().all(|(_, point)| point.complete));
         assert!(checker.point.is_none());
     }
 
@@ -251,7 +264,9 @@ mod tests {
         assert_eq!(checker.stmt(&stmt).unwrap_err().code, "E207");
         assert!(checker.point.is_none());
         assert!(!checker.points[0].complete);
-        assert!(checker.points.iter().skip(1).all(|point| point.complete));
+        assert_eq!(checker.points[0].kind, Kind::Stmt);
+        assert!(!checker.points[1].complete);
+        assert!(checker.points.iter().skip(2).all(|point| point.complete));
         let start = checker.points.len();
         let stmt = crate::parser::parse("3").unwrap().stmts.remove(0);
         checker.stmt(&stmt).unwrap();

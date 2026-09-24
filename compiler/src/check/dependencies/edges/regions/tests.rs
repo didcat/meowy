@@ -97,7 +97,9 @@ pub(crate) fn region_edges_share_branch_capacity_and_preserve_atomic_registratio
             checker.branch_edges.clear();
             checker.region_edges.clear();
             for id in 1..=MAX_EDGES / routes.len() {
-                checker.branch_edges.insert(id, routes);
+                checker
+                    .branch_edges
+                    .insert(checker.points.len() + id, routes);
             }
             checker.region_edges.insert(usize::MAX, edges);
             checker.region_edges.insert(usize::MAX - 1, edges);

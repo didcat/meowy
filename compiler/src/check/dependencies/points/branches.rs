@@ -42,7 +42,9 @@ pub(crate) fn branch_points_attach_inline_queries_and_reads_to_matcher_arms() {
     let arm = checker.points[body].parent.unwrap();
     assert_eq!(checker.points[arm].kind, Kind::Then);
     assert_eq!(checker.points[arm].parent, Some(branches[1]));
-    assert!(checker.points[checker.queries[1].point].parent.is_none());
+    let stmt = checker.points[checker.queries[1].point].parent.unwrap();
+    assert_eq!(checker.points[stmt].kind, Kind::Stmt);
+    assert!(checker.points[stmt].parent.is_none());
 }
 
 #[test]
@@ -67,7 +69,9 @@ pub(crate) fn branch_points_keep_both_short_circuit_alternatives_and_erased_rhs_
         };
         assert_eq!(children(&checker, id), [Kind::Condition, arm, other]);
         let query = &checker.points[checker.queries[0].point];
-        let expr = &checker.points[query.parent.unwrap()];
+        let stmt = &checker.points[query.parent.unwrap()];
+        assert_eq!(stmt.kind, Kind::Stmt);
+        let expr = &checker.points[stmt.parent.unwrap()];
         let region = &checker.points[expr.parent.unwrap()];
         assert_eq!(expr.kind, Kind::Expr);
         assert_eq!(region.kind, arm);
@@ -93,7 +97,9 @@ pub(crate) fn branch_points_restore_context_after_errors_and_nested_function_che
     }
     let checker =
         check("p:@\"proof\";|false|{f:(){q:p.can_copy<uint8>()};outer:p.can_copy<uint16>()}");
-    assert!(checker.points[checker.queries[0].point].parent.is_none());
+    let stmt = checker.points[checker.queries[0].point].parent.unwrap();
+    assert_eq!(checker.points[stmt].kind, Kind::Stmt);
+    assert!(checker.points[stmt].parent.is_none());
     assert!(checker.points[checker.queries[1].point].parent.is_some());
     for point in &checker.points {
         if let Some(parent) = point.parent {

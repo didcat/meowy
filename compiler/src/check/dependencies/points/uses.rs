@@ -92,7 +92,10 @@ pub(crate) fn required_points_keep_nested_functions_separate_from_expression_par
     let query = &checker.queries[0];
     let point = &checker.points[query.point];
     assert_eq!(point.owner, query.owner);
-    assert!(point.parent.is_none());
+    let stmt = &checker.points[point.parent.unwrap()];
+    assert_eq!(stmt.kind, Kind::Stmt);
+    assert_eq!(stmt.owner, query.owner);
+    assert!(stmt.parent.is_none());
     assert_eq!(
         point.block,
         Some(checker.functions[0].as_ref().unwrap().body.id)

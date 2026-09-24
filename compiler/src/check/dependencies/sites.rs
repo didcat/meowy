@@ -2,6 +2,7 @@ use crate::{ast::Span, check::Checker, check::Result, diagnostic::Diagnostic, hi
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct Site {
+    pub(crate) point: Option<hir::PointId>,
     pub(crate) owner: usize,
     pub(crate) block: Option<hir::BlockId>,
     pub(crate) parent: Option<hir::StatementId>,
@@ -42,6 +43,7 @@ impl Checker {
         self.sites.insert(
             id,
             Site {
+                point: None,
                 owner: self.owner,
                 block,
                 parent,
@@ -188,6 +190,38 @@ mod uses {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    pub(crate) fn checked_statement_roots_cover_erased_values_and_preserve_failed_sites() {
+        let mut checker = Checker::new();
+        for (source, erased) in [("<T>:<uint8>", true), ("1", false)] {
+            let stmt = crate::parser::parse(source).unwrap().stmts.remove(0);
+            let (id, stmts) = checker.checked_stmt(&stmt).unwrap();
+            assert_eq!(stmts.is_empty(), erased);
+            let point = &checker.points[id];
+            let site = &checker.sites[&point.site.unwrap()];
+            assert_eq!(site.point, Some(id));
+            assert_eq!(point.kind, super::super::PointKind::Stmt);
+            assert_eq!(point.owner, site.owner);
+            assert_eq!(point.block, site.block);
+            assert!(point.complete && site.complete);
+            assert!(
+                !stmts
+                    .iter()
+                    .any(|stmt| matches!(stmt, hir::Stmt::Statement { .. }))
+            );
+        }
+        let stmt = crate::parser::parse("bad<boolean>:1")
+            .unwrap()
+            .stmts
+            .remove(0);
+        assert_eq!(checker.checked_stmt(&stmt).unwrap_err().code, "E207");
+        let site = checker.sites.values().last().unwrap();
+        assert!(!site.complete);
+        assert!(site.point.is_none());
+        assert!(checker.statement.is_empty());
+        assert!(checker.point.is_none());
+    }
 
     #[test]
     pub(crate) fn checked_sites_distinguish_identical_spans_and_erased_statements() {

@@ -126,7 +126,8 @@ pub(crate) fn logic_sources_link_skipped_rhs_queries_and_reads_across_nested_blo
             .unwrap();
         let point = body.sources[index].unwrap();
         let query = &checker.queries[0];
-        let expr = checker.points[query.point].parent.unwrap();
+        let stmt = checker.points[query.point].parent.unwrap();
+        let expr = checker.points[stmt].parent.unwrap();
         let region = checker.points[expr].parent.unwrap();
         assert_eq!(checker.points[region].parent, Some(point));
         let read = checker.body_inputs.values().flatten().next().unwrap();

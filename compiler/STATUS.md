@@ -99,55 +99,39 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current region-content edge slices
+### Current statement and operand sequence slices
 
-Completed dependency-ordered commit plan:
-1. Expose exact root IDs from coerced and uncoerced runtime expression checking,
-   keeping the existing value-only APIs and diagnostic/budget precedence intact.
-2. Give matcher-body statements explicit checked point IDs, preserving statement
-   lifetime IDs, existing continuation control and ordinary diagnostics. Keep the
-   required ancestry-test updates with this representation prerequisite.
-3. Add bounded entry-to-child and child-normal-to-region-normal links, sharing the
-   edge budget with branch decisions. Integrate matcher conditions and bodies;
-   test identity, failure and budgets without inventing completion for exits.
-4. Link short-circuit condition/RHS regions to their exact expression roots, then
-   validate nested/skipped uses, error restoration and the full compiler gate.
+Dependency-ordered commit plan:
+1. Retain exact checked points for general lifetime-scoped statements, associating
+   completed sites with their roots. Preserve temporary lifetimes and errors;
+   update ancestry regressions atomically with the new statement containment.
+2. Retain bounded source-ordered block statement inventories and explicit normal-
+   to-next-entry edges using returned IDs. Keep forward groups as opaque barriers;
+   share the existing edge budget and validate ownership/site identity.
+3. Retain exact ordinary binary operand roots and their sequence edges. Leave
+   unsupported composed roots explicit and keep short-circuit routing separate.
+   Run focused regressions and the full compiler gate.
 
-Investigation: region IDs are already retained, but expression APIs discard the
-root ID and matcher bodies can be erased statements without any point of their
-own. Return the root IDs directly and create a statement point at the matcher-body
-boundary. General statement/operand sequencing remains a separate next slice.
-Region normal exits must depend on child normal exits; never insert a direct
-entry-to-normal bypass for a nonempty region. Explicit leaves/restarts and
-block/emission result transfer still precede any propagation or query outcomes.
+Investigation: block checking already visits statements in order, but `stmt`
+returns only HIR and forward groups bypass it. General statement roots should use
+`stmt_point` without adding HIR lifetime wrappers. Completed site-to-point links
+will distinguish full statements from matcher-body points sharing a site. Sequence
+edges connect normal ports only; they do not establish reachability or completion.
+Split review: the first representation change may touch more than eight files
+because existing ancestry assertions must change with the single new containment
+boundary; separating those fixtures would leave a failing intermediate commit.
+Explicit exits, result transfer and propagation remain separate.
 
-The prior series (`e201bd7`, `1e30544`, `398cb7b`) passed all ten checks:
-1510 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-debug/release. Log: `/tmp/meowy-branch-edges-gate.log`.
-
-Coerced/uncoerced expression APIs now return their exact outer point IDs while
-value-only callers keep their existing behavior. Both new expression-root groups
-and all 1512 library tests pass; `/tmp/meowy-expression-roots-lib.log`. No failures
-remain. Expression-root prerequisite: `ba3debb`. Matcher-body statements now
-have explicit points, including erased type/query statements, without allocating
-new lifetime scopes. The ancestry assertions now include this boundary. Both
-statement-point groups and all 1514 library tests pass;
-`/tmp/meowy-statement-points-lib.log`. No failures remain. Shared-budget region
-links now connect matcher condition/body regions to their returned root IDs.
-The shared edge budget covers branch and content links, with atomic identity
-validation. Matcher-body prerequisite: `ee6c2bc`. All four region-edge groups
-pass, including erased bodies, functions/leaves, invalid provenance and shared
-capacity exhaustion. All 1518 library tests pass;
-`/tmp/meowy-matcher-content-lib.log`. No failures remain. Short-circuit region
-contents now retain the exact condition/RHS expression roots. Matcher-content
-prerequisite: `e981b0b`. All three short-circuit content groups pass, including
-skipped RHS queries, original logical roots, grouped roots, nested functions,
-ordinary failures and unknown call completion. All ten compiler checks pass,
-including 1521 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-region-contents-gate.log`. No failures remain. General statement/
-operand sequencing and explicit exit/result transfers remain prerequisites.
-Unknown effects and unlinked normal ports remain incomplete; outcomes stay gated.
+The preceding series (`ba3debb`, `ee6c2bc`, `e981b0b`, `8677817`) passed all ten
+checks: 1521 library/910 native tests; conformance 10 passed, 13 unsupported,
+0 failed in debug/release. Log: `/tmp/meowy-region-contents-gate.log`.
+General statements now return checked root IDs and completed sites retain them.
+All 1521 existing library tests pass after updating containment assertions and
+keeping synthetic capacity keys disjoint from live IDs;
+`/tmp/meowy-general-statements-lib.log`. The new full-statement root group also
+passes for erased/runtime results, site association and failed-site restoration.
+No failures remain. Ordered block statement sequences are next.
+Unknown effects remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices
 

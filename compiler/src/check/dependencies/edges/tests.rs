@@ -128,7 +128,9 @@ pub(crate) fn matcher_edges_bound_atomic_registration_without_spending_logical_s
         checker.branch_edges.clear();
         if capacity {
             for id in 1..=MAX_EDGES / edges.len() {
-                checker.branch_edges.insert(id, edges);
+                checker
+                    .branch_edges
+                    .insert(checker.points.len() + id, edges);
             }
         } else {
             assert!(!checker.flow.spend(usize::MAX));

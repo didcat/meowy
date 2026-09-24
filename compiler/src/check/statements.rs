@@ -6,6 +6,13 @@ use crate::hir::{self, Type};
 
 impl Checker {
     pub(crate) fn stmt(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
+        self.checked_stmt(stmt).map(|(_, stmts)| stmts)
+    }
+
+    pub(crate) fn checked_stmt(
+        &mut self,
+        stmt: &ast::Stmt,
+    ) -> Result<(hir::PointId, Vec<hir::Stmt>)> {
         if self.statements >= 65_536 || !self.flow.spend(1) {
             return Err(Diagnostic::unsupported(
                 "statement lifetime budget exhausted",
@@ -17,21 +24,18 @@ impl Checker {
         self.track_site(id, stmt.span)?;
         let site = self.site.replace(id);
         self.statement.push((id, false));
-        let result = self.stmt_inner(stmt);
+        let result = self.stmt_point(stmt);
         let (_, used) = self.statement.pop().expect("statement lifetime");
         self.site = site;
-        let stmts = result?;
+        let (point, stmts) = result?;
         self.doc_stage(stmt.span.start)?;
         self.sites.get_mut(&id).expect("checked statement").complete = true;
+        self.sites.get_mut(&id).expect("checked statement").point = Some(point);
         if used {
-            Ok(vec![hir::Stmt::Statement { id, stmts }])
+            Ok((point, vec![hir::Stmt::Statement { id, stmts }]))
         } else {
-            Ok(stmts)
+            Ok((point, stmts))
         }
-    }
-
-    pub(crate) fn stmt_inner(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
-        self.continuation_statement(stmt)
     }
 
     pub(crate) fn stmt_point(

@@ -1,15 +1,11 @@
 use super::Checker;
-use crate::{ast, check::Result, diagnostic::Diagnostic, hir};
+use crate::{ast, check::Result, diagnostic::Diagnostic};
 
 impl Checker {
     pub(crate) fn continuation_control(&self) -> bool {
         self.frames
             .iter()
             .any(|frame| frame.owner == self.owner && frame.continuation)
-    }
-
-    pub(crate) fn continuation_statement(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
-        self.with_continuation(stmt.span, "statement", |checker| checker.stmt_body(stmt))
     }
 
     pub(crate) fn with_continuation<T>(
@@ -179,7 +175,7 @@ mod tests {
         assert!(!checker.continuation_control());
         assert!(!checker.flow.spend(usize::MAX));
         let stmt = crate::parser::parse("plain:3").unwrap().stmts.remove(0);
-        let error = checker.stmt_inner(&stmt).unwrap_err();
+        let error = checker.stmt_point(&stmt).unwrap_err();
         assert_eq!(error.code, "B001");
         assert!(error.message.contains("continuation statement budget"));
         assert!(!checker.control);

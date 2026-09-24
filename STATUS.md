@@ -456,6 +456,12 @@ tests; `/tmp/meowy-region-contents-gate.log`. Expression roots: `ba3debb`; match
 body points: `ee6c2bc`; matcher contents: `e981b0b`. General sequencing, explicit
 exit/result transfers and outcomes stay gated.
 
+General statements now retain exact root IDs through their existing lifetime
+boundary, and completed sites identify those roots. All 1521 existing library tests
+and the new erased/runtime/failure root group pass;
+`/tmp/meowy-general-statements-lib.log`. Ordered block sequences are next; normal
+ports remain conditional and propagation/outcomes stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
