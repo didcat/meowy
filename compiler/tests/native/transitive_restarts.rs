@@ -107,7 +107,7 @@ left<int32><null>:7;right<int32><null>:null
 first:&left;second:&right;p:=&first;count:=0
 'loop{
     copy:**p
-    |copy<int32>|d.print(copy<int32>)
+    |copy<int32>|d.print(copy~<int32>)
     |copy<null>|d.print("empty")
     p=&second
     count=count+1

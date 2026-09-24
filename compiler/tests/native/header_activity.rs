@@ -25,7 +25,7 @@ p:=&empty;i:=0
 'loop{
     copy:*p
     |copy.view<null>|d.print("empty")
-    |copy.view<&int32>|d.print(*(copy.view<&int32>))
+    |copy.view<&int32>|d.print(*(copy.view~<&int32>))
     d.print(copy.count)
     i=i+1
     |i==1|p=&full
@@ -47,7 +47,7 @@ owner:=7;empty<H>:{->count:1};full<H>:{->view:&owner;->count:2}
 p:=&full;i:=0
 'loop{
     copy:*p
-    |copy.view<&int32>|d.print(*(copy.view<&int32>))
+    |copy.view<&int32>|d.print(*(copy.view~<&int32>))
     p=&empty
     owner=8
     i=i+1
@@ -71,8 +71,8 @@ p=&empty;i=0
 #[test]
 pub fn restart_activity_resets_cannot_hide_initial_or_future_payload_conflicts() {
     for source in [
-        "<H>:<{view<&int32><null>}>;a:=1;empty<H>:{};full<H>:{->view:&a};p:=&empty;i:=0;'loop{copy:*p;|copy.view<null>|a=2;|copy.view<&int32>|v:*(copy.view<&int32>);p=&full;i=i+1;|i<2|'loop.restart()}",
-        "<H>:<{view<&int32><null>}>;a:=1;empty<H>:{};full<H>:{->view:&a};p:=&full;i:=0;'loop{a=2;copy:*p;|copy.view<&int32>|v:*(copy.view<&int32>);p=&empty;i=i+1;|i<2|'loop.restart()}",
+        "<H>:<{view<&int32><null>}>;a:=1;empty<H>:{};full<H>:{->view:&a};p:=&empty;i:=0;'loop{copy:*p;|copy.view<null>|a=2;|copy.view<&int32>|v:*(copy.view~<&int32>);p=&full;i=i+1;|i<2|'loop.restart()}",
+        "<H>:<{view<&int32><null>}>;a:=1;empty<H>:{};full<H>:{->view:&a};p:=&full;i:=0;'loop{a=2;copy:*p;|copy.view<&int32>|v:*(copy.view~<&int32>);p=&empty;i=i+1;|i<2|'loop.restart()}",
         "<H>:<{view<&int32><null>}>;a:1;empty<H>:{};full<H>:{->view:&a};p:=&empty;cell:&p;i:=0;'loop{p=&full;i=i+1;|i<2|'loop.restart()};copy:**cell",
     ] {
         rejects(source, "E302");
@@ -89,14 +89,14 @@ a:=7;empty<H>:{->count:1};full<H>:{->view:&a;->count:2}
 p:=&empty;old:*p;p=&full;full_copy:*p;i:=0
 'loop{p=&empty;i=i+1;|i<2|'loop.restart()}
 |old.view<null>|d.print("old-empty")
-|full_copy.view<&int32>|d.print(*(full_copy.view<&int32>))
+|full_copy.view<&int32>|d.print(*(full_copy.view~<&int32>))
 a=8
 |full_copy.view<&int32>|d.print("tag-only")
 "#,
     )
     .runs(b"old-empty\n7\ntag-only\n");
     rejects(
-        "<H>:<{view<&int32><null>}>;a:=1;empty<H>:{};full<H>:{->view:&a};p:=&full;old:*p;i:=0;'loop{p=&empty;i=i+1;|i<2|'loop.restart()};a=2;|old.view<&int32>|v:*(old.view<&int32>)",
+        "<H>:<{view<&int32><null>}>;a:=1;empty<H>:{};full<H>:{->view:&a};p:=&full;old:*p;i:=0;'loop{p=&empty;i=i+1;|i<2|'loop.restart()};a=2;|old.view<&int32>|v:*(old.view~<&int32>)",
         "E302",
     );
 }
@@ -116,12 +116,12 @@ p:=&none;i:=0
 'loop{
     copy:*p
     |copy<A>|{
-        active:copy<A>
+        active:copy~<A>
         |active.view<null>|d.print("none")
-        |active.view<&int32>|d.print(*(active.view<&int32>))
+        |active.view<&int32>|d.print(*(active.view~<&int32>))
         d.print(active.n)
     }
-    |copy<B>|{active:copy<B>;d.print(*(active.other));d.print(active.n)}
+    |copy<B>|{active:copy~<B>;d.print(*(active.other));d.print(active.n)}
     i=i+1
     |i==1|p=&some
     |i==2|p=&other
@@ -142,8 +142,8 @@ a:1;b:2;left<H>:{->left:&a};right<H>:{->right:&b}
 p:=&left;q:=&right;i:=0
 'loop{
     copy:*p
-    |copy.left<&int32>|d.print(*(copy.left<&int32>))
-    |copy.right<&int32>|d.print(*(copy.right<&int32>))
+    |copy.left<&int32>|d.print(*(copy.left~<&int32>))
+    |copy.right<&int32>|d.print(*(copy.right~<&int32>))
     old:p;p=q;q=old
     i=i+1
     |i<3|'loop.restart()
@@ -173,7 +173,7 @@ text:="old";none:empty(&text);p:=&none;i:=0
     )
     .runs(b"1\n1\n");
     rejects(
-        "<H>:<{view<&int32><null>}>;make<H>:(p<&int32>,text<&string>){->view:p};a:1;text:=\"old\";full:make(&a,&text);empty<H>:{};p:=&full;copy:*p;i:=0;'loop{p=&empty;i=i+1;|i<2|'loop.restart()};text=\"new\";|copy.view<&int32>|v:*(copy.view<&int32>)",
+        "<H>:<{view<&int32><null>}>;make<H>:(p<&int32>,text<&string>){->view:p};a:1;text:=\"old\";full:make(&a,&text);empty<H>:{};p:=&full;copy:*p;i:=0;'loop{p=&empty;i=i+1;|i<2|'loop.restart()};text=\"new\";|copy.view<&int32>|v:*(copy.view~<&int32>)",
         "E302",
     );
 }

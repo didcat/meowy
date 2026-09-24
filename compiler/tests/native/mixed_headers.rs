@@ -33,7 +33,7 @@ r<R>:'out{
     'loop{
         |first|{'out->n:=7;w:&!n;*w=8;first=false}
         |h.view<null>|d.print("empty")
-        |h.view<&int32>|d.print(*(h.view<&int32>))
+        |h.view<&int32>|d.print(*(h.view~<&int32>))
         h=full;i=i+1
         |i<2|'loop.restart()
     }

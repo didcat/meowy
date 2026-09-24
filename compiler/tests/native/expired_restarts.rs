@@ -173,7 +173,7 @@ p:=&expired;i:=0
     p=&blank
     copy:*p
     |copy.item<Row>|{
-        row:copy.item<Row>
+        row:copy.item~<Row>
         |row.view<null>|d.print("blank")
     }
     p=&empty
@@ -185,7 +185,7 @@ p:=&expired;i:=0
 "#,
     )
     .runs(b"blank\nempty\nblank\nempty\n");
-    for read in ["copy:*p", "view:p.view;|view<&int32>|v:*(view<&int32>)"] {
+    for read in ["copy:*p", "view:p.view;|view<&int32>|v:*(view~<&int32>)"] {
         rejects(&format!(
             "<H>:<{{view<&int32><null>;count<int32>}}>;expired<H>:(&7).{{->view<&int32><null>:$;->count:2}};empty<H>:{{->count:1}};p:=&expired;i:=0;'loop{{{read};p=&empty;i=i+1;|i<2|'loop.restart()}}"
         ));
@@ -215,7 +215,7 @@ p:=&expired;i:=0
     )
     .runs(b"2\ntag\n1\n1\n1\n");
     rejects(
-        "<H>:<{view<&int32><null>}>;make<H>:(p<&int32>,text<&string>){->view:p};a:7;expired:make(&a,&\"short\");empty<H>:{};p:=&expired;i:=0;'loop{view:p.view;|view<&int32>|v:*(view<&int32>);p=&empty;i=i+1;|i<2|'loop.restart()}",
+        "<H>:<{view<&int32><null>}>;make<H>:(p<&int32>,text<&string>){->view:p};a:7;expired:make(&a,&\"short\");empty<H>:{};p:=&expired;i:=0;'loop{view:p.view;|view<&int32>|v:*(view~<&int32>);p=&empty;i=i+1;|i<2|'loop.restart()}",
     );
 }
 

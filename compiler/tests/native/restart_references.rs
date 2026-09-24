@@ -179,7 +179,7 @@ left<int32[2]>:[3];right<int32[2]>:[4,5];items:=&left;count=0
 first<int32><null>:6;last<int32><null>:null;value:=&first;count=0
 'union{
     copy:*value
-    |copy<int32>|d.print(copy<int32>)
+    |copy<int32>|d.print(copy~<int32>)
     |copy<null>|d.print("empty")
     value=&last
     count=count+1
