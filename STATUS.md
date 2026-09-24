@@ -418,23 +418,24 @@ All 384 focused tests and all ten compiler checks pass. Hidden discovery now ret
 borrowed-record continuation types, variant keys and shared-layer counts. Borrowed-record
 continuations now resolve with cumulative depth across union-to-record transitions;
 unknown contents retain their incomplete state. Bound prerequisite: `4c0b67b`.
-All 392 focused tests and all ten compiler checks pass. Borrowed heterogeneous-union
-continuations are next and remain incomplete.
+All 392 focused tests and all ten compiler checks pass. Supported borrowed
+record/null-union continuations now retain exact variant identities through the
+same bounded traversal. All 397 focused tests and all ten compiler checks pass. By-value
+returned union reference origins are next and remain incomplete.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1365
-  library/903 native tests (2268 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1370
+  library/903 native tests (2273 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-resolved-continuations-gate.log`.
-- All 392 dependency-filtered tests pass. The cumulative-depth prerequisite and
-  four resolution groups cover nested union/record transitions, known/unknown
-  contents, union/carrier results, nullable views, depth/work limits and E302/E303.
-  Existing typed discovery/no-replay tests now verify successful resolution.
-  Borrowed heterogeneous-union continuations remain incomplete. Accepted fixtures
-  pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-terminal-continuations-gate.log`.
+- All 397 dependency-filtered tests pass. Five heterogeneous-union continuation
+  groups cover distinct layouts, null/unknown contents, deeper references, union/
+  carrier results, cumulative depth, no replay, work limits, unsupported members,
+  exclusive edges and E302/E303 lifetimes. Constructor inference gates are unchanged.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

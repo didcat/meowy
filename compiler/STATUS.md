@@ -29,28 +29,27 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current bounded union continuation series
+### Current heterogeneous-union continuation slice
 
 Commit plan:
-1. Thread cumulative traversal levels through record, union and shared-layer
-   resolution while retaining existing public entry points and admission. Add
-   boundary regressions, run focused checks and commit this prerequisite.
-2. Resolve typed borrowed-record continuations through the bounded record walker.
-   Keep nested/all/unknown/null, budgets/no replay and lifetime regressions with
-   admission. Run the full gate and update both handoffs.
+1. Admit supported record/null-union terminals as typed continuations using the
+   existing bounded classifier. Reuse cumulative resolution and variant-qualified
+   snapshots; test differing layouts, unknown/null contents, deeper/mixed chains,
+   result kinds, depth/work bounds and lifetimes. Run the full gate and update
+   both handoffs and the guide.
 
-Investigation: the compiler flow ledger already bounds total work; local record
-counters do not bound recursive transitions. Carry a cumulative record/variant
-level separately from existing shared-reference layer limits. Unknown plans stay
-incomplete until their typed traversal is supported. Bound prerequisite `4c0b67b`
-passed all 388 focused tests before admission. Borrowed-record continuation
-resolution now passes all 392 dependency-filtered tests; log:
-`/tmp/meowy-resolved-continuations-focused.log`. Nested transitions reject cumulative
-depth exhaustion, known alternatives survive unknown contents, and nullable views,
-union/carrier results, no replay and E302/E303 lifetimes pass. All ten compiler
-checks pass, including 1365 library/903 native tests; log:
-`/tmp/meowy-resolved-continuations-gate.log`. No failures remain.
-User proposal changes remain preserved; proof outcomes stay gated.
+Investigation: the continuation resolver already routes union view contents back
+through bounded variant discovery; only terminal admission excludes heterogeneous
+unions. Keep unsupported members, exclusive edges and owned variant addresses
+incomplete. Unrelated `assets/` and proposal changes remain untouched.
+Admission and five new groups pass all 397 dependency-filtered tests; log:
+`/tmp/meowy-union-terminal-continuations-focused.log`. Unknown references use
+explicitly typed bindings where union constructor inference remains E207-gated.
+Layouts/null/unknowns, deeper chains, result kinds, cumulative bounds, no replay,
+unsupported members and E302/E303 pass. All ten compiler checks pass, including
+1370 library/903 native tests; log: `/tmp/meowy-union-terminal-continuations-gate.log`.
+No failures remain. Unrelated `assets/` and proposal changes are preserved;
+proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1378,16 +1377,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1365
-  library/903 native tests (2268 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1370
+  library/903 native tests (2273 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-resolved-continuations-gate.log`.
-- All 392 dependency-filtered tests pass. The cumulative-depth prerequisite and
-  four resolution groups cover nested union/record transitions, known/unknown
-  contents, union/carrier results, nullable views, depth/work limits and E302/E303.
-  Existing typed discovery/no-replay tests now verify successful resolution.
-  Borrowed heterogeneous-union continuations remain incomplete. Accepted fixtures
-  pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-terminal-continuations-gate.log`.
+- All 397 dependency-filtered tests pass. Five heterogeneous-union continuation
+  groups cover distinct layouts, null/unknown contents, deeper references, union/
+  carrier results, cumulative depth, no replay, work limits, unsupported members,
+  exclusive edges and E302/E303 lifetimes. Constructor inference gates are unchanged.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1619,13 +1617,18 @@ explicitly documented. No outstanding failures remain.
    Unknown owners/contents retain known alternatives without becoming complete.
    Bound prerequisite: `4c0b67b`. Nested transitions, nullable contents and lifetimes
    are covered; exclusive edges and variant-address projections remain gated.
-   Next extend typed continuation discovery in `calls/cells/views/hidden.rs` to
-   supported borrowed record/null-union terminals that differ from the result
-   target. Reuse the cumulative traversal bound and exact variant-key snapshots;
-   do not flatten union layouts or drop unsupported members. Test alternating
-   union/record chains, direct/deeper references, all/unknown/null candidates,
-   limits/no replay and lifetimes before the full gate.
-   By-value returned unions and unselected heterogeneous prefixes remain separate.
+   Typed continuations now include supported heterogeneous record/null-union
+   terminals, reusing exact variant snapshots and cumulative traversal bounds.
+   Differing layouts, unknown/null contents and deeper reference chains preserve
+   all supported candidates; mixed unsupported members and exclusive edges stay gated.
+   Next track by-value returned union reference origins in
+   `records/shapes/producers.rs`, where call expressions still produce unknown
+   shaped snapshots. First add bounded variant-qualified result-leaf type lookup;
+   then match supported reference leaves against the public input contract without
+   inspecting callee bodies or selecting a runtime variant. Keep carrier-cell
+   result leaves as a separate slice. Test variant layouts, all/unknown candidates,
+   null, nested calls, budgets and lifetimes before the full gate.
+   Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

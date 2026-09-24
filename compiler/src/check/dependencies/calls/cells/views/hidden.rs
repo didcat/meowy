@@ -137,7 +137,9 @@ impl Checker {
                 terminal = terminal.pointee().unwrap();
             }
             if terminal.has_borrowed() && terminal != target {
-                if Self::origin_record(terminal).is_none() {
+                if Self::origin_record(terminal).is_none()
+                    && !self.union_carrier_target(terminal, expr.span)?
+                {
                     return Ok(None);
                 }
                 let mut view = ty;
@@ -180,3 +182,6 @@ mod tests;
 
 #[cfg(test)]
 mod continuations;
+
+#[cfg(test)]
+mod union_continuations;

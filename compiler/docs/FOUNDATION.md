@@ -292,8 +292,10 @@ read the stored view, then expand remaining shared layers through the same match
 Nullable and unknown owners retain their completeness state. Typed borrowed-record
 continuations resolve variant-qualified snapshots, expand shared layers and traverse
 concrete fields with cumulative depth across union-to-record transitions and the
-shared work ledger. Unknown contents remain incomplete. Borrowed heterogeneous-union
-continuations remain separate. Different layouts never become ordinary
+shared work ledger. Supported borrowed record/null-union continuations use the
+same traversal, preserving exact variant identities through differing layouts.
+Unknown contents remain incomplete; unsupported members and exclusive edges retain
+their gates. Different layouts never become ordinary
 field paths. Unsupported borrowed contents and owned projections inside variants
 remain incomplete. Shared concrete-record field reads and copies resolve stored
 origins through all known returned locations, including hidden union candidates.
