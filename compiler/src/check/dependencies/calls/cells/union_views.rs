@@ -75,15 +75,11 @@ pub(crate) fn returned_union_views_retain_null_and_carrier_payloads() {
 
 #[test]
 pub(crate) fn returned_union_views_keep_untraversed_inputs_incomplete() {
-    for source in [
-        "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;<R>:<{item<U>}>;f<&U>:(p<&R>){->p.&item};x:=false;wide<U>:{->r:&x};pack:{->item:wide};view:f(&pack)",
-        "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;<C>:<{view<&U>}>;<D>:<{other<boolean>}>;<V>:<C><D>;f<&U>:(p<&V>,q<&U>){copy:*p;|copy<C>|->copy.view;|copy<D>|->q};x:=false;y:=true;wide<U>:{->r:&x};other<U>:{->r:&y};pack<V>:{->view:&other};view:f(&pack,&wide)",
-    ] {
-        crate::compile(source).unwrap();
-        let mut checker = Checker::new();
-        statements(&mut checker, source);
-        assert!(!checker.reference_cells[&id(&checker, "view")].complete);
-    }
+    let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;<C>:<{view<&U>}>;<D>:<{other<boolean>}>;<V>:<C><D>;f<&U>:(p<&V>,q<&U>){copy:*p;|copy<C>|->copy.view;|copy<D>|->q};x:=false;y:=true;wide<U>:{->r:&x};other<U>:{->r:&y};pack<V>:{->view:&other};view:f(&pack,&wide)";
+    crate::compile(source).unwrap();
+    let mut checker = Checker::new();
+    statements(&mut checker, source);
+    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
 }
 
 #[test]

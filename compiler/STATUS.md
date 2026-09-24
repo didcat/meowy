@@ -29,23 +29,27 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current direct returned union view slice
+### Current owned-union projection slice
 
 Commit plan:
-1. Admit one shared layer only for supported record/null-union terminals using
-   the existing bounded classifier and exact public candidate matcher. Keep focused
-   regressions with the behavior change; update the guide and both handoffs after
-   the full compiler gate.
+1. Keep already matched owned union projections when the owned terminal exactly
+   equals the direct shared result target. Include focused owner-path, all/unknown
+   candidate, hidden-input, null, budget and lifetime regressions, then run the
+   full compiler gate and update both handoffs and the guide.
 
-Investigation: direct/deeper shared inputs and stored reference fields already use
-matched cell locations. Owned union fields projected from borrowed records still
-lack traversal; preserve that incomplete boundary and the unmatched-input guard.
-One-layer admission and six regression groups pass all 338 dependency-filtered
-tests; log: `/tmp/meowy-returned-union-views-focused.log`. Earlier incomplete-return
-expectations now verify known owners. Owned-union projections and hidden unmatched
-union inputs remain explicitly incomplete. All ten compiler checks pass, including
-1311 library and 903 native tests; log: `/tmp/meowy-returned-union-views-gate.log`.
-No failures remain. Proof outcomes stay gated; untracked `docs/proposals/` is untouched.
+Investigation: public projections already collect exact owned union field paths.
+The later walker rejects those fields because they are not references. A supported
+owned union equal to the result target can be skipped after projection collection:
+its finite structural type cannot contain another reference to that same whole
+union. Different unions must remain incomplete because they can hide candidates.
+No variant field indices or private function bodies need traversal for this slice.
+The exact-target skip and six regression groups pass all 344 dependency-filtered
+tests; log: `/tmp/meowy-owned-union-projections-focused.log`. Deeper inputs explicitly
+read the intermediate shared view before projecting; implicit reborrow projections
+outside concrete storage remain unsupported. All ten compiler checks pass, including
+1317 library and 903 native tests; log: `/tmp/meowy-owned-union-projections-gate.log`.
+No failures remain. Hidden unmatched unions stay incomplete; proof outcomes remain
+gated. Untracked `docs/proposals/` remains untouched.
 
 ### Proof dependency implementation slices
 
@@ -1373,15 +1377,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1311
-  library/903 native tests (2214 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1317
+  library/903 native tests (2220 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-returned-union-views-gate.log`.
-- All 338 dependency-filtered tests pass. Six new direct returned-view groups
-  cover direct/deeper/stored candidates, all/unknown candidates, null/carrier
-  payloads, nested calls, no replay, call/work limits, E302/E303 lifetimes and
-  incomplete owned-union/hidden-input boundaries. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-owned-union-projections-gate.log`.
+- All 344 dependency-filtered tests pass. Six new owned-union projection groups
+  cover concrete owner prefixes, deeper inputs, nested calls, stored/all/unknown
+  candidates, null contents, hidden unmatched candidates, no replay, work limits
+  and E302/E303 lifetimes. Accepted fixtures pass ordinary compilation/ownership;
+  dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1575,12 +1579,16 @@ explicitly documented. No outstanding failures remain.
    Unknown candidates and untraversed unmatched union inputs remain incomplete.
    Direct returned shared record/null-union views now match exact direct/deeper
    and stored shared inputs, preserving unknowns and unmatched-input guards.
-   Next audit owned-union projections from borrowed records in
-   `calls/cells/views.rs`: public projection paths can identify the owner, but the
-   subsequent walker rejects owned heterogeneous unions. Add bounded traversal
-   or prove a safe skip without dropping hidden nested candidates. Cover projected
-   owners, hidden references, null, unknowns, nested calls and lifetimes before
-   broadening admission and running the full compiler gate.
+   Exact owned-union projections from borrowed records now preserve concrete
+   owner paths alongside stored candidates. The walker skips only an owned union
+   identical to the direct shared result target after public projection matching;
+   unmatched owned unions remain incomplete because they may hide candidates.
+   Next handle hidden candidates in unmatched owned-union fields in
+   `calls/cells/views.rs` using existing shaped snapshots, without treating variant
+   field indices as concrete paths. First separate bounded candidate discovery
+   from location resolution; then integrate shape-aware matching with regressions
+   for differing field layouts, all/unknown candidates, null, limits and lifetimes.
+   Keep unsupported shapes incomplete and run the full compiler gate per series.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

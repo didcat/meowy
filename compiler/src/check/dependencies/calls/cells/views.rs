@@ -57,6 +57,11 @@ impl Checker {
                 if !ty.has_borrowed() {
                     continue;
                 }
+                if matches!(result, Type::Reference(target) if target.as_ref() == ty)
+                    && self.union_carrier_target(ty, expr.span)?
+                {
+                    continue;
+                }
                 if let Some(Type::Record { primary, fields }) = Self::origin_record(ty) {
                     if primary.has_borrowed() {
                         return Ok(None);
@@ -165,3 +170,6 @@ mod chains;
 
 #[cfg(test)]
 mod nested;
+
+#[cfg(test)]
+mod unions;

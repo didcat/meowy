@@ -279,8 +279,11 @@ candidates remain possible; unknown candidates and untraversed unmatched union
 inputs keep results incomplete. Nested-call depth and analysis budgets remain shared,
 and matching does not replay calls or inspect private bodies. Direct returned
 shared record/null-union views also retain exact owner locations through direct,
-deeper and stored shared inputs. Owned union projections from borrowed records
-remain incomplete; by-value returned union origins remain separate.
+deeper and stored shared inputs. Exact owned union projections from borrowed
+records retain concrete field paths alongside compatible stored candidates.
+Unmatched owned unions remain incomplete because their variants can hide nested
+candidates; no variant field indices are inferred. By-value returned union origins
+remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
