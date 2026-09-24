@@ -29,26 +29,22 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current union argument borrowed-record series
+### Current union argument borrowed-union series
 
 Commit plan:
-1. Extract borrowed-record origin traversal from known cell locations, preserving
-   existing expression entry points and charges. Accept an initial structural level,
-   add a boundary regression, run focused checks and commit the prerequisite.
-2. Feed variant-qualified union snapshots into that traversal for supported shared
-   concrete-record terminals. Test nested/deeper/all/unknown/null contents, inline
-   calls, bounds/no replay and lifetimes. Run the full gate and update both handoffs.
+1. Separate bounded typed union-leaf discovery from expression snapshot resolution
+   without broadening admission. Run focused checks and commit the prerequisite.
+2. Resolve supported borrowed-union terminals from location-backed snapshots with
+   cumulative structural depth. Cover nested/deeper/all/unknown/null layouts,
+   bounds/no replay and lifetimes; run the full gate and update both handoffs.
 
-Investigation: `call_record_view_origins` already has a bounded iterative record
-walker. Separate expression lookup from that walker, then preserve the union path's
-structural level when entering it. Heterogeneous terminal unions and returned cell
-matching remain separate. Traversal prerequisite `1482d20` passed all 420 focused
-tests before admission. Integration and five new groups pass all 425 dependency-
-filtered tests; log: `/tmp/meowy-union-record-origins-focused.log`. Nullable/all/
-unknown contents, deeper views, owned projections, inline calls, no replay, bounds
-and E302/E303 pass. All ten compiler checks pass, including 1398 library/903 native
-tests; log: `/tmp/meowy-union-record-origins-gate.log`. No failures remain.
-User changes remain preserved; proof outcomes stay gated.
+Investigation: typed leaves need to retain exact variant keys and shared-layer
+counts. Expression-backed and location-backed snapshots can share origin resolution;
+recursive union transitions must carry the existing structural level. Returned
+carrier-cell matching stays separate. Typed leaf extraction preserves admission and
+passes all 425 dependency-filtered tests and formatting; log:
+`/tmp/meowy-union-input-leaves-focused.log`. Location-backed resolution is next.
+User changes remain preserved.
 
 ### Proof dependency implementation slices
 
