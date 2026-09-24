@@ -8,6 +8,7 @@ pub(crate) enum Port {
     Entry(PointId),
     Normal(PointId),
     Operation(PointId),
+    Emission(crate::hir::EmitId),
     BlockEntry(crate::hir::BlockId),
     BlockNormal(crate::hir::BlockId),
     BlockResult(crate::hir::BlockId),
@@ -53,6 +54,7 @@ impl Checker {
             .saturating_add(self.endpoint_edges)
             .saturating_add(self.restart_edges.len())
             .saturating_add(self.operation_edges)
+            .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)
     }

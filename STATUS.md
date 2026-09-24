@@ -517,8 +517,11 @@ store/address links are next; complete value-flow and proof outcomes stay gated.
 
 Composed expression checking now retains exact outer root IDs without changing
 partial-record shapes, scalar fallbacks or original errors. Both new root groups
-and all 1563 library tests pass; `/tmp/meowy-composed-roots-lib.log`. Direct emission
-operations are next; propagation and proof outcomes remain gated.
+and all 1563 library tests pass; `/tmp/meowy-composed-roots-lib.log`. Direct
+primary/named/outer emissions now retain exact source, EmitId, slot and alias
+identities. Never/static outputs do not invent runtime emissions. Four focused
+groups and all 1567 library tests pass; `/tmp/meowy-direct-emissions-lib.log`.
+Record fanout is next; propagation and proof outcomes remain gated.
 
 ## Pending descriptor statement accounting
 

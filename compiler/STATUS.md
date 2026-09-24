@@ -124,7 +124,12 @@ checks: 1561 library/910 native tests; conformance 10 passed, 13 unsupported,
 Composed expression checking now returns exact outer root IDs while retaining
 partial shapes, scalar fallbacks and original errors. Both new root groups and
 all 1563 library tests pass; `/tmp/meowy-composed-roots-lib.log`. No failures remain.
-Direct emission operations are next. Store/address transfers, remaining operand coverage,
+Composed-root prerequisite: `e4374cc`. Direct primary/named/outer emissions now
+retain source roots, EmitId, slots and alias storage, with explicit effect ports.
+All four focused groups pass, including control marks, never/static exclusions,
+source errors and atomic shared-budget publication. All 1567 library tests pass;
+`/tmp/meowy-direct-emissions-lib.log`. No failures remain. Record-composition
+fanout is next. Store/address transfers, remaining operand coverage,
 propagation and proof evaluation remain incomplete.
 
 ### Proof dependency implementation slices

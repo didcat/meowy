@@ -311,3 +311,6 @@ pub(crate) use scope_exits::ScopeExit;
 
 mod operations;
 pub(crate) use operations::{Kind as OperationKind, Operation};
+
+mod emissions;
+pub(crate) use emissions::Emission;

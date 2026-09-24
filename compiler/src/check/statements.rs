@@ -617,18 +617,19 @@ impl Checker {
                 span,
             ));
         }
-        let value = if let Some(record) = record {
-            self.composed(value, record, annotated.as_ref().or(expected.as_ref()))?
+        let (input, value) = if let Some(record) = record {
+            self.composed_point(value, record, annotated.as_ref().or(expected.as_ref()))?
         } else if union.is_some() {
             if let Some(annotated) = annotated.as_ref() {
-                self.expr(value, Some(annotated))?
+                self.expr_point(value, Some(annotated))?
             } else {
-                self.expression(value, expected.as_ref())?
+                self.expression_point(value, expected.as_ref())?
             }
         } else {
-            self.expr(value, annotated.as_ref().or(expected.as_ref()))?
+            self.expr_point(value, annotated.as_ref().or(expected.as_ref()))?
         };
         if value.ty == Type::Never {
+            self.region_edges(self.point.expect("emission statement"), input, span)?;
             return Ok(vec![hir::Stmt::Expr(value)]);
         }
         if mutable && value.ty.has_reference() && !value.ty.fixed_borrowed_value() {
@@ -638,10 +639,12 @@ impl Checker {
             ));
         }
         let mut stmts = Vec::new();
+        let mut composed = false;
         if name.is_none()
             && matches!(value.ty, Type::Record { .. })
             && !union.as_ref().is_some_and(|ty| ty.accepts(&value.ty))
         {
+            composed = true;
             let ty = value.ty.clone();
             let id = self.local(ty.clone());
             self.track_record_references(id, &value, false)?;
@@ -761,6 +764,9 @@ impl Checker {
             let emission = self.emission(target, None, value);
             self.primary_input(&emission);
             stmts.push(emission);
+        }
+        if !composed {
+            self.emission_operation(self.point.expect("emission statement"), input, &stmts, span)?;
         }
         Ok(stmts)
     }
