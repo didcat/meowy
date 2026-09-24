@@ -124,7 +124,20 @@ debug/release. Log: `/tmp/meowy-call-order-gate.log`.
 and implicit shared-list dereference remain unchanged. Both focused groups and
 all 1599 library tests pass; formatting also passes. Logs:
 `/tmp/meowy-list-receiver-focused.log`, `/tmp/meowy-list-receiver-lib.log`.
-Index graph metadata follows; the full compiler gate will cover both slices.
+Receiver prerequisite: `77a4a7e`. Index metadata now captures exact receiver/position
+roots, static capacity/known length and explicit snapshot/bounds/result stages.
+Nonreturning receivers retain no checked index, and nonreturning positions have
+no projection/result edge. Identity and shared edge budgets guard publication.
+All four focused index groups pass, including owned/shared snapshots, nested
+owners, nonreturning operands, bounds/type errors, element loans and atomic
+identity/budget checks. Whole-list exclusive borrows retain B001. Log:
+`/tmp/meowy-index-order-focused.log`. Known immutable lengths and unknown
+mutable/shared lengths remain distinct. All ten compiler checks pass:
+1603 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-index-order-gate.log`. Post-handoff link checks pass:
+1208 local links in 110 Markdown files. List literal element sequencing is next;
+remaining graph coverage, propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1452,10 +1465,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Direct-call identities and ordered argument/effect links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1597 library/910
+- List receiver roots and index snapshot/bounds links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1603 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-call-order-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-index-order-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1817,16 +1830,21 @@ subtraction retains its documented limits. No outstanding failures remain.
    ordered links to an opaque effect, and conditional `Returned` edges. Declared
    `never` calls omit normal continuation. Debug formatting, list methods and
    required/type-only calls remain separate; no effect summary is inferred.
-   Next capture exact receiver/position roots in `list.rs::list_index`, preserving
-   receiver-before-index order and bounds-success stages. Keep borrowed-list
-   evaluation and nonreturning operands explicit; validate side effects, original
-   bounds/type/loan diagnostics and budgets with focused tests and the compiler
-   gate, then cover list literals/methods. Preserve owners and required roots. Keep result availability
+   List indices now retain exact receiver/position roots, explicit list-value and
+   length snapshots before position evaluation, and bounds-success result stages.
+   Nonreturning receivers skip position checking; nonreturning positions have no
+   projection/result edge. Shared-list dereference and loan checks are unchanged.
+   Next capture element roots in `list.rs::list_literal`, preserving contextual
+   element types, source order, nonreturning elements and capacity limits. Validate
+   nested/side-effectful construction, errors and budgets with focused tests and
+   the compiler gate, then cover list methods and element-borrow paths.
+   Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Index/list operand sequencing, debug formatting and contextual list/effect
-   block builders remain coverage gaps; missing sequences are not independence.
+   List literal/method and element-borrow sequencing, debug formatting and
+   contextual list/effect block builders remain coverage gaps; missing sequences
+   are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
    Record source identities during checking; do not infer links or runtime order from spans,

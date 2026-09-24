@@ -12,6 +12,7 @@ pub(crate) fn id(port: Port) -> PointId {
         Port::Entry(id)
         | Port::Normal(id)
         | Port::Operation(id)
+        | Port::Snapshot(id)
         | Port::Address { point: id, .. }
         | Port::Reserve { point: id, .. } => id,
         Port::Emission(_)

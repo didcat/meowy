@@ -408,8 +408,10 @@ impl Checker {
         index: &ast::Expr,
         span: Span,
     ) -> Result<hir::Expr> {
-        let value = self.list_receiver(value)?;
+        let (receiver, value) = self.list_receiver_point(value)?;
+        let point = self.point.expect("list index expression");
         if value.ty == Type::Never {
+            self.index_operation(point, receiver, None, span)?;
             return Ok(value);
         }
         let Type::List { element, capacity } = &value.ty else {
@@ -421,12 +423,23 @@ impl Checker {
         let ty = *element.clone();
         let capacity = *capacity;
         let length = self.list_length(&value);
-        let index = self.list_position(index, length, capacity)?;
+        let (position, index) = self.list_position_point(index, length, capacity)?;
         let ty = if index.ty == Type::Never {
             Type::Never
         } else {
             ty
         };
+        self.index_operation(
+            point,
+            receiver,
+            Some(crate::check::IndexAccess {
+                position,
+                capacity,
+                length,
+                may_return: index.ty != Type::Never,
+            }),
+            span,
+        )?;
         Ok(hir::Expr {
             kind: hir::ExprKind::ListIndex {
                 value: Box::new(value),

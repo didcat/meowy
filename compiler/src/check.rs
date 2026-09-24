@@ -19,6 +19,8 @@ mod statements;
 mod temporaries;
 mod type_values;
 
+pub(crate) use dependencies::IndexAccess;
+
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::ast::{self, Span};
@@ -173,6 +175,8 @@ pub(crate) struct Checker {
     pub(crate) calls: usize,
     pub(crate) invocations: BTreeMap<hir::CallId, dependencies::Invocation>,
     pub(crate) invocation_edges: usize,
+    pub(crate) indices: BTreeMap<hir::PointId, dependencies::Index>,
+    pub(crate) index_edges: usize,
     pub(crate) reborrows: usize,
     pub(crate) restarts: hir::RestartId,
     pub(crate) restart_inputs: BTreeMap<hir::RestartId, dependencies::RestartInput>,
@@ -337,6 +341,8 @@ impl Checker {
             calls: 0,
             invocations: BTreeMap::new(),
             invocation_edges: 0,
+            indices: BTreeMap::new(),
+            index_edges: 0,
             reborrows: 0,
             restarts: 0,
             restart_inputs: BTreeMap::new(),

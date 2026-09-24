@@ -549,6 +549,13 @@ to an opaque call effect. A distinct callee-return edge permits continuation;
 `/tmp/meowy-call-order-gate.log`. Debug formatting, list methods and
 required/type-only call paths remain separate; no effect summary or proof outcome
 is inferred.
+List indexing now retains exact receiver/position roots and an explicit value and
+length snapshot before position evaluation. Bounds success leads to projection
+and result availability; nonreturning operands do not gain result edges. The
+receiver helper (`77a4a7e`) preserves shared-list dereference and existing HIR.
+All ten compiler checks pass: 1603 library/910 native tests;
+`/tmp/meowy-index-order-gate.log`. Element-borrow, list literal/method and
+contextual builder paths remain separate.
 
 ## Pending descriptor statement accounting
 
@@ -678,10 +685,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Direct-call identities and ordered argument/effect links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1597 library/910 native tests.
+- List receiver roots and index snapshot/bounds links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1603 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-call-order-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-index-order-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -753,11 +760,12 @@ execution was not part of this documentation edit.
    canonical paths and reservation/bounds-success stages. Indirect stores capture
    target/RHS roots and pre-RHS pointee origins, keeping incomplete origins and
    reference-cell identities distinct. Direct calls retain ordered argument roots,
-   opaque effects and conditional return edges. Next capture list-index receiver
-   and position roots in `compiler/src/list.rs`, preserving receiver-before-index
-   order, bounds checks, borrowed-list rules and nonreturning operands. Validate
-   exact roots, side effects, errors and budgets, then extend list literal/method
-   coverage. Debug formatting and required/type-only calls remain separate.
+   opaque effects and conditional return edges. List indices now retain receiver
+   snapshots, ordered position roots and bounds-success stages. Next capture list
+   literal element roots in `compiler/src/list.rs::list_literal`, preserving element
+   context, evaluation order, nonreturning elements and capacity rules. Validate
+   exact roots, side effects, errors and budgets, then cover list methods and
+   element-borrow paths. Debug formatting and required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.
