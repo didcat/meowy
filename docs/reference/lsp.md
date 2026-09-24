@@ -328,8 +328,8 @@ current analysis. Disabling a feature does not disable facts needed by another.
 | `code_actions`      | `true`  | `textDocument/codeAction`, `codeAction/resolve`: compiler repair alternatives and proven gatostyle changes.                                                                                           |
 | `capture`           | `false` | Explicit **Capture diagnostic** command for a current static failure; requires extension 1 and the snapshot conditions below.                                                                         |
 
-Completion distinguishes type predicates in matcher conditions from ascriptions
-in value expressions without inspecting surrounding spaces. Generic closers and
+Completion distinguishes `value<T>` predicates from explicit `value~<T>`
+ascriptions in every expression position, without inspecting spaces. Generic closers and
 task punctuation use their parsed contexts. `true`, `false`, `null` and scope
 operations remain values/bindings, never a keyword vocabulary. `$` denotes the
 dispatch receiver and is classified as a readonly variable; `self` is ordinary.
@@ -343,11 +343,11 @@ omitted. The legend is fixed for a connection; tokens are non-overlapping and
 split at line boundaries, including multiline literals. See the
 [semantic token wire format](https://raw.githubusercontent.com/microsoft/language-server-protocol/gh-pages/_specifications/lsp/3.17/language/semanticTokens.md).
 
-For an expression such as `| t.{ -> $<MyCoolType> } <MyCoolType> | matched()`, hover
-must identify the inner proven ascription and the outer predicate separately.
-The outer predicate cannot supply an earlier proof. Ownership explanations can
-show why a borrow ends at a scope, where an owner moves, or which task remains
-unjoined. They describe static facts, not live addresses or a runtime trace.
+For `| enabled<boolean> && enabled~<boolean> | matched()`, hover identifies the
+left predicate and the right ascription separately, including the proof carried
+by short-circuit evaluation. Ownership explanations can show why a borrow ends at
+a scope, where an owner moves, or which task remains unjoined. They describe static
+facts, not live addresses or a runtime trace.
 
 Rename preserves symbol identity and must check every affected use in the owning
 project. It refuses an incomplete reference search, a conflicting new binding,

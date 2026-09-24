@@ -37,7 +37,7 @@ statements that intentionally share a line. Do not pad empty delimiters: `()`, `
 | Matchers and type tests      | `\| ready \| { -> 1 }`, `\| value <int32> \| use(value)` |
 | Field access and dispatch    | `value.field`, `value.(read)`, `value.{ -> $ }`       |
 | Borrows and dereferences     | `&value`, `&!value`, `*pointer`, `value.&field`          |
-| Ascriptions and type queries | `$<MyCoolType>`, `value<>`                            |
+| Ascriptions and type queries | `value~<MyCoolType>`, `value<>`                            |
 | Imports and scope access     | `@"debug"`, `'result.leave()`                            |
 | Task operations              | `>> work()`, `<< task`, `%group <T[N]>`, `%group >> work()`, `<< %group` |
 
@@ -49,11 +49,12 @@ Spaces never distinguish an ascription from a type test.
 For example, use this spaced presentation:
 
 ```meowy
-| object.{ -> $<MyCoolType> } <MyCoolType> | {}
+| enabled <boolean> && enabled~<boolean> | debug.print("Enabled")
 ```
 
-The inner ascription remains attached to `$`; the outer matcher type test is
-spaced. The outer test does not establish the proof needed by the inner ascription.
+The predicate establishes the proof used by the ascription in the right operand.
+`value<T>` remains a predicate in every expression position; `value~<T>` remains
+an ascription. Spaces select neither meaning.
 
 These conventions use the [structured gatostyle baseline](gatostyle.md#start-with-a-policy).
 They are presentation guidance for readers, not new grammar or a requirement that

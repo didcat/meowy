@@ -142,8 +142,8 @@ With tabs, a nesting level is one tab and remaining alignment uses spaces.
 | ---------------- | ---------------------------------------------------------------------------------- |
 | `bindings`       | Around `:`, `:=`, and assignment `=` in value declarations/statements              |
 | `annotations`    | Before a declaration's type annotation                                             |
-| `type_tests`     | Before the type suffix in a matcher condition                                      |
-| `ascriptions`    | Before the type suffix in a value expression                                       |
+| `type_tests`     | Before a predicate type suffix in any expression                                      |
+| `ascriptions`    | Around `~` before an explicit ascription type                                       |
 | `type_arguments` | Before a generic argument list                                                     |
 | `binary`         | Around binary operators, including capability constraints and function-type arrows |
 | `emissions`      | After `->` and between a scope label and its emission arrow                        |
@@ -172,22 +172,21 @@ mean exactly the same thing:
 |value<int32>|debug.print("{value}")
 ```
 
-Outside the condition, both `copy:value<int32>` and `copy : value <int32>` are
-ascriptions. A compact computed annotation is `other<(value<>)>:value`.
+Outside the condition, `matches:value<int32>` still stores a boolean predicate.
+Both `copy:value~<int32>` and `copy : value ~ <int32>` are ascriptions.
+A compact computed annotation is `other<(value<>)>:value`.
 The [syntax reference](../reference/syntax.md#angle-brackets-in-context) defines
-context, including generic calls, parentheses, and call arguments.
+these forms, including generic calls and the single bracketed ascription target.
 
-The same distinction composes through a dispatched block:
+A predicate can establish the proof needed by a later boolean operand:
 
 ```meowy
-| t.{ -> $<MyCoolType> } <MyCoolType> | matched()
+| enabled <boolean> && enabled~<boolean> | debug.print("Enabled")
 ```
 
-Inside the block, `$<MyCoolType>` is a proven ascription. Outside it, the
-matcher tests the emitted value's type. The ascription needs a proof before it
-executes; the outer test does not establish that proof retroactively. Gatostyle
-must understand these nested contexts when changing spacing or proposing a
-simplification, including the dispatch's ownership and cleanup behavior.
+The first operand checks the type; the second reads the proven boolean value.
+Gatostyle preserves that short-circuit proof order when changing spacing or
+proposing a simplification, along with ownership and cleanup behavior.
 
 ### Use no spaces
 

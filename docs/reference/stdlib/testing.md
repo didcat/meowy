@@ -178,8 +178,8 @@ testing : @"testing"
 
 `fail` returns `<never>`, so the later statement can only see the success type.
 A boolean passed to `assert` carries no such caller-side proof. Matcher conditions
-still use `<T>` as a predicate regardless of spaces; ordinary expression contexts
-still use it as a proven ascription.
+use `value<T>` as a predicate, as do other expression positions; proven
+ascription always uses `value~<T>`.
 
 `testing.assert(false, "reason")` and `testing.fail("reason")` deliberately raise
 runtime `P005`, even when the condition is constant. The compiler may lower that

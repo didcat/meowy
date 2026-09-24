@@ -118,7 +118,7 @@ and [named scopes](../reference/values-and-blocks.md#named-scopes-and-cleanup).
 ## Change presentation without changing type meaning
 
 Your spacebar may take the day off. Type predicates and proven ascriptions still
-have different jobs, and the surrounding grammar keeps them straight.
+have different jobs, marked explicitly by `<T>` and `~<T>`.
 
 ```meowy
 debug : @"debug"
@@ -131,17 +131,17 @@ pipeline : 20.(increment).(double)
 debug.print(ordinary == pipeline)
 
 value <int32><null> : 42
-| value <int32> | debug.print(value.{ -> $<int32> })
+| value <int32> | debug.print(value~<int32>)
 ```
 
 The output is `true` followed by `42`. The matcher's `value<int32>` tests the
-union alternative. Inside its body, `$<int32>` has a proof from that test;
-it does not parse or convert anything. Dispatch evaluates its receiver once.
+union alternative. Inside its body, `value~<int32>` has a proof from that test;
+it does not parse or convert anything. No wrapper block is needed.
 
 For a complete program with no spaces outside strings, use this separate file:
 
 ```meowy
-debug:@"debug";value<int32><null>:42;|value<int32>|debug.print(value.{->$<int32>})
+debug:@"debug";value<int32><null>:42;|value<int32>|debug.print(value~<int32>)
 ```
 
 That file prints `42`. Semicolons preserve the statement boundaries. The

@@ -120,7 +120,8 @@ syntax tree; semantic fixes must prove that types, evaluation, ownership, cleanu
 and task boundaries remain equivalent. An unproven rewrite stays a suggestion.
 
 No style policy changes the language grammar or weakens its checks. Spaces do not
-distinguish a type test from an ascription: matcher context does. Source may use
+distinguish a type test from an ascription: `value<T>` tests and `value~<T>`
+ascribes in every expression position. Source may use
 zero spaces, with punctuation supplying annotations and statement boundaries.
 
 ## Keep failures executable and explainable

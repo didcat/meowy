@@ -173,8 +173,10 @@ flowchart TD
 **Source and parsing.** Store original UTF-8 bytes and half-open byte spans.
 Retain comments, whitespace, and invalid syntax in the concrete tree for editor
 recovery and formatting. Use a hand-written lexer, recursive descent for forms,
-and a Pratt parser for expressions. Explicitly track matcher and type contexts:
-`value<T>` cannot change meaning merely because somebody inserted a space.
+and a Pratt parser for expressions. Keep declaration type positions separate from
+expression suffixes: `value<T>` is always a predicate, `value~<T>` explicitly
+ascribes one bracketed type, and `value<>` queries its type. Spaces never select
+between these meanings; generic call arguments retain `f<T>(args)`.
 Complete type syntax wins according to the reference without consulting the
 symbol table. Test nested angles, zero-space programs, interpolation, and
 newline termination from the start. See [syntax](docs/reference/syntax.md).

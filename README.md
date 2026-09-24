@@ -13,8 +13,8 @@ function body.
 The grammar is punctuation-based and has no reserved keywords. `true`, `false`,
 `null` and types are well-known values and bindings. `$` denotes the dispatch
 receiver; `self` is an ordinary name. See [names and syntax](docs/reference/syntax.md#no-keywords).
-Spaces are optional: matcher context distinguishes type tests from ascriptions,
-and punctuation can delimit a complete program without whitespace.
+Spaces are optional: `value<T>` tests a type and `value~<T>` explicitly ascribes it.
+Punctuation can delimit a complete program without whitespace.
 
 ```meowy
 <Reading> : <{
