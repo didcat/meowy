@@ -34,7 +34,9 @@ impl Checker {
         let Some(result_depth) = self.shared_cell_depth(result, expr)? else {
             return Ok(Cells::default());
         };
-        if result_depth < 2 || !self.origin_carrier(result, expr.span)? {
+        let direct =
+            result_depth == 1 && self.union_carrier_target(result.pointee().unwrap(), expr.span)?;
+        if (!direct && result_depth < 2) || !self.origin_carrier(result, expr.span)? {
             return Ok(Cells::default());
         }
         if !self.flow.spend(args.len() + 1) {
@@ -214,3 +216,6 @@ mod records;
 
 #[cfg(test)]
 mod unions;
+
+#[cfg(test)]
+mod union_views;

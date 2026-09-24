@@ -278,7 +278,9 @@ direct/deeper inputs and supported stored or projected record fields. All compat
 candidates remain possible; unknown candidates and untraversed unmatched union
 inputs keep results incomplete. Nested-call depth and analysis budgets remain shared,
 and matching does not replay calls or inspect private bodies. Direct returned
-heterogeneous-union views and by-value returned union origins remain separate.
+shared record/null-union views also retain exact owner locations through direct,
+deeper and stored shared inputs. Owned union projections from borrowed records
+remain incomplete; by-value returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

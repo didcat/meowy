@@ -78,7 +78,7 @@ pub(crate) fn shared_union_views_keep_null_and_carrier_contents_distinct() {
 }
 
 #[test]
-pub(crate) fn shared_union_reads_preserve_owner_lifetimes_and_unknown_returns() {
+pub(crate) fn shared_union_reads_preserve_owner_lifetimes_and_known_returns() {
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;view:{local<A><B>:{->r:&x};->&local};copy:*view";
     assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;wide<A><B>:{->r:&x};view:&(*(&({->item:wide}.item)));copy:*view";
@@ -89,7 +89,7 @@ pub(crate) fn shared_union_reads_preserve_owner_lifetimes_and_unknown_returns() 
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.pointees[&(checker.locals.len() - 1)].complete);
+    assert!(checker.pointees[&(checker.locals.len() - 1)].complete);
 }
 
 #[test]

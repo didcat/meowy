@@ -29,39 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current returned union carrier series
-
-The public carrier matcher now recognizes supported record/null-union terminals
-for results with at least two shared layers, including exact/deeper arguments and
-supported record fields.
-Direct returned views (one reference layer) and by-value union results remain separate.
+### Current direct returned union view slice
 
 Commit plan:
-1. Share bounded record/null-union terminal recognition with existing carrier
-   classification without changing admission. Run focused checks and commit.
-2. Admit those terminals in `shared_cell_depth`, retaining the two-layer minimum
-   and existing public candidate matching. Test direct/deeper/stored inputs,
-   all/unknown candidates, nested calls, depth/work limits, no replay and lifetimes.
-   Run the full compiler gate and update the guide/root handoff.
+1. Admit one shared layer only for supported record/null-union terminals using
+   the existing bounded classifier and exact public candidate matcher. Keep focused
+   regressions with the behavior change; update the guide and both handoffs after
+   the full compiler gate.
 
-Bounded record/null-union recognition is now shared without changing admission
-or budget charges. All 325 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-union-terminal-focused.log`; committed as `d85ec70`. Returned carriers
-now recognize record/null-union terminals while retaining the two-layer minimum.
-All 329 focused dependency tests pass for direct/deeper/stored candidates, nested
-calls, unknowns, null/carrier payloads and call-depth/no-replay checks. Adding exact
-terminal limits and live-loan/temporary-expiry regressions now pass. Review found
-that unmatched union terminals could hide nested return candidates: carrier and
-record-view matching preserve their incomplete boundary. All 332 dependency-filtered
-tests pass; log: `/tmp/meowy-returned-union-carriers-focused.log`. Seven groups cover
-direct/deeper/stored/projected candidates, nested calls, nullable payloads, unknowns,
-terminal limits, hidden union inputs and E302/E303 lifetimes. The unmatched-input
-guard is restricted to reference-bearing unions so existing irrelevant reference-
-free inputs remain skipped. Its preservation regression passes with all 332 focused
-dependency tests. All ten compiler checks pass; log:
-`/tmp/meowy-returned-union-carriers-gate.log`. No failures remain. Next: direct
-returned shared record-union views with exact matching and unsupported-input guards.
-Untracked `docs/proposals/` remains untouched; proof outcomes stay gated.
+Investigation: direct/deeper shared inputs and stored reference fields already use
+matched cell locations. Owned union fields projected from borrowed records still
+lack traversal; preserve that incomplete boundary and the unmatched-input guard.
+One-layer admission and six regression groups pass all 338 dependency-filtered
+tests; log: `/tmp/meowy-returned-union-views-focused.log`. Earlier incomplete-return
+expectations now verify known owners. Owned-union projections and hidden unmatched
+union inputs remain explicitly incomplete. All ten compiler checks pass, including
+1311 library and 903 native tests; log: `/tmp/meowy-returned-union-views-gate.log`.
+No failures remain. Proof outcomes stay gated; untracked `docs/proposals/` is untouched.
 
 ### Proof dependency implementation slices
 
@@ -1389,16 +1373,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1305
-  library/903 native tests (2208 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1311
+  library/903 native tests (2214 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-returned-union-carriers-gate.log`.
-- All 332 dependency-filtered tests pass. Seven returned-carrier groups cover
-  direct/deeper/stored/projected candidates, nested calls, null/carrier payloads,
-  all/unknown candidates, hidden union inputs, irrelevant reference-free inputs,
-  type/call/work limits, no replay and E302/E303 rejection. Accepted fixtures pass
-  ordinary compilation/ownership; dependency marks remain seeded.
-  Terminal prerequisite: `d85ec70`.
+  0 failed in debug/release. Log: `/tmp/meowy-returned-union-views-gate.log`.
+- All 338 dependency-filtered tests pass. Six new direct returned-view groups
+  cover direct/deeper/stored candidates, all/unknown candidates, null/carrier
+  payloads, nested calls, no replay, call/work limits, E302/E303 lifetimes and
+  incomplete owned-union/hidden-input boundaries. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1590,11 +1573,14 @@ explicitly documented. No outstanding failures remain.
    now match supported record/null-union terminals through the public contract,
    including direct/deeper inputs and supported stored/projected record fields.
    Unknown candidates and untraversed unmatched union inputs remain incomplete.
-   Next admit direct returned shared record-union views in `calls/cells.rs`, retaining
-   exact terminal matching and the unmatched-input guard. Begin with direct/deeper
-   shared inputs and stored views; audit owned-union projections from borrowed
-   records separately before broadening that traversal. Test all/unknown candidates,
-   null, nested calls, budgets, no replay and lifetimes before the full gate.
+   Direct returned shared record/null-union views now match exact direct/deeper
+   and stored shared inputs, preserving unknowns and unmatched-input guards.
+   Next audit owned-union projections from borrowed records in
+   `calls/cells/views.rs`: public projection paths can identify the owner, but the
+   subsequent walker rejects owned heterogeneous unions. Add bounded traversal
+   or prove a safe skip without dropping hidden nested candidates. Cover projected
+   owners, hidden references, null, unknowns, nested calls and lifetimes before
+   broadening admission and running the full compiler gate.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

@@ -79,6 +79,9 @@ pub(crate) fn nullable_result_lifetimes_and_heterogeneous_results_remain_checked
         panic!()
     };
     let cells = checker.reference_cell(value).unwrap();
-    assert!(!cells.complete);
-    assert!(cells.places.is_empty());
+    assert!(cells.complete);
+    assert_eq!(
+        cells.places,
+        BTreeSet::from([(id(&checker, "row"), vec![])])
+    );
 }
