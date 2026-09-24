@@ -17,6 +17,13 @@ Documentation and 82 standalone examples retain the standardized readable layout
 The prior token/literal preservation audit is `/tmp/meowy-doc-style-audit.json`;
 Git preserves its completed commit series. Compiler guides remain in `compiler/docs/`.
 
+## Dispatch receiver sigil migration
+
+Replace the implicit dispatch receiver name `self` with `$` across implementation,
+regressions, docs/examples and editor highlighting. The compiler handoff records
+reviewable migration slices and validation. `self` remains an ordinary name;
+receiver ownership and lifetime rules stay unchanged. Validation pending.
+
 ## Editor task and dispatch highlighting
 
 Vim/Neovim recognize `%group` in operand positions, including group joins and

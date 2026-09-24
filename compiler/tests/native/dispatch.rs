@@ -172,3 +172,47 @@ d.print(owner.n)
         );
     }
 }
+
+#[test]
+pub fn receiver_sigil_keeps_nested_receivers_and_literal_dollars() {
+    Case::new(
+        r#"
+d:@"debug"
+value:7
+answer:value.{outer:$;inner:3.{->$*2};->{->outer:outer;->inner:inner;->again:$}}
+d.print("{answer.outer} {answer.inner} {answer.again}")
+d.print(4.{->{->$+1}})
+9.{d.print("receiver={$}; literal=$")}
+"#,
+    )
+    .runs(b"7 6 7\n5\nreceiver=9; literal=$\n");
+}
+
+#[test]
+pub fn receiver_sigil_keeps_borrows_and_mutation_permissions() {
+    Case::new(
+        r#"
+d:@"debug"
+owner:=7
+copy:owner.{owner=9;view:&$;->*view}
+d.print("{copy} {owner}")
+row:={->n:=1}
+result:row.{$.n=5;->$.n}
+d.print("{result} {row.n}")
+"#,
+    )
+    .runs(b"7 9\n5 1\n");
+    for source in [
+        "owner:1;view:owner.{->&$}",
+        "owner:=1;view:(&owner).{->&*$};owner=2;out:*view",
+    ] {
+        let code = if source.starts_with("owner:1") {
+            "E303"
+        } else {
+            "E302"
+        };
+        let result = Case::new(source).command("check", &["--json"]);
+        assert_eq!(result.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&result.stderr).contains(code));
+    }
+}

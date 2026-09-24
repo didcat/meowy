@@ -19,6 +19,27 @@ retains its code tokens/attributes/output and passed `doc check --run-examples`.
 Generated API-page branding is lowercase and covered by the renderer regression.
 Git preserves that documentation series; the root STATUS links its preservation audit.
 
+## Dispatch receiver sigil migration
+
+Commit plan:
+1. Add `$` expression syntax and bind it to the existing dispatch receiver storage.
+   Keep `self` temporarily as a migration alias so focused intermediate commits
+   remain buildable; test new receiver behavior and ownership.
+2. Migrate compiler regression fixtures in reviewable subsystem batches, then remove
+   the implicit `self` alias. `self` remains an ordinary user name; `$` cannot be
+   declared/rebound and nested dispatches supply the nearest receiver.
+3. Update language docs/examples and Vim/Neovim highlighting in focused slices.
+   Run the complete compiler and editor gates across the series; preserve literals,
+   Rust/Python `self`, unrelated prose and the paused proof implementation handoff.
+
+The `$` byte is currently unused in meowy tokens; shell prompts and strings are
+unrelated. No ownership or lifetime behavior is intended to change. `$` syntax and receiver
+binding pass the focused checker test and all 14 dispatch-filtered native tests
+(debug/release), including nesting, interpolation, copy/field permissions and
+E201/E305/E302/E303 boundaries. Logs: `/tmp/meowy-receiver-sigil-check.log`,
+`/tmp/meowy-receiver-sigil-native.log`. Existing exclusive-dispatch and non-debug
+interpolation gates remain unchanged. Temporary `self` alias removal follows migration.
+
 ## Executable proof plan
 
 The next milestone is bounded type-only `proof.can_copy<T>()`, with opaque static

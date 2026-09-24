@@ -71,17 +71,15 @@ impl Checker {
             let local = self.local(ty.clone());
             self.proofs.receivers.insert(local);
             self.places.insert(local);
-            self.declare(
-                "self",
-                Value::Local {
-                    id: local,
-                    ty,
-                    mutable: false,
-                    owner: self.owner,
-                    constant: self.constant(&value),
-                },
-                block.span,
-            )?;
+            let binding = Value::Local {
+                id: local,
+                ty,
+                mutable: false,
+                owner: self.owner,
+                constant: self.constant(&value),
+            };
+            self.declare("$", binding.clone(), block.span)?;
+            self.declare("self", binding, block.span)?;
             stmts.push(hir::Stmt::Bind { id: local, value });
         }
         Ok(stmts)

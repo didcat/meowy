@@ -260,6 +260,7 @@ impl Parser {
             TokenKind::String => ExprKind::String(self.string_parts(&token)?),
             TokenKind::Name => ExprKind::Name(token.text),
             _ => match token.text.as_str() {
+                "$" => ExprKind::Name(token.text),
                 "(" => {
                     if let Some((params, label)) = self.function_head()? {
                         self.need("{")?;

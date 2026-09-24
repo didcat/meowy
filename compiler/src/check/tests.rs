@@ -337,3 +337,12 @@ pub(crate) fn unary_context_does_not_inject_a_union_before_the_operator() {
     rejects("byte<int8>:5;value<int16>:-byte", "E207");
     rejects("value<float32><float64>:-(1.5)", "E207");
 }
+
+#[test]
+pub(crate) fn dispatch_receiver_sigil_has_scoped_immutable_identity() {
+    accepts("value:3;out:value.{copy:$;->{->$+copy}}");
+    accepts("value:=3;out:(&value).{->*$}");
+    rejects("out:$", "E201");
+    rejects("value:3;out:value.{$=4;->$}", "E305");
+    rejects("$:3", "E004");
+}

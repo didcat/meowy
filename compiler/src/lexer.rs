@@ -97,7 +97,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
                     }
                 }
             }
-            byte if b"{}()[]<>:;,.|+-*/%&^!~=@'".contains(&byte) => {
+            byte if b"{}()[]<>:;,.|+-*/%&^!~=@'$".contains(&byte) => {
                 pos += 1;
                 if pos < bytes.len()
                     && matches!(
