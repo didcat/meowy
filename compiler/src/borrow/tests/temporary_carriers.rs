@@ -8,7 +8,7 @@ pub(crate) fn temporary_dereference_copies_keep_original_pointee_sources() {
         "owner:1;value:*(&({->view:&owner;->n:2}.n))",
         "owner:{->n:1};copy:&({->view:&owner}.view.n);value:*copy",
         "owner:1;copy:{->*(&{->view:&owner})};value:*(copy.view)",
-        "owner:1;copy:(&(&owner)).{->*self};value:*copy",
+        "owner:1;copy:(&(&owner)).{->*$};value:*copy",
         "owner:1;value:***(&(&(&owner)))",
         "load<&int32>:(p<& &int32>){->*p};owner:1;value:*(load(&(&owner)))",
     ] {
@@ -35,7 +35,7 @@ pub(crate) fn temporary_cell_origins_and_public_bounds_do_not_escape() {
 pub(crate) fn temporary_snapshots_keep_active_loans_without_reading_unused_pointees() {
     for source in [
         "owner:=1;copy:*(&{->view<&int32><null>:null;->n:2});owner=3;|copy.view<&int32>|value:*(copy.view<&int32>)",
-        "holder:(&1).{->view:self;->n:2};value:(*(&(&holder))).n",
+        "holder:(&1).{->view:$;->n:2};value:(*(&(&holder))).n",
         "owner:=1;copy:*(&{->view:&owner});value:*(copy.view);owner=3",
     ] {
         accepts(source);

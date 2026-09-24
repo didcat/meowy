@@ -80,7 +80,7 @@ pub(crate) fn binding_fields_keep_function_and_dispatch_copies_independent() {
     accepts(
         "<R>:<{field<int32>:=}>;f<int32>:(r<R>){r.field=8;->r.field};r<R>:{->field:=7};n:f(r);v:r.field",
     );
-    accepts("r:{->field:=7};v:r.{self.field=8;->self.field};w:r.field");
+    accepts("r:{->field:=7};v:r.{$.field=8;->$.field};w:r.field");
     rejects("p:{r:{->field:=7};->r.&!field}", "E303");
 }
 

@@ -38,7 +38,10 @@ binding pass the focused checker test and all 14 dispatch-filtered native tests
 (debug/release), including nesting, interpolation, copy/field permissions and
 E201/E305/E302/E303 boundaries. Logs: `/tmp/meowy-receiver-sigil-check.log`,
 `/tmp/meowy-receiver-sigil-native.log`. Existing exclusive-dispatch and non-debug
-interpolation gates remain unchanged. Temporary `self` alias removal follows migration.
+interpolation gates remain unchanged. All migrated compiler fixtures pass 1432 library and 905 native tests
+(debug/release); log: `/tmp/meowy-receiver-migration-tests.log`. Migration is split
+into checker/borrow, native field/dispatch, and lifetime/restart batches (seven
+fixture files each). Temporary `self` alias removal follows these commits.
 
 ## Executable proof plan
 

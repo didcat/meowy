@@ -11,7 +11,7 @@ pub(crate) fn temporary_copy_owners_live_through_their_complete_statement() {
         "read<uint8>:(p<&uint8>){->*p};byte<uint8>:1;value:read(&(byte<uint8>))",
         "read<uint8>:(p<&uint8>){->*p};value:read(&{byte<uint8>:1;->byte})",
         "first<&int32>:(p<&int32[2]>){->&(p[1])};value:*(first(&[3,4]))",
-        "value:(&{->n:4}).{->self.n}",
+        "value:(&{->n:4}).{->$.n}",
         "|*(&true)|value:*(&1)",
         "owner:=1;view:&owner;same:&(*view+1)==&{owner=3;->2}",
     ] {
@@ -62,8 +62,8 @@ pub(crate) fn call_entry_validates_every_active_transitive_argument_origin() {
         "read<int32>:(p<& &int32>){->**p};cell:&1;value:read(&cell)",
         "read<int32>:(p<& & &int32>){->***p};cell:&1;outer:&cell;value:read(&outer)",
         "keep<&int32>:(p<&int32>,q<&string>){->p};read<int32>:(p<& &int32>){->**p};owner:1;cell:keep(&owner,&\"x\");value:read(&cell)",
-        "<C>:<{view<&int32>;n<int32>}>;read<int32>:(p<&C>){->*(p.view)};holder:(&1).{->view:self;->n:2};value:read(&holder)",
-        "<V>:<&int32><null>;read<int32>:(p<&V>){->0};f<null>:(flag<boolean>){cell<V>:(&1).{|flag|->self};|flag|value:read(&cell)}",
+        "<C>:<{view<&int32>;n<int32>}>;read<int32>:(p<&C>){->*(p.view)};holder:(&1).{->view:$;->n:2};value:read(&holder)",
+        "<V>:<&int32><null>;read<int32>:(p<&V>){->0};f<null>:(flag<boolean>){cell<V>:(&1).{|flag|->$};|flag|value:read(&cell)}",
     ] {
         rejects(source, "E303");
     }
@@ -74,8 +74,8 @@ pub(crate) fn call_entry_validates_every_active_transitive_argument_origin() {
         "<V>:<&int32><null>;read<int32>:(p<&V>){->0};cell<V>:null;value:read(&cell)",
         "<V>:<&int32><null>;read<int32>:(p<&V>){->0};cell<V>:{|false|->&1};value:read(&cell)",
         "read<int32>:(p<& &int32>){->**p};flag:false;cell:&1;|flag|value:read(&cell)",
-        "holder:(&1).{->view:self;->n:2};p:&holder;value:p.n",
-        "<V>:<&int32><null>;read<int32>:(p<&V>){->0};f<null>:(flag<boolean>){cell<V>:(&1).{|flag|->self};|!flag|value:read(&cell)}",
+        "holder:(&1).{->view:$;->n:2};p:&holder;value:p.n",
+        "<V>:<&int32><null>;read<int32>:(p<&V>){->0};f<null>:(flag<boolean>){cell<V>:(&1).{|flag|->$};|!flag|value:read(&cell)}",
     ] {
         accepts(source);
     }
@@ -84,8 +84,8 @@ pub(crate) fn call_entry_validates_every_active_transitive_argument_origin() {
 #[test]
 pub(crate) fn tag_inspection_skips_payload_origins_but_checks_accessed_storage() {
     for source in [
-        "holder:(&1).{->view<&int32><null>:self;->n:2};p:&holder;|p.view<&int32>|v:1",
-        "holder:(&1).{->view<&int32><null>:self;->n:2};p:&holder;q:&p;|(*q).view<null>|v:1",
+        "holder:(&1).{->view<&int32><null>:$;->n:2};p:&holder;|p.view<&int32>|v:1",
+        "holder:(&1).{->view<&int32><null>:$;->n:2};p:&holder;q:&p;|(*q).view<null>|v:1",
         "r:&1;|r<&int32>|v:1",
         "r:&1;p:&r;|(*p)<&int32>|v:1",
         "<V>:<&int32><null>;read<int32>:(p<&V>){->0};cell<V>:&1;|cell<null>|value:read(&cell)",

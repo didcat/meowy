@@ -144,7 +144,7 @@ pub(crate) fn list_element_contracts_visit_types_without_enumerating_capacity() 
         "E303",
     );
     rejects("r:{a:[1,2];->&(a[1])}", "E303");
-    rejects("a:[1,2];r:a.{->&(self[1])}", "E303");
+    rejects("a:[1,2];r:a.{->&($[1])}", "E303");
 }
 
 #[test]

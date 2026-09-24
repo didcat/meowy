@@ -54,7 +54,7 @@ pub(crate) fn expired_entry_sources_can_be_replaced_before_reading() {
         "a:1;p:=&2;i:=0;'loop{p=&a;value:*p;i=i+1;|i<2|'loop.restart()}",
         "a:1;p:=&a;'out{local:2;p=&local};i:=0;'loop{p=&a;value:*p;i=i+1;|i<2|'loop.restart()}",
         "a:1;p:=&a;'out{->n:2;p=&n};i:=0;'loop{p=&a;value:*p;i=i+1;|i<2|'loop.restart()}",
-        "value:(&7).{p:=self;i:=0;'inner{v:*p;p=self;i=i+1;|i<2|'inner.restart()};->*p}",
+        "value:(&7).{p:=$;i:=0;'inner{v:*p;p=$;i=i+1;|i<2|'inner.restart()};->*p}",
     ] {
         accepts(source);
     }
@@ -62,8 +62,7 @@ pub(crate) fn expired_entry_sources_can_be_replaced_before_reading() {
 
 #[test]
 pub(crate) fn expired_transitive_headers_validate_only_demanded_parts() {
-    let source =
-        "<C>:<{view<&int32><null>;n<int32>}>;cell<C>:(&7).{->view:self;->n:4};p:=&cell;i:=0;";
+    let source = "<C>:<{view<&int32><null>;n<int32>}>;cell<C>:(&7).{->view:$;->n:4};p:=&cell;i:=0;";
     accepts(&format!(
         "{source}'loop{{n:p.n;|p.view<null>|{{}};p=&cell;i=i+1;|i<2|'loop.restart()}}"
     ));

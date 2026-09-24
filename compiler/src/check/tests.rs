@@ -197,7 +197,7 @@ pub(crate) fn reference_capability_boundaries_are_explicit() {
         "x:1;r:=&x",
         "r:&(1+2)",
         "<R>:<{value<&int32>}>;f<null>:(x<&R>){->null}",
-        "x:1;r:&x;r.{v:&self}",
+        "x:1;r:&x;r.{v:&$}",
     ] {
         accepts(source);
     }
@@ -302,11 +302,11 @@ pub(crate) fn restart_drops_mutable_proofs_and_rejects_outer_slot_hazards() {
 #[test]
 pub(crate) fn parameter_and_receiver_addresses_are_scope_local() {
     accepts("read<int32>:(value<int32>){view:{->&value};->*view}");
-    accepts("value:7;copy:value.{view:&self;->*view}");
+    accepts("value:7;copy:value.{view:&$;->*view}");
     rejects("bad<&int32>:(value<int32>){->&value}", "E303");
-    rejects("bad:(value<int32>){->(&value).{->&*self}}", "E303");
-    rejects("value:7;view:value.{->&self}", "E303");
-    rejects("value:{->n:7};view:value.{->&(self.n)}", "E303");
+    rejects("bad:(value<int32>){->(&value).{->&*$}}", "E303");
+    rejects("value:7;view:value.{->&$}", "E303");
+    rejects("value:{->n:7};view:value.{->&($.n)}", "E303");
 }
 
 #[test]
@@ -314,14 +314,11 @@ pub(crate) fn shared_dispatch_keeps_original_origins_and_bounds() {
     accepts(
         "<R>:<{n<int32>}>;<H>:<{view<&R>}>;field<&int32>:(holder<H>){->&(holder.view.n)};owner<R>:{->n:7};view:field({->view:&owner});read:*view",
     );
-    accepts("owner:=1;view:(&owner).{->&*self};value:*view;owner=2");
-    accepts("a:=1;b:=2;pair:{->a:&a;->b:&b};view:pair.{->self.a};b=3;value:*view");
+    accepts("owner:=1;view:(&owner).{->&*$};value:*view;owner=2");
+    accepts("a:=1;b:=2;pair:{->a:&a;->b:&b};view:pair.{->$.a};b=3;value:*view");
+    rejects("owner:=1;view:(&owner).{->$};owner=2;value:*view", "E302");
     rejects(
-        "owner:=1;view:(&owner).{->self};owner=2;value:*view",
-        "E302",
-    );
-    rejects(
-        r#"first<&int32>:(a<&int32>,b<&string>){->a};owner:1;view:{short:"x";->first(&owner,&short).{->self}}"#,
+        r#"first<&int32>:(a<&int32>,b<&string>){->a};owner:1;view:{short:"x";->first(&owner,&short).{->$}}"#,
         "E303",
     );
 }
