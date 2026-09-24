@@ -42,9 +42,13 @@ Investigation: the existing outer reference branch uses `call_shared_view`, whic
 excludes heterogeneous unions. `call_origin_view` and location traversal already
 support those targets. The shared record-view helper must also preserve call depth
 when obtaining input locations. Returned carrier-cell matching stays separate.
-Caller-depth propagation and its regression pass all 430 dependency-filtered tests
-and formatting; log: `/tmp/meowy-origin-caller-depth-focused.log`.
-Direct union-view admission is next; user changes remain preserved.
+Caller-depth prerequisite `d600bb6` passed all 430 focused tests before admission.
+Direct union-view support and five new groups pass all 435 dependency-filtered
+tests; log: `/tmp/meowy-direct-union-origins-focused.log`. Distinct/deeper/stored/
+null/unknown views, nested calls, preserved caller depth, modes/work limits and
+E302/E303 pass. All ten compiler checks pass, including 1408 library/903 native
+tests; log: `/tmp/meowy-direct-union-origins-gate.log`. No failures remain.
+User changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1372,15 +1376,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1402
-  library/903 native tests (2305 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1408
+  library/903 native tests (2311 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-borrowed-union-origins-gate.log`.
-- All 429 dependency-filtered tests pass. Four borrowed-union content groups
-  cover distinct/deeper/null/unknown layouts, record transitions, inline calls,
-  cumulative depth, no replay, work limits and E302/E303 lifetimes. Direct borrowed-
-  union origin arguments and returned carrier-cell matching remain separate.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-direct-union-origins-gate.log`.
+- All 435 dependency-filtered tests pass. Caller-depth preservation and five
+  direct borrowed-union groups cover distinct/null/unknown layouts, deeper/stored
+  views, nested calls, unknown intermediate cells, no replay, call/work limits,
+  exclusive edges and E302/E303 lifetimes. Returned carrier-cell matching from
+  by-value unions remains separate. Accepted fixtures pass ordinary compilation/
+  ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1640,12 +1645,16 @@ explicitly documented. No outstanding failures remain.
    structural depth and the work ledger; exact keys keep differing layouts apart.
    Null/unknown contents retain known roots conservatively. Discovery prerequisite:
    `c9c5325`.
-   Next route direct borrowed-union origin arguments through `call_origin_view`
-   in `calls/inputs.rs`; that outer reference branch still uses the older concrete-
-   record-only classifier. Reuse the now bounded record/union location traversal,
-   preserve exact matches and unsupported members, and test direct/deeper/stored
-   views, all/unknown/null candidates, limits/no replay and lifetimes. Keep by-value
-   union arguments returning carrier-cell locations as a separate slice.
+   Direct/deeper/record-stored borrowed-union origin arguments now enter the
+   same bounded location traversal through `call_origin_view`. Caller-depth
+   prerequisite `d600bb6` prevents input location lookup from restarting the call
+   budget. Exact variants and unknown intermediates retain conservative origins.
+   Next match returned carrier-cell locations from by-value union arguments in
+   `calls/cells.rs` and `calls/cells/record_results.rs`. Reuse bounded typed candidate
+   discovery while reading expression-backed variant snapshots with the current call
+   depth, rather than inventing concrete owner paths. Split record-view and carrier/
+   union-view result admission if needed. Test direct/deeper/stored/all/unknown/null
+   leaves, inline wrappers, copies, limits/no replay and lifetimes before the full gate.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

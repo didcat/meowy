@@ -435,21 +435,24 @@ from variant-qualified cells with the enclosing structural depth preserved.
 Traversal prerequisite: `1482d20`. All 425 focused tests and all ten compiler checks pass.
 Borrowed heterogeneous-union terminal contents now resolve typed snapshots through
 cumulative record/union transitions. Discovery prerequisite: `c9c5325`.
-All 429 focused tests and all ten compiler checks pass. Direct borrowed-union origin
-arguments are next; returned carrier-cell matching remains separate.
+All 429 focused tests and all ten compiler checks pass. Direct/deeper/stored
+borrowed-union origin arguments now retain variant-aware origins while preserving
+caller depth. Prerequisite: `d600bb6`. All 435 focused tests and all ten compiler checks pass.
+Returned carrier-cell matching from by-value union arguments is next.
 Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1402
-  library/903 native tests (2305 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1408
+  library/903 native tests (2311 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-borrowed-union-origins-gate.log`.
-- All 429 dependency-filtered tests pass. Four borrowed-union content groups
-  cover distinct/deeper/null/unknown layouts, record transitions, inline calls,
-  cumulative depth, no replay, work limits and E302/E303 lifetimes. Direct borrowed-
-  union origin arguments and returned carrier-cell matching remain separate.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-direct-union-origins-gate.log`.
+- All 435 dependency-filtered tests pass. Caller-depth preservation and five
+  direct borrowed-union groups cover distinct/null/unknown layouts, deeper/stored
+  views, nested calls, unknown intermediate cells, no replay, call/work limits,
+  exclusive edges and E302/E303 lifetimes. Returned carrier-cell matching from
+  by-value unions remains separate. Accepted fixtures pass ordinary compilation/
+  ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

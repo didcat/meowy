@@ -56,7 +56,7 @@ impl Checker {
                     }
                 }
                 Type::Reference(_) => {
-                    let Some((ty, layers)) = self.call_shared_view(ty, arg)? else {
+                    let Some((ty, layers)) = self.call_origin_view(ty, arg)? else {
                         return Ok(Input::Unsupported);
                     };
                     if ty.pointee().is_some_and(Type::has_borrowed) {
@@ -195,3 +195,6 @@ mod tests {
 mod nullable;
 
 mod unions;
+
+#[cfg(test)]
+mod direct_unions;

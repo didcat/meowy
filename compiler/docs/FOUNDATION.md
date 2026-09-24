@@ -320,8 +320,10 @@ including stored references and owned-field projections. Structural depth includ
 the enclosing variant path. Supported borrowed heterogeneous record/null-union
 terminals resolve exact location-backed snapshots through cumulative record/union
 transitions, preserving null and unknown contents. Borrowed primary values and
-unsupported members remain incomplete; direct borrowed-union origin arguments and
-returned carrier-cell matching retain separate boundaries.
+unsupported members remain incomplete. Direct, deeper and record-stored borrowed
+union origin arguments use the same variant-aware traversal, preserving caller
+depth when fetching input locations. By-value union arguments returning carrier-cell
+locations remain a separate boundary.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
