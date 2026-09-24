@@ -25,6 +25,7 @@ pub(crate) enum Route {
     Join,
     Exit,
     Result,
+    Backedge,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -49,6 +50,7 @@ impl Checker {
             .saturating_add(self.sequence_edges)
             .saturating_add(self.scope_exits.len())
             .saturating_add(self.endpoint_edges)
+            .saturating_add(self.restart_edges.len())
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)
     }

@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current block and result endpoint slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Add bounded block entry/normal/result ports around core statement sequences.
    Retain opaque receiver-initialization prefixes and forward barriers; admit empty
    blocks explicitly, and never materialize a result edge for a never block.
@@ -133,7 +133,15 @@ roots; body summaries retain their owning producer point. Block prerequisite:
 borrow/loan regressions. All 1547 library tests pass after updating the older
 fixture to assert its new expression-statement links;
 `/tmp/meowy-block-consumers-lib.log`. No failures remain. Generic statement/value
-transfers remain separate; explicit restart reentry routes are next.
+transfers remain separate. Consumer integration: `4f266e4`. Restart ports now
+connect to validated target entries through a distinct backedge route. Source and
+reentry edges are published atomically and share the edge budget. All three
+restart-edge groups pass, covering nested/function targets, explicit cycles without
+normal results, capacity atomicity and source mismatches. All ten compiler checks
+pass, including 1550 library/910 native tests, formatting, Clippy, build and
+conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-block-results-gate.log`. No failures remain. These result ports describe
+availability, not field/emission value origins; propagation remains gated.
 Proof outcomes and restart dependency propagation stay gated.
 
 ### Proof dependency implementation slices
@@ -1462,11 +1470,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Explicit scope-exit ports, HIR provenance and body-fact source validation passed
-  all ten checks in `python3 -B tools/verify.py --compiler`: 1540 library/910 native
-  tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-scope-exits-gate.log`. Block/statement/
-  result endpoints, remaining operand coverage and restart propagation stay pending.
+- Core block endpoints, plain block consumers, expression statements and marked
+  restart backedges passed all ten checks in `python3 -B tools/verify.py --compiler`:
+  1550 library/910 native tests, formatting, Clippy, build and conformance
+  (10 passed, 13 unsupported, 0 failed in debug/release).
+  Log: `/tmp/meowy-block-results-gate.log`. Remaining statement/value transfers,
+  operand coverage and restart dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1800,9 +1809,18 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`1f26948`); HIR leaves and restart evidence retain source IDs (`90a2065`). Body
    facts validate source identity and exact targets, preserving unknown synthetic
    origins and original call spans. No normal-fallthrough edge is introduced.
-   Next connect block/statement entry, normal and result endpoints using existing
-   sequences, exit ports and HIR identities. Distinguish target leave completion
-   from restart reentry; preserve owners, emissions and required logical roots.
+   Core block entry/normal/result ports (`b45829a`) now retain empty completion,
+   sequence endpoints and target-leave joins, preserving receiver/forward barriers.
+   Plain block consumers and expression statements use exact source links
+   (`4f266e4`); body producer IDs remain function-owned. Restart reentry edges are
+   separately marked Backedge and publish atomically with their exit source.
+   Next connect matcher statement roots to their checked branch points in source
+   order, then model binding/write/emission operations and value transfers in
+   `dependencies/edges.rs`, `dependencies/sequences.rs` and statement checking.
+   Emission initializes a component; it must not become an exit. Preserve EmitId,
+   target slots, owners and retained required roots. Keep result availability
+   separate from field/value provenance, and exclude backedges from acyclic walks
+   until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
    Call/index/list operand sequencing, composed roots and contextual list/effect
    block builders remain coverage gaps; missing sequences are not independence.

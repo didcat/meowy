@@ -492,8 +492,11 @@ Four focused groups and all 1544 library tests pass;
 `/tmp/meowy-block-endpoints-lib.log`. Plain block expressions now use exact
 producer/result links, and expression statements depend on their child normal
 ports. All 1547 library tests pass; `/tmp/meowy-block-consumers-lib.log`.
-Block prerequisite: `b45829a`. Restart reentry routes are next; generic value-flow
-and dependency propagation remain incomplete.
+Block prerequisite: `b45829a`; consumer links: `4f266e4`. Restart ports now connect
+to validated block entries through separately marked backedges, sharing the edge
+budget and publishing atomically with source exits. All ten compiler checks pass,
+including 1550 library/910 native tests; `/tmp/meowy-block-results-gate.log`.
+Remaining statement/value transfers and dependency propagation stay incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -623,10 +626,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Scope-exit ports, HIR provenance and validated body-fact sources passed all ten
-  checks in `python3 -B tools/verify.py --compiler`: 1540 library/910 native tests.
-  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-scope-exits-gate.log`. The transfer graph remains partial;
+- Core block endpoints, plain block consumers, expression statements and marked
+  restart backedges passed all ten checks in `python3 -B tools/verify.py --compiler`:
+  1550 library/910 native tests. Conformance: 10 passed, 13 unsupported, 0 failed in
+  debug/release. Log: `/tmp/meowy-block-results-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -690,7 +693,10 @@ execution was not part of this documentation edit.
    source links. Branch decision/bypass/normal-join edges are now explicit.
    Region ports now link to exact checked contents; core blocks and ordinary binary
    operands retain explicit sequence edges. Leave/restart exits now preserve exact
-   target ports and checked sources. Next connect block/statement/result endpoints.
+   target ports and checked sources. Core block ports, plain block consumers and
+   expression statements now connect; restart reentry is marked separately.
+   Next connect matcher statement roots, then binding/write/emission operations
+   and value transfers. Result availability is not value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.
    Normal ports do not imply reachability. Preserve independent matcher arms,
