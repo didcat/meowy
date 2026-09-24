@@ -43,10 +43,14 @@ Investigation: the origin fallback already validates actual storage against the
 shared view target. Carrier reads still return incomplete at the same unknown
 source boundary. Keep direct temporary and by-value call paths unchanged, and
 keep unselected heterogeneous owner prefixes incomplete.
-Shared owner/prefix/leaf validation is extracted without changing admission or
-charges. All 357 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-view-field-validation-focused.log`. Carrier integration is next.
-Untracked `docs/proposals/` remains untouched.
+Validation prerequisite `22a0e0c` preserves origin admission and charges; all 357
+focused tests passed before integration. Carrier reads and seven new groups pass
+all 364 dependency-filtered tests; log: `/tmp/meowy-view-carrier-fields-focused.log`.
+Known cells survive unknown owners/contents. Deeper carriers, null/nested records,
+stored record/union views, hidden candidates, copies, no replay, call/work limits
+and E302/E303 lifetimes pass. All ten compiler checks pass, including 1337 library
+and 903 native tests; log: `/tmp/meowy-view-carrier-fields-gate.log`.
+No failures remain. Untracked `docs/proposals/` remains untouched; outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1374,15 +1378,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1330
-  library/903 native tests (2233 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1337
+  library/903 native tests (2240 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-concrete-view-origins-gate.log`.
-- All 357 dependency-filtered tests pass. Seven new concrete-view groups cover
-  direct/nested/returned reads and copies, all/unknown origins, nullable records,
-  no replay, call/work/path bounds, invalid owner prefixes, E225 control propagation
-  and E302/E303 lifetimes. Hidden-union regressions now verify concrete field origins.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks stay seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-view-carrier-fields-gate.log`.
+- All 364 dependency-filtered tests pass. Seven new carrier-field groups cover
+  direct/nested/returned views and copies, all/unknown contents and owners, nullable
+  records, deeper carriers, stored record/union views, hidden candidates, no replay,
+  call/work bounds and E302/E303 lifetimes. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1589,11 +1593,16 @@ explicitly documented. No outstanding failures remain.
    locations when direct storage lookup is unavailable. Returned calls, hidden union
    candidates, nullable/nested records and copies retain all stored origins; unknown
    owners remain incomplete. Concrete prefix/type checks prevent layout mixing.
-   Next integrate carrier-field contents in `records/cells.rs`: its unknown Deref
-   source still loses stored reference-cell locations. Reuse the concrete owner/path
-   validation from `records/sources/views.rs`, keeping structural extraction separate
-   from admission. Test stored/deeper carriers, all/unknown candidates, nullable
-   records, copies, bounds, no replay and lifetimes before the full compiler gate.
+   Shared carrier-field contents now resolve through the same concrete owner/path
+   validation, retaining stored cells across returned views, copies, nullable records
+   and hidden candidates. Unknown owners or contents remain incomplete.
+   Next admit hidden candidates from direct unmatched shared-union arguments in
+   `calls/cells.rs` and `calls/cells/record_results.rs`. Reuse bounded variant-key
+   discovery and snapshot resolution from `calls/cells/views/hidden.rs`; distinguish
+   exact terminal matches from traversal into different union contents. Start with
+   one shared layer, then deeper/stored inputs as a separate slice. Test all/unknown
+   candidates, null, distinct layouts, budgets/no replay and lifetimes before the
+   full gate. Untraversed borrowed contents must remain incomplete.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

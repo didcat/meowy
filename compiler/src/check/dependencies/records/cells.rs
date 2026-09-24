@@ -154,7 +154,12 @@ impl Checker {
             return self.call_result_cells(ty, base, args, depth);
         }
         let sources = match self.record_source_locations(value, path)? {
-            RecordSource::Unknown => return Ok(Cells::default()),
+            RecordSource::Unknown => {
+                if let crate::hir::ExprKind::Deref(view) = &base.kind {
+                    return self.record_view_field_cells(view, &fields, depth);
+                }
+                return Ok(Cells::default());
+            }
             RecordSource::Empty => {
                 return Ok(Cells {
                     complete: true,
@@ -209,3 +214,5 @@ mod tests;
 
 #[cfg(test)]
 mod calls;
+
+mod views;

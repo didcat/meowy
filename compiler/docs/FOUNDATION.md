@@ -287,8 +287,10 @@ field paths. Unsupported borrowed contents and owned projections inside variants
 remain incomplete. Shared concrete-record field reads and copies resolve stored
 origins through all known returned locations, including hidden union candidates.
 Concrete owner prefixes and leaf types are checked; unknown alternatives remain
-incomplete. Nested/nullable records retain their paths and null contents. Carrier
-field contents remain separate; by-value returned union origins remain separate.
+incomplete. Nested/nullable records retain their paths and null contents. Stored
+shared carrier fields also recover their cell locations through these views,
+including deeper carriers and stored record/union views. Unknown
+owners or contents stay incomplete; by-value returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

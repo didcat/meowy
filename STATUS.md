@@ -401,22 +401,24 @@ hidden exact/deeper shared candidates now use variant-qualified snapshots.
 The location-reader prerequisite is `9969754`. All 350 focused tests and all ten
 compiler checks pass. Concrete-record reference fields now resolve stored origins
 through known shared view locations, including hidden union candidates. All 357
-focused tests and all ten compiler checks pass. Carrier-field contents are next; those
-stored cell locations remain incomplete through indirect record views.
+focused tests and all ten compiler checks pass. Stored carrier-field cells now
+resolve through the same validated shared record views, retaining unknown owners
+and contents. Validation prerequisite: `22a0e0c`. All 364 focused tests and all ten
+compiler checks pass. Direct unmatched shared-union arguments are next.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1330
-  library/903 native tests (2233 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1337
+  library/903 native tests (2240 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-concrete-view-origins-gate.log`.
-- All 357 dependency-filtered tests pass. Seven new concrete-view groups cover
-  direct/nested/returned reads and copies, all/unknown origins, nullable records,
-  no replay, call/work/path bounds, invalid owner prefixes, E225 control propagation
-  and E302/E303 lifetimes. Hidden-union regressions now verify concrete field origins.
-  Accepted fixtures pass ordinary compilation/ownership; dependency marks stay seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-view-carrier-fields-gate.log`.
+- All 364 dependency-filtered tests pass. Seven new carrier-field groups cover
+  direct/nested/returned views and copies, all/unknown contents and owners, nullable
+  records, deeper carriers, stored record/union views, hidden candidates, no replay,
+  call/work bounds and E302/E303 lifetimes. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
