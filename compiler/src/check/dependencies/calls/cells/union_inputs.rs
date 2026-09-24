@@ -17,17 +17,28 @@ impl Checker {
     pub(super) fn union_input_cells(
         &mut self,
         input: &Expr,
-        mut ty: &Type,
+        ty: &Type,
         path: &[usize],
         result: &Type,
         depth: usize,
         layers: usize,
     ) -> Result<Option<Cells>> {
-        let mut locations = if path.is_empty() {
+        let locations = if path.is_empty() {
             self.reference_cell_at(input, depth + 1)?
         } else {
             self.record_source_cells_at(input, path, depth + 1)?
         };
+        self.union_location_cells(locations, ty, result, layers, input)
+    }
+
+    pub(super) fn union_location_cells(
+        &mut self,
+        mut locations: Cells,
+        mut ty: &Type,
+        result: &Type,
+        layers: usize,
+        input: &Expr,
+    ) -> Result<Option<Cells>> {
         for _ in 0..layers {
             locations = self.expand_reference_cells(locations, input)?;
             ty = ty.pointee().unwrap();

@@ -29,25 +29,23 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current owned record-stored union input slice
+### Current borrowed-record union-field series
 
 Commit plan:
-1. Pass the concrete field type/path to union-input resolution and read stored
-   cells before shared-layer expansion. Keep both result matchers and focused
-   nested/mixed/unknown, union/carrier, budget/no-replay and lifetime regressions
-   together. Run the full compiler gate and update both handoffs and the guide.
+1. Extract shared-layer expansion and variant-key matching into a location-based
+   helper without changing admission or charges. Run focused checks and commit.
+2. Resolve borrowed-record union field addresses, read their stored references,
+   and reuse that helper. Keep nested/deeper/nullable/all/unknown regressions and
+   budget/lifetime checks with admission. Run the full gate and update both handoffs.
 
-Investigation: owned record argument walkers already produce bounded concrete
-field paths. Remove their direct-argument-only gate and resolve selected fields
-with `record_source_cells_at`. Borrowed-record fields keep their separate traversal;
-no variant indices become concrete paths, and exact terminals keep existing matching.
-Both result paths and five new groups pass all 379 dependency-filtered tests;
-log: `/tmp/meowy-stored-union-inputs-focused.log`. Nested/mixed stored inputs,
-unknown fields/intermediates, null, union/carrier results, no replay, call/work
-limits and E302/E303 pass. Borrowed-record fields remain explicitly incomplete.
-All ten compiler checks pass, including 1352 library/903 native tests; log:
-`/tmp/meowy-stored-union-inputs-gate.log`. No failures remain.
-Untracked `docs/proposals/` remains untouched; outcomes stay gated.
+Investigation: `returned_record_cells` already computes concrete field addresses
+but rejects unmatched shared-union terminals. Expand the stored field reference
+once before the remaining shared layers. Preserve exact terminal matching and
+unknown owners/contents; never turn variant positions into ordinary field paths.
+Location-based resolution is extracted without changing admission or charges.
+All 379 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-union-location-helper-focused.log`. Borrowed-field integration is next.
+Untracked `docs/proposals/` remains untouched.
 
 ### Proof dependency implementation slices
 
