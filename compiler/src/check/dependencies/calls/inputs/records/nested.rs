@@ -90,3 +90,28 @@ pub(crate) fn unknown_nested_types_still_obey_total_record_depth() {
     assert_eq!(error.code, "B001");
     assert!(error.message.contains("record call"));
 }
+
+#[test]
+pub(crate) fn stored_record_origin_traversal_keeps_initial_depth() {
+    let mut checker = Checker::new();
+    let stmts = statements(
+        &mut checker,
+        "<R>:<{r<&boolean>}>;x:=false;row<R>:{->r:&x};view:&row",
+    );
+    let crate::hir::Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+        panic!()
+    };
+    let result = Type::Reference(Box::new(Type::Bool));
+    let cells = crate::check::dependencies::Cells::default();
+    assert!(
+        checker
+            .call_record_cell_origins(cells.clone(), value, &value.ty, &result, 0, 31)
+            .is_ok()
+    );
+    let error = checker
+        .call_record_cell_origins(cells, value, &value.ty, &result, 0, 32)
+        .err()
+        .unwrap();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("record call"));
+}

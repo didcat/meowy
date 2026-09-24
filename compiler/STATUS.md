@@ -29,24 +29,22 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current by-value union carrier-origin slice
+### Current union argument borrowed-record series
 
 Commit plan:
-1. Classify shared carrier leaves with the existing bounded shared-view walker,
-   read variant-qualified cell snapshots with the current call depth, and expand
-   to reference-free terminal origins. Include mixed/deeper/null/unknown inputs,
-   inline wrappers, copies, limits/no replay and lifetimes. Run the full gate and
-   update both handoffs and the guide.
+1. Extract borrowed-record origin traversal from known cell locations, preserving
+   existing expression entry points and charges. Accept an initial structural level,
+   add a boundary regression, run focused checks and commit the prerequisite.
+2. Feed variant-qualified union snapshots into that traversal for supported shared
+   concrete-record terminals. Test nested/deeper/all/unknown/null contents, inline
+   calls, bounds/no replay and lifetimes. Run the full gate and update both handoffs.
 
-Investigation: `call_stored_origins` already expands cell layers and merges known
-roots conservatively. Reuse it after exact snapshot selection; direct leaves keep
-origin snapshots. Borrowed record/union terminal contents and returned carrier-cell
-matching remain separate. Admission and five new groups pass all 419 dependency-
-filtered tests; log: `/tmp/meowy-union-carrier-origins-focused.log`. Mixed/deeper/
-null/unknown inputs, inline wrappers, copies, reference-free record projections,
-no replay, depth/work limits and E302/E303 pass. All ten compiler checks pass,
-including 1392 library/903 native tests; log: `/tmp/meowy-union-carrier-origins-gate.log`.
-No failures remain; proof outcomes stay gated.
+Investigation: `call_record_view_origins` already has a bounded iterative record
+walker. Separate expression lookup from that walker, then preserve the union path's
+structural level when entering it. Heterogeneous terminal unions and returned cell
+matching remain separate. The extraction and initial-depth regression pass all
+420 dependency-filtered tests and formatting; log:
+`/tmp/meowy-record-cell-origins-focused.log`. Union snapshot integration is next.
 User changes remain preserved.
 
 ### Proof dependency implementation slices

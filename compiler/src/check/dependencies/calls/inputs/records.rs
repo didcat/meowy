@@ -1,5 +1,5 @@
 use super::{Checker, Diagnostic, Expr, Input, MAX_DEPTH, MAX_FIELDS, Origins, Result, Type};
-use crate::check::dependencies::references::MAX_ROOTS;
+use crate::check::dependencies::{Cells, references::MAX_ROOTS};
 
 impl Checker {
     pub(super) fn call_record_view_origins(
@@ -10,11 +10,23 @@ impl Checker {
         result: &Type,
         layers: usize,
     ) -> Result<Input> {
-        let mut cells = if path.is_empty() {
+        let cells = if path.is_empty() {
             self.reference_cell(arg)?
         } else {
             self.record_source_cells(arg, path)?
         };
+        self.call_record_cell_origins(cells, arg, ty, result, layers, 0)
+    }
+
+    pub(super) fn call_record_cell_origins(
+        &mut self,
+        mut cells: Cells,
+        arg: &Expr,
+        ty: &Type,
+        result: &Type,
+        layers: usize,
+        level: usize,
+    ) -> Result<Input> {
         for _ in 0..layers {
             cells = self.expand_reference_cells(cells, arg)?;
         }
@@ -23,7 +35,7 @@ impl Checker {
             ..Origins::default()
         };
         let mut found = false;
-        let mut views = vec![(ty, cells, 0)];
+        let mut views = vec![(ty, cells, level)];
         let mut visits = 0;
         while let Some((ty, cells, depth)) = views.pop() {
             if depth > MAX_DEPTH || !self.flow.spend(1) {
