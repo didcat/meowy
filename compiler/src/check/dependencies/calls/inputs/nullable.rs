@@ -83,5 +83,10 @@ pub(crate) fn heterogeneous_record_arguments_do_not_share_paths() {
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.pointees[&id(&checker, "r")].complete);
+    let origins = &checker.pointees[&id(&checker, "r")];
+    assert!(origins.complete);
+    assert_eq!(
+        origins.roots,
+        BTreeSet::from([id(&checker, "x"), id(&checker, "y")])
+    );
 }

@@ -48,6 +48,13 @@ impl Checker {
                     }
                     continue;
                 }
+                Type::Union(_) => {
+                    match self.call_union_input_origins(arg, ty, &path, result, depth)? {
+                        Input::Unsupported => return Ok(Input::Unsupported),
+                        Input::Absent => continue,
+                        Input::Known(source) => source,
+                    }
+                }
                 Type::Reference(_) => {
                     let Some((ty, layers)) = self.call_shared_view(ty, arg)? else {
                         return Ok(Input::Unsupported);
@@ -184,3 +191,5 @@ mod tests {
 
 #[cfg(test)]
 mod nullable;
+
+mod unions;

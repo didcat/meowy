@@ -425,21 +425,23 @@ union call reference origins now follow exact variant-qualified result types and
 all compatible public inputs. Type lookup prerequisite: `b50f87a`. All 404 focused
 tests and all ten compiler checks pass. By-value union carrier leaves now retain
 public-contract cell locations independently from reference-origin completeness.
-All 409 focused tests and all ten compiler checks pass. By-value union argument traversal
-is next and remains incomplete. Union-interior writes and proof outcomes stay gated.
+All 409 focused tests and all ten compiler checks pass. By-value union arguments now
+retain shared-reference origins through exact variant snapshots, including nested
+fields and inline wrappers. All 414 focused tests and all ten compiler checks pass. Shared
+carrier argument leaves are next; their origins remain incomplete. Union-interior
+writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1382
-  library/903 native tests (2285 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1387
+  library/903 native tests (2290 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-value-cells-gate.log`.
-- All 409 dependency-filtered tests pass. Five new carrier-result groups cover
-  all/unknown inputs, copies, deeper/stored carriers, record/union view contents,
-  nested reference calls, null public contracts, independent origin/cell completeness,
-  no replay, depth/work limits and E302/E303 lifetimes. By-value union arguments
-  remain unsupported. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-argument-origins-gate.log`.
+- All 414 dependency-filtered tests pass. Five new union-argument groups cover
+  distinct layouts, all/unknown/null origins, copies, nested owned fields, inline
+  call wrappers, nested union results, no replay, depth/work/capacity limits and
+  E302/E303 lifetimes. Carrier leaves remain explicitly incomplete. Accepted
+  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

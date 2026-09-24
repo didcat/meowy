@@ -75,7 +75,7 @@ impl Checker {
         self.record_shape_source_at(value, key, 0)
     }
 
-    pub(super) fn record_shape_source_at(
+    pub(crate) fn record_shape_source_at(
         &mut self,
         value: &Expr,
         key: &ShapeKey,

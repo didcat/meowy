@@ -309,8 +309,11 @@ against every compatible public input. Copies and nested result paths keep those
 origins; callee bodies and runtime variants are not selected. Supported shared
 carrier-cell result leaves also retain public-contract locations, including deeper
 carriers and stored record/union views. Origin and cell completeness stay independent;
-unknown and unsupported inputs remain incomplete. By-value union argument traversal
-remains separate.
+unknown and unsupported inputs remain incomplete. Owned by-value record/null-union
+arguments contribute compatible shared-reference origins through exact variant-key
+snapshots, including nested owned fields and inline call wrappers. Null contents
+contribute no origins; no private runtime variant is inferred. Carrier leaves,
+borrowed primary values and unsupported members remain incomplete.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
