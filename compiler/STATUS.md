@@ -29,26 +29,22 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current union argument borrowed-union series
+### Current direct borrowed-union origin series
 
 Commit plan:
-1. Separate bounded typed union-leaf discovery from expression snapshot resolution
-   without broadening admission. Run focused checks and commit the prerequisite.
-2. Resolve supported borrowed-union terminals from location-backed snapshots with
-   cumulative structural depth. Cover nested/deeper/all/unknown/null layouts,
-   bounds/no replay and lifetimes; run the full gate and update both handoffs.
+1. Carry caller depth through record-view argument cell lookup instead of resetting
+   it; add a focused depth regression, run focused checks and commit.
+2. Route outer reference arguments through the bounded union-aware classifier.
+   Test direct/deeper/stored views, all/unknown/null layouts, nested calls, modes,
+   budgets/no replay and lifetimes. Run the full gate and update both handoffs.
 
-Investigation: typed leaves need to retain exact variant keys and shared-layer
-counts. Expression-backed and location-backed snapshots can share origin resolution;
-recursive union transitions must carry the existing structural level. Returned
-carrier-cell matching stays separate. Discovery prerequisite `c9c5325` passed all
-425 focused tests before admission. Location-backed resolution and four new groups
-pass all 429 dependency-filtered tests; log:
-`/tmp/meowy-borrowed-union-origins-focused.log`. Distinct/deeper/null/unknown layouts,
-record transitions, inline calls, cumulative bounds, no replay and E302/E303 pass.
-All ten compiler checks pass, including 1402 library/903 native tests; log:
-`/tmp/meowy-borrowed-union-origins-gate.log`. No failures remain.
-User changes remain preserved; proof outcomes stay gated.
+Investigation: the existing outer reference branch uses `call_shared_view`, which
+excludes heterogeneous unions. `call_origin_view` and location traversal already
+support those targets. The shared record-view helper must also preserve call depth
+when obtaining input locations. Returned carrier-cell matching stays separate.
+Caller-depth propagation and its regression pass all 430 dependency-filtered tests
+and formatting; log: `/tmp/meowy-origin-caller-depth-focused.log`.
+Direct union-view admission is next; user changes remain preserved.
 
 ### Proof dependency implementation slices
 

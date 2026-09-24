@@ -60,7 +60,9 @@ impl Checker {
                         return Ok(Input::Unsupported);
                     };
                     if ty.pointee().is_some_and(Type::has_borrowed) {
-                        match self.call_record_view_origins(arg, &path, ty, result, layers)? {
+                        match self
+                            .call_record_view_origins(arg, &path, ty, result, layers, depth)?
+                        {
                             Input::Unsupported => return Ok(Input::Unsupported),
                             Input::Absent => continue,
                             Input::Known(source) => source,

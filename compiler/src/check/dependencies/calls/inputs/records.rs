@@ -9,11 +9,12 @@ impl Checker {
         ty: &Type,
         result: &Type,
         layers: usize,
+        depth: usize,
     ) -> Result<Input> {
         let cells = if path.is_empty() {
-            self.reference_cell(arg)?
+            self.reference_cell_at(arg, depth + 1)?
         } else {
-            self.record_source_cells(arg, path)?
+            self.record_source_cells_at(arg, path, depth + 1)?
         };
         self.call_record_cell_origins(cells, arg, ty, result, layers, 0)
     }

@@ -84,7 +84,7 @@ pub(crate) fn unknown_nested_types_still_obey_total_record_depth() {
     }
     let result = Type::Reference(Box::new(Type::Bool));
     let error = checker
-        .call_record_view_origins(value, &[], &ty, &result, 0)
+        .call_record_view_origins(value, &[], &ty, &result, 0, 0)
         .err()
         .unwrap();
     assert_eq!(error.code, "B001");
@@ -114,4 +114,23 @@ pub(crate) fn stored_record_origin_traversal_keeps_initial_depth() {
         .unwrap();
     assert_eq!(error.code, "B001");
     assert!(error.message.contains("record call"));
+}
+
+#[test]
+pub(crate) fn record_view_origin_arguments_preserve_caller_depth() {
+    let source =
+        "<R>:<{r<&boolean>}>;f<&boolean>:(p<&R>){->p.r};x:=false;row<R>:{->r:&x};out:f(&row)";
+    crate::compile(source).unwrap();
+    let mut checker = Checker::new();
+    let stmts = statements(&mut checker, source);
+    let crate::hir::Stmt::Bind { value, .. } = stmts.last().unwrap() else {
+        panic!()
+    };
+    assert!(checker.reference_origins(value).unwrap().complete);
+    let error = checker
+        .reference_origins_at(value, crate::check::dependencies::calls::MAX_DEPTH)
+        .err()
+        .unwrap();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("call depth"));
 }
