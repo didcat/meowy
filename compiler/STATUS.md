@@ -125,7 +125,18 @@ Log: `/tmp/meowy-method-order-gate.log`.
 Nested indexed roots beneath projected borrows also retain distinct identities.
 Place/view/temporary selection and HIR remain unchanged; tests cover statement
 ownership, grouping and error restoration. Formatting and all 1626 library tests
-pass. Log: `/tmp/meowy-element-parents-lib.log`. Graph integration is next.
+pass. Log: `/tmp/meowy-element-parents-lib.log` (`ff1373c`). Shared element metadata
+now retains parent/index roots, checked place paths or view/temporary distinctions,
+reborrow IDs and address/length capture before index evaluation. Bounds-success
+edges admit results only after normal index completion. It grants no new loan
+authority. All three focused element groups pass, including exact address/index
+ordering, temporary ownership, nested projections, E101/E222/E302/E303 errors and
+atomic publication. Log: `/tmp/meowy-element-order-focused.log`.
+All ten compiler checks pass: 1629 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+Log: `/tmp/meowy-element-order-gate.log`. Post-documentation link checks pass:
+1208 local links in 110 Markdown files. Exclusive indexed-borrow metadata is next;
+remaining graph coverage, propagation and proof outcomes stay incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1453,10 +1464,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- List/string size and list-add operand/effect links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1624 library/910
+- Shared element-parent roots and address/bounds links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1629 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-method-order-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-element-order-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1830,17 +1841,19 @@ subtraction retains its documented limits. No outstanding failures remain.
    List/string `size` now retain receiver/operation roots; `add` retains receiver
    snapshots, item roots and capacity-success result stages. Known and unknown
    lengths remain distinct; nonreturning operands do not produce result edges.
-   Next capture shared element-borrow parent/index roots in `list.rs::element_borrow`,
-   distinguishing ordinary place borrows, existing shared views and temporary
-   parents. Preserve storage identity, temporary lifetime, parent-before-index
-   evaluation, bounds and loan checks. Validate nonreturning operands, ordinary
-   errors and budgets with focused tests and the compiler gate; follow with
-   exclusive path borrows.
+   Shared element borrows now retain exact parent/index roots, checked place paths,
+   view boundaries and direct temporary/statement IDs. Address/length stages
+   precede indices, and bounds-success stages precede reference results. No new
+   loan authority or lifetime extension is inferred.
+   Next capture exclusive path/index roots in `check/indexed.rs::exclusive_indexed`,
+   preserving source paths, each containing-list reservation/length capture and
+   final loan acquisition. Validate nested/projected paths, nonreturning indices,
+   original errors and shared budgets with focused tests and the compiler gate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Element-borrow sequencing, debug formatting and other contextual
+   Exclusive indexed-borrow sequencing, debug formatting and other contextual
    block builders remain coverage gaps; missing sequences
    are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.

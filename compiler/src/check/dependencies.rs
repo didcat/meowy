@@ -329,5 +329,8 @@ mod lists;
 mod methods;
 pub(crate) use methods::{Kind as MethodKind, Method};
 
+mod elements;
+pub(crate) use elements::{Access as ElementAccess, Element};
+
 mod emissions;
 pub(crate) use emissions::Emission;

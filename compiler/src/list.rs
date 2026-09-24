@@ -558,8 +558,10 @@ impl Checker {
         index: &ast::Expr,
         span: Span,
     ) -> Result<hir::Expr> {
-        let (_, value) = self.element_parent(value, span)?;
+        let (parent, value) = self.element_parent(value, span)?;
+        let point = self.point.expect("element borrow");
         if value.ty == Type::Never {
+            self.element_operation(point, parent, &value, None, span)?;
             return Ok(value);
         }
         let Type::Reference(target) = &value.ty else {
@@ -584,7 +586,7 @@ impl Checker {
         let ty = Type::Reference(element.clone());
         let capacity = *capacity;
         let length = self.borrowed_list_length(&value);
-        let index = self.list_position(index, length, capacity)?;
+        let (position, index) = self.list_position_point(index, length, capacity)?;
         let ty = if index.ty == Type::Never {
             Type::Never
         } else {
@@ -592,6 +594,19 @@ impl Checker {
         };
         let site = self.reborrows;
         self.reborrows += 1;
+        self.element_operation(
+            point,
+            parent,
+            &value,
+            Some(crate::check::ElementAccess {
+                position,
+                capacity,
+                length,
+                site,
+                may_return: index.ty != Type::Never,
+            }),
+            span,
+        )?;
         Ok(hir::Expr {
             kind: hir::ExprKind::ElementBorrow {
                 site,

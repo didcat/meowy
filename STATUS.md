@@ -570,7 +570,12 @@ List/string `size` now retain exact receiver and operation roots (`1fd816d`). Li
 result edges. Nonreturning operands have no result path; receiver storage is not
 mutated. All ten compiler checks pass: 1624 library/910 native tests;
 `/tmp/meowy-method-order-gate.log`.
-Element-borrow paths, broader propagation and proof outcomes remain incomplete.
+Shared element borrows now retain exact parent/index roots, checked place paths,
+view boundaries and direct temporary ownership. Address/length capture precedes
+index evaluation; bounds success admits the resulting reference. Parent helpers:
+`ff1373c`. All ten compiler checks pass: 1629 library/910 native tests;
+`/tmp/meowy-element-order-gate.log`.
+Exclusive path borrows, broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -700,10 +705,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- List/string size and list-add operand/effect links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1624 library/910 native tests.
+- Shared element-parent roots and address/bounds links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1629 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-method-order-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-element-order-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -779,11 +784,12 @@ execution was not part of this documentation edit.
    snapshots, ordered position roots and bounds-success stages. List literals retain
    source-ordered element roots and construction endpoints, including exact custom
    effect-block roots and body links after recognition. `size`/`add` retain receiver
-   and item roots, snapshots and capacity-success stages. Next capture shared
-   element-borrow parent/index roots in `compiler/src/list.rs::element_borrow`,
-   preserving source storage, temporary lifetimes, bounds checks and nonreturning
-   operands. Validate owned/shared/temporary parents and loan/error order before
-   extending exclusive path borrows. Debug formatting and
+   and item roots, snapshots and capacity-success stages. Shared element borrows
+   now retain parent/index roots, address stages and temporary ownership. Next
+   capture exclusive indexed-borrow path/index roots in `compiler/src/check/indexed.rs`,
+   preserving each container reservation, bounds check and final loan acquisition.
+   Validate nested paths, nonreturning indices, error order and budgets.
+   Debug formatting and
    required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

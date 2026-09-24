@@ -155,6 +155,11 @@ operations. List `add` snapshots the receiver and its length before checking the
 item; capacity-success edges then lead to a new list result. Nonreturning receivers
 skip arguments, and nonreturning items have no result edge. Original argument,
 capacity and loan checks remain authoritative; the receiver is not mutated by `add`.
+Shared element borrows retain parent/index roots and reborrow IDs. Parent metadata
+distinguishes checked places, existing views and direct statement-owned temporaries.
+Address and length capture precede index evaluation; bounds success precedes the
+reference result. These stages retain source storage without copying the list,
+granting new loan authority or extending temporary lifetimes.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
