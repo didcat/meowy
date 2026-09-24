@@ -135,6 +135,7 @@ pub(crate) struct Frame {
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct InputUse {
     pub(crate) id: hir::LocalId,
+    pub(crate) storage: hir::LocalId,
     pub(crate) span: Span,
     pub(crate) control: bool,
     pub(crate) root: Span,

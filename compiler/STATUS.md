@@ -128,7 +128,16 @@ link per fact. All 15 focused body groups pass, including data/address/index rol
 both matcher arms, nested-body isolation and stable backward-only link identities.
 All 1462 library tests pass; logs: `/tmp/meowy-body-relations-focused.log` and
 `/tmp/meowy-body-relations-library.log`. Canonical storage IDs and short-circuit
-branch roles are next.
+branch roles are next. Relation prerequisite: `fe19008`.
+
+Canonical storage capture now covers local binds/reads/writes, slot aliases and
+required uses. Emitted aliases can also appear as HIR Bind facts; their IDs must
+resolve through the same alias root. Ordinary copies and reference carriers keep
+their own cells; indirect stores retain no invented destination. Direct required
+reads of emitted initializer values retain their existing eligibility B001 gate.
+All 1465 library tests pass, including all 18 body groups; log:
+`/tmp/meowy-body-storage-library.log`. No failures remain. Short-circuit operand
+roles are the final planned slice before the full compiler gate.
 
 ### Proof dependency implementation slices
 

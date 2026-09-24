@@ -39,13 +39,16 @@ pub(crate) struct Body {
     pub(crate) owner: usize,
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
+    pub(crate) storage: Vec<Option<hir::LocalId>>,
 }
 
 pub(crate) struct Walk<'a> {
     pub(crate) pending: Vec<(Node<'a>, Option<Link>)>,
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
+    pub(crate) storage: Vec<Option<hir::LocalId>>,
     pub(crate) link: Option<Link>,
+    pub(crate) aliases: &'a std::collections::BTreeMap<hir::LocalId, crate::borrow::Alias>,
     pub(crate) flow: &'a mut crate::flow::Flow,
     pub(crate) limit: usize,
     pub(crate) span: Span,
@@ -66,9 +69,22 @@ impl<'a> Walk<'a> {
         if self.facts.len() >= self.limit || !self.flow.spend(1) {
             return Err(Self::budget(span));
         }
+        let storage = match &fact {
+            Fact::Bind(id) | Fact::Read(id) | Fact::Write(id) | Fact::Alias(id) => {
+                if !self
+                    .flow
+                    .spend(self.aliases.len().checked_ilog2().unwrap_or(0) as usize + 1)
+                {
+                    return Err(Self::budget(span));
+                }
+                Some(self.aliases.get(id).map_or(*id, |alias| alias.root))
+            }
+            _ => None,
+        };
         let parent = self.facts.len();
         self.facts.push((fact, span));
         self.links.push(self.link);
+        self.storage.push(storage);
         self.link = Some(Link {
             parent,
             role: Role::Data,
@@ -246,14 +262,17 @@ impl Checker {
             return Ok(());
         };
         if self.body_facts >= MAX_BODY_FACTS
-            || !self
-                .flow
-                .spend(self.body_inputs.len().checked_ilog2().unwrap_or(0) as usize + 1)
+            || !self.flow.spend(
+                self.body_inputs.len().checked_ilog2().unwrap_or(0) as usize
+                    + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
+                    + 2,
+            )
         {
             return Err(Walk::budget(expr.span));
         }
         let input = InputUse {
             id: *id,
+            storage: self.proofs.aliases.get(id).map_or(*id, |alias| alias.root),
             span: expr.span,
             control: self.control,
             root: self
@@ -279,7 +298,9 @@ impl Checker {
             pending: Vec::new(),
             facts: Vec::new(),
             links: Vec::new(),
+            storage: Vec::new(),
             link: None,
+            aliases: &self.proofs.aliases,
             flow: &mut self.flow,
             limit: MAX_BODY_FACTS.saturating_sub(self.body_facts),
             span,
@@ -290,6 +311,7 @@ impl Checker {
             owner: self.owner,
             facts: walk.facts,
             links: walk.links,
+            storage: walk.storage,
         };
         if let Some(prior) = self.bodies.get(&block.id) {
             if *prior != body {
