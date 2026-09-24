@@ -490,22 +490,23 @@ All 447 focused tests and all ten compiler checks pass. Later expression operand
 now refresh continuation control, including temporary owners and final coercion
 rollback. Scope prerequisite: `bac55cf`. All 453 focused tests and all ten compiler checks pass.
 Restart sites now retain bounded target/owner/span/control evidence under their
-existing IDs. All 458 focused tests and all ten compiler checks pass. Loop/query scope
-association is next; loop-carried propagation and termination dependence remain
-incomplete.
+existing IDs. Pending queries now retain same-function active block IDs and link
+to restart targets in either registration order; copies keep their original scope.
+All 1437 library tests pass; final compiler gate passed. Loop-body fact association
+and bounded backedge propagation are next; termination dependence remains incomplete.
 Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler --editor both`: all twelve checks passed,
-  including 1432 library/906 native tests (2338 total), 20 Python harness tests,
-  Vim/Neovim syntax checks, fmt, Clippy, build, links and catalog/schema checks.
-  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-dollar-receiver-gate.log`.
-- Receiver tests cover nested dispatches/blocks, literal dollars and interpolation,
-  receiver copies and field permissions, ordinary `self` names, scope/rebinding
-  rejection and E302/E303 lifetimes. Existing capability gates are preserved.
-  The full composition project still requires unsupported manifest/module syntax.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1437
+  library/906 native tests (2343 total), 20 Python harness tests, fmt, Clippy,
+  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
+  0 failed in debug/release. Log: `/tmp/meowy-query-restart-scopes-gate.log`.
+- Five new query-scope groups cover before/after restart association, nested targets,
+  function ownership, descriptor copies, side-effect-free recognition, malformed
+  queries and scope/work bounds. Query control flags and retained logical roots
+  are unchanged; loop-carried propagation remains unimplemented. Editor and separate
+  runtime/sanitizer gates were not rerun for this metadata slice.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

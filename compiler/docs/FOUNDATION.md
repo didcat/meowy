@@ -111,7 +111,10 @@ assignment operands mark temporary availability correctly. Final coercion errors
 restore enclosing control, and operand-local joins do not taint later independent
 temporaries. Validated restart sites retain bounded target, function-owner, source
 span and proof-control evidence under their existing RestartId, separately from
-forward continuation flags. This is metadata for later loop analysis; backedge
+forward continuation flags. Pending queries retain bounded active block identities
+from their own function and link to restart targets in either registration order.
+Descriptor copies keep the original query scope; recognition alone records nothing.
+These associations do not change query control flags or evaluate outcomes. Backedge
 propagation and termination dependence remain unimplemented.
 Direct local assignments and owned field/list-element writes retain dependencies
 from the RHS, evaluated indices and lexical control. These marks conservatively

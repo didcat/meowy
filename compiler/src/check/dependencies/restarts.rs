@@ -1,6 +1,5 @@
 use super::Checker;
 use crate::{ast::Span, check::Result, diagnostic::Diagnostic, hir};
-use std::collections::btree_map::Entry;
 
 pub(crate) const MAX_RESTART_INPUTS: usize = 65_536;
 
@@ -35,18 +34,22 @@ impl Checker {
             span,
             control: self.control,
         };
-        match self.restart_inputs.entry(site) {
-            Entry::Vacant(entry) => {
-                entry.insert(input);
-            }
-            Entry::Occupied(entry) if *entry.get() == input => {}
-            Entry::Occupied(_) => {
-                return Err(Diagnostic::unsupported(
-                    "proof restart site identity mismatch",
-                    span,
-                ));
-            }
+        if self
+            .restart_inputs
+            .get(&site)
+            .is_some_and(|prior| *prior != input)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof restart site identity mismatch",
+                span,
+            ));
         }
+        let queries = self.restart_query_ids(input.owner, target, span)?;
+        self.restart_inputs.entry(site).or_insert(input);
+        self.restart_queries
+            .entry(site)
+            .or_default()
+            .extend(queries);
         Ok(())
     }
 }

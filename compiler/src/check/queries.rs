@@ -1,3 +1,4 @@
+mod scopes;
 mod statements;
 
 use super::{Checker, Result, Spec, Value};
@@ -18,6 +19,7 @@ pub(crate) struct Query {
     pub(crate) revision: u32,
     pub(crate) root: usize,
     pub(crate) control: bool,
+    pub(crate) scopes: Vec<usize>,
 }
 
 impl Query {
@@ -121,6 +123,8 @@ impl Checker {
                         span,
                     ));
                 }
+                let scopes = checker.query_scopes(span)?;
+                let sites = checker.query_restart_sites(&scopes, span)?;
                 let root = match checker.type_work.as_ref().unwrap().query_root {
                     Some(id) => id,
                     None => {
@@ -139,7 +143,11 @@ impl Checker {
                     revision: 1,
                     root,
                     control: checker.control,
+                    scopes,
                 });
+                for site in sites {
+                    checker.restart_queries.entry(site).or_default().insert(id);
+                }
                 Ok(id)
             }),
         }

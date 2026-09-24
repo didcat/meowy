@@ -46,29 +46,28 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current restart dependency evidence prerequisite
+### Current pending-query restart-scope association slice
 
 Commit plan:
-1. Record bounded RestartId/target/function-owner/source-span/control evidence only
-   after ordinary scope-operation validation. Keep site identity stable, preserve
-   original errors and avoid changing forward continuation state. Test aliases,
-   nested targets, ordinary/derived control, function ownership and budget failures.
-   Run the full gate and commit this independently reviewable representation slice.
-2. Next associate loop body facts and pending query sites with target blocks, then
-   plan bounded backward/control propagation and E225 enforcement without replaying
-   initializers or changing retained logical budgets.
+1. Retain bounded same-function active block IDs when preparing a new query and
+   associate queries with restart targets in either source order. Descriptor copies
+   retain their original site and scope; recognition remains side-effect free.
+   Keep nested/function/copy/error/budget regressions with metadata integration.
+   Run the full gate and update both handoffs.
+2. Then plan loop-body fact association and bounded backward/control propagation,
+   preserving retained roots and ordinary errors before E225 enforcement.
 
-Investigation: restart frontiers already retain target and entered base reach, but
-not proof-control provenance. Frame flags only affect later source statements;
-backedges need stable site evidence for earlier statements and later iterations.
-This prerequisite does not claim loop-carried propagation or termination analysis.
-Evidence registration and five new groups pass all 458 dependency-filtered tests;
-log: `/tmp/meowy-restart-evidence-focused.log`. Ordinary/derived control, aliases,
-nested targets, function owners, leave-derived control, original scope errors,
-site identity and capacity/work limits pass. All ten compiler checks pass, including
-1431 library/903 native tests; log: `/tmp/meowy-restart-evidence-gate.log`.
-No failures remain. Loop-carried propagation is not yet implemented.
-User changes remain preserved and proof outcomes stay gated.
+Investigation: pending queries are omitted from runtime HIR. Explicit owner/block
+identities avoid reconstructing lexical scope from spans. Restart-query links can
+be built as either endpoint is registered without replaying source or changing
+query control flags. This slice is association only, not loop-carried propagation.
+The association implementation and five new groups pass all 1437 library tests;
+log: `/tmp/meowy-query-restart-scopes-focused.log`. Before/after restart links,
+nested targets, function ownership, copy identity, recognition/error behavior and
+scope/work bounds pass. All ten compiler checks pass, including 1437 library/906
+native tests; log: `/tmp/meowy-query-restart-scopes-gate.log`. No failures remain.
+This slice records associations only. User changes are preserved; proof outcomes
+and loop-carried propagation remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1396,15 +1395,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler --editor both`: all twelve checks passed,
-  including 1432 library/906 native tests (2338 total), 20 Python harness tests,
-  Vim/Neovim syntax checks, fmt, Clippy, build, links and catalog/schema checks.
-  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-dollar-receiver-gate.log`.
-- Receiver tests cover nested dispatches/blocks, literal dollars and interpolation,
-  receiver copies and field permissions, ordinary `self` names, scope/rebinding
-  rejection and E302/E303 lifetimes. Existing capability gates are preserved.
-  The full composition project still requires unsupported manifest/module syntax.
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1437
+  library/906 native tests (2343 total), 20 Python harness tests, fmt, Clippy,
+  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
+  0 failed in debug/release. Log: `/tmp/meowy-query-restart-scopes-gate.log`.
+- Five new query-scope groups cover before/after restart association, nested targets,
+  function ownership, descriptor copies, side-effect-free recognition, malformed
+  queries and scope/work bounds. Query control flags and retained logical roots
+  are unchanged; loop-carried propagation remains unimplemented. Editor and separate
+  runtime/sanitizer gates were not rerun for this metadata slice.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1686,13 +1685,16 @@ explicitly documented. No outstanding failures remain.
    Scope-operation errors precede registration; repeated matching metadata is stable
    and conflicting site identities are rejected. No loop-carried propagation is
    claimed by this prerequisite.
-   Next associate pending query sites and checked body facts with restart target
-   blocks. Pending queries are omitted from runtime HIR, so retain bounded active
-   block identities at query preparation rather than inferring scopes from spans.
-   Then plan propagation over backedges and loop headers without re-evaluating
-   initializers or resetting logical budgets. Test queries/writes before a restart,
-   nested targets, owner separation, unknown/derived conditions and original errors;
-   keep outcomes gated until bounded propagation and E225 enforcement pass the full gate.
+   Pending queries now retain bounded active block IDs within their function and
+   associate with matching restart sites in either source order. Copies preserve
+   the original query scope; recognition and failed preparation add no observations.
+   The links do not change query control flags or replay source.
+   Next associate checked loop-body facts with restart target blocks, including
+   bindings, writes, reads and required-input uses before the restart. Plan bounded
+   propagation over backedges and headers using these summaries and query links;
+   do not re-evaluate initializers or reset retained logical budgets. Preserve nested
+   targets, function ownership, ordinary errors and unknown/derived conditions.
+   E225 enforcement and outcomes must remain gated until this propagation is validated.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
