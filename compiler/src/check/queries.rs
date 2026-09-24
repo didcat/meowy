@@ -12,6 +12,7 @@ pub(crate) enum Pending<'a> {
 }
 
 pub(crate) struct Query {
+    pub(crate) site: Option<crate::hir::StatementId>,
     pub(crate) ty: Spec,
     pub(crate) span: Span,
     pub(crate) owner: usize,
@@ -125,6 +126,7 @@ impl Checker {
                 }
                 let scopes = checker.query_scopes(span)?;
                 let sites = checker.query_restart_sites(&scopes, span)?;
+                let site = checker.checked_site(span)?;
                 let root = match checker.type_work.as_ref().unwrap().query_root {
                     Some(id) => id,
                     None => {
@@ -136,6 +138,7 @@ impl Checker {
                 };
                 let id = checker.queries.len();
                 checker.queries.push(Query {
+                    site,
                     ty,
                     span,
                     owner: checker.owner,

@@ -111,8 +111,8 @@ Dependency-ordered commit plan:
    and skipped reads. Run focused tests and the full compiler gate.
 
 Investigation: statements already allocate bounded StatementId values, but erased
-statements do not retain them in HIR. Required reads and queries retain spans and
-block scope only. A separate checked-site inventory can preserve their statement
+statements do not retain them in HIR. Required reads and queries previously
+retained spans and block scope only. A separate checked-site inventory can preserve their statement
 provenance without introducing runtime lifetime wrappers or replaying evaluation.
 Parent links describe checking containment only: expression/branch/continuation
 identities and block/emission result transfers remain subsequent prerequisites.
@@ -121,13 +121,24 @@ Existing body operand/storage/short-circuit relations passed all ten compiler
 checks (1469 library/910 native tests), with conformance 10 passed, 13 unsupported,
 0 failed in debug/release; `/tmp/meowy-body-relations-gate.log`.
 
-The checked-site inventory now retains statement identity, same-function parents,
+`d8f7f64` retains checked statement identity, same-function parents,
 block ownership and explicit completion. Error paths restore the active site. All
 four focused groups and all 1473 library tests pass;
-`/tmp/meowy-checked-sites-lib.log`. No failures remain. Next attach required reads
-and pending queries to these sites, then run the full compiler gate.
-Backedge/header propagation, termination dependence and proof outcomes
-remain gated. Unknown reference/store/call effects must remain explicit.
+`/tmp/meowy-checked-sites-lib.log`. Required reads and original pending queries
+now capture the active same-function site; copies keep original query metadata.
+All seven focused erased-site/input groups and all ten compiler checks pass,
+including 1478 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-checked-sites-gate.log`. No failures remain. Restart-query ownership
+lookup uses the retained site when available and keeps explicit owner metadata for
+queries prepared outside statement checking. Required roots, recognition purity,
+skipped reads and E223 capture rejection are preserved.
+
+Next retain explicit expression/branch/continuation identities and connect them to
+these statement sites and HIR body relations. Statement containment does not order
+execution or distinguish multiple reads within an expression. Block/emission result
+transfers, backedge/header propagation and termination dependence remain incomplete.
+Proof outcomes remain gated; unknown reference/store/call effects remain explicit.
 
 ### Proof dependency implementation slices
 
@@ -1455,6 +1466,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
+- Checked statement sites and erased input/query associations passed all ten checks
+  in `python3 -B tools/verify.py --compiler`: 1478 library/910 native tests,
+  formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
+  in debug/release). Log: `/tmp/meowy-checked-sites-gate.log`. This metadata does
+  not yet provide expression/branch/continuation identities or restart propagation.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1760,10 +1776,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    short-circuit condition/RHS roles. Local/slot-alias facts and required uses retain
    canonical storage IDs without conflating reference carriers with their pointees.
    Relations: `fe19008`; storage: `5099fd1`. Indirect stores stay unresolved.
-   Next give erased required reads and pending queries explicit checked site and
-   branch/continuation identities in `dependencies/bodies.rs`, `queries/` and their
-   checking boundaries. Do not infer site identity or execution order from spans
-   or inventory indices. Preserve recognition purity, original roots and both arms.
+   Checked statement sites now retain function/block ownership, same-function
+   parents and completion state (`d8f7f64`). Required reads and original pending
+   queries retain those sites; query copies keep their original source. All ten
+   compiler checks pass, including 1478 library/910 native tests.
+   Next add explicit expression/branch/continuation identities in
+   `dependencies/sites.rs`, `dependencies/bodies.rs`, `queries/` and their checking
+   boundaries, linking erased uses and retained HIR relations. Distinguish multiple
+   reads within a statement and preserve both matcher/short-circuit successors.
+   Statement containment is not execution order. Do not infer identity or ordering
+   from spans or inventory indices. Preserve recognition purity, original roots
+   and both arms.
    Connect nested block/emission result sources to their consumers using existing
    HIR/slot identities; retain unknown reference/store/call effects explicitly.
    These remain prerequisites to a complete transfer graph. Then propagate over

@@ -65,7 +65,9 @@ impl Checker {
         target: usize,
         span: Span,
     ) -> Result<Vec<usize>> {
-        if !self.flow.spend(self.queries.len() + 1) {
+        if !self.flow.spend(
+            self.queries.len() * (self.sites.len().checked_ilog2().unwrap_or(0) as usize + 1) + 1,
+        ) {
             return Err(Diagnostic::unsupported(
                 "restart query association budget exhausted",
                 span,
@@ -73,7 +75,10 @@ impl Checker {
         }
         let mut queries = Vec::new();
         for (id, query) in self.queries.iter().enumerate() {
-            if query.owner != owner {
+            let source = query
+                .site
+                .map_or(query.owner, |site| self.sites[&site].owner);
+            if source != owner {
                 continue;
             }
             if !self.flow.spend(

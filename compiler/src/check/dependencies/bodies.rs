@@ -242,6 +242,7 @@ impl Checker {
         if !matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. }) {
             return Ok(());
         }
+        let site = self.checked_site(expr.span)?;
         if !self.flow.spend(self.frames.len() + self.scopes.len() + 1) {
             return Err(Walk::budget(expr.span));
         }
@@ -281,6 +282,7 @@ impl Checker {
             return Err(Walk::budget(expr.span));
         }
         let input = InputUse {
+            site,
             id: *id,
             storage: self.proofs.aliases.get(id).map_or(*id, |alias| alias.root),
             span: expr.span,

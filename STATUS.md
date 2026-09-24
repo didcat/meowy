@@ -399,9 +399,11 @@ all ten compiler checks pass.
 
 Checked statements now retain bounded identities, function/block ownership,
 same-function containment and explicit completion after successful checking.
-Four focused groups and all 1473 library tests pass; erased required/query uses
-will be linked next. Branch/continuation identity, result transfers and backedge
-propagation remain incomplete. Proof outcomes remain gated.
+Required reads and original pending queries retain these sites; copies preserve
+query identity and required roots. All ten compiler checks pass, including 1478
+library/910 native tests; `/tmp/meowy-checked-sites-gate.log`. Expression/branch/
+continuation identity, result transfers and backedge propagation remain incomplete.
+Proof outcomes remain gated. Statement-site prerequisite: `d8f7f64`.
 
 ## Pending descriptor statement accounting
 
@@ -531,10 +533,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Restart-body operand/branch relations and storage identities passed all ten checks
-  in `python3 -B tools/verify.py --compiler`, including 1469 library/910 native tests.
+- Checked statement sites and erased input/query associations passed all ten checks
+  in `python3 -B tools/verify.py --compiler`, including 1478 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-body-relations-gate.log`. This is metadata capture only;
+  `/tmp/meowy-checked-sites-gate.log`. This is metadata capture only;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -593,8 +595,9 @@ execution was not part of this documentation edit.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
-   Next associate erased query/input sites with explicit branch/continuation
-   identities and connect block/emission results to consumers. Retained operand
+   Checked statement sites now retain erased query/input associations. Next add
+   explicit expression/branch/continuation identities, distinguish uses within a
+   statement and connect block/emission results to consumers. Retained operand
    and canonical-storage relations are prerequisites; bounded backedge/header
    propagation remains unimplemented.
    Fixed flag type queries are independent of answers and must remain admitted.
