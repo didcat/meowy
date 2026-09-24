@@ -113,6 +113,9 @@ impl Checker {
             _ => Err(self.type_unavailable(expr)?),
         })();
         self.type_work.as_mut().unwrap().depth -= 1;
+        if result.is_ok() {
+            self.track_required_read(expr)?;
+        }
         result
     }
 

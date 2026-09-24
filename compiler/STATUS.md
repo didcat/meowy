@@ -126,7 +126,20 @@ Facts are a structural inventory, not execution order or transfer edges. Express
 spans are retained; HIR exits/aliases without spans use their enclosing block span
 (the restart site retains its exact source span). Five focused body tests pass;
 all 1452 library tests and Clippy pass. Logs: `/tmp/meowy-restart-bodies-library.log`
-and `/tmp/meowy-restart-bodies-clippy.log`. Required reads are next.
+and `/tmp/meowy-restart-bodies-clippy.log`. Runtime prerequisite: `87e7b20`.
+
+Required scalar/boolean/record reads now retain storage roots, read/root spans and
+lexical control under the nearest same-function runtime block ID. This capture
+occurs after successful input checks and shares the inventory capacity, without
+changing logical charges. Skipped branches and fixed-signature type queries do not
+create input uses. All 11 focused inventory groups pass; log:
+`/tmp/meowy-restart-inputs-focused.log`. All ten compiler checks pass, including
+1458 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-restart-body-inputs-gate.log`. No outstanding failures remain.
+No backedge enforcement is implemented. Failed enclosing bodies may retain
+successful earlier input uses, but have no completed body inventory and cannot
+be analyzed as complete.
 
 ### Proof dependency implementation slices
 
@@ -1749,12 +1762,22 @@ subtraction retains its documented limits. No outstanding failures remain.
    associate with matching restart sites in either source order. Copies preserve
    the original query scope; recognition and failed preparation add no observations.
    The links do not change query control flags or replay source.
-   Next associate checked loop-body facts with restart target blocks, including
-   bindings, writes, reads and required-input uses before the restart. Plan bounded
-   propagation over backedges and headers using these summaries and query links;
-   do not re-evaluate initializers or reset retained logical budgets. Preserve nested
-   targets, function ownership, ordinary errors and unknown/derived conditions.
-   E225 enforcement and outcomes must remain gated until this propagation is validated.
+   Completed runtime bodies now retain bounded structural inventories of bindings,
+   reads, writes, stores, calls, nested blocks and exits under their block/function
+   identities. Restart targets address these inventories directly. Successful
+   required scalar/boolean/record input uses retain storage-root IDs, read/root spans
+   and lexical control under the nearest same-function block; fixed-signature
+   queries and skipped evaluation add no uses. Runtime prerequisite: `87e7b20`.
+   Next add bounded data/control transfer relations in `dependencies/bodies.rs`
+   and the checked HIR traversal: the flat inventory is not execution order or a
+   complete transfer graph. Retain source/destination and branch relationships,
+   canonical aliases and unresolved indirect stores before propagating anything.
+   Then propagate over restart backedges/headers using these facts and query links,
+   without re-evaluating initializers or resetting retained logical budgets. Preserve
+   nested targets, function ownership, ordinary errors and unknown/derived conditions.
+   Validate seeded before/after-restart reads, writes, required uses and queries,
+   then run the full compiler gate. E225 enforcement and outcomes stay gated until
+   this propagation is validated; termination dependence remains separate.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

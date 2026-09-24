@@ -168,6 +168,66 @@ impl<'a> Walk<'a> {
 }
 
 impl Checker {
+    pub(crate) fn track_required_read(&mut self, expr: &crate::ast::Expr) -> Result<()> {
+        use crate::{
+            ast::ExprKind,
+            check::{InputUse, Value},
+        };
+        if !matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. }) {
+            return Ok(());
+        }
+        if !self.flow.spend(self.frames.len() + self.scopes.len() + 1) {
+            return Err(Walk::budget(expr.span));
+        }
+        let Some(frame) = self
+            .frames
+            .iter()
+            .rev()
+            .find(|frame| frame.owner == self.owner)
+        else {
+            return Ok(());
+        };
+        let mut base = expr;
+        while let ExprKind::Field { value, .. } | ExprKind::Group(value) = &base.kind {
+            if !self.flow.spend(1) {
+                return Err(Walk::budget(expr.span));
+            }
+            base = value;
+        }
+        let ExprKind::Name(name) = &base.kind else {
+            return Ok(());
+        };
+        let Some(Value::Local { id, .. } | Value::FileModule { id, .. }) = self
+            .scopes
+            .iter()
+            .rev()
+            .find_map(|scope| scope.values.get(name))
+        else {
+            return Ok(());
+        };
+        if self.body_facts >= MAX_BODY_FACTS
+            || !self
+                .flow
+                .spend(self.body_inputs.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
+            return Err(Walk::budget(expr.span));
+        }
+        let input = InputUse {
+            id: *id,
+            span: expr.span,
+            control: self.control,
+            root: self
+                .type_work
+                .as_ref()
+                .expect("required input root")
+                .logical
+                .root,
+        };
+        self.body_inputs.entry(frame.id).or_default().push(input);
+        self.body_facts += 1;
+        Ok(())
+    }
+
     pub(crate) fn track_body(&mut self, block: &hir::Block, span: Span) -> Result<()> {
         if !self
             .flow

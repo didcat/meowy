@@ -132,6 +132,14 @@ pub(crate) struct Frame {
     pub(crate) owner: usize,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct InputUse {
+    pub(crate) id: hir::LocalId,
+    pub(crate) span: Span,
+    pub(crate) control: bool,
+    pub(crate) root: Span,
+}
+
 pub(crate) struct Checker {
     pub(crate) scopes: Vec<Scope>,
     pub(crate) frames: Vec<Frame>,
@@ -166,6 +174,7 @@ pub(crate) struct Checker {
     pub(crate) restart_queries: BTreeMap<hir::RestartId, BTreeSet<usize>>,
     pub(crate) bodies: BTreeMap<hir::BlockId, dependencies::Body>,
     pub(crate) body_facts: usize,
+    pub(crate) body_inputs: BTreeMap<hir::BlockId, Vec<InputUse>>,
     pub(crate) statements: usize,
     pub(crate) statement: Vec<(hir::StatementId, bool)>,
     pub(crate) lengths: BTreeMap<usize, crate::list::Fact>,
@@ -306,6 +315,7 @@ impl Checker {
             restart_queries: BTreeMap::new(),
             bodies: BTreeMap::new(),
             body_facts: 0,
+            body_inputs: BTreeMap::new(),
             statements: 0,
             statement: Vec::new(),
             lengths: BTreeMap::new(),

@@ -510,12 +510,23 @@ rollback. Scope prerequisite: `bac55cf`. All 453 focused tests and all ten compi
 Restart sites now retain bounded target/owner/span/control evidence under their
 existing IDs. Pending queries now retain same-function active block IDs and link
 to restart targets in either registration order; copies keep their original scope.
-All 1437 library tests pass; final compiler gate passed. Loop-body fact association
-and bounded backedge propagation are next; termination dependence remains incomplete.
+Checked runtime bodies now
+retain bounded facts under block/function IDs, including nested-body links, bindings,
+reads, writes, calls and exits (`87e7b20`). Successful required-input reads retain
+storage-root IDs, source/root spans and lexical control in the same scope inventory.
+All 11 focused inventory groups and all ten compiler checks pass (1458 library/
+910 native tests); log: `/tmp/meowy-restart-body-inputs-gate.log`.
+Bounded transfer relations and backedge/header propagation are next; the inventory
+alone is not a control/data transfer graph. Termination dependence remains incomplete.
 Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
+- Restart-body inventory and required-input association passed all ten checks in
+  `python3 -B tools/verify.py --compiler`, including 1458 library/910 native tests.
+  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
+  `/tmp/meowy-restart-body-inputs-gate.log`. This is metadata capture only;
+  bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -573,6 +584,9 @@ execution was not part of this documentation edit.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
+   Next build bounded transfer relations for the retained restart-body facts and
+   required-input uses, then propagate across backedges and headers. The flat
+   inventory alone does not establish dependencies or independence.
    Fixed flag type queries are independent of answers and must remain admitted.
    Pending statement and annotation roots are integrated; descriptor construction
    and type inspection must charge the retained ledger when outcomes are admitted.
