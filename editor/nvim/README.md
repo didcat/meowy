@@ -72,6 +72,8 @@ The highlighter handles:
 - Nested generic types, record types, function signatures, constrained binders,
   multiple parameters and arguments, union alternatives, type subtraction, and
   type queries.
+- The `$` dispatch receiver, including field access, borrows and interpolation;
+  `self` remains an ordinary identifier.
 - References and pointers, including `<&!T>`, `<*!T>`, and `&!value`, plus `!{ ... }`
   safety boundaries.
 - Task submission and joins (`>>`, `<<`), `%group` names, labeled scopes,

@@ -19,14 +19,16 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Dispatch receiver sigil migration
 
-Replace the implicit dispatch receiver name `self` with `$` across implementation,
-regressions, docs/examples and editor highlighting. The compiler handoff records
-reviewable migration slices and validation. `self` remains an ordinary name;
-receiver ownership and lifetime rules stay unchanged. The implementation and migrated
-regressions pass 1432 library/906 native tests, including debug/release receiver
-execution. The implicit `self` alias is removed (`213cfe4`). Reference and guide
-updates pass all four default checks; log: `/tmp/meowy-dollar-docs.log`. Editor
-migration and the final combined gate remain.
+`$` now denotes the nearest dispatch receiver in the compiler, documentation,
+examples and Vim/Neovim highlighting. Ordinary nested blocks retain it; nested
+dispatches introduce their own. `self` is an ordinary name with no implicit alias.
+Ownership, mutability and lifetime behavior are unchanged.
+
+All 12 checks in `python3 -B tools/verify.py --compiler --editor both` passed:
+1432 library/906 native tests, Vim/Neovim, lint, formatting, conformance, links and
+schemas. Log: `/tmp/meowy-dollar-receiver-gate.log`. Native receiver tests run in
+debug/release. The full composition project retains its pre-existing bootstrap
+manifest/module-composition limitations. Restart/proof work remains the next task.
 
 ## Editor task and dispatch highlighting
 
@@ -43,7 +45,7 @@ reads, comments and strings retain their previous groups.
 `python3 -B tools/verify.py --editor both` passed all six checks for each slice;
 logs: `/tmp/meowy-task-group-editor.log`, `/tmp/meowy-dispatch-highlight.log`,
 `/tmp/meowy-dispatch-arguments-highlight.log`.
-Compiler/runtime implementation and the active compiler handoff are unchanged.
+Those editor-only slices did not change compiler/runtime implementation.
 
 ## Task-group sigil documentation
 
@@ -495,21 +497,20 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1431
-  library/903 native tests (2334 total), 20 Python harness tests, fmt, Clippy,
-  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-restart-evidence-gate.log`.
-- All 458 dependency-filtered tests pass. Five restart-evidence groups cover
-  ordinary/derived control, nested and aliased targets, function owners, leave-
-  derived availability, original scope errors, stable site identity and capacity/
-  work limits. This is metadata only; loop-carried propagation and termination
-  dependence remain unimplemented. Accepted fixtures pass ordinary compilation;
-  proof-control marks remain seeded and runtime outcomes stay gated.
+- `python3 -B tools/verify.py --compiler --editor both`: all twelve checks passed,
+  including 1432 library/906 native tests (2338 total), 20 Python harness tests,
+  Vim/Neovim syntax checks, fmt, Clippy, build, links and catalog/schema checks.
+  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+  Log: `/tmp/meowy-dollar-receiver-gate.log`.
+- Receiver tests cover nested dispatches/blocks, literal dollars and interpolation,
+  receiver copies and field permissions, ordinary `self` names, scope/rebinding
+  rejection and E302/E303 lifetimes. Existing capability gates are preserved.
+  The full composition project still requires unsupported manifest/module syntax.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  fixtures, dependencies and versions are unchanged; separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Area handoff
 

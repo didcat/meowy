@@ -96,7 +96,7 @@ after_multi:47
 |!(value<int32>)|reject()
 |accepts < int32 > (value)|use(value)
 |accepts(value<int32>)|use(value)
-|t.{->self<MyCoolType>}<MyCoolType>|matched()
+|t.{->$<MyCoolType>}<MyCoolType>|matched()
 copy:value < int32 >
 other<(name<>)>:"Ada"
 expanded < (name<>!<null>) > : name
@@ -139,7 +139,7 @@ borrowed_jobs : &jobs
 borrowed_comparison : &jobs < limit
 value
     .(convert)
-    .{ -> self }
+    .{ -> $ }
 qualified_dispatch : value.(transforms.convert)
 spaced_dispatch : value. ( transforms . convert )
 multiline_dispatch : value.(
@@ -203,5 +203,11 @@ doc_interpolation : "value {{#|| } " |# inert ||# ->7}} tail"
 <Docs> : <{#| type field |# number<int32>}>
 # | ordinary spaced opener | #
 after_spaced_comment : 50
+
+receiver_field : value.{ -> $.field }
+receiver_borrow : value.{ -> &$ }
+receiver_query : value.{ -> $<> }
+receiver_string : "$ stays literal; {$} is an expression"
+
 #||| unclosed documentation
 ||# still unclosed documentation

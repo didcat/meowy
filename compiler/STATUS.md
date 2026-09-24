@@ -21,38 +21,20 @@ Git preserves that documentation series; the root STATUS links its preservation 
 
 ## Dispatch receiver sigil migration
 
-Commit plan:
-1. Add `$` expression syntax and bind it to the existing dispatch receiver storage.
-   Keep `self` temporarily as a migration alias so focused intermediate commits
-   remain buildable; test new receiver behavior and ownership.
-2. Migrate compiler regression fixtures in reviewable subsystem batches, then remove
-   the implicit `self` alias. `self` remains an ordinary user name; `$` cannot be
-   declared/rebound and nested dispatches supply the nearest receiver.
-3. Update language docs/examples and Vim/Neovim highlighting in focused slices.
-   Run the complete compiler and editor gates across the series; preserve literals,
-   Rust/Python `self`, unrelated prose and the paused proof implementation handoff.
+`$` is the sole implicit dispatch receiver. Nested dispatches introduce a new `$`;
+ordinary nested blocks retain the enclosing receiver. It cannot be declared or
+rebound. `self` is an ordinary name, including inside dispatches; legacy implicit
+uses fail E201. Receiver ownership, mutability and lifetime rules are unchanged.
 
-The `$` byte is currently unused in meowy tokens; shell prompts and strings are
-unrelated. No ownership or lifetime behavior is intended to change. `$` syntax and receiver
-binding pass the focused checker test and all 14 dispatch-filtered native tests
-(debug/release), including nesting, interpolation, copy/field permissions and
-E201/E305/E302/E303 boundaries. Logs: `/tmp/meowy-receiver-sigil-check.log`,
-`/tmp/meowy-receiver-sigil-native.log`. Existing exclusive-dispatch and non-debug
-interpolation gates remain unchanged. All migrated compiler fixtures pass 1432 library and 905 native tests
-(debug/release); log: `/tmp/meowy-receiver-migration-tests.log`. Migration is split
-into checker/borrow, native field/dispatch, and lifetime/restart batches (seven
-fixture files each). Checker/borrow batch committed as `eeb3b73`; native dispatch
-and field fixtures are committed as `7af7755`. The validated lifetime/restart
-fixtures are committed as `4deba7b`. The alias is removed and ordinary `self`
-names coexist with `$`. The first removal run passed 1432 library/905 native tests
-but found two still-legacy standalone compiler examples; those now use `$`.
-Dollar-only checking now passes all 1432 library and 906 native tests in both
-profiles; log: `/tmp/meowy-dollar-only-tests.log`. Legacy implicit `self` is E201;
-ordinary outer/inner/parameter names `self` remain valid beside `$`. Documentation
-and editor migration remain before the final compiler/editor gate. Contract docs
-are committed as `280a9e5`; guides/examples pass the default checks. The documented
-composition project still hits existing manifest/module-composition bootstrap gates;
-its standalone receiver examples are covered by native tests instead.
+Implementation: `39d9bd1`, `213cfe4`; fixture batches: `eeb3b73`, `7af7755`,
+`4deba7b`; contract/guides: `280a9e5`, `f9c6fae`. Vim/Neovim now highlight receiver
+fields, borrows, type queries and interpolation while preserving literal dollars.
+All 12 compiler/editor checks pass, including 1432 library/906 native tests;
+log: `/tmp/meowy-dollar-receiver-gate.log`. Native receiver execution covers debug
+and release. Default documentation checks pass (`/tmp/meowy-dollar-docs.log`).
+The full composition project still hits existing manifest/module-composition gates;
+no full-language example execution or release qualification is claimed.
+The restart/proof implementation handoff below remains the next compiler task.
 
 ## Executable proof plan
 
@@ -1414,21 +1396,20 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1431
-  library/903 native tests (2334 total), 20 Python harness tests, fmt, Clippy,
-  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-restart-evidence-gate.log`.
-- All 458 dependency-filtered tests pass. Five restart-evidence groups cover
-  ordinary/derived control, nested and aliased targets, function owners, leave-
-  derived availability, original scope errors, stable site identity and capacity/
-  work limits. This is metadata only; loop-carried propagation and termination
-  dependence remain unimplemented. Accepted fixtures pass ordinary compilation;
-  proof-control marks remain seeded and runtime outcomes stay gated.
+- `python3 -B tools/verify.py --compiler --editor both`: all twelve checks passed,
+  including 1432 library/906 native tests (2338 total), 20 Python harness tests,
+  Vim/Neovim syntax checks, fmt, Clippy, build, links and catalog/schema checks.
+  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+  Log: `/tmp/meowy-dollar-receiver-gate.log`.
+- Receiver tests cover nested dispatches/blocks, literal dollars and interpolation,
+  receiver copies and field permissions, ordinary `self` names, scope/rebinding
+  rejection and E302/E303 lifetimes. Existing capability gates are preserved.
+  The full composition project still requires unsupported manifest/module syntax.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
-  fixtures, dependencies and versions are unchanged; editor and separate runtime/
-  sanitizer gates were not rerun. Full release qualification remains open.
+  fixtures, dependencies and versions are unchanged; separate runtime/sanitizer
+  gates were not rerun. Full release qualification remains open.
 
 ## Prior capabilities and other areas
 

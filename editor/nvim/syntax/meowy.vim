@@ -9,10 +9,11 @@ syntax case match
 
 " Explicit clusters keep task/comparison operators out of type arguments while
 " allowing full expressions, including nested strings, inside interpolation.
-syntax cluster meowyCode contains=meowyIdentifier,meowyBuiltinValue,meowyBinding,meowyCall,meowyNumber,meowyFloat,meowyOperator,meowyEmit,meowyTaskOperator,meowyBorrow,meowyUnchecked,meowyDispatch,meowyScope,meowyTaskGroup,meowyPunctuation,meowyBlock,meowyParen,meowyList,meowyType,meowyString,meowyImport,meowyComment,meowyDocComment,meowyModuleDoc
+syntax cluster meowyCode contains=meowyIdentifier,meowyReceiver,meowyBuiltinValue,meowyBinding,meowyCall,meowyNumber,meowyFloat,meowyOperator,meowyEmit,meowyTaskOperator,meowyBorrow,meowyUnchecked,meowyDispatch,meowyScope,meowyTaskGroup,meowyPunctuation,meowyBlock,meowyParen,meowyList,meowyType,meowyString,meowyImport,meowyComment,meowyDocComment,meowyModuleDoc
 syntax cluster meowyTypeBody contains=meowyTypeName,meowyTypeArguments,meowyTypeRecord,meowyTypeParameters,meowyTypeExtent,meowyTypeOperator,meowyTypePunctuation,meowyNumber,meowyString,meowyComment,meowyDocComment,meowyModuleDoc
 
 syntax match meowyIdentifier /\<[A-Za-z_][A-Za-z0-9_]*\>/
+syntax match meowyReceiver /\$/
 " This is optional lexical emphasis, not a claim about name resolution.
 if get(g:, 'meowy_highlight_builtin_values', 1)
   syntax match meowyBuiltinValue /\<\%(true\|false\|null\)\>/
@@ -77,6 +78,7 @@ syntax region meowyImport start=/@"/ skip=/\\./ end=/"/ contains=meowyInvalidEsc
 syntax sync fromstart
 
 highlight default link meowyIdentifier Identifier
+highlight default link meowyReceiver Identifier
 highlight default link meowyBuiltinValue Constant
 highlight default link meowyBinding Identifier
 highlight default link meowyCall Function
