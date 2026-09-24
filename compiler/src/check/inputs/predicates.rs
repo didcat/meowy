@@ -59,7 +59,9 @@ impl Checker {
                 input.add(&source);
                 input.value = source.value.map(|value| !value);
             }
-            ExprKind::Binary { op, left, right } if matches!(op.as_str(), "&&" | "||") => {
+            ExprKind::Binary {
+                op, left, right, ..
+            } if matches!(op.as_str(), "&&" | "||") => {
                 let left = self.predicate_expr(left, depth + 1, count, locals)?;
                 input.add(&left);
                 input.value = left.value;
@@ -70,10 +72,11 @@ impl Checker {
                 input.add(&right);
                 input.value = right.value;
             }
-            ExprKind::Binary { op, left, right }
-                if matches!(op.as_str(), "==" | "!=")
-                    && left.ty == Type::Bool
-                    && right.ty == Type::Bool =>
+            ExprKind::Binary {
+                op, left, right, ..
+            } if matches!(op.as_str(), "==" | "!=")
+                && left.ty == Type::Bool
+                && right.ty == Type::Bool =>
             {
                 let a = self.predicate_expr(left, depth + 1, count, locals)?;
                 input.add(&a);
@@ -87,10 +90,11 @@ impl Checker {
                     input.value = Some(if op == "==" { a == b } else { a != b });
                 }
             }
-            ExprKind::Binary { op, left, right }
-                if matches!(op.as_str(), "==" | "!=" | "<" | "<=" | ">" | ">=")
-                    && matches!(left.ty, Type::Int { .. })
-                    && left.ty == right.ty =>
+            ExprKind::Binary {
+                op, left, right, ..
+            } if matches!(op.as_str(), "==" | "!=" | "<" | "<=" | ">" | ">=")
+                && matches!(left.ty, Type::Int { .. })
+                && left.ty == right.ty =>
             {
                 let a = self.input_expr(left, depth + 1, count, locals)?;
                 input.add(&a);

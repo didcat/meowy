@@ -135,7 +135,14 @@ unknown sources. HIR prerequisite: `1038bbc`. All four matcher-source groups
 pass, including nested/function ownership, malformed IDs and unknown synthetic
 branches. All 1496 library tests pass; `/tmp/meowy-matcher-sources-lib.log`.
 Synthetic test branches relocated to a new block explicitly clear provenance.
-No failures remain. Short-circuit HIR provenance is next.
+No failures remain. Matcher source integration: `f2dcfcf`.
+
+HIR binary expressions now carry optional point IDs. Only matching same-function
+And/Or checking points are assigned; ordinary and synthetic binaries stay unknown.
+Both logic provenance groups and all 1498 library tests pass;
+`/tmp/meowy-hir-logic-lib.log`. No failures remain. This is the second atomic
+variant migration described in the split review above. Short-circuit body-fact
+association is next, followed by the full compiler gate.
 Explicit continuation/join/result transfers and restart propagation remain pending.
 Proof outcomes stay gated; unknown reference/store/call effects stay explicit.
 

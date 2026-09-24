@@ -119,14 +119,15 @@ impl Checker {
                     value: Box::new(source.literal(value)),
                 }
             }
-            ExprKind::Binary { op, left, right }
-                if matches!(op.as_str(), "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^") =>
-            {
+            ExprKind::Binary {
+                op, left, right, ..
+            } if matches!(op.as_str(), "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^") => {
                 let a = self.input_expr(left, depth + 1, count, locals)?;
                 let b = self.input_expr(right, depth + 1, count, locals)?;
                 input.add(&a);
                 input.add(&b);
                 ExprKind::Binary {
+                    point: None,
                     op: op.clone(),
                     left: Box::new(a.literal(left)),
                     right: Box::new(b.literal(right)),

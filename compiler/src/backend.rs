@@ -598,7 +598,9 @@ impl<'a> Generator<'a> {
                     _ => Err(format!("unsupported checked unary operator {op}")),
                 }
             }
-            ExprKind::Binary { op, left, right } => self.binary(op, left, right, expression.span),
+            ExprKind::Binary {
+                op, left, right, ..
+            } => self.binary(op, left, right, expression.span),
             ExprKind::Call { id, args, .. } => {
                 let mut values = Vec::new();
                 for arg in args {

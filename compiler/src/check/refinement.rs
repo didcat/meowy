@@ -181,7 +181,9 @@ impl Checker {
                     let guard = self.guard(value);
                     self.flow.not(guard)
                 }
-                hir::ExprKind::Binary { op, left, right } if op == "&&" || op == "||" => {
+                hir::ExprKind::Binary {
+                    op, left, right, ..
+                } if op == "&&" || op == "||" => {
                     let left = self.guard(left);
                     let right = self.guard(right);
                     if op == "&&" {

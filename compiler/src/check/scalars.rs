@@ -403,6 +403,12 @@ impl Checker {
         };
         Ok(hir::Expr {
             kind: hir::ExprKind::Binary {
+                point: self.point.filter(|id| {
+                    let point = &self.points[*id];
+                    point.owner == self.owner
+                        && ((op == "&&" && point.kind == PointKind::And)
+                            || (op == "||" && point.kind == PointKind::Or))
+                }),
                 op: op.into(),
                 left: Box::new(left),
                 right: Box::new(right),
@@ -468,7 +474,9 @@ impl Checker {
                 ("-", Constant::Float(value)) => Some(Constant::Float(-value)),
                 _ => None,
             },
-            hir::ExprKind::Binary { op, left, right } => {
+            hir::ExprKind::Binary {
+                op, left, right, ..
+            } => {
                 let a = self.constant(left)?;
                 if let Constant::Bool(value) = a
                     && (op == "&&" && !value || op == "||" && value)

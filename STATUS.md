@@ -423,8 +423,11 @@ assigns them; synthetic branches explicitly retain no source. Both provenance
 groups and all 1492 library tests pass; `/tmp/meowy-hir-matchers-lib.log`.
 Matcher body facts now retain and validate these sources, linking erased uses
 through their branch regions. Four focused groups and all 1496 library tests pass;
-`/tmp/meowy-matcher-sources-lib.log`. Short-circuit HIR provenance is next;
-continuation/result edges and proof outcomes remain gated.
+`/tmp/meowy-matcher-sources-lib.log`. HIR short-circuit expressions now retain
+matching checked point IDs too; ordinary/synthetic binaries remain without sources.
+Both logic provenance groups and all 1498 library tests pass;
+`/tmp/meowy-hir-logic-lib.log`. Short-circuit body-fact association and the full
+compiler gate are next. Continuation/result edges and proof outcomes remain gated.
 
 ## Pending descriptor statement accounting
 

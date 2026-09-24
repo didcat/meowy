@@ -524,7 +524,9 @@ impl<'a> Graph<'a> {
                 }
                 Bundle::new()
             }
-            ExprKind::Binary { op, left, right } if ["&&", "||"].contains(&op.as_str()) => {
+            ExprKind::Binary {
+                op, left, right, ..
+            } if ["&&", "||"].contains(&op.as_str()) => {
                 self.expression(left)?;
                 if self.current.is_empty() {
                     return Ok(Bundle::new());

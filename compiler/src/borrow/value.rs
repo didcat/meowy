@@ -215,7 +215,9 @@ impl Checker<'_> {
                 }
                 State::unknown(&expr.ty, self.guards, expr.span)?
             }
-            ExprKind::Binary { op, left, right } => {
+            ExprKind::Binary {
+                op, left, right, ..
+            } => {
                 flow = self.expression(left)?.flow;
                 if flow.next && self.merging && ["&&", "||"].contains(&op.as_str()) {
                     let guard = self.condition(left)?;

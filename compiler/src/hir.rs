@@ -437,6 +437,7 @@ pub enum ExprKind {
         value: Box<Expr>,
     },
     Binary {
+        point: Option<PointId>,
         op: String,
         left: Box<Expr>,
         right: Box<Expr>,

@@ -46,6 +46,7 @@ pub(crate) fn integer(value: i128, bits: u32, signed: bool) -> Expr {
 pub(crate) fn binary(op: &str, left: Expr, right: Expr, ty: Type) -> Expr {
     expr(
         ExprKind::Binary {
+            point: None,
             op: op.into(),
             left: Box::new(left),
             right: Box::new(right),

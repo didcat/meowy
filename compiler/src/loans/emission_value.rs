@@ -110,10 +110,11 @@ impl Graph<'_> {
             ExprKind::Coerce { value } if value.ty == Type::Bool => {
                 self.emission_value(value, depth + 1)?
             }
-            ExprKind::Binary { op, left, right }
-                if left.ty == Type::Bool
-                    && right.ty == Type::Bool
-                    && matches!(op.as_str(), "&&" | "||" | "==" | "!=") =>
+            ExprKind::Binary {
+                op, left, right, ..
+            } if left.ty == Type::Bool
+                && right.ty == Type::Bool
+                && matches!(op.as_str(), "&&" | "||" | "==" | "!=") =>
             {
                 let left = self.emission_value(left, depth + 1)?;
                 let right = self.emission_value(right, depth + 1)?;

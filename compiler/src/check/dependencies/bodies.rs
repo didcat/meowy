@@ -177,7 +177,9 @@ impl<'a> Walk<'a> {
                     | E::Primary(value)
                     | E::ListSize(value)
                     | E::StringSize(value) => self.push([Node::Expr(value)])?,
-                    E::Binary { op, left, right } if matches!(op.as_str(), "&&" | "||") => {
+                    E::Binary {
+                        op, left, right, ..
+                    } if matches!(op.as_str(), "&&" | "||") => {
                         let and = op == "&&";
                         self.fact(if and { Fact::And } else { Fact::Or }, expr.span)?;
                         self.role(if and { Role::Then } else { Role::Else });
