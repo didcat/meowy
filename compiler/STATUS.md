@@ -99,47 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current restart-body fact association slices
+### Current restart-body relation slices
 
 Dependency-ordered commit plan:
-1. Inventory checked runtime body facts by block/function identity, retaining
-   nested-block links, bindings, reads, writes, calls and exits with bounded work
-   and storage. Associate a restart with its target body without replaying source.
-   Include nested/function/error/budget regressions with this integration.
-2. Retain successful required-input reads that disappear from runtime HIR in the
-   same body inventory. Cover scalar/record reads, skipped evaluation, fixed type
-   signatures and retained query budgets. Run the full compiler gate and update
-   both handoffs.
+1. Attach bounded parent/operand relations to the existing body facts, preserving
+   data inputs, branch conditions/arms, indexed write operands and indirect store
+   addresses. Keep focused relationship/scope/budget tests with integration.
+2. Retain canonical storage IDs for local/slot-alias facts without resolving
+   indirect stores or confusing reference carriers with their pointees.
+3. Retain both short-circuit successors with explicit condition/arm relationships.
+   Run the full compiler gate and update both handoffs.
 
-Investigation: completed HIR bodies provide stable block IDs and exclude nested
-function bodies. Each nested body can be inventoried once and referenced by ID;
-restart targets and pending-query scopes already use these IDs. Required scalar,
-boolean and record input checks need separate capture after successful evaluation.
-The inventory is a prerequisite, not a control/data transfer graph: propagation,
-header joins, termination dependence and E225 enforcement over backedges remain
-separate. Do not infer control independence from missing transfer edges or enable
-proof outcomes. The working tree was clean.
+Investigation: the iterative body walker already visits both matcher arms and
+all operands without executing them. One parent link per fact can preserve their
+structural roles without duplicating HIR or expanding ancestor sets. Nested bodies
+remain linked by block ID; function owners stay separate. Canonical slot roots
+come from the existing ownership alias metadata. Relations are prerequisites:
+erased input/query sites still need precise branch/continuation association, and
+loop-header/backedge propagation and termination dependence remain unimplemented.
+Do not enable E225 enforcement over backedges or proof outcomes from this metadata.
 
-Runtime inventory is integrated at successful block completion. Nested bodies are
-linked without rescanning; indirect stores remain explicit unresolved store facts.
-Facts are a structural inventory, not execution order or transfer edges. Expression
-spans are retained; HIR exits/aliases without spans use their enclosing block span
-(the restart site retains its exact source span). Five focused body tests pass;
-all 1452 library tests and Clippy pass. Logs: `/tmp/meowy-restart-bodies-library.log`
-and `/tmp/meowy-restart-bodies-clippy.log`. Runtime prerequisite: `87e7b20`.
-
-Required scalar/boolean/record reads now retain storage roots, read/root spans and
-lexical control under the nearest same-function runtime block ID. This capture
-occurs after successful input checks and shares the inventory capacity, without
-changing logical charges. Skipped branches and fixed-signature type queries do not
-create input uses. All 11 focused inventory groups pass; log:
-`/tmp/meowy-restart-inputs-focused.log`. All ten compiler checks pass, including
-1458 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-restart-body-inputs-gate.log`. No outstanding failures remain.
-No backedge enforcement is implemented. Failed enclosing bodies may retain
-successful earlier input uses, but have no completed body inventory and cannot
-be analyzed as complete.
+Baseline: body inventories and required-input capture (`87e7b20`, `ec15894`) pass
+all ten compiler checks, including 1458 library/910 native tests. Required uses
+retain storage IDs, read/root spans and lexical control without replay or logical
+budget changes. Skipped required evaluation and fixed type signatures add no uses.
+The tree was clean. Operand/branch parent links are integrated with one bounded
+link per fact. All 15 focused body groups pass, including data/address/index roles,
+both matcher arms, nested-body isolation and stable backward-only link identities.
+All 1462 library tests pass; logs: `/tmp/meowy-body-relations-focused.log` and
+`/tmp/meowy-body-relations-library.log`. Canonical storage IDs and short-circuit
+branch roles are next.
 
 ### Proof dependency implementation slices
 

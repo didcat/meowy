@@ -3,6 +3,22 @@ use crate::{ast::Span, check::Result, diagnostic::Diagnostic, hir};
 
 pub(crate) const MAX_BODY_FACTS: usize = 262_144;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Role {
+    Data,
+    Condition,
+    Then,
+    Else,
+    Index,
+    Address,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct Link {
+    pub(crate) parent: usize,
+    pub(crate) role: Role,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Fact {
     Bind(usize),
@@ -22,11 +38,14 @@ pub(crate) enum Fact {
 pub(crate) struct Body {
     pub(crate) owner: usize,
     pub(crate) facts: Vec<(Fact, Span)>,
+    pub(crate) links: Vec<Option<Link>>,
 }
 
 pub(crate) struct Walk<'a> {
-    pub(crate) pending: Vec<Node<'a>>,
+    pub(crate) pending: Vec<(Node<'a>, Option<Link>)>,
     pub(crate) facts: Vec<(Fact, Span)>,
+    pub(crate) links: Vec<Option<Link>>,
+    pub(crate) link: Option<Link>,
     pub(crate) flow: &'a mut crate::flow::Flow,
     pub(crate) limit: usize,
     pub(crate) span: Span,
@@ -38,7 +57,7 @@ impl<'a> Walk<'a> {
             if self.pending.len() + self.facts.len() >= self.limit || !self.flow.spend(1) {
                 return Err(Self::budget(self.span));
             }
-            self.pending.push(node);
+            self.pending.push((node, self.link));
         }
         Ok(())
     }
@@ -47,8 +66,20 @@ impl<'a> Walk<'a> {
         if self.facts.len() >= self.limit || !self.flow.spend(1) {
             return Err(Self::budget(span));
         }
+        let parent = self.facts.len();
         self.facts.push((fact, span));
+        self.links.push(self.link);
+        self.link = Some(Link {
+            parent,
+            role: Role::Data,
+        });
         Ok(())
+    }
+
+    pub(crate) fn role(&mut self, role: Role) {
+        if let Some(link) = &mut self.link {
+            link.role = role;
+        }
     }
 
     pub(crate) fn budget(span: Span) -> Diagnostic {
@@ -56,6 +87,8 @@ impl<'a> Walk<'a> {
     }
 
     pub(crate) fn path(&mut self, path: &'a [hir::WriteStep]) -> Result<()> {
+        let link = self.link;
+        self.role(Role::Index);
         for step in path {
             if !self.flow.spend(1) {
                 return Err(Self::budget(self.span));
@@ -64,12 +97,14 @@ impl<'a> Walk<'a> {
                 self.push([Node::Expr(&step.index)])?;
             }
         }
+        self.link = link;
         Ok(())
     }
 
     pub(crate) fn run(&mut self) -> Result<()> {
         use hir::{ExprKind as E, Stmt as S};
-        while let Some(node) = self.pending.pop() {
+        while let Some((node, link)) = self.pending.pop() {
+            self.link = link;
             match node {
                 Node::Expr(expr) => match &expr.kind {
                     E::Local(id) => self.fact(Fact::Read(*id), expr.span)?,
@@ -140,7 +175,9 @@ impl<'a> Walk<'a> {
                         span,
                     } => {
                         self.fact(Fact::Store, *span)?;
-                        self.push([Node::Expr(value), Node::Expr(target)])?;
+                        self.push([Node::Expr(value)])?;
+                        self.role(Role::Address);
+                        self.push([Node::Expr(target)])?;
                     }
                     S::Emit { id, value, .. } => {
                         self.fact(Fact::Emit(*id), value.span)?;
@@ -152,8 +189,11 @@ impl<'a> Walk<'a> {
                         otherwise,
                     } => {
                         self.fact(Fact::Branch, condition.span)?;
+                        self.role(Role::Else);
                         self.push(otherwise.iter().rev().map(Node::Stmt))?;
+                        self.role(Role::Then);
                         self.push(then.iter().rev().map(Node::Stmt))?;
+                        self.role(Role::Condition);
                         self.push([Node::Expr(condition)])?;
                     }
                     S::SlotAlias { id, .. } => self.fact(Fact::Alias(*id), self.span)?,
@@ -238,6 +278,8 @@ impl Checker {
         let mut walk = Walk {
             pending: Vec::new(),
             facts: Vec::new(),
+            links: Vec::new(),
+            link: None,
             flow: &mut self.flow,
             limit: MAX_BODY_FACTS.saturating_sub(self.body_facts),
             span,
@@ -247,6 +289,7 @@ impl Checker {
         let body = Body {
             owner: self.owner,
             facts: walk.facts,
+            links: walk.links,
         };
         if let Some(prior) = self.bodies.get(&block.id) {
             if *prior != body {
@@ -265,3 +308,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod relations;
