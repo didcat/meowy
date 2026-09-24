@@ -318,5 +318,8 @@ pub(crate) use path_operations::{Operation as PathOperation, Step as PathStep};
 mod store_operations;
 pub(crate) use store_operations::Operation as StoreOperation;
 
+mod invocations;
+pub(crate) use invocations::Invocation;
+
 mod emissions;
 pub(crate) use emissions::Emission;

@@ -99,46 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current indirect store slices
+### Current direct call slices
 
 Dependency-ordered commit plan:
-1. Retain exact target/RHS roots and explicit target-capture/write stages for
-   scalar indirect stores. Preserve ordinary checking and add focused order,
-   owner/control, diagnostic and atomic-budget regressions.
-2. Snapshot bounded pointee origins before checking the RHS, preserving unknown
-   completeness and separating reference-cell storage from pointee owners.
-   Verify retargeting, aliases and nonreturning operands, then run the compiler gate.
+1. Retain exact direct-function call sites, callee identities and checked argument
+   roots, including dispatch receivers first. Preserve arity/type/borrow checks,
+   function owners, recursion and type-only call boundaries.
+2. Link arguments in source order to an opaque call-effect stage. Admit a normal
+   continuation only on callee return, omitting it for `never` results. Verify
+   nested/empty calls, side effects, nonreturning arguments and shared budgets;
+   run the full compiler gate and update the handoff.
 
-Investigation: backend and loan analysis already capture the target before the
-RHS. Existing dependency marking resolves conservative origins after RHS checking;
-keep that monotone behavior separate from the operation's pre-RHS snapshot.
-Neither ledger grants loan authority or admits proof outcomes. Whole-owner origins
-are not precise field/element write locations.
+Investigation: `functions.rs::call` resolves direct callees as symbols and checks
+receiver/arguments left-to-right. Argument roots are currently discarded. Debug
+formatting, list methods and required/type-only calls follow separate paths and
+remain outside this direct-function slice. No effect summary or proof evaluator
+is introduced; call effects remain unknown even for a body that looks pure.
 
-Baseline: field/indexed store series `9f2708c`, `e26a99c`, `28a933b` passed all ten
-compiler checks: 1583 library/910 native tests, conformance 10 passed,
-13 unsupported, 0 failed in debug/release. Log:
-`/tmp/meowy-path-operations-gate.log`.
-
-The order slice now captures target/RHS roots with an explicit address stage after
-target completion and a write stage after RHS completion. Child identity and the
-shared edge budget guard atomic publication. All three focused groups and all
-1586 library tests pass; formatting also passes. Logs:
-`/tmp/meowy-indirect-order-focused.log`, `/tmp/meowy-indirect-order-lib.log`.
-Ordering commit: `003c7d4`. The snapshot slice now resolves bounded owner origins
-before the RHS, canonicalizes slot aliases and retains explicit completeness.
-Snapshot errors are returned only after ordinary RHS/store checks; existing
-conservative marking remains separate. Root limits, local identities and shared
-work/edge budgets guard publication. All seven focused groups pass, including
-retargeting, canonical aliases, reborrows, returned references, incomplete origins,
-nonreturning operands and atomic root limits. Log:
-`/tmp/meowy-indirect-origins-focused.log`. All ten compiler checks pass:
-1590 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-indirect-stores-gate.log`. Post-documentation link checks pass:
-1208 local links in 110 Markdown files. Call-argument/effect links are next;
-precise projected write locations, remaining operand coverage, propagation and
-proof evaluation remain incomplete.
+Baseline: indirect-store commits `003c7d4` and `1729634` passed all ten compiler
+checks: 1590 library/910 native tests; conformance 10 passed, 13 unsupported,
+0 failed in debug/release. Log: `/tmp/meowy-indirect-stores-gate.log`.
+Direct calls now retain site/callee identities, exact argument roots, owner/control
+and whether the declared result permits a return. Roots are captured during the
+existing checks, without replaying arguments or creating a runtime callee read.
+Bounded identity validation rejects duplicate/foreign roots and missing sites.
+All three focused groups and all 1593 library tests pass; formatting also passes.
+Logs: `/tmp/meowy-call-inputs-focused.log`, `/tmp/meowy-call-inputs-lib.log`.
+Graph edges follow in the next slice; the full compiler gate will cover the series.
 
 ### Proof dependency implementation slices
 

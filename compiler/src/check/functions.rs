@@ -280,14 +280,17 @@ impl Checker {
                 })?;
                 let mutating = params.iter().any(|ty| matches!(ty, Type::Exclusive(_)));
                 let mut values = Vec::new();
+                let mut points = Vec::new();
                 for (arg, ty) in args.into_iter().zip(params) {
-                    values.push(self.expr(arg, Some(&ty)).map_err(|error| {
+                    let (point, value) = self.expr_point(arg, Some(&ty)).map_err(|error| {
                         if error.code == "E207" {
                             Self::error("E212", error.message, error.span)
                         } else {
                             error
                         }
-                    })?);
+                    })?;
+                    points.push(point);
+                    values.push(value);
                 }
                 if mutating {
                     self.forget_mutable();
@@ -295,6 +298,16 @@ impl Checker {
                 let site = self.calls;
                 self.calls += 1;
                 self.proofs.calls.insert(site, self.reach);
+                self.invocation(super::dependencies::Invocation {
+                    point: self.point.expect("call expression"),
+                    owner: self.owner,
+                    function: id,
+                    site,
+                    args: points,
+                    may_return: result != Type::Never,
+                    control: self.control,
+                    span,
+                })?;
                 (
                     hir::ExprKind::Call {
                         id,
