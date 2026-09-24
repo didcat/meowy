@@ -48,6 +48,16 @@ impl Checker {
         span: Span,
         check: impl FnOnce(&mut Self) -> Result<T>,
     ) -> Result<T> {
+        self.with_point_id(kind, span, check)
+            .map(|(_, value)| value)
+    }
+
+    pub(crate) fn with_point_id<T>(
+        &mut self,
+        kind: Kind,
+        span: Span,
+        check: impl FnOnce(&mut Self) -> Result<T>,
+    ) -> Result<(hir::PointId, T)> {
         if self.points.len() >= MAX_POINTS || !self.flow.spend(self.frames.len() + 1) {
             return Err(Diagnostic::unsupported(
                 "proof expression point budget exhausted",
@@ -76,7 +86,7 @@ impl Checker {
         let result = check(self);
         self.point = prior;
         self.points[id].complete = result.is_ok();
-        result
+        result.map(|value| (id, value))
     }
 }
 
@@ -92,6 +102,56 @@ mod anchors;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    pub(crate) fn point_results_return_the_enclosing_id_after_nested_checking() {
+        let mut checker = Checker::new();
+        let span = Span::default();
+        let (outer, (inner, value)) = checker
+            .with_point_id(Kind::Expr, span, |checker| {
+                checker.with_point_id(Kind::Expr, span, |_| Ok(7))
+            })
+            .unwrap();
+        assert_eq!(value, 7);
+        assert_ne!(outer, inner);
+        assert_eq!(checker.points[inner].parent, Some(outer));
+        assert!(checker.points[outer].parent.is_none());
+        assert!(checker.points[outer].complete);
+        assert!(checker.points[inner].complete);
+        assert!(checker.point.is_none());
+    }
+
+    #[test]
+    pub(crate) fn point_results_restore_the_parent_after_a_failed_child() {
+        let mut checker = Checker::new();
+        let span = Span::default();
+        let (outer, inner) = checker
+            .with_point_id(Kind::Expr, span, |checker| {
+                let parent = checker.point;
+                let error = checker
+                    .with_point_id(Kind::Expr, span, |_| {
+                        Err::<(), _>(Checker::error("E207", "invalid child", span))
+                    })
+                    .unwrap_err();
+                assert_eq!(error.code, "E207");
+                assert_eq!(checker.point, parent);
+                checker
+                    .with_point_id(Kind::Expr, span, |_| Ok(()))
+                    .map(|(id, _)| id)
+            })
+            .unwrap();
+        assert_eq!(checker.points[inner].parent, Some(outer));
+        assert_eq!(
+            checker
+                .points
+                .iter()
+                .filter(|point| !point.complete)
+                .count(),
+            1
+        );
+        assert!(checker.points[outer].complete);
+        assert!(checker.point.is_none());
+    }
 
     #[test]
     pub(crate) fn expression_points_distinguish_repeated_checks_with_identical_spans() {

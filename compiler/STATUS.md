@@ -99,57 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current HIR branch provenance slices
+### Current branch continuation and join slices
 
-Completed dependency-ordered commit plan:
-1. Carry optional checked point IDs on HIR matcher branches, assigning them at
-   checked construction and preserving explicit absence in synthetic HIR. Update
-   all exhaustive consumers/constructors and test identity preservation through clones.
-2. Retain matcher sources alongside body facts. Validate bounded source lookup,
-   point kind, owner, block and completion; keep unknown synthetic sources explicit.
-3. Carry optional checked point IDs on HIR binary expressions, assigning only
-   short-circuit branch points. Keep ordinary/synthetic binaries without provenance.
-4. Link short-circuit body facts to their checked points, verify mixed/nested and
-   erased-use associations, and run the full compiler gate.
+Dependency-ordered commit plan:
+1. Return the exact allocated ID from a checked point boundary while preserving
+   the existing value-only API, restoration, completion and budget behavior.
+2. Add bounded explicit branch edges and integrate matcher condition/arm/normal-join
+   ports. Retain both labeled successors and the empty skipped path; validate
+   source identities and test atomic budgets, failures and independent arms.
+3. Integrate short-circuit true/false operand routes and normal joins using IDs
+   returned by checking. Cover nested/skipped RHS uses and source errors; run the
+   full compiler gate.
 
-Investigation: `Stmt::If` and `ExprKind::Binary` currently have no stable source
-identity. They are consumed by checking, ownership, loans and lowering; clones
-must preserve provenance without span matching or address-based side tables.
-Split review: each HIR variant migration exceeds eight files because Rust requires
-its exhaustive patterns and every constructor (including native backend fixtures)
-to change atomically with the field. Splitting those by file would not compile.
-Matchers and binary expressions remain separate buildable slices, and body-fact
-integration follows each representation change separately. No runtime behavior or
-new language capability is intended.
+Investigation: current parent links identify containment, not successors. Branch
+regions must return their IDs directly so edge construction never scans spans or
+infers ordering from allocation. Entry and normal-completion ports are distinct:
+a checked region does not imply that its normal port is reachable. Leave/restart
+and generic statement/operand sequencing will need separate edges before this
+partial graph can support propagation. Block/emission result transfers remain
+separate; no query evaluation or backedge E225 enforcement is enabled here.
 
-The previous point series (`10a45ec`, `b4a79de`, `a962406`) passed all ten checks:
-1490 library/910 native tests, conformance 10 passed, 13 unsupported, 0 failed in
-debug/release; `/tmp/meowy-branch-points-gate.log`.
-
-HIR matchers now carry optional point IDs; checked construction assigns them and
-synthetic constructors use None. Both provenance groups and all 1492 library
-tests pass, including clones, repeated spans and function/block ownership;
-`/tmp/meowy-hir-matchers-lib.log`. No failures remain. Matcher body-fact
-association now validates kind/owner/block/completion and preserves explicit
-unknown sources. HIR prerequisite: `1038bbc`. All four matcher-source groups
-pass, including nested/function ownership, malformed IDs and unknown synthetic
-branches. All 1496 library tests pass; `/tmp/meowy-matcher-sources-lib.log`.
-Synthetic test branches relocated to a new block explicitly clear provenance.
-No failures remain. Matcher source integration: `f2dcfcf`.
-
-HIR binary expressions now carry optional point IDs. Only matching same-function
-And/Or checking points are assigned; ordinary and synthetic binaries stay unknown.
-Both logic provenance groups and all 1498 library tests pass;
-`/tmp/meowy-hir-logic-lib.log`. No failures remain. This is the second atomic
-variant migration described in the split review above. Short-circuit body-fact
-association now uses the same validated source links. Binary HIR prerequisite:
-`a66a363`. All three logic-source groups pass, covering mixed/nested branches,
-functions, erased RHS query/read chains, operator mismatch and unknown sources.
-All ten compiler checks pass, including 1501 library/910 native tests, formatting,
-Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-hir-branch-sources-gate.log`. No failures remain.
-Explicit continuation/join/result transfers and restart propagation remain pending.
-Proof outcomes stay gated; unknown reference/store/call effects stay explicit.
+The HIR source series (`1038bbc`, `f2dcfcf`, `a66a363`, `671b2b6`) passed all ten
+checks: 1501 library/910 native tests; conformance 10 passed, 13 unsupported,
+0 failed in debug/release. Log: `/tmp/meowy-hir-branch-sources-gate.log`.
+Checked point boundaries now return their exact allocated ID alongside the
+result. Nested checking and failures restore the enclosing active point; the
+value-only API and existing budgets are preserved. Both new point-result groups
+and all 1503 library tests pass; `/tmp/meowy-point-results-lib.log`. No failures
+remain. Matcher branch edges are next. Unknown sources/effects remain explicit
+and proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
