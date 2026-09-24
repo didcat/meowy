@@ -238,8 +238,13 @@ impl Checker {
                 _ => Fit::No,
             });
         }
-        if matches!(value.kind, ExprKind::Unary { .. } | ExprKind::Binary { .. })
-            && let Some(fit) = self.list_scalar_probe(value, expected, reach)?
+        if matches!(
+            value.kind,
+            ExprKind::Unary { .. }
+                | ExprKind::Binary { .. }
+                | ExprKind::Call { .. }
+                | ExprKind::Dispatch { .. }
+        ) && let Some(fit) = self.list_scalar_probe(value, expected, reach)?
         {
             return Ok(fit);
         }

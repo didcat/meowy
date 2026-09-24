@@ -4,6 +4,7 @@ use crate::ast::{self, ExprKind, StmtKind};
 use crate::check::{Checker, Constant, Result, Value};
 use crate::diagnostic::Diagnostic;
 use crate::flow::{FALSE, Guard, TRUE};
+use crate::foundation::{Item, Module};
 use crate::hir::Type;
 
 use super::{Fit, MAX_SCALAR_NODES, Scalar};
@@ -88,6 +89,21 @@ impl Checker {
                 ));
             }
             let bytes = match &value.kind {
+                ExprKind::Call { callee, .. } | ExprKind::Dispatch { callee, .. } => {
+                    let Some((_, args)) = self.bits_arguments(value)? else {
+                        return Ok(None);
+                    };
+                    pending.extend(args.into_iter().rev());
+                    pending.push(callee);
+                    0
+                }
+                ExprKind::Field { value: base, name }
+                    if matches!(self.symbol(value)?, Some(Value::Foundation(Item::Bits(_)))) =>
+                {
+                    pending.push(base);
+                    name.len()
+                }
+                ExprKind::Import(name) if Module::resolve(name) == Some(Module::Bits) => name.len(),
                 ExprKind::List(values) if aggregate => {
                     for value in values {
                         if pending.len() == MAX_SCALAR_NODES || !self.flow.spend(1) {
@@ -201,7 +217,12 @@ impl Checker {
                     let Some(symbol) = Self::list_symbol(&self.scopes, name) else {
                         return Ok(None);
                     };
+                    let bits = matches!(
+                        symbol,
+                        Value::Module(Module::Bits) | Value::Foundation(Item::Bits(_))
+                    );
                     let constant = match symbol {
+                        _ if bits => None,
                         Value::Constant(value) => Some(value),
                         Value::Local {
                             ty,
@@ -239,6 +260,7 @@ impl Checker {
                         ));
                     }
                     let symbol = match symbol {
+                        _ if bits => symbol.clone(),
                         Value::Local { ty, .. } => {
                             let id = scalar.checker.locals.len();
                             scalar.checker.locals.push(ty.clone());
@@ -252,7 +274,7 @@ impl Checker {
                         }
                         _ => Value::Constant(constant.expect("compiler constant").clone()),
                     };
-                    scalar.unknown |= constant.is_none();
+                    scalar.unknown |= constant.is_none() && !bits;
                     scalar.checker.scopes[0].values.insert(name.clone(), symbol);
                     bytes
                 }

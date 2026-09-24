@@ -1,6 +1,29 @@
 use super::rejects;
 
 #[test]
+pub(crate) fn bit_call_candidates_retain_lexical_identity_and_contextual_widths() {
+    for source in [
+        "b:@\"bits\";values<int8[1]><uint8[1]>:[b.not(128)]",
+        "b:@\"bits\";flip:b.not;values<int8[1]><uint8[1]>:[128.(flip)]",
+        "values<int8[1]><uint8[1]>:[(@\"bits\").not(128)]",
+        "b:@\"bits\";alias:b;values<int8[1]><uint8[1]>:[alias.and(255,128)]",
+        "b:@\"bits\";values<int8[2]><uint8[2]>:[b.or(128,0),{->b.xor(1,1)}]",
+    ] {
+        crate::compile(source).unwrap();
+    }
+    rejects("b:@\"bits\";values<int8[1]><uint8[1]>:[b.not(1)]", "E207");
+    rejects(
+        "b:@\"bits\";values<int8[1]><uint8[1]>:[b.and(256,0)]",
+        "E207",
+    );
+    rejects("b:@\"bits\";values<int8[1]><uint8[1]>:[b.and(128)]", "E212");
+    rejects(
+        "b:@\"bits\";{b:{->not:1};values<int8[1]><uint8[1]>:[b.not(128)]}",
+        "B001",
+    );
+}
+
+#[test]
 pub(crate) fn pure_compounds_reuse_contextual_operator_rules() {
     for source in [
         "values<int8[1]><int16[1]>:[-(128)]",
