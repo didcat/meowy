@@ -330,9 +330,10 @@ current analysis. Disabling a feature does not disable facts needed by another.
 
 Completion distinguishes type predicates in matcher conditions from ascriptions
 in value expressions without inspecting surrounding spaces. Generic closers and
-task punctuation use their parsed contexts. `true`, `false`, `null`, `self`, and
-scope operations remain values/bindings, never a keyword vocabulary. Semantic
-tokens distinguish an actual foundational value from a shadowing local binding.
+task punctuation use their parsed contexts. `true`, `false`, `null` and scope
+operations remain values/bindings, never a keyword vocabulary. `$` denotes the
+dispatch receiver and is classified as a readonly variable; `self` is ordinary.
+Semantic tokens distinguish an actual foundational value from a shadowing local binding.
 
 The token legend uses the supported intersection of `namespace`, `type`,
 `typeParameter`, `parameter`, `variable`, `property`, `function`, `operator`,
@@ -342,7 +343,7 @@ omitted. The legend is fixed for a connection; tokens are non-overlapping and
 split at line boundaries, including multiline literals. See the
 [semantic token wire format](https://raw.githubusercontent.com/microsoft/language-server-protocol/gh-pages/_specifications/lsp/3.17/language/semanticTokens.md).
 
-For an expression such as `| t.{ -> self<MyCoolType> } <MyCoolType> | matched()`, hover
+For an expression such as `| t.{ -> $<MyCoolType> } <MyCoolType> | matched()`, hover
 must identify the inner proven ascription and the outer predicate separately.
 The outer predicate cannot supply an earlier proof. Ownership explanations can
 show why a borrow ends at a scope, where an owner moves, or which task remains

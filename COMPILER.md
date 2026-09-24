@@ -180,8 +180,9 @@ symbol table. Test nested angles, zero-space programs, interpolation, and
 newline termination from the start. See [syntax](docs/reference/syntax.md).
 
 **Names and types.** Resolve ordinary names to stable item IDs, including
-well-known intrinsics. Never recognize `self`, `leave`, `Copy`, or `true` by
-spelling after resolution. Preserve type, value, and label namespaces; package
+well-known intrinsics. Never recognize `leave`, `Copy`, or `true` by
+spelling after resolution. Parse `$` as receiver punctuation and resolve it to the
+nearest dispatch binding. Preserve type, value, and label namespaces; package
 identity also contributes to nominal identity. A typed high-level representation
 should retain block emissions, match narrowing, exact record shape, unions,
 function-item identity, generic constraints, and callable capabilities.

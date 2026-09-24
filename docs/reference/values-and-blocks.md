@@ -187,10 +187,12 @@ are evaluated once, left-to-right. The ordinary parameter types determine whethe
 the receiver is copied, moved, or borrowed. Use `&value.(f)`, equivalently
 `(&value).(f)`, for an explicit borrow when `f` takes a reference.
 
-`value.{ ... }` evaluates the receiver once and binds it as `self` in the block.
+`value.{ ... }` evaluates the receiver once and binds it as `$` in the block.
 It follows ordinary ownership rules: a move-only receiver moves into that binding.
-The `self` binding cannot be replaced. An owned receiver retains its field
-permissions; a shared-reference receiver remains read-only, and an exclusive
+`$` means "the dispatch receiver". Its binding cannot be replaced or redeclared;
+a nested dispatch has its own `$`, while ordinary nested blocks use the enclosing
+receiver. `self` has no special role and can be used as an ordinary name.
+An owned receiver retains its field permissions; a shared-reference receiver remains read-only, and an exclusive
 reference retains its pointee permissions.
 
 ```meowy

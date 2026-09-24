@@ -13,7 +13,7 @@ implementation boundary; it does not change language rules.
   Equality compares addresses; dereference copies the supported copyable referent.
 - Eligible roots include ordinary locals, by-value parameters and dispatch receiver
   copies. Reference-bearing referents carry transitive value summaries as described
-  below. Parameter/self addresses refer to their
+  below. Parameter/receiver addresses refer to their
   local storage, not an original caller value. Emitted storage uses the slot model below.
   A narrowed union payload is not an addressable record projection yet.
 - Each HIR emission has a unique ID, including generated record components and
@@ -214,10 +214,10 @@ implementation boundary; it does not change language rules.
   nested blocks. Returning their own cell addresses,
   directly or through another call/dispatch,
   is E303. Every definition is checked even when callers infer no normal return.
-- A by-value dispatch receiver is copied into an immutable `self` local before the
-  body runs. Borrowing `self` or its concrete fields observes that copy. Changes
+- A by-value dispatch receiver is copied into an immutable `$` local before the
+  body runs. Borrowing `$` or its concrete fields observes that copy. Changes
   to an original mutable owner do not change it; its address cannot leave the block.
-- A shared-reference receiver instead copies the reference value. Returning `self`
+- A shared-reference receiver instead copies the reference value. Returning `$`
   or a reborrow of its referent retains the original sources and inherited bounds.
   Reference-bearing record/union receivers use the same component/variant facts
   as ordinary immutable bindings, without adding a function-style all-input bound.
@@ -226,7 +226,7 @@ implementation boundary; it does not change language rules.
   earlier argument copies, effectful receivers and enclosing-scope early leaves.
 - Borrowing a whole reference-bearing receiver follows the copied receiver's cell
   lifetime, while its contained reference values keep their original sources.
-  Shared dispatch does not enable exclusive `self` mutation or captures.
+  Shared dispatch does not enable exclusive `$` mutation or captures.
 
 ## Shared reborrows
 
@@ -1375,7 +1375,7 @@ permission to replace an immutable root or store a value beyond its owner lifeti
   Nested lists and concrete record fields compose element and field reborrows.
   A temporary reference-valued parent is allowed. Computed or ascribed Copy lists
   materialize for their complete statement. Borrowed copied parameters and
-  dispatch `self` belong to their local storage and cannot escape (E303).
+  dispatch `$` belong to their local storage and cannot escape (E303).
 - `ElementBorrow` evaluates its parent pointer and snapshots initialized length
   before checking its once-evaluated index. It shares integer/static E101 rules
   with copy indexing; runtime checks report P001 before address formation. The CFG

@@ -22,7 +22,11 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 Replace the implicit dispatch receiver name `self` with `$` across implementation,
 regressions, docs/examples and editor highlighting. The compiler handoff records
 reviewable migration slices and validation. `self` remains an ordinary name;
-receiver ownership and lifetime rules stay unchanged. Validation pending.
+receiver ownership and lifetime rules stay unchanged. The implementation and migrated
+regressions pass 1432 library/906 native tests, including debug/release receiver
+execution. The implicit `self` alias is removed (`213cfe4`). Reference and guide
+updates pass all four default checks; log: `/tmp/meowy-dollar-docs.log`. Editor
+migration and the final combined gate remain.
 
 ## Editor task and dispatch highlighting
 

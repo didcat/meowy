@@ -20,10 +20,11 @@ bindings, functions, blocks, types, matchers, and control targets. Words resolve
 to values in a scope, including the well-known names supplied by the language.
 
 `true`, `false`, and `null` are predefined constant values. Primitive types such
-as `<boolean>` and `<uint8>` are predefined values in the type namespace. `self`
-is a binding introduced by dispatch. All follow ordinary name resolution and
-can be shadowed in an inner scope; shadowing cannot change their intrinsic
-identity, representation, or implicit language behavior.
+as `<boolean>` and `<uint8>` are predefined values in the type namespace. These
+names follow ordinary name resolution and can be shadowed in an inner scope;
+shadowing cannot change their intrinsic identity, representation, or implicit
+language behavior. `$` is punctuation denoting the nearest dispatch receiver,
+not an identifier. `self` is an ordinary name with no implicit binding.
 
 The foundational module `@"core"` exposes the predefined constants and types when
 a local name shadows one of them. A missing primary emission, for example, still
@@ -154,7 +155,7 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `value.&name`, `value.&!name`                 | Shared or exclusive borrow of the selected field                 |
 | `value.*name`                                 | Dereference the selected field                                   |
 | `value.(f)`                                   | Call `f` with `value` as its first argument                      |
-| `value.{ ... }`                               | Evaluate block with `self` bound to `value`                      |
+| `value.{ ... }`                               | Evaluate block with `$` bound to `value`                      |
 | `\| condition \| statement`                   | Conditional matcher arm                                          |
 | `'scope { ... }`                              | Named, immediately evaluated block                               |
 | `'scope -> value`                             | Primary emission into a named enclosing block                    |
@@ -231,16 +232,17 @@ expressed through a matcher, not inferred from its distance to an outer `|`.
 The contexts compose through dispatch too:
 
 ```meowy
-| t.{ -> self<MyCoolType> } <MyCoolType> | matched()
+| t.{ -> $<MyCoolType> } <MyCoolType> | matched()
 ```
 
-The dispatched block is an ordinary value context: `self<MyCoolType>` is an
+The dispatched block is an ordinary value context: `$<MyCoolType>` is an
 ascription, and `->` emits that value. After `}`, the surrounding matcher context
 resumes, so the outer `<MyCoolType>` is a predicate. This requires the flow type
-of `self` to satisfy the ascription before the block emits; an outer test cannot
+of `$` to satisfy the ascription before the block emits; an outer test cannot
 prove an earlier operation. With this exact block, the outer test succeeds if
 evaluation completes normally. Dispatch still follows its usual move/borrow
-rules. Neither the spaces nor the spelling of `self` introduces a special case.
+rules. The receiver sigil does not change ascription or predicate rules; spaces do not
+select either meaning.
 
 For an ascription directly used as a condition, bind it first and match the
 boolean binding. Parenthesizing `value<T>` alone still gives a type test there.
@@ -355,7 +357,9 @@ that boundary.
 Bindings are lexically scoped and visible after their declaration. Function
 declarations can refer to themselves; mutual recursion requires explicit function
 type declarations. Shadowing is allowed in a nested block, not by redeclaring a
-name in the same block. `self` is a contextual binding and can be shadowed.
+name in the same block. `$` cannot be declared or rebound as a user name. A nested
+dispatch supplies its own receiver; ordinary nested blocks use the enclosing `$`.
+Outside a dispatch receiver's lexical scope, `$` is invalid.
 
 Types, labels, values, and task groups use distinct namespaces. `%name` selects a
 task group; `&name` borrows an ordinary value. A group and a value may therefore

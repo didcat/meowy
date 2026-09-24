@@ -15,9 +15,9 @@ completion and repetition.
 
 The grammar has no reserved keywords. Punctuation supplies structure; names
 refer to ordinary values, type values, or scoped operations. `true`, `false`,
-`null`, and primitive types come from a small predefined environment, while
-`self` is introduced by dispatch. Local shadowing and aliasing follow the same
-rules as other bindings. Compiler knowledge follows an intrinsic's identity,
+`null`, and primitive types come from a small predefined environment. `$` denotes
+the nearest dispatch receiver; `self` is an ordinary name. Ordinary names support
+lexical shadowing and aliasing; only a nested dispatch introduces another `$`. Compiler knowledge follows an intrinsic's identity,
 not the letters in its name.
 
 Lower-level features follow that rule too: `&!` marks an exclusive borrow,
