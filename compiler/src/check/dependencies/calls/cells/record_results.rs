@@ -50,10 +50,9 @@ impl Checker {
                 continue;
             }
             let record = self.call_shared_view(ty, expr)?;
-            if path.is_empty()
-                && let Some(layers) = self.unmatched_union_layers(ty, result, 1, expr)?
-            {
-                let Some(source) = self.union_input_cells(arg, result, depth, layers)? else {
+            if let Some(layers) = self.unmatched_union_layers(ty, result, 1, expr)? {
+                let Some(source) = self.union_input_cells(arg, ty, &path, result, depth, layers)?
+                else {
                     return Ok(Cells::default());
                 };
                 if !found {

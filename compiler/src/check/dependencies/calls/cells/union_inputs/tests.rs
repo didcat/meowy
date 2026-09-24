@@ -49,7 +49,7 @@ pub(crate) fn direct_union_inputs_preserve_unknown_owners_and_contents() {
 }
 
 #[test]
-pub(crate) fn union_inputs_distinguish_deeper_and_stored_candidates() {
+pub(crate) fn union_inputs_retain_deeper_and_stored_candidates() {
     for source in [
         "<R>:<{r<&boolean>}>;<A>:<{view<&R>}>;<B>:<{other<boolean>}>;<U>:<A><B>;f<&R>:(p<& &U>,q<&R>){->q};x:=false;row<R>:{->r:&x};wide<U>:{->view:&row};link:&wide;view:f(&link,&row)",
         "<R>:<{r<&boolean>}>;<A>:<{view<&R>}>;<B>:<{other<boolean>}>;<U>:<A><B>;<W>:<{view<&U>}>;f<&R>:(p<W>,q<&R>){->q};x:=false;row<R>:{->r:&x};wide<U>:{->view:&row};pack<W>:{->view:&wide};view:f(pack,&row)",
@@ -57,9 +57,11 @@ pub(crate) fn union_inputs_distinguish_deeper_and_stored_candidates() {
         crate::compile(source).unwrap();
         let mut checker = Checker::new();
         statements(&mut checker, source);
+        let cells = &checker.reference_cells[&id(&checker, "view")];
+        assert!(cells.complete);
         assert_eq!(
-            checker.reference_cells[&id(&checker, "view")].complete,
-            source.contains("link:&wide")
+            cells.places,
+            BTreeSet::from([(id(&checker, "row"), vec![])])
         );
     }
 }

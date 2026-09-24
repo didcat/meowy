@@ -409,22 +409,23 @@ candidates to concrete-record, union-view and carrier returns. Record-result sli
 `f5d001a`. All 370 focused tests and all ten compiler checks pass. Deeper direct
 shared-union inputs now expand bounded cell layers before matching hidden candidates.
 Unknown intermediates remain incomplete; exclusive edges remain unsupported.
-All 374 focused tests and all ten compiler checks pass. Owned record-stored union inputs
-are next, followed by borrowed-record fields.
+All 374 focused tests and all ten compiler checks pass. Union inputs stored in
+owned record arguments now retain candidates through nested concrete fields and
+shared layers. All 379 focused tests and all ten compiler checks pass. Borrowed-record
+union fields are next and remain incomplete.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1347
-  library/903 native tests (2250 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1352
+  library/903 native tests (2255 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-deeper-union-inputs-gate.log`.
-- All 374 dependency-filtered tests pass. Four new deeper-union-input groups
-  cover direct/deeper mixtures, unknown intermediate cells, null, union/carrier
-  results, nested calls, no replay, exclusive edges, exact depth endpoints, work
-  limits and E302/E303 lifetimes. Existing record-depth diagnostics are preserved.
-  Record-stored inputs and untraversed borrowed contents remain incomplete.
+  0 failed in debug/release. Log: `/tmp/meowy-stored-union-inputs-gate.log`.
+- All 379 dependency-filtered tests pass. Five new owned record-stored input
+  groups cover nested/mixed fields, unknown contents/intermediates, null,
+  record/union/carrier results, nested calls, no replay, call/work limits and
+  E302/E303 lifetimes. Borrowed-record union fields remain explicitly incomplete.
   Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control

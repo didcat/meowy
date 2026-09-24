@@ -83,13 +83,10 @@ impl Checker {
             let record = self
                 .call_shared_view(ty, expr)?
                 .filter(|(view, _)| view.pointee().is_some_and(Type::has_borrowed));
-            let union = if path.is_empty() {
-                self.unmatched_union_layers(ty, result, result_depth, expr)?
-            } else {
-                None
-            };
+            let union = self.unmatched_union_layers(ty, result, result_depth, expr)?;
             let source = if let Some(layers) = union {
-                let Some(source) = self.union_input_cells(arg, result, depth, layers)? else {
+                let Some(source) = self.union_input_cells(arg, ty, &path, result, depth, layers)?
+                else {
                     return Ok(Cells::default());
                 };
                 source

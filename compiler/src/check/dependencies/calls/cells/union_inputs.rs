@@ -17,12 +17,17 @@ impl Checker {
     pub(super) fn union_input_cells(
         &mut self,
         input: &Expr,
+        mut ty: &Type,
+        path: &[usize],
         result: &Type,
         depth: usize,
         layers: usize,
     ) -> Result<Option<Cells>> {
-        let mut locations = self.reference_cell_at(input, depth + 1)?;
-        let mut ty = &input.ty;
+        let mut locations = if path.is_empty() {
+            self.reference_cell_at(input, depth + 1)?
+        } else {
+            self.record_source_cells_at(input, path, depth + 1)?
+        };
         for _ in 0..layers {
             locations = self.expand_reference_cells(locations, input)?;
             ty = ty.pointee().unwrap();
@@ -39,3 +44,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod stored;
