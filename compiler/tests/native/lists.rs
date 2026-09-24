@@ -49,8 +49,8 @@ member<Value>:3
 mixed:[member,"text"]
 first:mixed[1]
 second:mixed[2]
-|first<int32>|d.print(first<int32>)
-|second<string>|d.print(second<string>)
+|first<int32>|d.print(first~<int32>)
+|second<string>|d.print(second~<string>)
 nested<int32[3][2]>:[[1],[2,3]]
 d.print(nested[2][2])
 d.print(nested[1].size())
@@ -58,7 +58,7 @@ d.print(nested[1].size())
 <Words>:<string[2]>
 numbers<Numbers>:[5]
 choice<Numbers><Words>:numbers
-|choice<Numbers>|d.print(choice<Numbers>[1])
+|choice<Numbers>|d.print(choice~<Numbers>[1])
 d.print(choice==choice)
 "#,
     )
@@ -443,21 +443,23 @@ pub(crate) fn signature_roots_keep_forward_and_export_source_errors() {
 #[test]
 pub(crate) fn type_use_roots_preserve_imported_identities_and_ascriptions() {
     super::file_modules::case(
-        "m:@\"./facade.mwy\";d:@\"debug\";kind:((m).Kind);copy:kind;v<(copy)>:7;safe:v<(copy)>;d.print(safe);queried:(v/0)<>;w<(queried)>:9;d.print(w);|v<uint8>|d.print(3)",
+        "m:@\"./facade.mwy\";d:@\"debug\";kind:((m).Kind);copy:kind;v<(copy)>:7;safe:v~<(copy)>;d.print(safe);queried:(v/0)<>;w<(queried)>:9;d.print(w);|v<uint8>|d.print(3)",
         &[
             ("data.mwy", "d:@\"debug\";d.print(1);->Kind<Type>:<uint8>"),
             ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(2);->Kind<Type>:m.Kind"),
         ],
     ).runs(b"1\n2\n7\n9\n3\n");
-    Case::new("d:@\"debug\";kind:<int32[1+1]>;copy:kind;v<(copy)>:[7,9];w:v<(kind)>;d.print(w[2])")
-        .runs(b"9\n");
+    Case::new(
+        "d:@\"debug\";kind:<int32[1+1]>;copy:kind;v<(copy)>:[7,9];w:v~<(kind)>;d.print(w[2])",
+    )
+    .runs(b"9\n");
 }
 
 #[test]
 pub(crate) fn type_use_roots_keep_original_binding_and_ascription_errors() {
     for source in [
         "kind:<uint8[1/0]><Missing>",
-        "value:7;->value:value<int32[1/0]>",
+        "value:7;->value:value~<int32[1/0]>",
     ] {
         let case = super::file_modules::case(
             "m:@\"./facade.mwy\"",

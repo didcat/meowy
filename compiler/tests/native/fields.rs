@@ -17,14 +17,14 @@ holder.items=[2,3]
 holder.choice="changed"
 d.print(holder.items.size());d.print(holder.items[2])
 choice:holder.choice
-|choice<string>|d.print(choice<string>)
+|choice<string>|d.print(choice~<string>)
 <Optional>:<{n<int32><null>:=}>
 optional<Optional>:={}
 initial:optional.n
 |initial<null>|d.print("empty")
 optional.n=42
 filled:optional.n
-|filled<int32>|d.print(filled<int32>)
+|filled<int32>|d.print(filled~<int32>)
 "#,
     )
     .runs(b"7\n2\nkept\n1\n2\n3\nchanged\nempty\n42\n");
@@ -134,7 +134,7 @@ value:={->left<int32><string>:=1;->right<int32><string>:=2}
 "#,
     )
     .runs(b"1\n");
-    let source = "value:={->left<int32><string>:=1;->right<int32>:=2};|value.left<int32>|{value.left=\"new\";copy:value.left<int32>}";
+    let source = "value:={->left<int32><string>:=1;->right<int32>:=2};|value.left<int32>|{value.left=\"new\";copy:value.left~<int32>}";
     let output = Case::new(source).command("check", &["--json"]);
     assert_eq!(output.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&output.stderr).contains("\"code\":\"E208\""));

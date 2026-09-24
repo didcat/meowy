@@ -24,7 +24,7 @@ optional<int32[1]><string[1]><null>:[4]
 <Value>:<int32><string>
 member<Value>:5
 existing<Value[1]><int32[1]>:[member]
-|existing<Value[1]>|{element:existing[1];|element<int32>|d.print(element<int32>)}
+|existing<Value[1]>|{element:existing[1];|element<int32>|d.print(element~<int32>)}
 record:{->23;->tag:"record"}
 projected<int32[1]><string[1]>:[record]
 |projected<int32[1]>|d.print(projected[1])

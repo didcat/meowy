@@ -70,7 +70,7 @@ pub fn type_tests_narrow_values_fields_and_short_circuit_operands() {
 d:@"debug"
 inspect<null>:(value<int32><string><null>){
     |value<int32>|d.print(value+1)
-    |value<string>&&value.size()>0|d.print(value<string>)
+    |value<string>&&value.size()>0|d.print(value~<string>)
     |value<null>|d.print("missing")
 }
 inspect(4)
@@ -78,7 +78,7 @@ inspect("text")
 inspect(null)
 fallback<string>:(value<string><null>) 'result {
     |value<null>|{'result->"fallback";'result.leave()}
-    ->value<string>
+    ->value~<string>
 }
 d.print(fallback(null))
 d.print(fallback("kept"))
@@ -223,13 +223,16 @@ read(empty)
 #[test]
 pub fn branch_proofs_do_not_survive_mutation_or_continuing_arms() {
     for (source, code) in [
-        ("f<null>:(x<string><null>){|x<null>|{};y:x<string>}", "E208"),
         (
-            "x<string><null>:=\"ok\";|x<string>|{x=null;y:x<string>}",
+            "f<null>:(x<string><null>){|x<null>|{};y:x~<string>}",
             "E208",
         ),
         (
-            "x<{name<string><null>}>:={->name:\"ok\"};|x.name<string>|{x={};y:x.name<string>}",
+            "x<string><null>:=\"ok\";|x<string>|{x=null;y:x~<string>}",
+            "E208",
+        ),
+        (
+            "x<{name<string><null>}>:={->name:\"ok\"};|x.name<string>|{x={};y:x.name~<string>}",
             "E208",
         ),
         ("f<int32>:(flag<boolean>){|flag|->1}", "E204"),
@@ -268,7 +271,7 @@ d:@"debug"
 <R>:<{view<&int32><null>;count<int64>}>
 owner:=42
 present<R><null>:{->view:&owner;->count:7}
-|present<R>|{|present.view<&int32>|d.print(*(present.view<&int32>));d.print(present.count)}
+|present<R>|{|present.view<&int32>|d.print(*(present.view~<&int32>));d.print(present.count)}
 owner=43
 absent<R><null>:{->count:9}
 empty_view<&int32><null>:null

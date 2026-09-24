@@ -59,9 +59,9 @@ a=12
 inspect<null>:(flag<boolean>){
     owner:=7
     value<&int32><null>:{|flag|->&owner}
-    result:value.{|$<&int32>|->$<&int32>}
+    result:value.{|$<&int32>|->$~<&int32>}
     |result<null>|{owner=8;d.print("none")}
-    |result<&int32>|d.print(*(result<&int32>))
+    |result<&int32>|d.print(*(result~<&int32>))
     owner=9
     d.print(owner)
 }

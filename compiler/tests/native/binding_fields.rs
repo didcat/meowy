@@ -197,7 +197,7 @@ r:{->p<&int32><null>:=null}
 i:=0
 'loop{
     r.p=&a
-    |r.p<&int32>|d.print(*(r.p<&int32>))
+    |r.p<&int32>|d.print(*(r.p~<&int32>))
     r.p=null
     i=i+1
     |i<2|'loop.restart()
@@ -208,7 +208,7 @@ d.print(a)
     )
     .runs(b"1\n1\n3\n");
     rejects(
-        "a:=1;r:{->p<&int32><null>:=null};r.p=&a;|r.p<&int32>|{old:r.p<&int32>;r.p=null;a=2;v:*old}",
+        "a:=1;r:{->p<&int32><null>:=null};r.p=&a;|r.p<&int32>|{old:r.p~<&int32>;r.p=null;a=2;v:*old}",
         "E302",
     );
     rejects(
