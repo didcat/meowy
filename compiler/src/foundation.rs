@@ -7,6 +7,35 @@ pub(crate) enum Module {
     Memory,
     Strings,
     Proof,
+    Bits,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum BitOp {
+    And,
+    Or,
+    Xor,
+    Not,
+}
+
+impl BitOp {
+    pub(crate) fn name(self) -> &'static str {
+        match self {
+            Self::And => "bits.and",
+            Self::Or => "bits.or",
+            Self::Xor => "bits.xor",
+            Self::Not => "bits.not",
+        }
+    }
+
+    pub(crate) fn operator(self) -> &'static str {
+        match self {
+            Self::And => "&",
+            Self::Or => "|",
+            Self::Xor => "^",
+            Self::Not => "~",
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -50,6 +79,7 @@ pub(crate) enum Item {
     Heap,
     StringCopy,
     CanCopy,
+    Bits(BitOp),
 }
 
 impl Module {
@@ -60,6 +90,7 @@ impl Module {
             "memory" => Some(Self::Memory),
             "strings" => Some(Self::Strings),
             "proof" => Some(Self::Proof),
+            "bits" => Some(Self::Bits),
             _ => None,
         }
     }
@@ -71,15 +102,23 @@ impl Module {
             Self::Memory => "memory",
             Self::Strings => "strings",
             Self::Proof => "proof",
+            Self::Bits => "bits",
         }
     }
 
     pub(crate) fn partial(self) -> bool {
-        matches!(self, Self::Memory | Self::Strings | Self::Proof)
+        matches!(
+            self,
+            Self::Memory | Self::Strings | Self::Proof | Self::Bits
+        )
     }
 
     pub(crate) fn item(self, name: &str) -> Option<Item> {
         match (self, name) {
+            (Self::Bits, "and") => Some(Item::Bits(BitOp::And)),
+            (Self::Bits, "or") => Some(Item::Bits(BitOp::Or)),
+            (Self::Bits, "xor") => Some(Item::Bits(BitOp::Xor)),
+            (Self::Bits, "not") => Some(Item::Bits(BitOp::Not)),
             (Self::Proof, "can_copy") => Some(Item::CanCopy),
             (Self::Memory, "Allocator") => Some(Item::Type(FoundationType::Allocator)),
             (Self::Memory, "AllocationFailure") => {
@@ -100,6 +139,7 @@ impl Item {
             Self::Heap => "memory.heap",
             Self::StringCopy => "strings.copy",
             Self::CanCopy => "proof.can_copy",
+            Self::Bits(op) => op.name(),
         }
     }
 }

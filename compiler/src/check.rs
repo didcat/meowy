@@ -1,4 +1,5 @@
 mod aliases;
+mod bits;
 mod blocks;
 mod dependencies;
 mod documentation;

@@ -107,6 +107,8 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
+        let bits = self.bits_expression(expr)?;
+        let expr = bits.as_ref().unwrap_or(expr);
         self.charge_integer(expr)?;
         let (kind, ty) = match &expr.kind {
             ExprKind::Int(text) => return self.integer(text, false, expected, expr.span),
@@ -464,6 +466,8 @@ impl Checker {
     }
 
     pub(crate) fn hint(&mut self, expr: &ast::Expr) -> Option<Type> {
+        let bits = self.bits_expression(expr).ok().flatten();
+        let expr = bits.as_ref().unwrap_or(expr);
         if matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. })
             && matches!(
                 self.hint_symbol(expr),

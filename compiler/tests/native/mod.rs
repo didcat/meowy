@@ -3,6 +3,7 @@ pub(crate) mod alias_writes;
 pub(crate) mod allocator_bounds;
 pub(crate) mod allocator_carriers;
 pub(crate) mod binding_fields;
+pub(crate) mod bits;
 pub(crate) mod boolean_blocks;
 pub(crate) mod boolean_equality;
 pub(crate) mod boolean_fields;
