@@ -29,7 +29,7 @@ pub(crate) fn pure_compounds_reuse_contextual_operator_rules() {
         "values<int8[1]><int16[1]>:[-(128)]",
         "values<int8[1]><int16[1]>:[-(-128)]",
         "values<int8[1]><int16[1]>:[(127+1)-1]",
-        "values<int8[1]><uint8[1]>:[~128]",
+        "values<int8[1]><uint8[1]>:[(@\"bits\").not(128)]",
         "values<float32[1]><float64[1]>:[1e39-1e39]",
         "values<boolean[1]><int32[1]>:[!(false||true)&&false]",
         "values<boolean[1]><int32[1]>:[false&&(1/0==1)]",
@@ -41,7 +41,7 @@ pub(crate) fn pure_compounds_reuse_contextual_operator_rules() {
         assert!(crate::compile(source).is_ok(), "{source}");
     }
     for source in [
-        "values<int8[1]><uint8[1]>:[~1]",
+        "values<int8[1]><uint8[1]>:[(@\"bits\").not(1)]",
         "values<float32[1]><float64[1]>:[3e38+3e38]",
         "values<int8[1]><uint8[1]>:[256-256]",
         "values<int8[1]><int16[1]>:[1/0]",

@@ -32,7 +32,7 @@ pub(crate) fn logical_integer_nodes_preserve_grouping_and_negative_literal_rules
         ("(1)+(2*3)", 5),
         ("-7", 2),
         ("-(7)", 2),
-        ("~7", 2),
+        ("(@\"bits\").not(7)", 2),
     ] {
         assert_eq!(cost(source, None), steps, "{source}");
     }
@@ -135,13 +135,13 @@ pub(crate) fn logical_integer_blocks_charge_operators_and_delegated_nodes_once()
         ("({->2})+3", 5),
         ("({->2})+({->3})", 7),
         ("-({->2})", 4),
-        ("~({->2})", 4),
+        ("(@\"bits\").not({->2})", 4),
         ("-7+({->2})", 6),
         ("({->2})*({->3}+4)", 9),
     ] {
         assert_eq!(arithmetic_cost(source), steps, "{source}");
     }
-    for source in ["1+2", "-7+2", "~(2*3)"] {
+    for source in ["1+2", "-7+2", "(@\"bits\").not(2*3)"] {
         assert_eq!(arithmetic_cost(source), cost(source, None), "{source}");
     }
 }

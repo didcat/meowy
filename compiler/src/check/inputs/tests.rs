@@ -48,7 +48,9 @@ pub(crate) fn initializer_inputs_retain_unreachable_arithmetic_failures() {
 
 #[test]
 pub(crate) fn initializer_inputs_retain_values_after_lexical_scopes_close() {
-    let checker = check("base<uint8>:252;complement:~base;wide<uint64>:4294967296;next:wide+1");
+    let checker = check(
+        "base<uint8>:252;complement:(@\"bits\").not(base);wide<uint64>:4294967296;next:wide+1",
+    );
     assert_eq!(
         checker
             .inputs
@@ -79,7 +81,7 @@ pub(crate) fn initializer_blocks_preserve_local_values_nested_blocks_and_post_em
     for source in [
         "capacity:{step:2;->step*2};<T>:{n:capacity;-><int32[n]>};v<T>:[1,2]",
         "capacity:{step:{->2};->step*2};<T>:{-><int32[capacity]>}",
-        "capacity<uint8>:{step<uint8>:252;->~step};<T>:{-><int32[capacity]>}",
+        "capacity<uint8>:{step<uint8>:252;->(@\"bits\").not(step)};<T>:{-><int32[capacity]>}",
         "capacity:{->4;unused:3};<T>:{-><int32[capacity]>}",
     ] {
         crate::compile(source).unwrap_or_else(|error| panic!("{source}: {error:?}"));

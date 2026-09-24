@@ -143,7 +143,7 @@ impl Checker {
 mod tests {
     #[test]
     pub(crate) fn required_integer_blocks_preserve_context_and_erase_runtime_storage() {
-        let source = "<T>:{n<uint8>:({base<uint8>:2;->base})+{->2};m:~({v<uint8>:255;->v});s:-({->2})+6;copy:{->n+({->m})};-><int32[copy+4]>}";
+        let source = "<T>:{n<uint8>:({base<uint8>:2;->base})+{->2};m:(@\"bits\").not({v<uint8>:255;->v});s:-({->2})+6;copy:{->n+({->m})};-><int32[copy+4]>}";
         let program = crate::compile(source).unwrap();
         assert!(program.locals.is_empty());
         assert!(program.body.stmts.is_empty());

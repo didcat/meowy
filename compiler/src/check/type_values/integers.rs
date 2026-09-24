@@ -160,7 +160,7 @@ mod tests {
             ("small+1", "2", 8, false),
             ("-128", "signed", 8, true),
             ("1+2", "wide", 16, false),
-            ("~small", "small", 8, false),
+            ("(@\"bits\").not(small)", "small", 8, false),
         ] {
             let mut checker = checker();
             assert_eq!(

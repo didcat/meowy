@@ -329,7 +329,7 @@ pub(crate) fn shared_dispatch_keeps_original_origins_and_bounds() {
 #[test]
 pub(crate) fn unary_context_does_not_inject_a_union_before_the_operator() {
     accepts("value<boolean><null>:!true");
-    accepts("byte<int8>:5;value<int8><null>:-byte;bits<int8><null>:~byte");
+    accepts("byte<int8>:5;value<int8><null>:-byte;bits<int8><null>:(@\"bits\").not(byte)");
     accepts("value<float32><null>:-({->1.5})");
     rejects("value:!1", "E222");
     rejects("value<int8><null>:-(128)", "E216");

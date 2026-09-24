@@ -208,9 +208,9 @@ pub(crate) fn computed_integers_check_arithmetic_with_exact_width_and_signedness
     for source in [
         "<T>:{base:2;capacity:base*3+1;-><int32[capacity]>};v<T>:[1,2]",
         "<T>:{base<uint8>:254;capacity:base+1;-><int32[capacity]>}",
-        "<T>:{n<uint8>:252;capacity:~n;-><int32[capacity]>}",
+        "<T>:{n<uint8>:252;capacity:(@\"bits\").not(n);-><int32[capacity]>}",
         "<T>:{n<int8>:-8;capacity:-n;-><int32[capacity]>}",
-        "<T>:{n:((8/2)%3)|4;capacity:n^1;-><int32[capacity]>}",
+        "<T>:{n:(@\"bits\").or((8/2)%3,4);capacity:(@\"bits\").xor(n,1);-><int32[capacity]>}",
     ] {
         crate::compile(source).unwrap_or_else(|error| panic!("{source}: {error:?}"));
     }
