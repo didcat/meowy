@@ -29,6 +29,8 @@ pub(crate) enum Fact {
     Emit(hir::EmitId),
     Call(hir::CallId),
     Branch,
+    And,
+    Or,
     Block(hir::BlockId),
     Leave(hir::BlockId),
     Restart(hir::RestartId),
@@ -143,6 +145,14 @@ impl<'a> Walk<'a> {
                     | E::Primary(value)
                     | E::ListSize(value)
                     | E::StringSize(value) => self.push([Node::Expr(value)])?,
+                    E::Binary { op, left, right } if matches!(op.as_str(), "&&" | "||") => {
+                        let and = op == "&&";
+                        self.fact(if and { Fact::And } else { Fact::Or }, expr.span)?;
+                        self.role(if and { Role::Then } else { Role::Else });
+                        self.push([Node::Expr(right)])?;
+                        self.role(Role::Condition);
+                        self.push([Node::Expr(left)])?;
+                    }
                     E::Binary { left, right, .. } => {
                         self.push([Node::Expr(right), Node::Expr(left)])?;
                     }
@@ -333,3 +343,6 @@ mod tests;
 
 #[cfg(test)]
 mod relations;
+
+#[cfg(test)]
+mod logic;

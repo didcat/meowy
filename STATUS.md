@@ -514,18 +514,21 @@ Checked runtime bodies now
 retain bounded facts under block/function IDs, including nested-body links, bindings,
 reads, writes, calls and exits (`87e7b20`). Successful required-input reads retain
 storage-root IDs, source/root spans and lexical control in the same scope inventory.
-All 11 focused inventory groups and all ten compiler checks pass (1458 library/
-910 native tests); log: `/tmp/meowy-restart-body-inputs-gate.log`.
-Bounded transfer relations and backedge/header propagation are next; the inventory
-alone is not a control/data transfer graph. Termination dependence remains incomplete.
+Body facts now retain operand/branch parent links (`fe19008`) and canonical storage
+IDs (`5099fd1`), including distinct short-circuit condition/RHS roles. All 22 focused
+body groups and all ten compiler checks pass (1469 library/910 native tests); log:
+`/tmp/meowy-body-relations-gate.log`. These relations do not establish execution
+order or complete value flow. Erased query/input sites still
+need explicit branch/continuation identities, and block/emission results need
+consumer links before backedge/header propagation. Termination dependence remains incomplete.
 Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Restart-body inventory and required-input association passed all ten checks in
-  `python3 -B tools/verify.py --compiler`, including 1458 library/910 native tests.
+- Restart-body operand/branch relations and storage identities passed all ten checks
+  in `python3 -B tools/verify.py --compiler`, including 1469 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-restart-body-inputs-gate.log`. This is metadata capture only;
+  `/tmp/meowy-body-relations-gate.log`. This is metadata capture only;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -584,9 +587,10 @@ execution was not part of this documentation edit.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
-   Next build bounded transfer relations for the retained restart-body facts and
-   required-input uses, then propagate across backedges and headers. The flat
-   inventory alone does not establish dependencies or independence.
+   Next associate erased query/input sites with explicit branch/continuation
+   identities and connect block/emission results to consumers. Retained operand
+   and canonical-storage relations are prerequisites; bounded backedge/header
+   propagation remains unimplemented.
    Fixed flag type queries are independent of answers and must remain admitted.
    Pending statement and annotation roots are integrated; descriptor construction
    and type inspection must charge the retained ledger when outcomes are admitted.

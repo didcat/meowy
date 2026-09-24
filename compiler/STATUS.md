@@ -119,25 +119,29 @@ erased input/query sites still need precise branch/continuation association, and
 loop-header/backedge propagation and termination dependence remain unimplemented.
 Do not enable E225 enforcement over backedges or proof outcomes from this metadata.
 
-Baseline: body inventories and required-input capture (`87e7b20`, `ec15894`) pass
-all ten compiler checks, including 1458 library/910 native tests. Required uses
-retain storage IDs, read/root spans and lexical control without replay or logical
-budget changes. Skipped required evaluation and fixed type signatures add no uses.
-The tree was clean. Operand/branch parent links are integrated with one bounded
-link per fact. All 15 focused body groups pass, including data/address/index roles,
-both matcher arms, nested-body isolation and stable backward-only link identities.
-All 1462 library tests pass; logs: `/tmp/meowy-body-relations-focused.log` and
-`/tmp/meowy-body-relations-library.log`. Canonical storage IDs and short-circuit
-branch roles are next. Relation prerequisite: `fe19008`.
+Body inventories and required-input capture remain available (`87e7b20`,
+`ec15894`). Parent links now retain data/address/index operands and both matcher
+arms (`fe19008`). There is one bounded, backward-only parent link per fact;
+nested bodies retain their own identities and function owners. Canonical storage
+IDs for local/slot-alias facts and required uses reuse `Alias::root` (`5099fd1`).
+Ordinary copies and reference carriers keep distinct cells; indirect stores have
+no invented destination. Emitted initializer eligibility remains B001-gated.
 
-Canonical storage capture now covers local binds/reads/writes, slot aliases and
-required uses. Emitted aliases can also appear as HIR Bind facts; their IDs must
-resolve through the same alias root. Ordinary copies and reference carriers keep
-their own cells; indirect stores retain no invented destination. Direct required
-reads of emitted initializer values retain their existing eligibility B001 gate.
-All 1465 library tests pass, including all 18 body groups; log:
-`/tmp/meowy-body-storage-library.log`. No failures remain. Short-circuit operand
-roles are the final planned slice before the full compiler gate.
+Runtime `&&`/`||` now retain distinct logical facts, left-condition and right-arm
+roles, including constant-skipped operands, nested logic and effectful RHS blocks.
+No initializer or condition is replayed. These are structural relations, not a
+complete value-flow/continuation graph or execution order. Missing links do not
+prove independence. Required uses retain original read/root spans and logical
+charges; failed bodies are not complete summaries.
+
+All 22 focused body groups pass (`/tmp/meowy-body-logic-focused.log`). The first
+two slices also pass all 1462/1465 library tests respectively. All ten compiler
+checks pass, including 1469 library/910 native tests, formatting, Clippy, build
+and conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-body-relations-gate.log`. No failures remain. Before backedge
+propagation, associate erased required/query sites with explicit branch/continuation
+identities and connect nested block results/emissions to consumers. Keep unknown
+reference/store/call effects explicit. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1766,11 +1770,18 @@ subtraction retains its documented limits. No outstanding failures remain.
    required scalar/boolean/record input uses retain storage-root IDs, read/root spans
    and lexical control under the nearest same-function block; fixed-signature
    queries and skipped evaluation add no uses. Runtime prerequisite: `87e7b20`.
-   Next add bounded data/control transfer relations in `dependencies/bodies.rs`
-   and the checked HIR traversal: the flat inventory is not execution order or a
-   complete transfer graph. Retain source/destination and branch relationships,
-   canonical aliases and unresolved indirect stores before propagating anything.
-   Then propagate over restart backedges/headers using these facts and query links,
+   Body facts now retain bounded parent/operand roles, both matcher arms and
+   short-circuit condition/RHS roles. Local/slot-alias facts and required uses retain
+   canonical storage IDs without conflating reference carriers with their pointees.
+   Relations: `fe19008`; storage: `5099fd1`. Indirect stores stay unresolved.
+   Next give erased required reads and pending queries explicit checked site and
+   branch/continuation identities in `dependencies/bodies.rs`, `queries/` and their
+   checking boundaries. Do not infer site identity or execution order from spans
+   or inventory indices. Preserve recognition purity, original roots and both arms.
+   Connect nested block/emission result sources to their consumers using existing
+   HIR/slot identities; retain unknown reference/store/call effects explicitly.
+   These remain prerequisites to a complete transfer graph. Then propagate over
+   restart backedges/headers using these facts and query links,
    without re-evaluating initializers or resetting retained logical budgets. Preserve
    nested targets, function ownership, ordinary errors and unknown/derived conditions.
    Validate seeded before/after-restart reads, writes, required uses and queries,
