@@ -288,3 +288,46 @@ pub(crate) fn composed_roots_keep_errors_and_existing_scalar_fallbacks() {
     assert_eq!(value.ty, hir::Type::Bool);
     assert!(checker.points[id].complete);
 }
+
+#[test]
+pub(crate) fn position_roots_retain_exact_outer_ids_without_rechecking_indices() {
+    let mut checker = Checker::new();
+    let stmt = crate::parser::parse("((1+1))").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let (first, value) = checker.list_position_point(&expr, Some(2), 3).unwrap();
+    let count = checker.points.len();
+    let (second, copy) = checker.list_position_point(&expr, Some(2), 3).unwrap();
+    assert_ne!(first, second);
+    assert_eq!(checker.points.len(), count * 2);
+    assert_eq!(value.ty, copy.ty);
+    assert_eq!(checker.points[first].span, expr.span);
+    assert!(checker.points[first].complete && checker.points[second].complete);
+    assert!(checker.point.is_none());
+}
+
+#[test]
+pub(crate) fn position_roots_preserve_type_one_based_length_and_capacity_errors() {
+    for (source, length, capacity, code) in [
+        ("false", None, 2, "E222"),
+        ("0", None, 2, "E101"),
+        ("3", None, 2, "E101"),
+        ("2", Some(1), 3, "E101"),
+        ("\"name\"", None, 2, "B001"),
+    ] {
+        let mut checker = Checker::new();
+        let stmt = crate::parser::parse(source).unwrap().stmts.remove(0);
+        let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+            panic!()
+        };
+        assert_eq!(
+            checker
+                .list_position_point(&expr, length, capacity)
+                .unwrap_err()
+                .code,
+            code
+        );
+        assert!(checker.point.is_none());
+    }
+}

@@ -436,7 +436,17 @@ impl Checker {
         length: Option<usize>,
         capacity: usize,
     ) -> Result<hir::Expr> {
-        let index = self.expr(index, None)?;
+        self.list_position_point(index, length, capacity)
+            .map(|(_, value)| value)
+    }
+
+    pub(crate) fn list_position_point(
+        &mut self,
+        index: &ast::Expr,
+        length: Option<usize>,
+        capacity: usize,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        let (point, index) = self.expr_point(index, None)?;
         if index.ty == Type::String {
             return Err(Diagnostic::unsupported(
                 "named-list alias lookup",
@@ -465,7 +475,7 @@ impl Checker {
                 index.span,
             ));
         }
-        Ok(index)
+        Ok((point, index))
     }
 
     pub(crate) fn element_borrow(

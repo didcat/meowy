@@ -99,51 +99,34 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current emission-operation slices
+### Current field and indexed store slices
 
-Completed dependency-ordered commit plan:
-1. Expose exact roots from contextual/composed expression checking, preserving
-   existing value-only callers, partial record shapes, diagnostics and accounting.
-2. Record direct primary/named/outer emission operations using original input roots,
-   EmitId and target slots; include alias identity and explicit emission effect ports.
-   Never values and static exports must not invent runtime emissions.
-3. Integrate record-composition fanout, retaining primary/field projections from
-   the original source before temporary staging. Keep targets and publication bounded.
-4. Link emitted body facts through exact EmitId provenance, then run the compiler gate.
+Dependency-ordered commit plan:
+1. Return exact checked roots from list-position checking while preserving existing
+   integer/one-based bounds diagnostics and the value-only API.
+2. Retain field-only store operations with canonical storage, exact field paths,
+   RHS roots and explicit address/effect stages. Keep ordinary checking unchanged.
+3. Extend those operations to indexed paths, capturing each index once and retaining
+   containing-list reservation/length stages, checked-success edges and RHS order.
+   Test nested/side-effectful paths and run the full compiler gate.
 
-Investigation: `emit` validates slots before creating HIR emissions, but contextual
-composition currently discards its root ID. A single source statement can create
-several ordered emissions; preserve those identities instead of inventing one local
-storage target. Named emissions also produce slot aliases whose existing emission
-IDs provide exact links. Result availability is separate from value provenance;
-emissions initialize components and must not become scope exits.
+Investigation: `mutation.rs::write_path` resolves path steps before the RHS;
+`list_position_point` now returns exact roots without rechecking indices; the
+value-only wrapper preserves existing callers. Lowering captures each containing
+list length before evaluating its index, and ownership analysis validates the
+reservations. Metadata must preserve that order without granting new loan authority
+or asserting that bounds checks always succeed. Pure field addresses remain valid
+across supported same-layout RHS replacement. Indirect stores remain a separate
+next slice so reference-cell identities cannot be mistaken for pointee targets.
 
-The preceding series (`ed3baf3`, `1f7abb7`, `0e93b48`, `075cbde`) passed all ten
-checks: 1561 library/910 native tests; conformance 10 passed, 13 unsupported,
-0 failed in debug/release. Log: `/tmp/meowy-storage-operations-gate.log`.
-Composed expression checking now returns exact outer root IDs while retaining
-partial shapes, scalar fallbacks and original errors. Both new root groups and
-all 1563 library tests pass; `/tmp/meowy-composed-roots-lib.log`. No failures remain.
-Composed-root prerequisite: `e4374cc`. Direct primary/named/outer emissions now
-retain source roots, EmitId, slots and alias storage, with explicit effect ports.
-All four focused groups pass, including control marks, never/static exclusions,
-source errors and atomic shared-budget publication. All 1567 library tests pass;
-`/tmp/meowy-direct-emissions-lib.log`. No failures remain. Record-composition
-fanout now retains primary/field projections from the original input root, with
-validated staging cells and ordered EmitId chains. Direct-emission prerequisite:
-`6bb0f49`. All four fanout groups and all 1571 library tests pass, including
-projection validation, reference sources and atomic budget/duplicate rejection;
-`/tmp/meowy-emission-fanout-lib.log`. No failures remain. Body-fact EmitId source
-links now use exact point/target indices, avoiding repeated fanout scans. Body
-facts validate owner, point, EmitId and slot while synthetic sources stay unknown.
-Fanout prerequisite: `c6fd7e5`. All three emitted-fact groups pass for exact
-fanout/direct links, function isolation, malformed indices/targets and unknown
-synthetic sources. The older mixed-source fixture now verifies its emission source
-as well as all five branch sources. All ten compiler checks pass, including 1574
-library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-emission-operations-gate.log`. No failures remain. Store/address transfers, remaining operand coverage,
-propagation and proof evaluation remain incomplete.
+The preceding emission series (`e4374cc`, `6bb0f49`, `c6fd7e5`, `b73a14c`) passed
+all ten checks: 1574 library/910 native tests; conformance 10 passed, 13 unsupported,
+0 failed in debug/release. Log: `/tmp/meowy-emission-operations-gate.log`.
+The root-helper slice passes formatting and all 1576 library tests, including exact
+identity and unchanged integer/one-based length/capacity diagnostics. Log:
+`/tmp/meowy-position-roots-lib.log`. Next implement field-only operations, then
+indexed stages. Remaining transfers/operand coverage and propagation stay
+incomplete; proof evaluation remains gated.
 
 ### Proof dependency implementation slices
 
