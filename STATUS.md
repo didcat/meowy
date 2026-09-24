@@ -434,8 +434,12 @@ library tests pass; `/tmp/meowy-point-results-lib.log`. Explicit matcher decisio
 normal-join edges are now retained with bounded, atomic source validation. Both
 boolean successors remain explicit; normal ports do not imply runtime reachability.
 Four focused groups and all 1507 library tests pass;
-`/tmp/meowy-matcher-edges-lib.log`. Short-circuit edges are next; propagation and
-outcomes stay gated.
+`/tmp/meowy-matcher-edges-lib.log`. Short-circuit edges now retain the true route
+for && and false route for ||, explicit bypasses and normal joins. All ten compiler
+checks pass, including 1510 library/910 native tests; `/tmp/meowy-branch-edges-gate.log`.
+Point-result prerequisite: `e201bd7`; matcher edges: `1e30544`. Region-content links,
+generic sequences and explicit exit/result transfers remain incomplete. Propagation
+and outcomes stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -565,10 +569,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- HIR branch provenance and validated body-fact sources passed all ten checks
-  in `python3 -B tools/verify.py --compiler`, including 1501 library/910 native tests.
+- Explicit branch decision/bypass/normal-join edges passed all ten checks
+  in `python3 -B tools/verify.py --compiler`, including 1510 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-hir-branch-sources-gate.log`. This is metadata capture only;
+  `/tmp/meowy-branch-edges-gate.log`. The transfer graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -629,9 +633,11 @@ execution was not part of this documentation edit.
    or flags, preserving E225 separation and ordinary typing/ownership checks.
    Expression/read/query points and explicit runtime branch regions now distinguish
    uses within a statement. HIR branches and body facts now retain validated
-   source links. Next add explicit continuation/join/result-transfer edges at
-   statement/expression checking boundaries. Preserve independent
-   matcher arms, short-circuit joins, nested targets and unknown effects; do not
+   source links. Branch decision/bypass/normal-join edges are now explicit.
+   Next connect region ports to their checked contents and consecutive statement/
+   operand boundaries, then model leave/restart exits and result transfers.
+   Normal ports do not imply reachability. Preserve independent matcher arms,
+   nested targets and unknown effects; do not
    infer runtime order from point IDs or source spans. Bounded backedge/header
    propagation remains unimplemented.
    Fixed flag type queries are independent of answers and must remain admitted.

@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current branch continuation and join slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Return the exact allocated ID from a checked point boundary while preserving
    the existing value-only API, restoration, completion and budget behavior.
 2. Add bounded explicit branch edges and integrate matcher condition/arm/normal-join
@@ -133,7 +133,15 @@ All four focused matcher-edge groups pass, including independent decisions,
 leave boundaries, functions, repeated registrations, ordinary errors and budgets.
 All 1507 library tests pass, including invalid parent/owner/block cases;
 `/tmp/meowy-matcher-edges-lib.log`. No failures remain. Short-circuit edge
-integration is next, followed by the full compiler gate. Unknown sources/effects remain explicit
+integration now records the true route for && and false route for ||, their
+empty bypasses and normal joins after operand validation. Matcher prerequisite:
+`1e30544`. All three logic-edge groups pass, including skipped RHS query/read
+chains, nested/function identities, E222 operand errors and incomplete E207
+coercions. All ten compiler checks pass, including 1510 library/910 native tests,
+formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
+in debug/release). Log: `/tmp/meowy-branch-edges-gate.log`. No failures remain.
+Region-content links, statement/operand sequences and explicit exit/result edges
+remain prerequisites to propagation. Unknown sources/effects remain explicit
 and proof outcomes stay gated.
 
 ### Proof dependency implementation slices
@@ -1462,11 +1470,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- HIR branch provenance and validated body-fact source links passed all ten checks
-  in `python3 -B tools/verify.py --compiler`: 1501 library/910 native tests,
+- Explicit matcher/short-circuit decision and normal-join edges passed all ten
+  checks in `python3 -B tools/verify.py --compiler`: 1510 library/910 native tests,
   formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
-  in debug/release). Log: `/tmp/meowy-hir-branch-sources-gate.log`. Explicit
-  continuations/result transfers and restart propagation remain pending.
+  in debug/release). Log: `/tmp/meowy-branch-edges-gate.log`. Region-content links,
+  general sequences, exit/result transfers and restart propagation remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1783,11 +1791,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    HIR matchers (`1038bbc`) and short-circuit binaries (`a66a363`) retain optional
    point IDs. Body facts validate kind/function/block/completion and retain direct
    source links (matcher integration: `f2dcfcf`); synthetic sources stay unknown.
-   Next add explicit continuation/join edges in `dependencies/points.rs`,
-   `dependencies/exits.rs` and statement/expression checking boundaries, using
-   `dependencies/bodies.rs` source links. Keep forward leaves, independent
-   matcher arms, nested targets and function ownership distinct. Record source
-   identities during checking; do not infer links or runtime order from spans,
+   Point boundaries return exact IDs (`e201bd7`). Branch decisions now retain
+   explicit entry, true/false, empty bypass and normal-join ports in
+   `dependencies/edges.rs` (matcher prerequisite: `1e30544`). Both structural
+   alternatives remain, and normal ports do not imply reachable completion.
+   Next connect region entry/normal ports to checked contents and consecutive
+   statement/operand boundaries using returned point IDs and body source links.
+   Add explicit leave/restart exit ports in `dependencies/exits.rs` and scope
+   checking, preserving BlockId/RestartId targets; never add a generic entry-to-
+   normal bypass for a region containing control exits or unknown effects.
+   Keep independent matcher arms, nested targets and function ownership distinct.
+   Record source identities during checking; do not infer links or runtime order from spans,
    point IDs or inventory indices. Required evaluator control regions beyond
    captured read leaves remain separate. Preserve recognition purity, original
    roots, fixed signatures and both structural successors.

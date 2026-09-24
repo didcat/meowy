@@ -258,16 +258,17 @@ impl Checker {
                     }
                 })
         };
-        let left = if boolean {
-            self.with_point(PointKind::Condition, left.span, |checker| {
+        let (test, left) = if boolean {
+            let (id, value) = self.with_point_id(PointKind::Condition, left.span, |checker| {
                 checker.expression(left, context.as_ref())
-            })?
+            })?;
+            (Some(id), value)
         } else if equality && matches!(context, Some(Type::Record { .. })) {
             let record = context.clone().expect("record context");
             let primary = Self::primary_type(&record);
-            self.composed(left, record, Some(&primary))?
+            (None, self.composed(left, record, Some(&primary))?)
         } else {
-            self.expression(left, context.as_ref())?
+            (None, self.expression(left, context.as_ref())?)
         };
         let skipped = if boolean {
             let guard = self.guard(&left);
@@ -288,31 +289,49 @@ impl Checker {
         } else {
             Self::primary_type(&left.ty)
         };
-        let right = if boolean {
+        let (arm, right) = if boolean {
             let kind = if op == "&&" {
                 PointKind::Then
             } else {
                 PointKind::Else
             };
-            self.with_point(kind, right.span, |checker| {
+            let (id, value) = self.with_point_id(kind, right.span, |checker| {
                 checker.expression(right, Some(&right_context))
-            })?
+            })?;
+            (Some(id), value)
         } else if equality && matches!(right_context, Type::Record { .. }) {
             let primary = Self::primary_type(&right_context);
-            self.composed(right, right_context, Some(&primary))?
+            (None, self.composed(right, right_context, Some(&primary))?)
         } else {
-            self.expression(right, Some(&right_context))?
+            (None, self.expression(right, Some(&right_context))?)
         };
-        if boolean {
+        let skipped = if boolean {
             self.reach = self.flow.or(self.reach, skipped);
             let kind = if op == "&&" {
                 PointKind::Else
             } else {
                 PointKind::Then
             };
-            self.with_point(kind, span, |_| Ok(()))?;
+            Some(self.with_point_id(kind, span, |_| Ok(()))?.0)
+        } else {
+            None
+        };
+        let value = self.binary_values(op, left, right, span)?;
+        if let hir::ExprKind::Binary {
+            point: Some(point), ..
+        } = &value.kind
+        {
+            let test = test.expect("short-circuit condition");
+            let arm = arm.expect("short-circuit operand");
+            let skipped = skipped.expect("short-circuit skipped path");
+            let (then, otherwise) = if op == "&&" {
+                (arm, skipped)
+            } else {
+                (skipped, arm)
+            };
+            self.branch_edges(*point, test, then, otherwise, span)?;
         }
-        self.binary_values(op, left, right, span)
+        Ok(value)
     }
 
     pub(crate) fn binary_values(
