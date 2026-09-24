@@ -128,6 +128,14 @@ Unknown origins preserve known possibilities and explicitly remain incomplete.
 Indirect stores with marked RHS, target or lexical control mark all retained
 owners after ordinary checks, or report B001 if origins are incomplete. This does
 not replace borrow/loan validation.
+Indirect-store graph operations separately retain exact target/RHS roots and a
+bounded owner snapshot captured before RHS checking. Retargeting the reference
+cell during the RHS does not change that snapshot. Canonical slot aliases share
+owner IDs; reference-cell IDs are not substituted for pointees. Incomplete origins
+stay explicit, and owner sets do not identify exact field/element write locations.
+The target must complete before address capture and RHS entry; the RHS must
+complete before the write effect. These links do not prove reachability or enable
+proof evaluation. Existing conservative dependency marks remain separate.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

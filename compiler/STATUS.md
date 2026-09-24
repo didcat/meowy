@@ -125,7 +125,20 @@ target completion and a write stage after RHS completion. Child identity and the
 shared edge budget guard atomic publication. All three focused groups and all
 1586 library tests pass; formatting also passes. Logs:
 `/tmp/meowy-indirect-order-focused.log`, `/tmp/meowy-indirect-order-lib.log`.
-Pointee snapshots follow separately; the full compiler gate will cover both slices.
+Ordering commit: `003c7d4`. The snapshot slice now resolves bounded owner origins
+before the RHS, canonicalizes slot aliases and retains explicit completeness.
+Snapshot errors are returned only after ordinary RHS/store checks; existing
+conservative marking remains separate. Root limits, local identities and shared
+work/edge budgets guard publication. All seven focused groups pass, including
+retargeting, canonical aliases, reborrows, returned references, incomplete origins,
+nonreturning operands and atomic root limits. Log:
+`/tmp/meowy-indirect-origins-focused.log`. All ten compiler checks pass:
+1590 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-indirect-stores-gate.log`. Post-documentation link checks pass:
+1208 local links in 110 Markdown files. Call-argument/effect links are next;
+precise projected write locations, remaining operand coverage, propagation and
+proof evaluation remain incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1453,11 +1466,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Exact index roots and field/indexed store operations passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1583 library/910
+- Indirect-store order and pre-RHS origin snapshots passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1590 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-path-operations-gate.log`.
-  Store/address transfers, remaining operand coverage and dependency propagation
+  0 failed in debug/release). Log: `/tmp/meowy-indirect-stores-gate.log`.
+  Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1811,12 +1824,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    index/RHS roots, address stages and containing-list reservation/length stages.
    `Checked` edges admit the next address only on bounds success; write effects
    follow normal RHS completion. These metadata do not grant loan authority.
-   Next model indirect scalar stores in `statements.rs`, capturing the checked
-   target before the RHS and retaining bounded pointee origins; validate target
-   retargeting, incomplete origins, nonreturning operands and unchanged loans with
-   focused regressions and the full compiler gate. Distinguish reference cells
-   from their pointee targets and
-   keep incomplete origins explicit. Preserve loan checks, owners and required roots. Keep result availability
+   Indirect scalar stores now retain exact target/RHS roots, capture/write stages
+   and bounded canonical pointee-owner snapshots before RHS retargeting. Unknown
+   origins stay incomplete; whole-owner sets are not precise projected locations.
+   Next retain exact runtime call-argument roots in `functions.rs::call` and link
+   source-ordered arguments to a distinct call-effect stage. Keep callee identity,
+   borrowed argument checking, function ownership, type-only calls and unknown
+   effects explicit. Verify side effects, nonreturning arguments, budgets and
+   ordinary errors with focused tests and the compiler gate, then extend index/list
+   operand coverage. Preserve loan checks, owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.

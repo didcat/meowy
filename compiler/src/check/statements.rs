@@ -217,6 +217,7 @@ impl Checker {
                             form.span,
                         ));
                     };
+                    let origins = self.store_target_origins(&target);
                     let (input, value) = self.expr_point(value, Some(ty))?;
                     if self.control || self.derived_expr(&target) || self.derived_expr(&value) {
                         let origins = self.reference_origins(&target)?;
@@ -235,6 +236,7 @@ impl Checker {
                         self.point.expect("indirect store statement"),
                         address,
                         input,
+                        origins?,
                         form.span,
                     )?;
                     return Ok(vec![hir::Stmt::Store {

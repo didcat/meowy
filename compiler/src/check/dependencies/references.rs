@@ -3,7 +3,7 @@ use crate::hir::{Expr, ExprKind, Type};
 
 use std::collections::BTreeSet;
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub(crate) struct Origins {
     pub(crate) roots: BTreeSet<usize>,
     pub(crate) complete: bool,

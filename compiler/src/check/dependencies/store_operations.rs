@@ -1,5 +1,5 @@
 use super::{
-    PointKind,
+    Origins, PointKind,
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -14,24 +14,52 @@ pub(crate) struct Operation {
     pub(crate) owner: usize,
     pub(crate) target: hir::PointId,
     pub(crate) input: hir::PointId,
+    pub(crate) origins: Origins,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: [Edge; 5],
 }
 
 impl Checker {
+    pub(crate) fn store_target_origins(&mut self, target: &hir::Expr) -> Result<Origins> {
+        let origins = self.reference_origins(target)?;
+        if origins.roots.len() > super::references::MAX_ROOTS
+            || !self.flow.spend(
+                origins.roots.len()
+                    * (self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize + 1),
+            )
+        {
+            return Err(Diagnostic::unsupported(
+                "proof indirect-store origin budget exhausted",
+                target.span,
+            ));
+        }
+        Ok(Origins {
+            roots: origins
+                .roots
+                .into_iter()
+                .map(|root| self.origin_id(root))
+                .collect(),
+            complete: origins.complete,
+        })
+    }
+
     pub(crate) fn store_operation(
         &mut self,
         id: hir::PointId,
         target: hir::PointId,
         input: hir::PointId,
+        origins: Origins,
         span: Span,
     ) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof indirect-store budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof indirect-store identity mismatch", span);
-        if !self
-            .flow
-            .spend(self.stores.len().checked_ilog2().unwrap_or(0) as usize * 2 + 4)
+        if origins.roots.len() > super::references::MAX_ROOTS
+            || !self.flow.spend(
+                self.stores.len().checked_ilog2().unwrap_or(0) as usize * 2
+                    + origins.roots.len()
+                    + 4,
+            )
         {
             return Err(budget());
         }
@@ -40,6 +68,10 @@ impl Checker {
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
             || target == input
+            || origins
+                .roots
+                .iter()
+                .any(|root| self.locals.get(*root).is_none())
         {
             return Err(invalid());
         }
@@ -62,6 +94,7 @@ impl Checker {
             owner: self.owner,
             target,
             input,
+            origins,
             control: self.control,
             span,
             edges: [
@@ -87,6 +120,9 @@ impl Checker {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod origins;
 
 #[cfg(test)]
 mod tests {
@@ -173,14 +209,14 @@ mod tests {
         let op = op.clone();
         let count = checker.store_edges;
         checker
-            .store_operation(id, op.target, op.input, op.span)
+            .store_operation(id, op.target, op.input, op.origins.clone(), op.span)
             .unwrap();
         assert_eq!(checker.store_edges, count);
         for child in [op.target, op.input] {
             checker.points[child].parent = None;
             assert!(
                 checker
-                    .store_operation(id, op.target, op.input, op.span)
+                    .store_operation(id, op.target, op.input, op.origins.clone(), op.span)
                     .unwrap_err()
                     .message
                     .contains("identity")
@@ -192,7 +228,7 @@ mod tests {
         checker.store_edges = 0;
         assert!(
             checker
-                .store_operation(id, op.input, op.input, op.span)
+                .store_operation(id, op.input, op.input, op.origins.clone(), op.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -200,7 +236,7 @@ mod tests {
         checker.sequence_edges = super::super::edges::MAX_EDGES;
         assert!(
             checker
-                .store_operation(id, op.target, op.input, op.span)
+                .store_operation(id, op.target, op.input, op.origins.clone(), op.span)
                 .unwrap_err()
                 .message
                 .contains("budget")
