@@ -88,12 +88,12 @@ pub(crate) fn hidden_union_returns_expand_deeper_candidates_and_nested_calls() {
 }
 
 #[test]
-pub(crate) fn hidden_union_returns_keep_untraversed_borrowed_contents_incomplete() {
+pub(crate) fn hidden_union_returns_resolve_borrowed_record_contents() {
     let source = "<R>:<{r<&boolean>}>;<N>:<{view<&R>}>;<A>:<{view<&N>}>;<B>:<{other<boolean>}>;<U>:<A><B>;<W>:<{hidden<U>}>;f<&R>:(p<&W>,q<&R>){->q};x:=false;one<R>:{->r:&x};nested<N>:{->view:&one};pack<W>:{->hidden:{->view:&nested}};view:f(&pack,&one)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
+    assert!(checker.reference_cells[&id(&checker, "view")].complete);
 }
 
 #[test]

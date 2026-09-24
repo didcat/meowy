@@ -67,12 +67,12 @@ pub(crate) fn union_inputs_retain_deeper_and_stored_candidates() {
 }
 
 #[test]
-pub(crate) fn direct_union_inputs_keep_untraversed_borrowed_contents_incomplete() {
+pub(crate) fn direct_union_inputs_resolve_borrowed_record_contents() {
     let source = "<R>:<{r<&boolean>}>;<N>:<{view<&R>}>;<A>:<{view<&N>}>;<B>:<{other<boolean>}>;<U>:<A><B>;f<&R>:(p<&U>,q<&R>){->q};x:=false;row<R>:{->r:&x};nested<N>:{->view:&row};wide<U>:{->view:&nested};view:f(&wide,&row)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
+    assert!(checker.reference_cells[&id(&checker, "view")].complete);
 }
 
 #[test]

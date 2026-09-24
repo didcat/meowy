@@ -415,24 +415,26 @@ shared layers. All 379 focused tests and all ten compiler checks pass. Borrowed-
 union fields now read stored references before remaining shared-layer expansion;
 nullable/unknown owners and fields remain conservative. Prerequisite: `40fc5e0`.
 All 384 focused tests and all ten compiler checks pass. Hidden discovery now retains
-borrowed-record continuation types, variant keys and shared-layer counts. Resolution
-remains incomplete until traversal bounds are shared across union-to-record transitions.
-All 387 focused tests and all ten compiler checks pass. Bounded continuation resolution is next.
+borrowed-record continuation types, variant keys and shared-layer counts. Borrowed-record
+continuations now resolve with cumulative depth across union-to-record transitions;
+unknown contents retain their incomplete state. Bound prerequisite: `4c0b67b`.
+All 392 focused tests and all ten compiler checks pass. Borrowed heterogeneous-union
+continuations are next and remain incomplete.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1360
-  library/903 native tests (2263 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1365
+  library/903 native tests (2268 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-continuations-gate.log`.
-- All 387 dependency-filtered tests pass. Three new typed-continuation groups
-  cover direct/deeper/nullable borrowed-record types, mixed terminal/continuation
-  keys, distinct variant layouts, exclusive/owned-target boundaries, no replay
-  and exhausted work. Existing depth/capacity and incomplete-resolution tests pass.
-  This is a discovery prerequisite; continuation resolution remains unimplemented.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-resolved-continuations-gate.log`.
+- All 392 dependency-filtered tests pass. The cumulative-depth prerequisite and
+  four resolution groups cover nested union/record transitions, known/unknown
+  contents, union/carrier results, nullable views, depth/work limits and E302/E303.
+  Existing typed discovery/no-replay tests now verify successful resolution.
+  Borrowed heterogeneous-union continuations remain incomplete. Accepted fixtures
+  pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

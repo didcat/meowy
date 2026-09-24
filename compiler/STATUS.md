@@ -42,10 +42,15 @@ Commit plan:
 Investigation: the compiler flow ledger already bounds total work; local record
 counters do not bound recursive transitions. Carry a cumulative record/variant
 level separately from existing shared-reference layer limits. Unknown plans stay
-incomplete until this guard is validated. Cumulative levels and boundary regressions
-pass all 388 dependency-filtered tests; log:
-`/tmp/meowy-continuation-depth-focused.log`. Admission remains unchanged; integration
-is next. User proposal changes remain preserved.
+incomplete until their typed traversal is supported. Bound prerequisite `4c0b67b`
+passed all 388 focused tests before admission. Borrowed-record continuation
+resolution now passes all 392 dependency-filtered tests; log:
+`/tmp/meowy-resolved-continuations-focused.log`. Nested transitions reject cumulative
+depth exhaustion, known alternatives survive unknown contents, and nullable views,
+union/carrier results, no replay and E302/E303 lifetimes pass. All ten compiler
+checks pass, including 1365 library/903 native tests; log:
+`/tmp/meowy-resolved-continuations-gate.log`. No failures remain.
+User proposal changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1373,16 +1378,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1360
-  library/903 native tests (2263 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1365
+  library/903 native tests (2268 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-continuations-gate.log`.
-- All 387 dependency-filtered tests pass. Three new typed-continuation groups
-  cover direct/deeper/nullable borrowed-record types, mixed terminal/continuation
-  keys, distinct variant layouts, exclusive/owned-target boundaries, no replay
-  and exhausted work. Existing depth/capacity and incomplete-resolution tests pass.
-  This is a discovery prerequisite; continuation resolution remains unimplemented.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-resolved-continuations-gate.log`.
+- All 392 dependency-filtered tests pass. The cumulative-depth prerequisite and
+  four resolution groups cover nested union/record transitions, known/unknown
+  contents, union/carrier results, nullable views, depth/work limits and E302/E303.
+  Existing typed discovery/no-replay tests now verify successful resolution.
+  Borrowed heterogeneous-union continuations remain incomplete. Accepted fixtures
+  pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1608,17 +1613,18 @@ explicitly documented. No outstanding failures remain.
    helper. Nullable/unknown owners and fields preserve completeness; union/carrier
    result reads retain all supported hidden and direct candidates. Location helper:
    `40fc5e0`.
-   Hidden discovery now retains typed borrowed-record continuations with exact
-   variant keys and shared-layer counts alongside terminal candidates. Resolution
-   explicitly remains incomplete when any continuation exists; it does not read
-   snapshots or infer additional owners from an unfinished plan.
-   Next integrate continuation resolution in `calls/cells/views/hidden.rs` with
-   `returned_record_cells`. Introduce a shared traversal-depth/work context or an
-   explicit worklist across union-to-record transitions before enabling recursion;
-   local counters must not reset at every transition. Resolve each key, expand its
-   shared layers, then traverse the retained concrete view type. Test nested/all/
-   unknown candidates, nullable views, depth/work bounds, no replay and lifetimes
-   before the full gate. Keep exclusive edges and variant-address projections gated.
+   Typed borrowed-record continuations now resolve their variant-qualified
+   snapshots, expand shared layers and traverse concrete fields. Cumulative depth
+   spans union-to-record transitions; the existing flow ledger bounds total work.
+   Unknown owners/contents retain known alternatives without becoming complete.
+   Bound prerequisite: `4c0b67b`. Nested transitions, nullable contents and lifetimes
+   are covered; exclusive edges and variant-address projections remain gated.
+   Next extend typed continuation discovery in `calls/cells/views/hidden.rs` to
+   supported borrowed record/null-union terminals that differ from the result
+   target. Reuse the cumulative traversal bound and exact variant-key snapshots;
+   do not flatten union layouts or drop unsupported members. Test alternating
+   union/record chains, direct/deeper references, all/unknown/null candidates,
+   limits/no replay and lifetimes before the full gate.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

@@ -26,19 +26,32 @@ impl Checker {
         let Some(paths) = self.hidden_union_paths(ty, result, expr)? else {
             return Ok(None);
         };
-        if paths.iter().any(|path| path.view.is_some()) {
-            return Ok(None);
-        }
         let mut cells = Cells {
             complete: true,
             ..Cells::default()
         };
         for path in paths {
+            let next = level + path.key.fields.len() + path.key.variants.len();
+            if next > MAX_DEPTH {
+                return Err(Diagnostic::unsupported(
+                    "proof union continuation depth exhausted",
+                    expr.span,
+                ));
+            }
             let mut source = self
                 .location_shape_source(locations, prefix, &path.key, expr.span)?
                 .cells;
             for _ in 0..path.layers {
                 source = self.expand_reference_cells(source, expr)?;
+            }
+            if let Some(view) = path.view {
+                let depth = self.shared_cell_depth(result, expr)?;
+                let Some(resolved) =
+                    self.returned_record_cells_at(source, view, expr, depth, result, next + 1)?
+                else {
+                    return Ok(None);
+                };
+                source = resolved;
             }
             self.merge_returned_cells(&mut cells, source, expr)?;
         }

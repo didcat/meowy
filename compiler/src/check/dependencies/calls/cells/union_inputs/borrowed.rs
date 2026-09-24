@@ -106,5 +106,5 @@ pub(crate) fn borrowed_union_fields_preserve_owner_lifetimes_and_unknown_content
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
+    assert!(checker.reference_cells[&id(&checker, "view")].complete);
 }
