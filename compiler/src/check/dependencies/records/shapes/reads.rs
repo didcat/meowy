@@ -58,10 +58,11 @@ impl Checker {
                 }
                 ExprKind::Local(id) => break *id,
                 ExprKind::Deref(inner) => {
-                    let Some(id) = self.shape_temporary(inner)? else {
+                    let Some(place) = self.shape_temporary(inner)? else {
                         return Ok(None);
                     };
-                    break id;
+                    fields.extend(place.fields.iter().rev());
+                    break place.root;
                 }
                 _ => return Ok(None),
             }

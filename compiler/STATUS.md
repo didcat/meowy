@@ -34,7 +34,7 @@ outcome is constructed. The reference remains authoritative.
 Admission audit: direct copy and empty-path reborrow of a computed union field pass
 ordinary `meowy check`; retaining its reference into the next statement fails E303.
 Fixtures: `/tmp/meowy-temp-union-{copy,reborrow,expiry}.mwy`. No borrow gate needs
-relaxation. Temporary registration currently retains incomplete shaped layouts.
+relaxation. Temporary registration now captures shaped snapshots on existing IDs.
 
 Commit plan:
 1. Add bounded explicit temporary-ID lookup through empty-path reborrows and use
@@ -50,7 +50,17 @@ feed shaped source/narrowing reads. Two seeded groups cover external pointee
 identity, unknown named/projected views and depth/work limits. All 305 focused
 dependency tests and formatting pass; log:
 `/tmp/meowy-temporary-shape-reads-focused.log`. Next: capture real temporary values.
-The tree was clean at investigation; proof outcomes stay gated.
+Read prerequisite committed as `dfb1e47`. Projected reborrows of temporary records
+retain validated concrete field paths and adjust shape selections accordingly.
+Temporary registration captures checked contents without changing lifetime IDs.
+All 310
+dependency-filtered tests now pass; log: `/tmp/meowy-temporary-unions-focused.log`.
+Real copies, reborrows, carriers, null/unknown inputs, snapshot independence and
+unchanged E303 expiry pass. A new path group checks concrete projections, narrowing
+offsets and rejection of invalid/union-interior paths. All ten compiler checks pass;
+log: `/tmp/meowy-temporary-unions-gate.log`. No failures remain. The guide/root
+handoff will be committed separately. No lifetime rule is changed;
+proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1378,17 +1388,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1276
-  library/903 native tests (2179 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1283
+  library/903 native tests (2186 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-mutable-fields-gate.log`.
-- All 303 dependency-filtered tests pass. Four prefix groups cover offsets,
-  siblings/copies, missing inputs, unselected variants, capacity and failures.
-  Seven source groups cover final mutable slots/descendants, owned field/subrecord
-  writes, null/unknown inputs, carriers, composition, later marks/query control and
-  E302 loans. Union-interior writes retain their existing B001 gate. Accepted
-  fixtures pass ordinary compilation/ownership; marks remain seeded.
-  Prefix prerequisite: `7b491bc`.
+  0 failed in debug/release. Log: `/tmp/meowy-temporary-unions-gate.log`.
+- All 310 dependency-filtered tests pass. Three lookup groups cover explicit
+  temporary identity, concrete field paths, shape offsets, unknown views and bounds.
+  Four source groups cover copies/reborrows, carriers, null/unknown contents,
+  snapshot independence and unchanged E303 expiry. Accepted fixtures pass ordinary
+  compilation/ownership; marks remain seeded. Read prerequisite: `dfb1e47`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1569,12 +1577,15 @@ explicitly documented. No outstanding failures remain.
    Owned concrete-record field/subrecord writes merge bounded qualified prefixes,
    preserving siblings and prior copies; whole-value replacement retains mutable
    record shapes too. Union-interior writes retain the ordinary concrete-storage
-   B001 gate. Next inspect statement-owned temporary union values in `temporaries.rs`
-   and `records/shapes/{reads,producers}`: capture their explicit storage IDs and
-   recover snapshots through direct dereferences/reborrows without extending
-   lifetimes. Verify ordinary borrow admission first; cover null/unknown values,
-   later marks, bounds and unchanged E303 expiry before the full gate. Returned
-   unions and general borrowed union views remain separate.
+   B001 gate. Statement-owned temporaries now capture shaped snapshots; direct
+   dereferences and reborrows recover explicit storage IDs and concrete field paths,
+   preserving shape offsets and E303 expiry. Next add direct named shared-union
+   storage links in `dependencies/references.rs`, then exact-selection reads in
+   `records/shapes`. Audit ordinary borrow admission first. Preserve incomplete
+   locations and reject positional prefixes crossing unselected union shapes;
+   test aliases/copies, later marks, null/unknown inputs, bounds and ownership before
+   the full gate. Broader borrowed union views and returned union origins remain
+   separate until these storage foundations are established.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

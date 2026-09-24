@@ -27,6 +27,7 @@ impl Checker {
         self.track_reference(id, &value, false)?;
         self.track_reference_cell(id, &value, false)?;
         self.track_record_references(id, &value, false)?;
+        self.capture_record_shapes(id, &value)?;
         if self.control || self.derived_expr(&value) {
             self.mark_derived(id);
         }

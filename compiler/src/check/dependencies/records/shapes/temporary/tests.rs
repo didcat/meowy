@@ -33,7 +33,7 @@ pub(crate) fn direct_temporary_union_reads_recover_seeded_contents_not_cell_owne
             span: Span::new(1, 2),
         },
     );
-    let cell = checker.shape_temporary(&view).unwrap().unwrap();
+    let cell = checker.shape_temporary(&view).unwrap().unwrap().root;
     checker
         .record_shapes
         .insert(cell, checker.record_shapes[&wide].clone());
@@ -80,7 +80,7 @@ pub(crate) fn temporary_shape_lookup_preserves_unknown_views_and_bounds() {
         span: Span::new(3, 4),
     };
     let view = borrow(&mut checker, value);
-    let cell = checker.shape_temporary(&view).unwrap().unwrap();
+    let cell = checker.shape_temporary(&view).unwrap().unwrap().root;
     assert!(
         checker
             .shape_temporary(&reborrow(view.clone(), vec![0]))
@@ -97,11 +97,78 @@ pub(crate) fn temporary_shape_lookup_preserves_unknown_views_and_bounds() {
     for _ in 0..MAX_DEPTH {
         chain = reborrow(chain, vec![]);
     }
-    assert_eq!(checker.shape_temporary(&chain).unwrap(), Some(cell));
+    assert_eq!(
+        checker
+            .shape_temporary(&chain)
+            .unwrap()
+            .map(|place| place.root),
+        Some(cell)
+    );
     let chain = reborrow(chain, vec![]);
     let error = checker.shape_temporary(&chain).unwrap_err();
     assert_eq!(error.code, "B001");
     assert!(error.message.contains("shape depth"));
     assert!(!checker.flow.spend(usize::MAX));
     assert!(checker.shape_temporary(&named).is_err());
+}
+
+#[test]
+pub(crate) fn projected_temporary_shapes_validate_paths_and_shift_narrowing_keys() {
+    let mut checker = Checker::new();
+    statements(
+        &mut checker,
+        "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;wide<A><B>:{->r:&x};row:{->flag:false;->inner:{->item:wide}}",
+    );
+    let row = id(&checker, "row");
+    let wide = id(&checker, "wide");
+    let ty = checker.locals[wide].clone();
+    let selected = checker.record_shapes[&wide]
+        .entries
+        .keys()
+        .next()
+        .unwrap()
+        .variants[0]
+        .1
+        .clone();
+    let source = Expr {
+        kind: ExprKind::Local(row),
+        ty: checker.locals[row].clone(),
+        span: Span::new(5, 6),
+    };
+    let view = borrow(&mut checker, source);
+    let mut projected = reborrow(view.clone(), vec![1, 0]);
+    projected.ty = Type::Reference(Box::new(ty.clone()));
+    let place = checker.shape_temporary(&projected).unwrap().unwrap();
+    assert_eq!(place.fields, [1, 0]);
+    let copied = Expr {
+        kind: ExprKind::Deref(Box::new(projected)),
+        ty,
+        span: view.span,
+    };
+    let narrowed = Expr {
+        kind: ExprKind::Coerce {
+            value: Box::new(copied),
+        },
+        ty: selected,
+        span: view.span,
+    };
+    let snapshot = checker
+        .record_shape_snapshot(&narrowed, &[0])
+        .unwrap()
+        .unwrap();
+    assert!(snapshot.origins.complete);
+    assert_eq!(snapshot.origins.roots, BTreeSet::from([id(&checker, "x")]));
+    for path in [vec![99], vec![1, 0, 0]] {
+        assert!(
+            checker
+                .shape_temporary(&reborrow(view.clone(), path))
+                .unwrap()
+                .is_none()
+        );
+    }
+    let error = checker
+        .shape_temporary(&reborrow(view, vec![0; MAX_DEPTH + 1]))
+        .unwrap_err();
+    assert_eq!(error.code, "B001");
+    assert!(error.message.contains("path budget"));
 }
