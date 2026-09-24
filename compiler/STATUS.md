@@ -44,13 +44,15 @@ owned-union matcher. Resolve their owner locations and reuse that matcher withou
 adding field indices to ordinary paths. Exact terminals keep their existing path;
 shared chains and record-stored union arguments remain a separate slice. Unknown
 borrowed contents and variant field addresses remain incomplete.
-The complete implementation passes all 370 focused tests. Split review found more
-than eight affected files, so concrete-record result admission is separated from
-union-view/carrier result admission. Each retains its own behavior regressions.
-The concrete-record slice independently passes all 369 dependency-filtered tests
-and formatting; log: `/tmp/meowy-direct-union-records-focused.log`.
-Union-view/carrier integration is next.
-Untracked `docs/proposals/` remains untouched.
+Record-result slice `f5d001a` independently passed 369 focused tests. The combined
+series passes all 370 dependency-filtered tests; log:
+`/tmp/meowy-direct-union-inputs-focused.log`. Six groups cover variant layouts,
+null, unknown owners/contents, nested calls, no replay, call/work limits and
+E302/E303 lifetimes. Prior union-view/carrier fixtures now retain hidden candidates;
+deeper/stored inputs and untraversed borrowed contents remain incomplete.
+All ten compiler checks pass, including 1343 library/903 native tests; log:
+`/tmp/meowy-direct-union-inputs-gate.log`. No failures remain.
+Untracked `docs/proposals/` remains untouched; outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1378,15 +1380,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1337
-  library/903 native tests (2240 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1343
+  library/903 native tests (2246 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-view-carrier-fields-gate.log`.
-- All 364 dependency-filtered tests pass. Seven new carrier-field groups cover
-  direct/nested/returned views and copies, all/unknown contents and owners, nullable
-  records, deeper carriers, stored record/union views, hidden candidates, no replay,
-  call/work bounds and E302/E303 lifetimes. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-direct-union-inputs-gate.log`.
+- All 370 dependency-filtered tests pass. Six new direct-union-input groups cover
+  variant layouts/null, unknown owners and contents, concrete-record and carrier
+  results, nested calls, call/work limits, no replay and E302/E303 lifetimes.
+  Earlier union-result tests now retain both hidden and direct candidates. Deeper,
+  record-stored and untraversed borrowed-content boundaries remain incomplete.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1587,8 +1590,7 @@ explicitly documented. No outstanding failures remain.
    Hidden exact/deeper shared terminal candidates in owned record/null-union
    fields now resolve through variant-qualified snapshots. Unknown leaves remain
    incomplete, and owned targets inside variants or borrowed contents needing
-   further traversal remain unsupported. Direct unmatched shared-union arguments
-   are still outside this owned-field path.
+   further traversal remain unsupported. Direct shared-union input support is below.
    Concrete-record reference-field origins now resolve through known shared view
    locations when direct storage lookup is unavailable. Returned calls, hidden union
    candidates, nullable/nested records and copies retain all stored origins; unknown
@@ -1596,13 +1598,17 @@ explicitly documented. No outstanding failures remain.
    Shared carrier-field contents now resolve through the same concrete owner/path
    validation, retaining stored cells across returned views, copies, nullable records
    and hidden candidates. Unknown owners or contents remain incomplete.
-   Next admit hidden candidates from direct unmatched shared-union arguments in
-   `calls/cells.rs` and `calls/cells/record_results.rs`. Reuse bounded variant-key
-   discovery and snapshot resolution from `calls/cells/views/hidden.rs`; distinguish
-   exact terminal matches from traversal into different union contents. Start with
-   one shared layer, then deeper/stored inputs as a separate slice. Test all/unknown
-   candidates, null, distinct layouts, budgets/no replay and lifetimes before the
-   full gate. Untraversed borrowed contents must remain incomplete.
+   Direct one-layer unmatched shared-union arguments now reuse bounded variant-key
+   discovery and snapshot resolution for concrete-record, union-view and carrier
+   results. Unknown owners/contents remain incomplete; exact terminals retain
+   their existing matching path. Record-result prerequisite: `f5d001a`.
+   Next support deeper shared-union input chains in `calls/cells/union_inputs.rs`
+   and both result matchers: recognize the shared terminal, expand bounded cell
+   layers, then reuse variant-key discovery. Test direct/deeper mixtures, unknown
+   intermediate cells, exclusive boundaries, depth/work limits and no replay.
+   Follow with record-stored union inputs as a separate slice; path traversal must
+   not infer concrete positions across unselected variant layouts. Run the full
+   gate for each series and keep untraversed borrowed contents incomplete.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

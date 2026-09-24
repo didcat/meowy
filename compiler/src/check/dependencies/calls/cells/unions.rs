@@ -153,7 +153,19 @@ pub(crate) fn unmatched_union_inputs_do_not_hide_untraversed_return_candidates()
         crate::compile(source).unwrap();
         let mut checker = Checker::new();
         statements(&mut checker, source);
-        assert!(!checker.reference_cells[&id(&checker, "out")].complete);
+        let cells = &checker.reference_cells[&id(&checker, "out")];
+        if source.contains("holder<V>") {
+            assert!(cells.complete);
+            assert_eq!(
+                cells.places,
+                BTreeSet::from([
+                    (id(&checker, "view"), vec![]),
+                    (id(&checker, "hidden"), vec![])
+                ])
+            );
+        } else {
+            assert!(!cells.complete);
+        }
     }
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;<V>:<boolean><int32>;f<& &U>:(p<&V>,q<& &U>){->q};x:=false;wide<U>:{->r:&x};view:&wide;plain<V>:false;out:f(&plain,&view)";
     crate::compile(source).unwrap();
@@ -165,4 +177,33 @@ pub(crate) fn unmatched_union_inputs_do_not_hide_untraversed_return_candidates()
         cells.places,
         BTreeSet::from([(id(&checker, "view"), vec![])])
     );
+}
+
+#[test]
+pub(crate) fn direct_union_inputs_keep_nested_calls_and_carrier_results() {
+    let source = "<R>:<{r<&boolean>}>;<A>:<{cell<& &R>}>;<B>:<{other<boolean>}>;<U>:<A><B>;f<& &R>:(p<&U>,q<& &R>){copy:*p;|copy<A>|->copy.cell;|copy<B>|->q};g<& &R>:(p<& &R>){->p};x:=false;row<R>:{->r:&x};link:&row;wide<U>:{->cell:&link};cell:g(f(&wide,&link));view:*cell;out:view.r";
+    crate::compile(source).unwrap();
+    let mut checker = Checker::new();
+    let stmts = statements(&mut checker, source);
+    assert!(checker.reference_cells[&id(&checker, "cell")].complete);
+    assert_eq!(
+        checker.pointees[&id(&checker, "out")].roots,
+        BTreeSet::from([id(&checker, "x")])
+    );
+    let crate::hir::Stmt::Bind { value, .. } = &stmts[stmts.len() - 3] else {
+        panic!()
+    };
+    let calls = checker.calls;
+    assert!(checker.reference_cell(value).unwrap().complete);
+    assert_eq!(checker.calls, calls);
+    assert_eq!(
+        checker
+            .reference_cell_at(value, crate::check::dependencies::calls::MAX_DEPTH)
+            .err()
+            .unwrap()
+            .code,
+        "B001"
+    );
+    assert!(!checker.flow.spend(usize::MAX));
+    assert_eq!(checker.reference_cell(value).err().unwrap().code, "B001");
 }

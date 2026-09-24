@@ -74,12 +74,20 @@ pub(crate) fn returned_union_views_retain_null_and_carrier_payloads() {
 }
 
 #[test]
-pub(crate) fn returned_union_views_keep_untraversed_inputs_incomplete() {
+pub(crate) fn returned_union_views_retain_hidden_direct_input_candidates() {
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;<C>:<{view<&U>}>;<D>:<{other<boolean>}>;<V>:<C><D>;f<&U>:(p<&V>,q<&U>){copy:*p;|copy<C>|->copy.view;|copy<D>|->q};x:=false;y:=true;wide<U>:{->r:&x};other<U>:{->r:&y};pack<V>:{->view:&other};view:f(&pack,&wide)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
+    let cells = &checker.reference_cells[&id(&checker, "view")];
+    assert!(cells.complete);
+    assert_eq!(
+        cells.places,
+        BTreeSet::from([
+            (id(&checker, "wide"), vec![]),
+            (id(&checker, "other"), vec![])
+        ])
+    );
 }
 
 #[test]

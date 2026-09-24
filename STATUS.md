@@ -404,21 +404,25 @@ through known shared view locations, including hidden union candidates. All 357
 focused tests and all ten compiler checks pass. Stored carrier-field cells now
 resolve through the same validated shared record views, retaining unknown owners
 and contents. Validation prerequisite: `22a0e0c`. All 364 focused tests and all ten
-compiler checks pass. Direct unmatched shared-union arguments are next.
+compiler checks pass. Direct one-layer shared-union arguments now contribute hidden
+candidates to concrete-record, union-view and carrier returns. Record-result slice:
+`f5d001a`. All 370 focused tests and all ten compiler checks pass. Deeper shared-union input
+chains are next, followed by record-stored inputs.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1337
-  library/903 native tests (2240 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1343
+  library/903 native tests (2246 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-view-carrier-fields-gate.log`.
-- All 364 dependency-filtered tests pass. Seven new carrier-field groups cover
-  direct/nested/returned views and copies, all/unknown contents and owners, nullable
-  records, deeper carriers, stored record/union views, hidden candidates, no replay,
-  call/work bounds and E302/E303 lifetimes. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-direct-union-inputs-gate.log`.
+- All 370 dependency-filtered tests pass. Six new direct-union-input groups cover
+  variant layouts/null, unknown owners and contents, concrete-record and carrier
+  results, nested calls, call/work limits, no replay and E302/E303 lifetimes.
+  Earlier union-result tests now retain both hidden and direct candidates. Deeper,
+  record-stored and untraversed borrowed-content boundaries remain incomplete.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
