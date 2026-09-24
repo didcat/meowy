@@ -71,7 +71,8 @@ The highlighter handles:
 
 - Nested generic types, record types, function signatures, constrained binders,
   multiple parameters and arguments, union alternatives, type subtraction, and
-  type queries.
+  type queries, ordinary type predicates (`value<T>`) and explicit proven
+  ascriptions (`value~<T>`).
 - The `$` dispatch receiver, including field access, borrows and interpolation;
   `self` remains an ordinary identifier.
 - References and pointers, including `<&!T>`, `<*!T>`, and `&!value`, plus `!{ ... }`
@@ -98,10 +99,18 @@ Comma-separated specializations such as `make_d<string, uint32, boolean, string>
 also retain type highlighting; `call(x < limit, other > 0)` keeps its comparison
 operators.
 
-Spaced and unspaced types share highlighting. In `| value <T> | statement`, the type
-is a matcher predicate; outside a condition it is an ascription. The highlighter
-does not use a space to distinguish these roles. Computed annotations such as
-`other <(value<>)> : value` retain explicit type delimiters too.
+Spaced and unspaced types share highlighting. `value<T>` is a type predicate in
+any expression; `value~<T>` is a proven ascription. The `~` consumes one bracketed
+type, so `value~<Choice><int32>` highlights the ascription followed by a predicate.
+A generic target such as `value~<D<string, uint32>>` nests normally. Union targets
+use a named alias. Generic calls retain `function<T>(arguments)` syntax.
+Computed annotations such as `other <(value<>)> : value` retain explicit type
+delimiters too.
+
+Bitwise operations use ordinary `@"bits"` module calls, including `bits.and`,
+`bits.or`, `bits.xor`, and `bits.not`. Prefix `~` and `^` have no operator
+highlighting; `~` is highlighted only before an ascription type. Borrows,
+matcher bars, capability intersections and boolean operators retain their groups.
 
 Blocks, record types, and multiline comments also expose syntax folds. Enable
 those explicitly with `:setlocal foldmethod=syntax` if desired.

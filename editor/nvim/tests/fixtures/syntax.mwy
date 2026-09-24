@@ -57,7 +57,7 @@ view <uint8[]> : rows.slice()
 <Theme> : <"dark"><"light">
 result <uint32><error><null> : operation()
 present : result<>!<error>!<null>
-projected : result<uint32>
+projected : result~<uint32>
 
 <Record> : <{
     nested <{
@@ -96,8 +96,18 @@ after_multi:47
 |!(value<int32>)|reject()
 |accepts < int32 > (value)|use(value)
 |accepts(value<int32>)|use(value)
-|t.{->$<MyCoolType>}<MyCoolType>|matched()
-copy:value < int32 >
+| enabled<boolean> && enabled~<boolean> | debug.print("Enabled")
+predicate : value<int32>
+copy:value ~ < int32 >
+chained : value~<Choice><int32>
+field : value~<Record>.field
+ascribed_generic : item~<D<string, uint32, boolean, string>>
+receiver_ascription : value.{ -> $~<MyCoolType> }
+multiline_ascription : value~
+    <Choice>
+quoted_ascription : "value~<Choice>"
+# value~<Choice> #
+interpolated_ascription : "value: {value~<int32>} tail"
 other<(name<>)>:"Ada"
 expanded < (name<>!<null>) > : name
 <Compact>:<{x<int32>;y<int32>}>
@@ -111,7 +121,12 @@ after_compact:46
 | count <limit && other > 0 | debug.print("comparison")
 | result <error> || result <null> | 'scope.leave()
 | ready != false | debug.print(ready)
-mask : (left | right) & 0xff
+bits : @"bits"
+mask : bits.and(bits.or(left, right), 0xff)
+xor : bits.xor(left, right)
+complement : bits.not(mask)
+removed_complement : ~mask
+removed_xor : left ^ right
 
 'scope {
     finish : 'scope.leave
