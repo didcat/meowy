@@ -99,49 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current restart-body relation slices
+### Current checked-site prerequisite slices
 
 Dependency-ordered commit plan:
-1. Attach bounded parent/operand relations to the existing body facts, preserving
-   data inputs, branch conditions/arms, indexed write operands and indirect store
-   addresses. Keep focused relationship/scope/budget tests with integration.
-2. Retain canonical storage IDs for local/slot-alias facts without resolving
-   indirect stores or confusing reference carriers with their pointees.
-3. Retain both short-circuit successors with explicit condition/arm relationships.
-   Run the full compiler gate and update both handoffs.
+1. Retain bounded checked statement identities with function/block ownership,
+   same-function parent links and explicit completion state. Reuse StatementId;
+   preserve diagnostic spans without treating them as identities or execution order.
+   Include duplicate-span, nested-function and failure-restoration regressions.
+2. Attach required-input reads and original pending queries to their active checked
+   statement sites. Preserve query-copy identity, recognition purity, required roots
+   and skipped reads. Run focused tests and the full compiler gate.
 
-Investigation: the iterative body walker already visits both matcher arms and
-all operands without executing them. One parent link per fact can preserve their
-structural roles without duplicating HIR or expanding ancestor sets. Nested bodies
-remain linked by block ID; function owners stay separate. Canonical slot roots
-come from the existing ownership alias metadata. Relations are prerequisites:
-erased input/query sites still need precise branch/continuation association, and
-loop-header/backedge propagation and termination dependence remain unimplemented.
-Do not enable E225 enforcement over backedges or proof outcomes from this metadata.
+Investigation: statements already allocate bounded StatementId values, but erased
+statements do not retain them in HIR. Required reads and queries retain spans and
+block scope only. A separate checked-site inventory can preserve their statement
+provenance without introducing runtime lifetime wrappers or replaying evaluation.
+Parent links describe checking containment only: expression/branch/continuation
+identities and block/emission result transfers remain subsequent prerequisites.
 
-Body inventories and required-input capture remain available (`87e7b20`,
-`ec15894`). Parent links now retain data/address/index operands and both matcher
-arms (`fe19008`). There is one bounded, backward-only parent link per fact;
-nested bodies retain their own identities and function owners. Canonical storage
-IDs for local/slot-alias facts and required uses reuse `Alias::root` (`5099fd1`).
-Ordinary copies and reference carriers keep distinct cells; indirect stores have
-no invented destination. Emitted initializer eligibility remains B001-gated.
+Existing body operand/storage/short-circuit relations passed all ten compiler
+checks (1469 library/910 native tests), with conformance 10 passed, 13 unsupported,
+0 failed in debug/release; `/tmp/meowy-body-relations-gate.log`.
 
-Runtime `&&`/`||` now retain distinct logical facts, left-condition and right-arm
-roles, including constant-skipped operands, nested logic and effectful RHS blocks.
-No initializer or condition is replayed. These are structural relations, not a
-complete value-flow/continuation graph or execution order. Missing links do not
-prove independence. Required uses retain original read/root spans and logical
-charges; failed bodies are not complete summaries.
-
-All 22 focused body groups pass (`/tmp/meowy-body-logic-focused.log`). The first
-two slices also pass all 1462/1465 library tests respectively. All ten compiler
-checks pass, including 1469 library/910 native tests, formatting, Clippy, build
-and conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-body-relations-gate.log`. No failures remain. Before backedge
-propagation, associate erased required/query sites with explicit branch/continuation
-identities and connect nested block results/emissions to consumers. Keep unknown
-reference/store/call effects explicit. Proof outcomes remain gated.
+The checked-site inventory now retains statement identity, same-function parents,
+block ownership and explicit completion. Error paths restore the active site. All
+four focused groups and all 1473 library tests pass;
+`/tmp/meowy-checked-sites-lib.log`. No failures remain. Next attach required reads
+and pending queries to these sites, then run the full compiler gate.
+Backedge/header propagation, termination dependence and proof outcomes
+remain gated. Unknown reference/store/call effects must remain explicit.
 
 ### Proof dependency implementation slices
 

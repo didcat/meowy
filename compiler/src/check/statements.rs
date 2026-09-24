@@ -14,11 +14,15 @@ impl Checker {
         }
         let id = self.statements;
         self.statements += 1;
+        self.track_site(id, stmt.span)?;
+        let site = self.site.replace(id);
         self.statement.push((id, false));
         let result = self.stmt_inner(stmt);
         let (_, used) = self.statement.pop().expect("statement lifetime");
+        self.site = site;
         let stmts = result?;
         self.doc_stage(stmt.span.start)?;
+        self.sites.get_mut(&id).expect("checked statement").complete = true;
         if used {
             Ok(vec![hir::Stmt::Statement { id, stmts }])
         } else {

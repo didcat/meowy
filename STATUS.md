@@ -397,6 +397,12 @@ too, including record views, copies and nested calls. Explicit result-type and
 depth prerequisites are `ee3a574` and `862eea2`. All 216 dependency groups and
 all ten compiler checks pass.
 
+Checked statements now retain bounded identities, function/block ownership,
+same-function containment and explicit completion after successful checking.
+Four focused groups and all 1473 library tests pass; erased required/query uses
+will be linked next. Branch/continuation identity, result transfers and backedge
+propagation remain incomplete. Proof outcomes remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature
