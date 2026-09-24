@@ -312,5 +312,8 @@ pub(crate) use scope_exits::ScopeExit;
 mod operations;
 pub(crate) use operations::{Kind as OperationKind, Operation};
 
+mod path_operations;
+pub(crate) use path_operations::{Operation as PathOperation, Step as PathStep};
+
 mod emissions;
 pub(crate) use emissions::Emission;

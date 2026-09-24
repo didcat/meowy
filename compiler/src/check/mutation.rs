@@ -133,7 +133,7 @@ impl Checker {
                 target.span,
             ));
         }
-        let value = self.expr(value, Some(&ty))?;
+        let (input, value) = self.expr_point(value, Some(&ty))?;
         let derived = self.control
             || self.derived_expr(&value)
             || path.iter().any(|step| match step {
@@ -155,6 +155,16 @@ impl Checker {
         }
         if derived {
             self.mark_derived(id);
+        }
+        if !indexed && let Some(point) = self.point {
+            let steps = path
+                .iter()
+                .map(|step| match step {
+                    hir::WriteStep::Field(field) => super::dependencies::PathStep::Field(*field),
+                    hir::WriteStep::Index(_) => unreachable!(),
+                })
+                .collect();
+            self.path_operation(point, id, steps, input, target.span)?;
         }
         Ok(hir::Stmt::SetPath {
             id,

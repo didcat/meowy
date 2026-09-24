@@ -124,9 +124,15 @@ all ten checks: 1574 library/910 native tests; conformance 10 passed, 13 unsuppo
 0 failed in debug/release. Log: `/tmp/meowy-emission-operations-gate.log`.
 The root-helper slice passes formatting and all 1576 library tests, including exact
 identity and unchanged integer/one-based length/capacity diagnostics. Log:
-`/tmp/meowy-position-roots-lib.log`. Next implement field-only operations, then
-indexed stages. Remaining transfers/operand coverage and propagation stay
-incomplete; proof evaluation remains gated.
+`/tmp/meowy-position-roots-lib.log` (`9f2708c`). Field-only operations now retain
+canonical storage, exact field paths and RHS roots, with address stages before
+the RHS and a write effect after its normal completion. Identity checks and the
+shared edge budget guard publication. Formatting and all 1579 library tests pass,
+including nested paths, same-layout RHS replacement, control/owner separation,
+ordinary errors and atomic edge-budget failure. Log:
+`/tmp/meowy-field-paths-lib.log`. Indexed stages follow; the final compiler gate
+will cover the complete series. Remaining transfers/operand coverage and
+propagation stay incomplete; proof evaluation remains gated.
 
 ### Proof dependency implementation slices
 
