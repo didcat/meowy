@@ -49,6 +49,17 @@ impl Checker {
                 }
                 continue;
             }
+            if path.is_empty() && Self::unmatched_union_view(ty, result, 1) {
+                let Some(source) = self.union_input_cells(arg, result, depth)? else {
+                    return Ok(Cells::default());
+                };
+                if !found {
+                    cells.complete = true;
+                    found = true;
+                }
+                self.merge_returned_cells(&mut cells, source, expr)?;
+                continue;
+            }
             let Some((view, layers)) = self.call_shared_view(ty, expr)? else {
                 return Ok(Cells::default());
             };

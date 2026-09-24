@@ -2,7 +2,7 @@ use super::super::{Cells, Checker, Diagnostic, Expr, MAX_DEPTH, MAX_FIELDS, Resu
 use crate::check::dependencies::records::shapes::ShapeKey;
 
 impl Checker {
-    pub(super) fn hidden_union_cells(
+    pub(in crate::check::dependencies::calls::cells) fn hidden_union_cells(
         &mut self,
         locations: &Cells,
         prefix: &[usize],

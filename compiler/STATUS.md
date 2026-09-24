@@ -29,28 +29,28 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current concrete view carrier-field series
+### Current direct shared-union input slice
 
 Commit plan:
-1. Extract concrete shared-view owner/prefix/leaf validation without changing
-   origin admission or charges. Run focused checks and commit the prerequisite.
-2. Reuse those checks for stored carrier-field contents through unknown Deref
-   sources in `records/cells.rs`. Preserve all/unknown cells, nullable records and
-   copies; test deeper/stored/returned views, bounds, no replay and lifetimes.
-   Run the full compiler gate and update both handoffs and the guide.
+1. Route direct unmatched shared-union arguments for concrete-record view results
+   through bounded variant-key discovery. Keep layout/null/unknown/boundary/lifetime
+   regressions together; run focused checks and commit.
+2. Integrate the same route for union-view and carrier results, updating earlier
+   incomplete expectations and adding nested-call/no-replay/budget coverage. Run
+   the full gate and update both handoffs and the guide.
 
-Investigation: the origin fallback already validates actual storage against the
-shared view target. Carrier reads still return incomplete at the same unknown
-source boundary. Keep direct temporary and by-value call paths unchanged, and
-keep unselected heterogeneous owner prefixes incomplete.
-Validation prerequisite `22a0e0c` preserves origin admission and charges; all 357
-focused tests passed before integration. Carrier reads and seven new groups pass
-all 364 dependency-filtered tests; log: `/tmp/meowy-view-carrier-fields-focused.log`.
-Known cells survive unknown owners/contents. Deeper carriers, null/nested records,
-stored record/union views, hidden candidates, copies, no replay, call/work limits
-and E302/E303 lifetimes pass. All ten compiler checks pass, including 1337 library
-and 903 native tests; log: `/tmp/meowy-view-carrier-fields-gate.log`.
-No failures remain. Untracked `docs/proposals/` remains untouched; outcomes stay gated.
+Investigation: direct shared-union inputs stop before the already implemented
+owned-union matcher. Resolve their owner locations and reuse that matcher without
+adding field indices to ordinary paths. Exact terminals keep their existing path;
+shared chains and record-stored union arguments remain a separate slice. Unknown
+borrowed contents and variant field addresses remain incomplete.
+The complete implementation passes all 370 focused tests. Split review found more
+than eight affected files, so concrete-record result admission is separated from
+union-view/carrier result admission. Each retains its own behavior regressions.
+The concrete-record slice independently passes all 369 dependency-filtered tests
+and formatting; log: `/tmp/meowy-direct-union-records-focused.log`.
+Union-view/carrier integration is next.
+Untracked `docs/proposals/` remains untouched.
 
 ### Proof dependency implementation slices
 

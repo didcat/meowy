@@ -219,3 +219,5 @@ mod unions;
 
 #[cfg(test)]
 mod union_views;
+
+mod union_inputs;
