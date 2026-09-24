@@ -1,5 +1,3 @@
-<img src="assets/m.png" alt="m—meowy's mascot (aka my cat)" width="220">
-
 # meowy
 
 **meowy** is a small, composable systems programming language built around
