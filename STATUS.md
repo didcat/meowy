@@ -7,6 +7,9 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Documentation conventions
 
+Agent responses default to English unless the user requests another language,
+as specified in `AGENTS.md`.
+
 Write the project name as `meowy`. Reader examples follow
 [the documentation conventions](docs/guide/documentation-style.md), including
 linked standalone examples. Tests, internal tooling and generated source retain

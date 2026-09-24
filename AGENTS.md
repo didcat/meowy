@@ -1,6 +1,7 @@
 # Repository working rules
 
 - Keep explanations short and use short, clear names.
+- Always respond in English unless the user explicitly requests another language.
 - Declare visibility wherever the language permits, including implicit public APIs.
 - Use immutable bindings, `const` or `final` for values that do not change; use
   `static` for members belonging to a class.
