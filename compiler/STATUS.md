@@ -29,38 +29,29 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current temporary union snapshot series
+### Current named shared-union view series
 
-Admission audit: direct copy and empty-path reborrow of a computed union field pass
-ordinary `meowy check`; retaining its reference into the next statement fails E303.
-Fixtures: `/tmp/meowy-temp-union-{copy,reborrow,expiry}.mwy`. No borrow gate needs
-relaxation. Temporary registration now captures shaped snapshots on existing IDs.
+Admission audit: named shared-union copies and concrete record-field borrows pass
+ordinary `meowy check`; a shared view escaping local storage fails E303. Fixtures:
+`/tmp/meowy-named-union-{copy,field,expiry}.mwy`. No borrow rule needs relaxation.
 
 Commit plan:
-1. Add bounded explicit temporary-ID lookup through empty-path reborrows and use
-   it for shaped source/narrowing reads. Validate seeded snapshots, unknown views
-   and traversal budgets; commit this read-side prerequisite.
-2. Capture shaped snapshots on existing statement-owned temporary IDs. Test real
-   union copies, nested fields, carriers, null/unknown inputs, later marks and E303
-   expiry. Run the full compiler gate and update the guide/root handoff.
+1. Recognize shared references to bounded record/null unions as storage carriers.
+   Reuse existing bounded `Cells` links for direct owners, aliases, retargets and
+   concrete field borrows. Validate locations, unknowns, marks and budgets; commit.
+2. Resolve shaped dereference reads through known locations, combining snapshots
+   conservatively and validating concrete prefixes before applying shape keys.
+   Preserve temporary handling and unknown alternatives; test real copies, shape
+   narrowing, null, carriers, retargets, bounds and E303 lifetime checks. Run the
+   full compiler gate and update the guide/root handoff.
 
-Named/general borrowed union views and returned unions remain separate. No temporary
-lifetime is extended. Direct temporary IDs and bounded empty-path reborrows now
-feed shaped source/narrowing reads. Two seeded groups cover external pointee
-identity, unknown named/non-record views and depth/work limits. All 305 focused
-dependency tests and formatting pass; log:
-`/tmp/meowy-temporary-shape-reads-focused.log`. Next: capture real temporary values.
-Read prerequisite committed as `dfb1e47`. Projected reborrows of temporary records
-retain validated concrete field paths and adjust shape selections accordingly.
-Temporary registration captures checked contents without changing lifetime IDs.
-All 310
-dependency-filtered tests now pass; log: `/tmp/meowy-temporary-unions-focused.log`.
-Real copies, reborrows, carriers, null/unknown inputs, snapshot independence and
-unchanged E303 expiry pass. A new path group checks concrete projections, narrowing
-offsets and rejection of invalid/union-interior paths. All ten compiler checks pass;
-log: `/tmp/meowy-temporary-unions-gate.log`. No failures remain. Temporary capture is committed as `cac7976`; the separate
-guide/root handoff records its supported boundary. No lifetime rule is changed;
-proof outcomes stay gated.
+Returned union views and broader unsupported location paths remain separate.
+Shared references to record/null unions now use bounded `Cells` locations. Four
+source/classification groups cover aliases, stored views, retarget snapshots,
+unknown alternatives, sibling-prefix isolation and type/work limits. All 314
+dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-union-view-links-focused.log`. Next: exact-shape reads from those
+locations. The tree was clean at investigation; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

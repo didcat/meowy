@@ -164,6 +164,23 @@ impl Checker {
         ty: &Type,
         span: crate::ast::Span,
     ) -> crate::check::Result<bool> {
+        if let Type::Reference(target) = ty
+            && let Type::Union(members) = target.as_ref()
+            && target.has_reference()
+        {
+            if members.len() > MAX_ROOTS || !self.flow.spend(members.len() + 1) {
+                return Err(crate::diagnostic::Diagnostic::unsupported(
+                    "proof union view type budget exhausted",
+                    span,
+                ));
+            }
+            if members
+                .iter()
+                .all(|member| matches!(member, Type::Record { .. } | Type::Null))
+            {
+                return Ok(true);
+            }
+        }
         let mut ty = ty.pointee();
         let mut depth = 0;
         loop {
@@ -512,3 +529,6 @@ mod origins {
         assert!(checker.pointees[&0].complete);
     }
 }
+
+#[cfg(test)]
+mod union_views;
