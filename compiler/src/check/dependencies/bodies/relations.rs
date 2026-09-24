@@ -57,6 +57,11 @@ pub(crate) fn body_relations_preserve_both_arms_and_nested_body_boundaries() {
     };
     *otherwise = then.clone();
     root.id = checker.block;
+    for stmt in &mut root.stmts {
+        if let hir::Stmt::If { point, .. } = stmt {
+            *point = None;
+        }
+    }
     checker
         .track_body(&root, crate::ast::Span::default())
         .unwrap();

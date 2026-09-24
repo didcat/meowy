@@ -130,7 +130,12 @@ HIR matchers now carry optional point IDs; checked construction assigns them and
 synthetic constructors use None. Both provenance groups and all 1492 library
 tests pass, including clones, repeated spans and function/block ownership;
 `/tmp/meowy-hir-matchers-lib.log`. No failures remain. Matcher body-fact
-association and source validation are next.
+association now validates kind/owner/block/completion and preserves explicit
+unknown sources. HIR prerequisite: `1038bbc`. All four matcher-source groups
+pass, including nested/function ownership, malformed IDs and unknown synthetic
+branches. All 1496 library tests pass; `/tmp/meowy-matcher-sources-lib.log`.
+Synthetic test branches relocated to a new block explicitly clear provenance.
+No failures remain. Short-circuit HIR provenance is next.
 Explicit continuation/join/result transfers and restart propagation remain pending.
 Proof outcomes stay gated; unknown reference/store/call effects stay explicit.
 

@@ -42,6 +42,7 @@ pub(crate) struct Body {
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
     pub(crate) storage: Vec<Option<hir::LocalId>>,
+    pub(crate) sources: Vec<Option<hir::PointId>>,
 }
 
 pub(crate) struct Walk<'a> {
@@ -49,6 +50,10 @@ pub(crate) struct Walk<'a> {
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
     pub(crate) storage: Vec<Option<hir::LocalId>>,
+    pub(crate) sources: Vec<Option<hir::PointId>>,
+    pub(crate) points: &'a [super::Point],
+    pub(crate) owner: usize,
+    pub(crate) block: hir::BlockId,
     pub(crate) link: Option<Link>,
     pub(crate) aliases: &'a std::collections::BTreeMap<hir::LocalId, crate::borrow::Alias>,
     pub(crate) flow: &'a mut crate::flow::Flow,
@@ -87,6 +92,7 @@ impl<'a> Walk<'a> {
         self.facts.push((fact, span));
         self.links.push(self.link);
         self.storage.push(storage);
+        self.sources.push(None);
         self.link = Some(Link {
             parent,
             role: Role::Data,
@@ -98,6 +104,32 @@ impl<'a> Walk<'a> {
         if let Some(link) = &mut self.link {
             link.role = role;
         }
+    }
+
+    pub(crate) fn source(
+        &mut self,
+        id: Option<hir::PointId>,
+        kind: super::PointKind,
+        span: Span,
+    ) -> Result<()> {
+        if let Some(id) = id {
+            if !self.flow.spend(1) {
+                return Err(Self::budget(span));
+            }
+            if !self.points.get(id).is_some_and(|point| {
+                point.kind == kind
+                    && point.owner == self.owner
+                    && point.block == Some(self.block)
+                    && point.complete
+            }) {
+                return Err(Diagnostic::unsupported(
+                    "proof branch source identity mismatch",
+                    span,
+                ));
+            }
+        }
+        *self.sources.last_mut().expect("branch fact") = id;
+        Ok(())
     }
 
     pub(crate) fn budget(span: Span) -> Diagnostic {
@@ -210,12 +242,13 @@ impl<'a> Walk<'a> {
                         self.push([Node::Expr(value)])?;
                     }
                     S::If {
+                        point,
                         condition,
                         then,
                         otherwise,
-                        ..
                     } => {
                         self.fact(Fact::Branch, condition.span)?;
+                        self.source(*point, super::PointKind::Match, condition.span)?;
                         self.role(Role::Else);
                         self.push(otherwise.iter().rev().map(Node::Stmt))?;
                         self.role(Role::Then);
@@ -321,6 +354,10 @@ impl Checker {
             facts: Vec::new(),
             links: Vec::new(),
             storage: Vec::new(),
+            sources: Vec::new(),
+            points: &self.points,
+            owner: self.owner,
+            block: block.id,
             link: None,
             aliases: &self.proofs.aliases,
             flow: &mut self.flow,
@@ -334,6 +371,7 @@ impl Checker {
             facts: walk.facts,
             links: walk.links,
             storage: walk.storage,
+            sources: walk.sources,
         };
         if let Some(prior) = self.bodies.get(&block.id) {
             if *prior != body {
@@ -358,3 +396,6 @@ mod relations;
 
 #[cfg(test)]
 mod logic;
+
+#[cfg(test)]
+mod sources;

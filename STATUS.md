@@ -421,8 +421,10 @@ Expression prerequisite: `10a45ec`; required/query integration: `b4a79de`.
 HIR matcher branches now retain optional checked point IDs. Checked construction
 assigns them; synthetic branches explicitly retain no source. Both provenance
 groups and all 1492 library tests pass; `/tmp/meowy-hir-matchers-lib.log`.
-Matcher body-fact association is next; continuation/result edges and proof outcomes
-remain gated.
+Matcher body facts now retain and validate these sources, linking erased uses
+through their branch regions. Four focused groups and all 1496 library tests pass;
+`/tmp/meowy-matcher-sources-lib.log`. Short-circuit HIR provenance is next;
+continuation/result edges and proof outcomes remain gated.
 
 ## Pending descriptor statement accounting
 
