@@ -129,6 +129,8 @@ mod regions;
 
 mod blocks;
 
+mod matchers;
+
 #[cfg(test)]
 mod tests;
 

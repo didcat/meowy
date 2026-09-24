@@ -498,6 +498,11 @@ budget and publishing atomically with source exits. All ten compiler checks pass
 including 1550 library/910 native tests; `/tmp/meowy-block-results-gate.log`.
 Remaining statement/value transfers and dependency propagation stay incomplete.
 
+Matcher statement roots now connect to exact branch IDs in source order, with
+independent decisions and conditional normal completion. Three focused groups and
+all 1553 library tests pass; `/tmp/meowy-matcher-roots-lib.log`. Ordinary binding
+operations are next; value-flow propagation and proof evaluation stay gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

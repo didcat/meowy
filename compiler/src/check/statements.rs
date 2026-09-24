@@ -287,54 +287,60 @@ impl Checker {
             ),
             StmtKind::Match { arms } => {
                 let mut stmts = Vec::new();
+                let mut points = Vec::new();
                 for (condition, body) in arms {
                     self.control |= self.continuation_control();
                     let Some(condition) = condition else {
                         return Err(Diagnostic::unsupported("matcher fallback arms", stmt.span));
                     };
-                    let branch = self.with_point(PointKind::Match, condition.span, |checker| {
-                        let (test, (input, condition)) = checker.with_point_id(
-                            PointKind::Condition,
-                            condition.span,
-                            |checker| checker.expr_point(condition, None),
-                        )?;
-                        if condition.ty != Type::Bool {
-                            return Err(Self::error(
-                                "E215",
-                                format!("matcher requires boolean, found {:?}", condition.ty),
+                    let (point, branch) =
+                        self.with_point_id(PointKind::Match, condition.span, |checker| {
+                            let (test, (input, condition)) = checker.with_point_id(
+                                PointKind::Condition,
                                 condition.span,
-                            ));
-                        }
-                        let guard = checker.guard(&condition);
-                        let absent = checker.flow.not(guard);
-                        let skipped = checker.flow.and(checker.reach, absent);
-                        checker.reach = checker.flow.and(checker.reach, guard);
-                        let control = checker.control;
-                        checker.control |= checker.derived_expr(&condition);
-                        let depth = checker.scopes.len();
-                        checker.scopes.push(Scope::default());
-                        let then = checker.with_point_id(PointKind::Then, body.span, |checker| {
-                            checker.stmt_point(body)
-                        });
-                        checker.scopes.truncate(depth);
-                        checker.control = control;
-                        checker.reach = checker.flow.or(checker.reach, skipped);
-                        let (taken, (content, then)) = then?;
-                        let (skipped, ()) =
-                            checker.with_point_id(PointKind::Else, condition.span, |_| Ok(()))?;
-                        let point = checker.point.expect("matcher point");
-                        checker.region_edges(test, input, condition.span)?;
-                        checker.region_edges(taken, content, body.span)?;
-                        checker.branch_edges(point, test, taken, skipped, condition.span)?;
-                        Ok(hir::Stmt::If {
-                            point: Some(point),
-                            condition,
-                            then,
-                            otherwise: Vec::new(),
-                        })
-                    })?;
+                                |checker| checker.expr_point(condition, None),
+                            )?;
+                            if condition.ty != Type::Bool {
+                                return Err(Self::error(
+                                    "E215",
+                                    format!("matcher requires boolean, found {:?}", condition.ty),
+                                    condition.span,
+                                ));
+                            }
+                            let guard = checker.guard(&condition);
+                            let absent = checker.flow.not(guard);
+                            let skipped = checker.flow.and(checker.reach, absent);
+                            checker.reach = checker.flow.and(checker.reach, guard);
+                            let control = checker.control;
+                            checker.control |= checker.derived_expr(&condition);
+                            let depth = checker.scopes.len();
+                            checker.scopes.push(Scope::default());
+                            let then =
+                                checker.with_point_id(PointKind::Then, body.span, |checker| {
+                                    checker.stmt_point(body)
+                                });
+                            checker.scopes.truncate(depth);
+                            checker.control = control;
+                            checker.reach = checker.flow.or(checker.reach, skipped);
+                            let (taken, (content, then)) = then?;
+                            let (skipped, ()) =
+                                checker
+                                    .with_point_id(PointKind::Else, condition.span, |_| Ok(()))?;
+                            let point = checker.point.expect("matcher point");
+                            checker.region_edges(test, input, condition.span)?;
+                            checker.region_edges(taken, content, body.span)?;
+                            checker.branch_edges(point, test, taken, skipped, condition.span)?;
+                            Ok(hir::Stmt::If {
+                                point: Some(point),
+                                condition,
+                                then,
+                                otherwise: Vec::new(),
+                            })
+                        })?;
+                    points.push(Some(point));
                     stmts.push(branch);
                 }
+                self.matcher_endpoints(self.point.expect("matcher statement"), points, stmt.span)?;
                 Ok(stmts)
             }
             StmtKind::Expr(value) => {

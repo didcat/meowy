@@ -16,6 +16,7 @@ pub(crate) const MAX_ITEMS: usize = 65_536;
 pub(crate) enum Source {
     Block(hir::BlockId),
     Expr(hir::PointId),
+    Stmt(hir::PointId),
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -52,9 +53,14 @@ impl Checker {
                 self.bodies.get(&block).ok_or_else(invalid)?.owner,
                 Some(block),
             ),
-            Source::Expr(id) => {
+            Source::Expr(id) | Source::Stmt(id) => {
                 let point = self.points.get(id).ok_or_else(invalid)?;
-                if point.kind != PointKind::Expr || (!point.complete && self.point != Some(id)) {
+                let kind = if matches!(source, Source::Stmt(_)) {
+                    PointKind::Stmt
+                } else {
+                    PointKind::Expr
+                };
+                if point.kind != kind || (!point.complete && self.point != Some(id)) {
                     return Err(invalid());
                 }
                 (point.owner, point.block)
@@ -81,6 +87,9 @@ impl Checker {
                 Source::Expr(parent) => {
                     point.parent == Some(parent)
                         && matches!(point.kind, PointKind::Expr | PointKind::And | PointKind::Or)
+                }
+                Source::Stmt(parent) => {
+                    point.parent == Some(parent) && point.kind == PointKind::Match
                 }
             };
             if !valid {

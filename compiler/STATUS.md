@@ -99,50 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current block and result endpoint slices
+### Current matcher and storage-operation slices
 
-Completed dependency-ordered commit plan:
-1. Add bounded block entry/normal/result ports around core statement sequences.
-   Retain opaque receiver-initialization prefixes and forward barriers; admit empty
-   blocks explicitly, and never materialize a result edge for a never block.
-2. Link plain block expressions to their block ports and ordinary expression
-   statements to their exact expression roots. Preserve failed coercions, target
-   leaves, unknown calls and untracked producer/effect boundaries.
-3. Connect checked restart ports to block entries with a distinct backedge route,
-   publishing source/reentry edges atomically within the shared budget. Run the
-   full compiler gate; do not perform restart propagation or query evaluation.
+Dependency-ordered commit plan:
+1. Connect matcher statement roots to exact checked branch IDs in source order,
+   preserving independent decisions and conditional normal completion. Reuse the
+   sequence/endpoints ledgers and shared budgets; validate nested/error paths.
+2. Retain explicit ordinary binding operations with exact initializer roots and
+   canonical storage IDs. Separate evaluating the value from performing the bind;
+   module producers without exact roots remain explicitly unknown.
+3. Add direct local/slot-alias assignment operations after ordinary checking,
+   keeping reference retargeting and source diagnostics intact. Validate and run
+   the full compiler gate. Field/index/indirect stores and emissions remain next.
 
-Investigation: core block sequences already provide source-order endpoints, but
-receiver setup is synthetic HIR preceding those statements. Mark that prefix
-opaque before adding entry edges. A target leave joins block completion; statement
-normal ports remain conditional. Plain block result ports describe availability,
-not field/emission value origins. Generic writes, bindings, emission/result-value
-transfers, contextual list/effect blocks and unknown calls remain incomplete.
+Investigation: matcher branches are checked independently but their parent statement
+ports remain unlinked. Ordinary bindings and direct assignments already determine
+an exact value root and storage target; represent the operation between value-normal
+and statement-normal ports rather than bypassing the storage effect. These are
+source/effect links, not evaluated proof outcomes or complete value-flow analysis.
 
-The prior scope-exit series (`1f26948`, `90a2065`, `8c7badd`) passed all ten checks:
-1540 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-debug/release. Log: `/tmp/meowy-scope-exits-gate.log`.
+The prior series (`b45829a`, `4f266e4`, `98d7607`) passed all ten checks:
+1550 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-block-results-gate.log`.
 
-Core block endpoints now retain entry, normal completion, target-leave joins and
-result availability, with explicit forward/receiver barriers. All four focused
-groups and all 1544 library tests pass, including empty/never blocks and shared
-capacity; `/tmp/meowy-block-endpoints-lib.log`. No failures remain. Plain block
-result consumers and expression statements now connect through exact producer
-roots; body summaries retain their owning producer point. Block prerequisite:
-`b45829a`. All five focused block-result groups pass, including the existing
-borrow/loan regressions. All 1547 library tests pass after updating the older
-fixture to assert its new expression-statement links;
-`/tmp/meowy-block-consumers-lib.log`. No failures remain. Generic statement/value
-transfers remain separate. Consumer integration: `4f266e4`. Restart ports now
-connect to validated target entries through a distinct backedge route. Source and
-reentry edges are published atomically and share the edge budget. All three
-restart-edge groups pass, covering nested/function targets, explicit cycles without
-normal results, capacity atomicity and source mismatches. All ten compiler checks
-pass, including 1550 library/910 native tests, formatting, Clippy, build and
-conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-block-results-gate.log`. No failures remain. These result ports describe
-availability, not field/emission value origins; propagation remains gated.
-Proof outcomes and restart dependency propagation stay gated.
+Matcher statements now retain exact branch sequences and endpoint links. All
+three focused groups pass for independent arms, conditional exits, original errors
+and endpoint budgets. All 1553 library tests pass;
+`/tmp/meowy-matcher-roots-lib.log`. The multi-arm regression now reuses parsed
+AST arms, preserving the same coverage. Ordinary binding operations are next.
+Unknown effects and missing operand/producer coverage remain incomplete; propagation
+and proof evaluation stay gated.
 
 ### Proof dependency implementation slices
 
