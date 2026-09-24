@@ -129,7 +129,12 @@ retain source roots, EmitId, slots and alias storage, with explicit effect ports
 All four focused groups pass, including control marks, never/static exclusions,
 source errors and atomic shared-budget publication. All 1567 library tests pass;
 `/tmp/meowy-direct-emissions-lib.log`. No failures remain. Record-composition
-fanout is next. Store/address transfers, remaining operand coverage,
+fanout now retains primary/field projections from the original input root, with
+validated staging cells and ordered EmitId chains. Direct-emission prerequisite:
+`6bb0f49`. All four fanout groups and all 1571 library tests pass, including
+projection validation, reference sources and atomic budget/duplicate rejection;
+`/tmp/meowy-emission-fanout-lib.log`. No failures remain. Body-fact EmitId source
+links and the full compiler gate are next. Store/address transfers, remaining operand coverage,
 propagation and proof evaluation remain incomplete.
 
 ### Proof dependency implementation slices

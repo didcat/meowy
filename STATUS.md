@@ -521,7 +521,10 @@ and all 1563 library tests pass; `/tmp/meowy-composed-roots-lib.log`. Direct
 primary/named/outer emissions now retain exact source, EmitId, slot and alias
 identities. Never/static outputs do not invent runtime emissions. Four focused
 groups and all 1567 library tests pass; `/tmp/meowy-direct-emissions-lib.log`.
-Record fanout is next; propagation and proof outcomes remain gated.
+Record fanout now retains ordered primary/field projections from the original
+input, with validated staging cells and atomic target publication. All four fanout
+groups and all 1571 library tests pass; `/tmp/meowy-emission-fanout-lib.log`.
+Body-fact EmitId links are next; propagation and proof outcomes remain gated.
 
 ## Pending descriptor statement accounting
 

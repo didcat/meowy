@@ -639,14 +639,14 @@ impl Checker {
             ));
         }
         let mut stmts = Vec::new();
-        let mut composed = false;
+        let mut composed = None;
         if name.is_none()
             && matches!(value.ty, Type::Record { .. })
             && !union.as_ref().is_some_and(|ty| ty.accepts(&value.ty))
         {
-            composed = true;
             let ty = value.ty.clone();
             let id = self.local(ty.clone());
+            composed = Some(id);
             self.track_record_references(id, &value, false)?;
             self.capture_record_shapes(id, &value)?;
             let local = hir::Expr {
@@ -765,9 +765,13 @@ impl Checker {
             self.primary_input(&emission);
             stmts.push(emission);
         }
-        if !composed {
-            self.emission_operation(self.point.expect("emission statement"), input, &stmts, span)?;
-        }
+        self.emission_operation(
+            self.point.expect("emission statement"),
+            input,
+            composed,
+            &stmts,
+            span,
+        )?;
         Ok(stmts)
     }
 

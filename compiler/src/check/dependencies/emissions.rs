@@ -9,11 +9,21 @@ use crate::{
     hir,
 };
 
+pub(crate) const MAX_TARGETS: usize = 65_536;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Projection {
+    Value,
+    Primary,
+    Field(usize),
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Target {
     pub(crate) id: hir::EmitId,
     pub(crate) block: hir::BlockId,
     pub(crate) field: Option<String>,
+    pub(crate) projection: Projection,
     pub(crate) alias: Option<hir::LocalId>,
     pub(crate) storage: Option<hir::LocalId>,
 }
@@ -33,19 +43,24 @@ impl Checker {
         &mut self,
         id: hir::PointId,
         input: hir::PointId,
+        from: Option<hir::LocalId>,
         stmts: &[hir::Stmt],
         span: Span,
     ) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof emission-operation budget exhausted", span);
         let invalid =
             || Diagnostic::unsupported("proof emission-operation identity mismatch", span);
-        if stmts.len() > 3
+        if stmts.len() > MAX_TARGETS + 2
             || !self.flow.spend(
-                self.frames.len()
+                stmts.len()
+                    * (self.frames.len()
+                        + self.proofs.emissions.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.emission_sources.len().checked_ilog2().unwrap_or(0) as usize * 2
+                        + stmts.len().checked_ilog2().unwrap_or(0) as usize
+                        + 4)
                     + self.emissions.len().checked_ilog2().unwrap_or(0) as usize * 2
-                    + self.proofs.emissions.len().checked_ilog2().unwrap_or(0) as usize
                     + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
-                    + 8,
+                    + 4,
             )
         {
             return Err(budget());
@@ -69,12 +84,18 @@ impl Checker {
         }
         let mut targets = Vec::new();
         let mut alias = None;
+        let mut seen = std::collections::BTreeSet::new();
+        let mut staged = false;
         for stmt in stmts {
             match stmt {
                 hir::Stmt::Emit {
-                    id, target, field, ..
+                    id,
+                    target,
+                    field,
+                    value,
                 } => {
-                    if !targets.is_empty()
+                    if (from.is_none() && !targets.is_empty())
+                        || !seen.insert(*id)
                         || !self.proofs.emissions.contains_key(id)
                         || !self
                             .frames
@@ -86,18 +107,36 @@ impl Checker {
                     if !self.flow.spend(field.as_ref().map_or(0, String::len) + 1) {
                         return Err(budget());
                     }
+                    if targets.len() == MAX_TARGETS {
+                        return Err(budget());
+                    }
+                    let projection =
+                        self.emission_projection(from, value, field.as_deref(), span)?;
                     targets.push(Target {
                         id: *id,
                         block: *target,
                         field: field.clone(),
+                        projection,
                         alias: None,
                         storage: None,
                     });
                 }
-                hir::Stmt::SlotAlias { id, .. } if alias.is_none() => alias = Some(*id),
-                hir::Stmt::Bind { .. } => {}
+                hir::Stmt::SlotAlias { id, .. } if alias.is_none() && from.is_none() => {
+                    alias = Some(*id)
+                }
+                hir::Stmt::Bind { id, .. } => {
+                    if let Some(from) = from {
+                        if *id != from || staged {
+                            return Err(invalid());
+                        }
+                        staged = true;
+                    }
+                }
                 _ => return Err(invalid()),
             }
+        }
+        if from.is_some() && !staged {
+            return Err(invalid());
         }
         let target = targets.first_mut().ok_or_else(invalid)?;
         if let Some(id) = alias {
@@ -111,18 +150,23 @@ impl Checker {
             target.alias = Some(id);
             target.storage = Some(alias.root);
         }
-        if self
-            .emission_sources
-            .get(&target.id)
-            .is_some_and(|source| *source != id)
-        {
-            return Err(invalid());
+        for target in &targets {
+            if self
+                .emission_sources
+                .get(&target.id)
+                .is_some_and(|source| *source != id)
+            {
+                return Err(invalid());
+            }
         }
-        let edges = vec![
-            Edge::new(Port::Entry(id), Port::Entry(input), Route::Next),
-            Edge::new(Port::Normal(input), Port::Emission(target.id), Route::Next),
-            Edge::new(Port::Emission(target.id), Port::Normal(id), Route::Next),
-        ];
+        let mut edges = vec![Edge::new(Port::Entry(id), Port::Entry(input), Route::Next)];
+        let mut prior = Port::Normal(input);
+        for target in &targets {
+            let port = Port::Emission(target.id);
+            edges.push(Edge::new(prior, port, Route::Next));
+            prior = port;
+        }
+        edges.push(Edge::new(prior, Port::Normal(id), Route::Next));
         let emission = Emission {
             owner: self.owner,
             input,
@@ -141,12 +185,19 @@ impl Checker {
         if !self.edge_room(emission.edges.len()) {
             return Err(budget());
         }
-        self.emission_sources.insert(emission.targets[0].id, id);
+        for target in &emission.targets {
+            self.emission_sources.insert(target.id, id);
+        }
         self.emission_edges += emission.edges.len();
         self.emissions.insert(id, emission);
         Ok(())
     }
 }
+
+mod projections;
+
+#[cfg(test)]
+mod fanout;
 
 #[cfg(test)]
 mod tests {
@@ -220,7 +271,7 @@ mod tests {
         let input = checker.emissions[&point].input;
         let count = checker.emission_edges;
         checker
-            .emission_operation(point, input, &stmts, block.span)
+            .emission_operation(point, input, None, &stmts, block.span)
             .unwrap();
         assert_eq!(checker.emission_edges, count);
         let mut invalid = stmts.clone();
@@ -231,7 +282,7 @@ mod tests {
         }
         assert!(
             checker
-                .emission_operation(point, input, &invalid, block.span)
+                .emission_operation(point, input, None, &invalid, block.span)
                 .unwrap_err()
                 .message
                 .contains("identity mismatch")
@@ -243,7 +294,7 @@ mod tests {
         checker.sequence_edges = super::super::edges::MAX_EDGES;
         assert!(
             checker
-                .emission_operation(point, input, &stmts, block.span)
+                .emission_operation(point, input, None, &stmts, block.span)
                 .unwrap_err()
                 .message
                 .contains("budget")
