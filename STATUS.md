@@ -397,21 +397,25 @@ filtered tests and all ten compiler checks pass. Direct returned shared union vi
 now retain exact owner locations through direct/deeper/stored inputs. All 338
 focused tests and all ten compiler checks pass. Exact owned-union projections from
 borrowed records now preserve concrete owner paths alongside stored candidates;
-unmatched owned unions remain incomplete. All 344 focused tests and all ten compiler
-checks pass. Hidden candidates in unmatched owned-union fields are next. By-value
-returned unions, union-interior writes and proof outcomes stay gated.
+hidden exact/deeper shared candidates now use variant-qualified snapshots.
+The location-reader prerequisite is `9969754`. All 350 focused tests and all ten
+compiler checks pass. Concrete-record field-origin integration is next; its
+summaries remain incomplete even when hidden candidate locations are known.
+Union-result shaped reads retain their dependencies. By-value returned unions,
+union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1317
-  library/903 native tests (2220 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1323
+  library/903 native tests (2226 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-owned-union-projections-gate.log`.
-- All 344 dependency-filtered tests pass. Six new owned-union projection groups
-  cover concrete owner prefixes, deeper inputs, nested calls, stored/all/unknown
-  candidates, null contents, hidden unmatched candidates, no replay, work limits
-  and E302/E303 lifetimes. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-hidden-union-gate.log`.
+- All 350 dependency-filtered tests pass. Six new hidden-candidate groups cover
+  distinct variant layouts, exact/deeper stored candidates, null, unknown leaves,
+  nested calls, no replay, type/work bounds and E302/E303 lifetimes. Union-result
+  shaped reads retain candidate dependencies; concrete-record content summaries
+  remain explicitly incomplete. Accepted fixtures pass ordinary compilation and
+  ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

@@ -44,10 +44,15 @@ field prefixes. Reuse the view reader for stored snapshots; never append variant
 field positions to ordinary `Cells` paths. Start with exact/deeper shared terminal
 candidates; references requiring traversal into borrowed record contents remain
 incomplete. Existing exact owned projections remain supported.
-Location-based snapshot reads are extracted without changing admission, prefix
-validation or analysis charges. All 344 dependency-filtered tests and formatting
-pass; log: `/tmp/meowy-shape-locations-focused.log`. Candidate integration is next.
-Untracked `docs/proposals/` remains untouched.
+Prerequisite `9969754` preserves prefix validation and charges. Hidden candidate
+resolution passes all 350 focused tests; log: `/tmp/meowy-hidden-union-focused.log`.
+Six new groups cover variant layouts, unknowns, null, deeper inputs, nested calls,
+no replay, bounds and lifetimes. Union-result reads preserve both dependencies;
+concrete-record field-origin summaries remain explicitly incomplete despite known
+locations and are the next integration step. All ten compiler checks pass, including
+1323 library/903 native tests; log: `/tmp/meowy-hidden-union-gate.log`.
+The final gate also passes with the variant field-address guard regression.
+Untracked `docs/proposals/` remains untouched; outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1375,15 +1380,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1317
-  library/903 native tests (2220 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1323
+  library/903 native tests (2226 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-owned-union-projections-gate.log`.
-- All 344 dependency-filtered tests pass. Six new owned-union projection groups
-  cover concrete owner prefixes, deeper inputs, nested calls, stored/all/unknown
-  candidates, null contents, hidden unmatched candidates, no replay, work limits
-  and E302/E303 lifetimes. Accepted fixtures pass ordinary compilation/ownership;
-  dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-hidden-union-gate.log`.
+- All 350 dependency-filtered tests pass. Six new hidden-candidate groups cover
+  distinct variant layouts, exact/deeper stored candidates, null, unknown leaves,
+  nested calls, no replay, type/work bounds and E302/E303 lifetimes. Union-result
+  shaped reads retain candidate dependencies; concrete-record content summaries
+  remain explicitly incomplete. Accepted fixtures pass ordinary compilation and
+  ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1580,13 +1586,18 @@ explicitly documented. No outstanding failures remain.
    Exact owned-union projections from borrowed records now preserve concrete
    owner paths alongside stored candidates. The walker skips only an owned union
    identical to the direct shared result target after public projection matching;
-   unmatched owned unions remain incomplete because they may hide candidates.
-   Next handle hidden candidates in unmatched owned-union fields in
-   `calls/cells/views.rs` using existing shaped snapshots, without treating variant
-   field indices as concrete paths. First separate bounded candidate discovery
-   from location resolution; then integrate shape-aware matching with regressions
-   for differing field layouts, all/unknown candidates, null, limits and lifetimes.
-   Keep unsupported shapes incomplete and run the full compiler gate per series.
+   unmatched owned unions use the bounded discovery path below.
+   Hidden exact/deeper shared terminal candidates in owned record/null-union
+   fields now resolve through variant-qualified snapshots. Unknown leaves remain
+   incomplete, and owned targets inside variants or borrowed contents needing
+   further traversal remain unsupported. Direct unmatched shared-union arguments
+   are still outside this owned-field path.
+   Next integrate the resolved locations with concrete-record field-origin reads
+   in `records/sources.rs` and `records/sources/calls.rs`. Current tests prove complete
+   returned locations but explicitly incomplete concrete-record content summaries;
+   union-result shaped reads already preserve both candidate dependencies. Reuse
+   the cell matcher without replaying calls, retain unknowns and budgets, and test
+   concrete fields, nullable records, nested calls and E225 before the full gate.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

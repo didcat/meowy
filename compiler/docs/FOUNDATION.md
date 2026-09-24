@@ -281,9 +281,12 @@ and matching does not replay calls or inspect private bodies. Direct returned
 shared record/null-union views also retain exact owner locations through direct,
 deeper and stored shared inputs. Exact owned union projections from borrowed
 records retain concrete field paths alongside compatible stored candidates.
-Unmatched owned unions remain incomplete because their variants can hide nested
-candidates; no variant field indices are inferred. By-value returned union origins
-remain separate.
+Owned record/null unions also contribute exact/deeper shared-reference candidates
+through variant-qualified stored snapshots. Different layouts never become ordinary
+field paths. Unsupported borrowed contents and owned projections inside variants
+remain incomplete. Concrete-record field-origin summaries through these hidden
+candidates remain separate from location matching; union-result shaped reads retain
+their dependencies. By-value returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

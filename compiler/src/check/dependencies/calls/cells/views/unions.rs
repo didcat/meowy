@@ -84,7 +84,15 @@ pub(crate) fn owned_union_projections_do_not_skip_hidden_nested_candidates() {
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
+    let cells = &checker.reference_cells[&id(&checker, "view")];
+    assert!(cells.complete);
+    assert_eq!(
+        cells.places,
+        BTreeSet::from([
+            (id(&checker, "pack"), vec![1]),
+            (id(&checker, "other"), vec![])
+        ])
+    );
 }
 
 #[test]

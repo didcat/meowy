@@ -79,6 +79,15 @@ impl Checker {
                     }
                     continue;
                 }
+                if matches!(ty, Type::Union(_)) {
+                    let Some(source) =
+                        self.hidden_union_cells(&locations, &path, ty, result, expr)?
+                    else {
+                        return Ok(None);
+                    };
+                    self.merge_returned_cells(&mut cells, source, expr)?;
+                    continue;
+                }
                 let record = self
                     .call_shared_view(ty, expr)?
                     .filter(|(view, _)| view.pointee().is_some_and(Type::has_borrowed));
@@ -173,3 +182,5 @@ mod nested;
 
 #[cfg(test)]
 mod unions;
+
+mod hidden;
