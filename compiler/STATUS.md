@@ -51,7 +51,15 @@ source/classification groups cover aliases, stored views, retarget snapshots,
 unknown alternatives, sibling-prefix isolation and type/work limits. All 314
 dependency-filtered tests and formatting pass; log:
 `/tmp/meowy-union-view-links-focused.log`. Next: exact-shape reads from those
-locations. The tree was clean at investigation; proof outcomes stay gated.
+locations. Location prerequisite: `758c3fc`. Shared dereference reads now combine
+exact snapshots across known locations, validating concrete prefixes and retaining
+incomplete alternatives. Existing temporary resolution is preserved. All 319
+dependency-filtered tests pass; log: `/tmp/meowy-shared-union-reads-focused.log`.
+Five read groups cover named/stored/projected views, retarget copies, null/carriers,
+unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
+All ten compiler checks pass; log: `/tmp/meowy-shared-union-views-gate.log`.
+No failures remain. Documentation will be committed separately. Next: bounded shared
+carrier chains ending at record unions. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1379,15 +1387,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1283
-  library/903 native tests (2186 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1292
+  library/903 native tests (2195 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-temporary-unions-gate.log`.
-- All 310 dependency-filtered tests pass. Three lookup groups cover explicit
-  temporary identity, concrete field paths, shape offsets, unknown views and bounds.
-  Four source groups cover copies/reborrows, carriers, null/unknown contents,
-  snapshot independence and unchanged E303 expiry. Accepted fixtures pass ordinary
-  compilation/ownership; marks remain seeded. Read prerequisite: `dfb1e47`.
+  0 failed in debug/release. Log: `/tmp/meowy-shared-union-views-gate.log`.
+- All 319 dependency-filtered tests pass. Four location groups cover shared union
+  carriers, aliases, stored views, retarget copies, prefix isolation and bounds.
+  Five read groups cover exact snapshots, null/carriers, incomplete alternatives,
+  unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  Location prerequisite: `758c3fc`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1570,13 +1579,16 @@ explicitly documented. No outstanding failures remain.
    record shapes too. Union-interior writes retain the ordinary concrete-storage
    B001 gate. Statement-owned temporaries now capture shaped snapshots; direct
    dereferences and reborrows recover explicit storage IDs and concrete field paths,
-   preserving shape offsets and E303 expiry. Next add direct named shared-union
-   storage links in `dependencies/references.rs`, then exact-selection reads in
-   `records/shapes`. Audit ordinary borrow admission first. Preserve incomplete
-   locations and reject positional prefixes crossing unselected union shapes;
-   test aliases/copies, later marks, null/unknown inputs, bounds and ownership before
-   the full gate. Broader borrowed union views and returned union origins remain
-   separate until these storage foundations are established.
+   preserving shape offsets and E303 expiry. Named shared record/null-union views
+   now retain bounded storage locations; shaped dereference reads merge exact
+   snapshots across valid concrete prefixes and retain unknown alternatives.
+   Next extend shared carrier chains ending at record unions in
+   `dependencies/references.rs`: preserve shared-only classification and reuse
+   bounded cell-layer expansion. Test named/stored carriers, copies, retargets,
+   unknown layers, depth/work limits and ordinary ownership. Audit any interaction
+   with existing returned-carrier matching before the full gate. Direct returned
+   union views and by-value returned union origins still need separate public-
+   contract matching; unselected heterogeneous prefixes remain incomplete.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

@@ -58,11 +58,17 @@ impl Checker {
                 }
                 ExprKind::Local(id) => break *id,
                 ExprKind::Deref(inner) => {
-                    let Some(place) = self.shape_temporary(inner)? else {
+                    if variants.is_empty() {
                         return Ok(None);
-                    };
-                    fields.extend(place.fields.iter().rev());
-                    break place.root;
+                    }
+                    fields.reverse();
+                    let variants = variants
+                        .into_iter()
+                        .rev()
+                        .map(|(at, ty)| (fields.len() - at, ty))
+                        .collect::<Vec<_>>();
+                    let key = ShapeKey::new(&fields, &variants, &mut self.flow, value.span)?;
+                    return Ok(Some(self.view_shape_source(inner, &key)?));
                 }
                 _ => return Ok(None),
             }

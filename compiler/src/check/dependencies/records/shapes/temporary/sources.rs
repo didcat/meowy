@@ -72,7 +72,7 @@ pub(crate) fn temporary_union_copies_keep_snapshots_across_source_replacement() 
 }
 
 #[test]
-pub(crate) fn temporary_union_tracking_does_not_extend_expiry_or_admit_named_views() {
+pub(crate) fn temporary_union_tracking_keeps_expiry_separate_from_named_views() {
     let prefix = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;x:=false;wide<A><B>:{->r:&x}";
     for tail in [
         "view:&({->item:wide}.item);copy:*view",
@@ -85,5 +85,7 @@ pub(crate) fn temporary_union_tracking_does_not_extend_expiry_or_admit_named_vie
     crate::compile(&source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, &source);
-    assert!(!checker.pointees[&(checker.locals.len() - 1)].complete);
+    let origins = &checker.pointees[&(checker.locals.len() - 1)];
+    assert!(origins.complete);
+    assert_eq!(origins.roots, BTreeSet::from([id(&checker, "x")]));
 }

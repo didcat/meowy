@@ -100,20 +100,7 @@ impl Checker {
             }
             match &base.kind {
                 ExprKind::Local(id) => return self.stored_shape_source(*id, &key, value.span),
-                ExprKind::Deref(inner) => {
-                    let Some(place) = self.shape_temporary(inner)? else {
-                        return Ok(Snapshot::default());
-                    };
-                    let mut fields = place.fields.clone();
-                    fields.extend(&key.fields);
-                    let variants = key
-                        .variants
-                        .iter()
-                        .map(|(at, ty)| (at + place.fields.len(), ty))
-                        .collect::<Vec<_>>();
-                    let key = ShapeKey::new(&fields, &variants, &mut self.flow, value.span)?;
-                    return self.stored_shape_source(place.root, &key, value.span);
-                }
+                ExprKind::Deref(inner) => return self.view_shape_source(inner, &key),
                 ExprKind::Field {
                     value: inner,
                     index,
