@@ -75,7 +75,9 @@ The highlighter handles:
 - References and pointers, including `<&!T>`, `<*!T>`, and `&!value`, plus `!{ ... }`
   safety boundaries.
 - Task submission and joins (`>>`, `<<`), `%group` names, labeled scopes,
-  emissions, matchers, field selection, and dispatch.
+  emissions, matchers, field selection, and dispatch. Simple and qualified callables
+  in `value.(function)` and `value.(module.function)` use function highlighting,
+  including a line break after the opening parenthesis.
 - Decimal, hexadecimal, and binary integers with separators, floating-point
   literals and exponents, and arithmetic and logical operators.
 - Delimited multiline comments, multiline strings, supported escapes, and

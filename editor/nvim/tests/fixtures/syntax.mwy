@@ -140,6 +140,16 @@ borrowed_comparison : &jobs < limit
 value
     .(convert)
     .{ -> self }
+qualified_dispatch : value.(transforms.convert)
+spaced_dispatch : value. ( transforms . convert )
+multiline_dispatch : value.(
+    transforms.convert
+)
+ordinary_group : (convert)
+nested_group : consume((convert))
+ordinary_field : transforms.convert
+quoted_dispatch : "value.(convert)"
+# value.(convert) #
 
 plain : "a # is string content"
 escaped : "quote: \" slash: \\ braces: \{literal\} tab: \t nul: \0"

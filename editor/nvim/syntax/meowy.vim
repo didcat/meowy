@@ -20,6 +20,7 @@ endif
 syntax match meowyBinding /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*:\%(:\)\@!/
 syntax match meowyCall /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*(/
 syntax match meowyCall /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*<[^"#{};|=]\+>\s*(/
+syntax match meowyCall /\%(\.\_s*(\_s*\%([A-Za-z_][A-Za-z0-9_]*\_s*\.\_s*\)*\)\@<=[A-Za-z_][A-Za-z0-9_]*\ze\_s*)/
 
 syntax match meowyOperator /[-+*\/%=<>!~^&|:]/
 syntax match meowyOperator /:=\|==\|!=\|<=\|>=\|&&\|||/

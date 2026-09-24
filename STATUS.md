@@ -19,16 +19,17 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Editor task and dispatch highlighting
 
-Commit plan:
-1. Recognize `%group` in operand positions, preserving binary remainder and ordinary
-   borrows; update editor fixtures/docs and run Vim/Neovim verification.
-2. Highlight simple and qualified callables in `.(function)` dispatch, preserving
-   ordinary parenthesized values. Add focused regressions and rerun editor checks.
+Vim/Neovim recognize `%group` in operand positions, including group joins and
+configuration methods, while binary remainder and ordinary borrows keep their
+highlighting. Task-group editor slice: `27ad3e9`.
 
-The user extended the documentation-only task to editor highlighting. Compiler and
-runtime implementation remain outside this change. `%group` recognition passes
-all six checks in `python3 -B tools/verify.py --editor both`; log:
-`/tmp/meowy-task-group-editor.log`. Dispatch-callable highlighting is next.
+Simple/qualified callables in `.(function)` dispatch now receive function
+highlighting, including multiline forms. Ordinary parenthesized values, field
+reads, comments and strings retain their previous groups.
+
+`python3 -B tools/verify.py --editor both` passed all six checks for each slice;
+logs: `/tmp/meowy-task-group-editor.log`, `/tmp/meowy-dispatch-highlight.log`.
+Compiler/runtime implementation and the active compiler handoff are unchanged.
 
 ## Task-group sigil documentation
 
@@ -39,9 +40,9 @@ handle/group; borrowing data for a task does not grant a borrowed join.
 
 `python3 -B tools/verify.py` passed all four default checks; log:
 `/tmp/meowy-task-group-sigil-docs.log`. Staged whitespace checks passed. This is a
-documentation-only change: compiler, runtime and editor code were not changed or
-executed, and task-group syntax remains unimplemented. The active compiler
-implementation handoff is unchanged.
+documentation-only slice (`4b81c5d`); it did not compile or execute meowy programs.
+The editor follow-up is recorded above. Task-group syntax remains unimplemented,
+and the active compiler implementation handoff is unchanged.
 
 ## Scope-exit action documentation
 
