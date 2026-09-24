@@ -164,23 +164,7 @@ impl Checker {
         ty: &Type,
         span: crate::ast::Span,
     ) -> crate::check::Result<bool> {
-        if let Type::Reference(target) = ty
-            && let Type::Union(members) = target.as_ref()
-            && target.has_reference()
-        {
-            if members.len() > MAX_ROOTS || !self.flow.spend(members.len() + 1) {
-                return Err(crate::diagnostic::Diagnostic::unsupported(
-                    "proof union view type budget exhausted",
-                    span,
-                ));
-            }
-            if members
-                .iter()
-                .all(|member| matches!(member, Type::Record { .. } | Type::Null))
-            {
-                return Ok(true);
-            }
-        }
+        let mut shared = matches!(ty, Type::Reference(_));
         let mut ty = ty.pointee();
         let mut depth = 0;
         loop {
@@ -190,6 +174,23 @@ impl Checker {
                     "proof reference origin traversal budget exhausted",
                     span,
                 ));
+            }
+            if shared
+                && let Type::Union(members) = inner
+                && inner.has_reference()
+            {
+                if members.len() > MAX_ROOTS || !self.flow.spend(members.len()) {
+                    return Err(crate::diagnostic::Diagnostic::unsupported(
+                        "proof union view type budget exhausted",
+                        span,
+                    ));
+                }
+                if members
+                    .iter()
+                    .all(|member| matches!(member, Type::Record { .. } | Type::Null))
+                {
+                    return Ok(true);
+                }
             }
             if Self::origin_reference(inner)
                 || (Self::origin_record(inner).is_some() && inner.has_reference())
@@ -203,6 +204,7 @@ impl Checker {
                     span,
                 ));
             }
+            shared &= matches!(inner, Type::Reference(_));
             ty = inner.pointee();
         }
     }
@@ -532,3 +534,6 @@ mod origins {
 
 #[cfg(test)]
 mod union_views;
+
+#[cfg(test)]
+mod union_chains;

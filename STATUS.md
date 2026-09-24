@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-23. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-24. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -388,21 +388,22 @@ shaped snapshots, including concrete projected reborrows, without extending
 lifetimes. Read prerequisite: `dfb1e47`. Named shared record-union views retain owner locations,
 and dereference reads merge exact snapshots through concrete prefixes. Location
 prerequisite: `758c3fc`. All 319 dependency-filtered tests and all ten compiler checks
-pass. Shared carrier chains ending at unions are next; returned union views,
-union-interior writes and proof outcomes remain separate.
+pass. Shared carrier chains ending at record unions now retain locations through
+named/stored layers and conservative retargets. All 325 dependency-filtered tests
+and all ten compiler checks pass. Returned union carrier matching is next; direct
+returned union views, union-interior writes and proof outcomes remain separate.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1292
-  library/903 native tests (2195 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1298
+  library/903 native tests (2201 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-shared-union-views-gate.log`.
-- All 319 dependency-filtered tests pass. Four location groups cover shared union
-  carriers, aliases, stored views, retarget copies, prefix isolation and bounds.
-  Five read groups cover exact snapshots, null/carriers, incomplete alternatives,
-  unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
-  Location prerequisite: `758c3fc`.
+  0 failed in debug/release. Log: `/tmp/meowy-union-chains-gate.log`.
+- All 325 dependency-filtered tests pass. Six chain groups cover named/stored/
+  deeper carriers, retarget snapshots, unknown layers, nullable carrier contents,
+  shared-edge classification, exact type/work limits and E302/E303 rejection.
+  The returned-carrier audit confirms those results remain incomplete. Accepted
+  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-23. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-24. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -29,38 +29,28 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current named shared-union view series
+### Current shared union carrier-chain slice
 
-Admission audit: named shared-union copies and concrete record-field borrows pass
-ordinary `meowy check`; a shared view escaping local storage fails E303. Fixtures:
-`/tmp/meowy-named-union-{copy,field,expiry}.mwy`. No borrow rule needs relaxation.
+Shared record-union carrier chains now retain `Cells` through bounded dereference
+layers. Union recognition preserves a shared-edge flag throughout the chain. Returned-carrier matching has a separate terminal-type
+classifier (`shared_cell_depth`) that still leaves union terminals incomplete.
 
-Commit plan:
-1. Recognize shared references to bounded record/null unions as storage carriers.
-   Reuse existing bounded `Cells` links for direct owners, aliases, retargets and
-   concrete field borrows. Validate locations, unknowns, marks and budgets; commit.
-2. Resolve shaped dereference reads through known locations, combining snapshots
-   conservatively and validating concrete prefixes before applying shape keys.
-   Preserve temporary handling and unknown alternatives; test real copies, shape
-   narrowing, null, carriers, retargets, bounds and E303 lifetime checks. Run the
-   full compiler gate and update the guide/root handoff.
+Commit plan: extend union recognition through the existing bounded traversal while
+requiring every new union-carrier edge to be shared. Keep the behavior change with
+source tests for named/stored/deeper carriers, retargets, old copies, unknown layers,
+null, marks and ownership, plus exact type/work limits. Audit returned-carrier
+behavior without broadening the public call matcher. Run the full compiler gate
+and update the guide/root handoff in the same slice.
 
-Returned union views and broader unsupported location paths remain separate.
-Shared references to record/null unions now use bounded `Cells` locations. Four
-source/classification groups cover aliases, stored views, retarget snapshots,
-unknown alternatives, sibling-prefix isolation and type/work limits. All 314
-dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-union-view-links-focused.log`. Next: exact-shape reads from those
-locations. Location prerequisite: `758c3fc`. Shared dereference reads now combine
-exact snapshots across known locations, validating concrete prefixes and retaining
-incomplete alternatives. Existing temporary resolution is preserved. All 319
-dependency-filtered tests pass; log: `/tmp/meowy-shared-union-reads-focused.log`.
-Five read groups cover named/stored/projected views, retarget copies, null/carriers,
-unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
-All ten compiler checks pass; log: `/tmp/meowy-shared-union-views-gate.log`.
-No failures remain. Read integration is committed as `8c1d1a7`; the separate guide
-and root handoff record its boundary. Next: bounded shared carrier chains ending at
-record unions. Proof outcomes stay gated.
+Union recognition now follows the existing cell-depth traversal and retains a
+shared-edge flag across the chain. All 325 dependency-filtered tests pass; log:
+`/tmp/meowy-union-chains-focused.log`. Six groups cover named/stored/deeper chains,
+retarget/copy snapshots, unknown layers, nullable carrier contents, exact type/work
+limits and E302/E303 rejection. Returned union carriers remain incomplete because
+their call classifier is unchanged. All ten compiler checks pass; log:
+`/tmp/meowy-union-chains-gate.log`. No failures remain. Next: union terminal types
+for returned shared carriers before public candidate matching. Untracked
+`docs/proposals/` remains untouched; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1388,16 +1378,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1292
-  library/903 native tests (2195 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1298
+  library/903 native tests (2201 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-shared-union-views-gate.log`.
-- All 319 dependency-filtered tests pass. Four location groups cover shared union
-  carriers, aliases, stored views, retarget copies, prefix isolation and bounds.
-  Five read groups cover exact snapshots, null/carriers, incomplete alternatives,
-  unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
-  Location prerequisite: `758c3fc`.
+  0 failed in debug/release. Log: `/tmp/meowy-union-chains-gate.log`.
+- All 325 dependency-filtered tests pass. Six chain groups cover named/stored/
+  deeper carriers, retarget snapshots, unknown layers, nullable carrier contents,
+  shared-edge classification, exact type/work limits and E302/E303 rejection.
+  The returned-carrier audit confirms those results remain incomplete. Accepted
+  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1583,13 +1572,16 @@ explicitly documented. No outstanding failures remain.
    preserving shape offsets and E303 expiry. Named shared record/null-union views
    now retain bounded storage locations; shaped dereference reads merge exact
    snapshots across valid concrete prefixes and retain unknown alternatives.
-   Next extend shared carrier chains ending at record unions in
-   `dependencies/references.rs`: preserve shared-only classification and reuse
-   bounded cell-layer expansion. Test named/stored carriers, copies, retargets,
-   unknown layers, depth/work limits and ordinary ownership. Audit any interaction
-   with existing returned-carrier matching before the full gate. Direct returned
-   union views and by-value returned union origins still need separate public-
-   contract matching; unselected heterogeneous prefixes remain incomplete.
+   Shared carrier chains now retain those locations through bounded shared-only
+   classification and existing cell expansion, including named/stored chains,
+   retargets and prior copies. Returned union carriers remain incomplete:
+   `calls/cells.rs::shared_cell_depth` does not yet recognize union terminals.
+   Next extend that terminal classification for returned carriers of at least two
+   shared layers, then reuse public candidate matching for direct/deeper/stored
+   arguments. Test all/unknown candidates, nested calls, propagated depth/work,
+   no replay and lifetimes before the full gate. Keep direct returned union views
+   and by-value returned unions separate; unselected heterogeneous prefixes remain
+   incomplete.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

@@ -269,8 +269,12 @@ stored fields and retargets. Dereference reads merge exact shaped snapshots acro
 those locations, preserving prior copies, null contents and unknown alternatives.
 Concrete record prefixes are checked before applying field indices; prefixes that
 cross unselected heterogeneous shapes remain incomplete. E302/E303 ownership checks
-are unchanged. Broader union carrier chains, returned union views and by-value
-returned union origins remain separate.
+are unchanged. Shared carrier chains ending at record/null unions retain locations
+through bounded cell-layer expansion, including named/stored chains, retargets and
+prior copies. Unknown layers remain incomplete; the new classification does not
+cross exclusive edges. Returned union carriers still need terminal-type support
+in public call matching. Direct returned union views and by-value returned union
+origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
