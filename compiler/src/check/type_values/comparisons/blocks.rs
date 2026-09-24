@@ -33,6 +33,8 @@ impl Checker {
         depth: usize,
         count: &mut usize,
     ) -> Result<Option<Type>> {
+        let bits = self.bits_expression(expr)?;
+        let expr = bits.as_ref().unwrap_or(expr);
         self.form_work(expr, depth, count)?;
         if expected.is_some_and(|ty| !matches!(ty, Type::Int { .. })) {
             return Err(Self::error(

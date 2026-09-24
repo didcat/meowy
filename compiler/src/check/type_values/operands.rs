@@ -9,6 +9,10 @@ impl Checker {
         let mut count = 0;
         while let Some((expr, depth)) = pending.pop() {
             self.form_work(expr, depth, &mut count)?;
+            if let Some((_, args)) = self.bits_arguments(expr)? {
+                pending.extend(args.into_iter().rev().map(|arg| (arg, depth + 1)));
+                continue;
+            }
             match &expr.kind {
                 ExprKind::Block(_) => return Ok(true),
                 ExprKind::Group(value) => pending.push((value, depth + 1)),
@@ -65,6 +69,8 @@ impl Checker {
         expr: &Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
+        let bits = self.bits_expression(expr)?;
+        let expr = bits.as_ref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| match &expr.kind {
             ExprKind::Block(_) => {

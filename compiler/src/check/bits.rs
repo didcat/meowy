@@ -2,6 +2,9 @@ use super::{Checker, Result, Value};
 use crate::ast::{Expr, ExprKind};
 use crate::foundation::{BitOp, Item};
 
+#[cfg(test)]
+mod required;
+
 impl Checker {
     pub(crate) fn bits_arguments<'a>(
         &mut self,

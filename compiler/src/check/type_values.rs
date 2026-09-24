@@ -232,6 +232,8 @@ impl Checker {
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
+        let bits = self.bits_expression(expr)?;
+        let expr = bits.as_ref().unwrap_or(expr);
         if let Some(annotation) = annotation
             && self.meta_annotation(annotation)?
         {
