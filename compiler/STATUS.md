@@ -43,9 +43,14 @@ Investigation: hidden candidate discovery already retains exact keys, shared
 layers and typed continuations. Reuse its resolver after `record_shape_source_at`
 reads a by-value argument; offset keys only through concrete owned record prefixes.
 Never manufacture a concrete field address inside a union variant. Preserve
-caller and structural depth bounds. Resolver extraction passes all 435 dependency-
-filtered tests and formatting; log: `/tmp/meowy-hidden-cell-resolution-focused.log`.
-By-value snapshot integration is next. User changes remain preserved.
+caller and structural depth bounds. Resolver prerequisite `1e97d1d` passed all 435
+focused tests before admission. Integration and five new groups pass all 440
+dependency-filtered tests; log: `/tmp/meowy-owned-union-cells-focused.log`.
+Earlier candidate expectations now check known cells. Exact layouts/null/unknowns,
+nested fields/calls, result kinds, continuations, bounds/no replay and E302/E303 pass.
+All ten compiler checks pass, including 1413 library/903 native tests; log:
+`/tmp/meowy-owned-union-cells-gate.log`. No failures remain.
+User changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1373,16 +1378,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1408
-  library/903 native tests (2311 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1413
+  library/903 native tests (2316 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-direct-union-origins-gate.log`.
-- All 435 dependency-filtered tests pass. Caller-depth preservation and five
-  direct borrowed-union groups cover distinct/null/unknown layouts, deeper/stored
-  views, nested calls, unknown intermediate cells, no replay, call/work limits,
-  exclusive edges and E302/E303 lifetimes. Returned carrier-cell matching from
-  by-value unions remains separate. Accepted fixtures pass ordinary compilation/
-  ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-owned-union-cells-gate.log`.
+- All 440 dependency-filtered tests pass. Five by-value union cell groups cover
+  exact layouts, all/unknown/null candidates, copies, nested fields and inline
+  calls, record/union/carrier results, typed continuations, no replay, depth/work
+  limits and E302/E303 lifetimes. Earlier heterogeneous candidate tests now verify
+  known locations. Accepted fixtures pass ordinary compilation/ownership; marks
+  remain seeded. Proof outcomes and unselected variant-address projections stay gated.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1646,12 +1651,18 @@ explicitly documented. No outstanding failures remain.
    same bounded location traversal through `call_origin_view`. Caller-depth
    prerequisite `d600bb6` prevents input location lookup from restarting the call
    budget. Exact variants and unknown intermediates retain conservative origins.
-   Next match returned carrier-cell locations from by-value union arguments in
-   `calls/cells.rs` and `calls/cells/record_results.rs`. Reuse bounded typed candidate
-   discovery while reading expression-backed variant snapshots with the current call
-   depth, rather than inventing concrete owner paths. Split record-view and carrier/
-   union-view result admission if needed. Test direct/deeper/stored/all/unknown/null
-   leaves, inline wrappers, copies, limits/no replay and lifetimes before the full gate.
+   By-value union arguments now contribute returned cell locations through exact
+   expression-backed variant snapshots, including concrete owned prefixes, record/
+   union views, deeper carriers and typed continuations. Resolver prerequisite:
+   `1e97d1d`. Unknown candidates preserve incompleteness; no variant positions are
+   manufactured as ordinary storage paths.
+   Next audit conditional leave/restart continuation dependencies in
+   `dependencies.rs` and the statement/block control handlers. Its structural walk
+   currently ignores Leave/Restart; lexical control restoration does not by itself
+   account for which later statements can execute. Record a short plan separating
+   exit/control representation, propagation and E225 enforcement. Start with seeded
+   successor read/write/query regressions, preserve original typing/ownership errors,
+   and run the full gate before changing proof-outcome admission.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

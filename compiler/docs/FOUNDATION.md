@@ -322,8 +322,10 @@ terminals resolve exact location-backed snapshots through cumulative record/unio
 transitions, preserving null and unknown contents. Borrowed primary values and
 unsupported members remain incomplete. Direct, deeper and record-stored borrowed
 union origin arguments use the same variant-aware traversal, preserving caller
-depth when fetching input locations. By-value union arguments returning carrier-cell
-locations remain a separate boundary.
+depth when fetching input locations. By-value union arguments also contribute
+returned cell locations through expression-backed variant snapshots, including
+record/union views, deeper carriers and typed continuations. Unknown candidates
+remain incomplete; concrete prefixes never replace variant-qualified paths.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

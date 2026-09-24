@@ -85,12 +85,14 @@ pub(crate) fn matching_record_fields_keep_all_candidates_and_unknowns() {
 }
 
 #[test]
-pub(crate) fn heterogeneous_record_return_candidates_remain_incomplete() {
+pub(crate) fn heterogeneous_record_return_candidates_retain_cells() {
     let source = "<A>:<{c<& &boolean>}>;<B>:<{n<int32>}>;f<& &boolean>:(p<A><B>,q<& &boolean>){|p<A>|->p.c;|p<B>|->q};x:=false;a:&x;row<A><B>:{->c:&a};r:f(row,&a)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "r")].complete);
+    let cells = &checker.reference_cells[&id(&checker, "r")];
+    assert!(cells.complete);
+    assert_eq!(cells.places, BTreeSet::from([(id(&checker, "a"), vec![])]));
 }
 
 #[test]
