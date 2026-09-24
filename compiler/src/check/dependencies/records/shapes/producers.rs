@@ -41,6 +41,36 @@ impl Snapshot {
 }
 
 impl Checker {
+    pub(super) fn stored_shape_source(
+        &mut self,
+        id: usize,
+        key: &ShapeKey,
+        span: Span,
+    ) -> Result<Snapshot> {
+        let root = self.origin_id(id);
+        let snapshot = self
+            .record_shapes
+            .get(&root)
+            .and_then(|shapes| shapes.get(key));
+        let work = snapshot.map_or(1, |value| {
+            value.origins.roots.len()
+                + value
+                    .cells
+                    .places
+                    .iter()
+                    .map(|(_, path)| path.len() + 1)
+                    .sum::<usize>()
+                + 1
+        });
+        if !self.flow.spend(work) {
+            return Err(Diagnostic::unsupported(
+                "proof record shape source budget exhausted",
+                span,
+            ));
+        }
+        Ok(snapshot.cloned().unwrap_or_default())
+    }
+
     pub(super) fn record_shape_source(&mut self, value: &Expr, key: &ShapeKey) -> Result<Snapshot> {
         self.record_shape_source_at(value, key, 0)
     }
@@ -69,29 +99,12 @@ impl Checker {
                 ));
             }
             match &base.kind {
-                ExprKind::Local(id) => {
-                    let root = self.origin_id(*id);
-                    let snapshot = self
-                        .record_shapes
-                        .get(&root)
-                        .and_then(|shapes| shapes.get(&key));
-                    let work = snapshot.map_or(1, |value| {
-                        value.origins.roots.len()
-                            + value
-                                .cells
-                                .places
-                                .iter()
-                                .map(|(_, path)| path.len() + 1)
-                                .sum::<usize>()
-                            + 1
-                    });
-                    if !self.flow.spend(work) {
-                        return Err(Diagnostic::unsupported(
-                            "proof record shape source budget exhausted",
-                            value.span,
-                        ));
-                    }
-                    return Ok(snapshot.cloned().unwrap_or_default());
+                ExprKind::Local(id) => return self.stored_shape_source(*id, &key, value.span),
+                ExprKind::Deref(inner) => {
+                    let Some(id) = self.shape_temporary(inner)? else {
+                        return Ok(Snapshot::default());
+                    };
+                    return self.stored_shape_source(id, &key, value.span);
                 }
                 ExprKind::Field {
                     value: inner,

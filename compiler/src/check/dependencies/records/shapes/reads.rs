@@ -57,6 +57,12 @@ impl Checker {
                     base = inner;
                 }
                 ExprKind::Local(id) => break *id,
+                ExprKind::Deref(inner) => {
+                    let Some(id) = self.shape_temporary(inner)? else {
+                        return Ok(None);
+                    };
+                    break id;
+                }
                 _ => return Ok(None),
             }
             depth += 1;

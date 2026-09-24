@@ -29,39 +29,28 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current completed mutable union field series
+### Current temporary union snapshot series
 
-Investigation: owned write paths are positional and require concrete records before
-the target; union-interior writes retain their ordinary gate. Shape updates can
-therefore prefix incoming keys without inventing selections above that prefix.
-Block capture must read final canonical slots for mutable fields or descendants,
-not their earlier initializer expressions.
+Admission audit: direct copy and empty-path reborrow of a computed union field pass
+ordinary `meowy check`; retaining its reference into the next statement fails E303.
+Fixtures: `/tmp/meowy-temp-union-{copy,reborrow,expiry}.mwy`. No borrow gate needs
+relaxation. Temporary registration currently retains incomplete shaped layouts.
 
 Commit plan:
-1. Add bounded shape-prefix merging to owned-path writes. Preserve siblings, old
-   copies and unknown alternatives; reject paths crossing unselected variants.
-   Validate seeded updates and failure preservation, then commit.
-2. Capture mutable record shapes and read final canonical slot snapshots at block
-   completion. Test lexical retargets, completed field/subrecord/conditional writes,
-   copies, carriers, null/unknown inputs, later marks and ownership. Run the full
-   compiler gate and update the guide/root handoff.
+1. Add bounded explicit temporary-ID lookup through empty-path reborrows and use
+   it for shaped source/narrowing reads. Validate seeded snapshots, unknown views
+   and traversal budgets; commit this read-side prerequisite.
+2. Capture shaped snapshots on existing statement-owned temporary IDs. Test real
+   union copies, nested fields, carriers, null/unknown inputs, later marks and E303
+   expiry. Run the full compiler gate and update the guide/root handoff.
 
-Temporary-borrow producers, returned unions and borrowed union views remain separate.
-Prefix merging is wired to checked owned-path writes. Four seeded groups cover
-shape-offset remapping, sibling/copy preservation, missing inputs, unselected
-variant rejection, total capacity and failure preservation. Unrelated writes bypass
-shape-path limits. All 296 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-shape-prefixes-focused.log`. Next: final-slot construction and mutable
-shape capture. Prerequisite: `7b491bc`. Mutable fields and mutable descendants now
-read final canonical slot snapshots at block completion; initial capture and
-whole-value merging admit mutable record shapes. All 303 dependency-filtered tests
-pass; log: `/tmp/meowy-mutable-fields-focused.log`. Seven real-source groups cover
-final slots and descendants, direct/subrecord/conditional/self writes, copies,
-carriers, null/unknown alternatives, composition independence, query control and
-E302 loans. Union-interior writes still report their existing concrete-storage
-B001 gate. All ten compiler checks pass; log: `/tmp/meowy-mutable-fields-gate.log`.
-No failures remain. Next: inspect statement-owned temporary union snapshots while
-preserving ordinary borrow gates and expiry. Proof outcomes stay gated.
+Named/general borrowed union views and returned unions remain separate. No temporary
+lifetime is extended. Direct temporary IDs and bounded empty-path reborrows now
+feed shaped source/narrowing reads. Two seeded groups cover external pointee
+identity, unknown named/projected views and depth/work limits. All 305 focused
+dependency tests and formatting pass; log:
+`/tmp/meowy-temporary-shape-reads-focused.log`. Next: capture real temporary values.
+The tree was clean at investigation; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
