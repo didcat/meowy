@@ -307,6 +307,7 @@ impl Checker {
                     may_return: result != Type::Never,
                     control: self.control,
                     span,
+                    edges: Vec::new(),
                 })?;
                 (
                     hir::ExprKind::Call {

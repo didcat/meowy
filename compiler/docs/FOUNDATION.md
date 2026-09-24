@@ -136,6 +136,12 @@ stay explicit, and owner sets do not identify exact field/element write location
 The target must complete before address capture and RHS entry; the RHS must
 complete before the write effect. These links do not prove reachability or enable
 proof evaluation. Existing conservative dependency marks remain separate.
+Direct-function calls retain their callee and call-site IDs plus exact argument
+roots, with dispatch receivers first. Ordered argument completion leads to an
+opaque call-effect stage; a separate return edge permits normal continuation only
+when the callee returns. Declared `never` results omit that edge. No purity,
+termination or effect summary is inferred. Debug formatting, list methods and
+required/type-only calls retain separate coverage boundaries.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

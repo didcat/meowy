@@ -1,4 +1,7 @@
-use super::PointKind;
+use super::{
+    PointKind,
+    edges::{Edge, Port, Route},
+};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -17,10 +20,11 @@ pub(crate) struct Invocation {
     pub(crate) may_return: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
+    pub(crate) edges: Vec<Edge>,
 }
 
 impl Checker {
-    pub(crate) fn invocation(&mut self, call: Invocation) -> Result<()> {
+    pub(crate) fn invocation(&mut self, mut call: Invocation) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof call-input budget exhausted", call.span);
         let invalid = || Diagnostic::unsupported("proof call-input identity mismatch", call.span);
         if call.args.len() > super::sequences::MAX_ITEMS
@@ -58,6 +62,19 @@ impl Checker {
                 return Err(invalid());
             }
         }
+        let effect = Port::Operation(call.point);
+        let mut from = Port::Entry(call.point);
+        call.edges.clear();
+        for arg in &call.args {
+            call.edges
+                .push(Edge::new(from, Port::Entry(*arg), Route::Next));
+            from = Port::Normal(*arg);
+        }
+        call.edges.push(Edge::new(from, effect, Route::Next));
+        if call.may_return {
+            call.edges
+                .push(Edge::new(effect, Port::Normal(call.point), Route::Returned));
+        }
         if let Some(prior) = self.invocations.get(&call.site) {
             return if *prior == call {
                 Ok(())
@@ -65,10 +82,17 @@ impl Checker {
                 Err(invalid())
             };
         }
+        if !self.edge_room(call.edges.len()) {
+            return Err(budget());
+        }
+        self.invocation_edges += call.edges.len();
         self.invocations.insert(call.site, call);
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod order;
 
 #[cfg(test)]
 mod tests {
@@ -135,6 +159,7 @@ mod tests {
         checker.invocation(call.clone()).unwrap();
         assert_eq!(checker.invocations.len(), 1);
         checker.invocations.clear();
+        checker.invocation_edges = 0;
         let mut cases = Vec::new();
         let mut other = call.clone();
         other.args[1] = other.args[0];

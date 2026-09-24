@@ -37,6 +37,7 @@ pub(crate) enum Route {
     Result,
     Backedge,
     Checked,
+    Returned,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -65,6 +66,7 @@ impl Checker {
             .saturating_add(self.operation_edges)
             .saturating_add(self.path_edges)
             .saturating_add(self.store_edges)
+            .saturating_add(self.invocation_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)

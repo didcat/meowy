@@ -542,6 +542,13 @@ remain incomplete, and projected writes retain owner-level granularity. All ten
 compiler checks pass: 1590 library/910 native tests;
 `/tmp/meowy-indirect-stores-gate.log`. Remaining operand links,
 precise write locations, propagation and proof outcomes remain incomplete.
+Direct-function calls now retain exact callee/site IDs and argument roots
+(`fdeb312`), including dispatch receivers first. Ordered argument completion leads
+to an opaque call effect. A distinct callee-return edge permits continuation;
+`never` results omit it. All ten compiler checks pass: 1597 library/910 native tests;
+`/tmp/meowy-call-order-gate.log`. Debug formatting, list methods and
+required/type-only call paths remain separate; no effect summary or proof outcome
+is inferred.
 
 ## Pending descriptor statement accounting
 
@@ -671,10 +678,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Indirect-store order and pre-RHS origin snapshots passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1590 library/910 native tests.
+- Direct-call identities and ordered argument/effect links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1597 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-indirect-stores-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-call-order-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -745,10 +752,12 @@ execution was not part of this documentation edit.
    and projections. Field/indexed stores now retain address/index/RHS order,
    canonical paths and reservation/bounds-success stages. Indirect stores capture
    target/RHS roots and pre-RHS pointee origins, keeping incomplete origins and
-   reference-cell identities distinct. Next retain call-argument roots and ordered
-   call-effect links in `compiler/src/check/functions.rs`; preserve unknown effects
-   and function ownership. Verify side effects, nonreturning arguments, budgets
-   and ordinary errors before extending index/list operand coverage.
+   reference-cell identities distinct. Direct calls retain ordered argument roots,
+   opaque effects and conditional return edges. Next capture list-index receiver
+   and position roots in `compiler/src/list.rs`, preserving receiver-before-index
+   order, bounds checks, borrowed-list rules and nonreturning operands. Validate
+   exact roots, side effects, errors and budgets, then extend list literal/method
+   coverage. Debug formatting and required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.
