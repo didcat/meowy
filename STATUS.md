@@ -19,14 +19,21 @@ Git preserves its completed commit series. Compiler guides remain in `compiler/d
 
 ## Explicit ascription and bits-module migration
 
-Adopt `value~<T>` for proven ascription and make `value<T>` a type predicate in all
-expression positions. Generic calls and type queries retain their syntax; union
-ascriptions use one target type such as a named alias. Move integer bitwise syntax
-into `@"bits"` functions while preserving integer widths and required evaluation.
-Compiler, docs and editor work proceeds in the compiler handoff's reviewed slices.
-Uniform predicates pass 1447 library/909 native tests; bits module implementation,
-required evaluation and fixture migration are committed. Final operator removal
-and combined verification remain; restart/proof implementation stays separate.
+`value~<T>` now performs proven ascription; `value<T>` is a type predicate in every
+expression position. Ascription consumes one bracketed target and still requires
+prior proof (E208). Union aliases and computed targets work. Generic calls and
+`value<>` type queries retain their syntax and existing bootstrap limits.
+
+Integer bit operations now use lexically resolved `@"bits"` functions
+`and/or/xor/not`; their old operator spellings are rejected. Integer widths,
+required evaluation, budgets, borrows, matchers and boolean operators are preserved.
+Documentation, examples and Vim/Neovim cover the new syntax.
+
+All 12 checks in `python3 -B tools/verify.py --compiler --editor both` passed,
+including 1447 library/910 native tests. Log:
+`/tmp/meowy-explicit-types-bits-gate.log`. The
+[compiler handoff](compiler/STATUS.md#explicit-ascription-and-bits-module-migration)
+lists the reviewed commits and remaining limits. Restart/proof work remains next.
 
 ## Dispatch receiver sigil migration
 
@@ -509,15 +516,15 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1437
-  library/906 native tests (2343 total), 20 Python harness tests, fmt, Clippy,
-  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-query-restart-scopes-gate.log`.
-- Five new query-scope groups cover before/after restart association, nested targets,
-  function ownership, descriptor copies, side-effect-free recognition, malformed
-  queries and scope/work bounds. Query control flags and retained logical roots
-  are unchanged; loop-carried propagation remains unimplemented. Editor and separate
-  runtime/sanitizer gates were not rerun for this metadata slice.
+- `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
+  including 1447 library/910 native tests (2357 total), 16 Python tooling and four
+  compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
+  checks. Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+  Log: `/tmp/meowy-explicit-types-bits-gate.log`.
+- Explicit ascriptions retain E208 and ownership checks; predicates use comparison
+  precedence in every expression position. Generic-call fallback, one-target
+  ascription, union targets, bit-function widths/evaluation order, required budgets
+  and contextual lists are covered. Native behavior runs in debug/release.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -530,8 +537,8 @@ Union-interior writes and proof outcomes stay gated.
 | --- | --- |
 | Compiler | Logical charges cover type-expression dispatch/materialization, required statements/blocks, scalar/record reads and constructed/copied record slots; query statement/annotation budgets are retained; descriptor outcomes and phase tracking stay open. |
 | Documentation tooling | Constructed signatures and file graphs are checked; multi-file doc commands/indexes remain separate. |
-| Editor integration | Pointer syntax previously passed Vim/Neovim; unchanged here. |
-| Standard library | `proof` revision 1 specifies queries and static tests; implementation remains open. Net/HTTP foundations remain separate. |
+| Editor integration | Explicit ascriptions, type predicates, dispatch receivers/callables and task-group sigils pass Vim/Neovim checks. |
+| Standard library | `bits.and/or/xor/not` execute with existing integer widths and required-evaluation rules. Other bits APIs remain gated. Proof outcomes and Net/HTTP foundations remain separate. |
 | Runtime and release | File-site runtime helpers passed native probes; platform/distribution qualification remains open. |
 
 ## Proof package reference

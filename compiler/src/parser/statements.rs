@@ -67,7 +67,7 @@ impl Parser {
     pub(crate) fn statement_inner(&mut self) -> ParseResult<Stmt> {
         let start = self.token().span.start;
         let kind = if self.take("|") {
-            let condition = self.expr(0, true, false, true)?;
+            let condition = self.expr(0, false)?;
             self.need("|")?;
             self.newlines();
             let body = self.statement()?;
@@ -94,7 +94,7 @@ impl Parser {
                 name,
                 ty,
                 mutable,
-                value: self.expr(0, false, false, false)?,
+                value: self.expr(0, false)?,
             }
         } else {
             let save = self.pos;
@@ -113,12 +113,12 @@ impl Parser {
                 kind
             } else {
                 self.pos = save;
-                let target = self.expr(0, false, false, false)?;
+                let target = self.expr(0, false)?;
                 if self.take("=") {
                     self.newlines();
                     StmtKind::Assign {
                         target,
-                        value: self.expr(0, false, false, false)?,
+                        value: self.expr(0, false)?,
                     }
                 } else {
                     StmtKind::Expr(target)
@@ -150,7 +150,7 @@ impl Parser {
         let ty = if self.at("<") {
             self.type_union()?
         } else {
-            let value = self.expr(0, false, false, false)?;
+            let value = self.expr(0, false)?;
             TypeExpr {
                 span: value.span,
                 kind: TypeKind::Computed(Box::new(value)),
@@ -204,7 +204,7 @@ impl Parser {
             None => (None, None, false),
         };
         self.newlines();
-        let value = self.expr(0, false, false, false)?;
+        let value = self.expr(0, false)?;
         Ok(StmtKind::Emit {
             label,
             name,

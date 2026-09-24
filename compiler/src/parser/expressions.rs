@@ -4,13 +4,7 @@ use crate::diagnostic::Diagnostic;
 use crate::lexer::TokenKind;
 
 impl Parser {
-    pub(crate) fn expr(
-        &mut self,
-        min: u8,
-        condition: bool,
-        multiline: bool,
-        pipe: bool,
-    ) -> ParseResult<Expr> {
+    pub(crate) fn expr(&mut self, min: u8, multiline: bool) -> ParseResult<Expr> {
         if self.depth >= 64 {
             return Err(Diagnostic::unsupported(
                 "expression nesting beyond 64 levels",
@@ -18,22 +12,16 @@ impl Parser {
             ));
         }
         self.depth += 1;
-        let result = self.expr_inner(min, condition, multiline, pipe);
+        let result = self.expr_inner(min, multiline);
         self.depth -= 1;
         result
     }
 
-    pub(crate) fn expr_inner(
-        &mut self,
-        min: u8,
-        condition: bool,
-        multiline: bool,
-        pipe: bool,
-    ) -> ParseResult<Expr> {
+    pub(crate) fn expr_inner(&mut self, min: u8, multiline: bool) -> ParseResult<Expr> {
         if multiline {
             self.newlines();
         }
-        let mut left = self.prefix(min, condition, multiline, pipe)?;
+        let mut left = self.prefix(min, multiline)?;
         loop {
             if !bounded_tree(&left) {
                 return Err(Diagnostic::unsupported(
@@ -69,7 +57,7 @@ impl Parser {
                     continue;
                 }
                 if self.take("[") {
-                    let index = self.expr(0, false, true, false)?;
+                    let index = self.expr(0, true)?;
                     self.need("]")?;
                     left = Expr {
                         kind: ExprKind::Index {
@@ -84,7 +72,7 @@ impl Parser {
                     self.newlines();
                     let kind = if self.take("(") {
                         self.newlines();
-                        let callee = self.expr(0, false, true, false)?;
+                        let callee = self.expr(0, true)?;
                         let args = if self.take(",") {
                             self.arguments(")")?
                         } else {
@@ -187,51 +175,46 @@ impl Parser {
                         continue;
                     }
                     self.pos = save;
-                    {
-                        if let Ok(ty) = self.type_union() {
-                            if self.at("(") {
-                                if matches!(ty.kind, crate::ast::TypeKind::Union(_)) {
-                                    return Err(Diagnostic::unsupported(
-                                        "union suffixes in generic calls; use a named type argument",
-                                        ty.span,
-                                    ));
-                                }
-                                left = Expr {
-                                    kind: ExprKind::Specialize {
-                                        value: Box::new(left),
-                                        types: vec![ty],
-                                    },
-                                    span: Span::new(start, self.end()),
-                                };
-                                continue;
-                            }
-                            if min > 40 {
-                                self.pos = save;
-                                break;
-                            }
-                            if is_comparison(&left) {
-                                return Err(Diagnostic::new(
-                                    "E004",
-                                    "comparisons cannot be chained",
+                    if let Ok(ty) = self.type_union() {
+                        if self.at("(") {
+                            if matches!(ty.kind, crate::ast::TypeKind::Union(_)) {
+                                return Err(Diagnostic::unsupported(
+                                    "union suffixes in generic calls; use a named type argument",
                                     ty.span,
                                 ));
                             }
                             left = Expr {
-                                kind: ExprKind::Ascribe {
+                                kind: ExprKind::Specialize {
                                     value: Box::new(left),
-                                    ty,
-                                    predicate: true,
+                                    types: vec![ty],
                                 },
                                 span: Span::new(start, self.end()),
                             };
                             continue;
                         }
-                        self.pos = save;
+                        if min > 40 {
+                            self.pos = save;
+                            break;
+                        }
+                        if is_comparison(&left) {
+                            return Err(Diagnostic::new(
+                                "E004",
+                                "comparisons cannot be chained",
+                                ty.span,
+                            ));
+                        }
+                        left = Expr {
+                            kind: ExprKind::Ascribe {
+                                value: Box::new(left),
+                                ty,
+                                predicate: true,
+                            },
+                            span: Span::new(start, self.end()),
+                        };
+                        continue;
                     }
+                    self.pos = save;
                 }
-            }
-            if pipe && self.at("|") {
-                break;
             }
             let op = self.token().text.clone();
             let Some(level) = precedence(&op) else {
@@ -249,7 +232,7 @@ impl Parser {
             }
             self.bump();
             self.newlines();
-            let right = self.expr(level + 1, condition, multiline, pipe)?;
+            let right = self.expr(level + 1, multiline)?;
             left = Expr {
                 kind: ExprKind::Binary {
                     op,
@@ -262,13 +245,7 @@ impl Parser {
         Ok(left)
     }
 
-    pub(crate) fn prefix(
-        &mut self,
-        min: u8,
-        condition: bool,
-        multiline: bool,
-        pipe: bool,
-    ) -> ParseResult<Expr> {
+    pub(crate) fn prefix(&mut self, min: u8, multiline: bool) -> ParseResult<Expr> {
         let token = self.bump();
         let start = token.span.start;
         let kind = match token.kind {
@@ -286,7 +263,7 @@ impl Parser {
                             body: self.block(label, true, start),
                         }
                     } else {
-                        let value = self.expr(0, condition, true, false)?;
+                        let value = self.expr(0, true)?;
                         self.need(")")?;
                         ExprKind::Group(Box::new(value))
                     }
@@ -350,7 +327,7 @@ impl Parser {
                     } else {
                         min.max(90)
                     };
-                    let value = self.expr(level, condition, multiline, pipe)?;
+                    let value = self.expr(level, multiline)?;
                     ExprKind::Unary {
                         op: token.text,
                         value: Box::new(value),
@@ -491,7 +468,7 @@ impl Parser {
             return Ok(args);
         }
         loop {
-            args.push(self.expr(0, false, true, false)?);
+            args.push(self.expr(0, true)?);
             if self.take(close) {
                 break;
             }
@@ -511,7 +488,7 @@ impl Parser {
             return Ok(values);
         }
         loop {
-            values.push(self.expr(0, false, true, false)?);
+            values.push(self.expr(0, true)?);
             if self.at(":") || self.at(":=") {
                 return Err(Diagnostic::unsupported(
                     "named list aliases",

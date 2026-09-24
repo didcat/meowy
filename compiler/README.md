@@ -417,8 +417,8 @@ implementation work.
   and aliases of the resolved `core` and `debug` intrinsics.
 - Null, booleans, signed/unsigned 8–64-bit integers, `isize`/`usize`, float32/64,
   and borrowed literal strings. Numeric operations preserve the operand types.
-- Immutable and mutable local bindings; checked integer arithmetic, bitwise
-  operations, comparisons, and short-circuit boolean operators.
+- Immutable and mutable local bindings; checked integer arithmetic, comparisons,
+  short-circuit boolean operators, and lexically resolved `bits.and/or/xor/not`.
   Unary operators keep their operand type before the result enters an expected
   union, preserving checked widths and boolean operations. Non-returning operands
   propagate through scalar operators while preserving evaluation order and prefixes.
@@ -426,9 +426,11 @@ implementation work.
   scalar-primary projection, dispatch, and duplicate/uninitialized slot checks.
 - Normalized scalar/record unions, nullable field and primary defaults, and
   conversions between compatible union sets without numeric widening.
-- Runtime type predicates and proven ascriptions, including immutable field paths,
-  complementary conditions, short-circuit operands and early-exit narrowing.
-  Assignments invalidate proofs about the changed value.
+- Context-independent type predicates `value<T>` and explicit proven ascriptions
+  `value~<T>`, including immutable field paths, complementary conditions,
+  short-circuit operands and early-exit narrowing. Assignments invalidate proofs
+  about the changed value. Type queries `value<>` and generic-call parsing retain
+  their syntax.
 - Shared references to ordinary local bindings and their concrete record
   fields, address equality, reference copies and copyable dereference. Record field
   access through a reference copies the field. Borrow origins are checked before
@@ -649,7 +651,7 @@ too small reports E103. Literal range can select a width, but no preference is g
 to a smaller capacity or a default numeric width. Pure contextual literals may wait
 for typed elements; other expressions are checked once in source order.
 Pure scalar unary/binary expressions can also constrain candidates, including
-grouped negation, arithmetic, bitwise operations and Boolean comparisons. Their
+grouped negation, arithmetic, `bits.and/or/xor/not` calls and Boolean comparisons. Their
 intermediate values use each candidate's exact width: `(127 + 1) - 1` cannot select
 `int8` merely because its final mathematical result is 127. Immutable scalar
 constants retain their declared types. Short circuits and the expression's original

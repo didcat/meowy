@@ -38,36 +38,56 @@ The restart/proof implementation handoff below remains the next compiler task.
 
 ## Explicit ascription and bits-module migration
 
-Commit plan:
-1. Add postfix `~<T>` as proven ascription (one bracketed target), preserving old
-   syntax during fixture migration. Test proof-before-use, boolean matcher operands,
-   union aliases, whitespace and generic-call parsing.
-2. Add lexically resolved `bits.and/or/xor/not` backed by existing integer HIR and
-   required evaluation, then migrate bitwise fixtures before removing operators.
-3. Migrate existing ascription fixtures in bounded subsystem batches and make bare
-   `value<T>` a predicate everywhere. Keep generic calls and empty type queries.
-4. Update docs/examples and Vim/Neovim in separate reviewed slices. Run the complete
-   compiler/editor gate, retaining E208 and ownership behavior and existing gates.
+The migration is complete. `value~<T>` consumes one bracketed ascription target
+and retains proof-before-use (E208) and ownership checks. Named union aliases and
+existing computed targets work. `value<T>` is always a type predicate at comparison
+precedence; `value<>` and generic-call parsing retain their syntax. The expression
+parser no longer carries matcher/ascription or bitwise-pipe mode flags. Generic
+binders and value arguments retain their existing bootstrap capability gates.
 
-Root owns both STATUS files; parallel agents own bits-module code, documentation,
-and editor support. Explicit ~ ascription passes two parser tests and a native
-debug/release test; logs: `/tmp/meowy-explicit-ascription-parser.log`,
-`/tmp/meowy-explicit-ascription-native.log`. Legacy context-sensitive suffixes remain
-only during fixture migration. AST-based fixture migration passes all 1446 library
-and 908 native tests (debug/release): `/tmp/meowy-ascription-library-migration.log`,
-`/tmp/meowy-ascription-native-migration.log`. Union targets use existing computed
-brackets where needed; required-budget tests account for their actual extra work.
-Bare type suffixes now parse as predicates everywhere at comparison precedence;
-generic-call fallback remains available in higher-precedence operands. All 1447
-library/909 native tests pass (`/tmp/meowy-uniform-predicates-tests.log`). Generated
-fixture fragments and required-target costs were migrated without weakening checks.
-Old bitwise parser spellings are removed; all 1447 library/910 native tests pass
-(`/tmp/meowy-bits-only-tests.log`). Borrows, matchers, boolean operators and remainder
-retain their behavior. Obsolete matcher-mode parameters are next to remove. Migration
-commits are grouped by checker, ownership, loans, native values, native
-slots, restart headers and reference returns (at most eight files each).
-Ordinary host-language self/bitwise syntax and unrelated user
-work are preserved. The restart/proof handoff remains unchanged.
+`@"bits"` provides lexically resolved `and/or/xor/not`, including aliases and
+dispatch, through the existing integer HIR and required evaluator. Exact widths,
+evaluation order, budgets, E225 separation and contextual list inference are
+preserved. Binary integer `&`, `|`, `^` and prefix `~` are no longer source operators.
+Borrows, matchers, boolean operators, capabilities and remainder keep their meanings.
+Other documented bits APIs remain gated. Documentation, examples and Vim/Neovim
+now teach and highlight the explicit syntax.
+
+The dependency-ordered plan separated syntax admission, bits runtime/required
+integration, bounded fixture migration, uniform predicates/operator retirement,
+and parser cleanup. Reviewed commits:
+
+| Slice | Commit |
+| --- | --- |
+| Vim explicit ascription highlighting | `f58c1ce` |
+| Lexically resolved bit functions | `e669908` |
+| Ascription and predicate contract | `c7045e7` |
+| Bits-module documentation | `92d9f61` |
+| Required integer evidence for bit functions | `5b224dd` |
+| Explicit proven ascription parser and regressions | `020568c` |
+| Ascription teaching guides | `e889dad` |
+| Contextual list inference for bit functions | `540cff9` |
+| Documented ascription examples | `70e02e6` |
+| Checker ascription fixtures | `129cdd6` |
+| Ownership ascription fixtures | `b93f443` |
+| Loan ascription fixtures | `6209ee5` |
+| Native scalar/type ascription fixtures | `e91293e` |
+| Native loan/slot ascription fixtures | `128fbd7` |
+| Native restart/header ascriptions | `dad0bf9` |
+| Native reference-return ascriptions | `5451e23` |
+| Integer checker bit-function fixtures | `c1a12b4` |
+| Native integer bit-function fixtures | `5ce0eb3` |
+| Context-independent type predicates | `5d07043` |
+| Retired bitwise operator syntax | `a85adf1` |
+
+The final cleanup commit removes obsolete parser mode parameters and records this
+handoff. All 12 checks in `python3 -B tools/verify.py --compiler --editor both`
+passed: 1447 library/910 native tests, Vim/Neovim, lint, formatting, build, tooling,
+links and schemas. Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+Log: `/tmp/meowy-explicit-types-bits-gate.log`. Parser cleanup also received an
+independent read-only review. No outstanding failures remain. The unrelated user
+asset deletion is preserved. Restart/proof implementation below remains next;
+this migration does not enable proof outcomes or qualify the full release.
 
 ## Executable proof plan
 
@@ -1428,15 +1448,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1437
-  library/906 native tests (2343 total), 20 Python harness tests, fmt, Clippy,
-  build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-query-restart-scopes-gate.log`.
-- Five new query-scope groups cover before/after restart association, nested targets,
-  function ownership, descriptor copies, side-effect-free recognition, malformed
-  queries and scope/work bounds. Query control flags and retained logical roots
-  are unchanged; loop-carried propagation remains unimplemented. Editor and separate
-  runtime/sanitizer gates were not rerun for this metadata slice.
+- `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
+  including 1447 library/910 native tests (2357 total), 16 Python tooling and four
+  compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
+  checks. Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
+  Log: `/tmp/meowy-explicit-types-bits-gate.log`.
+- Explicit ascriptions retain E208 and ownership checks; predicates use comparison
+  precedence in every expression position. Generic-call fallback, one-target
+  ascription, union targets, bit-function widths/evaluation order, required budgets
+  and contextual lists are covered. Native behavior runs in debug/release.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1509,8 +1529,9 @@ platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LL
 
 ## Next steps
 
-The bounded subtraction series is complete; its syntax/representation limits remain
-explicitly documented. No outstanding failures remain.
+Explicit ascriptions, uniform type predicates and the four bit functions are
+complete; their remaining bootstrap limits are documented above. Bounded type
+subtraction retains its documented limits. No outstanding failures remain.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.

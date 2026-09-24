@@ -185,13 +185,13 @@ impl Parser {
                     }
                 } else {
                     self.pos = save;
-                    let value = self.expr(0, false, true, false)?;
+                    let value = self.expr(0, true)?;
                     self.need(")")?;
                     TypeKind::Computed(Box::new(value))
                 }
             } else {
                 self.pos = save;
-                let value = self.expr(0, false, true, false)?;
+                let value = self.expr(0, true)?;
                 self.need(")")?;
                 TypeKind::Computed(Box::new(value))
             }
@@ -218,7 +218,7 @@ impl Parser {
             let size = if self.at("]") {
                 None
             } else {
-                Some(Box::new(self.expr(0, false, true, false)?))
+                Some(Box::new(self.expr(0, true)?))
             };
             self.need("]")?;
             ty = TypeExpr {
