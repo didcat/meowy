@@ -485,6 +485,13 @@ call spans and unknown synthetic sources. All ten compiler checks pass, includin
 `1f26948`; HIR provenance: `90a2065`. Block/statement/result endpoints and
 propagation remain incomplete; proof outcomes stay gated.
 
+Core blocks now retain entry, normal-completion and result ports, including target-
+leave joins. Empty blocks have explicit completion paths; forward groups and
+synthetic receiver setup remain opaque, and never blocks have no result edge.
+Four focused groups and all 1544 library tests pass;
+`/tmp/meowy-block-endpoints-lib.log`. Expression consumers and statement endpoints
+are next; value-flow and dependency propagation remain incomplete.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

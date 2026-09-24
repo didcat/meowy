@@ -96,6 +96,8 @@ pub(crate) fn region_edges_share_branch_capacity_and_preserve_atomic_registratio
         if capacity {
             checker.branch_edges.clear();
             checker.region_edges.clear();
+            checker.endpoints.clear();
+            checker.endpoint_edges = 0;
             for id in 1..=MAX_EDGES / routes.len() {
                 checker
                     .branch_edges

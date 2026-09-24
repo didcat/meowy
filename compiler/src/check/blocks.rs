@@ -22,8 +22,12 @@ impl Checker {
         receiver: Option<hir::Expr>,
         partial: bool,
     ) -> Result<hir::Block> {
+        let opaque = receiver.is_some();
         let mut stmts = self.block_start(block, expected, receiver, partial)?;
         let mut points = Vec::new();
+        if opaque {
+            points.push(None);
+        }
         let mut index = 0;
         while index < block.stmts.len() {
             if matches!(block.stmts[index].kind, StmtKind::Forward { .. }) {
@@ -42,6 +46,7 @@ impl Checker {
             points,
             block.span,
         )?;
+        self.block_endpoints(&body, block.span)?;
         Ok(body)
     }
 

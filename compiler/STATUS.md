@@ -99,47 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current scope-exit slices
+### Current block and result endpoint slices
 
-Completed dependency-ordered commit plan:
-1. Record bounded leave/restart exit edges from checked statement entries to
-   explicit target ports after ordinary scope validation. Preserve target/function,
-   RestartId, source span and control metadata; share the edge budget.
-2. Carry optional source points on HIR leaves, retaining explicit unknowns for
-   synthetic leaves. Keep restart provenance associated through existing RestartId.
-3. Validate and attach scope-exit sources to body facts, then run the compiler gate.
+Dependency-ordered commit plan:
+1. Add bounded block entry/normal/result ports around core statement sequences.
+   Retain opaque receiver-initialization prefixes and forward barriers; admit empty
+   blocks explicitly, and never materialize a result edge for a never block.
+2. Link plain block expressions to their block ports and ordinary expression
+   statements to their exact expression roots. Preserve failed coercions, target
+   leaves, unknown calls and untracked producer/effect boundaries.
+3. Connect checked restart ports to block entries with a distinct backedge route,
+   publishing source/reentry edges atomically within the shared budget. Run the
+   full compiler gate; do not perform restart propagation or query evaluation.
 
-Investigation: scope operations already validate arity, owner, active target and
-restart ownership before producing HIR. Their active statement points give exact
-source identity. Exit edges must never target the statement normal port. Leave
-ports name the target block; restart ports retain both target and RestartId, without
-enabling backedge propagation. HIR leaves need a source field to avoid matching
-multiple exits by target or span.
-Split review: the HIR leave migration must update its exhaustive consumers and
-synthetic constructors atomically; more than eight files may be required to keep
-that enum change buildable. Edge recording and body-fact integration stay separate.
+Investigation: core block sequences already provide source-order endpoints, but
+receiver setup is synthetic HIR preceding those statements. Mark that prefix
+opaque before adding entry edges. A target leave joins block completion; statement
+normal ports remain conditional. Plain block result ports describe availability,
+not field/emission value origins. Generic writes, bindings, emission/result-value
+transfers, contextual list/effect blocks and unknown calls remain incomplete.
 
-The preceding series (`aaffd39`, `4286bae`, `b2ba9be`) passed all ten checks:
-1530 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-debug/release. Log: `/tmp/meowy-sequences-gate.log`.
+The prior scope-exit series (`1f26948`, `90a2065`, `8c7badd`) passed all ten checks:
+1540 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-scope-exits-gate.log`.
 
-Scope exits now retain checked statement entries, explicit leave/restart target
-ports, owner, span and control marks. All four focused groups pass for aliases,
-nested/function targets, ordinary errors, stable identities and shared budgets.
-All 1534 library tests pass; `/tmp/meowy-scope-exits-lib.log`. No failures remain.
-Exit-edge implementation: `1f26948`. HIR leaves now carry optional checked
-point IDs; restart metadata retains matching statement points alongside RestartId.
-Both HIR-exit provenance groups and all 1536 library tests pass, covering clones,
-repeated spans and unknown seeded restart origins; `/tmp/meowy-exit-hir-lib.log`.
-No failures remain. HIR prerequisite: `90a2065`. Body facts now validate scope-
-exit source kind/owner/block/completion and exact target ports, retaining original
-call spans and explicit unknowns. All six focused exit-source/provenance groups
-pass, including derived control, malformed metadata and synthetic sources. All
-ten compiler checks pass, including 1540 library/910 native tests, formatting,
-Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-scope-exits-gate.log`. No failures remain.
-Block/statement/result endpoint links, remaining operand coverage and propagation
-remain incomplete. Outcomes stay gated.
+Core block endpoints now retain entry, normal completion, target-leave joins and
+result availability, with explicit forward/receiver barriers. All four focused
+groups and all 1544 library tests pass, including empty/never blocks and shared
+capacity; `/tmp/meowy-block-endpoints-lib.log`. No failures remain. Plain block
+result consumers and expression-statement endpoints are next.
+Proof outcomes and restart dependency propagation stay gated.
 
 ### Proof dependency implementation slices
 
