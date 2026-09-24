@@ -100,6 +100,9 @@ impl Checker {
             }
             match &base.kind {
                 ExprKind::Local(id) => return self.stored_shape_source(*id, &key, value.span),
+                ExprKind::Call { args, .. } => {
+                    return self.call_shape_source(base, args, &key, depth);
+                }
                 ExprKind::Deref(inner) => return self.view_shape_source(inner, &key),
                 ExprKind::Field {
                     value: inner,

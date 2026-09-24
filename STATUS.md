@@ -421,21 +421,23 @@ unknown contents retain their incomplete state. Bound prerequisite: `4c0b67b`.
 All 392 focused tests and all ten compiler checks pass. Supported borrowed
 record/null-union continuations now retain exact variant identities through the
 same bounded traversal. All 397 focused tests and all ten compiler checks pass. By-value
-returned union reference origins are next and remain incomplete.
-Union-result shaped reads retain their dependencies. By-value returned unions,
+union call reference origins now follow exact variant-qualified result types and
+all compatible public inputs. Type lookup prerequisite: `b50f87a`. All 404 focused
+tests and all ten compiler checks pass. Carrier-cell result leaves are next.
+Union-result shaped reads retain their dependencies. Carrier-cell result leaves,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1370
-  library/903 native tests (2273 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1377
+  library/903 native tests (2280 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-terminal-continuations-gate.log`.
-- All 397 dependency-filtered tests pass. Five heterogeneous-union continuation
-  groups cover distinct layouts, null/unknown contents, deeper references, union/
-  carrier results, cumulative depth, no replay, work limits, unsupported members,
-  exclusive edges and E302/E303 lifetimes. Constructor inference gates are unchanged.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-value-origins-gate.log`.
+- All 404 dependency-filtered tests pass. Result-type lookup and five call-origin
+  groups cover exact/nested/nullable variant paths, invalid keys, variant-specific
+  and all/unknown origins, copies, nested reference calls, null public contracts,
+  no replay, depth/work limits and E302/E303 lifetimes. Carrier-cell leaves remain
+  incomplete. Accepted fixtures pass ordinary compilation/ownership; marks stay seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

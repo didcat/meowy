@@ -44,10 +44,14 @@ Investigation: shaped call results currently fall through to unknown snapshots.
 Resolve declared result types with exact variant keys without selecting a runtime
 variant or reading callee bodies. Existing record call lookup can share the
 concrete-path branch; original path charges remain with its caller.
-Variant-qualified lookup and existing record-call integration pass all 399
-dependency-filtered tests and formatting; log:
-`/tmp/meowy-result-shape-types-focused.log`. Call-origin admission is next.
-Unrelated README/assets/proposal changes remain untouched.
+Type-lookup prerequisite `b50f87a` passed all 399 focused tests before admission.
+Call-origin matching and five new groups pass all 404 dependency-filtered tests;
+log: `/tmp/meowy-union-value-origins-focused.log`. Variant-specific/all/unknown
+origins, copies, nested reference calls, null public contracts, bounds/no replay
+and E302/E303 pass. Carrier-cell result leaves remain incomplete.
+All ten compiler checks pass, including 1377 library/903 native tests; log:
+`/tmp/meowy-union-value-origins-gate.log`. No failures remain.
+Unrelated README/assets/proposal changes are preserved; outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1375,15 +1379,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1370
-  library/903 native tests (2273 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1377
+  library/903 native tests (2280 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-terminal-continuations-gate.log`.
-- All 397 dependency-filtered tests pass. Five heterogeneous-union continuation
-  groups cover distinct layouts, null/unknown contents, deeper references, union/
-  carrier results, cumulative depth, no replay, work limits, unsupported members,
-  exclusive edges and E302/E303 lifetimes. Constructor inference gates are unchanged.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-value-origins-gate.log`.
+- All 404 dependency-filtered tests pass. Result-type lookup and five call-origin
+  groups cover exact/nested/nullable variant paths, invalid keys, variant-specific
+  and all/unknown origins, copies, nested reference calls, null public contracts,
+  no replay, depth/work limits and E302/E303 lifetimes. Carrier-cell leaves remain
+  incomplete. Accepted fixtures pass ordinary compilation/ownership; marks stay seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1619,13 +1623,15 @@ explicitly documented. No outstanding failures remain.
    terminals, reusing exact variant snapshots and cumulative traversal bounds.
    Differing layouts, unknown/null contents and deeper reference chains preserve
    all supported candidates; mixed unsupported members and exclusive edges stay gated.
-   Next track by-value returned union reference origins in
-   `records/shapes/producers.rs`, where call expressions still produce unknown
-   shaped snapshots. First add bounded variant-qualified result-leaf type lookup;
-   then match supported reference leaves against the public input contract without
-   inspecting callee bodies or selecting a runtime variant. Keep carrier-cell
-   result leaves as a separate slice. Test variant layouts, all/unknown candidates,
-   null, nested calls, budgets and lifetimes before the full gate.
+   By-value union calls now use bounded exact-variant result-leaf lookup and
+   public-contract matching for shared references with reference-free pointees.
+   Copies and nested result paths retain variant-specific/all/unknown origins;
+   no runtime branch or callee body is selected. Type lookup prerequisite: `b50f87a`.
+   Next resolve carrier-cell leaves in `records/shapes/calls.rs` through the
+   existing `call_result_cells` matcher, retaining origin/cell completeness
+   independently. Cover shared record/union views, deeper carriers, direct/stored
+   inputs, all/unknown/null candidates, copies, nested calls, budgets/no replay and
+   lifetimes before the full gate. By-value union argument traversal remains separate.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

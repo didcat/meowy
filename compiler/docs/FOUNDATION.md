@@ -303,7 +303,11 @@ Concrete owner prefixes and leaf types are checked; unknown alternatives remain
 incomplete. Nested/nullable records retain their paths and null contents. Stored
 shared carrier fields also recover their cell locations through these views,
 including deeper carriers and stored record/union views. Unknown
-owners or contents stay incomplete; by-value returned union origins remain separate.
+owners or contents stay incomplete. By-value union calls retain variant-specific
+origins for supported shared reference leaves with reference-free pointees, matched
+against every compatible public input. Copies and nested result paths keep those
+origins; callee bodies and runtime variants are not selected. Carrier-cell result
+leaves and unsupported inputs remain incomplete.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
