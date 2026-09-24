@@ -72,17 +72,32 @@ impl Checker {
             let Some((view, layers)) = self.call_shared_view(ty, arg)? else {
                 return Ok(Input::Unsupported);
             };
-            if !Self::origin_reference(view) {
+            let nested = view.pointee().is_some_and(Type::has_borrowed);
+            if !nested && !Self::origin_reference(view) {
                 return Ok(Input::Unsupported);
             }
-            if crate::borrow_contract::projections(view, result, &mut self.flow, arg.span)?
-                .is_empty()
+            if !nested
+                && crate::borrow_contract::projections(view, result, &mut self.flow, arg.span)?
+                    .is_empty()
             {
                 continue;
             }
             let key = ShapeKey::new(&fields, &variants, &mut self.flow, arg.span)?;
             let snapshot = self.record_shape_source_at(arg, &key, depth + 1)?;
-            let source = if layers == 0 {
+            let source = if nested {
+                match self.call_record_cell_origins(
+                    snapshot.cells,
+                    arg,
+                    view,
+                    result,
+                    layers,
+                    fields.len() + variants.len(),
+                )? {
+                    Input::Unsupported => return Ok(Input::Unsupported),
+                    Input::Absent => continue,
+                    Input::Known(source) => source,
+                }
+            } else if layers == 0 {
                 snapshot.origins
             } else {
                 self.call_stored_origins(snapshot.cells, arg, layers - 1)?
@@ -116,3 +131,6 @@ mod tests;
 
 #[cfg(test)]
 mod carriers;
+
+#[cfg(test)]
+mod records;

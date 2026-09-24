@@ -314,8 +314,11 @@ arguments contribute compatible shared-reference origins through exact variant-k
 snapshots, including nested owned fields and inline call wrappers. Null contents
 contribute no origins; no private runtime variant is inferred. Shared carrier leaves
 also expand stored cell snapshots to reference-free terminal origins, preserving
-unknown layers and compatible record projections. Borrowed record/union terminal
-contents, borrowed primary values and unsupported members remain incomplete.
+unknown layers and compatible record projections. Borrowed concrete-record and
+nullable-record terminal contents also use bounded location-based traversal,
+including stored references and owned-field projections. Structural depth includes
+the enclosing variant path. Borrowed heterogeneous-union terminals, borrowed
+primary values and unsupported members remain incomplete.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

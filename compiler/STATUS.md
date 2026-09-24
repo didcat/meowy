@@ -42,10 +42,13 @@ Commit plan:
 Investigation: `call_record_view_origins` already has a bounded iterative record
 walker. Separate expression lookup from that walker, then preserve the union path's
 structural level when entering it. Heterogeneous terminal unions and returned cell
-matching remain separate. The extraction and initial-depth regression pass all
-420 dependency-filtered tests and formatting; log:
-`/tmp/meowy-record-cell-origins-focused.log`. Union snapshot integration is next.
-User changes remain preserved.
+matching remain separate. Traversal prerequisite `1482d20` passed all 420 focused
+tests before admission. Integration and five new groups pass all 425 dependency-
+filtered tests; log: `/tmp/meowy-union-record-origins-focused.log`. Nullable/all/
+unknown contents, deeper views, owned projections, inline calls, no replay, bounds
+and E302/E303 pass. All ten compiler checks pass, including 1398 library/903 native
+tests; log: `/tmp/meowy-union-record-origins-gate.log`. No failures remain.
+User changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1373,15 +1376,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1392
-  library/903 native tests (2295 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1398
+  library/903 native tests (2301 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-carrier-origins-gate.log`.
-- All 419 dependency-filtered tests pass. Five carrier-argument groups cover
-  mixed layouts, deeper/null/unknown cells, copies, nested fields, inline wrappers,
-  reference-free record projections, no replay, depth/work limits and E302/E303.
-  Borrowed terminal contents remain incomplete. Accepted fixtures pass ordinary
-  compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-record-origins-gate.log`.
+- All 425 dependency-filtered tests pass. The traversal prerequisite and five
+  integration groups cover initial depth, nullable/all/unknown contents, deeper
+  nested views, owned projections, inline calls, no replay, depth/work limits and
+  E302/E303 lifetimes. Borrowed heterogeneous terminals remain incomplete. Accepted
+  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1632,13 +1635,17 @@ explicitly documented. No outstanding failures remain.
    snapshots through `call_stored_origins` to reference-free terminal origins.
    Mixed/deeper/null/unknown inputs and compatible record projections retain known
    roots; borrowed record/union terminal contents remain incomplete.
-   Next handle borrowed concrete-record terminal contents in
-   `calls/inputs/unions.rs`. Extract location-based traversal from
-   `calls/inputs/records.rs` without changing admission, then feed it variant-qualified
-   cell snapshots and bounded shared-layer counts. Preserve record depth/work limits,
-   nullable/unknown contents and diagnostic order. Keep borrowed heterogeneous-union
-   terminals and returned carrier-cell matching separate; validate focused slices
-   and run the full gate across the series.
+   Borrowed concrete/nullable-record terminal contents in by-value union arguments
+   now use location-based record traversal from exact cell snapshots. Structural
+   depth includes the enclosing variant path; all/unknown contents and owned-field
+   projections preserve known roots. Traversal prerequisite: `1482d20`.
+   Next support borrowed heterogeneous record/null-union terminal contents in
+   `calls/inputs/unions.rs`. Separate typed leaf discovery from expression-backed
+   snapshot lookup so borrowed locations can use `location_shape_source`; carry
+   structural depth/work bounds across record/union transitions without resetting
+   counters. Keep returned carrier-cell matching as a separate slice. Test nested/
+   deeper/all/unknown/null variants, distinct layouts, no replay, bounds and lifetimes,
+   then run the full gate. Do not flatten variant positions into ordinary paths.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
