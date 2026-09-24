@@ -42,13 +42,13 @@ square <int32> : (value <int32>) {
 }
 
 status <int32> := 0
-&squares<int32[4]>
+%squares <int32[4]>
 
-&squares >> square(2)
-&squares >> square(3)
-&squares >> square(4)
+%squares >> square(2)
+%squares >> square(3)
+%squares >> square(4)
 
-results : << &squares
+results : << %squares
 index <usize> := 1
 
 'show {
@@ -85,7 +85,7 @@ Result 2: 9
 Result 3: 16
 ```
 
-`<< &squares` seals and consumes the group. It returns three outcomes in a list
+`<< %squares` seals and consumes the group. It returns three outcomes in a list
 with capacity four. Position one belongs to `square(2)` even if that task finishes
 last. The parent prints after the join, so this output does not depend on worker
 print interleaving.

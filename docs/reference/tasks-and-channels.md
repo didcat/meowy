@@ -23,7 +23,10 @@ result : << job
 `<task<T>>`, where `T` is the expression's complete result type. Reading the
 handle does not wait. `<< job` waits and consumes the handle exactly once.
 `<<` only accepts a task or group, never an ordinary function result merely
-because that function happens to spawn work internally.
+because that function happens to spawn work internally. It does not join through
+a reference: `<< &job` is invalid, since a borrow cannot supply the owned handle
+that joining consumes. Borrowing data for a task is separate from borrowing its
+handle.
 
 Capture expressions execute in the parent before scheduling. For a call operand,
 the callee and its arguments evaluate left-to-right in the parent; the call itself
@@ -48,17 +51,20 @@ Joining requires no allocation for the result beyond the task's reserved storage
 ## Bounded groups
 
 ```meowy
-&squares<int32[4]>
+%squares <int32[4]>
 
-&squares >> square(2)
-&squares >> square(3)
-&squares >> square(4)
+%squares >> square(2)
+%squares >> square(3)
+%squares >> square(4)
 
-results : << &squares
+results : << %squares
 ```
 
+`%squares` names the group; the `%` prefix does not borrow it. Group names have
+their own namespace, distinct from ordinary values. Binary `%` still means remainder.
+
 The annotation is a capacity, not a promise that four tasks will be submitted.
-`<< &squares` seals the group, joins every submitted task, and consumes its result
+`<< %squares` seals the group, joins every submitted task, and consumes its result
 storage. The result is a bounded list with capacity four and element type
 `tasks.Outcome<int32>`. Its length is the number of submitted tasks.
 
@@ -75,7 +81,7 @@ group hidden behind an omitted annotation.
 A submission produces a borrowed `tasks.Ticket<T>` for cancellation and status.
 The group owns its result; the ticket cannot be individually joined. The group
 and its tickets cannot escape their declaring scope or be accessed after join.
-Read `results[1]`, not `&squares[1]`, after joining.
+Read `results[1]`, not `%squares[1]`, after joining.
 
 ## State and ownership
 
@@ -111,13 +117,13 @@ Worker pinning gives no scheduling-order or fairness guarantee.
 ```meowy
 time : @"time"
 
-&work<int32[4]>
-&work.deadline(time.after(time.Millisecond.scale(250)))
+%work <int32[4]>
+%work.deadline(time.after(time.Millisecond.scale(250)))
 
-ticket : &work >> square(10)
+ticket : %work >> square(10)
 ticket.cancel()
 
-outcomes : << &work
+outcomes : << %work
 ```
 
 `time.ms` constructs a duration; `time.after` produces a monotonic absolute

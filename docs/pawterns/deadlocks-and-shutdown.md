@@ -214,11 +214,11 @@ wait_for_work <null> : () {
 }
 
 status <int32> := 0
-&service<null[1]>
-&service.deadline(time.after(time.Millisecond.scale(50)))
-&service >> wait_for_work()
+%service <null[1]>
+%service.deadline(time.after(time.Millisecond.scale(50)))
+%service >> wait_for_work()
 
-outcomes : << &service
+outcomes : << %service
 outcome : &(outcomes[1])
 
 'report {
@@ -249,7 +249,7 @@ For explicit cancellation instead, replace the deadline and submission lines,
 leaving the group declaration and later join in place, with:
 
 ```meowy
-ticket : &service >> wait_for_work()
+ticket : %service >> wait_for_work()
 ticket.cancel()
 ```
 

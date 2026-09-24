@@ -7,8 +7,8 @@
 | API                                                  | Result                   | Contract                                                            |
 | ---------------------------------------------------- | ------------------------ | ------------------------------------------------------------------- |
 | `job.deadline(instant)`                              | `<null>`                 | Sets or shortens a task's deadline before join                      |
-| `&group.deadline(instant)`                           | `<null>`                 | Sets a group deadline before submission                             |
-| `job.cancel()`, `ticket.cancel()`, `&group.cancel()` | `<null>`                 | Nonblocking, idempotent cancellation request                        |
+| `%group.deadline(instant)`                           | `<null>`                 | Sets a group deadline before submission                             |
+| `job.cancel()`, `ticket.cancel()`, `%group.cancel()` | `<null>`                 | Nonblocking, idempotent cancellation request                        |
 | `job.status()`, `ticket.status()`                    | `<tasks.State>`          | Snapshot, never an ownership or completion proof                    |
 | `tasks.checkpoint()`                                 | `<null>` on continuation | Acknowledges pending cancellation by unwinding to the task boundary |
 

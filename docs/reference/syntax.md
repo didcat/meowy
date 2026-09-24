@@ -170,8 +170,9 @@ literal contents retain their own bytes regardless of the surrounding layout.
 | `&(value[index])`, `&!(value[index])`         | Shared or exclusive borrow of the selected element               |
 | `*reference`                                  | Access a safe reference's referent                               |
 | `>> expression`, `<< task`                    | Start or join a task                                             |
-| `&group<T[N]>`                                | Declare a bounded task group                                     |
-| `&group >> expression`                        | Submit a task to a group                                         |
+| `%group<T[N]>`                                | Declare a bounded task group                                     |
+| `%group >> expression`                        | Submit a task to a group                                         |
+| `<< %group`                                  | Seal and join a group, consuming its result storage               |
 | `!{ ... }`                                    | Block permitting operations with caller-proven safety conditions |
 | `(x <T>) !{ ... }`                            | Function whose callers must establish those conditions           |
 | `<:T : memory.Copy>`                          | Generic type binder constrained by a capability value            |
@@ -280,6 +281,11 @@ From highest to lowest precedence:
 | 9     | `&&`                                                                                 |
 | 10    | `\|\|`                                                                               |
 
+`%name` is a task-group primary expression, not a borrow or a general unary
+operator. Its following calls and field selections use the usual postfix rules.
+Binary `%` remains the remainder operator: `a % b`. The parser distinguishes these
+forms by operand position, not whitespace.
+
 Binary arithmetic operators associate left-to-right; comparisons cannot be
 chained. Assignment, emissions, and matchers are statement forms. Parentheses
 override precedence. `>>` and `<<` are never bit shifts; use `bits.shl` and
@@ -351,10 +357,10 @@ declarations can refer to themselves; mutual recursion requires explicit functio
 type declarations. Shadowing is allowed in a nested block, not by redeclaring a
 name in the same block. `self` is a contextual binding and can be shadowed.
 
-Types, labels, and values use distinct namespaces. A task group's `&name` shares
-the spelling of a borrow expression, so a group and a value must not have the same
-name in overlapping scopes. Label operations can only target a lexically enclosing
-scope in the current function and task.
+Types, labels, values, and task groups use distinct namespaces. `%name` selects a
+task group; `&name` borrows an ordinary value. A group and a value may therefore
+share a name without changing either lookup. Label operations can only target a
+lexically enclosing scope in the current function and task.
 
 The names of intrinsic values never introduce extra parser productions. Function
 constraints use punctuation in their type binders; returned borrows follow the

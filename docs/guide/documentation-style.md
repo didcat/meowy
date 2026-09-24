@@ -39,7 +39,7 @@ statements that intentionally share a line. Do not pad empty delimiters: `()`, `
 | Borrows and dereferences     | `&value`, `&!value`, `*pointer`, `value.&field`          |
 | Ascriptions and type queries | `self<MyCoolType>`, `value<>`                            |
 | Imports and scope access     | `@"debug"`, `'result.leave()`                            |
-| Task operations              | `>> work()`, `<< task`                                   |
+| Task operations              | `>> work()`, `<< task`, `%group <T[N]>`, `%group >> work()`, `<< %group` |
 
 Keep punctuation belonging to one token intact, including `->`, `<-`, `:=`, `&!`, `&&`,
 `||`, `>>` and `<<`. Keep type suffix internals and generic arguments attached;

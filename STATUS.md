@@ -17,6 +17,19 @@ Documentation and 82 standalone examples retain the standardized readable layout
 The prior token/literal preservation audit is `/tmp/meowy-doc-style-audit.json`;
 Git preserves its completed commit series. Compiler guides remain in `compiler/docs/`.
 
+## Task-group sigil documentation
+
+Task groups now use `%name` in language/API references, tutorials and the documented
+task program. `%name` identifies a group in its own namespace; `&name` still borrows
+an ordinary value, and binary `%` remains remainder. Joining consumes an owned
+handle/group; borrowing data for a task does not grant a borrowed join.
+
+`python3 -B tools/verify.py` passed all four default checks; log:
+`/tmp/meowy-task-group-sigil-docs.log`. Staged whitespace checks passed. This is a
+documentation-only change: compiler, runtime and editor code were not changed or
+executed, and task-group syntax remains unimplemented. The active compiler
+implementation handoff is unchanged.
+
 ## Scope-exit action documentation
 
 The [deferred-action reference](docs/reference/values-and-blocks.md#deferred-actions)
