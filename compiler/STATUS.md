@@ -58,8 +58,9 @@ dependency-filtered tests pass; log: `/tmp/meowy-shared-union-reads-focused.log`
 Five read groups cover named/stored/projected views, retarget copies, null/carriers,
 unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
 All ten compiler checks pass; log: `/tmp/meowy-shared-union-views-gate.log`.
-No failures remain. Documentation will be committed separately. Next: bounded shared
-carrier chains ending at record unions. Proof outcomes stay gated.
+No failures remain. Read integration is committed as `8c1d1a7`; the separate guide
+and root handoff record its boundary. Next: bounded shared carrier chains ending at
+record unions. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

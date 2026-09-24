@@ -264,7 +264,13 @@ snapshots on their existing storage IDs. Direct dereferences and reborrows recov
 those snapshots through bounded concrete field paths, keeping external pointee
 owners distinct from temporary storage. Copies retain their contents after source
 replacement; null/unknown distinctions and E303 expiry remain unchanged. Named
-shared-union views, broader borrowed views and returned union origins remain separate.
+shared views of record/null unions retain bounded owner locations through aliases,
+stored fields and retargets. Dereference reads merge exact shaped snapshots across
+those locations, preserving prior copies, null contents and unknown alternatives.
+Concrete record prefixes are checked before applying field indices; prefixes that
+cross unselected heterogeneous shapes remain incomplete. E302/E303 ownership checks
+are unchanged. Broader union carrier chains, returned union views and by-value
+returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

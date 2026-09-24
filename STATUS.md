@@ -385,21 +385,24 @@ slots. Owned field/subrecord writes merge bounded prefixes, retaining sibling
 metadata and prior copies. Prefix prerequisite: `7b491bc`. Statement-owned
 temporaries now retain
 shaped snapshots, including concrete projected reborrows, without extending
-lifetimes. Read prerequisite: `dfb1e47`. All 310 dependency-filtered tests and all
-ten compiler checks pass. Direct named shared-union storage links are next;
-union-interior writes and proof outcomes remain gated.
+lifetimes. Read prerequisite: `dfb1e47`. Named shared record-union views retain owner locations,
+and dereference reads merge exact snapshots through concrete prefixes. Location
+prerequisite: `758c3fc`. All 319 dependency-filtered tests and all ten compiler checks
+pass. Shared carrier chains ending at unions are next; returned union views,
+union-interior writes and proof outcomes remain separate.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1283
-  library/903 native tests (2186 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1292
+  library/903 native tests (2195 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-temporary-unions-gate.log`.
-- All 310 dependency-filtered tests pass. Three lookup groups cover explicit
-  temporary identity, concrete field paths, shape offsets, unknown views and bounds.
-  Four source groups cover copies/reborrows, carriers, null/unknown contents,
-  snapshot independence and unchanged E303 expiry. Accepted fixtures pass ordinary
-  compilation/ownership; marks remain seeded. Read prerequisite: `dfb1e47`.
+  0 failed in debug/release. Log: `/tmp/meowy-shared-union-views-gate.log`.
+- All 319 dependency-filtered tests pass. Four location groups cover shared union
+  carriers, aliases, stored views, retarget copies, prefix isolation and bounds.
+  Five read groups cover exact snapshots, null/carriers, incomplete alternatives,
+  unknown returns, invalid prefixes, budgets and unchanged E302/E303 rejection.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  Location prerequisite: `758c3fc`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
