@@ -1288,8 +1288,8 @@ permission to replace an immutable root or store a value beyond its owner lifeti
   expression effects or change flow proofs. Raw declared source types keep probes
   conservative when later effects can invalidate a narrowing fact.
 - A unique candidate supplies element type and capacity. Pure scalar compounds
-  also constrain expected candidates: grouped/chained `-`, `!`, `~`, arithmetic,
-  bitwise, Boolean and comparison expressions may use literals and resolved
+  also constrain expected candidates: grouped/chained `-`, `!`, arithmetic,
+  Boolean and comparison expressions may use literals and resolved
   immutable scalar constants. A fresh checker retains only referenced constants,
   their exact primitive types and normalized local IDs; it invokes the ordinary
   expression checker. Mutable or captured values, calls and effectful blocks are

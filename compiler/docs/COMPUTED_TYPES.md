@@ -462,7 +462,7 @@ created; function capture restrictions and ordinary module startup are preserved
 
 ## Integer block operands
 
-Integer blocks can be operands of required arithmetic and bitwise expressions:
+Integer blocks can be operands of required arithmetic and `@"bits"` calls:
 
 ```meowy
 <Items> : {
@@ -477,8 +477,9 @@ debug : @"debug"
 debug.print(items[2])
 ```
 
-This prints `7`. Supported operators are unary `-`/`~` and binary `+`, `-`, `*`, `/`,
-`%`, `&`, `|`, `^`. Operand blocks use the surrounding expected integer width when
+This prints `7`. Supported operators are unary `-` and binary `+`, `-`, `*`, `/`,
+`%`. Use `bits.and`, `bits.or`, `bits.xor`, and `bits.not` for integer bit operations.
+Operand blocks use the surrounding expected integer width when
 available; otherwise their result is inferred. Already typed operands retain their
 widths. Context follows ordinary operand hints and left-to-right evaluation; a block
 is never evaluated early to discover its type.
@@ -746,8 +747,9 @@ its namespace as a record.
 
 Local integer bindings retain their checked width and signedness through aliases,
 subsequent calculations and type queries. Supported expressions are integer literals,
-eligible names, parentheses, unary `-`/`~` and binary `+`, `-`, `*`, `/`, `%`, `&`, `|`,
-`^`, plus [integer block operands](#integer-block-operands) inside required evaluation.
+eligible names, parentheses, unary `-` and binary `+`, `-`, `*`, `/`, `%`, plus
+`bits.and`, `bits.or`, `bits.xor`, and `bits.not` calls and
+[integer block operands](#integer-block-operands) inside required evaluation.
 They reuse the scalar checker and constant evaluator. Incompatible widths use
 E213, literal overflow E216 and invalid arithmetic E107. Negative or unrepresentable
 list capacities retain E104. Required arithmetic is checked even inside an unreachable

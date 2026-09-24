@@ -27,6 +27,6 @@ numbers : @"numbers"
     -> {
         -> version : bytes[1]
         -> flags : bytes[2]
-        -> payload_size : bits.shl(high, 8) | low
+        -> payload_size : bits.or(bits.shl(high, 8), low)
     }
 }

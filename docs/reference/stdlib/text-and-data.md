@@ -178,7 +178,7 @@ executable values, or arbitrary resource owners.
 
 ## Numeric conversions and shifts
 
-The numeric conversion/arithmetic and bit-shift items in this section satisfy
+The numeric conversion/arithmetic and bit-operation items in this section satisfy
 `core.Pure` and allocate nothing. Required evaluation uses the same result and
 failure rules with compile-time operands; runtime calls retain their checked
 behavior. This grant does not cover entropy, I/O, or mutation of caller storage.
@@ -190,8 +190,20 @@ behavior. This grant does not cover entropy, I/O, or mutation of caller storage.
 | `numbers.wrapping_add(a <T>, b <T>)` | `<T>`                     | Integer addition modulo the width                                             |
 | `numbers.truncate<T>(value)`         | `<T><numbers.RangeError>` | Discards a floating fractional part, then checks range                        |
 | `numbers.wrapping<T>(value)`         | `<T>`                     | Explicit integer low-bit conversion, interpreted in destination signedness    |
+| `bits.and(a <T>, b <T>)`            | `<T>`                     | Bitwise conjunction of two integers of the same type                         |
+| `bits.or(a <T>, b <T>)`             | `<T>`                     | Bitwise inclusive disjunction of two integers of the same type               |
+| `bits.xor(a <T>, b <T>)`            | `<T>`                     | Bitwise exclusive disjunction of two integers of the same type               |
+| `bits.not(value <T>)`               | `<T>`                     | Complement every bit within the integer width                               |
 | `bits.shl(value <T>, count <usize>)` | `<T>`                     | Shift left, discarding high bits                                              |
 | `bits.shr(value <T>, count <usize>)` | `<T>`                     | Logical right shift for unsigned integers; sign-extending for signed integers |
+
+Import `@"bits"` to use these operations. `and`, `or`, `xor`, and `not` accept
+all fixed-width signed and unsigned integer types, plus `isize` and `usize`.
+They preserve the operand width and signedness; signed values use their
+two's-complement bit pattern. Binary operands must have the same type, with
+untyped literals taking the expected operand type. These operations do not
+overflow or allocate. Boolean logic continues to use `&&`, `||`, and `!`;
+there are no integer bitwise operators in expression syntax.
 
 Both shift functions panic when `count` is at least the bit width. A constant
 invalid shift is a static error. Conversions and arithmetic are compiler-known
