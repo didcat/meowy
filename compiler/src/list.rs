@@ -655,7 +655,7 @@ impl Checker {
         }
         let length = self.list_length(&value);
         let capacity = *capacity;
-        let item = self.expr(&args[0], Some(element))?;
+        let (input, item) = self.expr_point(&args[0], Some(element))?;
         if self.reach != FALSE && length == Some(capacity) {
             return Err(Self::error(
                 "E103",
@@ -668,6 +668,17 @@ impl Checker {
         } else {
             value.ty.clone()
         };
+        self.method_operation(
+            point,
+            receiver,
+            crate::check::MethodKind::Add {
+                item: input,
+                capacity,
+                length,
+                may_return: item.ty != Type::Never,
+            },
+            span,
+        )?;
         Ok(hir::Expr {
             kind: hir::ExprKind::ListAdd {
                 value: Box::new(value),

@@ -124,7 +124,17 @@ length from string byte length, and stopped receivers have no result/argument
 edge. The unused value-only receiver wrapper was removed. Identity and shared
 edge budgets guard publication. Formatting and all 1620 library tests pass,
 including all three size/identity groups. Log: `/tmp/meowy-size-methods-lib.log`.
-`add` follows; the full compiler gate will cover both slices.
+Size slice: `1fd816d`. `add` now retains the checked item root, static capacity and
+known/unknown length. Snapshot edges precede item evaluation; a capacity-success
+edge reaches construction only after normal item completion. Nonreturning items
+have no result edge. All seven focused method groups pass, including owned/shared
+snapshots, full-list error order, nonreturning items, owners/control and atomic
+identity/budget failures. Log: `/tmp/meowy-add-methods-focused.log`.
+All ten compiler checks pass: 1624 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+Log: `/tmp/meowy-method-order-gate.log`. Post-documentation link checks pass:
+1208 local links in 110 Markdown files. Shared element-borrow roots/order are next;
+remaining graph coverage, propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1452,10 +1462,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Custom list-element recognition, roots and body links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1617 library/910
+- List/string size and list-add operand/effect links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1624 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-custom-elements-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-method-order-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1826,16 +1836,20 @@ subtraction retains its documented limits. No outstanding failures remain.
    boundaries. Custom effect-block roots now follow form recognition and own
    checked body sequences/result links. Probes allocate no expression points; failures
    restore active point, scopes/frames, owner and reach.
-   Next retain receiver/item roots in `list.rs::list_method` for `size` and `add`,
-   preserving list-value/length capture before item evaluation, capacity-success
-   stages, string-size semantics and nonreturning operands. Verify side effects,
-   static/runtime error order and shared budgets with focused tests and the compiler
-   gate, then cover element-borrow paths.
+   List/string `size` now retain receiver/operation roots; `add` retains receiver
+   snapshots, item roots and capacity-success result stages. Known and unknown
+   lengths remain distinct; nonreturning operands do not produce result edges.
+   Next capture shared element-borrow parent/index roots in `list.rs::element_borrow`,
+   distinguishing ordinary place borrows, existing shared views and temporary
+   parents. Preserve storage identity, temporary lifetime, parent-before-index
+   evaluation, bounds and loan checks. Validate nonreturning operands, ordinary
+   errors and budgets with focused tests and the compiler gate; follow with
+   exclusive path borrows.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   List-method and element-borrow sequencing, debug formatting and other contextual
+   Element-borrow sequencing, debug formatting and other contextual
    block builders remain coverage gaps; missing sequences
    are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.

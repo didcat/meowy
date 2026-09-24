@@ -140,8 +140,8 @@ Direct-function calls retain their callee and call-site IDs plus exact argument
 roots, with dispatch receivers first. Ordered argument completion leads to an
 opaque call-effect stage; a separate return edge permits normal continuation only
 when the callee returns. Declared `never` results omit that edge. No purity,
-termination or effect summary is inferred. Debug formatting, list methods and
-required/type-only calls retain separate coverage boundaries.
+termination or effect summary is inferred. Debug formatting and required/type-only
+calls retain separate coverage boundaries.
 List literals retain ordered element roots by source position, including scalar
 elements checked later for contextual inference. Empty construction is explicit;
 nonreturning elements do not publish a list result. Union candidate selection and
@@ -150,6 +150,11 @@ roots after form recognition, then connect checked prefix/emission statements an
 block results. Candidate probes allocate no roots and effects are checked once.
 Failed checks restore the active point, scope/frame depths, owner and reach.
 Construction links do not establish complete value provenance or proof outcomes.
+List/string `size` operations retain exact receiver roots and distinct length
+operations. List `add` snapshots the receiver and its length before checking the
+item; capacity-success edges then lead to a new list result. Nonreturning receivers
+skip arguments, and nonreturning items have no result edge. Original argument,
+capacity and loan checks remain authoritative; the receiver is not mutated by `add`.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

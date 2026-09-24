@@ -14,6 +14,12 @@ pub(crate) enum Kind {
     Stopped,
     ListSize,
     StringSize,
+    Add {
+        item: hir::PointId,
+        capacity: usize,
+        length: Option<usize>,
+        may_return: bool,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -49,24 +55,54 @@ impl Checker {
         {
             return Err(invalid());
         }
-        if !self.points.get(receiver).is_some_and(|source| {
-            source.parent == Some(id)
-                && source.owner == self.owner
-                && source.block == point.block
-                && source.complete
-                && matches!(
-                    source.kind,
-                    PointKind::Expr | PointKind::And | PointKind::Or
-                )
-        }) {
-            return Err(invalid());
+        let item = if let Kind::Add {
+            item,
+            capacity,
+            length,
+            ..
+        } = kind
+        {
+            if item == receiver || length.is_some_and(|length| length > capacity) {
+                return Err(invalid());
+            }
+            Some(item)
+        } else {
+            None
+        };
+        for child in std::iter::once(receiver).chain(item) {
+            if !self.points.get(child).is_some_and(|source| {
+                source.parent == Some(id)
+                    && source.owner == self.owner
+                    && source.block == point.block
+                    && source.complete
+                    && matches!(
+                        source.kind,
+                        PointKind::Expr | PointKind::And | PointKind::Or
+                    )
+            }) {
+                return Err(invalid());
+            }
         }
         let mut edges = vec![Edge::new(
             Port::Entry(id),
             Port::Entry(receiver),
             Route::Next,
         )];
-        if kind != Kind::Stopped {
+        if let Kind::Add {
+            item, may_return, ..
+        } = kind
+        {
+            edges.extend([
+                Edge::new(Port::Normal(receiver), Port::Snapshot(id), Route::Next),
+                Edge::new(Port::Snapshot(id), Port::Entry(item), Route::Next),
+            ]);
+            if may_return {
+                edges.extend([
+                    Edge::new(Port::Normal(item), Port::Operation(id), Route::Checked),
+                    Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+                ]);
+            }
+        } else if kind != Kind::Stopped {
             edges.extend([
                 Edge::new(Port::Normal(receiver), Port::Operation(id), Route::Next),
                 Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
@@ -95,6 +131,9 @@ impl Checker {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod add;
 
 #[cfg(test)]
 mod tests {
