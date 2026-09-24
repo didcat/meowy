@@ -11,11 +11,11 @@ inspect<null>:(flag<boolean>){
     empty<&int32><null>:null
     d.print(view==empty)
     |view<null>|owner=9
-    |view<&int32>|d.print(*(view<&int32>))
+    |view<&int32>|d.print(*(view~<&int32>))
     owner=10
     d.print(owner)
     record<{nested<{view<&int32><null>}>;count<int32>}>:{->nested:{|flag|->view:&owner};->count:3}
-    |record.nested.view<&int32>|d.print(*(record.nested.view<&int32>))
+    |record.nested.view<&int32>|d.print(*(record.nested.view~<&int32>))
     owner=11
     d.print(record.count)
 }
@@ -52,7 +52,7 @@ s:"text"
 <Small>:<&int32><&string>
 a<Small>:&x
 b<Small><null><boolean>:a
-|b<Small>|{c<Small>:b;|c<&int32>|d.print(*(c<&int32>))}
+|b<Small>|{c<Small>:b;|c<&int32>|d.print(*(c~<&int32>))}
 other<Small><null><boolean>:&s
 d.print(b==other)
 "#,
@@ -74,7 +74,7 @@ owner:=12
 count:=0
 'loop {
     item:{|count<2|->view:&owner}
-    |item.view<&int32>|d.print(*(item.view<&int32>))
+    |item.view<&int32>|d.print(*(item.view~<&int32>))
     owner=owner+1
     count=count+1
     |count<3|'loop.restart()
@@ -85,7 +85,7 @@ number:=20
 step:=0
 'choose {
     view<&int32><null>:{|present|->&number}
-    |view<&int32>|d.print(*(view<&int32>))
+    |view<&int32>|d.print(*(view~<&int32>))
     |view<null>|number=21
     present=!present
     step=step+1
@@ -106,11 +106,11 @@ pub fn reference_unions_protect_live_copies_operands_and_slots() {
         "a:=1;flag:=true;r:{|flag|->&a;a=2}",
         "a:=1;flag:=true;r:{|flag|->view:&a;a=2}",
         "a:=1;flag:=true;|({|flag|->&a;a=2})<null>|{}",
-        "a:=1;r<&int32><null>:&a;i:=0;'loop{|r<&int32>|{value:*(r<&int32>)};a=2;i=i+1;|i<2|'loop.restart()}",
-        "a:=1;r<&int32><null>:&a;first:=true;i:=0;'loop{|!first&&r<&int32>|{value:*(r<&int32>)};|first|a=2;first=false;i=i+1;|i<2|'loop.restart()}",
-        "f<null>:(flag<boolean>){a:=1;r<&int32><null>:{|flag|->&a};|r<&int32>|{a=2;value:*(r<&int32>)}}",
-        "tag<int32><null>:=null;tag=1;copy:tag;a:=1;r:{|copy<int32>|->view:&a};a=2;|r.view<&int32>|{value:*(r.view<&int32>)}",
-        "tag<{value<int32><null>}>:={};tag={->value:1};copy:tag;a:=1;r:{|copy.value<int32>|->view:&a};a=2;|r.view<&int32>|{value:*(r.view<&int32>)}",
+        "a:=1;r<&int32><null>:&a;i:=0;'loop{|r<&int32>|{value:*(r~<&int32>)};a=2;i=i+1;|i<2|'loop.restart()}",
+        "a:=1;r<&int32><null>:&a;first:=true;i:=0;'loop{|!first&&r<&int32>|{value:*(r~<&int32>)};|first|a=2;first=false;i=i+1;|i<2|'loop.restart()}",
+        "f<null>:(flag<boolean>){a:=1;r<&int32><null>:{|flag|->&a};|r<&int32>|{a=2;value:*(r~<&int32>)}}",
+        "tag<int32><null>:=null;tag=1;copy:tag;a:=1;r:{|copy<int32>|->view:&a};a=2;|r.view<&int32>|{value:*(r.view~<&int32>)}",
+        "tag<{value<int32><null>}>:={};tag={->value:1};copy:tag;a:=1;r:{|copy.value<int32>|->view:&a};a=2;|r.view<&int32>|{value:*(r.view~<&int32>)}",
     ] {
         let case = Case::new(source);
         for profile in ["debug", "release"] {
@@ -160,7 +160,7 @@ inspect<null>:(flag<boolean>){
     absent<B>:{->name:"empty"}
     value<A><B>:{|flag|->present;|!flag|->absent}
     |value<B>|{owner=22;d.print(value.name);|value.view<null>|d.print("missing")}
-    |value<A>|{|value.view<&int32>|d.print(*(value.view<&int32>))}
+    |value<A>|{|value.view<&int32>|d.print(*(value.view~<&int32>))}
     owner=23
     d.print(owner)
 }
@@ -177,7 +177,7 @@ f<null>:(flag<boolean>){
     present<A>:{->view:&owner;->count:1}
     absent<B>:{->name:"empty"}
     value<A><B>:{|flag|->present;|!flag|->absent}
-    |value<A>|{owner=22;|value.view<&int32>|{read:*(value.view<&int32>)}}
+    |value<A>|{owner=22;|value.view<&int32>|{read:*(value.view~<&int32>)}}
 }
 "#;
     let case = Case::new(source);

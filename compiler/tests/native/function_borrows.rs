@@ -166,7 +166,7 @@ inspect<null>:(flag<boolean>){
     owner:=11
     view:copy(optional(flag,&owner))
     |view<null>|{owner=12;d.print("absent")}
-    |view<&int32>|d.print(*(view<&int32>))
+    |view<&int32>|d.print(*(view~<&int32>))
     owner=13
     d.print(owner)
 }
@@ -180,8 +180,8 @@ text:"text"
 keep<AnyRef>:(value<AnyRef>){->value}
 a:keep(&number)
 b:keep(&text)
-|a<&int32>|d.print(*(a<&int32>))
-|b<&string>|d.print(*(b<&string>))
+|a<&int32>|d.print(*(a~<&int32>))
+|b<&string>|d.print(*(b~<&string>))
 "#,
     )
     .runs(b"11\n13\nabsent\n13\nempty\n7\ntext\n");

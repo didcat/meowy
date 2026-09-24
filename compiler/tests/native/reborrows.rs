@@ -89,7 +89,7 @@ inspect(true)
 inspect(false)
 owner:=7
 optional<&int32><null>:&owner
-|optional<&int32>|{view:&(*(optional<&int32>));d.print(*view)}
+|optional<&int32>|{view:&(*(optional~<&int32>));d.print(*view)}
 owner=8
 count:=0
 'loop {

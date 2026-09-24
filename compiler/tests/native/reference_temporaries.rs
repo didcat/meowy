@@ -53,7 +53,7 @@ owner:=7
 empty:*(&(make(&owner,false)))
 full:*(&(make(&owner,true)))
 |empty.view<null>|d.print("empty")
-|full.view<&int32>|d.print(*(full.view<&int32>))
+|full.view<&int32>|d.print(*(full.view~<&int32>))
 owner=8
 d.print(empty.count)
 none:*(&{->view<&int32><null>:null})

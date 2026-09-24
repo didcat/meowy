@@ -107,7 +107,7 @@ second:pick(false,&empty,&full)
 one:*first
 two:*second
 |one.view<null>|d.print("empty")
-|two.view<&int32>|d.print(*(two.view<&int32>))
+|two.view<&int32>|d.print(*(two.view~<&int32>))
 d.print(first.n);d.print(second.n)
 cell:&(empty.view)
 copied:*cell
@@ -151,7 +151,7 @@ pub fn transitive_loans_reject_stale_nested_reads_and_invalid_escapes() {
             "E303",
         ),
         (
-            "owner:=1;tag<int32><null>:=null;tag=1;view:&tag;copy:*view;result<&int32><null>:{|copy<int32>|->&owner};owner=2;|result<&int32>|v:*(result<&int32>)",
+            "owner:=1;tag<int32><null>:=null;tag=1;view:&tag;copy:*view;result<&int32><null>:{|copy<int32>|->&owner};owner=2;|result<&int32>|v:*(result~<&int32>)",
             "E302",
         ),
     ] {
