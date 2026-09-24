@@ -15,6 +15,7 @@ pub(crate) const MAX_ITEMS: usize = 65_536;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Source {
     Block(hir::BlockId),
+    Expr(hir::PointId),
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -46,24 +47,43 @@ impl Checker {
         {
             return Err(budget());
         }
-        let Source::Block(block) = source;
-        let owner = self.bodies.get(&block).ok_or_else(invalid)?.owner;
+        let (owner, block) = match source {
+            Source::Block(block) => (
+                self.bodies.get(&block).ok_or_else(invalid)?.owner,
+                Some(block),
+            ),
+            Source::Expr(id) => {
+                let point = self.points.get(id).ok_or_else(invalid)?;
+                if point.kind != PointKind::Expr || (!point.complete && self.point != Some(id)) {
+                    return Err(invalid());
+                }
+                (point.owner, point.block)
+            }
+        };
         if owner != self.owner {
             return Err(invalid());
         }
         let mut seen = BTreeSet::new();
         for id in items.iter().flatten() {
             let point = self.points.get(*id).ok_or_else(invalid)?;
-            if point.kind != PointKind::Stmt
-                || point.owner != owner
-                || point.block != Some(block)
-                || !point.complete
-                || !seen.insert(*id)
-                || !point
-                    .site
-                    .and_then(|site| self.sites.get(&site))
-                    .is_some_and(|site| site.complete && site.point == Some(*id))
+            if point.owner != owner || point.block != block || !point.complete || !seen.insert(*id)
             {
+                return Err(invalid());
+            }
+            let valid = match source {
+                Source::Block(_) => {
+                    point.kind == PointKind::Stmt
+                        && point
+                            .site
+                            .and_then(|site| self.sites.get(&site))
+                            .is_some_and(|site| site.complete && site.point == Some(*id))
+                }
+                Source::Expr(parent) => {
+                    point.parent == Some(parent)
+                        && matches!(point.kind, PointKind::Expr | PointKind::And | PointKind::Or)
+                }
+            };
+            if !valid {
                 return Err(invalid());
             }
         }
@@ -106,3 +126,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod operands;

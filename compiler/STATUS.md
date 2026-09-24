@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current statement and operand sequence slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Retain exact checked points for general lifetime-scoped statements, associating
    completed sites with their roots. Preserve temporary lifetimes and errors;
    update ancestry regressions atomically with the new statement containment.
@@ -137,8 +137,17 @@ atomic; the shared budget includes sequence edges. All four block-sequence group
 pass, covering erased statements, barriers, nested/functions, duplicate/changed
 identity and work/item/edge limits. All 1526 library tests pass;
 `/tmp/meowy-block-sequences-lib.log`. No failures remain. Ordinary binary operand
-sequences are next, followed by the full compiler gate.
-Contextual list/effect block builders remain outside this sequence integration.
+sequences now retain exact direct operand roots; composed equality operands
+remain explicit unknowns and short-circuit routes stay separate. Block prerequisite:
+`4286bae`. All four operand groups pass, including effectful blocks/erased uses,
+nested functions, short-circuit separation, unknown composed roots and ordinary
+errors/unknown call completion. All ten compiler checks pass, including 1530
+library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release). Log: `/tmp/meowy-sequences-gate.log`.
+No failures remain. These are conditional normal-to-next-entry links, not evidence
+of runtime completion. Explicit scope exits and block/statement/result endpoints
+remain prerequisites; other operand families and contextual block builders remain
+coverage gaps.
 Unknown effects remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices
@@ -1467,11 +1476,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Matcher/short-circuit region-content links and shared edge budgets passed all
-  ten checks in `python3 -B tools/verify.py --compiler`: 1521 library/910 native tests,
-  formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
-  in debug/release). Log: `/tmp/meowy-region-contents-gate.log`. General sequences,
-  exit/result transfers and restart propagation remain pending.
+- General statement roots, core block sequences and ordinary binary operand
+  sequences passed all ten checks in `python3 -B tools/verify.py --compiler`:
+  1530 library/910 native tests, formatting, Clippy, build and conformance
+  (10 passed, 13 unsupported, 0 failed in debug/release).
+  Log: `/tmp/meowy-sequences-gate.log`. Explicit exits/results, remaining operand/
+  contextual-block coverage and restart propagation remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1796,13 +1806,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    now link region entry/normal ports to checked contents through a shared bounded
    edge ledger (matcher-content prerequisite: `e981b0b`). Empty bypasses remain
    separate; child normal ports are not presumed reachable.
-   Next retain general statement boundaries and explicit consecutive statement/
-   operand edges in `dependencies/points.rs`, `dependencies/edges.rs` and block/
-   statement/expression checking. Use returned IDs and actual checking boundaries;
-   general statements outside matcher bodies do not yet receive statement points.
-   Add explicit leave/restart exit ports in `dependencies/exits.rs` and scope
-   checking, preserving BlockId/RestartId targets; never add a generic entry-to-
-   normal bypass for a region containing control exits or unknown effects.
+   General statements now retain exact roots through lifetime checking (`aaffd39`),
+   and completed sites identify those roots. Core blocks retain ordered statements
+   and explicit forward-group barriers (`4286bae`). Ordinary binary operands retain
+   exact direct roots and normal-to-next-entry edges; composed roots stay unknown.
+   `dependencies/sequences.rs` validates ownership and shares the edge budget.
+   Next add explicit leave/restart exit ports in `dependencies/exits.rs` and scope
+   checking, preserving BlockId/RestartId targets. Then connect block/statement
+   entry, normal and result endpoints without inventing fallthrough or pure effects.
+   Call/index/list operand sequencing, composed roots and contextual list/effect
+   block builders remain coverage gaps; missing sequences are not independence.
+   Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
    Record source identities during checking; do not infer links or runtime order from spans,
    point IDs or inventory indices. Required evaluator control regions beyond

@@ -462,8 +462,12 @@ and the new erased/runtime/failure root group pass;
 `/tmp/meowy-general-statements-lib.log`. Core block sequences now retain exact
 statement order, including erased uses and explicit forward-group barriers. Four
 focused groups and all 1526 library tests pass; `/tmp/meowy-block-sequences-lib.log`.
-Ordinary binary operand sequences are next. Contextual list/effect block builders,
-explicit exits/results and propagation/outcomes remain incomplete.
+Ordinary binary operands now retain exact direct roots and explicit normal-to-next
+edges; composed roots remain unknown and short-circuit routing stays separate.
+All ten compiler checks pass, including 1530 library/910 native tests;
+`/tmp/meowy-sequences-gate.log`. Statement roots: `aaffd39`; core blocks: `4286bae`.
+Other operand families, contextual list/effect blocks, explicit exits/results and
+propagation/outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -593,10 +597,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Region-content links and shared branch/content budgets passed all ten checks
-  in `python3 -B tools/verify.py --compiler`, including 1521 library/910 native tests.
-  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-region-contents-gate.log`. The transfer graph remains partial;
+- Statement roots, core block order and ordinary binary operand sequences passed
+  all ten checks in `python3 -B tools/verify.py --compiler`: 1530 library/910 native
+  tests. Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
+  `/tmp/meowy-sequences-gate.log`. The transfer graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -658,9 +662,10 @@ execution was not part of this documentation edit.
    Expression/read/query points and explicit runtime branch regions now distinguish
    uses within a statement. HIR branches and body facts now retain validated
    source links. Branch decision/bypass/normal-join edges are now explicit.
-   Region ports now link to exact checked contents. Next record consecutive
-   statement/operand boundaries and their explicit sequence edges, then model
-   leave/restart exits and result transfers.
+   Region ports now link to exact checked contents; core blocks and ordinary binary
+   operands retain explicit sequence edges. Next model leave/restart exits and
+   connect block/statement/result endpoints. Other operand families and contextual
+   list/effect blocks remain sequence-coverage gaps.
    Normal ports do not imply reachability. Preserve independent matcher arms,
    nested targets and unknown effects; do not
    infer runtime order from point IDs or source spans. Bounded backedge/header

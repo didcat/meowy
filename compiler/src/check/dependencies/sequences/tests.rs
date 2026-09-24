@@ -54,7 +54,9 @@ pub(crate) fn block_sequences_keep_forward_barriers_nested_targets_and_functions
         check("flag:=false;'outer{before:1;|flag|'outer.restart();after:2};f:(){a:1;b:2}");
     assert_eq!(checker.sequences.len(), 3);
     for (source, sequence) in &checker.sequences {
-        let Source::Block(block) = source;
+        let Source::Block(block) = source else {
+            continue;
+        };
         for id in sequence.items.iter().flatten() {
             assert_eq!(checker.points[*id].owner, sequence.owner);
             assert_eq!(checker.points[*id].block, Some(*block));
