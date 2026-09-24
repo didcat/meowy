@@ -99,51 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current field and indexed store slices
+### Current indirect store slices
 
 Dependency-ordered commit plan:
-1. Return exact checked roots from list-position checking while preserving existing
-   integer/one-based bounds diagnostics and the value-only API.
-2. Retain field-only store operations with canonical storage, exact field paths,
-   RHS roots and explicit address/effect stages. Keep ordinary checking unchanged.
-3. Extend those operations to indexed paths, capturing each index once and retaining
-   containing-list reservation/length stages, checked-success edges and RHS order.
-   Test nested/side-effectful paths and run the full compiler gate.
+1. Retain exact target/RHS roots and explicit target-capture/write stages for
+   scalar indirect stores. Preserve ordinary checking and add focused order,
+   owner/control, diagnostic and atomic-budget regressions.
+2. Snapshot bounded pointee origins before checking the RHS, preserving unknown
+   completeness and separating reference-cell storage from pointee owners.
+   Verify retargeting, aliases and nonreturning operands, then run the compiler gate.
 
-Investigation: `mutation.rs::write_path` resolves path steps before the RHS;
-`list_position_point` now returns exact roots without rechecking indices; the
-value-only wrapper preserves existing callers. Lowering captures each containing
-list length before evaluating its index, and ownership analysis validates the
-reservations. Metadata must preserve that order without granting new loan authority
-or asserting that bounds checks always succeed. Pure field addresses remain valid
-across supported same-layout RHS replacement. Indirect stores remain a separate
-next slice so reference-cell identities cannot be mistaken for pointee targets.
+Investigation: backend and loan analysis already capture the target before the
+RHS. Existing dependency marking resolves conservative origins after RHS checking;
+keep that monotone behavior separate from the operation's pre-RHS snapshot.
+Neither ledger grants loan authority or admits proof outcomes. Whole-owner origins
+are not precise field/element write locations.
 
-The preceding emission series (`e4374cc`, `6bb0f49`, `c6fd7e5`, `b73a14c`) passed
-all ten checks: 1574 library/910 native tests; conformance 10 passed, 13 unsupported,
-0 failed in debug/release. Log: `/tmp/meowy-emission-operations-gate.log`.
-The root-helper slice passes formatting and all 1576 library tests, including exact
-identity and unchanged integer/one-based length/capacity diagnostics. Log:
-`/tmp/meowy-position-roots-lib.log` (`9f2708c`). Field-only operations now retain
-canonical storage, exact field paths and RHS roots, with address stages before
-the RHS and a write effect after its normal completion. Identity checks and the
-shared edge budget guard publication. Formatting and all 1579 library tests pass,
-including nested paths, same-layout RHS replacement, control/owner separation,
-ordinary errors and atomic edge-budget failure. Log:
-`/tmp/meowy-field-paths-lib.log` (`e26a99c`). Indexed operations now capture exact
-index roots once and preserve each containing-list reservation/length stage before
-its index, followed by a `Checked` bounds-success edge. Capacity/path validation,
-distinct roots and shared budgets guard publication. These stages describe the
-existing lowering/loan order; they do not grant borrow authority or prove bounds.
-All seven focused operation groups pass, including nested side effects, aliases,
-nonreturning operands, reservation errors and atomic identity/budget failures.
-Log: `/tmp/meowy-indexed-paths-focused.log`. All ten compiler checks pass:
-1583 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-path-operations-gate.log`. Post-handoff link checks also pass:
-1208 local links in 110 Markdown files. Next implement indirect scalar stores.
-Remaining transfers/operand coverage and propagation stay incomplete; proof
-evaluation remains gated.
+Baseline: field/indexed store series `9f2708c`, `e26a99c`, `28a933b` passed all ten
+compiler checks: 1583 library/910 native tests, conformance 10 passed,
+13 unsupported, 0 failed in debug/release. Log:
+`/tmp/meowy-path-operations-gate.log`.
+
+The order slice now captures target/RHS roots with an explicit address stage after
+target completion and a write stage after RHS completion. Child identity and the
+shared edge budget guard atomic publication. All three focused groups and all
+1586 library tests pass; formatting also passes. Logs:
+`/tmp/meowy-indirect-order-focused.log`, `/tmp/meowy-indirect-order-lib.log`.
+Pointee snapshots follow separately; the full compiler gate will cover both slices.
 
 ### Proof dependency implementation slices
 

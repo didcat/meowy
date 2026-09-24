@@ -64,6 +64,7 @@ impl Checker {
             .saturating_add(self.restart_edges.len())
             .saturating_add(self.operation_edges)
             .saturating_add(self.path_edges)
+            .saturating_add(self.store_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)

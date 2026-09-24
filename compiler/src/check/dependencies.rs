@@ -315,5 +315,8 @@ pub(crate) use operations::{Kind as OperationKind, Operation};
 mod path_operations;
 pub(crate) use path_operations::{Operation as PathOperation, Step as PathStep};
 
+mod store_operations;
+pub(crate) use store_operations::Operation as StoreOperation;
+
 mod emissions;
 pub(crate) use emissions::Emission;

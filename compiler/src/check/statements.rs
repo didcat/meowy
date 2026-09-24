@@ -201,7 +201,7 @@ impl Checker {
                 if let ExprKind::Unary { op, value: pointer } = &form.kind
                     && op == "*"
                 {
-                    let target = self.expr(pointer, None)?;
+                    let (address, target) = self.expr_point(pointer, None)?;
                     if target.ty.pointee().is_some_and(|ty| {
                         !matches!(ty, Type::Bool | Type::Int { .. } | Type::Float { .. })
                     }) {
@@ -217,7 +217,7 @@ impl Checker {
                             form.span,
                         ));
                     };
-                    let value = self.expr(value, Some(ty))?;
+                    let (input, value) = self.expr_point(value, Some(ty))?;
                     if self.control || self.derived_expr(&target) || self.derived_expr(&value) {
                         let origins = self.reference_origins(&target)?;
                         if !origins.complete {
@@ -231,6 +231,12 @@ impl Checker {
                         }
                     }
                     self.forget_mutable();
+                    self.store_operation(
+                        self.point.expect("indirect store statement"),
+                        address,
+                        input,
+                        form.span,
+                    )?;
                     return Ok(vec![hir::Stmt::Store {
                         target,
                         value,
