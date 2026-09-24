@@ -52,7 +52,16 @@ shape-offset remapping, sibling/copy preservation, missing inputs, unselected
 variant rejection, total capacity and failure preservation. Unrelated writes bypass
 shape-path limits. All 296 dependency-filtered tests and formatting pass; log:
 `/tmp/meowy-shape-prefixes-focused.log`. Next: final-slot construction and mutable
-shape capture. The tree was clean at investigation; proof outcomes stay gated.
+shape capture. Prerequisite: `7b491bc`. Mutable fields and mutable descendants now
+read final canonical slot snapshots at block completion; initial capture and
+whole-value merging admit mutable record shapes. All 303 dependency-filtered tests
+pass; log: `/tmp/meowy-mutable-fields-focused.log`. Seven real-source groups cover
+final slots and descendants, direct/subrecord/conditional/self writes, copies,
+carriers, null/unknown alternatives, composition independence, query control and
+E302 loans. Union-interior writes still report their existing concrete-storage
+B001 gate. All ten compiler checks pass; log: `/tmp/meowy-mutable-fields-gate.log`.
+No failures remain. Next: inspect statement-owned temporary union snapshots while
+preserving ordinary borrow gates and expiry. Proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1380,15 +1389,17 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1265
-  library/903 native tests (2168 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1276
+  library/903 native tests (2179 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-mutable-slots-gate.log`.
-- All 292 dependency-filtered tests pass. Six slot groups cover direct,
-  conditional/self retargets, sibling visibility, prior copies, carriers,
-  null/unknown inputs, canonical shape-failure preservation, query control and
-  E302 loans. Accepted fixtures pass ordinary compilation/ownership; marks remain
-  seeded. Completed mutable record fields/subrecords remain incomplete.
+  0 failed in debug/release. Log: `/tmp/meowy-mutable-fields-gate.log`.
+- All 303 dependency-filtered tests pass. Four prefix groups cover offsets,
+  siblings/copies, missing inputs, unselected variants, capacity and failures.
+  Seven source groups cover final mutable slots/descendants, owned field/subrecord
+  writes, null/unknown inputs, carriers, composition, later marks/query control and
+  E302 loans. Union-interior writes retain their existing B001 gate. Accepted
+  fixtures pass ordinary compilation/ownership; marks remain seeded.
+  Prefix prerequisite: `7b491bc`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1564,14 +1575,17 @@ explicitly documented. No outstanding failures remain.
    incomplete alternatives without replaying RHS work. Self-assignment reads prior
    metadata; failed shape merges preserve it. Mutable named slots with immutable
    contents now capture initial snapshots and merge retargets at `Alias::root`;
-   siblings see the shared owners while prior copies remain independent. Next
-   implement completed mutable union fields/subrecords: add bounded prefix merging
-   for owned-path writes before removing the mutable-field capture gate. At block
-   completion, read mutable fields from their final canonical slot snapshots rather
-   than initializer expressions, so lexical retargets are retained. Preserve sibling
-   paths, shape offsets and prior copies; test direct/subrecord/conditional writes,
-   null/unknown values, marks, budgets and ordinary ownership before the full gate.
-   Keep temporary-borrow producers, returned unions and borrowed union views separate.
+   siblings see the shared owners while prior copies remain independent. Completed
+   mutable fields and mutable descendants now capture final canonical slot snapshots.
+   Owned concrete-record field/subrecord writes merge bounded qualified prefixes,
+   preserving siblings and prior copies; whole-value replacement retains mutable
+   record shapes too. Union-interior writes retain the ordinary concrete-storage
+   B001 gate. Next inspect statement-owned temporary union values in `temporaries.rs`
+   and `records/shapes/{reads,producers}`: capture their explicit storage IDs and
+   recover snapshots through direct dereferences/reborrows without extending
+   lifetimes. Verify ordinary borrow admission first; cover null/unknown values,
+   later marks, bounds and unchanged E303 expiry before the full gate. Returned
+   unions and general borrowed union views remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

@@ -109,10 +109,10 @@ pub(crate) fn named_union_marks_control_queries_without_bypassing_ownership() {
 }
 
 #[test]
-pub(crate) fn nested_named_shapes_keep_completed_mutable_record_boundaries() {
+pub(crate) fn nested_named_shapes_capture_completed_mutable_records() {
     for (body, complete) in [
         ("->item:{->inner<A><B>:{->r:&x}};->copy:item.inner", true),
-        ("->item<A><B>:={->r:&x};->copy:item", false),
+        ("->item<A><B>:={->r:&x};->copy:item", true),
     ] {
         let source = format!(
             "<A>:<{{r<&boolean>}}>;<B>:<{{r<&int32>}}>;x:=false;row:{{{body}}};|row.copy<A>|out:row.copy.r"

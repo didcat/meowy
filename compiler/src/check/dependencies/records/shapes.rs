@@ -124,7 +124,6 @@ impl Checker {
                     .aliases
                     .get(&id)
                     .is_some_and(|alias| alias.mutable))
-            && !value.ty.has_mutable_fields()
         {
             let next = self.record_shape_values(value, true)?;
             let root = self.origin_id(id);
@@ -140,9 +139,6 @@ impl Checker {
     }
 
     pub(crate) fn capture_record_shapes(&mut self, id: usize, value: &Expr) -> Result<()> {
-        if value.ty.has_mutable_fields() {
-            return Ok(());
-        }
         self.build_record_shapes(id, value, true)
     }
 

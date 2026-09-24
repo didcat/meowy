@@ -48,13 +48,25 @@ impl Checker {
             .map(|(at, ty)| (at - 1, ty))
             .collect::<Vec<_>>();
         let key = ShapeKey::new(tail, &variants, &mut self.flow, value.span)?;
-        let mut pending = if ids.is_empty() {
+        let final_slot = field.mutable || field.ty.has_mutable_fields();
+        let mut pending = if ids.is_empty() || final_slot {
             Vec::new()
         } else {
             vec![(&block.stmts[..], 0)]
         };
         let mut found = BTreeSet::new();
         let mut snapshot = Snapshot::empty();
+        if final_slot {
+            for id in &ids {
+                let next = self
+                    .shaped(*id)
+                    .and_then(|shapes| shapes.get(&key))
+                    .cloned()
+                    .unwrap_or_default();
+                snapshot.merge(next, &mut self.flow, value.span)?;
+                found.insert(*id);
+            }
+        }
         let mut visits = 0;
         while let Some((stmts, level)) = pending.pop() {
             if level > MAX_DEPTH {
@@ -141,3 +153,6 @@ mod tests;
 
 #[cfg(test)]
 mod compositions;
+
+#[cfg(test)]
+mod mutable;

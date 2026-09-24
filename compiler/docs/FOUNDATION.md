@@ -232,8 +232,8 @@ discovery retains bounded record-shape selections at heterogeneous union boundar
 and marks unsupported borrowed alternatives. Positional origin storage excludes
 these qualified paths. Separate bounded snapshots own shape selections and retain
 ordinary origins and carrier locations without crossing shapes. Local narrowing
-reads select exact keys; absent entries stay incomplete. Ordinary bindings with
-immutable fields capture root record-to-union widening and exact union copies.
+reads select exact keys; absent entries stay incomplete. Ordinary bindings
+capture root record-to-union widening and exact union copies.
 Known null contributes no owners, while unknown sources remain incomplete. Copies
 preserve their prior snapshots. Whole-container and addressed-prefix dependency
 traversal follows shaped origins and carrier locations, including later pointee
@@ -245,22 +245,22 @@ sources keep snapshots incomplete. Composition temporaries retain immutable
 snapshots and map destination field names to source indices and shape offsets.
 Mixed direct/composed alternatives share the same bounded merge; later source
 replacement does not change prior copies. Capture does not replay initializers.
-Named emissions with immutable contents capture shaped snapshots before slot
-registration.
+Named emissions capture shaped snapshots before slot registration.
 Sibling aliases merge possible owners and carrier locations at the canonical slot
 root; missing alternatives remain incomplete. Lexical reads and later dependency
 marks use the shared root, while ordinary copies keep prior snapshots.
-Ordinary mutable bindings with immutable fields retain old and new owners across
+Ordinary mutable bindings retain old and new owners across
 whole-value replacement, including nested union containers and carriers. RHS
 snapshots are built before storage changes, so self-assignment reads prior metadata
 and failed merges preserve it. Earlier copies retain their snapshots. Null or
 independent overwrites do not erase earlier owners; unknown alternatives remain
-incomplete. Mutable named slots with immutable contents also merge whole-slot
-retargets at the canonical root, preserving sibling visibility and earlier copies.
-This supports lexical slot reads; completed mutable record fields/subrecords still
-remain incomplete. Their construction must retain final slot snapshots, and owned
-field writes need prefix merging before capture can be enabled. Temporary-borrow
-producers, returned unions and borrowed union views remain separate.
+incomplete. Mutable named slots also merge whole-slot retargets at the canonical
+root, preserving sibling visibility and earlier copies. Completed mutable fields
+and mutable descendants capture final canonical slot snapshots, retaining lexical
+updates. Owned concrete-record field/subrecord writes merge qualified prefixes and
+preserve sibling metadata and prior copies. Writes through union interiors retain
+their concrete-storage gate. Temporary-borrow producers, returned unions and general
+borrowed union views remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
