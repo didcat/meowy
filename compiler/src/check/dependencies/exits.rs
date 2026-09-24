@@ -9,10 +9,19 @@ impl Checker {
     }
 
     pub(crate) fn continuation_statement(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
+        self.with_continuation(stmt.span, "statement", |checker| checker.stmt_body(stmt))
+    }
+
+    pub(crate) fn with_continuation<T>(
+        &mut self,
+        span: ast::Span,
+        kind: &str,
+        check: impl FnOnce(&mut Self) -> Result<T>,
+    ) -> Result<T> {
         if !self.flow.spend(self.frames.len() + 1) {
             return Err(Diagnostic::unsupported(
-                "proof continuation statement budget exhausted",
-                stmt.span,
+                format!("proof continuation {kind} budget exhausted"),
+                span,
             ));
         }
         let prior = self
@@ -22,7 +31,7 @@ impl Checker {
             .collect::<Vec<_>>();
         let control = self.control;
         self.control |= self.continuation_control();
-        let result = self.stmt_body(stmt);
+        let result = check(self);
         self.control = control;
         if result.is_err() {
             for (index, frame) in self.frames.iter_mut().enumerate() {

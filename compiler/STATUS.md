@@ -29,25 +29,22 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current conditional-leave successor slice
+### Current leave expression-successor series
 
 Commit plan:
-1. Retain per-frame derived continuation state for forward leave targets and
-   intervening scopes. Apply it to subsequent statements and matcher arms, restore
-   lexical control on errors and stop at the target's join. Keep seeded read/write,
-   pending-query/E225, nested-target and ordinary-error regressions with propagation.
-   Run the full compiler gate and update both handoffs.
+1. Extract continuation control entry/rollback into a reusable scope helper without
+   changing statement behavior or charges. Run focused checks and commit.
+2. Apply that scope at expression evaluation boundaries. Test later call operands,
+   indexes/temporaries, target joins, pending queries, error rollback and budgets.
+   Run the full gate and update both handoffs; keep restart backedges separate.
 
-Investigation: matcher bodies restore lexical control after checking, so a derived
-leave does not currently mark later statements. Scope frames can retain that
-continuation state until their join. This first slice covers statement successors;
-restart backedges, termination dependence and intra-expression operand successors
-remain separate. Seven forward-leave groups pass all 447 dependency-filtered tests;
-log: `/tmp/meowy-leave-successors-focused.log`. Successor marks, target joins,
-pending-query/E225 availability, source-error precedence, rollback, sibling arms
-and work bounds pass. All ten compiler checks pass, including 1420 library/903
-native tests; log: `/tmp/meowy-leave-successors-gate.log`. No failures remain.
-Proof outcomes stay gated; user changes remain preserved.
+Investigation: frame continuation marks survive an earlier operand, but later
+expressions do not refresh lexical control until another statement begins. This
+misses availability marks on later temporary owners. Share the existing scope
+transaction across expressions, preserving original source errors and evaluation
+order. The scope extraction passes all 447 dependency-filtered tests and formatting;
+log: `/tmp/meowy-continuation-scope-focused.log`. Expression integration is next.
+User changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
