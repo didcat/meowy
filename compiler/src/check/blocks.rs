@@ -314,6 +314,29 @@ impl Checker {
         record: Type,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
+        self.composed_point(value, record, expected)
+            .map(|(_, value)| value)
+    }
+
+    pub(crate) fn composed_point(
+        &mut self,
+        value: &ast::Expr,
+        record: Type,
+        expected: Option<&Type>,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        self.with_point_id(
+            super::dependencies::PointKind::Expr,
+            value.span,
+            |checker| checker.composed_value(value, record, expected),
+        )
+    }
+
+    pub(crate) fn composed_value(
+        &mut self,
+        value: &ast::Expr,
+        record: Type,
+        expected: Option<&Type>,
+    ) -> Result<hir::Expr> {
         match &value.kind {
             ExprKind::Group(value) => self.composed(value, record, expected),
             ExprKind::Block(block) => {

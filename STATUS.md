@@ -515,6 +515,11 @@ compiler checks pass, including 1561 library/910 native tests;
 without exact producers remain unknown. Emission operations and remaining
 store/address links are next; complete value-flow and proof outcomes stay gated.
 
+Composed expression checking now retains exact outer root IDs without changing
+partial-record shapes, scalar fallbacks or original errors. Both new root groups
+and all 1563 library tests pass; `/tmp/meowy-composed-roots-lib.log`. Direct emission
+operations are next; propagation and proof outcomes remain gated.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

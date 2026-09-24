@@ -213,3 +213,78 @@ pub(crate) fn hir_exit_sources_link_restart_ids_without_inventing_seeded_origins
         .unwrap();
     assert!(checker.restart_inputs[&0].point.is_none());
 }
+
+#[test]
+pub(crate) fn composed_roots_preserve_partial_shapes_and_outer_identity() {
+    let mut checker = Checker::new();
+    let record = hir::Type::Record {
+        primary: Box::new(hir::Type::Null),
+        fields: vec![
+            hir::Field {
+                name: "x".into(),
+                ty: hir::Type::Bool,
+                mutable: false,
+            },
+            hir::Field {
+                name: "y".into(),
+                ty: hir::Type::Bool,
+                mutable: false,
+            },
+        ],
+    };
+    let stmt = crate::parser::parse("(({->x:true}))")
+        .unwrap()
+        .stmts
+        .remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let (id, value) = checker.composed_point(&expr, record.clone(), None).unwrap();
+    assert!(checker.points[id].complete);
+    assert!(checker.points[id].parent.is_none());
+    let hir::Type::Record { fields, .. } = &value.ty else {
+        panic!()
+    };
+    assert_eq!(fields.len(), 1);
+    assert_eq!(fields[0].name, "x");
+    let (next, copy) = checker.composed_point(&expr, record, None).unwrap();
+    assert_ne!(id, next);
+    assert_eq!(value.ty, copy.ty);
+    assert_eq!(checker.points[id].span, checker.points[next].span);
+    assert!(checker.point.is_none());
+}
+
+#[test]
+pub(crate) fn composed_roots_keep_errors_and_existing_scalar_fallbacks() {
+    let mut checker = Checker::new();
+    let record = hir::Type::Record {
+        primary: Box::new(hir::Type::Null),
+        fields: vec![hir::Field {
+            name: "x".into(),
+            ty: hir::Type::Bool,
+            mutable: false,
+        }],
+    };
+    let stmt = crate::parser::parse("{->x:1}").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    assert_eq!(
+        checker
+            .composed_point(&expr, record.clone(), None)
+            .unwrap_err()
+            .code,
+        "E207"
+    );
+    assert!(checker.point.is_none());
+    assert!(!checker.points[0].complete);
+    let stmt = crate::parser::parse("true").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let (id, value) = checker
+        .composed_point(&expr, record, Some(&hir::Type::Bool))
+        .unwrap();
+    assert_eq!(value.ty, hir::Type::Bool);
+    assert!(checker.points[id].complete);
+}
