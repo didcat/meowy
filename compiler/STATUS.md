@@ -125,7 +125,18 @@ empty lists have an explicit construction stage and `never` lists have no result
 edge. Combined edge-budget preflight prevents partial sequence publication.
 All four focused groups and all 1607 library tests pass; formatting also passes.
 Logs: `/tmp/meowy-list-literals-focused.log`, `/tmp/meowy-list-literals-lib.log`.
-Union-context integration follows separately; the final gate covers both slices.
+Concrete/inferred slice: `18f8e70`. Union-context checking now stores ordinary and
+deferred roots in original slots; custom effect builders retain explicit `None`
+barriers. Adjacent known elements can link, but no edge skips an unknown element.
+Candidate filtering, expected-value coercion and once-only checking are unchanged.
+All seven focused groups pass, including union selection, deferred slots, custom
+effect gaps and original ambiguity/capacity errors. Log:
+`/tmp/meowy-list-unions-focused.log`. All ten compiler checks pass:
+1610 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-list-literals-gate.log`. Post-documentation link checks pass:
+1208 local links in 110 Markdown files. Exact custom effect-element roots are next;
+remaining graph coverage, propagation and proof evaluation stay incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1453,10 +1464,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- List receiver roots and index snapshot/bounds links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1603 library/910
+- Concrete/inferred and union-context list sequencing passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1610 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-index-order-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-list-literals-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1822,16 +1833,20 @@ subtraction retains its documented limits. No outstanding failures remain.
    length snapshots before position evaluation, and bounds-success result stages.
    Nonreturning receivers skip position checking; nonreturning positions have no
    projection/result edge. Shared-list dereference and loan checks are unchanged.
-   Next capture element roots in `list.rs::list_literal`, preserving contextual
-   element types, source order, nonreturning elements and capacity limits. Validate
-   nested/side-effectful construction, errors and budgets with focused tests and
-   the compiler gate, then cover list methods and element-borrow paths.
+   Concrete/inferred and union-context lists now retain element sequences by source
+   slot, preserving deferred scalar checking, construction endpoints and `never`
+   boundaries. Custom effect-block elements remain explicit unknown slots.
+   Next expose exact roots for those elements in `list_context/effect.rs`, after
+   side-effect-free form recognition and before actual checking. Preserve candidate
+   probes, lexical scopes, once-only effects and unknown body transfers. Verify
+   errors, owner/point restoration and budgets with focused tests and the compiler
+   gate, then cover list methods and element-borrow paths.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   List literal/method and element-borrow sequencing, debug formatting and
-   contextual list/effect block builders remain coverage gaps; missing sequences
+   Custom list-element roots, list-method and element-borrow sequencing, debug
+   formatting and contextual list/effect block builders remain coverage gaps; missing sequences
    are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

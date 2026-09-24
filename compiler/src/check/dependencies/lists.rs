@@ -79,6 +79,9 @@ impl Checker {
 }
 
 #[cfg(test)]
+mod unions;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

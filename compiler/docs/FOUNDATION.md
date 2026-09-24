@@ -142,6 +142,12 @@ opaque call-effect stage; a separate return edge permits normal continuation onl
 when the callee returns. Declared `never` results omit that edge. No purity,
 termination or effect summary is inferred. Debug formatting, list methods and
 required/type-only calls retain separate coverage boundaries.
+List literals retain ordered element roots by source position, including scalar
+elements checked later for contextual inference. Empty construction is explicit;
+nonreturning elements do not publish a list result. Union candidate selection and
+coercions remain unchanged. Custom effect-block elements retain unknown sequence
+entries until their exact roots are supported; graph edges never skip those gaps.
+Construction links do not establish complete value provenance or proof outcomes.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

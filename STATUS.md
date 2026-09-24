@@ -556,6 +556,13 @@ receiver helper (`77a4a7e`) preserves shared-list dereference and existing HIR.
 All ten compiler checks pass: 1603 library/910 native tests;
 `/tmp/meowy-index-order-gate.log`. Element-borrow, list literal/method and
 contextual builder paths remain separate.
+Concrete/inferred list literals now retain element roots by source slot and reuse
+ordered sequences and construction/result endpoints (`18f8e70`). Deferred scalar
+checking does not reorder runtime edges. Union contexts retain ordinary/deferred
+roots while custom effect elements remain explicit gaps. Empty lists have a
+construction stage; nonreturning elements prevent result publication. All seven
+focused groups and all ten compiler checks pass: 1610 library/910 native tests;
+`/tmp/meowy-list-literals-gate.log`. Exact custom element roots remain next.
 
 ## Pending descriptor statement accounting
 
@@ -685,10 +692,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- List receiver roots and index snapshot/bounds links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1603 library/910 native tests.
+- Concrete/inferred and union-context list sequencing passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1610 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-index-order-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-list-literals-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -761,11 +768,13 @@ execution was not part of this documentation edit.
    target/RHS roots and pre-RHS pointee origins, keeping incomplete origins and
    reference-cell identities distinct. Direct calls retain ordered argument roots,
    opaque effects and conditional return edges. List indices now retain receiver
-   snapshots, ordered position roots and bounds-success stages. Next capture list
-   literal element roots in `compiler/src/list.rs::list_literal`, preserving element
-   context, evaluation order, nonreturning elements and capacity rules. Validate
-   exact roots, side effects, errors and budgets, then cover list methods and
-   element-borrow paths. Debug formatting and required/type-only calls remain separate.
+   snapshots, ordered position roots and bounds-success stages. List literals retain
+   source-ordered element roots and construction endpoints, including union-context
+   gaps for custom effect blocks. Next give those blocks exact element roots in
+   `compiler/src/list_context/effect.rs` without allocating points during candidate
+   probes. Validate once-only effects, scope/owner restoration, errors and budgets,
+   then cover list methods and element-borrow paths. Debug formatting and
+   required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.

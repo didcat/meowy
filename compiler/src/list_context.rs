@@ -67,6 +67,7 @@ impl Checker {
             return self.list_literal(values, Some(choices[0]), span);
         }
         let mut items = vec![None; values.len()];
+        let mut points = vec![None; values.len()];
         let mut deferred = Vec::new();
         for (index, value) in values.iter().enumerate() {
             if choices.len() > 1 && self.list_deferred(value)? {
@@ -94,9 +95,13 @@ impl Checker {
                 )? {
                 item
             } else if common {
-                self.expr(value, Some(elements[0]))?
+                let (point, value) = self.expr_point(value, Some(elements[0]))?;
+                points[index] = Some(point);
+                value
             } else if self.list_independent(value) {
-                self.expr(value, None)?
+                let (point, value) = self.expr_point(value, None)?;
+                points[index] = Some(point);
+                value
             } else {
                 return Err(Diagnostic::unsupported(
                     "list element needs a concrete contextual type before its effects can be checked",
@@ -155,9 +160,11 @@ impl Checker {
         };
         for (index, reach) in deferred {
             let after = std::mem::replace(&mut self.reach, reach);
-            let result = self.expr(&values[index], Some(element));
+            let result = self.expr_point(&values[index], Some(element));
             self.reach = after;
-            items[index] = Some(result?);
+            let (point, value) = result?;
+            points[index] = Some(point);
+            items[index] = Some(value);
         }
         let values = items
             .into_iter()
@@ -175,6 +182,12 @@ impl Checker {
         } else {
             list.clone()
         };
+        self.list_sequence(
+            self.point.expect("union list literal"),
+            points,
+            ty != Type::Never,
+            span,
+        )?;
         Ok(hir::Expr {
             kind: hir::ExprKind::List { values, list },
             ty,
