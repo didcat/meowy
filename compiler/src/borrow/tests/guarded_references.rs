@@ -66,11 +66,11 @@ pub(crate) fn short_circuit_updates_share_the_same_guarded_environment() {
 pub(crate) fn guarded_pointer_versions_preserve_pointee_activity() {
     let prefix = "<H>:<{view<&int32><null>;n<int32>}>;";
     accepts(&format!(
-        "{prefix}f<null>:(flag<boolean>){{a:=1;left<H>:{{->view:&a;->n:1}};right<H>:{{->n:2}};p:=&left;|flag|p=&right;copy:*p;|copy.view<null>|a=3;|copy.view<&int32>|value:*(copy.view<&int32>)}}"
+        "{prefix}f<null>:(flag<boolean>){{a:=1;left<H>:{{->view:&a;->n:1}};right<H>:{{->n:2}};p:=&left;|flag|p=&right;copy:*p;|copy.view<null>|a=3;|copy.view<&int32>|value:*(copy.view~<&int32>)}}"
     ));
     rejects(
         &format!(
-            "{prefix}f<null>:(flag<boolean>){{a:=1;left<H>:{{->view:&a;->n:1}};right<H>:{{->n:2}};p:=&left;|flag|p=&right;copy:*p;|copy.view<&int32>|{{a=3;value:*(copy.view<&int32>)}}}}"
+            "{prefix}f<null>:(flag<boolean>){{a:=1;left<H>:{{->view:&a;->n:1}};right<H>:{{->n:2}};p:=&left;|flag|p=&right;copy:*p;|copy.view<&int32>|{{a=3;value:*(copy.view~<&int32>)}}}}"
         ),
         "E302",
     );

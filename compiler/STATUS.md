@@ -57,7 +57,12 @@ only during fixture migration. AST-based fixture migration passes all 1446 libra
 and 908 native tests (debug/release): `/tmp/meowy-ascription-library-migration.log`,
 `/tmp/meowy-ascription-native-migration.log`. Union targets use existing computed
 brackets where needed; required-budget tests account for their actual extra work.
-Migration commits are grouped by checker, ownership, loans, native values, native
+Bare type suffixes now parse as predicates everywhere at comparison precedence;
+generic-call fallback remains available in higher-precedence operands. All 1447
+library/909 native tests pass (`/tmp/meowy-uniform-predicates-tests.log`). Generated
+fixture fragments and required-target costs were migrated without weakening checks.
+Old bitwise parser operators and obsolete matcher mode are next to remove. Migration
+commits are grouped by checker, ownership, loans, native values, native
 slots, restart headers and reference returns (at most eight files each).
 Ordinary host-language self/bitwise syntax and unrelated user
 work are preserved. The restart/proof handoff remains unchanged.

@@ -42,7 +42,7 @@ pub(crate) fn parses_functions_labels_and_emissions() {
 }
 
 #[test]
-pub(crate) fn honors_context_for_type_suffixes() {
+pub(crate) fn distinguishes_explicit_ascriptions_from_type_predicates() {
     let block = parse("|!(value<int32>) && accepts(value~<int32>)|copy:value~<int32>").unwrap();
     let StmtKind::Match { arms } = &block.stmts[0].kind else {
         panic!()
@@ -388,4 +388,31 @@ pub(crate) fn explicit_ascription_preserves_generic_calls_and_type_queries() {
     };
     assert!(matches!(value.kind, ExprKind::TypeQuery(_)));
     assert!(parse("out:value~T").is_err());
+}
+
+#[test]
+pub(crate) fn type_predicates_have_comparison_precedence_in_every_expression() {
+    for source in ["out:value<T>", "out:!value<T>", "out:1+value<T>"] {
+        let expr = self::value(source);
+        assert!(matches!(
+            expr.kind,
+            ExprKind::Ascribe {
+                predicate: true,
+                ..
+            }
+        ));
+    }
+    assert!(parse("out:value<T><3").is_err());
+    for source in ["out:-f<(int32)->int32>()", "out:1+f<(int32)->int32>()"] {
+        let expr = self::value(source);
+        let right = match &expr.kind {
+            ExprKind::Unary { value, .. } => value,
+            ExprKind::Binary { right, .. } => right,
+            _ => panic!(),
+        };
+        let ExprKind::Call { callee, .. } = &right.kind else {
+            panic!()
+        };
+        assert!(matches!(callee.kind, ExprKind::Specialize { .. }));
+    }
 }

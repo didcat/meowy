@@ -24,7 +24,9 @@ expression positions. Generic calls and type queries retain their syntax; union
 ascriptions use one target type such as a named alias. Move integer bitwise syntax
 into `@"bits"` functions while preserving integer widths and required evaluation.
 Compiler, docs and editor work proceeds in the compiler handoff's reviewed slices.
-Validation pending; restart/proof implementation remains separate.
+Uniform predicates pass 1447 library/909 native tests; bits module implementation,
+required evaluation and fixture migration are committed. Final operator removal
+and combined verification remain; restart/proof implementation stays separate.
 
 ## Dispatch receiver sigil migration
 

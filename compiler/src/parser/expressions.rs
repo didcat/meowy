@@ -187,7 +187,7 @@ impl Parser {
                         continue;
                     }
                     self.pos = save;
-                    if !condition || min <= 40 {
+                    {
                         if let Ok(ty) = self.type_union() {
                             if self.at("(") {
                                 if matches!(ty.kind, crate::ast::TypeKind::Union(_)) {
@@ -205,7 +205,11 @@ impl Parser {
                                 };
                                 continue;
                             }
-                            if condition && is_comparison(&left) {
+                            if min > 40 {
+                                self.pos = save;
+                                break;
+                            }
+                            if is_comparison(&left) {
                                 return Err(Diagnostic::new(
                                     "E004",
                                     "comparisons cannot be chained",
@@ -216,7 +220,7 @@ impl Parser {
                                 kind: ExprKind::Ascribe {
                                     value: Box::new(left),
                                     ty,
-                                    predicate: condition,
+                                    predicate: true,
                                 },
                                 span: Span::new(start, self.end()),
                             };

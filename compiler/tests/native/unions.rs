@@ -314,3 +314,22 @@ copy:x~<U>
     assert_eq!(result.status.code(), Some(1));
     assert!(String::from_utf8_lossy(&result.stderr).contains("E208"));
 }
+
+#[test]
+pub fn type_predicates_are_boolean_values_outside_matchers() {
+    Case::new(
+        r#"
+d:@"debug"
+show<null>:(flag<boolean>){d.print(flag)}
+value:7
+flag:value<int32>
+d.print(flag)
+show(value<string>)
+d.print(1+value<int32>)
+row:{->n:7}
+copy:row~<{n<int32>}>
+d.print(copy.n)
+"#,
+    )
+    .runs(b"true\nfalse\ntrue\n7\n");
+}

@@ -105,13 +105,13 @@ pub(crate) fn borrow_prefix_chains_stop_before_postfix() {
 #[test]
 pub(crate) fn borrow_type_suffixes_apply_to_the_reference() {
     for (source, expected) in [
-        ("&x<int32>", "(ascribe false (& x))"),
-        ("&(x<int32>)", "(& (group (ascribe false x)))"),
+        ("&x~<int32>", "(ascribe false (& x))"),
+        ("&(x~<int32>)", "(& (group (ascribe false x)))"),
         ("&x<>", "(query (& x))"),
-        ("r.&field<&int32>", "(ascribe false (& (field r field)))"),
+        ("r.&field~<&int32>", "(ascribe false (& (field r field)))"),
         ("r.&field<>", "(query (& (field r field)))"),
-        ("*x<int32>", "(ascribe false (* x))"),
-        ("*(x<&int32>)", "(* (group (ascribe false x)))"),
+        ("*x~<int32>", "(ascribe false (* x))"),
+        ("*(x~<&int32>)", "(* (group (ascribe false x)))"),
         ("r.*field<>", "(query (* (field r field)))"),
     ] {
         assert_eq!(tree(&value(source)), expected, "{source}");
