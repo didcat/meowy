@@ -286,3 +286,6 @@ mod calls;
 mod record_locations;
 
 mod exits;
+
+mod restarts;
+pub(crate) use restarts::RestartInput;

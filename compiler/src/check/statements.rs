@@ -422,6 +422,7 @@ impl Checker {
                             ));
                         }
                         let site = self.restarts;
+                        self.track_restart_input(site, target, value.span)?;
                         self.restarts += 1;
                         self.proofs.frontiers.insert(
                             site,

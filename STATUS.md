@@ -446,22 +446,24 @@ including writes and query availability, until the target scope joins.
 All 447 focused tests and all ten compiler checks pass. Later expression operands
 now refresh continuation control, including temporary owners and final coercion
 rollback. Scope prerequisite: `bac55cf`. All 453 focused tests and all ten compiler checks pass.
-Restart backedges and loop-carried control are next; termination dependence remains
+Restart sites now retain bounded target/owner/span/control evidence under their
+existing IDs. All 458 focused tests and all ten compiler checks pass. Loop/query scope
+association is next; loop-carried propagation and termination dependence remain
 incomplete.
 Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1426
-  library/903 native tests (2329 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1431
+  library/903 native tests (2334 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-expression-successors-gate.log`.
-- All 453 dependency-filtered tests pass. Six expression-successor groups cover
-  later call operands, indexed RHS temporaries/writes, target joins, pending-query
-  E225, ordinary unmarked behavior, call-argument/source-error precedence, final
-  coercion rollback and expression-budget exhaustion. Marks are seeded; runtime
-  proof outcomes remain unavailable. Restart backedges and termination dependence
-  remain incomplete.
+  0 failed in debug/release. Log: `/tmp/meowy-restart-evidence-gate.log`.
+- All 458 dependency-filtered tests pass. Five restart-evidence groups cover
+  ordinary/derived control, nested and aliased targets, function owners, leave-
+  derived availability, original scope errors, stable site identity and capacity/
+  work limits. This is metadata only; loop-carried propagation and termination
+  dependence remain unimplemented. Accepted fixtures pass ordinary compilation;
+  proof-control marks remain seeded and runtime outcomes stay gated.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

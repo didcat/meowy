@@ -29,26 +29,29 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current leave expression-successor series
+### Current restart dependency evidence prerequisite
 
 Commit plan:
-1. Extract continuation control entry/rollback into a reusable scope helper without
-   changing statement behavior or charges. Run focused checks and commit.
-2. Apply that scope at expression evaluation boundaries. Test later call operands,
-   indexes/temporaries, target joins, pending queries, error rollback and budgets.
-   Run the full gate and update both handoffs; keep restart backedges separate.
+1. Record bounded RestartId/target/function-owner/source-span/control evidence only
+   after ordinary scope-operation validation. Keep site identity stable, preserve
+   original errors and avoid changing forward continuation state. Test aliases,
+   nested targets, ordinary/derived control, function ownership and budget failures.
+   Run the full gate and commit this independently reviewable representation slice.
+2. Next associate loop body facts and pending query sites with target blocks, then
+   plan bounded backward/control propagation and E225 enforcement without replaying
+   initializers or changing retained logical budgets.
 
-Investigation: frame continuation marks survive an earlier operand, but later
-expressions do not refresh lexical control until another statement begins. This
-misses availability marks on later temporary owners. Share the existing scope
-transaction across expressions, preserving original source errors and evaluation
-order. Scope prerequisite `bac55cf` passed all 447 focused tests before integration.
-Expression boundaries and six new groups pass all 453 dependency-filtered tests;
-log: `/tmp/meowy-expression-successors-focused.log`. Later temporary owners,
-indexed RHS writes, target joins, pending queries, original E212/E207 diagnostics,
-final coercion rollback and work bounds pass. All ten compiler checks pass,
-including 1426 library/903 native tests; log: `/tmp/meowy-expression-successors-gate.log`.
-No failures remain. User changes remain preserved; proof outcomes stay gated.
+Investigation: restart frontiers already retain target and entered base reach, but
+not proof-control provenance. Frame flags only affect later source statements;
+backedges need stable site evidence for earlier statements and later iterations.
+This prerequisite does not claim loop-carried propagation or termination analysis.
+Evidence registration and five new groups pass all 458 dependency-filtered tests;
+log: `/tmp/meowy-restart-evidence-focused.log`. Ordinary/derived control, aliases,
+nested targets, function owners, leave-derived control, original scope errors,
+site identity and capacity/work limits pass. All ten compiler checks pass, including
+1431 library/903 native tests; log: `/tmp/meowy-restart-evidence-gate.log`.
+No failures remain. Loop-carried propagation is not yet implemented.
+User changes remain preserved and proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1376,16 +1379,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1426
-  library/903 native tests (2329 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1431
+  library/903 native tests (2334 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-expression-successors-gate.log`.
-- All 453 dependency-filtered tests pass. Six expression-successor groups cover
-  later call operands, indexed RHS temporaries/writes, target joins, pending-query
-  E225, ordinary unmarked behavior, call-argument/source-error precedence, final
-  coercion rollback and expression-budget exhaustion. Marks are seeded; runtime
-  proof outcomes remain unavailable. Restart backedges and termination dependence
-  remain incomplete.
+  0 failed in debug/release. Log: `/tmp/meowy-restart-evidence-gate.log`.
+- All 458 dependency-filtered tests pass. Five restart-evidence groups cover
+  ordinary/derived control, nested and aliased targets, function owners, leave-
+  derived availability, original scope errors, stable site identity and capacity/
+  work limits. This is metadata only; loop-carried propagation and termination
+  dependence remain unimplemented. Accepted fixtures pass ordinary compilation;
+  proof-control marks remain seeded and runtime outcomes stay gated.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1662,13 +1665,18 @@ explicitly documented. No outstanding failures remain.
    call operands, indexed assignment RHS temporaries and pending-query blocks.
    Operand-local target joins remain independent; final coercion errors restore
    enclosing control. Scope prerequisite: `bac55cf`.
-   Next audit restart backedges and loop-carried proof control in the scope-operation
-   handlers and dependency walk. Record RestartId/target/control evidence separately
-   from forward leaves, then plan bounded propagation over the source graph without
-   re-evaluating initializers or resetting logical budgets. A frame flag only affects
-   later source statements and cannot by itself cover earlier statements on the next
-   iteration. Start with seeded pre-restart writes/reads/query availability and
-   nested targets; retain ordinary errors and keep outcomes gated through the full gate.
+   Validated restart sites now retain bounded RestartId/target/function-owner/
+   source-span/control evidence separately from forward continuation flags.
+   Scope-operation errors precede registration; repeated matching metadata is stable
+   and conflicting site identities are rejected. No loop-carried propagation is
+   claimed by this prerequisite.
+   Next associate pending query sites and checked body facts with restart target
+   blocks. Pending queries are omitted from runtime HIR, so retain bounded active
+   block identities at query preparation rather than inferring scopes from spans.
+   Then plan propagation over backedges and loop headers without re-evaluating
+   initializers or resetting logical budgets. Test queries/writes before a restart,
+   nested targets, owner separation, unknown/derived conditions and original errors;
+   keep outcomes gated until bounded propagation and E225 enforcement pass the full gate.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
