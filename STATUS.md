@@ -409,7 +409,10 @@ Runtime expression checking now retains bounded point IDs with statement/block/
 function ownership, same-function parents and completion state. Four focused groups
 and all 1482 library tests pass; `/tmp/meowy-expression-points-lib.log`.
 Existing continuation-budget diagnostic precedence is preserved.
-Required-read/query points and branch-region capture are the next integrations.
+Required reads and original queries now retain individual points, preserving
+query-copy identity and logical roots. Four focused groups and all 1486 library
+tests pass; `/tmp/meowy-required-points-lib.log`. Runtime branch-region capture
+and the full compiler gate are next.
 These identities do not yet establish execution order or restart propagation.
 
 ## Pending descriptor statement accounting

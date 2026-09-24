@@ -281,22 +281,31 @@ impl Checker {
         {
             return Err(Walk::budget(expr.span));
         }
-        let input = InputUse {
-            site,
-            id: *id,
-            storage: self.proofs.aliases.get(id).map_or(*id, |alias| alias.root),
-            span: expr.span,
-            control: self.control,
-            root: self
-                .type_work
-                .as_ref()
-                .expect("required input root")
-                .logical
-                .root,
-        };
-        self.body_inputs.entry(frame.id).or_default().push(input);
-        self.body_facts += 1;
-        Ok(())
+        let id = *id;
+        let block = frame.id;
+        self.with_point(super::PointKind::Read, expr.span, |checker| {
+            let input = InputUse {
+                point: checker.point.expect("required read point"),
+                site,
+                id,
+                storage: checker
+                    .proofs
+                    .aliases
+                    .get(&id)
+                    .map_or(id, |alias| alias.root),
+                span: expr.span,
+                control: checker.control,
+                root: checker
+                    .type_work
+                    .as_ref()
+                    .expect("required input root")
+                    .logical
+                    .root,
+            };
+            checker.body_inputs.entry(block).or_default().push(input);
+            checker.body_facts += 1;
+            Ok(())
+        })
     }
 
     pub(crate) fn track_body(&mut self, block: &hir::Block, span: Span) -> Result<()> {

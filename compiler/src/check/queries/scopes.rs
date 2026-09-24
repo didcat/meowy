@@ -75,9 +75,9 @@ impl Checker {
         }
         let mut queries = Vec::new();
         for (id, query) in self.queries.iter().enumerate() {
-            let source = query
-                .site
-                .map_or(query.owner, |site| self.sites[&site].owner);
+            let source = query.site.map_or(self.points[query.point].owner, |site| {
+                self.sites[&site].owner
+            });
             if source != owner {
                 continue;
             }

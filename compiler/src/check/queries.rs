@@ -12,6 +12,7 @@ pub(crate) enum Pending<'a> {
 }
 
 pub(crate) struct Query {
+    pub(crate) point: usize,
     pub(crate) site: Option<crate::hir::StatementId>,
     pub(crate) ty: Spec,
     pub(crate) span: Span,
@@ -110,48 +111,51 @@ impl Checker {
             Pending::Copy(id) => Ok(id),
             Pending::Call { ty, span } => self.construction_root(span, |checker| {
                 checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
-                let at = ty.span;
-                let ty = checker.source_spec(ty, true)?;
-                if matches!(ty, Spec::Function { .. }) {
-                    return Err(Diagnostic::unsupported(
-                        "proof queries on function signatures",
-                        at,
-                    ));
-                }
-                if checker.queries.len() == 4096 || !checker.flow.spend(1) {
-                    return Err(Diagnostic::unsupported(
-                        "pending proof query capacity exhausted",
-                        span,
-                    ));
-                }
-                let scopes = checker.query_scopes(span)?;
-                let sites = checker.query_restart_sites(&scopes, span)?;
-                let site = checker.checked_site(span)?;
-                let root = match checker.type_work.as_ref().unwrap().query_root {
-                    Some(id) => id,
-                    None => {
-                        let id = checker.query_budgets.len();
-                        checker.query_budgets.push(None);
-                        checker.type_work.as_mut().unwrap().query_root = Some(id);
-                        id
+                checker.with_point(super::dependencies::PointKind::Query, span, |checker| {
+                    let at = ty.span;
+                    let ty = checker.source_spec(ty, true)?;
+                    if matches!(ty, Spec::Function { .. }) {
+                        return Err(Diagnostic::unsupported(
+                            "proof queries on function signatures",
+                            at,
+                        ));
                     }
-                };
-                let id = checker.queries.len();
-                checker.queries.push(Query {
-                    site,
-                    ty,
-                    span,
-                    owner: checker.owner,
-                    target: crate::driver::TARGET,
-                    revision: 1,
-                    root,
-                    control: checker.control,
-                    scopes,
-                });
-                for site in sites {
-                    checker.restart_queries.entry(site).or_default().insert(id);
-                }
-                Ok(id)
+                    if checker.queries.len() == 4096 || !checker.flow.spend(1) {
+                        return Err(Diagnostic::unsupported(
+                            "pending proof query capacity exhausted",
+                            span,
+                        ));
+                    }
+                    let scopes = checker.query_scopes(span)?;
+                    let sites = checker.query_restart_sites(&scopes, span)?;
+                    let site = checker.checked_site(span)?;
+                    let root = match checker.type_work.as_ref().unwrap().query_root {
+                        Some(id) => id,
+                        None => {
+                            let id = checker.query_budgets.len();
+                            checker.query_budgets.push(None);
+                            checker.type_work.as_mut().unwrap().query_root = Some(id);
+                            id
+                        }
+                    };
+                    let id = checker.queries.len();
+                    checker.queries.push(Query {
+                        point: checker.point.expect("pending query point"),
+                        site,
+                        ty,
+                        span,
+                        owner: checker.owner,
+                        target: crate::driver::TARGET,
+                        revision: 1,
+                        root,
+                        control: checker.control,
+                        scopes,
+                    });
+                    for site in sites {
+                        checker.restart_queries.entry(site).or_default().insert(id);
+                    }
+                    Ok(id)
+                })
             }),
         }
     }

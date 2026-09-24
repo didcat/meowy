@@ -134,6 +134,7 @@ pub(crate) struct Frame {
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct InputUse {
+    pub(crate) point: usize,
     pub(crate) site: Option<hir::StatementId>,
     pub(crate) id: hir::LocalId,
     pub(crate) storage: hir::LocalId,

@@ -128,7 +128,13 @@ and block links, and completion state. All four focused expression-point groups
 pass, including duplicate spans, nested functions, coercion failure restoration
 and capacity limits. All 1482 library tests pass;
 `/tmp/meowy-expression-points-lib.log`. The existing continuation-budget diagnostic
-precedence is preserved. No failures remain. Required-read/query points are next.
+precedence is preserved. No failures remain. Expression prerequisite: `10a45ec`. Required reads and
+query construction now enter their own points; repeated reads get distinct IDs
+and query arguments retain their query parent. All four required-point groups
+pass, including failed enclosing queries, recognition purity, skipped reads and
+function isolation. All 1486 library tests pass;
+`/tmp/meowy-required-points-lib.log`. No failures remain. Runtime branch/operand
+region capture is next, followed by the full compiler gate.
 Proof outcomes remain gated; unknown reference/store/call effects remain explicit.
 
 ### Proof dependency implementation slices

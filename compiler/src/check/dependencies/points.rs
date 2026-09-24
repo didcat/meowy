@@ -10,6 +10,8 @@ pub(crate) const MAX_POINTS: usize = 262_144;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Kind {
     Expr,
+    Read,
+    Query,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -61,6 +63,9 @@ impl Checker {
         result
     }
 }
+
+#[cfg(test)]
+mod uses;
 
 #[cfg(test)]
 mod tests {
