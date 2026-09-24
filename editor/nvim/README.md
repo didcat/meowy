@@ -76,7 +76,8 @@ The highlighter handles:
   safety boundaries.
 - Task submission and joins (`>>`, `<<`), `%group` names, labeled scopes,
   emissions, matchers, field selection, and dispatch. Simple and qualified callables
-  in `value.(function)` and `value.(module.function)` use function highlighting,
+  in `value.(function)`, `value.(module.function)` and `value.(function, argument)`
+  use function highlighting,
   including a line break after the opening parenthesis.
 - Decimal, hexadecimal, and binary integers with separators, floating-point
   literals and exponents, and arithmetic and logical operators.

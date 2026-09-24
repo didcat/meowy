@@ -145,6 +145,15 @@ spaced_dispatch : value. ( transforms . convert )
 multiline_dispatch : value.(
     transforms.convert
 )
+"".(print, "")
+"".(print, "", "", "", "")
+value.(print, first, second, third, fourth)
+value.(transforms.convert, argument)
+value.(convert, handler)
+multiline_arguments : value.(
+    print, ""
+)
+consume(print, "")
 ordinary_group : (convert)
 nested_group : consume((convert))
 ordinary_field : transforms.convert

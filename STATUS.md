@@ -24,11 +24,14 @@ configuration methods, while binary remainder and ordinary borrows keep their
 highlighting. Task-group editor slice: `27ad3e9`.
 
 Simple/qualified callables in `.(function)` dispatch now receive function
-highlighting, including multiline forms. Ordinary parenthesized values, field
+highlighting, including multiline forms. Dispatches with extra arguments, such as
+`"".(print, "")`, now recognize the callable before the comma; argument names
+remain ordinary identifiers, with no argument-count limit. Ordinary parenthesized values, field
 reads, comments and strings retain their previous groups.
 
 `python3 -B tools/verify.py --editor both` passed all six checks for each slice;
-logs: `/tmp/meowy-task-group-editor.log`, `/tmp/meowy-dispatch-highlight.log`.
+logs: `/tmp/meowy-task-group-editor.log`, `/tmp/meowy-dispatch-highlight.log`,
+`/tmp/meowy-dispatch-arguments-highlight.log`.
 Compiler/runtime implementation and the active compiler handoff are unchanged.
 
 ## Task-group sigil documentation
