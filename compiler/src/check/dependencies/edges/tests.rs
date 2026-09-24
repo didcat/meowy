@@ -19,7 +19,8 @@ pub(crate) fn matcher_edges_link_erased_uses_to_independent_decisions_and_normal
         check("p:@\"proof\";n:3;|false|q:p.can_copy<({-><uint8[n]>})>();|true|<T>:{-><uint8[n]>}");
     assert_eq!(checker.branch_edges.len(), 2);
     let query = &checker.points[checker.queries[0].point];
-    let taken = query.parent.unwrap();
+    let body = query.parent.unwrap();
+    let taken = checker.points[body].parent.unwrap();
     let branch = checker.points[taken].parent.unwrap();
     let edges = &checker.branch_edges[&branch];
     assert!(

@@ -30,12 +30,16 @@ pub(crate) fn branch_points_attach_inline_queries_and_reads_to_matcher_arms() {
         assert!(checker.points[*id].complete);
     }
     let query = &checker.points[checker.queries[0].point];
-    let arm = &checker.points[query.parent.unwrap()];
+    let body = &checker.points[query.parent.unwrap()];
+    assert_eq!(body.kind, Kind::Stmt);
+    let arm = &checker.points[body.parent.unwrap()];
     assert_eq!(arm.kind, Kind::Then);
     assert_eq!(arm.parent, Some(branches[0]));
     let reads = checker.body_inputs.values().flatten().collect::<Vec<_>>();
     assert_eq!(reads.len(), 2);
-    let arm = checker.points[reads[1].point].parent.unwrap();
+    let body = checker.points[reads[1].point].parent.unwrap();
+    assert_eq!(checker.points[body].kind, Kind::Stmt);
+    let arm = checker.points[body].parent.unwrap();
     assert_eq!(checker.points[arm].kind, Kind::Then);
     assert_eq!(checker.points[arm].parent, Some(branches[1]));
     assert!(checker.points[checker.queries[1].point].parent.is_none());

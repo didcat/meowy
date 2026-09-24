@@ -10,6 +10,7 @@ pub(crate) const MAX_POINTS: usize = 262_144;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Kind {
     Expr,
+    Stmt,
     Read,
     Query,
     Match,
@@ -102,6 +103,51 @@ mod anchors;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    pub(crate) fn statement_points_retain_erased_bodies_without_new_lifetime_scopes() {
+        let source = "p:@\"proof\";n:3;|true|q:p.can_copy<uint8>();|false|<T>:{-><uint8[n]>}";
+        let mut checker = Checker::new();
+        let block = crate::parser::parse(source).unwrap();
+        checker.block(&block, None, None).unwrap();
+        let bodies = checker
+            .points
+            .iter()
+            .filter(|point| point.kind == Kind::Stmt)
+            .collect::<Vec<_>>();
+        assert_eq!(bodies.len(), 2);
+        assert!(bodies.iter().all(|point| point.complete));
+        for body in bodies {
+            let region = &checker.points[body.parent.unwrap()];
+            assert_eq!(region.kind, Kind::Then);
+            assert_eq!(body.site, region.site);
+        }
+        let query = &checker.points[checker.queries[0].point];
+        assert_eq!(checker.points[query.parent.unwrap()].kind, Kind::Stmt);
+        let read = checker.body_inputs.values().flatten().next().unwrap();
+        assert_eq!(
+            checker.points[checker.points[read.point].parent.unwrap()].kind,
+            Kind::Stmt
+        );
+        assert!(checker.statement.is_empty());
+        assert!(checker.point.is_none());
+    }
+
+    #[test]
+    pub(crate) fn statement_points_restore_control_after_failed_matcher_bodies() {
+        let mut checker = Checker::new();
+        let block = crate::parser::parse("|true|x<boolean>:1").unwrap();
+        assert_eq!(checker.block(&block, None, None).unwrap_err().code, "E207");
+        let body = checker
+            .points
+            .iter()
+            .find(|point| point.kind == Kind::Stmt)
+            .unwrap();
+        assert!(!body.complete);
+        assert!(checker.point.is_none());
+        assert!(!checker.control);
+        assert!(checker.branch_edges.is_empty());
+    }
 
     #[test]
     pub(crate) fn point_results_return_the_enclosing_id_after_nested_checking() {

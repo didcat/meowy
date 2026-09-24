@@ -444,7 +444,10 @@ and outcomes stay gated.
 Coerced/uncoerced expression APIs now return exact root IDs without adding points
 or changing diagnostics/accounting. Both focused groups and all 1512 library tests
 pass; `/tmp/meowy-expression-roots-lib.log`. Matcher-body statement identities are
-next, followed by region-content edges. General sequencing and outcomes stay gated.
+now retained for erased and runtime bodies, without new lifetime scopes. Both
+statement-point groups and all 1514 library tests pass;
+`/tmp/meowy-statement-points-lib.log`. Region-content edges are next; general
+sequencing and outcomes stay gated.
 
 ## Pending descriptor statement accounting
 

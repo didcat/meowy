@@ -13,7 +13,8 @@ pub(crate) fn matcher_sources_link_body_facts_to_erased_query_and_read_regions()
         .unwrap();
     let point = body.sources[index].unwrap();
     let query = &checker.queries[0];
-    let arm = checker.points[query.point].parent.unwrap();
+    let stmt = checker.points[query.point].parent.unwrap();
+    let arm = checker.points[stmt].parent.unwrap();
     assert_eq!(checker.points[arm].parent, Some(point));
     let read = &checker.body_inputs[&block.id][0];
     assert_eq!(checker.points[read.point].parent, Some(query.point));

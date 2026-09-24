@@ -128,8 +128,12 @@ debug/release. Log: `/tmp/meowy-branch-edges-gate.log`.
 Coerced/uncoerced expression APIs now return their exact outer point IDs while
 value-only callers keep their existing behavior. Both new expression-root groups
 and all 1512 library tests pass; `/tmp/meowy-expression-roots-lib.log`. No failures
-remain. The matcher-body point prerequisite is next. It is split from region-edge
-integration so ancestry changes and new graph behavior remain separately reviewable.
+remain. Expression-root prerequisite: `ba3debb`. Matcher-body statements now
+have explicit points, including erased type/query statements, without allocating
+new lifetime scopes. The ancestry assertions now include this boundary. Both
+statement-point groups and all 1514 library tests pass;
+`/tmp/meowy-statement-points-lib.log`. No failures remain. Shared-budget region
+links and matcher-content integration are next.
 Unknown effects and unlinked normal ports remain incomplete; outcomes stay gated.
 
 ### Proof dependency implementation slices

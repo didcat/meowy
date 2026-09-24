@@ -34,6 +34,17 @@ impl Checker {
         self.continuation_statement(stmt)
     }
 
+    pub(crate) fn stmt_point(
+        &mut self,
+        stmt: &ast::Stmt,
+    ) -> Result<(hir::PointId, Vec<hir::Stmt>)> {
+        self.with_continuation(stmt.span, "statement", |checker| {
+            checker.with_point_id(PointKind::Stmt, stmt.span, |checker| {
+                checker.stmt_body(stmt)
+            })
+        })
+    }
+
     pub(crate) fn stmt_body(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
         if self.pending_statement(stmt)? {
             return Ok(Vec::new());
@@ -299,7 +310,7 @@ impl Checker {
                         let depth = checker.scopes.len();
                         checker.scopes.push(Scope::default());
                         let then = checker.with_point_id(PointKind::Then, body.span, |checker| {
-                            checker.stmt_inner(body)
+                            checker.stmt_point(body).map(|(_, stmts)| stmts)
                         });
                         checker.scopes.truncate(depth);
                         checker.control = control;
