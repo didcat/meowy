@@ -1,4 +1,4 @@
-use super::{Checker, Result, Value};
+use super::{Checker, Result, Value, dependencies::PointKind};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
 use crate::flow::FALSE;
@@ -7,7 +7,7 @@ use crate::hir::{self, Type};
 impl Checker {
     pub(crate) fn expr(&mut self, expr: &ast::Expr, expected: Option<&Type>) -> Result<hir::Expr> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.with_point(super::dependencies::PointKind::Expr, expr.span, |checker| {
+            checker.with_point(PointKind::expression(expr), expr.span, |checker| {
                 checker.coerced_expression(expr, expected)
             })
         })
@@ -85,7 +85,7 @@ impl Checker {
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.with_point(super::dependencies::PointKind::Expr, expr.span, |checker| {
+            checker.with_point(PointKind::expression(expr), expr.span, |checker| {
                 checker.expression_value(expr, expected)
             })
         })

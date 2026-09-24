@@ -12,6 +12,22 @@ pub(crate) enum Kind {
     Expr,
     Read,
     Query,
+    Match,
+    And,
+    Or,
+    Condition,
+    Then,
+    Else,
+}
+
+impl Kind {
+    pub(crate) fn expression(expr: &crate::ast::Expr) -> Self {
+        match &expr.kind {
+            crate::ast::ExprKind::Binary { op, .. } if op == "&&" => Self::And,
+            crate::ast::ExprKind::Binary { op, .. } if op == "||" => Self::Or,
+            _ => Self::Expr,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -66,6 +82,9 @@ impl Checker {
 
 #[cfg(test)]
 mod uses;
+
+#[cfg(test)]
+mod branches;
 
 #[cfg(test)]
 mod tests {

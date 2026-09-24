@@ -1,4 +1,4 @@
-use super::{Checker, Result, Scope, Slot, Value};
+use super::{Checker, Result, Scope, Slot, Value, dependencies::PointKind};
 use crate::ast::{self, ExprKind, Span, StmtKind};
 use crate::diagnostic::Diagnostic;
 use crate::flow::FALSE;
@@ -277,32 +277,42 @@ impl Checker {
                     let Some(condition) = condition else {
                         return Err(Diagnostic::unsupported("matcher fallback arms", stmt.span));
                     };
-                    let condition = self.expr(condition, None)?;
-                    if condition.ty != Type::Bool {
-                        return Err(Self::error(
-                            "E215",
-                            format!("matcher requires boolean, found {:?}", condition.ty),
+                    let branch = self.with_point(PointKind::Match, condition.span, |checker| {
+                        let condition = checker.with_point(
+                            PointKind::Condition,
                             condition.span,
-                        ));
-                    }
-                    let guard = self.guard(&condition);
-                    let absent = self.flow.not(guard);
-                    let skipped = self.flow.and(self.reach, absent);
-                    self.reach = self.flow.and(self.reach, guard);
-                    let control = self.control;
-                    self.control |= self.derived_expr(&condition);
-                    let depth = self.scopes.len();
-                    self.scopes.push(Scope::default());
-                    let then = self.stmt_inner(body);
-                    self.scopes.truncate(depth);
-                    self.control = control;
-                    self.reach = self.flow.or(self.reach, skipped);
-                    let then = then?;
-                    stmts.push(hir::Stmt::If {
-                        condition,
-                        then,
-                        otherwise: Vec::new(),
-                    });
+                            |checker| checker.expr(condition, None),
+                        )?;
+                        if condition.ty != Type::Bool {
+                            return Err(Self::error(
+                                "E215",
+                                format!("matcher requires boolean, found {:?}", condition.ty),
+                                condition.span,
+                            ));
+                        }
+                        let guard = checker.guard(&condition);
+                        let absent = checker.flow.not(guard);
+                        let skipped = checker.flow.and(checker.reach, absent);
+                        checker.reach = checker.flow.and(checker.reach, guard);
+                        let control = checker.control;
+                        checker.control |= checker.derived_expr(&condition);
+                        let depth = checker.scopes.len();
+                        checker.scopes.push(Scope::default());
+                        let then = checker.with_point(PointKind::Then, body.span, |checker| {
+                            checker.stmt_inner(body)
+                        });
+                        checker.scopes.truncate(depth);
+                        checker.control = control;
+                        checker.reach = checker.flow.or(checker.reach, skipped);
+                        let then = then?;
+                        checker.with_point(PointKind::Else, condition.span, |_| Ok(()))?;
+                        Ok(hir::Stmt::If {
+                            condition,
+                            then,
+                            otherwise: Vec::new(),
+                        })
+                    })?;
+                    stmts.push(branch);
                 }
                 Ok(stmts)
             }

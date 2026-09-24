@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current expression and branch identity slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Add a bounded expression-point inventory with explicit parent, statement,
    function and block identities. Capture successful/failed runtime expression
    checking boundaries without using spans as identity; test restoration and bounds.
@@ -115,7 +115,7 @@ Dependency-ordered commit plan:
 Investigation: `expr` and `expression` are the runtime expression boundaries.
 Matcher bodies may use `stmt_inner`, so statement IDs alone cannot distinguish
 inline arms. Required reads bypass runtime expression checking; they need their
-own identities. The new points will retain checking containment, not infer runtime
+own identities. These points retain checking containment, not inferred runtime
 execution order. Explicit continuation/result-transfer links and HIR branch anchors
 remain separate prerequisites to backedge propagation.
 
@@ -128,13 +128,20 @@ and block links, and completion state. All four focused expression-point groups
 pass, including duplicate spans, nested functions, coercion failure restoration
 and capacity limits. All 1482 library tests pass;
 `/tmp/meowy-expression-points-lib.log`. The existing continuation-budget diagnostic
-precedence is preserved. No failures remain. Expression prerequisite: `10a45ec`. Required reads and
+precedence is preserved. Expression prerequisite: `10a45ec`. Required reads and
 query construction now enter their own points; repeated reads get distinct IDs
 and query arguments retain their query parent. All four required-point groups
 pass, including failed enclosing queries, recognition purity, skipped reads and
 function isolation. All 1486 library tests pass;
 `/tmp/meowy-required-points-lib.log`. No failures remain. Runtime branch/operand
-region capture is next, followed by the full compiler gate.
+region capture now wraps matcher conditions/bodies and short-circuit operands,
+including explicit empty alternatives. Required/query point prerequisite: `b4a79de`.
+All four branch-point groups pass, including inline matcher uses, skipped RHS
+queries, nested boolean conditions, function isolation and E215/E207/E222 errors.
+All ten compiler checks pass, including 1490 library/910 native tests, formatting,
+Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+Log: `/tmp/meowy-branch-points-gate.log`. No failures remain. Next connect these
+points to HIR branches/body facts and explicit continuation/join/result edges.
 Proof outcomes remain gated; unknown reference/store/call effects remain explicit.
 
 ### Proof dependency implementation slices
@@ -1463,11 +1470,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Checked statement sites and erased input/query associations passed all ten checks
-  in `python3 -B tools/verify.py --compiler`: 1478 library/910 native tests,
+- Expression/read/query points and runtime branch regions passed all ten checks
+  in `python3 -B tools/verify.py --compiler`: 1490 library/910 native tests,
   formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
-  in debug/release). Log: `/tmp/meowy-checked-sites-gate.log`. This metadata does
-  not yet provide expression/branch/continuation identities or restart propagation.
+  in debug/release). Log: `/tmp/meowy-branch-points-gate.log`. HIR branch links,
+  explicit continuations/result transfers and restart propagation remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1777,13 +1784,18 @@ subtraction retains its documented limits. No outstanding failures remain.
    parents and completion state (`d8f7f64`). Required reads and original pending
    queries retain those sites; query copies keep their original source. All ten
    compiler checks pass, including 1478 library/910 native tests.
-   Next add explicit expression/branch/continuation identities in
-   `dependencies/sites.rs`, `dependencies/bodies.rs`, `queries/` and their checking
-   boundaries, linking erased uses and retained HIR relations. Distinguish multiple
-   reads within a statement and preserve both matcher/short-circuit successors.
-   Statement containment is not execution order. Do not infer identity or ordering
-   from spans or inventory indices. Preserve recognition purity, original roots
-   and both arms.
+   Runtime expression points (`10a45ec`) and individual required-read/query points
+   (`b4a79de`) retain same-function parent/statement/block identities and explicit
+   completion. Matcher and short-circuit points now retain condition/taken/skipped
+   regions, including inline erased uses and runtime-skipped operands.
+   Next link `dependencies/points.rs` identities to retained HIR branches/body facts
+   in `dependencies/bodies.rs`, then add explicit continuation/join edges at
+   statement/expression checking boundaries. Keep forward leaves, independent
+   matcher arms, nested targets and function ownership distinct. Record source
+   identities during checking; do not infer links or runtime order from spans,
+   point IDs or inventory indices. Required evaluator control regions beyond
+   captured read leaves remain separate. Preserve recognition purity, original
+   roots, fixed signatures and both structural successors.
    Connect nested block/emission result sources to their consumers using existing
    HIR/slot identities; retain unknown reference/store/call effects explicitly.
    These remain prerequisites to a complete transfer graph. Then propagate over

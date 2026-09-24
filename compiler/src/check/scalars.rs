@@ -1,4 +1,4 @@
-use super::{Checker, Constant, Result, Value};
+use super::{Checker, Constant, Result, Value, dependencies::PointKind};
 use crate::ast::{self, Span};
 use crate::flow::FALSE;
 use crate::hir::{self, Type};
@@ -258,7 +258,11 @@ impl Checker {
                     }
                 })
         };
-        let left = if equality && matches!(context, Some(Type::Record { .. })) {
+        let left = if boolean {
+            self.with_point(PointKind::Condition, left.span, |checker| {
+                checker.expression(left, context.as_ref())
+            })?
+        } else if equality && matches!(context, Some(Type::Record { .. })) {
             let record = context.clone().expect("record context");
             let primary = Self::primary_type(&record);
             self.composed(left, record, Some(&primary))?
@@ -284,7 +288,16 @@ impl Checker {
         } else {
             Self::primary_type(&left.ty)
         };
-        let right = if equality && matches!(right_context, Type::Record { .. }) {
+        let right = if boolean {
+            let kind = if op == "&&" {
+                PointKind::Then
+            } else {
+                PointKind::Else
+            };
+            self.with_point(kind, right.span, |checker| {
+                checker.expression(right, Some(&right_context))
+            })?
+        } else if equality && matches!(right_context, Type::Record { .. }) {
             let primary = Self::primary_type(&right_context);
             self.composed(right, right_context, Some(&primary))?
         } else {
@@ -292,6 +305,12 @@ impl Checker {
         };
         if boolean {
             self.reach = self.flow.or(self.reach, skipped);
+            let kind = if op == "&&" {
+                PointKind::Else
+            } else {
+                PointKind::Then
+            };
+            self.with_point(kind, span, |_| Ok(()))?;
         }
         self.binary_values(op, left, right, span)
     }
