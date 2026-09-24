@@ -126,7 +126,14 @@ Checked point boundaries now return their exact allocated ID alongside the
 result. Nested checking and failures restore the enclosing active point; the
 value-only API and existing budgets are preserved. Both new point-result groups
 and all 1503 library tests pass; `/tmp/meowy-point-results-lib.log`. No failures
-remain. Matcher branch edges are next. Unknown sources/effects remain explicit
+remain. Point-result prerequisite: `e201bd7`. Matcher branches now record bounded
+entry, true/false, skipped-path and normal-join edges using returned IDs. Source
+validation and publication are atomic; repeated identical registrations are stable.
+All four focused matcher-edge groups pass, including independent decisions,
+leave boundaries, functions, repeated registrations, ordinary errors and budgets.
+All 1507 library tests pass, including invalid parent/owner/block cases;
+`/tmp/meowy-matcher-edges-lib.log`. No failures remain. Short-circuit edge
+integration is next, followed by the full compiler gate. Unknown sources/effects remain explicit
 and proof outcomes stay gated.
 
 ### Proof dependency implementation slices

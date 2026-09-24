@@ -278,7 +278,7 @@ impl Checker {
                         return Err(Diagnostic::unsupported("matcher fallback arms", stmt.span));
                     };
                     let branch = self.with_point(PointKind::Match, condition.span, |checker| {
-                        let condition = checker.with_point(
+                        let (test, condition) = checker.with_point_id(
                             PointKind::Condition,
                             condition.span,
                             |checker| checker.expr(condition, None),
@@ -298,16 +298,19 @@ impl Checker {
                         checker.control |= checker.derived_expr(&condition);
                         let depth = checker.scopes.len();
                         checker.scopes.push(Scope::default());
-                        let then = checker.with_point(PointKind::Then, body.span, |checker| {
+                        let then = checker.with_point_id(PointKind::Then, body.span, |checker| {
                             checker.stmt_inner(body)
                         });
                         checker.scopes.truncate(depth);
                         checker.control = control;
                         checker.reach = checker.flow.or(checker.reach, skipped);
-                        let then = then?;
-                        checker.with_point(PointKind::Else, condition.span, |_| Ok(()))?;
+                        let (taken, then) = then?;
+                        let (skipped, ()) =
+                            checker.with_point_id(PointKind::Else, condition.span, |_| Ok(()))?;
+                        let point = checker.point.expect("matcher point");
+                        checker.branch_edges(point, test, taken, skipped, condition.span)?;
                         Ok(hir::Stmt::If {
-                            point: checker.point,
+                            point: Some(point),
                             condition,
                             then,
                             otherwise: Vec::new(),

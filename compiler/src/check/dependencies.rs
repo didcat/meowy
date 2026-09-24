@@ -299,3 +299,6 @@ pub(crate) use sites::Site;
 
 mod points;
 pub(crate) use points::{Kind as PointKind, Point};
+
+mod edges;
+pub(crate) use edges::Edge;

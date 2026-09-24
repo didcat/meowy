@@ -431,7 +431,11 @@ restart propagation and proof outcomes remain pending.
 Checked point boundaries now return exact IDs alongside checked values, preserving
 nested/error restoration and existing budgets. Both focused groups and all 1503
 library tests pass; `/tmp/meowy-point-results-lib.log`. Explicit matcher decision/
-normal-join edges are the next integration; propagation and outcomes stay gated.
+normal-join edges are now retained with bounded, atomic source validation. Both
+boolean successors remain explicit; normal ports do not imply runtime reachability.
+Four focused groups and all 1507 library tests pass;
+`/tmp/meowy-matcher-edges-lib.log`. Short-circuit edges are next; propagation and
+outcomes stay gated.
 
 ## Pending descriptor statement accounting
 
