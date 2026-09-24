@@ -7,6 +7,53 @@ use crate::{
 };
 
 impl Checker {
+    pub(crate) fn block_result(
+        &mut self,
+        id: hir::PointId,
+        block: hir::BlockId,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof block result budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof block result identity mismatch", span);
+        if !self.flow.spend(
+            self.bodies.len().checked_ilog2().unwrap_or(0) as usize
+                + self.endpoints.len().checked_ilog2().unwrap_or(0) as usize * 2
+                + 3,
+        ) {
+            return Err(budget());
+        }
+        let point = self.points.get(id).ok_or_else(invalid)?;
+        if point.kind != super::PointKind::Expr
+            || point.owner != self.owner
+            || (!point.complete && self.point != Some(id))
+            || !self
+                .bodies
+                .get(&block)
+                .is_some_and(|body| body.owner == self.owner && body.parent == Some(id))
+            || !self.endpoints.contains_key(&SequenceSource::Block(block))
+        {
+            return Err(invalid());
+        }
+        let key = SequenceSource::Expr(id);
+        let edges = vec![
+            Edge::new(Port::Entry(id), Port::BlockEntry(block), Route::Next),
+            Edge::new(Port::BlockResult(block), Port::Normal(id), Route::Result),
+        ];
+        if let Some(prior) = self.endpoints.get(&key) {
+            return if *prior == edges {
+                Ok(())
+            } else {
+                Err(invalid())
+            };
+        }
+        if !self.edge_room(edges.len()) {
+            return Err(budget());
+        }
+        self.endpoint_edges += edges.len();
+        self.endpoints.insert(key, edges);
+        Ok(())
+    }
+
     pub(crate) fn block_endpoints(&mut self, body: &hir::Block, span: Span) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof block endpoint budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof block endpoint identity mismatch", span);
@@ -191,5 +238,101 @@ mod tests {
         );
         assert!(checker.endpoints.is_empty());
         assert_eq!(checker.endpoint_edges, 0);
+    }
+
+    #[test]
+    pub(crate) fn block_results_link_expression_statements_to_exact_body_producers() {
+        let (checker, _) = check("{};{->1};'out{'out.leave()}");
+        let mut count = 0;
+        for (key, edges) in &checker.endpoints {
+            let SequenceSource::Expr(point) = key else {
+                continue;
+            };
+            let Port::BlockEntry(block) = edges[0].to else {
+                panic!()
+            };
+            assert_eq!(checker.bodies[&block].parent, Some(*point));
+            let stmt = checker.points[*point].parent.unwrap();
+            assert_eq!(checker.region_edges[&stmt][0].to, Port::Entry(*point));
+            assert_eq!(
+                edges[1],
+                Edge::new(
+                    Port::BlockResult(block),
+                    Port::Normal(*point),
+                    Route::Result
+                )
+            );
+            count += 1;
+        }
+        assert_eq!(count, 3);
+    }
+
+    #[test]
+    pub(crate) fn block_results_preserve_function_isolation_and_incomplete_failures() {
+        let (checker, _) = check("f<int32>:(){->{->1}};{f()}");
+        for (key, edges) in &checker.endpoints {
+            let SequenceSource::Expr(point) = key else {
+                continue;
+            };
+            let Port::BlockEntry(block) = edges[0].to else {
+                panic!()
+            };
+            assert_eq!(checker.bodies[&block].owner, checker.points[*point].owner);
+        }
+        let mut checker = Checker::new();
+        let block = crate::parser::parse("x<boolean>:{->1}").unwrap();
+        assert_eq!(checker.block(&block, None, None).unwrap_err().code, "E207");
+        assert!(!checker.points.iter().all(|point| point.complete));
+        let (checker, _) = check("'loop{'loop.restart()}");
+        for (key, edges) in &checker.endpoints {
+            let SequenceSource::Block(block) = key else {
+                continue;
+            };
+            assert!(
+                !edges
+                    .iter()
+                    .any(|edge| edge.to == Port::BlockResult(*block))
+            );
+        }
+    }
+
+    #[test]
+    pub(crate) fn block_results_reject_wrong_parent_and_shared_budget_exhaustion() {
+        let (mut checker, _) = check("{}");
+        let (key, edges) = checker
+            .endpoints
+            .iter()
+            .find(|(key, _)| matches!(key, SequenceSource::Expr(_)))
+            .unwrap();
+        let key = *key;
+        let SequenceSource::Expr(point) = key else {
+            panic!()
+        };
+        let Port::BlockEntry(block) = edges[0].to else {
+            panic!()
+        };
+        let count = checker.endpoint_edges;
+        checker.block_result(point, block, Span::default()).unwrap();
+        assert_eq!(checker.endpoint_edges, count);
+        checker.bodies.get_mut(&block).unwrap().parent = None;
+        assert!(
+            checker
+                .block_result(point, block, Span::default())
+                .unwrap_err()
+                .message
+                .contains("identity mismatch")
+        );
+        checker.bodies.get_mut(&block).unwrap().parent = Some(point);
+        checker.endpoints.remove(&key);
+        checker.endpoint_edges -= 2;
+        checker.sequence_edges = super::super::MAX_EDGES;
+        assert!(
+            checker
+                .block_result(point, block, Span::default())
+                .unwrap_err()
+                .message
+                .contains("result budget")
+        );
+        assert!(!checker.endpoints.contains_key(&key));
     }
 }

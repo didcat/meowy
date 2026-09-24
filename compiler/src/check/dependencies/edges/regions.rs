@@ -19,7 +19,7 @@ impl Checker {
         let point = self.points.get(id).ok_or_else(invalid)?;
         if !matches!(
             point.kind,
-            PointKind::Condition | PointKind::Then | PointKind::Else
+            PointKind::Condition | PointKind::Then | PointKind::Else | PointKind::Stmt
         ) || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
         {
@@ -34,7 +34,8 @@ impl Checker {
                 source.kind,
                 PointKind::Expr | PointKind::And | PointKind::Or | PointKind::Stmt
             )
-            || (point.kind == PointKind::Condition && source.kind == PointKind::Stmt)
+            || (matches!(point.kind, PointKind::Condition | PointKind::Stmt)
+                && source.kind == PointKind::Stmt)
         {
             return Err(invalid());
         }

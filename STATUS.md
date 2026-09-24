@@ -489,8 +489,11 @@ Core blocks now retain entry, normal-completion and result ports, including targ
 leave joins. Empty blocks have explicit completion paths; forward groups and
 synthetic receiver setup remain opaque, and never blocks have no result edge.
 Four focused groups and all 1544 library tests pass;
-`/tmp/meowy-block-endpoints-lib.log`. Expression consumers and statement endpoints
-are next; value-flow and dependency propagation remain incomplete.
+`/tmp/meowy-block-endpoints-lib.log`. Plain block expressions now use exact
+producer/result links, and expression statements depend on their child normal
+ports. All 1547 library tests pass; `/tmp/meowy-block-consumers-lib.log`.
+Block prerequisite: `b45829a`. Restart reentry routes are next; generic value-flow
+and dependency propagation remain incomplete.
 
 ## Pending descriptor statement accounting
 

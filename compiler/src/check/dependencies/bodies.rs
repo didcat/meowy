@@ -39,6 +39,7 @@ pub(crate) enum Fact {
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct Body {
     pub(crate) owner: usize,
+    pub(crate) parent: Option<hir::PointId>,
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
     pub(crate) storage: Vec<Option<hir::LocalId>>,
@@ -451,6 +452,7 @@ impl Checker {
         walk.run()?;
         let body = Body {
             owner: self.owner,
+            parent: self.point.filter(|id| self.points[*id].owner == self.owner),
             facts: walk.facts,
             links: walk.links,
             storage: walk.storage,

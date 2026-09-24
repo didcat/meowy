@@ -37,7 +37,15 @@ pub(crate) fn region_edges_keep_exit_and_function_boundaries_without_invented_co
     let source = "'out{|true|'out.leave()};f:(){|true|1}";
     crate::compile(source).unwrap();
     let checker = check(source);
-    assert_eq!(checker.region_edges.len(), 4);
+    assert_eq!(checker.region_edges.len(), 6);
+    assert_eq!(
+        checker
+            .region_edges
+            .keys()
+            .filter(|id| checker.points[**id].kind == PointKind::Stmt)
+            .count(),
+        2
+    );
     for edges in checker.region_edges.values() {
         let child = id(edges[0].to);
         assert_eq!(

@@ -483,7 +483,11 @@ impl Checker {
                         }
                     }]);
                 }
-                Ok(vec![hir::Stmt::Expr(self.expr(value, None)?)])
+                let (root, value) = self.expr_point(value, None)?;
+                if let Some(point) = self.point {
+                    self.region_edges(point, root, stmt.span)?;
+                }
+                Ok(vec![hir::Stmt::Expr(value)])
             }
             StmtKind::Forward { .. } => Err(Self::error(
                 "E221",

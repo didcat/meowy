@@ -312,6 +312,9 @@ impl Checker {
             }
             ExprKind::Block(block) => {
                 let block = self.block(block, expected.cloned(), None)?;
+                if let Some(point) = self.point {
+                    self.block_result(point, block.id, expr.span)?;
+                }
                 let ty = block.ty.clone();
                 (hir::ExprKind::Block(block), ty)
             }

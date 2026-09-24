@@ -127,7 +127,13 @@ Core block endpoints now retain entry, normal completion, target-leave joins and
 result availability, with explicit forward/receiver barriers. All four focused
 groups and all 1544 library tests pass, including empty/never blocks and shared
 capacity; `/tmp/meowy-block-endpoints-lib.log`. No failures remain. Plain block
-result consumers and expression-statement endpoints are next.
+result consumers and expression statements now connect through exact producer
+roots; body summaries retain their owning producer point. Block prerequisite:
+`b45829a`. All five focused block-result groups pass, including the existing
+borrow/loan regressions. All 1547 library tests pass after updating the older
+fixture to assert its new expression-statement links;
+`/tmp/meowy-block-consumers-lib.log`. No failures remain. Generic statement/value
+transfers remain separate; explicit restart reentry routes are next.
 Proof outcomes and restart dependency propagation stay gated.
 
 ### Proof dependency implementation slices
