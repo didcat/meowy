@@ -162,7 +162,7 @@ pub fn mutable_fields_check_shapes_mutability_and_storage_boundaries() {
     Case::new("v:{->n:=1};v.n=2").runs(b"");
     Case::new("v:={->inner:{->n:=1}};v.inner.n=2").runs(b"");
     Case::new("<M>:<{n<int32>:=}>;f<null>:(v<M>){v.n=2}").runs(b"");
-    Case::new("v:={->n:=1};v.{self.n=2}").runs(b"");
+    Case::new("v:={->n:=1};v.{$.n=2}").runs(b"");
     for (source, code) in [
         (
             "x<uint8>:1;<A>:<{x<uint16>:=;y<uint8>}>;<B>:<{x<uint16>:=;y<uint16>}>;rows<A[1]><B[1]>:[{->x:=300;->y:x}]",

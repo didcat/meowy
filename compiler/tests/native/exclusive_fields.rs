@@ -34,7 +34,7 @@ pub fn nested_fields_keep_each_mutable_boundary_and_projection() {
     Case::new("v:{->n:=1};p:&!(v.n)").runs(b"");
     Case::new("v:={->inner:{->n:=1}};p:&!(v.inner.n)").runs(b"");
     Case::new("<R>:<{n<int32>:=}>;f<null>:(v<R>){p:&!(v.n)}").runs(b"");
-    Case::new("v:={->n:=1};v.{p:&!(self.n)}").runs(b"");
+    Case::new("v:={->n:=1};v.{p:&!($.n)}").runs(b"");
     Case::new(
         r#"
 d:@"debug"

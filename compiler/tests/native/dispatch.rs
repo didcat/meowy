@@ -27,14 +27,14 @@ pub fn value_dispatch_borrows_its_copy_and_shared_dispatch_keeps_the_owner() {
         r#"
 d:@"debug"
 owner:=4
-copy:owner.{owner=5;view:&self;->*view}
+copy:owner.{owner=5;view:&$;->*view}
 d.print(copy)
 d.print(owner)
 <R>:<{n<int32>;nested<{other<int32>}>}>
 record<R>:={->n:6;->nested:{->other:7}}
-count:record.{view:&(self.n);->*view}
+count:record.{view:&($.n);->*view}
 d.print(count)
-view:(&record).{->&(self.nested.other)}
+view:(&record).{->&($.nested.other)}
 d.print(view==&(record.nested.other))
 d.print(*view)
 record={->n:8;->nested:{->other:9}}
@@ -52,14 +52,14 @@ d:@"debug"
 a:=11
 b:=22
 pair:{->left:&a;->right:&b}
-view:pair.{->self.left}
+view:pair.{->$.left}
 b=23
 d.print(*view)
 a=12
 inspect<null>:(flag<boolean>){
     owner:=7
     value<&int32><null>:{|flag|->&owner}
-    result:value.{|self<&int32>|->self<&int32>}
+    result:value.{|$<&int32>|->$<&int32>}
     |result<null>|{owner=8;d.print("none")}
     |result<&int32>|d.print(*(result<&int32>))
     owner=9
@@ -79,12 +79,12 @@ pub fn borrowed_dispatch_operands_run_once_and_preserve_exits() {
 d:@"debug"
 get<&int32>:(value<&int32>){d.print("get");->value}
 owner:=7
-view:get(&owner).{->&*self}
+view:get(&owner).{->&*$}
 d.print(*view)
 owner=8
 inspect<int32>:(flag<boolean>) 'out {
     value:3
-    ->get({|flag|{'out->9;'out.leave()};->&value}).{view:&*self;->*view}
+    ->get({|flag|{'out->9;'out.leave()};->&value}).{view:&*$;->*view}
 }
 d.print(inspect(true))
 d.print(inspect(false))
@@ -99,10 +99,10 @@ pub fn parameter_and_receiver_copy_addresses_cannot_escape() {
         "bad<&int32>:(value<int32>){->&value}",
         "bad:(value<int32>){view:{->&value};->view}",
         "<R>:<{n<int32>}>;bad<&int32>:(value<R>){->&(value.n)}",
-        "owner:1;view:owner.{->&self}",
-        "owner:{->n:1};view:owner.{->&(self.n)}",
-        "bad<&int32>:(value<int32>){->(&value).{->&*self}}",
-        "first<&int32>:(a<&int32>,b<&string>){->a};owner:1;view:{short:\"x\";->first(&owner,&short).{->self}}",
+        "owner:1;view:owner.{->&$}",
+        "owner:{->n:1};view:owner.{->&($.n)}",
+        "bad<&int32>:(value<int32>){->(&value).{->&*$}}",
+        "first<&int32>:(a<&int32>,b<&string>){->a};owner:1;view:{short:\"x\";->first(&owner,&short).{->$}}",
     ] {
         let result = Case::new(source).command("check", &["--json"]);
         assert_eq!(result.status.code(), Some(1), "{source}");
@@ -114,10 +114,10 @@ pub fn parameter_and_receiver_copy_addresses_cannot_escape() {
 #[test]
 pub fn shared_dispatch_keeps_active_and_inherited_loans() {
     for source in [
-        "owner:=1;value:(&owner).{owner=2;->*self}",
-        "owner:=1;view:(&owner).{->self};owner=2;value:*view",
-        "first<&int32>:(a<&int32>,b<&string>){->a};a:=1;b:=\"x\";view:first(&a,&b).{->&*self};b=\"y\";value:*view",
-        "owner:=1;view:(&owner).{->&*self;owner=2};value:*view",
+        "owner:=1;value:(&owner).{owner=2;->*$}",
+        "owner:=1;view:(&owner).{->$};owner=2;value:*view",
+        "first<&int32>:(a<&int32>,b<&string>){->a};a:=1;b:=\"x\";view:first(&a,&b).{->&*$};b=\"y\";value:*view",
+        "owner:=1;view:(&owner).{->&*$;owner=2};value:*view",
     ] {
         let case = Case::new(source);
         for profile in ["debug", "release"] {
@@ -140,7 +140,7 @@ d:@"debug"
 make<H>:(p<&R>){d.print("make");->view:p;->count:3}
 owner<R>:={->n:7}
 holder<H>:{->view:&owner;->count:4}
-view:holder.{->&(self.view.n)}
+view:holder.{->&($.view.n)}
 d.print(view==&(owner.n))
 d.print(*view)
 other:&(make(&owner).view.n)

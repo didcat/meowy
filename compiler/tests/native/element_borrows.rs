@@ -72,8 +72,8 @@ view:forward(&values,2)
 d.print(view==&(values[2]))
 d.print(*view)
 copy(values)
-values.{view:&(self[1]);d.print(*view)}
-shared:(&values).{->&(self[1])}
+values.{view:&($[1]);d.print(*view)}
+shared:(&values).{->&($[1])}
 d.print(*shared)
 values=[30]
 d.print(values[1])
@@ -123,7 +123,7 @@ pub fn element_borrows_enforce_bounds_lifetimes_and_remaining_boundaries() {
         ("values<int32[0]>:[];view:&(values[1])", "E101"),
         ("view:{values:[1];->&(values[1])}", "E303"),
         ("bad<&int32>:(values<int32[2]>){->&(values[1])}", "E303"),
-        ("values:[1];view:values.{->&(self[1])}", "E303"),
+        ("values:[1];view:values.{->&($[1])}", "E303"),
         ("view:&([1,2][1]);copy:*view", "E303"),
         (
             "make<int32[2]>:(){->[1]};view:&(make()[1]);copy:*view",

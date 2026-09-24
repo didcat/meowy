@@ -195,7 +195,7 @@ pub fn excluded_result_shapes_and_restart_inputs_remain_gated() {
         "f<null>:(p<&!int32>,s<string>){}",
         "f<null>:(p<&!int32>){'again{'again.restart()}}",
         "read<{n<int32>}>:(p<&int32>){->n:*p};x:=1;p:&!x;v:read(p)",
-        "f<null>:(p<&!int32>){v:p.{->*self}}",
+        "f<null>:(p<&!int32>){v:p.{->*$}}",
         "f<null>:(p<&!int32>){s:&*p;cell:&s}",
     ] {
         rejects(source, "B001");

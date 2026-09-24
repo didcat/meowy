@@ -41,7 +41,9 @@ E201/E305/E302/E303 boundaries. Logs: `/tmp/meowy-receiver-sigil-check.log`,
 interpolation gates remain unchanged. All migrated compiler fixtures pass 1432 library and 905 native tests
 (debug/release); log: `/tmp/meowy-receiver-migration-tests.log`. Migration is split
 into checker/borrow, native field/dispatch, and lifetime/restart batches (seven
-fixture files each). Temporary `self` alias removal follows these commits.
+fixture files each). Checker/borrow batch committed as `eeb3b73`; native dispatch
+and field fixtures retain the same validated behavior. Temporary `self` alias
+removal follows the remaining migration commits.
 
 ## Executable proof plan
 

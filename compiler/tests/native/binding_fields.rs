@@ -113,7 +113,7 @@ change<int32>:(r<R>){r.n=8;->r.n}
 r<R>:{->n:=7;->other:=1}
 d.print(change(r))
 d.print(r.n)
-value:r.{self.n=9;->self.n}
+value:r.{$.n=9;->$.n}
 d.print(value)
 d.print(r.n)
 p:=r.&!n
