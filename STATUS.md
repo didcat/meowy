@@ -414,20 +414,19 @@ query-copy identity and logical roots. Four focused groups and all 1486 library
 tests pass; `/tmp/meowy-required-points-lib.log`. Runtime branch-region capture
 is implemented for matcher conditions/arms and both short-circuit alternatives.
 All four focused branch groups and all ten compiler checks pass, including 1490
-library/910 native tests; `/tmp/meowy-branch-points-gate.log`. HIR branch links,
-explicit continuation/result transfers and restart propagation remain incomplete.
+library/910 native tests; `/tmp/meowy-branch-points-gate.log`. The HIR source-link
+integration below extends these points. Continuation/result transfers and restart
+propagation remain incomplete.
 Expression prerequisite: `10a45ec`; required/query integration: `b4a79de`.
 
-HIR matcher branches now retain optional checked point IDs. Checked construction
-assigns them; synthetic branches explicitly retain no source. Both provenance
-groups and all 1492 library tests pass; `/tmp/meowy-hir-matchers-lib.log`.
-Matcher body facts now retain and validate these sources, linking erased uses
-through their branch regions. Four focused groups and all 1496 library tests pass;
-`/tmp/meowy-matcher-sources-lib.log`. HIR short-circuit expressions now retain
-matching checked point IDs too; ordinary/synthetic binaries remain without sources.
-Both logic provenance groups and all 1498 library tests pass;
-`/tmp/meowy-hir-logic-lib.log`. Short-circuit body-fact association and the full
-compiler gate are next. Continuation/result edges and proof outcomes remain gated.
+HIR matchers and short-circuit expressions now retain explicit checked point IDs;
+ordinary and synthetic binaries/branches retain no invented sources. Body facts
+validate point kind, function, block and completion, linking erased query/read
+regions without matching source spans. Clones preserve IDs; repeated checks remain
+distinct. All ten compiler checks pass, including 1501 library/910 native tests;
+`/tmp/meowy-hir-branch-sources-gate.log`. Matcher HIR: `1038bbc`; matcher fact links:
+`f2dcfcf`; short-circuit HIR: `a66a363`. Explicit continuation/join/result transfers,
+restart propagation and proof outcomes remain pending.
 
 ## Pending descriptor statement accounting
 
@@ -557,10 +556,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Expression/read/query points and runtime branch regions passed all ten checks
-  in `python3 -B tools/verify.py --compiler`, including 1490 library/910 native tests.
+- HIR branch provenance and validated body-fact sources passed all ten checks
+  in `python3 -B tools/verify.py --compiler`, including 1501 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-branch-points-gate.log`. This is metadata capture only;
+  `/tmp/meowy-hir-branch-sources-gate.log`. This is metadata capture only;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -620,8 +619,9 @@ execution was not part of this documentation edit.
 1. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
    Expression/read/query points and explicit runtime branch regions now distinguish
-   uses within a statement. Next link these points to retained HIR branch/body
-   identities and explicit continuation/result-transfer edges. Preserve independent
+   uses within a statement. HIR branches and body facts now retain validated
+   source links. Next add explicit continuation/join/result-transfer edges at
+   statement/expression checking boundaries. Preserve independent
    matcher arms, short-circuit joins, nested targets and unknown effects; do not
    infer runtime order from point IDs or source spans. Bounded backedge/header
    propagation remains unimplemented.

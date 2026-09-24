@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current HIR branch provenance slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Carry optional checked point IDs on HIR matcher branches, assigning them at
    checked construction and preserving explicit absence in synthetic HIR. Update
    all exhaustive consumers/constructors and test identity preservation through clones.
@@ -142,7 +142,12 @@ And/Or checking points are assigned; ordinary and synthetic binaries stay unknow
 Both logic provenance groups and all 1498 library tests pass;
 `/tmp/meowy-hir-logic-lib.log`. No failures remain. This is the second atomic
 variant migration described in the split review above. Short-circuit body-fact
-association is next, followed by the full compiler gate.
+association now uses the same validated source links. Binary HIR prerequisite:
+`a66a363`. All three logic-source groups pass, covering mixed/nested branches,
+functions, erased RHS query/read chains, operator mismatch and unknown sources.
+All ten compiler checks pass, including 1501 library/910 native tests, formatting,
+Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+Log: `/tmp/meowy-hir-branch-sources-gate.log`. No failures remain.
 Explicit continuation/join/result transfers and restart propagation remain pending.
 Proof outcomes stay gated; unknown reference/store/call effects stay explicit.
 
@@ -1472,11 +1477,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Expression/read/query points and runtime branch regions passed all ten checks
-  in `python3 -B tools/verify.py --compiler`: 1490 library/910 native tests,
+- HIR branch provenance and validated body-fact source links passed all ten checks
+  in `python3 -B tools/verify.py --compiler`: 1501 library/910 native tests,
   formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed
-  in debug/release). Log: `/tmp/meowy-branch-points-gate.log`. HIR branch links,
-  explicit continuations/result transfers and restart propagation remain pending.
+  in debug/release). Log: `/tmp/meowy-hir-branch-sources-gate.log`. Explicit
+  continuations/result transfers and restart propagation remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1790,9 +1795,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`b4a79de`) retain same-function parent/statement/block identities and explicit
    completion. Matcher and short-circuit points now retain condition/taken/skipped
    regions, including inline erased uses and runtime-skipped operands.
-   Next link `dependencies/points.rs` identities to retained HIR branches/body facts
-   in `dependencies/bodies.rs`, then add explicit continuation/join edges at
-   statement/expression checking boundaries. Keep forward leaves, independent
+   HIR matchers (`1038bbc`) and short-circuit binaries (`a66a363`) retain optional
+   point IDs. Body facts validate kind/function/block/completion and retain direct
+   source links (matcher integration: `f2dcfcf`); synthetic sources stay unknown.
+   Next add explicit continuation/join edges in `dependencies/points.rs`,
+   `dependencies/exits.rs` and statement/expression checking boundaries, using
+   `dependencies/bodies.rs` source links. Keep forward leaves, independent
    matcher arms, nested targets and function ownership distinct. Record source
    identities during checking; do not infer links or runtime order from spans,
    point IDs or inventory indices. Required evaluator control regions beyond
