@@ -3,14 +3,14 @@ use super::{accepts, rejects};
 #[test]
 pub(crate) fn empty_and_full_restart_predecessors_keep_their_actual_payloads() {
     for source in [
-        "<C>:<{view<&int32><null>}>;empty<C>:{};p:=&empty;count:=0;'loop{p=&empty;count=count+1;|count<2|'loop.restart()};copy:*p;|copy.view<&int32>|value:*(copy.view<&int32>)",
-        "<C>:<{view<&int32><null>}>;a:=1;full<C>:{->view:&a};empty<C>:{};p:=&empty;count:=0;'loop{count=count+1;|count<2|{p=&full;'loop.restart()};p=&empty};a=2;copy:*p;|copy.view<&int32>|value:*(copy.view<&int32>)",
+        "<C>:<{view<&int32><null>}>;empty<C>:{};p:=&empty;count:=0;'loop{p=&empty;count=count+1;|count<2|'loop.restart()};copy:*p;|copy.view<&int32>|value:*(copy.view~<&int32>)",
+        "<C>:<{view<&int32><null>}>;a:=1;full<C>:{->view:&a};empty<C>:{};p:=&empty;count:=0;'loop{count=count+1;|count<2|{p=&full;'loop.restart()};p=&empty};a=2;copy:*p;|copy.view<&int32>|value:*(copy.view~<&int32>)",
         "<V>:<&int32><null>;empty<V>:null;p:=&empty;count:=0;'loop{p=&empty;count=count+1;|count<2|'loop.restart()};copy:*p",
     ] {
         accepts(source);
     }
     rejects(
-        "<C>:<{view<&int32><null>}>;a:=1;full<C>:{->view:&a};empty<C>:{};p:=&empty;count:=0;'loop{copy:*p;|copy.view<null>|{a=2;p=&full};|copy.view<&int32>|value:*(copy.view<&int32>);count=count+1;|count<2|'loop.restart()}",
+        "<C>:<{view<&int32><null>}>;a:=1;full<C>:{->view:&a};empty<C>:{};p:=&empty;count:=0;'loop{copy:*p;|copy.view<null>|{a=2;p=&full};|copy.view<&int32>|value:*(copy.view~<&int32>);count=count+1;|count<2|'loop.restart()}",
         "E302",
     );
 }

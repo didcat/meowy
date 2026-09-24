@@ -104,10 +104,10 @@ pub(crate) fn binding_fields_preserve_unchanged_allocator_alias_bounds() {
 #[test]
 pub(crate) fn binding_fields_refresh_nullable_activity_and_forget_mutated_predicates() {
     accepts(
-        "a:=1;r:{->p<&int32><null>:=null};i:=0;'loop{r.p=&a;|r.p<&int32>|{v:*(r.p<&int32>)};r.p=null;i=i+1;|i<2|'loop.restart()};a=2",
+        "a:=1;r:{->p<&int32><null>:=null};i:=0;'loop{r.p=&a;|r.p<&int32>|{v:*(r.p~<&int32>)};r.p=null;i=i+1;|i<2|'loop.restart()};a=2",
     );
     rejects(
-        "a:=1;r:{->p<&int32><null>:=null};r.p=&a;|r.p<&int32>|{old:r.p<&int32>;r.p=null;a=2;v:*old}",
+        "a:=1;r:{->p<&int32><null>:=null};r.p=&a;|r.p<&int32>|{old:r.p~<&int32>;r.p=null;a=2;v:*old}",
         "E302",
     );
     rejects(

@@ -8,7 +8,7 @@ pub(crate) fn temporary_copy_owners_live_through_their_complete_statement() {
         "value:*(&([1,2][2]))",
         "value:*(&({->row:{->n:4}}.row.n))",
         "id<&int32>:(p<&int32>){->p};value:*(id(&(1+2)))",
-        "read<uint8>:(p<&uint8>){->*p};byte<uint8>:1;value:read(&(byte<uint8>))",
+        "read<uint8>:(p<&uint8>){->*p};byte<uint8>:1;value:read(&(byte~<uint8>))",
         "read<uint8>:(p<&uint8>){->*p};value:read(&{byte<uint8>:1;->byte})",
         "first<&int32>:(p<&int32[2]>){->&(p[1])};value:*(first(&[3,4]))",
         "value:(&{->n:4}).{->$.n}",

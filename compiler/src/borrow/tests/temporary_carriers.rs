@@ -34,7 +34,7 @@ pub(crate) fn temporary_cell_origins_and_public_bounds_do_not_escape() {
 #[test]
 pub(crate) fn temporary_snapshots_keep_active_loans_without_reading_unused_pointees() {
     for source in [
-        "owner:=1;copy:*(&{->view<&int32><null>:null;->n:2});owner=3;|copy.view<&int32>|value:*(copy.view<&int32>)",
+        "owner:=1;copy:*(&{->view<&int32><null>:null;->n:2});owner=3;|copy.view<&int32>|value:*(copy.view~<&int32>)",
         "holder:(&1).{->view:$;->n:2};value:(*(&(&holder))).n",
         "owner:=1;copy:*(&{->view:&owner});value:*(copy.view);owner=3",
     ] {

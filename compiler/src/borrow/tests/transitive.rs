@@ -62,13 +62,13 @@ pub(crate) fn transitive_summary_paths_stop_at_existing_work_limits() {
 #[test]
 pub(crate) fn pointee_tags_keep_immutable_snapshots_and_mutable_read_freshness() {
     for source in [
-        "owner:=1;holder:{->view<&int32><null>:null};outer:&holder;copy:*outer;owner=2;|copy.view<&int32>|{v:*(copy.view<&int32>)}",
-        "owner:=1;holder:{->view<&int32><null>:null};outer:&holder;cell:&(outer.view);copy:*cell;owner=2;|copy<&int32>|{v:*(copy<&int32>)}",
+        "owner:=1;holder:{->view<&int32><null>:null};outer:&holder;copy:*outer;owner=2;|copy.view<&int32>|{v:*(copy.view~<&int32>)}",
+        "owner:=1;holder:{->view<&int32><null>:null};outer:&holder;cell:&(outer.view);copy:*cell;owner=2;|copy<&int32>|{v:*(copy~<&int32>)}",
     ] {
         accepts(source);
     }
     rejects(
-        "owner:=1;tag<int32><null>:=null;tag=1;view:&tag;copy:*view;result<&int32><null>:{|copy<int32>|->&owner};owner=2;|result<&int32>|{v:*(result<&int32>)}",
+        "owner:=1;tag<int32><null>:=null;tag=1;view:&tag;copy:*view;result<&int32><null>:{|copy<int32>|->&owner};owner=2;|result<&int32>|{v:*(result~<&int32>)}",
         "E302",
     );
 }

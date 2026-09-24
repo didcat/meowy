@@ -6,7 +6,7 @@ pub(crate) fn reference_alias_copies_and_reborrows_keep_pointee_origins() {
         "owner:1;result:{->view:&owner;->view};p<&int32>:result;v:*p",
         "owner:{->n:1};result:{->carrier:{->view:&owner};->&(carrier.view.n)};p<&int32>:result;v:*p",
         "id<&int32>:(p<&int32>){result:{->view:p;->view};->result}",
-        "owner:1;result:{->view<&int32><null>:&owner;|view<&int32>|{p:&(*(view<&int32>));v:*p}}",
+        "owner:1;result:{->view<&int32><null>:&owner;|view<&int32>|{p:&(*(view~<&int32>));v:*p}}",
     ] {
         accepts(source);
     }

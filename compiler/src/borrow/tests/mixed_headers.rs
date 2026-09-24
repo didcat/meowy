@@ -10,7 +10,7 @@ pub(crate) fn mixed_headers_keep_known_shared_roots_beside_local_exclusive_loans
 #[test]
 pub(crate) fn mixed_headers_allow_inactive_nullable_predecessors() {
     accepts(
-        "<R>:<{n<int32>:=}>;<H>:<{view<&int32><null>}>;x:7;empty<H>:{};full<H>:{->view:&x};h:=empty;first:=true;i:=0;r<R>:'out{'loop{|first|{'out->n:=7;w:&!n;*w=8;first=false};|h.view<&int32>|v:*(h.view<&int32>);h=full;i=i+1;|i<2|'loop.restart()}}",
+        "<R>:<{n<int32>:=}>;<H>:<{view<&int32><null>}>;x:7;empty<H>:{};full<H>:{->view:&x};h:=empty;first:=true;i:=0;r<R>:'out{'loop{|first|{'out->n:=7;w:&!n;*w=8;first=false};|h.view<&int32>|v:*(h.view~<&int32>);h=full;i=i+1;|i<2|'loop.restart()}}",
     );
 }
 
