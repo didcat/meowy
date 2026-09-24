@@ -99,45 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current checked-site prerequisite slices
+### Current expression and branch identity slices
 
 Dependency-ordered commit plan:
-1. Retain bounded checked statement identities with function/block ownership,
-   same-function parent links and explicit completion state. Reuse StatementId;
-   preserve diagnostic spans without treating them as identities or execution order.
-   Include duplicate-span, nested-function and failure-restoration regressions.
-2. Attach required-input reads and original pending queries to their active checked
-   statement sites. Preserve query-copy identity, recognition purity, required roots
-   and skipped reads. Run focused tests and the full compiler gate.
+1. Add a bounded expression-point inventory with explicit parent, statement,
+   function and block identities. Capture successful/failed runtime expression
+   checking boundaries without using spans as identity; test restoration and bounds.
+2. Give each retained required read and original pending query its own point.
+   Preserve logical roots, source diagnostics, recognition purity, skipped reads
+   and query-copy identity. Keep the regressions with the integration.
+3. Capture matcher condition/taken/skipped regions and short-circuit operand roles
+   under explicit branch points. Preserve both structural alternatives, ordinary
+   checking and function isolation; run the full compiler gate.
 
-Investigation: statements already allocate bounded StatementId values, but erased
-statements do not retain them in HIR. Required reads and queries previously
-retained spans and block scope only. A separate checked-site inventory can preserve their statement
-provenance without introducing runtime lifetime wrappers or replaying evaluation.
-Parent links describe checking containment only: expression/branch/continuation
-identities and block/emission result transfers remain subsequent prerequisites.
+Investigation: `expr` and `expression` are the runtime expression boundaries.
+Matcher bodies may use `stmt_inner`, so statement IDs alone cannot distinguish
+inline arms. Required reads bypass runtime expression checking; they need their
+own identities. The new points will retain checking containment, not infer runtime
+execution order. Explicit continuation/result-transfer links and HIR branch anchors
+remain separate prerequisites to backedge propagation.
 
-Existing body operand/storage/short-circuit relations passed all ten compiler
-checks (1469 library/910 native tests), with conformance 10 passed, 13 unsupported,
-0 failed in debug/release; `/tmp/meowy-body-relations-gate.log`.
+The preceding statement-site series (`d8f7f64`, `8a38c02`) passed all ten checks:
+1478 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-checked-sites-gate.log`.
 
-`d8f7f64` retains checked statement identity, same-function parents,
-block ownership and explicit completion. Error paths restore the active site. All
-four focused groups and all 1473 library tests pass;
-`/tmp/meowy-checked-sites-lib.log`. Required reads and original pending queries
-now capture the active same-function site; copies keep original query metadata.
-All seven focused erased-site/input groups and all ten compiler checks pass,
-including 1478 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-checked-sites-gate.log`. No failures remain. Restart-query ownership
-lookup uses the retained site when available and keeps explicit owner metadata for
-queries prepared outside statement checking. Required roots, recognition purity,
-skipped reads and E223 capture rejection are preserved.
-
-Next retain explicit expression/branch/continuation identities and connect them to
-these statement sites and HIR body relations. Statement containment does not order
-execution or distinguish multiple reads within an expression. Block/emission result
-transfers, backedge/header propagation and termination dependence remain incomplete.
+Runtime expression points now retain bounded IDs, same-function parents, statement
+and block links, and completion state. All four focused expression-point groups
+pass, including duplicate spans, nested functions, coercion failure restoration
+and capacity limits. All 1482 library tests pass;
+`/tmp/meowy-expression-points-lib.log`. The existing continuation-budget diagnostic
+precedence is preserved. No failures remain. Required-read/query points are next.
 Proof outcomes remain gated; unknown reference/store/call effects remain explicit.
 
 ### Proof dependency implementation slices

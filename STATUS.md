@@ -405,6 +405,13 @@ library/910 native tests; `/tmp/meowy-checked-sites-gate.log`. Expression/branch
 continuation identity, result transfers and backedge propagation remain incomplete.
 Proof outcomes remain gated. Statement-site prerequisite: `d8f7f64`.
 
+Runtime expression checking now retains bounded point IDs with statement/block/
+function ownership, same-function parents and completion state. Four focused groups
+and all 1482 library tests pass; `/tmp/meowy-expression-points-lib.log`.
+Existing continuation-budget diagnostic precedence is preserved.
+Required-read/query points and branch-region capture are the next integrations.
+These identities do not yet establish execution order or restart propagation.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

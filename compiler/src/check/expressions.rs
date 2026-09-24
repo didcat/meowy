@@ -7,7 +7,9 @@ use crate::hir::{self, Type};
 impl Checker {
     pub(crate) fn expr(&mut self, expr: &ast::Expr, expected: Option<&Type>) -> Result<hir::Expr> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.coerced_expression(expr, expected)
+            checker.with_point(super::dependencies::PointKind::Expr, expr.span, |checker| {
+                checker.coerced_expression(expr, expected)
+            })
         })
     }
 
@@ -83,7 +85,9 @@ impl Checker {
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.expression_value(expr, expected)
+            checker.with_point(super::dependencies::PointKind::Expr, expr.span, |checker| {
+                checker.expression_value(expr, expected)
+            })
         })
     }
 

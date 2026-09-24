@@ -295,3 +295,6 @@ pub(crate) use bodies::Body;
 
 mod sites;
 pub(crate) use sites::Site;
+
+mod points;
+pub(crate) use points::{Kind as PointKind, Point};
