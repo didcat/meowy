@@ -29,30 +29,26 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current direct shared-union input slice
+### Current deeper shared-union input slice
 
 Commit plan:
-1. Route direct unmatched shared-union arguments for concrete-record view results
-   through bounded variant-key discovery. Keep layout/null/unknown/boundary/lifetime
-   regressions together; run focused checks and commit.
-2. Integrate the same route for union-view and carrier results, updating earlier
-   incomplete expectations and adding nested-call/no-replay/budget coverage. Run
-   the full gate and update both handoffs and the guide.
+1. Recognize unmatched shared-union terminals with the existing bounded shared
+   classifier, expand their known cell layers, then reuse variant-key matching for
+   both result paths. Include direct/deeper mixtures, unknown intermediates, null,
+   record/union/carrier results, modes/bounds/no replay and lifetime regressions.
+   Run the full compiler gate and update both handoffs and the guide.
 
-Investigation: direct shared-union inputs stop before the already implemented
-owned-union matcher. Resolve their owner locations and reuse that matcher without
-adding field indices to ordinary paths. Exact terminals keep their existing path;
-shared chains and record-stored union arguments remain a separate slice. Unknown
-borrowed contents and variant field addresses remain incomplete.
-Record-result slice `f5d001a` independently passed 369 focused tests. The combined
-series passes all 370 dependency-filtered tests; log:
-`/tmp/meowy-direct-union-inputs-focused.log`. Six groups cover variant layouts,
-null, unknown owners/contents, nested calls, no replay, call/work limits and
-E302/E303 lifetimes. Prior union-view/carrier fixtures now retain hidden candidates;
-deeper/stored inputs and untraversed borrowed contents remain incomplete.
-All ten compiler checks pass, including 1343 library/903 native tests; log:
-`/tmp/meowy-direct-union-inputs-gate.log`. No failures remain.
-Untracked `docs/proposals/` remains untouched; outcomes stay gated.
+Investigation: the direct-input helper already separates terminal discovery from
+location resolution. Return the shared layer count from classification and pass
+it to resolution; never cross exclusive edges. Exact terminals keep their existing
+matcher. Record-stored union inputs and untraversed borrowed contents stay separate.
+The deeper-input matcher and four new groups pass all 374 dependency-filtered
+tests; log: `/tmp/meowy-deeper-union-inputs-focused.log`. Record classification
+runs first to preserve existing B001 cell-depth precedence. Direct/deeper mixtures,
+unknowns, null, both hidden/direct union/carrier candidates, exclusive edges,
+exact depth endpoints, no replay and lifetimes pass. All ten compiler checks pass,
+including 1347 library/903 native tests; log: `/tmp/meowy-deeper-union-inputs-gate.log`.
+No failures remain. Untracked `docs/proposals/` remains untouched; outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1380,15 +1376,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1343
-  library/903 native tests (2246 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1347
+  library/903 native tests (2250 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-direct-union-inputs-gate.log`.
-- All 370 dependency-filtered tests pass. Six new direct-union-input groups cover
-  variant layouts/null, unknown owners and contents, concrete-record and carrier
-  results, nested calls, call/work limits, no replay and E302/E303 lifetimes.
-  Earlier union-result tests now retain both hidden and direct candidates. Deeper,
-  record-stored and untraversed borrowed-content boundaries remain incomplete.
+  0 failed in debug/release. Log: `/tmp/meowy-deeper-union-inputs-gate.log`.
+- All 374 dependency-filtered tests pass. Four new deeper-union-input groups
+  cover direct/deeper mixtures, unknown intermediate cells, null, union/carrier
+  results, nested calls, no replay, exclusive edges, exact depth endpoints, work
+  limits and E302/E303 lifetimes. Existing record-depth diagnostics are preserved.
+  Record-stored inputs and untraversed borrowed contents remain incomplete.
   Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
@@ -1602,13 +1598,16 @@ explicitly documented. No outstanding failures remain.
    discovery and snapshot resolution for concrete-record, union-view and carrier
    results. Unknown owners/contents remain incomplete; exact terminals retain
    their existing matching path. Record-result prerequisite: `f5d001a`.
-   Next support deeper shared-union input chains in `calls/cells/union_inputs.rs`
-   and both result matchers: recognize the shared terminal, expand bounded cell
-   layers, then reuse variant-key discovery. Test direct/deeper mixtures, unknown
-   intermediate cells, exclusive boundaries, depth/work limits and no replay.
-   Follow with record-stored union inputs as a separate slice; path traversal must
-   not infer concrete positions across unselected variant layouts. Run the full
-   gate for each series and keep untraversed borrowed contents incomplete.
+   Deeper direct shared-union inputs now use bounded shared-terminal recognition
+   and cell-layer expansion before variant-aware matching. Direct/deeper mixtures,
+   unknown intermediates and union/carrier outputs retain all known candidates;
+   exclusive edges remain unsupported and prior record-depth diagnostics are kept.
+   Next admit union inputs stored in owned record arguments in
+   `calls/cells/union_inputs.rs` and both result matchers. Pass the selected field
+   type/path to classification and resolve locations with `record_source_cells_at`
+   before shared-layer expansion. Keep borrowed-record fields as a separate slice.
+   Test nested fields, direct/stored/deeper mixtures, unknown cells, layout boundaries,
+   budgets/no replay and lifetimes, then run the full gate.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

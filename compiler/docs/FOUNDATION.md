@@ -282,10 +282,10 @@ shared record/null-union views also retain exact owner locations through direct,
 deeper and stored shared inputs. Exact owned union projections from borrowed
 records retain concrete field paths alongside compatible stored candidates.
 Owned record/null unions also contribute exact/deeper shared-reference candidates
-through variant-qualified stored snapshots. Direct one-layer shared-union arguments
-use the same discovery for record-view, union-view and carrier results. Unknown
-owners or contents remain incomplete; deeper and record-stored union inputs retain
-their separate boundary. Different layouts never become ordinary
+through variant-qualified stored snapshots. Direct and deeper shared-union arguments use
+bounded cell expansion before the same discovery for record-view, union-view and
+carrier results. Unknown intermediates or contents remain incomplete; exclusive
+edges and record-stored union inputs retain their separate boundary. Different layouts never become ordinary
 field paths. Unsupported borrowed contents and owned projections inside variants
 remain incomplete. Shared concrete-record field reads and copies resolve stored
 origins through all known returned locations, including hidden union candidates.

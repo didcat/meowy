@@ -49,8 +49,11 @@ impl Checker {
                 }
                 continue;
             }
-            if path.is_empty() && Self::unmatched_union_view(ty, result, 1) {
-                let Some(source) = self.union_input_cells(arg, result, depth)? else {
+            let record = self.call_shared_view(ty, expr)?;
+            if path.is_empty()
+                && let Some(layers) = self.unmatched_union_layers(ty, result, 1, expr)?
+            {
+                let Some(source) = self.union_input_cells(arg, result, depth, layers)? else {
                     return Ok(Cells::default());
                 };
                 if !found {
@@ -60,7 +63,7 @@ impl Checker {
                 self.merge_returned_cells(&mut cells, source, expr)?;
                 continue;
             }
-            let Some((view, layers)) = self.call_shared_view(ty, expr)? else {
+            let Some((view, layers)) = record else {
                 return Ok(Cells::default());
             };
             let exact = crate::borrow_contract::returns::candidate(result, view);

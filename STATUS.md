@@ -406,22 +406,25 @@ resolve through the same validated shared record views, retaining unknown owners
 and contents. Validation prerequisite: `22a0e0c`. All 364 focused tests and all ten
 compiler checks pass. Direct one-layer shared-union arguments now contribute hidden
 candidates to concrete-record, union-view and carrier returns. Record-result slice:
-`f5d001a`. All 370 focused tests and all ten compiler checks pass. Deeper shared-union input
-chains are next, followed by record-stored inputs.
+`f5d001a`. All 370 focused tests and all ten compiler checks pass. Deeper direct
+shared-union inputs now expand bounded cell layers before matching hidden candidates.
+Unknown intermediates remain incomplete; exclusive edges remain unsupported.
+All 374 focused tests and all ten compiler checks pass. Owned record-stored union inputs
+are next, followed by borrowed-record fields.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1343
-  library/903 native tests (2246 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1347
+  library/903 native tests (2250 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-direct-union-inputs-gate.log`.
-- All 370 dependency-filtered tests pass. Six new direct-union-input groups cover
-  variant layouts/null, unknown owners and contents, concrete-record and carrier
-  results, nested calls, call/work limits, no replay and E302/E303 lifetimes.
-  Earlier union-result tests now retain both hidden and direct candidates. Deeper,
-  record-stored and untraversed borrowed-content boundaries remain incomplete.
+  0 failed in debug/release. Log: `/tmp/meowy-deeper-union-inputs-gate.log`.
+- All 374 dependency-filtered tests pass. Four new deeper-union-input groups
+  cover direct/deeper mixtures, unknown intermediate cells, null, union/carrier
+  results, nested calls, no replay, exclusive edges, exact depth endpoints, work
+  limits and E302/E303 lifetimes. Existing record-depth diagnostics are preserved.
+  Record-stored inputs and untraversed borrowed contents remain incomplete.
   Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
