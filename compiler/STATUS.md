@@ -29,26 +29,25 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current by-value union argument origin slice
+### Current by-value union carrier-origin slice
 
 Commit plan:
-1. Discover bounded variant-qualified shared-reference leaves in owned union
-   arguments and match their stored origins through the public contract. Keep
-   primary/unsupported/carrier leaves incomplete; thread call depth into snapshot
-   reads. Include layouts, nested fields/calls, all/unknown/null, budgets/no replay
-   and lifetime regressions. Run the full gate and update both handoffs.
+1. Classify shared carrier leaves with the existing bounded shared-view walker,
+   read variant-qualified cell snapshots with the current call depth, and expand
+   to reference-free terminal origins. Include mixed/deeper/null/unknown inputs,
+   inline wrappers, copies, limits/no replay and lifetimes. Run the full gate and
+   update both handoffs and the guide.
 
-Investigation: `call_input_origins` already walks concrete owned records; its union
-branch remains unsupported. Traverse only owned record/null variants with exact
-keys, reject borrowed primary values, and reuse shaped snapshots. Carrier-cell
-argument matching remains a separate slice. User changes remain preserved.
-The origin matcher and five new groups pass all 414 dependency-filtered tests;
-log: `/tmp/meowy-union-argument-origins-focused.log`. Earlier heterogeneous-input
-coverage now checks exact compatible roots. Layout/null/unknown cases, nested fields,
-inline wrappers, nested results, no replay, depth/work/capacity limits and E302/E303
-pass. All ten compiler checks pass, including 1387 library/903 native tests; log:
-`/tmp/meowy-union-argument-origins-gate.log`. No failures remain.
-Carrier leaves remain incomplete; proof outcomes stay gated. User changes are preserved.
+Investigation: `call_stored_origins` already expands cell layers and merges known
+roots conservatively. Reuse it after exact snapshot selection; direct leaves keep
+origin snapshots. Borrowed record/union terminal contents and returned carrier-cell
+matching remain separate. Admission and five new groups pass all 419 dependency-
+filtered tests; log: `/tmp/meowy-union-carrier-origins-focused.log`. Mixed/deeper/
+null/unknown inputs, inline wrappers, copies, reference-free record projections,
+no replay, depth/work limits and E302/E303 pass. All ten compiler checks pass,
+including 1392 library/903 native tests; log: `/tmp/meowy-union-carrier-origins-gate.log`.
+No failures remain; proof outcomes stay gated.
+User changes remain preserved.
 
 ### Proof dependency implementation slices
 
@@ -1376,15 +1375,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1387
-  library/903 native tests (2290 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1392
+  library/903 native tests (2295 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-argument-origins-gate.log`.
-- All 414 dependency-filtered tests pass. Five new union-argument groups cover
-  distinct layouts, all/unknown/null origins, copies, nested owned fields, inline
-  call wrappers, nested union results, no replay, depth/work/capacity limits and
-  E302/E303 lifetimes. Carrier leaves remain explicitly incomplete. Accepted
-  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-carrier-origins-gate.log`.
+- All 419 dependency-filtered tests pass. Five carrier-argument groups cover
+  mixed layouts, deeper/null/unknown cells, copies, nested fields, inline wrappers,
+  reference-free record projections, no replay, depth/work limits and E302/E303.
+  Borrowed terminal contents remain incomplete. Accepted fixtures pass ordinary
+  compilation/ownership; dependency marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1631,12 +1630,17 @@ explicitly documented. No outstanding failures remain.
    exact variant-qualified snapshots, including nested owned fields, copies and
    inline union call wrappers. Borrowed primary values and carrier leaves remain
    unsupported; null variants contribute no origins and unknowns retain known roots.
-   Next extend `calls/inputs/unions.rs` to shared carrier leaves with reference-free
-   terminal pointees. Use `call_shared_view` for bounded classification, read the
-   key's cell snapshot with the current call depth, and reuse `call_stored_origins`
-   for layer expansion. Keep borrowed record/union terminal contents and returned
-   carrier-cell matching as separate slices. Test all/unknown/deeper/null inputs,
-   inline wrappers, copies, modes/limits/no replay and lifetimes before the full gate.
+   Shared carrier leaves in by-value union arguments now expand exact cell
+   snapshots through `call_stored_origins` to reference-free terminal origins.
+   Mixed/deeper/null/unknown inputs and compatible record projections retain known
+   roots; borrowed record/union terminal contents remain incomplete.
+   Next handle borrowed concrete-record terminal contents in
+   `calls/inputs/unions.rs`. Extract location-based traversal from
+   `calls/inputs/records.rs` without changing admission, then feed it variant-qualified
+   cell snapshots and bounded shared-layer counts. Preserve record depth/work limits,
+   nullable/unknown contents and diagnostic order. Keep borrowed heterogeneous-union
+   terminals and returned carrier-cell matching separate; validate focused slices
+   and run the full gate across the series.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

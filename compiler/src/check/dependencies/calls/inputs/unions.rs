@@ -69,15 +69,24 @@ impl Checker {
                 }
                 continue;
             }
-            if !matches!(ty, Type::Reference(_)) || !Self::origin_reference(ty) {
+            let Some((view, layers)) = self.call_shared_view(ty, arg)? else {
+                return Ok(Input::Unsupported);
+            };
+            if !Self::origin_reference(view) {
                 return Ok(Input::Unsupported);
             }
-            if crate::borrow_contract::projections(ty, result, &mut self.flow, arg.span)?.is_empty()
+            if crate::borrow_contract::projections(view, result, &mut self.flow, arg.span)?
+                .is_empty()
             {
                 continue;
             }
             let key = ShapeKey::new(&fields, &variants, &mut self.flow, arg.span)?;
-            let source = self.record_shape_source_at(arg, &key, depth + 1)?.origins;
+            let snapshot = self.record_shape_source_at(arg, &key, depth + 1)?;
+            let source = if layers == 0 {
+                snapshot.origins
+            } else {
+                self.call_stored_origins(snapshot.cells, arg, layers - 1)?
+            };
             if !self.flow.spend(source.roots.len() + 1) {
                 return Err(Diagnostic::unsupported(
                     "proof union input origin budget exhausted",
@@ -104,3 +113,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod carriers;

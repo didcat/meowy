@@ -96,12 +96,14 @@ pub(crate) fn owned_union_input_queries_keep_depth_work_and_no_replay() {
 }
 
 #[test]
-pub(crate) fn owned_union_inputs_preserve_carrier_boundaries_and_lifetimes() {
+pub(crate) fn owned_union_inputs_retain_carrier_origins_and_lifetimes() {
     let source = "<A>:<{r<& &boolean>}>;<B>:<{other<boolean>}>;<U>:<A><B>;f<&boolean>:(p<U>,q<&boolean>){->q};x:=false;a:&x;wide<U>:{->r:&a};out:f(wide,&x)";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.pointees[&id(&checker, "out")].complete);
+    let origins = &checker.pointees[&id(&checker, "out")];
+    assert!(origins.complete);
+    assert_eq!(origins.roots, BTreeSet::from([id(&checker, "x")]));
     let prefix = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;f<&boolean>:(p<U>,q<&boolean>){->q};x:=false;y:=true";
     let source = format!("{prefix};wide<U>:{{->r:&y}};out:f(wide,&x);y=false;copy:*out");
     assert_eq!(crate::compile(&source).unwrap_err()[0].code, "E302");
