@@ -29,29 +29,30 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current mutable named union slot slice
+### Current completed mutable union field series
 
-Canonical alias storage and detached RHS construction are already implemented.
-Mutable named slots now capture initial snapshots and merge replacements through
-their shared root. Completed mutable record fields remain a separate boundary.
+Investigation: owned write paths are positional and require concrete records before
+the target; union-interior writes retain their ordinary gate. Shape updates can
+therefore prefix incoming keys without inventing selections above that prefix.
+Block capture must read final canonical slots for mutable fields or descendants,
+not their earlier initializer expressions.
 
-Commit plan: enable capture for named slots whose contents have immutable fields,
-then merge mutable alias assignments at `Alias::root`. Keep this behavior change
-with focused regressions for direct/conditional/self retargets, sibling aliases,
-old copies, null/unknown inputs, carriers, atomic shape failures and ordinary loans.
-Run the full compiler gate and update the guide/root handoff in the same slice.
-No separate representation prerequisite is needed.
+Commit plan:
+1. Add bounded shape-prefix merging to owned-path writes. Preserve siblings, old
+   copies and unknown alternatives; reject paths crossing unselected variants.
+   Validate seeded updates and failure preservation, then commit.
+2. Capture mutable record shapes and read final canonical slot snapshots at block
+   completion. Test lexical retargets, completed field/subrecord/conditional writes,
+   copies, carriers, null/unknown inputs, later marks and ownership. Run the full
+   compiler gate and update the guide/root handoff.
 
-Mutable fields/subrecords, temporary-borrow producers and returned unions remain
-separate. Mutable named capture now runs before alias registration, and slot
-assignments build RHS snapshots before merging into the canonical root. All 292
-dependency-filtered tests pass; log: `/tmp/meowy-mutable-slots-focused.log`. Six groups
-cover direct/conditional/self retargets, siblings, copies, carriers, null/unknown
-alternatives, canonical failure preservation, query control and E302 loans. Existing
-coverage retains the completed-mutable-record boundary. All ten compiler checks
-pass; log: `/tmp/meowy-mutable-slots-gate.log`. No failures remain. Next: bounded
-owned-field prefix merging and final-slot capture before admitting completed
-mutable record fields/subrecords. Proof outcomes stay gated.
+Temporary-borrow producers, returned unions and borrowed union views remain separate.
+Prefix merging is wired to checked owned-path writes. Four seeded groups cover
+shape-offset remapping, sibling/copy preservation, missing inputs, unselected
+variant rejection, total capacity and failure preservation. Unrelated writes bypass
+shape-path limits. All 296 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-shape-prefixes-focused.log`. Next: final-slot construction and mutable
+shape capture. The tree was clean at investigation; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

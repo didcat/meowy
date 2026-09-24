@@ -149,6 +149,7 @@ impl Checker {
             })
             .collect::<Option<Vec<_>>>();
         if let Some(fields) = fields {
+            self.track_shape_prefix(id, &fields, &value)?;
             self.write_reference_field(id, &fields, &value)?;
             self.track_record_prefix(id, &fields, &value, true)?;
         }
