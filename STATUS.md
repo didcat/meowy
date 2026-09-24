@@ -412,21 +412,25 @@ Unknown intermediates remain incomplete; exclusive edges remain unsupported.
 All 374 focused tests and all ten compiler checks pass. Union inputs stored in
 owned record arguments now retain candidates through nested concrete fields and
 shared layers. All 379 focused tests and all ten compiler checks pass. Borrowed-record
-union fields are next and remain incomplete.
+union fields now read stored references before remaining shared-layer expansion;
+nullable/unknown owners and fields remain conservative. Prerequisite: `40fc5e0`.
+All 384 focused tests and all ten compiler checks pass. Borrowed record contents behind
+union-variant references are next and remain incomplete.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1352
-  library/903 native tests (2255 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1357
+  library/903 native tests (2260 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-stored-union-inputs-gate.log`.
-- All 379 dependency-filtered tests pass. Five new owned record-stored input
-  groups cover nested/mixed fields, unknown contents/intermediates, null,
-  record/union/carrier results, nested calls, no replay, call/work limits and
-  E302/E303 lifetimes. Borrowed-record union fields remain explicitly incomplete.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-borrowed-union-fields-gate.log`.
+- All 384 dependency-filtered tests pass. Five new borrowed-record union-field
+  groups cover nested/deeper shared fields, unknown owners/contents, nullable
+  owners/null contents, union/carrier returns, no replay, call/work limits and
+  E302/E303 lifetimes. Existing fixtures now retain hidden and direct candidates.
+  Untraversed borrowed contents remain incomplete. Accepted fixtures pass ordinary
+  compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

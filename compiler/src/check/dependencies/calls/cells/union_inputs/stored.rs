@@ -94,7 +94,7 @@ pub(crate) fn owned_stored_union_queries_keep_budgets_and_no_replay() {
 }
 
 #[test]
-pub(crate) fn owned_stored_union_inputs_preserve_lifetimes_and_borrowed_boundaries() {
+pub(crate) fn stored_union_inputs_preserve_lifetimes_and_borrowed_candidates() {
     let prefix = "<R>:<{r<&boolean>}>;<A>:<{view<&R>}>;<B>:<{other<boolean>}>;<U>:<A><B>;<W>:<{view<&U>}>;f<&R>:(p<W>,q<&R>){->q};x:=false;row<R>:{->r:&x}";
     let source = format!(
         "{prefix};wide<U>:={{->view:&row}};pack<W>:{{->view:&wide}};view:f(pack,&row);wide={{->view:&row}};out:view.r"
@@ -110,5 +110,10 @@ pub(crate) fn owned_stored_union_inputs_preserve_lifetimes_and_borrowed_boundari
     crate::compile(&source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, &source);
-    assert!(!checker.reference_cells[&id(&checker, "view")].complete);
+    let cells = &checker.reference_cells[&id(&checker, "view")];
+    assert!(cells.complete);
+    assert_eq!(
+        cells.places,
+        BTreeSet::from([(id(&checker, "row"), vec![])])
+    );
 }

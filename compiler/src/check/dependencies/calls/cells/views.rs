@@ -115,7 +115,15 @@ impl Checker {
                     result,
                     result_depth.unwrap_or(1),
                 ) {
-                    return Ok(None);
+                    let source = self.call_field_cells(&locations, &path, expr)?;
+                    let source = self.expand_reference_cells(source, expr)?;
+                    let Some(source) =
+                        self.union_location_cells(source, ty, result, field_depth - 1, expr)?
+                    else {
+                        return Ok(None);
+                    };
+                    self.merge_returned_cells(&mut cells, source, expr)?;
+                    continue;
                 }
                 let Some(result_depth) = result_depth else {
                     continue;

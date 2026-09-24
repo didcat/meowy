@@ -42,10 +42,14 @@ Investigation: `returned_record_cells` already computes concrete field addresses
 but rejects unmatched shared-union terminals. Expand the stored field reference
 once before the remaining shared layers. Preserve exact terminal matching and
 unknown owners/contents; never turn variant positions into ordinary field paths.
-Location-based resolution is extracted without changing admission or charges.
-All 379 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-union-location-helper-focused.log`. Borrowed-field integration is next.
-Untracked `docs/proposals/` remains untouched.
+Location prerequisite `40fc5e0` preserves admission and charges; all 379 focused
+tests passed before integration. Borrowed-field resolution and five new groups pass
+all 384 dependency-filtered tests; log: `/tmp/meowy-borrowed-union-fields-focused.log`.
+Earlier fixtures now retain both hidden and direct candidates. Nested/deeper/null/
+unknown cases, no replay, call/work limits and E302/E303 pass. All ten compiler
+checks pass, including 1357 library/903 native tests; log:
+`/tmp/meowy-borrowed-union-fields-gate.log`. No failures remain.
+User proposal changes are preserved; outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1373,15 +1377,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1352
-  library/903 native tests (2255 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1357
+  library/903 native tests (2260 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-stored-union-inputs-gate.log`.
-- All 379 dependency-filtered tests pass. Five new owned record-stored input
-  groups cover nested/mixed fields, unknown contents/intermediates, null,
-  record/union/carrier results, nested calls, no replay, call/work limits and
-  E302/E303 lifetimes. Borrowed-record union fields remain explicitly incomplete.
-  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-borrowed-union-fields-gate.log`.
+- All 384 dependency-filtered tests pass. Five new borrowed-record union-field
+  groups cover nested/deeper shared fields, unknown owners/contents, nullable
+  owners/null contents, union/carrier returns, no replay, call/work limits and
+  E302/E303 lifetimes. Existing fixtures now retain hidden and direct candidates.
+  Untraversed borrowed contents remain incomplete. Accepted fixtures pass ordinary
+  compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1602,12 +1607,18 @@ explicitly documented. No outstanding failures remain.
    field cells before shared-layer expansion and variant-aware matching. Nested
    fields, mixed direct/stored candidates, unknown contents and both result paths
    are covered; no union variant indices become ordinary storage paths.
-   Next handle union views stored in borrowed-record fields in `calls/cells/views.rs`.
-   Extract reusable location-based union resolution from `union_inputs.rs` first,
-   then resolve the field address and expand its stored reference before traversing
-   remaining shared layers. Preserve nullable/unknown owners, unmatched contents,
-   path/depth/work limits and lifetimes; run focused checks per slice and the full
-   compiler gate across the series.
+   Borrowed-record union fields now resolve concrete field addresses, read their
+   stored references and expand remaining shared layers through the same location
+   helper. Nullable/unknown owners and fields preserve completeness; union/carrier
+   result reads retain all supported hidden and direct candidates. Location helper:
+   `40fc5e0`.
+   Next traverse borrowed record contents behind union-variant references in
+   `calls/cells/views/hidden.rs`. Discovery currently rejects a borrowed terminal
+   different from the result target even when that record contains compatible
+   reference fields. Separate bounded typed continuation discovery from location
+   resolution, then reuse concrete borrowed-record traversal without flattening
+   variant field positions. Test nested/all/unknown candidates, null, cycles/depth
+   and work bounds, no replay and lifetimes before the full compiler gate.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

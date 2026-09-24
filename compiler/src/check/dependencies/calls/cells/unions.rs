@@ -164,7 +164,14 @@ pub(crate) fn unmatched_union_inputs_do_not_hide_untraversed_return_candidates()
                 ])
             );
         } else {
-            assert!(!cells.complete);
+            assert!(cells.complete);
+            assert_eq!(
+                cells.places,
+                BTreeSet::from([
+                    (id(&checker, "data"), vec![]),
+                    (id(&checker, "other"), vec![])
+                ])
+            );
         }
     }
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;<V>:<boolean><int32>;f<& &U>:(p<&V>,q<& &U>){->q};x:=false;wide<U>:{->r:&x};view:&wide;plain<V>:false;out:f(&plain,&view)";

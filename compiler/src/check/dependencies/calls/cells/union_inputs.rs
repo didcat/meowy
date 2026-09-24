@@ -58,3 +58,6 @@ mod tests;
 
 #[cfg(test)]
 mod stored;
+
+#[cfg(test)]
+mod borrowed;

@@ -287,7 +287,10 @@ bounded cell expansion before the same discovery for record-view, union-view and
 carrier results. Unknown intermediates or contents remain incomplete; exclusive
 edges remain unsupported. Union views stored in owned record arguments use concrete
 field paths before the same shared-layer expansion, including nested fields and
-unknown contents. Borrowed-record fields retain their separate boundary. Different layouts never become ordinary
+unknown contents. Borrowed-record union fields resolve their concrete field address,
+read the stored view, then expand remaining shared layers through the same matcher.
+Nullable and unknown owners retain their completeness state; references whose
+borrowed contents need further traversal remain incomplete. Different layouts never become ordinary
 field paths. Unsupported borrowed contents and owned projections inside variants
 remain incomplete. Shared concrete-record field reads and copies resolve stored
 origins through all known returned locations, including hidden union candidates.
