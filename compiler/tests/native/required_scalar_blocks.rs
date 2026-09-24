@@ -294,19 +294,17 @@ pub(crate) fn inferred_scalar_blocks_preserve_module_staging_and_function_reads(
 #[test]
 pub(crate) fn required_integer_block_operands_execute_arithmetic_and_extents() {
     case("<T>:{n<uint8>:({->2})*({->2});r:{->width<uint8>:({->n})+0};-><int32[({->r.width})+0]>};v<T>:[3,7];d:@\"debug\";d.print(v[2])",&[]).runs(b"7\n");
-    for (op, value) in [
-        ("+", 9),
-        ("-", 3),
-        ("*", 18),
-        ("/", 2),
-        ("%", 0),
-        ("&", 2),
-        ("|", 7),
-        ("^", 5),
+    for (expr, value) in [
+        ("({->6})+({->3})", 9),
+        ("({->6})-({->3})", 3),
+        ("({->6})*({->3})", 18),
+        ("({->6})/({->3})", 2),
+        ("({->6})%({->3})", 0),
+        (r#"(@"bits").and({->6},{->3})"#, 2),
+        (r#"(@"bits").or({->6},{->3})"#, 7),
+        (r#"(@"bits").xor({->6},{->3})"#, 5),
     ] {
-        let source = format!(
-            "<T>:{{n:({{->6}}){op}({{->3}});-><int32[n+1]>}};v<T>:[7];d:@\"debug\";d.print(v[1])"
-        );
+        let source = format!("<T>:{{n:{expr};-><int32[n+1]>}};v<T>:[7];d:@\"debug\";d.print(v[1])");
         case(&source, &[]).runs(b"7\n");
         let values = vec!["1"; value + 2].join(",");
         let output =

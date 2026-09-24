@@ -158,7 +158,7 @@ intermediate<int8[1]><int16[1]>:[(127+1)-1]
 |intermediate<int16[1]>|d.print(intermediate[1])
 negative<int8[1]><int16[1]>:[-(-128)]
 |negative<int16[1]>|d.print(negative[1])
-bits<int8[1]><uint8[1]>:[~128]
+bits<int8[1]><uint8[1]>:[(@"bits").not(128)]
 |bits<uint8[1]>|d.print(bits[1])
 byte<uint8>:1
 typed<uint8[1]><int16[1]>:[byte+1]
@@ -230,7 +230,7 @@ later<uint8[2]><uint16[2]>:[1+1,mark()]
 pub fn compound_list_candidates_preserve_ambiguity_and_source_errors() {
     for (source, code) in [
         ("values<int8[1]><int16[1]>:[1+1]", "E207"),
-        ("values<int8[1]><uint8[1]>:[~1]", "E207"),
+        ("values<int8[1]><uint8[1]>:[(@\"bits\").not(1)]", "E207"),
         ("values<int8[1]><uint8[1]>:[-(128)]", "E207"),
         ("values<int8[1]><int16[1]>:[1/0]", "E207"),
         ("values<float32[1]><float64[1]>:[3e38+3e38]", "E207"),

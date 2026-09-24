@@ -87,7 +87,7 @@ x:1;b:true
 d.print(false&&(*{d.print(99);->&x}>0))
 d.print(true||(!*{d.print(99);->&b}))
 d.print(false&&(-{d.print(99);->1}>0))
-d.print(true||(~{d.print(99);->1}==0))
+d.print(true||((@"bits").not({d.print(99);->1})==0))
 "#,
     )
     .runs(b"false\ntrue\nfalse\ntrue\n");
@@ -102,7 +102,7 @@ pub fn nonreturning_operator_operands_preserve_prefix_effects() {
         ("d.panic(\"stop\")==mark(2)", b"".as_slice()),
         ("-d.panic(\"stop\")", b"".as_slice()),
         ("!d.panic(\"stop\")", b"".as_slice()),
-        ("~d.panic(\"stop\")", b"".as_slice()),
+        ("(@\"bits\").not(d.panic(\"stop\"))", b"".as_slice()),
     ] {
         let source =
             format!("d:@\"debug\";mark<int32>:(n<int32>){{d.print(n);->n}};v:{expr};d.print(99)");

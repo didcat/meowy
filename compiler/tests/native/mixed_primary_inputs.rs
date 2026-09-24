@@ -64,7 +64,7 @@ pub(crate) fn mixed_primary_copies_require_evidence_and_preserve_runtime_capture
 #[test]
 pub(crate) fn mixed_primary_required_reads_keep_arithmetic_annotations_and_record_identity() {
     case(
-        "m:@\"./data.mwy\";alias:m;d:@\"debug\";<T>:{n<uint8>:(alias);step:m+1;mask:~m;-><int32[n+step]>};v<T>:[3,7];<Row>:{->m<>};row<Row>:{->4;->label:\"copy\";->width:2};<U>:{-><int32[m+alias.width]>};u<U>:[9];d.print(v[2]);d.print(row.label);d.print(u[1]);d.print(alias.label);d.print(m+1)",
+        "m:@\"./data.mwy\";alias:m;d:@\"debug\";<T>:{n<uint8>:(alias);step:m+1;mask:(@\"bits\").not(m);-><int32[n+step]>};v<T>:[3,7];<Row>:{->m<>};row<Row>:{->4;->label:\"copy\";->width:2};<U>:{-><int32[m+alias.width]>};u<U>:[9];d.print(v[2]);d.print(row.label);d.print(u[1]);d.print(alias.label);d.print(m+1)",
         &[("data.mwy", "base<uint8>:4;->base;->label:\"ready\";->width<uint8>:2")],
     ).runs(b"7\ncopy\n9\nready\n5\n");
 }

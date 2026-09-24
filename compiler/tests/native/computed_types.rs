@@ -230,7 +230,7 @@ pub(crate) fn initializer_inputs_keep_runtime_captures_and_mutable_dependencies_
 pub(crate) fn initializer_blocks_keep_nested_values_widths_and_module_initialization() {
     case(
         "m:@\"./types.mwy\";d:@\"debug\";values<m.Items>:[3,7];d.print(values[2]);d.print(m.get())",
-        &[("types.mwy", "d:@\"debug\";d.print(\"init\");capacity<uint8>:{base<uint8>:{->252};size:~base;->size+1};-><Items>:{n:capacity;-><int32[n]>};->get<int32>:(){<Local>:{n:capacity;-><int32[n]>};items<Local>:[4,8];->items[2]}")],
+        &[("types.mwy", "d:@\"debug\";d.print(\"init\");capacity<uint8>:{base<uint8>:{->252};size:(@\"bits\").not(base);->size+1};-><Items>:{n:capacity;-><int32[n]>};->get<int32>:(){<Local>:{n:capacity;-><int32[n]>};items<Local>:[4,8];->items[2]}")],
     ).runs(b"init\n7\n8\n");
 }
 

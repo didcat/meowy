@@ -9,7 +9,7 @@ pub(crate) fn integer_blocks_select_exact_width_values_and_restore_branch_scope(
         Case::new(&source).runs(format!("7\n{count}\n").as_bytes());
     }
     Case::new("d:@\"debug\";n<uint8>:{base<uint8>:4;|true|base<uint8>:200;->base};<T>:{-><int32[n]>};v<T>:[7];d.print(v[1]);d.print(n)").runs(b"7\n4\n");
-    Case::new("d:@\"debug\";n<uint64>:{|true|->18446744073709551615;|false|->0};<T>:{-><int32[n&3]>};v<T>:[7];d.print(v[1]);d.print(n)").runs(b"7\n18446744073709551615\n");
+    Case::new("d:@\"debug\";n<uint64>:{|true|->18446744073709551615;|false|->0};<T>:{-><int32[(@\"bits\").and(n,3)]>};v<T>:[7];d.print(v[1]);d.print(n)").runs(b"7\n18446744073709551615\n");
     for (source, code) in [
         (
             "n<uint8>:{|true|->255;|false|->0};<T>:{v:n+1;-><int32>}",

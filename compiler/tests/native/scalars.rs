@@ -51,7 +51,7 @@ c<int64>:-9223372036854775808
 d.print(a)
 d.print(b)
 d.print(c)
-d.print((5&3)^8|2)
+d.print((@"bits").or((@"bits").xor((@"bits").and(5,3),8),2))
 "#,
     )
     .runs(b"-128\n18446744073709551615\n-9223372036854775808\n11\n");
@@ -70,8 +70,8 @@ first:logic[1]
 |choice<Logic[1]>|{value:choice[1];|value<boolean>|d.print(value~<boolean>)}
 <Number>:<int8><null>
 number<int8>:5
-single<Number[2]>:[-number,~number]
-selected<Number[2]><string[2]>:[-number,~number]
+single<Number[2]>:[-number,(@"bits").not(number)]
+selected<Number[2]><string[2]>:[-number,(@"bits").not(number)]
 negative:single[1]
 |negative<int8>|d.print(negative~<int8>)
 |selected<Number[2]>|{value:selected[2];|value<int8>|d.print(value~<int8>)}

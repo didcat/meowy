@@ -3,7 +3,7 @@ use super::file_modules::case;
 #[test]
 pub(crate) fn required_comparisons_support_arithmetic_fields_primaries_and_functions() {
     case(
-        "m:@\"./facade.mwy\";<T>:{a:m.width+1==5;b:1+2<m;c:~m.width>=250;flag:(a&&b)||c;->flag<>};v<T>:false;f<boolean>:(){p:@\"./facade.mwy\";<U>:{a:p>0;b:p.row.n<=4;c:p+0==4;->c<>};v<U>:true;->v};d:@\"debug\";d.print(v);d.print(f());d.print(m.label)",
+        "m:@\"./facade.mwy\";<T>:{a:m.width+1==5;b:1+2<m;c:(@\"bits\").not(m.width)>=250;flag:(a&&b)||c;->flag<>};v<T>:false;f<boolean>:(){p:@\"./facade.mwy\";<U>:{a:p>0;b:p.row.n<=4;c:p+0==4;->c<>};v<U>:true;->v};d:@\"debug\";d.print(v);d.print(f());d.print(m.label)",
         &[("data.mwy", "base<uint8>:4;->base;->width:base;->row:{->n:base};->label:\"ready\""), ("facade.mwy", "m:@\"./data.mwy\";->m")],
     ).runs(b"false\ntrue\nready\n");
     case("value<int8>:-128;<T>:{a:-128==value;b:value<=127;c:(value+1)>value;->c<>};v<T>:true;d:@\"debug\";d.print(v)", &[]).runs(b"true\n");
