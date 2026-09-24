@@ -400,10 +400,6 @@ impl Checker {
         }
     }
 
-    pub(crate) fn list_receiver(&mut self, value: &ast::Expr) -> Result<hir::Expr> {
-        self.list_receiver_point(value).map(|(_, value)| value)
-    }
-
     pub(crate) fn list_receiver_point(
         &mut self,
         value: &ast::Expr,
@@ -620,19 +616,28 @@ impl Checker {
         args: &[ast::Expr],
         span: Span,
     ) -> Result<hir::Expr> {
-        let value = self.list_receiver(value)?;
+        let (receiver, value) = self.list_receiver_point(value)?;
+        let point = self.point.expect("collection method");
         if value.ty == Type::Never {
+            self.method_operation(point, receiver, crate::check::MethodKind::Stopped, span)?;
             return Ok(value);
         }
         if name == "size" {
             if !args.is_empty() {
                 return Err(Self::error("E212", "size takes no arguments", span));
             }
-            let kind = match value.ty {
-                Type::List { .. } => hir::ExprKind::ListSize(Box::new(value)),
-                Type::String => hir::ExprKind::StringSize(Box::new(value)),
+            let (method, kind) = match value.ty {
+                Type::List { .. } => (
+                    crate::check::MethodKind::ListSize,
+                    hir::ExprKind::ListSize(Box::new(value)),
+                ),
+                Type::String => (
+                    crate::check::MethodKind::StringSize,
+                    hir::ExprKind::StringSize(Box::new(value)),
+                ),
                 _ => return Err(Self::error("E201", "size requires a list or string", span)),
             };
+            self.method_operation(point, receiver, method, span)?;
             return Ok(hir::Expr {
                 kind,
                 ty: Type::Int {

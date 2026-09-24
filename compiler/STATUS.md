@@ -99,51 +99,32 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current custom list-element slices
+### Current collection-method slices
 
 Dependency-ordered commit plan:
-1. Separate effect-block form recognition from actual checking, preserving scan
-   budgets, original spans and diagnostics. Test that recognition creates no
-   points, scopes, bindings or effects.
-2. Capture an exact element root only after recognition, retain it in union list
-   sequences and restore active points/scopes on failure. Validate grouped spans,
-   ownership, errors and once-only effects.
-3. Retain checked statement roots for custom bodies and connect their block
-   endpoints/results to the element root. Validate ordering, budgets and existing
-   runtime behavior with the full compiler gate.
+1. Retain exact receiver roots for list/string `size` and explicit stopped-receiver
+   boundaries. Preserve method resolution, argument/type errors and shared-list
+   dereference; validate focused identity/order/budget tests.
+2. Extend method metadata to `add`, retaining the item root, captured list/length,
+   capacity-success and result stages. Preserve full-list diagnostic order and
+   nonreturning operands; run the full compiler gate and update the handoff.
 
-Investigation: `list_effect_block` scans the supported prefix/emission-suffix shape
-before opening a block. Its statements already use checked lifetimes through
-`stmt`, but their root IDs and body sequence endpoints are discarded. Candidate
-suffix probing is separate and must not allocate expression roots. Existing
-candidate selection and coercion rules remain authoritative; no proof evaluation
-or complete effect propagation is introduced.
+Investigation: `list_method` checks the receiver before method arguments and skips
+those arguments for `never` receivers. Lowering copies a list and captures length
+before the `add` item, then checks capacity. `add` returns a new list value; it does
+not mutate the receiver. String `size` extracts the existing byte length. Existing
+method/borrow rules and supported receiver types remain unchanged.
 
-Baseline: `18f8e70`, `d06fd10` passed all ten compiler checks: 1610 library/910 native
-tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-list-literals-gate.log`.
+Baseline: `312eda3`, `00cc9fc`, `5e4bed6` passed all ten compiler checks:
+1617 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-custom-elements-gate.log`.
 
-Recognition and body checking are now separate helpers with the original scan
-budget, ungrouped diagnostic spans and outer result span preserved. New tests
-cover grouped recognition, rejected forms and budget failure without points or
-effects. Formatting and all 1613 library tests pass, including all three new
-recognition groups. Log: `/tmp/meowy-effect-form-lib.log` (`312eda3`).
-Recognized elements now allocate exact outer roots before body checking; union
-sequences retain them. Failed checks restore active point, lexical scope/frame
-depths, owner and reach. Formatting and all 1615 library tests pass, including
-grouped identity, once-only bindings and nested-function error restoration.
-Log: `/tmp/meowy-effect-roots-lib.log` (`00cc9fc`). Custom bodies now retain checked
-prefix/suffix statement roots and reuse block sequence/endpoints and result links.
-The exact element root owns the body; existing statement lifetime handling is
-unchanged. All nine focused list groups pass, including exact body ownership,
-statement order, result links and shared-budget failures. Log:
-`/tmp/meowy-effect-body-focused.log`. The now test-only `stmt` wrapper is gated
-accordingly. All ten compiler checks pass: 1617 library/910 native tests,
-formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in
-debug/release). Log: `/tmp/meowy-custom-elements-gate.log`. Post-documentation link
-checks pass: 1208 local links in 110 Markdown files. Next cover `size`/`add`
-operand/effect links. Remaining graph coverage, propagation and proof evaluation
-stay incomplete.
+Method checking now retains the receiver root; size operations distinguish list
+length from string byte length, and stopped receivers have no result/argument
+edge. The unused value-only receiver wrapper was removed. Identity and shared
+edge budgets guard publication. Formatting and all 1620 library tests pass,
+including all three size/identity groups. Log: `/tmp/meowy-size-methods-lib.log`.
+`add` follows; the full compiler gate will cover both slices.
 
 ### Proof dependency implementation slices
 

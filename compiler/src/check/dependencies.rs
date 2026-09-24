@@ -326,5 +326,8 @@ pub(crate) use indices::{Access as IndexAccess, Index};
 
 mod lists;
 
+mod methods;
+pub(crate) use methods::{Kind as MethodKind, Method};
+
 mod emissions;
 pub(crate) use emissions::Emission;
