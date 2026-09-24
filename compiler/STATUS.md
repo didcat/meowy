@@ -29,28 +29,24 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current shared union carrier-chain slice
+### Current returned union carrier series
 
-Shared record-union carrier chains now retain `Cells` through bounded dereference
-layers. Union recognition preserves a shared-edge flag throughout the chain. Returned-carrier matching has a separate terminal-type
-classifier (`shared_cell_depth`) that still leaves union terminals incomplete.
+The public carrier matcher already handles exact/deeper shared arguments and stored
+record fields. Its terminal classifier still excludes heterogeneous record unions.
+Direct returned views (one reference layer) and by-value union results remain separate.
 
-Commit plan: extend union recognition through the existing bounded traversal while
-requiring every new union-carrier edge to be shared. Keep the behavior change with
-source tests for named/stored/deeper carriers, retargets, old copies, unknown layers,
-null, marks and ownership, plus exact type/work limits. Audit returned-carrier
-behavior without broadening the public call matcher. Run the full compiler gate
-and update the guide/root handoff in the same slice.
+Commit plan:
+1. Share bounded record/null-union terminal recognition with existing carrier
+   classification without changing admission. Run focused checks and commit.
+2. Admit those terminals in `shared_cell_depth`, retaining the two-layer minimum
+   and existing public candidate matching. Test direct/deeper/stored inputs,
+   all/unknown candidates, nested calls, depth/work limits, no replay and lifetimes.
+   Run the full compiler gate and update the guide/root handoff.
 
-Union recognition now follows the existing cell-depth traversal and retains a
-shared-edge flag across the chain. All 325 dependency-filtered tests pass; log:
-`/tmp/meowy-union-chains-focused.log`. Six groups cover named/stored/deeper chains,
-retarget/copy snapshots, unknown layers, nullable carrier contents, exact type/work
-limits and E302/E303 rejection. Returned union carriers remain incomplete because
-their call classifier is unchanged. All ten compiler checks pass; log:
-`/tmp/meowy-union-chains-gate.log`. No failures remain. Next: union terminal types
-for returned shared carriers before public candidate matching. Untracked
-`docs/proposals/` remains untouched; proof outcomes stay gated.
+Bounded record/null-union recognition is now shared without changing admission
+or budget charges. All 325 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-union-terminal-focused.log`. Next: returned-carrier terminal integration.
+Untracked `docs/proposals/` remains untouched; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 

@@ -159,6 +159,28 @@ impl Checker {
         }
     }
 
+    pub(crate) fn union_carrier_target(
+        &mut self,
+        ty: &Type,
+        span: crate::ast::Span,
+    ) -> crate::check::Result<bool> {
+        let Type::Union(members) = ty else {
+            return Ok(false);
+        };
+        if !ty.has_reference() {
+            return Ok(false);
+        }
+        if members.len() > MAX_ROOTS || !self.flow.spend(members.len()) {
+            return Err(crate::diagnostic::Diagnostic::unsupported(
+                "proof union view type budget exhausted",
+                span,
+            ));
+        }
+        Ok(members
+            .iter()
+            .all(|member| matches!(member, Type::Record { .. } | Type::Null)))
+    }
+
     pub(crate) fn origin_carrier(
         &mut self,
         ty: &Type,
@@ -175,22 +197,8 @@ impl Checker {
                     span,
                 ));
             }
-            if shared
-                && let Type::Union(members) = inner
-                && inner.has_reference()
-            {
-                if members.len() > MAX_ROOTS || !self.flow.spend(members.len()) {
-                    return Err(crate::diagnostic::Diagnostic::unsupported(
-                        "proof union view type budget exhausted",
-                        span,
-                    ));
-                }
-                if members
-                    .iter()
-                    .all(|member| matches!(member, Type::Record { .. } | Type::Null))
-                {
-                    return Ok(true);
-                }
+            if shared && self.union_carrier_target(inner, span)? {
+                return Ok(true);
             }
             if Self::origin_reference(inner)
                 || (Self::origin_record(inner).is_some() && inner.has_reference())
