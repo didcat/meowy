@@ -29,27 +29,25 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current owned-union projection slice
+### Current hidden union candidate series
 
 Commit plan:
-1. Keep already matched owned union projections when the owned terminal exactly
-   equals the direct shared result target. Include focused owner-path, all/unknown
-   candidate, hidden-input, null, budget and lifetime regressions, then run the
-   full compiler gate and update both handoffs and the guide.
+1. Extract location-based shaped snapshot reads from expression-based view reads,
+   retaining prefix checks and charges. Run dependency regressions and commit.
+2. Discover bounded shared-reference candidates in owned record/null unions using
+   variant-qualified keys, then resolve those keys through known owner locations.
+   Keep unsupported leaves incomplete; test layouts, all/unknown candidates, null,
+   nesting, budgets and lifetimes. Run the full gate and update both handoffs.
 
-Investigation: public projections already collect exact owned union field paths.
-The later walker rejects those fields because they are not references. A supported
-owned union equal to the result target can be skipped after projection collection:
-its finite structural type cannot contain another reference to that same whole
-union. Different unions must remain incomplete because they can hide candidates.
-No variant field indices or private function bodies need traversal for this slice.
-The exact-target skip and six regression groups pass all 344 dependency-filtered
-tests; log: `/tmp/meowy-owned-union-projections-focused.log`. Deeper inputs explicitly
-read the intermediate shared view before projecting; implicit reborrow projections
-outside concrete storage remain unsupported. All ten compiler checks pass, including
-1317 library and 903 native tests; log: `/tmp/meowy-owned-union-projections-gate.log`.
-No failures remain. Hidden unmatched unions stay incomplete; proof outcomes remain
-gated. Untracked `docs/proposals/` remains untouched.
+Investigation: `ShapeKey` already records variant identity separately from concrete
+field prefixes. Reuse the view reader for stored snapshots; never append variant
+field positions to ordinary `Cells` paths. Start with exact/deeper shared terminal
+candidates; references requiring traversal into borrowed record contents remain
+incomplete. Existing exact owned projections remain supported.
+Location-based snapshot reads are extracted without changing admission, prefix
+validation or analysis charges. All 344 dependency-filtered tests and formatting
+pass; log: `/tmp/meowy-shape-locations-focused.log`. Candidate integration is next.
+Untracked `docs/proposals/` remains untouched.
 
 ### Proof dependency implementation slices
 

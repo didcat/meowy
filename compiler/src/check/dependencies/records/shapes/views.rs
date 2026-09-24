@@ -1,4 +1,5 @@
 use super::{Checker, Diagnostic, Expr, MAX_DEPTH, Result, ShapeKey, Snapshot, Type};
+use crate::ast::Span;
 use crate::check::dependencies::{Cells, references::MAX_ROOTS};
 use crate::hir::ExprKind;
 use std::collections::BTreeSet;
@@ -42,24 +43,35 @@ impl Checker {
             suffix.reverse();
             (self.reference_cell(base)?, suffix)
         };
+        self.location_shape_source(&locations, &suffix, key, view.span)
+    }
+
+    pub(crate) fn location_shape_source(
+        &mut self,
+        locations: &Cells,
+        suffix: &[usize],
+        key: &ShapeKey,
+        span: Span,
+    ) -> Result<Snapshot> {
         if locations.places.len() > MAX_ROOTS {
             return Err(Diagnostic::unsupported(
                 "proof union view location capacity exhausted",
-                view.span,
+                span,
             ));
         }
         let mut result = Snapshot::empty();
         result.origins.complete = locations.complete;
         result.cells.complete = locations.complete;
-        for (root, mut prefix) in locations.places {
-            prefix.extend(&suffix);
+        for (root, prefix) in &locations.places {
+            let mut prefix = prefix.clone();
+            prefix.extend(suffix);
             if prefix.len() > MAX_DEPTH || !self.flow.spend(prefix.len() + 1) {
                 return Err(Diagnostic::unsupported(
                     "proof union view prefix budget exhausted",
-                    view.span,
+                    span,
                 ));
             }
-            let mut ty = self.locals.get(root);
+            let mut ty = self.locals.get(*root);
             for index in &prefix {
                 ty = ty.and_then(Self::origin_record).and_then(|ty| {
                     let Type::Record { fields, .. } = ty else {
@@ -80,9 +92,9 @@ impl Checker {
                 .iter()
                 .map(|(at, ty)| (at + prefix.len(), ty))
                 .collect::<Vec<_>>();
-            let key = ShapeKey::new(&fields, &variants, &mut self.flow, view.span)?;
-            let next = self.stored_shape_source(root, &key, view.span)?;
-            result.merge(next, &mut self.flow, view.span)?;
+            let key = ShapeKey::new(&fields, &variants, &mut self.flow, span)?;
+            let next = self.stored_shape_source(*root, &key, span)?;
+            result.merge(next, &mut self.flow, span)?;
         }
         Ok(result)
     }
