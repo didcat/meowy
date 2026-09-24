@@ -99,28 +99,34 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current pending-query restart-scope association slice
+### Current restart-body fact association slices
 
-Commit plan:
-1. Retain bounded same-function active block IDs when preparing a new query and
-   associate queries with restart targets in either source order. Descriptor copies
-   retain their original site and scope; recognition remains side-effect free.
-   Keep nested/function/copy/error/budget regressions with metadata integration.
-   Run the full gate and update both handoffs.
-2. Then plan loop-body fact association and bounded backward/control propagation,
-   preserving retained roots and ordinary errors before E225 enforcement.
+Dependency-ordered commit plan:
+1. Inventory checked runtime body facts by block/function identity, retaining
+   nested-block links, bindings, reads, writes, calls and exits with bounded work
+   and storage. Associate a restart with its target body without replaying source.
+   Include nested/function/error/budget regressions with this integration.
+2. Retain successful required-input reads that disappear from runtime HIR in the
+   same body inventory. Cover scalar/record reads, skipped evaluation, fixed type
+   signatures and retained query budgets. Run the full compiler gate and update
+   both handoffs.
 
-Investigation: pending queries are omitted from runtime HIR. Explicit owner/block
-identities avoid reconstructing lexical scope from spans. Restart-query links can
-be built as either endpoint is registered without replaying source or changing
-query control flags. This slice is association only, not loop-carried propagation.
-The association implementation and five new groups pass all 1437 library tests;
-log: `/tmp/meowy-query-restart-scopes-focused.log`. Before/after restart links,
-nested targets, function ownership, copy identity, recognition/error behavior and
-scope/work bounds pass. All ten compiler checks pass, including 1437 library/906
-native tests; log: `/tmp/meowy-query-restart-scopes-gate.log`. No failures remain.
-This slice records associations only. User changes are preserved; proof outcomes
-and loop-carried propagation remain gated.
+Investigation: completed HIR bodies provide stable block IDs and exclude nested
+function bodies. Each nested body can be inventoried once and referenced by ID;
+restart targets and pending-query scopes already use these IDs. Required scalar,
+boolean and record input checks need separate capture after successful evaluation.
+The inventory is a prerequisite, not a control/data transfer graph: propagation,
+header joins, termination dependence and E225 enforcement over backedges remain
+separate. Do not infer control independence from missing transfer edges or enable
+proof outcomes. The working tree was clean.
+
+Runtime inventory is integrated at successful block completion. Nested bodies are
+linked without rescanning; indirect stores remain explicit unresolved store facts.
+Facts are a structural inventory, not execution order or transfer edges. Expression
+spans are retained; HIR exits/aliases without spans use their enclosing block span
+(the restart site retains its exact source span). Five focused body tests pass;
+all 1452 library tests and Clippy pass. Logs: `/tmp/meowy-restart-bodies-library.log`
+and `/tmp/meowy-restart-bodies-clippy.log`. Required reads are next.
 
 ### Proof dependency implementation slices
 

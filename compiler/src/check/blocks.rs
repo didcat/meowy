@@ -106,7 +106,9 @@ impl Checker {
             self.doc_stage(usize::MAX)?;
         }
         self.scopes.pop();
-        Ok(hir::Block { id, ty, stmts })
+        let body = hir::Block { id, ty, stmts };
+        self.track_body(&body, block.span)?;
+        Ok(body)
     }
 
     pub(crate) fn block_type(
