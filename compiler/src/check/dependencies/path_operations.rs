@@ -12,6 +12,11 @@ use crate::{
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Step {
     Field(usize),
+    Index {
+        point: hir::PointId,
+        capacity: usize,
+        span: Span,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -41,7 +46,7 @@ impl Checker {
             || !self.flow.spend(
                 self.paths.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
-                    + steps.len() * 2
+                    + steps.len() * (steps.len().checked_ilog2().unwrap_or(0) as usize + 3)
                     + 4,
             )
         {
@@ -53,12 +58,8 @@ impl Checker {
             .aliases
             .get(&local)
             .map_or(local, |alias| alias.root);
-        if point.kind != PointKind::Stmt
-            || point.owner != self.owner
-            || (!point.complete && self.point != Some(id))
-            || self.locals.get(storage).is_none()
-            || steps.is_empty()
-            || !self.points.get(input).is_some_and(|source| {
+        let child = |input: hir::PointId| {
+            self.points.get(input).is_some_and(|source| {
                 source.parent == Some(id)
                     && source.owner == self.owner
                     && source.block == point.block
@@ -68,10 +69,18 @@ impl Checker {
                         PointKind::Expr | PointKind::And | PointKind::Or
                     )
             })
+        };
+        if point.kind != PointKind::Stmt
+            || point.owner != self.owner
+            || (!point.complete && self.point != Some(id))
+            || self.locals.get(storage).is_none()
+            || steps.is_empty()
+            || !child(input)
         {
             return Err(invalid());
         }
         let mut ty = self.locals.get(local).ok_or_else(invalid)?;
+        let mut inputs = std::collections::BTreeSet::from([input]);
         let address = |step| Port::Address { point: id, step };
         let mut edges = vec![Edge::new(Port::Entry(id), address(0), Route::Next)];
         for (index, step) in steps.iter().enumerate() {
@@ -82,6 +91,30 @@ impl Checker {
                     };
                     ty = &fields.get(*field).ok_or_else(invalid)?.ty;
                     edges.push(Edge::new(address(index), address(index + 1), Route::Next));
+                }
+                Step::Index {
+                    point, capacity, ..
+                } => {
+                    let hir::Type::List {
+                        element,
+                        capacity: size,
+                    } = ty
+                    else {
+                        return Err(invalid());
+                    };
+                    if capacity != size || !child(*point) || !inputs.insert(*point) {
+                        return Err(invalid());
+                    }
+                    let reserve = Port::Reserve {
+                        point: id,
+                        step: index,
+                    };
+                    edges.extend([
+                        Edge::new(address(index), reserve, Route::Next),
+                        Edge::new(reserve, Port::Entry(*point), Route::Next),
+                        Edge::new(Port::Normal(*point), address(index + 1), Route::Checked),
+                    ]);
+                    ty = element;
                 }
             }
         }
@@ -115,6 +148,9 @@ impl Checker {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod indexed;
 
 #[cfg(test)]
 mod tests {

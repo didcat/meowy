@@ -12,6 +12,10 @@ pub(crate) enum Port {
         point: PointId,
         step: usize,
     },
+    Reserve {
+        point: PointId,
+        step: usize,
+    },
     Emission(crate::hir::EmitId),
     BlockEntry(crate::hir::BlockId),
     BlockNormal(crate::hir::BlockId),
@@ -32,6 +36,7 @@ pub(crate) enum Route {
     Exit,
     Result,
     Backedge,
+    Checked,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

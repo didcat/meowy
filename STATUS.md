@@ -528,7 +528,15 @@ Body facts now use exact point/target indices to validate EmitId, owner and slot
 identity, preserving unknown synthetic sources. All ten compiler checks pass,
 including 1574 library/910 native tests; `/tmp/meowy-emission-operations-gate.log`.
 Composed roots: `e4374cc`; direct emissions: `6bb0f49`; fanout: `c6fd7e5`.
-Store/address transfers, propagation and proof outcomes remain incomplete.
+Field/indexed stores now retain canonical targets, exact field/index paths and
+checked RHS roots. Address stages precede the RHS; each index follows its
+containing-list reservation/length capture and reaches its next address only on
+bounds success. The write follows normal RHS completion. Existing mutability,
+type, bounds and loan validation remain authoritative. Exact index roots:
+`9f2708c`; field operations: `e26a99c`. All ten compiler checks pass, including
+1583 library/910 native tests; `/tmp/meowy-path-operations-gate.log`.
+Indirect store/address transfers,
+remaining operands, propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -658,10 +666,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Composed roots, emission operations and exact EmitId source links passed all ten
-  checks in `python3 -B tools/verify.py --compiler`: 1574 library/910 native tests.
+- Exact index roots and field/indexed store operations passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1583 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-emission-operations-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-path-operations-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -729,8 +737,10 @@ execution was not part of this documentation edit.
    expression statements now connect; restart reentry is marked separately.
    Matcher roots, ordinary bindings and direct writes now retain explicit operation
    links. Direct and composed emissions now retain slot identities, source roots
-   and projections. Next add field/indexed and indirect store/address transfers,
-   preserving operand order, reservations and incomplete-origin boundaries.
+   and projections. Field/indexed stores now retain address/index/RHS order,
+   canonical paths and reservation/bounds-success stages. Next add indirect
+   scalar stores, capturing target/RHS roots while preserving incomplete origins
+   and distinguishing reference-cell storage from pointee targets.
    Result availability is not complete value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.

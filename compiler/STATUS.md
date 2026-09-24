@@ -130,9 +130,20 @@ the RHS and a write effect after its normal completion. Identity checks and the
 shared edge budget guard publication. Formatting and all 1579 library tests pass,
 including nested paths, same-layout RHS replacement, control/owner separation,
 ordinary errors and atomic edge-budget failure. Log:
-`/tmp/meowy-field-paths-lib.log`. Indexed stages follow; the final compiler gate
-will cover the complete series. Remaining transfers/operand coverage and
-propagation stay incomplete; proof evaluation remains gated.
+`/tmp/meowy-field-paths-lib.log` (`e26a99c`). Indexed operations now capture exact
+index roots once and preserve each containing-list reservation/length stage before
+its index, followed by a `Checked` bounds-success edge. Capacity/path validation,
+distinct roots and shared budgets guard publication. These stages describe the
+existing lowering/loan order; they do not grant borrow authority or prove bounds.
+All seven focused operation groups pass, including nested side effects, aliases,
+nonreturning operands, reservation errors and atomic identity/budget failures.
+Log: `/tmp/meowy-indexed-paths-focused.log`. All ten compiler checks pass:
+1583 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-path-operations-gate.log`. Post-handoff link checks also pass:
+1208 local links in 110 Markdown files. Next implement indirect scalar stores.
+Remaining transfers/operand coverage and propagation stay incomplete; proof
+evaluation remains gated.
 
 ### Proof dependency implementation slices
 
@@ -1460,10 +1471,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Composed roots, direct/fanout emission operations and indexed EmitId source links
-  passed all ten checks in `python3 -B tools/verify.py --compiler`: 1574 library/910
+- Exact index roots and field/indexed store operations passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1583 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-emission-operations-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-path-operations-gate.log`.
   Store/address transfers, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1814,10 +1825,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    primary/field projections. Body facts use bounded point/target indices to link
    those operations without span matching. Emission initializes components; it
    does not exit its block. Never/static outputs retain their existing boundaries.
-   Next model field/indexed store operations in `mutation.rs::write_path`, capturing
-   exact address/index/RHS roots before temporary staging and preserving WriteStep
-   paths, source order and reservations. Follow with indirect scalar stores in
-   statement checking; distinguish reference cells from their pointee targets and
+   Field/indexed operations now retain canonical targets and exact WriteStep paths,
+   index/RHS roots, address stages and containing-list reservation/length stages.
+   `Checked` edges admit the next address only on bounds success; write effects
+   follow normal RHS completion. These metadata do not grant loan authority.
+   Next model indirect scalar stores in `statements.rs`, capturing the checked
+   target before the RHS and retaining bounded pointee origins; validate target
+   retargeting, incomplete origins, nonreturning operands and unchanged loans with
+   focused regressions and the full compiler gate. Distinguish reference cells
+   from their pointee targets and
    keep incomplete origins explicit. Preserve loan checks, owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

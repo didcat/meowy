@@ -87,6 +87,7 @@ impl Checker {
         let mut ty = ty;
         let mut mutable = mutable;
         let mut path = Vec::new();
+        let mut points = Vec::new();
         let mut names = Vec::new();
         let mut indexed = false;
         for step in steps.into_iter().rev() {
@@ -101,6 +102,7 @@ impl Checker {
                     let (index, field, writable) = self.record_field(ty, name, step.span)?;
                     mutable = writable;
                     path.push(hir::WriteStep::Field(index));
+                    points.push(super::dependencies::PathStep::Field(index));
                     if !indexed {
                         names.push(name.clone());
                     }
@@ -114,8 +116,14 @@ impl Checker {
                         ));
                     };
                     indexed = true;
+                    let (point, index) = self.list_position_point(index, None, capacity)?;
+                    points.push(super::dependencies::PathStep::Index {
+                        point,
+                        capacity,
+                        span: step.span,
+                    });
                     path.push(hir::WriteStep::Index(hir::IndexStep {
-                        index: self.list_position(index, None, capacity)?,
+                        index,
                         span: step.span,
                     }));
                     ty = *element;
@@ -125,6 +133,9 @@ impl Checker {
         }
         if let Some(hir::WriteStep::Index(last)) = path.last_mut() {
             last.span = target.span;
+        }
+        if let Some(super::dependencies::PathStep::Index { span, .. }) = points.last_mut() {
+            *span = target.span;
         }
         if !mutable {
             return Err(Self::error(
@@ -156,15 +167,8 @@ impl Checker {
         if derived {
             self.mark_derived(id);
         }
-        if !indexed && let Some(point) = self.point {
-            let steps = path
-                .iter()
-                .map(|step| match step {
-                    hir::WriteStep::Field(field) => super::dependencies::PathStep::Field(*field),
-                    hir::WriteStep::Index(_) => unreachable!(),
-                })
-                .collect();
-            self.path_operation(point, id, steps, input, target.span)?;
+        if let Some(point) = self.point {
+            self.path_operation(point, id, points, input, target.span)?;
         }
         Ok(hir::Stmt::SetPath {
             id,
