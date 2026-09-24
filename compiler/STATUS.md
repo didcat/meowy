@@ -29,29 +29,24 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current concrete view field-origin slice
+### Current concrete view carrier-field series
 
 Commit plan:
-1. Resolve reference-free-pointee field origins through known shared record-view
-   locations when ordinary direct storage lookup is unavailable. Reuse the bounded
-   returned-cell matcher; validate concrete owner prefixes and field types, merge
-   all known origins and preserve unknowns. Include focused reads/copies, nullable
-   records, hidden candidates, budgets/no replay, E225 and lifetime regressions.
+1. Extract concrete shared-view owner/prefix/leaf validation without changing
+   origin admission or charges. Run focused checks and commit the prerequisite.
+2. Reuse those checks for stored carrier-field contents through unknown Deref
+   sources in `records/cells.rs`. Preserve all/unknown cells, nullable records and
+   copies; test deeper/stored/returned views, bounds, no replay and lifetimes.
    Run the full compiler gate and update both handoffs and the guide.
 
-Investigation: `record_source_origins_at` handles by-value call fields but a
-`Deref` of a named or returned record view falls through to unknown storage.
-Existing direct temporary reads must retain their path. Add the location-backed
-fallback only for unknown shared concrete-record sources; carrier-field contents
-remain a separate integration step. No private-body inference or call replay.
-The shared-view fallback and seven new groups pass all 357 dependency-filtered
-tests; log: `/tmp/meowy-concrete-view-origins-focused.log`. Hidden union candidates
-now retain concrete field origins. E225 uses literals under derived control;
-unavailable runtime captures retain E211 precedence. Invalid-owner/path checks,
-null contents, unknowns, no replay and E302/E303 lifetimes pass. All ten compiler
-checks pass, including 1330 library/903 native tests; log:
-`/tmp/meowy-concrete-view-origins-gate.log`. No failures remain.
-Untracked `docs/proposals/` remains untouched; outcomes stay gated.
+Investigation: the origin fallback already validates actual storage against the
+shared view target. Carrier reads still return incomplete at the same unknown
+source boundary. Keep direct temporary and by-value call paths unchanged, and
+keep unselected heterogeneous owner prefixes incomplete.
+Shared owner/prefix/leaf validation is extracted without changing admission or
+charges. All 357 dependency-filtered tests and formatting pass; log:
+`/tmp/meowy-view-field-validation-focused.log`. Carrier integration is next.
+Untracked `docs/proposals/` remains untouched.
 
 ### Proof dependency implementation slices
 

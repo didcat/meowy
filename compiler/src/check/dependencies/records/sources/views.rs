@@ -26,23 +26,7 @@ impl Checker {
             ..Origins::default()
         };
         for (root, prefix) in locations.places {
-            if prefix.len() + path.len() > MAX_DEPTH
-                || !self.flow.spend(prefix.len() + path.len() + 1)
-            {
-                return Err(Diagnostic::unsupported(
-                    "proof record view field budget exhausted",
-                    view.span,
-                ));
-            }
-            let owner = self
-                .locals
-                .get(root)
-                .and_then(|ty| Self::concrete_field_type(ty, &prefix));
-            if owner != Some(target.as_ref()) {
-                origins.complete = false;
-                continue;
-            }
-            let Some(ty) = owner.and_then(|ty| Self::concrete_field_type(ty, path)) else {
+            let Some(ty) = self.record_view_field_type(view, root, &prefix, path)? else {
                 origins.complete = false;
                 continue;
             };
@@ -73,6 +57,33 @@ impl Checker {
             }
         }
         Ok(origins)
+    }
+
+    pub(crate) fn record_view_field_type<'a>(
+        &mut self,
+        view: &'a Expr,
+        root: usize,
+        prefix: &[usize],
+        path: &[usize],
+    ) -> Result<Option<&'a Type>> {
+        if prefix.len() + path.len() > MAX_DEPTH || !self.flow.spend(prefix.len() + path.len() + 1)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof record view field budget exhausted",
+                view.span,
+            ));
+        }
+        let Type::Reference(target) = &view.ty else {
+            return Ok(None);
+        };
+        let owner = self
+            .locals
+            .get(root)
+            .and_then(|ty| Self::concrete_field_type(ty, prefix));
+        if owner != Some(target.as_ref()) {
+            return Ok(None);
+        }
+        Ok(Self::concrete_field_type(target, path))
     }
 
     pub(super) fn concrete_field_type<'a>(mut ty: &'a Type, path: &[usize]) -> Option<&'a Type> {
