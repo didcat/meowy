@@ -503,6 +503,10 @@ independent decisions and conditional normal completion. Three focused groups an
 all 1553 library tests pass; `/tmp/meowy-matcher-roots-lib.log`. Ordinary binding
 operations are next; value-flow propagation and proof evaluation stay gated.
 
+The 4096-alias stress gate now accepts the shared control-flow B001 budget as well
+as the origin-specific cap; the 2048 case still requires the loan-analysis budget.
+Focused stress validation passed. Binding-operation integration remains in progress.
+
 ## Pending descriptor statement accounting
 
 Pending descriptor flag type queries now resolve their fixed `boolean` signature

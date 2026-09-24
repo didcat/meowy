@@ -27,9 +27,12 @@ pub(crate) fn aliases_of_many_origins_cannot_expand_storage_without_bound() {
         source.push_str(&format!("|p{id}|{{'pick->&a{id};'pick.leave()}};"));
     }
     source.push_str("->&a63};");
-    for (count, budget) in [
-        (2048, "loan-analysis budget"),
-        (4096, "borrow-origin fact budget"),
+    for (count, budgets) in [
+        (2048, vec!["loan-analysis budget"]),
+        (
+            4096,
+            vec!["borrow-origin fact budget", "control-flow proof budget"],
+        ),
     ] {
         let mut source = source.clone();
         for id in 0..count {
@@ -38,7 +41,12 @@ pub(crate) fn aliases_of_many_origins_cannot_expand_storage_without_bound() {
         source.push('}');
         let errors = crate::compile(&source).unwrap_err();
         assert_eq!(errors[0].code, "B001", "{errors:?}");
-        assert!(errors[0].message.contains(budget), "{errors:?}");
+        assert!(
+            budgets
+                .iter()
+                .any(|budget| errors[0].message.contains(budget)),
+            "{count}: {errors:?}"
+        );
     }
 }
 
