@@ -29,29 +29,28 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current hidden union candidate series
+### Current concrete view field-origin slice
 
 Commit plan:
-1. Extract location-based shaped snapshot reads from expression-based view reads,
-   retaining prefix checks and charges. Run dependency regressions and commit.
-2. Discover bounded shared-reference candidates in owned record/null unions using
-   variant-qualified keys, then resolve those keys through known owner locations.
-   Keep unsupported leaves incomplete; test layouts, all/unknown candidates, null,
-   nesting, budgets and lifetimes. Run the full gate and update both handoffs.
+1. Resolve reference-free-pointee field origins through known shared record-view
+   locations when ordinary direct storage lookup is unavailable. Reuse the bounded
+   returned-cell matcher; validate concrete owner prefixes and field types, merge
+   all known origins and preserve unknowns. Include focused reads/copies, nullable
+   records, hidden candidates, budgets/no replay, E225 and lifetime regressions.
+   Run the full compiler gate and update both handoffs and the guide.
 
-Investigation: `ShapeKey` already records variant identity separately from concrete
-field prefixes. Reuse the view reader for stored snapshots; never append variant
-field positions to ordinary `Cells` paths. Start with exact/deeper shared terminal
-candidates; references requiring traversal into borrowed record contents remain
-incomplete. Existing exact owned projections remain supported.
-Prerequisite `9969754` preserves prefix validation and charges. Hidden candidate
-resolution passes all 350 focused tests; log: `/tmp/meowy-hidden-union-focused.log`.
-Six new groups cover variant layouts, unknowns, null, deeper inputs, nested calls,
-no replay, bounds and lifetimes. Union-result reads preserve both dependencies;
-concrete-record field-origin summaries remain explicitly incomplete despite known
-locations and are the next integration step. All ten compiler checks pass, including
-1323 library/903 native tests; log: `/tmp/meowy-hidden-union-gate.log`.
-The final gate also passes with the variant field-address guard regression.
+Investigation: `record_source_origins_at` handles by-value call fields but a
+`Deref` of a named or returned record view falls through to unknown storage.
+Existing direct temporary reads must retain their path. Add the location-backed
+fallback only for unknown shared concrete-record sources; carrier-field contents
+remain a separate integration step. No private-body inference or call replay.
+The shared-view fallback and seven new groups pass all 357 dependency-filtered
+tests; log: `/tmp/meowy-concrete-view-origins-focused.log`. Hidden union candidates
+now retain concrete field origins. E225 uses literals under derived control;
+unavailable runtime captures retain E211 precedence. Invalid-owner/path checks,
+null contents, unknowns, no replay and E302/E303 lifetimes pass. All ten compiler
+checks pass, including 1330 library/903 native tests; log:
+`/tmp/meowy-concrete-view-origins-gate.log`. No failures remain.
 Untracked `docs/proposals/` remains untouched; outcomes stay gated.
 
 ### Proof dependency implementation slices
@@ -1380,16 +1379,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1323
-  library/903 native tests (2226 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1330
+  library/903 native tests (2233 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-hidden-union-gate.log`.
-- All 350 dependency-filtered tests pass. Six new hidden-candidate groups cover
-  distinct variant layouts, exact/deeper stored candidates, null, unknown leaves,
-  nested calls, no replay, type/work bounds and E302/E303 lifetimes. Union-result
-  shaped reads retain candidate dependencies; concrete-record content summaries
-  remain explicitly incomplete. Accepted fixtures pass ordinary compilation and
-  ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-concrete-view-origins-gate.log`.
+- All 357 dependency-filtered tests pass. Seven new concrete-view groups cover
+  direct/nested/returned reads and copies, all/unknown origins, nullable records,
+  no replay, call/work/path bounds, invalid owner prefixes, E225 control propagation
+  and E302/E303 lifetimes. Hidden-union regressions now verify concrete field origins.
+  Accepted fixtures pass ordinary compilation/ownership; dependency marks stay seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1592,12 +1590,15 @@ explicitly documented. No outstanding failures remain.
    incomplete, and owned targets inside variants or borrowed contents needing
    further traversal remain unsupported. Direct unmatched shared-union arguments
    are still outside this owned-field path.
-   Next integrate the resolved locations with concrete-record field-origin reads
-   in `records/sources.rs` and `records/sources/calls.rs`. Current tests prove complete
-   returned locations but explicitly incomplete concrete-record content summaries;
-   union-result shaped reads already preserve both candidate dependencies. Reuse
-   the cell matcher without replaying calls, retain unknowns and budgets, and test
-   concrete fields, nullable records, nested calls and E225 before the full gate.
+   Concrete-record reference-field origins now resolve through known shared view
+   locations when direct storage lookup is unavailable. Returned calls, hidden union
+   candidates, nullable/nested records and copies retain all stored origins; unknown
+   owners remain incomplete. Concrete prefix/type checks prevent layout mixing.
+   Next integrate carrier-field contents in `records/cells.rs`: its unknown Deref
+   source still loses stored reference-cell locations. Reuse the concrete owner/path
+   validation from `records/sources/views.rs`, keeping structural extraction separate
+   from admission. Test stored/deeper carriers, all/unknown candidates, nullable
+   records, copies, bounds, no replay and lifetimes before the full compiler gate.
    By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

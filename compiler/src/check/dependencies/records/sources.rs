@@ -177,7 +177,12 @@ impl Checker {
             return self.record_call_field_origins(base, args, &fields, depth);
         }
         let sources = match self.record_source_locations(value, path)? {
-            RecordSource::Unknown => return Ok(Origins::default()),
+            RecordSource::Unknown => {
+                if let ExprKind::Deref(view) = &base.kind {
+                    return self.record_view_field_origins(view, &fields, depth);
+                }
+                return Ok(Origins::default());
+            }
             RecordSource::Empty => {
                 return Ok(Origins {
                     roots: Default::default(),
@@ -236,3 +241,5 @@ mod calls;
 
 #[cfg(test)]
 mod coercions;
+
+mod views;

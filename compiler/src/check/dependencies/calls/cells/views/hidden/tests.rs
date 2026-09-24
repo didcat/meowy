@@ -22,7 +22,19 @@ pub(crate) fn hidden_union_returns_use_variant_keys_for_different_layouts() {
         let mut places = BTreeSet::from([(id(&checker, "one"), vec![])]);
         places.extend(names.iter().map(|name| (id(&checker, name), vec![])));
         assert_eq!(cells.places, places);
-        assert!(!checker.pointees[&id(&checker, "out")].complete);
+        assert!(checker.pointees[&id(&checker, "out")].complete);
+        let roots = cells
+            .places
+            .iter()
+            .map(|(root, _)| {
+                if *root == id(&checker, "one") {
+                    id(&checker, "x")
+                } else {
+                    id(&checker, "y")
+                }
+            })
+            .collect();
+        assert_eq!(checker.pointees[&id(&checker, "out")].roots, roots);
     }
 }
 

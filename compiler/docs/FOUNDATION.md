@@ -284,9 +284,11 @@ records retain concrete field paths alongside compatible stored candidates.
 Owned record/null unions also contribute exact/deeper shared-reference candidates
 through variant-qualified stored snapshots. Different layouts never become ordinary
 field paths. Unsupported borrowed contents and owned projections inside variants
-remain incomplete. Concrete-record field-origin summaries through these hidden
-candidates remain separate from location matching; union-result shaped reads retain
-their dependencies. By-value returned union origins remain separate.
+remain incomplete. Shared concrete-record field reads and copies resolve stored
+origins through all known returned locations, including hidden union candidates.
+Concrete owner prefixes and leaf types are checked; unknown alternatives remain
+incomplete. Nested/nullable records retain their paths and null contents. Carrier
+field contents remain separate; by-value returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
