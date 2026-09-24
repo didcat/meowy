@@ -331,3 +331,50 @@ pub(crate) fn position_roots_preserve_type_one_based_length_and_capacity_errors(
         assert!(checker.point.is_none());
     }
 }
+
+#[test]
+pub(crate) fn list_receiver_roots_keep_shared_dereference_and_exact_outer_identity() {
+    let mut checker = Checker::new();
+    super::super::tests::statements(&mut checker, "xs:[1,2];view:&xs");
+    for (source, borrowed) in [("((xs))", false), ("((view))", true)] {
+        let stmt = crate::parser::parse(source).unwrap().stmts.remove(0);
+        let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+            panic!()
+        };
+        let before = checker.points.len();
+        let (first, value) = checker.list_receiver_point(&expr).unwrap();
+        let count = checker.points.len() - before;
+        let (second, copy) = checker.list_receiver_point(&expr).unwrap();
+        assert_ne!(first, second);
+        assert_eq!(checker.points.len() - before, count * 2);
+        assert_eq!(checker.points[first].span, expr.span);
+        assert!(checker.points[first].complete);
+        assert!(matches!(value.ty, hir::Type::List { capacity: 2, .. }));
+        assert_eq!(matches!(value.kind, hir::ExprKind::Deref(_)), borrowed);
+        assert_eq!(value.ty, copy.ty);
+        assert!(checker.point.is_none());
+    }
+}
+
+#[test]
+pub(crate) fn list_receiver_roots_preserve_never_and_ordinary_errors() {
+    let mut checker = Checker::new();
+    super::super::tests::statements(&mut checker, "d:@\"debug\"");
+    let stmt = crate::parser::parse("d.panic(\"stop\")")
+        .unwrap()
+        .stmts
+        .remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let (point, value) = checker.list_receiver_point(&expr).unwrap();
+    assert_eq!(value.ty, hir::Type::Never);
+    assert!(checker.points[point].complete);
+    assert!(checker.point.is_none());
+    let stmt = crate::parser::parse("missing").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    assert_eq!(checker.list_receiver_point(&expr).unwrap_err().code, "E201");
+    assert!(checker.point.is_none());
+}

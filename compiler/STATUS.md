@@ -99,45 +99,32 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current direct call slices
+### Current list-index slices
 
 Dependency-ordered commit plan:
-1. Retain exact direct-function call sites, callee identities and checked argument
-   roots, including dispatch receivers first. Preserve arity/type/borrow checks,
-   function owners, recursion and type-only call boundaries.
-2. Link arguments in source order to an opaque call-effect stage. Admit a normal
-   continuation only on callee return, omitting it for `never` results. Verify
-   nested/empty calls, side effects, nonreturning arguments and shared budgets;
-   run the full compiler gate and update the handoff.
+1. Expose the exact checked receiver root while preserving the value-only API and
+   implicit shared-list dereference. Verify identity and unchanged HIR behavior.
+2. Retain receiver/position roots and explicit list-value/length capture before
+   index evaluation. Link successful bounds checks to result availability, keep
+   nonreturning operands explicit, and validate order, diagnostics and budgets.
+   Run the full compiler gate and update the handoff.
 
-Investigation: `functions.rs::call` resolves direct callees as symbols and checks
-receiver/arguments left-to-right. Argument roots are currently discarded. Debug
-formatting, list methods and required/type-only calls follow separate paths and
-remain outside this direct-function slice. No effect summary or proof evaluator
-is introduced; call effects remain unknown even for a body that looks pure.
+Investigation: `list_index` checks the receiver first and skips the index entirely
+when its type is `never`. Shared list receivers get a synthetic dereference; the
+backend copies the list value and extracts its length before evaluating the index.
+This is a value snapshot, not a reservation of the original owner's storage.
+The existing one-based bounds/borrow checks remain authoritative. Element-borrow,
+list literal/method and contextual builder paths remain separate.
 
-Baseline: indirect-store commits `003c7d4` and `1729634` passed all ten compiler
-checks: 1590 library/910 native tests; conformance 10 passed, 13 unsupported,
-0 failed in debug/release. Log: `/tmp/meowy-indirect-stores-gate.log`.
-Direct calls now retain site/callee identities, exact argument roots, owner/control
-and whether the declared result permits a return. Roots are captured during the
-existing checks, without replaying arguments or creating a runtime callee read.
-Bounded identity validation rejects duplicate/foreign roots and missing sites.
-All three focused groups and all 1593 library tests pass; formatting also passes.
-Logs: `/tmp/meowy-call-inputs-focused.log`, `/tmp/meowy-call-inputs-lib.log`.
-Identity slice: `fdeb312`. Calls now link source-ordered arguments to a distinct
-operation port; a `Returned` edge reaches normal completion only when the callee
-returns. Declared `never` results omit that edge. The operation remains opaque,
-and no purity or guaranteed return is inferred. Edges share the graph budget and
-publish atomically with call identities. All seven focused groups pass, including
-nested/empty calls, side-effect order, `never` and exiting arguments, loan errors
-and atomic edge budgets. Log: `/tmp/meowy-call-order-focused.log`.
-All ten compiler checks pass: 1597 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-call-order-gate.log`. Post-documentation link checks also pass:
-1208 local links in 110 Markdown files. List-index receiver/position links are next;
-remaining operand coverage, effect summaries, propagation and proof outcomes stay
-incomplete.
+Baseline: direct-call commits `fdeb312`, `5555325` passed all ten compiler checks:
+1597 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+debug/release. Log: `/tmp/meowy-call-order-gate.log`.
+
+`list_receiver_point` now exposes the existing checked root; its value-only wrapper
+and implicit shared-list dereference remain unchanged. Both focused groups and
+all 1599 library tests pass; formatting also passes. Logs:
+`/tmp/meowy-list-receiver-focused.log`, `/tmp/meowy-list-receiver-lib.log`.
+Index graph metadata follows; the full compiler gate will cover both slices.
 
 ### Proof dependency implementation slices
 

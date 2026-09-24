@@ -382,7 +382,14 @@ impl Checker {
     }
 
     pub(crate) fn list_receiver(&mut self, value: &ast::Expr) -> Result<hir::Expr> {
-        let mut value = self.expr(value, None)?;
+        self.list_receiver_point(value).map(|(_, value)| value)
+    }
+
+    pub(crate) fn list_receiver_point(
+        &mut self,
+        value: &ast::Expr,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        let (point, mut value) = self.expr_point(value, None)?;
         if let Type::Reference(ty) = &value.ty
             && matches!(ty.as_ref(), Type::List { .. })
         {
@@ -392,7 +399,7 @@ impl Checker {
                 kind: hir::ExprKind::Deref(Box::new(value)),
             };
         }
-        Ok(value)
+        Ok((point, value))
     }
 
     pub(crate) fn list_index(
