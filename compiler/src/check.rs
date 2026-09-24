@@ -193,7 +193,7 @@ pub(crate) struct Checker {
     pub(crate) operations: BTreeMap<hir::PointId, dependencies::Operation>,
     pub(crate) operation_edges: usize,
     pub(crate) emissions: BTreeMap<hir::PointId, dependencies::Emission>,
-    pub(crate) emission_sources: BTreeMap<hir::EmitId, hir::PointId>,
+    pub(crate) emission_sources: BTreeMap<hir::EmitId, (hir::PointId, usize)>,
     pub(crate) emission_edges: usize,
     pub(crate) statements: usize,
     pub(crate) statement: Vec<(hir::StatementId, bool)>,

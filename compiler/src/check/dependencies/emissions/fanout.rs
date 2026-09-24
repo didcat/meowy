@@ -30,7 +30,7 @@ pub(crate) fn emission_fanout_preserves_original_roots_projections_and_component
     assert_eq!(emission.targets[2].field.as_deref(), Some("b"));
     assert_eq!(emission.edges.len(), 5);
     for (index, target) in emission.targets.iter().enumerate() {
-        assert_eq!(checker.emission_sources[&target.id], point);
+        assert_eq!(checker.emission_sources[&target.id], (point, index));
         assert_eq!(emission.edges[index + 1].to, Port::Emission(target.id));
     }
     assert_eq!(emission.edges.last().unwrap().to, Port::Normal(point));
@@ -159,7 +159,7 @@ pub(crate) fn emission_fanout_publishes_all_targets_atomically_and_rejects_dupli
         emission
             .targets
             .iter()
-            .all(|target| checker.emission_sources[&target.id] == point)
+            .all(|target| checker.emission_sources[&target.id].0 == point)
     );
     let mut duplicate = stmts.clone();
     duplicate.push(stmts[1].clone());

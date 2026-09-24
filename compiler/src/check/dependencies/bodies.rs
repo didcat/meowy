@@ -55,6 +55,8 @@ pub(crate) struct Walk<'a> {
     pub(crate) points: &'a [super::Point],
     pub(crate) exits: &'a std::collections::BTreeMap<hir::PointId, super::ScopeExit>,
     pub(crate) restarts: &'a std::collections::BTreeMap<hir::RestartId, super::RestartInput>,
+    pub(crate) emissions: &'a std::collections::BTreeMap<hir::PointId, super::Emission>,
+    pub(crate) emit_sources: &'a std::collections::BTreeMap<hir::EmitId, (hir::PointId, usize)>,
     pub(crate) owner: usize,
     pub(crate) block: hir::BlockId,
     pub(crate) link: Option<Link>,
@@ -194,6 +196,38 @@ impl<'a> Walk<'a> {
         Ok(())
     }
 
+    pub(crate) fn emission(
+        &mut self,
+        id: hir::EmitId,
+        target: hir::BlockId,
+        field: Option<&str>,
+        span: Span,
+    ) -> Result<()> {
+        if !self.flow.spend(
+            self.emit_sources.len().checked_ilog2().unwrap_or(0) as usize
+                + self.emissions.len().checked_ilog2().unwrap_or(0) as usize
+                + field.map_or(0, str::len)
+                + 2,
+        ) {
+            return Err(Self::budget(span));
+        }
+        self.fact(Fact::Emit(id), span)?;
+        let Some((point, index)) = self.emit_sources.get(&id).copied() else {
+            return Ok(());
+        };
+        let invalid = || Diagnostic::unsupported("proof emission source identity mismatch", span);
+        let emission = self.emissions.get(&point).ok_or_else(invalid)?;
+        let slot = emission.targets.get(index).ok_or_else(invalid)?;
+        if emission.owner != self.owner
+            || slot.id != id
+            || slot.block != target
+            || slot.field.as_deref() != field
+        {
+            return Err(invalid());
+        }
+        self.source(Some(point), super::PointKind::Stmt, span)
+    }
+
     pub(crate) fn run(&mut self) -> Result<()> {
         use hir::{ExprKind as E, Stmt as S};
         while let Some((node, link)) = self.pending.pop() {
@@ -291,8 +325,13 @@ impl<'a> Walk<'a> {
                         self.role(Role::Address);
                         self.push([Node::Expr(target)])?;
                     }
-                    S::Emit { id, value, .. } => {
-                        self.fact(Fact::Emit(*id), value.span)?;
+                    S::Emit {
+                        id,
+                        target,
+                        field,
+                        value,
+                    } => {
+                        self.emission(*id, *target, field.as_deref(), value.span)?;
                         self.push([Node::Expr(value)])?;
                     }
                     S::If {
@@ -440,6 +479,8 @@ impl Checker {
             points: &self.points,
             exits: &self.scope_exits,
             restarts: &self.restart_inputs,
+            emissions: &self.emissions,
+            emit_sources: &self.emission_sources,
             owner: self.owner,
             block: block.id,
             link: None,
@@ -487,3 +528,6 @@ mod sources;
 
 #[cfg(test)]
 mod scope_exits;
+
+#[cfg(test)]
+mod emissions;

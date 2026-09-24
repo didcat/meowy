@@ -90,12 +90,14 @@ pub(crate) fn logic_sources_keep_mixed_nested_matchers_and_function_bodies_exact
     crate::compile(source).unwrap();
     let (checker, _) = check(source);
     let mut count = 0;
+    let mut emitted = 0;
     for (id, body) in &checker.bodies {
         for ((fact, _), source) in body.facts.iter().zip(&body.sources) {
             let kind = match fact {
                 Fact::And => super::super::PointKind::And,
                 Fact::Or => super::super::PointKind::Or,
                 Fact::Branch => super::super::PointKind::Match,
+                Fact::Emit(_) => super::super::PointKind::Stmt,
                 _ => {
                     assert!(source.is_none());
                     continue;
@@ -106,10 +108,15 @@ pub(crate) fn logic_sources_keep_mixed_nested_matchers_and_function_bodies_exact
             assert_eq!(point.owner, body.owner);
             assert_eq!(point.block, Some(*id));
             assert!(point.complete);
-            count += 1;
+            if matches!(fact, Fact::Emit(_)) {
+                emitted += 1;
+            } else {
+                count += 1;
+            }
         }
     }
     assert_eq!(count, 5);
+    assert_eq!(emitted, 1);
 }
 
 #[test]

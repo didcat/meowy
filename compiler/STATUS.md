@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current emission-operation slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Expose exact roots from contextual/composed expression checking, preserving
    existing value-only callers, partial record shapes, diagnostics and accounting.
 2. Record direct primary/named/outer emission operations using original input roots,
@@ -134,7 +134,15 @@ validated staging cells and ordered EmitId chains. Direct-emission prerequisite:
 `6bb0f49`. All four fanout groups and all 1571 library tests pass, including
 projection validation, reference sources and atomic budget/duplicate rejection;
 `/tmp/meowy-emission-fanout-lib.log`. No failures remain. Body-fact EmitId source
-links and the full compiler gate are next. Store/address transfers, remaining operand coverage,
+links now use exact point/target indices, avoiding repeated fanout scans. Body
+facts validate owner, point, EmitId and slot while synthetic sources stay unknown.
+Fanout prerequisite: `c6fd7e5`. All three emitted-fact groups pass for exact
+fanout/direct links, function isolation, malformed indices/targets and unknown
+synthetic sources. The older mixed-source fixture now verifies its emission source
+as well as all five branch sources. All ten compiler checks pass, including 1574
+library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-emission-operations-gate.log`. No failures remain. Store/address transfers, remaining operand coverage,
 propagation and proof evaluation remain incomplete.
 
 ### Proof dependency implementation slices
@@ -1463,12 +1471,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Matcher statement roots, ordinary binding operations and direct assignment
-  operations passed all ten checks in `python3 -B tools/verify.py --compiler`:
-  1561 library/910 native tests, formatting, Clippy, build and conformance
-  (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-storage-operations-gate.log`. Emission/store/address transfers,
-  remaining operand coverage and restart dependency propagation stay pending.
+- Composed roots, direct/fanout emission operations and indexed EmitId source links
+  passed all ten checks in `python3 -B tools/verify.py --compiler`: 1574 library/910
+  native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
+  0 failed in debug/release). Log: `/tmp/meowy-emission-operations-gate.log`.
+  Store/address transfers, remaining operand coverage and dependency propagation
+  stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1812,11 +1820,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    between value-normal and statement-normal ports, preserving source roots,
    canonical storage IDs, owner and control metadata. Unknown module producers
    remain explicit; annotations/required-use links are still separate.
-   Next model emission operations in `dependencies/operations.rs` and
-   `statements.rs::emit`, preserving EmitId, named/outer target slots and source
-   origins before composition. Emission initializes a component; it is not an exit.
-   Then cover field/index/indirect store address and value ordering without
-   bypassing reservation/loan validation. Preserve owners and required roots. Keep result availability
+   Composed roots (`e4374cc`) now precede emission staging. Direct emissions
+   (`6bb0f49`) and record fanout (`c6fd7e5`) retain exact EmitId, slots, aliases and
+   primary/field projections. Body facts use bounded point/target indices to link
+   those operations without span matching. Emission initializes components; it
+   does not exit its block. Never/static outputs retain their existing boundaries.
+   Next model field/indexed store operations in `mutation.rs::write_path`, capturing
+   exact address/index/RHS roots before temporary staging and preserving WriteStep
+   paths, source order and reservations. Follow with indirect scalar stores in
+   statement checking; distinguish reference cells from their pointee targets and
+   keep incomplete origins explicit. Preserve loan checks, owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.

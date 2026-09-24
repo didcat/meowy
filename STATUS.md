@@ -524,7 +524,11 @@ groups and all 1567 library tests pass; `/tmp/meowy-direct-emissions-lib.log`.
 Record fanout now retains ordered primary/field projections from the original
 input, with validated staging cells and atomic target publication. All four fanout
 groups and all 1571 library tests pass; `/tmp/meowy-emission-fanout-lib.log`.
-Body-fact EmitId links are next; propagation and proof outcomes remain gated.
+Body facts now use exact point/target indices to validate EmitId, owner and slot
+identity, preserving unknown synthetic sources. All ten compiler checks pass,
+including 1574 library/910 native tests; `/tmp/meowy-emission-operations-gate.log`.
+Composed roots: `e4374cc`; direct emissions: `6bb0f49`; fanout: `c6fd7e5`.
+Store/address transfers, propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -654,10 +658,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Matcher roots, binding operations and direct writes passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1561 library/910 native tests.
+- Composed roots, emission operations and exact EmitId source links passed all ten
+  checks in `python3 -B tools/verify.py --compiler`: 1574 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-storage-operations-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-emission-operations-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -724,8 +728,10 @@ execution was not part of this documentation edit.
    target ports and checked sources. Core block ports, plain block consumers and
    expression statements now connect; restart reentry is marked separately.
    Matcher roots, ordinary bindings and direct writes now retain explicit operation
-   links. Next add emissions and remaining store/address transfers, preserving
-   slot identities and operand order. Result availability is not value provenance.
+   links. Direct and composed emissions now retain slot identities, source roots
+   and projections. Next add field/indexed and indirect store/address transfers,
+   preserving operand order, reservations and incomplete-origin boundaries.
+   Result availability is not complete value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.
    Normal ports do not imply reachability. Preserve independent matcher arms,

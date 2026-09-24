@@ -150,11 +150,11 @@ impl Checker {
             target.alias = Some(id);
             target.storage = Some(alias.root);
         }
-        for target in &targets {
+        for (index, target) in targets.iter().enumerate() {
             if self
                 .emission_sources
                 .get(&target.id)
-                .is_some_and(|source| *source != id)
+                .is_some_and(|source| *source != (id, index))
             {
                 return Err(invalid());
             }
@@ -185,8 +185,8 @@ impl Checker {
         if !self.edge_room(emission.edges.len()) {
             return Err(budget());
         }
-        for target in &emission.targets {
-            self.emission_sources.insert(target.id, id);
+        for (index, target) in emission.targets.iter().enumerate() {
+            self.emission_sources.insert(target.id, (id, index));
         }
         self.emission_edges += emission.edges.len();
         self.emissions.insert(id, emission);
@@ -218,7 +218,7 @@ mod tests {
         assert_eq!(checker.emissions.len(), 2);
         for (id, emission) in &checker.emissions {
             let target = &emission.targets[0];
-            assert_eq!(checker.emission_sources[&target.id], *id);
+            assert_eq!(checker.emission_sources[&target.id], (*id, 0));
             assert_eq!(checker.points[emission.input].parent, Some(*id));
             assert_eq!(emission.edges[2].to, Port::Normal(*id));
             if target.field.is_some() {
