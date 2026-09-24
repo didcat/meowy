@@ -36,7 +36,7 @@ pub(crate) fn union_lists_keep_source_slots_across_candidate_selection() {
 }
 
 #[test]
-pub(crate) fn custom_effect_elements_remain_explicit_sequence_gaps_without_replayed_effects() {
+pub(crate) fn custom_effect_elements_retain_exact_roots_without_replayed_effects() {
     let source = "d:@\"debug\";xs<uint8[3]><int32[3]>:[1,{x:300;d.print(1);->x},2]";
     crate::compile(source).unwrap();
     let checker = check(source);
@@ -46,9 +46,17 @@ pub(crate) fn custom_effect_elements_remain_explicit_sequence_gaps_without_repla
         .find(|(key, seq)| matches!(key, SequenceSource::Expr(_)) && seq.items.len() == 3)
         .unwrap();
     assert!(sequence.items[0].is_some());
-    assert!(sequence.items[1].is_none());
+    assert!(sequence.items[1].is_some());
     assert!(sequence.items[2].is_some());
-    assert!(sequence.edges.is_empty());
+    assert_eq!(sequence.edges.len(), 2);
+    let element = sequence.items[1].unwrap();
+    let span = checker.points[element].span;
+    assert_eq!(&source[span.start..span.end], "{x:300;d.print(1);->x}");
+    assert!(
+        !checker
+            .endpoints
+            .contains_key(&SequenceSource::Expr(element))
+    );
     let SequenceSource::Expr(id) = *key else {
         panic!()
     };
@@ -73,17 +81,18 @@ pub(crate) fn custom_effect_elements_remain_explicit_sequence_gaps_without_repla
         .iter()
         .find(|(key, _)| matches!(key, SequenceSource::Expr(_)))
         .unwrap();
-    assert_eq!(sequence.items, [None]);
+    assert_eq!(sequence.items.len(), 1);
+    let element = sequence.items[0].unwrap();
     let SequenceSource::Expr(id) = *key else {
         panic!()
     };
     assert_eq!(
         checker.endpoints[key],
-        [Edge::new(
-            Port::Operation(id),
-            Port::Normal(id),
-            Route::Next
-        )]
+        [
+            Edge::new(Port::Entry(id), Port::Entry(element), Route::Next),
+            Edge::new(Port::Normal(element), Port::Operation(id), Route::Next),
+            Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+        ]
     );
 }
 

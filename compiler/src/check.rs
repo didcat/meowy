@@ -19,7 +19,7 @@ mod statements;
 mod temporaries;
 mod type_values;
 
-pub(crate) use dependencies::IndexAccess;
+pub(crate) use dependencies::{IndexAccess, PointKind};
 
 use std::collections::{BTreeMap, BTreeSet};
 

@@ -127,7 +127,13 @@ Recognition and body checking are now separate helpers with the original scan
 budget, ungrouped diagnostic spans and outer result span preserved. New tests
 cover grouped recognition, rejected forms and budget failure without points or
 effects. Formatting and all 1613 library tests pass, including all three new
-recognition groups. Log: `/tmp/meowy-effect-form-lib.log`. Root capture is next.
+recognition groups. Log: `/tmp/meowy-effect-form-lib.log` (`312eda3`).
+Recognized elements now allocate exact outer roots before body checking; union
+sequences retain them. Failed checks restore active point, lexical scope/frame
+depths, owner and reach. Formatting and all 1615 library tests pass, including
+grouped identity, once-only bindings and nested-function error restoration.
+Log: `/tmp/meowy-effect-roots-lib.log`. Body result/order links remain absent
+until the next slice.
 
 ### Proof dependency implementation slices
 

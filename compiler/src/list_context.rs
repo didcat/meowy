@@ -88,11 +88,12 @@ impl Checker {
                 .collect();
             let common = elements.iter().all(|ty| *ty == elements[0]);
             let item = if !common
-                && let Some(item) = self.list_effect_block(
+                && let Some((point, item)) = self.list_effect_block(
                     value,
                     &mut choices,
                     !deferred.is_empty() || index + 1 < values.len(),
                 )? {
+                points[index] = Some(point);
                 item
             } else if common {
                 let (point, value) = self.expr_point(value, Some(elements[0]))?;

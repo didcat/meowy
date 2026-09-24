@@ -1,5 +1,5 @@
 use crate::ast::{self, ExprKind, StmtKind};
-use crate::check::{Checker, Result};
+use crate::check::{Checker, PointKind, Result};
 use crate::diagnostic::Diagnostic;
 use crate::hir::{self, Type};
 
@@ -11,12 +11,27 @@ impl Checker {
         value: &ast::Expr,
         choices: &mut Vec<&Type>,
         unresolved: bool,
-    ) -> Result<Option<hir::Expr>> {
+    ) -> Result<Option<(hir::PointId, hir::Expr)>> {
         let Some((form, start)) = self.list_effect_form(value)? else {
             return Ok(None);
         };
-        self.list_effect_body(form, start, choices, unresolved, value.span)
-            .map(Some)
+        self.with_continuation(value.span, "list element", |checker| {
+            checker.with_point_id(PointKind::Expr, value.span, |checker| {
+                let scopes = checker.scopes.len();
+                let frames = checker.frames.len();
+                let owner = checker.owner;
+                let reach = checker.reach;
+                let result = checker.list_effect_body(form, start, choices, unresolved, value.span);
+                if result.is_err() {
+                    checker.scopes.truncate(scopes);
+                    checker.frames.truncate(frames);
+                    checker.owner = owner;
+                    checker.reach = reach;
+                }
+                result
+            })
+        })
+        .map(Some)
     }
 
     pub(crate) fn list_effect_form<'a>(
