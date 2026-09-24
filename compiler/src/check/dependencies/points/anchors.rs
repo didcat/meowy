@@ -378,3 +378,54 @@ pub(crate) fn list_receiver_roots_preserve_never_and_ordinary_errors() {
     assert_eq!(checker.list_receiver_point(&expr).unwrap_err().code, "E201");
     assert!(checker.point.is_none());
 }
+
+#[test]
+pub(crate) fn element_parent_roots_distinguish_places_views_and_statement_temporaries() {
+    let mut checker = Checker::new();
+    super::super::tests::statements(&mut checker, "xs:[1];view:&xs");
+    for (source, kind) in [("((xs))", 0), ("view", 1), ("[1]", 2)] {
+        let stmt = crate::parser::parse(source).unwrap().stmts.remove(0);
+        let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+            panic!()
+        };
+        checker.statement.push((17, false));
+        let (point, value) = checker.element_parent(&expr, expr.span).unwrap();
+        assert_eq!(checker.points[point].span, expr.span);
+        assert!(checker.points[point].complete);
+        assert!(matches!(value.ty, hir::Type::Reference(_)));
+        match (kind, value.kind) {
+            (0, hir::ExprKind::Borrow(_)) | (1, hir::ExprKind::Local(_)) => {}
+            (2, hir::ExprKind::TemporaryBorrow { id, statement, .. }) => {
+                assert_eq!(statement, 17);
+                assert_eq!(checker.proofs.temporaries[&id], 17);
+            }
+            _ => panic!("wrong parent representation"),
+        }
+        assert_eq!(checker.statement.pop().unwrap().1, kind == 2);
+        assert!(checker.point.is_none());
+    }
+    crate::compile("rows:[{->xs:[1]}];n:*(&(rows[1].xs[1]))").unwrap();
+}
+
+#[test]
+pub(crate) fn borrowed_roots_keep_distinct_ids_and_restore_parents_after_errors() {
+    let mut checker = Checker::new();
+    super::super::tests::statements(&mut checker, "xs:[1]");
+    let stmt = crate::parser::parse("((xs))").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    let (a, _) = checker.borrowed_point(&expr, expr.span).unwrap();
+    let (b, _) = checker.borrowed_point(&expr, expr.span).unwrap();
+    assert_ne!(a, b);
+    assert_eq!(checker.points[a].span, checker.points[b].span);
+    let stmt = crate::parser::parse("missing").unwrap().stmts.remove(0);
+    let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
+        panic!()
+    };
+    assert_eq!(
+        checker.borrowed_point(&expr, expr.span).unwrap_err().code,
+        "E201"
+    );
+    assert!(checker.point.is_none());
+}

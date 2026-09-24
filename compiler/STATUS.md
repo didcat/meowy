@@ -99,42 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current collection-method slices
+### Current shared element-borrow slices
 
 Dependency-ordered commit plan:
-1. Retain exact receiver roots for list/string `size` and explicit stopped-receiver
-   boundaries. Preserve method resolution, argument/type errors and shared-list
-   dereference; validate focused identity/order/budget tests.
-2. Extend method metadata to `add`, retaining the item root, captured list/length,
-   capacity-success and result stages. Preserve full-list diagnostic order and
-   nonreturning operands; run the full compiler gate and update the handoff.
+1. Expose exact borrowed-parent roots and extract element-parent checking without
+   changing place/view/temporary selection. Preserve nested projected roots and
+   temporary statement ownership; validate the prerequisite independently.
+2. Retain parent/index roots, parent representation and reborrow identities with
+   address/length capture before index evaluation and bounds-success/result edges.
+   Keep nonreturning operands explicit; validate ordinary lifetime/loan errors,
+   nested paths and shared budgets, then run the full compiler gate.
 
-Investigation: `list_method` checks the receiver before method arguments and skips
-those arguments for `never` receivers. Lowering copies a list and captures length
-before the `add` item, then checks capacity. `add` returns a new list value; it does
-not mutate the receiver. String `size` extracts the existing byte length. Existing
-method/borrow rules and supported receiver types remain unchanged.
+Investigation: shared element borrowing obtains a parent reference, loads its
+length, evaluates the index and returns a pointer only after bounds success.
+Unlike ordinary list indexing, it does not copy the source list. Parent checking
+selects ordinary places, existing views or statement-owned temporaries. Existing
+loan/lifetime validation remains authoritative; metadata must not treat a view
+cell as its pointee or extend temporary ownership. Exclusive paths stay separate.
 
-Baseline: `312eda3`, `00cc9fc`, `5e4bed6` passed all ten compiler checks:
-1617 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-debug/release. Log: `/tmp/meowy-custom-elements-gate.log`.
+Baseline: `1fd816d`, `7d7fdc8` passed all ten compiler checks: 1624 library/910 native
+tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
+Log: `/tmp/meowy-method-order-gate.log`.
 
-Method checking now retains the receiver root; size operations distinguish list
-length from string byte length, and stopped receivers have no result/argument
-edge. The unused value-only receiver wrapper was removed. Identity and shared
-edge budgets guard publication. Formatting and all 1620 library tests pass,
-including all three size/identity groups. Log: `/tmp/meowy-size-methods-lib.log`.
-Size slice: `1fd816d`. `add` now retains the checked item root, static capacity and
-known/unknown length. Snapshot edges precede item evaluation; a capacity-success
-edge reaches construction only after normal item completion. Nonreturning items
-have no result edge. All seven focused method groups pass, including owned/shared
-snapshots, full-list error order, nonreturning items, owners/control and atomic
-identity/budget failures. Log: `/tmp/meowy-add-methods-focused.log`.
-All ten compiler checks pass: 1624 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-method-order-gate.log`. Post-documentation link checks pass:
-1208 local links in 110 Markdown files. Shared element-borrow roots/order are next;
-remaining graph coverage, propagation and proof outcomes remain incomplete.
+`borrowed_point` and `element_parent` now expose exact parent roots without replay.
+Nested indexed roots beneath projected borrows also retain distinct identities.
+Place/view/temporary selection and HIR remain unchanged; tests cover statement
+ownership, grouping and error restoration. Formatting and all 1626 library tests
+pass. Log: `/tmp/meowy-element-parents-lib.log`. Graph integration is next.
 
 ### Proof dependency implementation slices
 

@@ -513,12 +513,11 @@ impl Checker {
         Ok((point, index))
     }
 
-    pub(crate) fn element_borrow(
+    pub(crate) fn element_parent(
         &mut self,
         value: &ast::Expr,
-        index: &ast::Expr,
         span: Span,
-    ) -> Result<hir::Expr> {
+    ) -> Result<(hir::PointId, hir::Expr)> {
         if !self.flow.spend(
             value
                 .span
@@ -540,16 +539,26 @@ impl Checker {
             form.kind,
             ExprKind::Name(_) | ExprKind::Field { .. } | ExprKind::Index { .. }
         ) || matches!(&form.kind, ExprKind::Unary { op, .. } if op == "*");
-        let value = if place && !matches!(hint, Some(Type::Reference(_) | Type::Never)) {
-            self.borrowed(value, value.span)?
+        let (point, value) = if place && !matches!(hint, Some(Type::Reference(_) | Type::Never)) {
+            self.borrowed_point(value, value.span)?
         } else {
-            let value = self.expr(value, None)?;
+            let (point, value) = self.expr_point(value, None)?;
             if matches!(value.ty, Type::Reference(_) | Type::Never) {
-                value
+                (point, value)
             } else {
-                self.temporary_borrow(value, span)?
+                (point, self.temporary_borrow(value, span)?)
             }
         };
+        Ok((point, value))
+    }
+
+    pub(crate) fn element_borrow(
+        &mut self,
+        value: &ast::Expr,
+        index: &ast::Expr,
+        span: Span,
+    ) -> Result<hir::Expr> {
+        let (_, value) = self.element_parent(value, span)?;
         if value.ty == Type::Never {
             return Ok(value);
         }

@@ -247,6 +247,18 @@ impl Checker {
         }
     }
 
+    pub(crate) fn borrowed_point(
+        &mut self,
+        expr: &ast::Expr,
+        span: Span,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        self.with_continuation(expr.span, "borrowed expression", |checker| {
+            checker.with_point_id(super::PointKind::Expr, expr.span, |checker| {
+                checker.borrowed(expr, span)
+            })
+        })
+    }
+
     pub(crate) fn borrowed(&mut self, expr: &ast::Expr, span: Span) -> Result<hir::Expr> {
         if !self.imports.is_empty() {
             let mut root = expr;
@@ -294,7 +306,7 @@ impl Checker {
         let mut names = Vec::new();
         let root = Self::address_root(expr, &mut names);
         let mut value = if matches!(root.kind, ExprKind::Index { .. }) {
-            self.borrowed(root, root.span)?
+            self.borrowed_point(root, root.span)?.1
         } else if let ExprKind::Unary { op, value } = &root.kind
             && op == "*"
         {
