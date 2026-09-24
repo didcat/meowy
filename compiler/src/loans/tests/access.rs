@@ -307,7 +307,7 @@ pub(crate) fn restart_transfers_do_not_synthesize_reads_or_acquisitions() {
 #[test]
 pub(crate) fn missing_pointee_evidence_is_rejected_only_on_reachable_paths() {
     inspect(
-        "p<&int32><null>:null;|p<&int32>|v:*(p<&int32>)",
+        "p<&int32><null>:null;|p<&int32>|v:*(p~<&int32>)",
         |graph, reach| {
             let id = graph
                 .nodes

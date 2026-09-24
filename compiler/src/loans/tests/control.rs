@@ -89,10 +89,10 @@ pub(crate) fn component_origins_keep_branch_and_iteration_liveness() {
 #[test]
 pub(crate) fn union_activity_assumptions_are_reestablished_after_restart() {
     accepts(
-        "a:=0;i:=0;'loop {r<&int32><null>:{|i<2|->&a};|r<&int32>|{x:*(r<&int32>)};a=a+1;i=i+1;|i<3|'loop.restart()}",
+        "a:=0;i:=0;'loop {r<&int32><null>:{|i<2|->&a};|r<&int32>|{x:*(r~<&int32>)};a=a+1;i=i+1;|i<3|'loop.restart()}",
     );
     rejects(
-        "a:=1;r<&int32><null>:&a;first:=true;i:=0;'loop {|!first&&r<&int32>|{x:*(r<&int32>)};|first|a=2;first=false;i=i+1;|i<2|'loop.restart()}",
+        "a:=1;r<&int32><null>:&a;first:=true;i:=0;'loop {|!first&&r<&int32>|{x:*(r~<&int32>)};|first|a=2;first=false;i=i+1;|i<2|'loop.restart()}",
         "E302",
     );
 }

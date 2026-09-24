@@ -262,7 +262,7 @@ pub(crate) fn restart_bodies_keep_static_sites_opaque_and_retain_expired_sources
 #[test]
 pub(crate) fn restart_region_gaps_are_explicit_without_promoting_bounds_to_origins() {
     inspect(
-        "<H>:<{view<&int32><null>}>;make<H>:(p<&int32>,text<&string>){->view:p};a:1;text:=\"old\";full:make(&a,&text);empty<H>:{};p:=&full;copy:*p;i:=0;'loop{p=&empty;i=i+1;|i<2|'loop.restart()};|copy.view<&int32>|v:*(copy.view<&int32>)",
+        "<H>:<{view<&int32><null>}>;make<H>:(p<&int32>,text<&string>){->view:p};a:1;text:=\"old\";full:make(&a,&text);empty<H>:{};p:=&full;copy:*p;i:=0;'loop{p=&empty;i=i+1;|i<2|'loop.restart()};|copy.view<&int32>|v:*(copy.view~<&int32>)",
         |graph, _| {
             let access = graph
                 .nodes

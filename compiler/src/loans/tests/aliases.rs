@@ -24,7 +24,7 @@ pub(crate) fn immutable_alias_activity_keeps_null_exclusion_and_reference_copy_o
         "owner:=1;value:{->tag<int32><null>:null;->view<&int32><null>:{|tag<int32>|->&owner}};owner=2",
     );
     accepts(
-        "r:{->tag<int32><null>:null};a:=1;p:{|r.tag<int32>|->view:&a};a=2;|p.view<&int32>|{v:*(p.view<&int32>)}",
+        "r:{->tag<int32><null>:null};a:=1;p:{|r.tag<int32>|->view:&a};a=2;|p.view<&int32>|{v:*(p.view~<&int32>)}",
     );
     accepts("a:=1;r:{->n:1;p:&n;v:*p;->view:&a};v:*(r.view);a=2");
     rejects("a:=1;r:{->n:1;p:&n;v:*p;->view:&a};a=2;v:*(r.view)", "E302");
@@ -53,8 +53,8 @@ pub(crate) fn emitted_slot_borrows_share_canonical_writes_and_restart_liveness()
 #[test]
 pub(crate) fn alias_mutations_publish_unknown_activity_without_losing_sibling_origins() {
     for source in [
-        "r:{->tag<int32><null>:=null;tag=1};a:=1;p:{|r.tag<int32>|->view:&a};a=2;|p.view<&int32>|{v:*(p.view<&int32>)}",
-        "r:{->row:={->tag<int32><null>:=null};row.tag=1};a:=1;p:{|r.row.tag<int32>|->view:&a};a=2;|p.view<&int32>|{v:*(p.view<&int32>)}",
+        "r:{->tag<int32><null>:=null;tag=1};a:=1;p:{|r.tag<int32>|->view:&a};a=2;|p.view<&int32>|{v:*(p.view~<&int32>)}",
+        "r:{->row:={->tag<int32><null>:=null};row.tag=1};a:=1;p:{|r.row.tag<int32>|->view:&a};a=2;|p.view<&int32>|{v:*(p.view~<&int32>)}",
         "a:=1;r:{->view:&a;->tag<int32><null>:=null;tag=1};a=2;v:*(r.view)",
     ] {
         rejects(source, "E302");

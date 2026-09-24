@@ -101,7 +101,7 @@ pub(crate) fn discarded_and_wrapped_value_takes_preserve_consumption() {
     for source in [
         "a:1;p:&a;p;v:*p",
         "a:1;p:&a;q:(p);v:*p",
-        "a:1;p:&a;q:p<&int32>;v:*p",
+        "a:1;p:&a;q:p~<&int32>;v:*p",
     ] {
         rejects(source, &["p"], "E301");
     }

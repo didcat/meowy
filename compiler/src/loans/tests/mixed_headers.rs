@@ -93,7 +93,7 @@ pub(crate) fn mixed_headers_cannot_hide_missing_definitions_or_explicit_opacity(
 #[test]
 pub(crate) fn mixed_headers_allow_inactive_paths_and_reject_invalid_or_exhausted_proofs() {
     inspect(
-        "<R>:<{n<int32>:=}>;<H>:<{view<&int32><null>}>;x:7;empty<H>:{};full<H>:{->view:&x};h:=empty;first:=true;i:=0;r<R>:'out{'loop{|first|{'out->n:=7;w:&!n;*w=8;first=false};|h.view<&int32>|v:*(h.view<&int32>);h=full;i=i+1;|i<2|'loop.restart()}}",
+        "<R>:<{n<int32>:=}>;<H>:<{view<&int32><null>}>;x:7;empty<H>:{};full<H>:{->view:&x};h:=empty;first:=true;i:=0;r<R>:'out{'loop{|first|{'out->n:=7;w:&!n;*w=8;first=false};|h.view<&int32>|v:*(h.view~<&int32>);h=full;i=i+1;|i<2|'loop.restart()}}",
         |graph, reach| {
             assert!(
                 graph

@@ -3,10 +3,10 @@ use super::{accepts, rejects};
 #[test]
 pub(crate) fn active_restart_headers_allow_initial_and_backedge_absent_paths() {
     accepts(
-        "<C>:<{view<&int32><null>}>;a:1;empty<C>:{};full<C>:{->view:&a};p:=&empty;i:=0;'again{seen:p.view;|seen<&int32>|v:*(seen<&int32>);p=&full;i=i+1;|i<2|'again.restart()};last:p.view;|last<&int32>|w:*(last<&int32>)",
+        "<C>:<{view<&int32><null>}>;a:1;empty<C>:{};full<C>:{->view:&a};p:=&empty;i:=0;'again{seen:p.view;|seen<&int32>|v:*(seen~<&int32>);p=&full;i=i+1;|i<2|'again.restart()};last:p.view;|last<&int32>|w:*(last~<&int32>)",
     );
     accepts(
-        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&full;i:=0;'again{seen:p.view;|seen<&int32>|v:*(seen<&int32>);p=&empty;i=i+1;|i<2|'again.restart()};a=2;last:p.view;|last<null>|done:true",
+        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&full;i:=0;'again{seen:p.view;|seen<&int32>|v:*(seen~<&int32>);p=&empty;i=i+1;|i<2|'again.restart()};a=2;last:p.view;|last<null>|done:true",
     );
     accepts(
         "cell<&int32><null>:null;p:=&cell;i:=0;'again{seen:*p;|seen<null>|done:true;p=&cell;i=i+1;|i<2|'again.restart()}",
@@ -16,18 +16,18 @@ pub(crate) fn active_restart_headers_allow_initial_and_backedge_absent_paths() {
 #[test]
 pub(crate) fn restart_demand_resets_before_predecessor_variant_filtering() {
     rejects(
-        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&empty;i:=0;'again{seen:p.view;|seen<null>|a=2;|seen<&int32>|v:*(seen<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
+        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&empty;i:=0;'again{seen:p.view;|seen<null>|a=2;|seen<&int32>|v:*(seen~<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
         "E302",
     );
     rejects(
-        "cell<&int32><null>:null;a:=1;full<&int32><null>:&a;p:=&cell;i:=0;'again{seen:*p;|seen<null>|a=2;|seen<&int32>|v:*(seen<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
+        "cell<&int32><null>:null;a:=1;full<&int32><null>:&a;p:=&cell;i:=0;'again{seen:*p;|seen<null>|a=2;|seen<&int32>|v:*(seen~<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
         "E302",
     );
     accepts(
         "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&full;i:=0;'again{p=&empty;a=2;seen:p.view;|seen<null>|done:true;i=i+1;|i<2|'again.restart()}",
     );
     accepts(
-        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};p:=&empty;a=2;full<C>:{->view:&a};i:=0;'again{seen:p.view;|seen<&int32>|v:*(seen<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
+        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};p:=&empty;a=2;full<C>:{->view:&a};i:=0;'again{seen:p.view;|seen<&int32>|v:*(seen~<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
     );
 }
 
@@ -40,7 +40,7 @@ pub(crate) fn stored_activity_does_not_add_header_reads_or_retarget_old_copies()
         "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&full;i:=0;'again{a=2;|p.view<null>|seen:true;p=&empty;i=i+1;|i<2|'again.restart()}",
     );
     rejects(
-        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&full;old:p.view;i:=0;'again{p=&empty;i=i+1;|i<2|'again.restart()};a=2;|old<&int32>|v:*(old<&int32>)",
+        "<C>:<{view<&int32><null>}>;a:=1;empty<C>:{};full<C>:{->view:&a};p:=&full;old:p.view;i:=0;'again{p=&empty;i=i+1;|i<2|'again.restart()};a=2;|old<&int32>|v:*(old~<&int32>)",
         "E302",
     );
     rejects(
@@ -52,24 +52,24 @@ pub(crate) fn stored_activity_does_not_add_header_reads_or_retarget_old_copies()
 #[test]
 pub(crate) fn active_header_components_keep_nested_public_call_bounds() {
     rejects(
-        "<C>:<{view<&int32><null>}>;id<&C>:(p<&C>,s<&string>){->p};a:1;full<C>:{->view:&a};s:=\"old\";p:=id(&full,&s);i:=0;'again{copy:*p;s=\"new\";seen:copy.view;|seen<&int32>|v:*(seen<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
+        "<C>:<{view<&int32><null>}>;id<&C>:(p<&C>,s<&string>){->p};a:1;full<C>:{->view:&a};s:=\"old\";p:=id(&full,&s);i:=0;'again{copy:*p;s=\"new\";seen:copy.view;|seen<&int32>|v:*(seen~<&int32>);p=&full;i=i+1;|i<2|'again.restart()}",
         "E302",
     );
     accepts(
         "<C>:<{view<&int32><null>}>;copy<C>:(p<&C>,s<&string>){->*p};empty<C>:{};s:=\"old\";p:=&empty;i:=0;'again{out:copy(p,&s);s=\"new\";|out.view<null>|seen:true;p=&empty;i=i+1;|i<2|'again.restart()}",
     );
     accepts(
-        "<C>:<{view<&int32><null>}>;a:1;full<C>:{->view:&a};empty<C>:{};p:=&empty;i:=0;j:=0;'outer{j=0;'inner{seen:p.view;|seen<&int32>|v:*(seen<&int32>);p=&full;j=j+1;|j<2|'inner.restart()};p=&empty;i=i+1;|i<2|'outer.restart()}",
+        "<C>:<{view<&int32><null>}>;a:1;full<C>:{->view:&a};empty<C>:{};p:=&empty;i:=0;j:=0;'outer{j=0;'inner{seen:p.view;|seen<&int32>|v:*(seen~<&int32>);p=&full;j=j+1;|j<2|'inner.restart()};p=&empty;i=i+1;|i<2|'outer.restart()}",
     );
 }
 
 #[test]
 pub(crate) fn nested_variant_paths_require_their_parent_activity() {
     accepts(
-        "<A>:<{view<&int32><null>;a<boolean>}>;<B>:<{view<&string><null>;b<boolean>}>;<U>:<A><B>;n:1;full<U>:{->view:&n;->a:true};empty<U>:{->view:null;->b:true};p:=&empty;i:=0;'again{row:*p;|row<A>|{seen:row<A>.view;|seen<&int32>|v:*(seen<&int32>)};|row<B>|{seen:row<B>.view;|seen<null>|done:true};p=&full;i=i+1;|i<2|'again.restart()}",
+        "<A>:<{view<&int32><null>;a<boolean>}>;<B>:<{view<&string><null>;b<boolean>}>;<U>:<A><B>;n:1;full<U>:{->view:&n;->a:true};empty<U>:{->view:null;->b:true};p:=&empty;i:=0;'again{row:*p;|row<A>|{seen:row~<A>.view;|seen<&int32>|v:*(seen~<&int32>)};|row<B>|{seen:row~<B>.view;|seen<null>|done:true};p=&full;i=i+1;|i<2|'again.restart()}",
     );
     rejects(
-        "<A>:<{view<&int32><null>;a<boolean>}>;<B>:<{view<&string><null>;b<boolean>}>;<U>:<A><B>;n:=1;full<U>:{->view:&n;->a:true};empty<U>:{->view:null;->b:true};p:=&empty;i:=0;'again{n=2;row:*p;|row<A>|{seen:row<A>.view;|seen<&int32>|v:*(seen<&int32>)};p=&full;i=i+1;|i<2|'again.restart()}",
+        "<A>:<{view<&int32><null>;a<boolean>}>;<B>:<{view<&string><null>;b<boolean>}>;<U>:<A><B>;n:=1;full<U>:{->view:&n;->a:true};empty<U>:{->view:null;->b:true};p:=&empty;i:=0;'again{n=2;row:*p;|row<A>|{seen:row~<A>.view;|seen<&int32>|v:*(seen~<&int32>)};p=&full;i=i+1;|i<2|'again.restart()}",
         "E302",
     );
     accepts(

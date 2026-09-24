@@ -7,7 +7,7 @@ pub(crate) fn transitive_contents_link_loans_before_and_after_outer_borrows() {
         "owner:=1;holder:{->view:&owner};owner=2;outer:&holder;inner:outer.view;v:*inner",
         "owner:=1;holder:{->view:&owner};outer:&holder;owner=2;copy:*outer;v:*(copy.view)",
         "owner:=1;cell:&owner;outer:&cell;copy:outer;owner=2;v:**copy",
-        "owner:=1;cell:&owner;outer<& &int32><null>:&cell;owner=2;|outer<& &int32>|v:*(*(outer<& &int32>))",
+        "owner:=1;cell:&owner;outer<& &int32><null>:&cell;owner=2;|outer<& &int32>|v:*(*(outer~<& &int32>))",
     ] {
         rejects(source, "E302");
     }
