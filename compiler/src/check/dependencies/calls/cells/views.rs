@@ -95,6 +95,14 @@ impl Checker {
                 let Some(field_depth) = self.shared_cell_depth(ty, expr)? else {
                     return Ok(None);
                 };
+                if Self::unmatched_union_terminal(
+                    ty,
+                    field_depth,
+                    result,
+                    result_depth.unwrap_or(1),
+                ) {
+                    return Ok(None);
+                }
                 let Some(result_depth) = result_depth else {
                     continue;
                 };

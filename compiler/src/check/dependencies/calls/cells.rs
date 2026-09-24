@@ -100,6 +100,9 @@ impl Checker {
                 let Some(arg_depth) = self.shared_cell_depth(ty, expr)? else {
                     return Ok(Cells::default());
                 };
+                if Self::unmatched_union_terminal(ty, arg_depth, result, result_depth) {
+                    return Ok(Cells::default());
+                }
                 if arg_depth < result_depth {
                     continue;
                 }
@@ -150,6 +153,27 @@ impl Checker {
         Ok(cells)
     }
 
+    pub(super) fn unmatched_union_terminal(
+        mut input: &Type,
+        input_depth: usize,
+        mut result: &Type,
+        result_depth: usize,
+    ) -> bool {
+        for _ in 0..input_depth {
+            input = input.pointee().unwrap();
+        }
+        if !matches!(input, Type::Union(_))
+            || !input.has_reference()
+            || Self::origin_record(input).is_some()
+        {
+            return false;
+        }
+        for _ in 0..result_depth {
+            result = result.pointee().unwrap();
+        }
+        input != result
+    }
+
     pub(super) fn shared_cell_depth(
         &mut self,
         mut ty: &Type,
@@ -170,6 +194,7 @@ impl Checker {
             }
             if !target.has_borrowed()
                 || (Self::origin_record(target).is_some() && target.has_reference())
+                || self.union_carrier_target(target, expr.span)?
             {
                 return Ok(Some(depth));
             }
@@ -186,3 +211,6 @@ mod chains;
 
 #[cfg(test)]
 mod records;
+
+#[cfg(test)]
+mod unions;

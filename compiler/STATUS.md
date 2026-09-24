@@ -31,8 +31,9 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current returned union carrier series
 
-The public carrier matcher already handles exact/deeper shared arguments and stored
-record fields. Its terminal classifier still excludes heterogeneous record unions.
+The public carrier matcher now recognizes supported record/null-union terminals
+for results with at least two shared layers, including exact/deeper arguments and
+supported record fields.
 Direct returned views (one reference layer) and by-value union results remain separate.
 
 Commit plan:
@@ -45,7 +46,21 @@ Commit plan:
 
 Bounded record/null-union recognition is now shared without changing admission
 or budget charges. All 325 dependency-filtered tests and formatting pass; log:
-`/tmp/meowy-union-terminal-focused.log`. Next: returned-carrier terminal integration.
+`/tmp/meowy-union-terminal-focused.log`; committed as `d85ec70`. Returned carriers
+now recognize record/null-union terminals while retaining the two-layer minimum.
+All 329 focused dependency tests pass for direct/deeper/stored candidates, nested
+calls, unknowns, null/carrier payloads and call-depth/no-replay checks. Adding exact
+terminal limits and live-loan/temporary-expiry regressions now pass. Review found
+that unmatched union terminals could hide nested return candidates: carrier and
+record-view matching preserve their incomplete boundary. All 332 dependency-filtered
+tests pass; log: `/tmp/meowy-returned-union-carriers-focused.log`. Seven groups cover
+direct/deeper/stored/projected candidates, nested calls, nullable payloads, unknowns,
+terminal limits, hidden union inputs and E302/E303 lifetimes. The unmatched-input
+guard is restricted to reference-bearing unions so existing irrelevant reference-
+free inputs remain skipped. Its preservation regression passes with all 332 focused
+dependency tests. All ten compiler checks pass; log:
+`/tmp/meowy-returned-union-carriers-gate.log`. No failures remain. Next: direct
+returned shared record-union views with exact matching and unsupported-input guards.
 Untracked `docs/proposals/` remains untouched; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
@@ -1374,15 +1389,16 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1298
-  library/903 native tests (2201 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1305
+  library/903 native tests (2208 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-chains-gate.log`.
-- All 325 dependency-filtered tests pass. Six chain groups cover named/stored/
-  deeper carriers, retarget snapshots, unknown layers, nullable carrier contents,
-  shared-edge classification, exact type/work limits and E302/E303 rejection.
-  The returned-carrier audit confirms those results remain incomplete. Accepted
-  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-returned-union-carriers-gate.log`.
+- All 332 dependency-filtered tests pass. Seven returned-carrier groups cover
+  direct/deeper/stored/projected candidates, nested calls, null/carrier payloads,
+  all/unknown candidates, hidden union inputs, irrelevant reference-free inputs,
+  type/call/work limits, no replay and E302/E303 rejection. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded.
+  Terminal prerequisite: `d85ec70`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1570,14 +1586,16 @@ explicitly documented. No outstanding failures remain.
    snapshots across valid concrete prefixes and retain unknown alternatives.
    Shared carrier chains now retain those locations through bounded shared-only
    classification and existing cell expansion, including named/stored chains,
-   retargets and prior copies. Returned union carriers remain incomplete:
-   `calls/cells.rs::shared_cell_depth` does not yet recognize union terminals.
-   Next extend that terminal classification for returned carriers of at least two
-   shared layers, then reuse public candidate matching for direct/deeper/stored
-   arguments. Test all/unknown candidates, nested calls, propagated depth/work,
-   no replay and lifetimes before the full gate. Keep direct returned union views
-   and by-value returned unions separate; unselected heterogeneous prefixes remain
-   incomplete.
+   retargets and prior copies. Returned carriers with at least two shared layers
+   now match supported record/null-union terminals through the public contract,
+   including direct/deeper inputs and supported stored/projected record fields.
+   Unknown candidates and untraversed unmatched union inputs remain incomplete.
+   Next admit direct returned shared record-union views in `calls/cells.rs`, retaining
+   exact terminal matching and the unmatched-input guard. Begin with direct/deeper
+   shared inputs and stored views; audit owned-union projections from borrowed
+   records separately before broadening that traversal. Test all/unknown candidates,
+   null, nested calls, budgets, no replay and lifetimes before the full gate.
+   By-value returned unions and unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.
    Keep flags gated until these analyses are complete.

@@ -390,20 +390,24 @@ and dereference reads merge exact snapshots through concrete prefixes. Location
 prerequisite: `758c3fc`. All 319 dependency-filtered tests and all ten compiler checks
 pass. Shared carrier chains ending at record unions now retain locations through
 named/stored layers and conservative retargets. All 325 dependency-filtered tests
-and all ten compiler checks pass. Returned union carrier matching is next; direct
-returned union views, union-interior writes and proof outcomes remain separate.
+and all ten compiler checks pass. Returned carriers with at least two shared layers
+now retain public-contract candidates for record/null-union terminals. Unmatched
+union inputs remain incomplete. Terminal prerequisite: `d85ec70`. All 332 dependency-
+filtered tests and all ten compiler checks pass. Direct returned union views are
+next; by-value returned unions, union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1298
-  library/903 native tests (2201 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1305
+  library/903 native tests (2208 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-chains-gate.log`.
-- All 325 dependency-filtered tests pass. Six chain groups cover named/stored/
-  deeper carriers, retarget snapshots, unknown layers, nullable carrier contents,
-  shared-edge classification, exact type/work limits and E302/E303 rejection.
-  The returned-carrier audit confirms those results remain incomplete. Accepted
-  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-returned-union-carriers-gate.log`.
+- All 332 dependency-filtered tests pass. Seven returned-carrier groups cover
+  direct/deeper/stored/projected candidates, nested calls, null/carrier payloads,
+  all/unknown candidates, hidden union inputs, irrelevant reference-free inputs,
+  type/call/work limits, no replay and E302/E303 rejection. Accepted fixtures pass
+  ordinary compilation/ownership; dependency marks remain seeded.
+  Terminal prerequisite: `d85ec70`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

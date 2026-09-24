@@ -118,13 +118,15 @@ pub(crate) fn union_chain_classification_preserves_shared_modes_and_limits() {
 }
 
 #[test]
-pub(crate) fn returned_union_carriers_remain_incomplete_and_keep_lifetime_checks() {
+pub(crate) fn returned_union_carriers_keep_origins_and_lifetime_checks() {
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;f<& &U>:(p<& &U>){->p};x:=false;wide<U>:{->r:&x};view:&wide;cell:f(&view);copy:**cell;|copy<A>|out:copy.r";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.reference_cells[&id(&checker, "cell")].complete);
-    assert!(!checker.pointees[&(checker.locals.len() - 1)].complete);
+    assert!(checker.reference_cells[&id(&checker, "cell")].complete);
+    let origins = &checker.pointees[&(checker.locals.len() - 1)];
+    assert!(origins.complete);
+    assert_eq!(origins.roots, BTreeSet::from([id(&checker, "x")]));
     let source = "<A>:<{r<&boolean>}>;<B>:<{r<&int32>}>;<U>:<A><B>;f<& &U>:(p<&U>){local:p;->&local};x:=false;wide<U>:{->r:&x};cell:f(&wide)";
     assert_eq!(crate::compile(source).unwrap_err()[0].code, "E303");
 }

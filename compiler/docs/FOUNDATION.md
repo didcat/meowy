@@ -272,9 +272,13 @@ cross unselected heterogeneous shapes remain incomplete. E302/E303 ownership che
 are unchanged. Shared carrier chains ending at record/null unions retain locations
 through bounded cell-layer expansion, including named/stored chains, retargets and
 prior copies. Unknown layers remain incomplete; the new classification does not
-cross exclusive edges. Returned union carriers still need terminal-type support
-in public call matching. Direct returned union views and by-value returned union
-origins remain separate.
+cross exclusive edges. Returned carriers with at least two shared-reference layers
+match record/null-union terminals through the public borrow contract, including
+direct/deeper inputs and supported stored or projected record fields. All compatible
+candidates remain possible; unknown candidates and untraversed unmatched union
+inputs keep results incomplete. Nested-call depth and analysis budgets remain shared,
+and matching does not replay calls or inspect private bodies. Direct returned
+heterogeneous-union views and by-value returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
