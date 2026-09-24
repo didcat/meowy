@@ -9,7 +9,7 @@ debug.print("Reading: {reading} {reading.unit} from {reading.sensor}")
 | reading.checked | debug.print("Within the sensor range")
 
 # The inner ascription already has a proof; the outer matcher tests the full shape. #
-| reading.{ -> self<readings.Checked> } <readings.Checked> | {
+| reading.{ -> $<readings.Checked> } <readings.Checked> | {
     debug.print("Composition retained the fields and primary")
 }
 

@@ -35,9 +35,9 @@ statements that intentionally share a line. Do not pad empty delimiters: `()`, `
 | Calls and lists              | `read(path, limit)`, `[1, 2, 3]`                         |
 | Inline blocks                | `{ -> count : 4 }`, `(value <int32>) { -> value }`       |
 | Matchers and type tests      | `\| ready \| { -> 1 }`, `\| value <int32> \| use(value)` |
-| Field access and dispatch    | `value.field`, `value.(read)`, `value.{ -> self }`       |
+| Field access and dispatch    | `value.field`, `value.(read)`, `value.{ -> $ }`       |
 | Borrows and dereferences     | `&value`, `&!value`, `*pointer`, `value.&field`          |
-| Ascriptions and type queries | `self<MyCoolType>`, `value<>`                            |
+| Ascriptions and type queries | `$<MyCoolType>`, `value<>`                            |
 | Imports and scope access     | `@"debug"`, `'result.leave()`                            |
 | Task operations              | `>> work()`, `<< task`, `%group <T[N]>`, `%group >> work()`, `<< %group` |
 
@@ -49,10 +49,10 @@ Spaces never distinguish an ascription from a type test.
 For example, use this spaced presentation:
 
 ```meowy
-| object.{ -> self<MyCoolType> } <MyCoolType> | {}
+| object.{ -> $<MyCoolType> } <MyCoolType> | {}
 ```
 
-The inner ascription remains attached to `self`; the outer matcher type test is
+The inner ascription remains attached to `$`; the outer matcher type test is
 spaced. The outer test does not establish the proof needed by the inner ascription.
 
 These conventions use the [structured gatostyle baseline](gatostyle.md#start-with-a-policy).

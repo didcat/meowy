@@ -322,7 +322,7 @@
 #             -> level : "hint" #
 #             -> fix : "manual" #
 #             Exact names allowed to shadow. #
-#             -> allow : ["self"] #
+#             -> allow : ["item"] #
 #         } #
 #         G204: lexical nesting below the file, starting at depth one; report only. #
 #         -> scope_depth : { #

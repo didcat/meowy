@@ -131,17 +131,17 @@ pipeline : 20.(increment).(double)
 debug.print(ordinary == pipeline)
 
 value <int32><null> : 42
-| value <int32> | debug.print(value.{ -> self<int32> })
+| value <int32> | debug.print(value.{ -> $<int32> })
 ```
 
 The output is `true` followed by `42`. The matcher's `value<int32>` tests the
-union alternative. Inside its body, `self<int32>` has a proof from that test;
+union alternative. Inside its body, `$<int32>` has a proof from that test;
 it does not parse or convert anything. Dispatch evaluates its receiver once.
 
 For a complete program with no spaces outside strings, use this separate file:
 
 ```meowy
-debug:@"debug";value<int32><null>:42;|value<int32>|debug.print(value.{->self<int32>})
+debug:@"debug";value<int32><null>:42;|value<int32>|debug.print(value.{->$<int32>})
 ```
 
 That file prints `42`. Semicolons preserve the statement boundaries. The

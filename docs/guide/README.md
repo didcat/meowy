@@ -19,8 +19,9 @@ print("Hello, {name}!")
 and `(...)` calls it. Strings interpolate expressions inside braces.
 
 The grammar uses punctuation, with no reserved keywords. `true`, `false`, `null`,
-type names, and the contextual `self` are well-known bindings. Names such as
-`print`, `leave`, and `restart` refer to values; their spelling is not syntax.
+and type names are well-known bindings. `$` denotes the dispatch receiver;
+`self` is an ordinary name. Names such as `print`, `leave`, and `restart` refer to
+values; their spelling is not syntax.
 
 ## Bindings have stable types
 
@@ -86,10 +87,10 @@ also_answer : 21.(twice)
 ```
 
 `value.(function)` passes `value` as the function's first argument. It is useful
-for pipelines. An inline dispatch binds `self`:
+for pipelines. An inline dispatch binds the receiver as `$`:
 
 ```meowy
-answer : 21.{ -> self * 2 }
+answer : 21.{ -> $ * 2 }
 ```
 
 Use `()` even when a function takes no arguments. Selecting a function field

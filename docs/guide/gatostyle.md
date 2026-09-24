@@ -180,10 +180,10 @@ context, including generic calls, parentheses, and call arguments.
 The same distinction composes through a dispatched block:
 
 ```meowy
-| t.{ -> self<MyCoolType> } <MyCoolType> | matched()
+| t.{ -> $<MyCoolType> } <MyCoolType> | matched()
 ```
 
-Inside the block, `self<MyCoolType>` is a proven ascription. Outside it, the
+Inside the block, `$<MyCoolType>` is a proven ascription. Outside it, the
 matcher tests the emitted value's type. The ascription needs a proof before it
 executes; the outer test does not establish that proof retroactively. Gatostyle
 must understand these nested contexts when changing spacing or proposing a
@@ -277,7 +277,7 @@ setting rather than pretending to apply it.
 | `naming` / `G106`               | Value, field, type, and type-parameter spellings                       | `values` and `fields` default `"snake_case"`; `types` defaults `"UpperCamelCase"`; `parameters` defaults `"UPPER_SNAKE_CASE"`; report only |
 | `unused_binding` / `G201`       | Local bindings never subsequently read                                 | `ignore_prefix : "_"`; report only because an initializer or cleanup can have effects                                                      |
 | `discarded_primary` / `G202`    | A non-null primary result discarded by an expression statement         | No extra options; report only; an explicitly named result documents intentional disposal                                                   |
-| `shadowing` / `G203`            | A binding hides another binding in its namespace                       | `allow : ["self"]`, an exact name list; report only                                                                                        |
+| `shadowing` / `G203`            | A binding hides another binding in its namespace                       | `allow : ["item"]`, an exact name list; report only                                                                                        |
 | `scope_depth` / `G204`          | Lexical nesting makes a path hard to follow                            | `max : 4`, a positive integer; report only                                                                                                 |
 | `unchecked_reason` / `G205`     | An unchecked boundary lacks a nearby explanation                       | `require_comment : true`; report only; a comment documents a proof, never supplies it                                                      |
 | `allocation` / `G206`           | Calls may allocate where the project excludes heap use                 | `allow : []`, a list of resolved callee selectors; report only                                                                             |

@@ -49,7 +49,10 @@ but found two still-legacy standalone compiler examples; those now use `$`.
 Dollar-only checking now passes all 1432 library and 906 native tests in both
 profiles; log: `/tmp/meowy-dollar-only-tests.log`. Legacy implicit `self` is E201;
 ordinary outer/inner/parameter names `self` remain valid beside `$`. Documentation
-and editor migration remain before the final compiler/editor gate.
+and editor migration remain before the final compiler/editor gate. Contract docs
+are committed as `280a9e5`; guides/examples pass the default checks. The documented
+composition project still hits existing manifest/module-composition bootstrap gates;
+its standalone receiver examples are covered by native tests instead.
 
 ## Executable proof plan
 
