@@ -41,10 +41,14 @@ Commit plan:
 Investigation: typed leaves need to retain exact variant keys and shared-layer
 counts. Expression-backed and location-backed snapshots can share origin resolution;
 recursive union transitions must carry the existing structural level. Returned
-carrier-cell matching stays separate. Typed leaf extraction preserves admission and
-passes all 425 dependency-filtered tests and formatting; log:
-`/tmp/meowy-union-input-leaves-focused.log`. Location-backed resolution is next.
-User changes remain preserved.
+carrier-cell matching stays separate. Discovery prerequisite `c9c5325` passed all
+425 focused tests before admission. Location-backed resolution and four new groups
+pass all 429 dependency-filtered tests; log:
+`/tmp/meowy-borrowed-union-origins-focused.log`. Distinct/deeper/null/unknown layouts,
+record transitions, inline calls, cumulative bounds, no replay and E302/E303 pass.
+All ten compiler checks pass, including 1402 library/903 native tests; log:
+`/tmp/meowy-borrowed-union-origins-gate.log`. No failures remain.
+User changes remain preserved; proof outcomes stay gated.
 
 ### Proof dependency implementation slices
 
@@ -1372,15 +1376,15 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1398
-  library/903 native tests (2301 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1402
+  library/903 native tests (2305 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-union-record-origins-gate.log`.
-- All 425 dependency-filtered tests pass. The traversal prerequisite and five
-  integration groups cover initial depth, nullable/all/unknown contents, deeper
-  nested views, owned projections, inline calls, no replay, depth/work limits and
-  E302/E303 lifetimes. Borrowed heterogeneous terminals remain incomplete. Accepted
-  fixtures pass ordinary compilation/ownership; dependency marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-borrowed-union-origins-gate.log`.
+- All 429 dependency-filtered tests pass. Four borrowed-union content groups
+  cover distinct/deeper/null/unknown layouts, record transitions, inline calls,
+  cumulative depth, no replay, work limits and E302/E303 lifetimes. Direct borrowed-
+  union origin arguments and returned carrier-cell matching remain separate.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference
@@ -1635,13 +1639,17 @@ explicitly documented. No outstanding failures remain.
    now use location-based record traversal from exact cell snapshots. Structural
    depth includes the enclosing variant path; all/unknown contents and owned-field
    projections preserve known roots. Traversal prerequisite: `1482d20`.
-   Next support borrowed heterogeneous record/null-union terminal contents in
-   `calls/inputs/unions.rs`. Separate typed leaf discovery from expression-backed
-   snapshot lookup so borrowed locations can use `location_shape_source`; carry
-   structural depth/work bounds across record/union transitions without resetting
-   counters. Keep returned carrier-cell matching as a separate slice. Test nested/
-   deeper/all/unknown/null variants, distinct layouts, no replay, bounds and lifetimes,
-   then run the full gate. Do not flatten variant positions into ordinary paths.
+   Borrowed heterogeneous record/null-union terminal contents now resolve typed
+   leaves from location-backed snapshots. Record/union transitions share cumulative
+   structural depth and the work ledger; exact keys keep differing layouts apart.
+   Null/unknown contents retain known roots conservatively. Discovery prerequisite:
+   `c9c5325`.
+   Next route direct borrowed-union origin arguments through `call_origin_view`
+   in `calls/inputs.rs`; that outer reference branch still uses the older concrete-
+   record-only classifier. Reuse the now bounded record/union location traversal,
+   preserve exact matches and unsupported members, and test direct/deeper/stored
+   views, all/unknown/null candidates, limits/no replay and lifetimes. Keep by-value
+   union arguments returning carrier-cell locations as a separate slice.
    Owned projections through unselected heterogeneous prefixes remain separate.
    Broader aggregate returned shapes remain separate. Precise overwrite/branch joins and function result
    dependencies remain separate; old owners/marks are retained conservatively.

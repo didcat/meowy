@@ -317,8 +317,11 @@ also expand stored cell snapshots to reference-free terminal origins, preserving
 unknown layers and compatible record projections. Borrowed concrete-record and
 nullable-record terminal contents also use bounded location-based traversal,
 including stored references and owned-field projections. Structural depth includes
-the enclosing variant path. Borrowed heterogeneous-union terminals, borrowed
-primary values and unsupported members remain incomplete.
+the enclosing variant path. Supported borrowed heterogeneous record/null-union
+terminals resolve exact location-backed snapshots through cumulative record/union
+transitions, preserving null and unknown contents. Borrowed primary values and
+unsupported members remain incomplete; direct borrowed-union origin arguments and
+returned carrier-cell matching retain separate boundaries.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's

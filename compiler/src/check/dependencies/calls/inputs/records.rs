@@ -80,6 +80,30 @@ impl Checker {
                 if !ty.has_borrowed() {
                     continue;
                 }
+                if matches!(ty, Type::Union(_)) && Self::origin_record(ty).is_none() {
+                    let source = match self.call_union_location_origins(
+                        &cells,
+                        arg,
+                        ty,
+                        &path,
+                        result,
+                        depth + 1,
+                    )? {
+                        Input::Unsupported => return Ok(Input::Unsupported),
+                        Input::Absent => continue,
+                        Input::Known(source) => source,
+                    };
+                    found = true;
+                    origins.complete &= source.complete;
+                    origins.roots.extend(source.roots);
+                    if origins.roots.len() > MAX_ROOTS {
+                        return Err(Diagnostic::unsupported(
+                            "proof reference origin capacity exhausted",
+                            arg.span,
+                        ));
+                    }
+                    continue;
+                }
                 let (ty, layers) = match Self::origin_record(ty).unwrap_or(ty) {
                     Type::Record { primary, fields } if !primary.has_borrowed() => {
                         if pending.len() + views.len() + fields.len() > MAX_FIELDS {
@@ -96,7 +120,7 @@ impl Checker {
                         continue;
                     }
                     Type::Reference(_) => {
-                        let Some(view) = self.call_shared_view(ty, arg)? else {
+                        let Some(view) = self.call_origin_view(ty, arg)? else {
                             return Ok(Input::Unsupported);
                         };
                         view

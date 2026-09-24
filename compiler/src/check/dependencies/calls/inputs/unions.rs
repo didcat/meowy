@@ -1,10 +1,15 @@
 use super::{Checker, Diagnostic, Expr, Input, MAX_DEPTH, MAX_FIELDS, Origins, Result, Type};
-use crate::check::dependencies::{records::shapes::ShapeKey, references::MAX_ROOTS};
+use crate::check::dependencies::{Cells, records::shapes::ShapeKey, references::MAX_ROOTS};
 
 pub(super) struct UnionLeaf<'a> {
     pub(super) key: ShapeKey,
     pub(super) view: &'a Type,
     pub(super) layers: usize,
+}
+
+pub(super) enum UnionSource<'a> {
+    Value(usize),
+    Stored(&'a Cells),
 }
 
 impl Checker {
@@ -19,22 +24,81 @@ impl Checker {
         let Some(leaves) = self.union_input_leaves(ty, prefix, result, arg)? else {
             return Ok(Input::Unsupported);
         };
+        self.resolve_union_origins(arg, result, leaves, UnionSource::Value(depth), 0)
+    }
+
+    pub(super) fn call_union_location_origins(
+        &mut self,
+        cells: &Cells,
+        arg: &Expr,
+        ty: &Type,
+        prefix: &[usize],
+        result: &Type,
+        level: usize,
+    ) -> Result<Input> {
+        if level > MAX_DEPTH {
+            return Err(Diagnostic::unsupported(
+                "proof union input depth exhausted",
+                arg.span,
+            ));
+        }
+        let Some(leaves) = self.union_input_leaves(ty, prefix, result, arg)? else {
+            return Ok(Input::Unsupported);
+        };
+        self.resolve_union_origins(arg, result, leaves, UnionSource::Stored(cells), level)
+    }
+
+    pub(super) fn resolve_union_origins(
+        &mut self,
+        arg: &Expr,
+        result: &Type,
+        leaves: Vec<UnionLeaf<'_>>,
+        source: UnionSource<'_>,
+        level: usize,
+    ) -> Result<Input> {
         let mut origins = Origins {
-            complete: true,
+            complete: match source {
+                UnionSource::Value(_) => true,
+                UnionSource::Stored(cells) => cells.complete,
+            },
             ..Origins::default()
         };
         let mut found = false;
         for leaf in leaves {
-            let snapshot = self.record_shape_source_at(arg, &leaf.key, depth + 1)?;
+            let next = level + leaf.key.fields.len() + leaf.key.variants.len();
+            if next > MAX_DEPTH {
+                return Err(Diagnostic::unsupported(
+                    "proof union input depth exhausted",
+                    arg.span,
+                ));
+            }
+            let snapshot = match source {
+                UnionSource::Value(depth) => {
+                    self.record_shape_source_at(arg, &leaf.key, depth + 1)?
+                }
+                UnionSource::Stored(cells) => {
+                    self.location_shape_source(cells, &[], &leaf.key, arg.span)?
+                }
+            };
             let source = if leaf.view.pointee().is_some_and(Type::has_borrowed) {
-                match self.call_record_cell_origins(
-                    snapshot.cells,
-                    arg,
-                    leaf.view,
-                    result,
-                    leaf.layers,
-                    leaf.key.fields.len() + leaf.key.variants.len(),
-                )? {
+                let target = leaf.view.pointee().unwrap();
+                let found = if Self::origin_record(target).is_some() {
+                    self.call_record_cell_origins(
+                        snapshot.cells,
+                        arg,
+                        leaf.view,
+                        result,
+                        leaf.layers,
+                        next,
+                    )?
+                } else {
+                    let mut cells = snapshot.cells;
+                    for _ in 0..leaf.layers {
+                        cells = self.expand_reference_cells(cells, arg)?;
+                    }
+                    self.call_union_location_origins(&cells, arg, target, &[], result, next + 1)?
+                };
+                match found {
                     Input::Unsupported => return Ok(Input::Unsupported),
                     Input::Absent => continue,
                     Input::Known(source) => source,
@@ -65,6 +129,27 @@ impl Checker {
         } else {
             Input::Absent
         })
+    }
+
+    pub(super) fn call_origin_view<'a>(
+        &mut self,
+        ty: &'a Type,
+        arg: &Expr,
+    ) -> Result<Option<(&'a Type, usize)>> {
+        if let Some(view) = self.call_shared_view(ty, arg)? {
+            return Ok(Some(view));
+        }
+        let Some(depth) = self.shared_cell_depth(ty, arg)? else {
+            return Ok(None);
+        };
+        let mut view = ty;
+        for _ in 1..depth {
+            view = view.pointee().unwrap();
+        }
+        if !self.union_carrier_target(view.pointee().unwrap(), arg.span)? {
+            return Ok(None);
+        }
+        Ok(Some((view, depth - 1)))
     }
 
     pub(super) fn union_input_leaves<'a>(
@@ -129,7 +214,7 @@ impl Checker {
                 }
                 continue;
             }
-            let Some((view, layers)) = self.call_shared_view(ty, arg)? else {
+            let Some((view, layers)) = self.call_origin_view(ty, arg)? else {
                 return Ok(None);
             };
             let nested = view.pointee().is_some_and(Type::has_borrowed);
@@ -160,3 +245,6 @@ mod carriers;
 
 #[cfg(test)]
 mod records;
+
+#[cfg(test)]
+mod borrowed_unions;

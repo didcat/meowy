@@ -80,7 +80,7 @@ pub(crate) fn union_record_input_queries_keep_depth_work_and_no_replay() {
 }
 
 #[test]
-pub(crate) fn union_record_inputs_preserve_lifetimes_and_heterogeneous_boundaries() {
+pub(crate) fn union_record_inputs_preserve_lifetimes_and_heterogeneous_contents() {
     let prefix = "<R>:<{r<&boolean>}>;<A>:<{view<&R>}>;<B>:<{other<boolean>}>;<U>:<A><B>;f<&boolean>:(p<U>,q<&boolean>){->q};x:=false;y:=true";
     let source = format!(
         "{prefix};row<R>:={{->r:&y}};wide<U>:{{->view:&row}};out:f(wide,&x);row={{->r:&x}};copy:*out"
@@ -94,5 +94,5 @@ pub(crate) fn union_record_inputs_preserve_lifetimes_and_heterogeneous_boundarie
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
     statements(&mut checker, source);
-    assert!(!checker.pointees[&id(&checker, "out")].complete);
+    assert!(checker.pointees[&id(&checker, "out")].complete);
 }
