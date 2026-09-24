@@ -101,8 +101,8 @@ copy:value < int32 >
 other<(name<>)>:"Ada"
 expanded < (name<>!<null>) > : name
 <Compact>:<{x<int32>;y<int32>}>
-&tight < tasks.Outcome<uint32>[4] >
-&tight>>work(1)
+%tight < tasks.Outcome<uint32>[4] >
+%tight>>work(1)
 job:>>work(2);joined:<<job
 |count<limit&&other>0|debug.print("comparison")
 after_compact:46
@@ -120,11 +120,23 @@ mask : (left | right) & 0xff
     'scope.restart()
 }
 
-&jobs<tasks.Outcome<uint32>[4]>
-&jobs >> work(1)
+%jobs<tasks.Outcome<uint32>[4]>
+%jobs >> work(1)
 job : >> work(2)
 result : << job
-results : << &jobs
+results : << %jobs
+%jobs.deadline(instant)
+%jobs.cancel()
+ticket : %jobs >> work(3)
+compact_join:<<%jobs
+use(%jobs)
+remainder : count % jobs
+compact_remainder:count%jobs
+close_remainder:count %jobs
+call_remainder:read()%jobs
+index_remainder:items[1]%jobs
+borrowed_jobs : &jobs
+borrowed_comparison : &jobs < limit
 value
     .(convert)
     .{ -> self }

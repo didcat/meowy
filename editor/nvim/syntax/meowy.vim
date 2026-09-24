@@ -29,7 +29,7 @@ syntax match meowyBorrow /\%(&\)\@<!&\%(&\)\@!\%(!\)\?/
 syntax match meowyUnchecked /!\ze\s*{/
 syntax match meowyDispatch /\./
 syntax match meowyScope /'[A-Za-z_][A-Za-z0-9_]*/
-syntax match meowyTaskGroup /&[A-Za-z_][A-Za-z0-9_]*\ze\s*\%(<\|>>\)/
+syntax match meowyTaskGroup /\%(\%(^\|[({,:;=+*\/%!?~^&|<>-]\|\[\)\s*\)\@<=%[A-Za-z_][A-Za-z0-9_]*/
 syntax match meowyPunctuation /[,;]/
 
 syntax match meowyNumber /\<\d\%(_\?\d\)*\>/

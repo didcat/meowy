@@ -17,6 +17,19 @@ Documentation and 82 standalone examples retain the standardized readable layout
 The prior token/literal preservation audit is `/tmp/meowy-doc-style-audit.json`;
 Git preserves its completed commit series. Compiler guides remain in `compiler/docs/`.
 
+## Editor task and dispatch highlighting
+
+Commit plan:
+1. Recognize `%group` in operand positions, preserving binary remainder and ordinary
+   borrows; update editor fixtures/docs and run Vim/Neovim verification.
+2. Highlight simple and qualified callables in `.(function)` dispatch, preserving
+   ordinary parenthesized values. Add focused regressions and rerun editor checks.
+
+The user extended the documentation-only task to editor highlighting. Compiler and
+runtime implementation remain outside this change. `%group` recognition passes
+all six checks in `python3 -B tools/verify.py --editor both`; log:
+`/tmp/meowy-task-group-editor.log`. Dispatch-callable highlighting is next.
+
 ## Task-group sigil documentation
 
 Task groups now use `%name` in language/API references, tutorials and the documented

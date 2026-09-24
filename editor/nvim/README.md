@@ -74,7 +74,7 @@ The highlighter handles:
   type queries.
 - References and pointers, including `<&!T>`, `<*!T>`, and `&!value`, plus `!{ ... }`
   safety boundaries.
-- Task submission and joins (`>>`, `<<`), group declarations, labeled scopes,
+- Task submission and joins (`>>`, `<<`), `%group` names, labeled scopes,
   emissions, matchers, field selection, and dispatch.
 - Decimal, hexadecimal, and binary integers with separators, floating-point
   literals and exponents, and arithmetic and logical operators.
@@ -130,8 +130,9 @@ Or in Vimscript:
 let g:meowy_highlight_builtin_values = 0
 ```
 
-The highlighter does not type-check expressions, resolve aliases, or infer whether
-an arbitrary `&name` refers to a group or a borrowed value. Incomplete or ambiguous
+The highlighter recognizes `%name` as a task group in operand positions, while
+binary `%` remains an operator and `&name` remains a borrow. It does not type-check
+expressions or resolve aliases. Incomplete or ambiguous
 annotations may stay plain until enough punctuation has been entered. The
 [language reference](../../docs/reference/syntax.md) defines their meaning.
 
