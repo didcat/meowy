@@ -382,23 +382,24 @@ Mutable named slots with immutable contents now capture shapes and merge retarge
 at their canonical roots. Siblings share possible owners; earlier copies remain
 independent. Completed mutable fields and descendants now capture final canonical
 slots. Owned field/subrecord writes merge bounded prefixes, retaining sibling
-metadata and prior copies. Prefix prerequisite: `7b491bc`. All 303 dependency-filtered
-tests and all ten compiler checks pass. Statement-owned temporary union snapshots
-are next; union-interior writes and proof outcomes remain gated.
+metadata and prior copies. Prefix prerequisite: `7b491bc`. Statement-owned
+temporaries now retain
+shaped snapshots, including concrete projected reborrows, without extending
+lifetimes. Read prerequisite: `dfb1e47`. All 310 dependency-filtered tests and all
+ten compiler checks pass. Direct named shared-union storage links are next;
+union-interior writes and proof outcomes remain gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1276
-  library/903 native tests (2179 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1283
+  library/903 native tests (2186 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-mutable-fields-gate.log`.
-- All 303 dependency-filtered tests pass. Four prefix groups cover offsets,
-  siblings/copies, missing inputs, unselected variants, capacity and failures.
-  Seven source groups cover final mutable slots/descendants, owned field/subrecord
-  writes, null/unknown inputs, carriers, composition, later marks/query control and
-  E302 loans. Union-interior writes retain their existing B001 gate. Accepted
-  fixtures pass ordinary compilation/ownership; marks remain seeded.
-  Prefix prerequisite: `7b491bc`.
+  0 failed in debug/release. Log: `/tmp/meowy-temporary-unions-gate.log`.
+- All 310 dependency-filtered tests pass. Three lookup groups cover explicit
+  temporary identity, concrete field paths, shape offsets, unknown views and bounds.
+  Four source groups cover copies/reborrows, carriers, null/unknown contents,
+  snapshot independence and unchanged E303 expiry. Accepted fixtures pass ordinary
+  compilation/ownership; marks remain seeded. Read prerequisite: `dfb1e47`.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

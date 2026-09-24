@@ -47,7 +47,7 @@ Commit plan:
 Named/general borrowed union views and returned unions remain separate. No temporary
 lifetime is extended. Direct temporary IDs and bounded empty-path reborrows now
 feed shaped source/narrowing reads. Two seeded groups cover external pointee
-identity, unknown named/projected views and depth/work limits. All 305 focused
+identity, unknown named/non-record views and depth/work limits. All 305 focused
 dependency tests and formatting pass; log:
 `/tmp/meowy-temporary-shape-reads-focused.log`. Next: capture real temporary values.
 Read prerequisite committed as `dfb1e47`. Projected reborrows of temporary records
@@ -58,8 +58,8 @@ dependency-filtered tests now pass; log: `/tmp/meowy-temporary-unions-focused.lo
 Real copies, reborrows, carriers, null/unknown inputs, snapshot independence and
 unchanged E303 expiry pass. A new path group checks concrete projections, narrowing
 offsets and rejection of invalid/union-interior paths. All ten compiler checks pass;
-log: `/tmp/meowy-temporary-unions-gate.log`. No failures remain. The guide/root
-handoff will be committed separately. No lifetime rule is changed;
+log: `/tmp/meowy-temporary-unions-gate.log`. No failures remain. Temporary capture is committed as `cac7976`; the separate
+guide/root handoff records its supported boundary. No lifetime rule is changed;
 proof outcomes stay gated.
 
 ### Proof dependency implementation slices

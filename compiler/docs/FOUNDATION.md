@@ -259,8 +259,12 @@ root, preserving sibling visibility and earlier copies. Completed mutable fields
 and mutable descendants capture final canonical slot snapshots, retaining lexical
 updates. Owned concrete-record field/subrecord writes merge qualified prefixes and
 preserve sibling metadata and prior copies. Writes through union interiors retain
-their concrete-storage gate. Temporary-borrow producers, returned unions and general
-borrowed union views remain separate.
+their concrete-storage gate. Statement-owned temporary values retain shaped
+snapshots on their existing storage IDs. Direct dereferences and reborrows recover
+those snapshots through bounded concrete field paths, keeping external pointee
+owners distinct from temporary storage. Copies retain their contents after source
+replacement; null/unknown distinctions and E303 expiry remain unchanged. Named
+shared-union views, broader borrowed views and returned union origins remain separate.
 Shared returns of supported
 scalar/list/record views retain
 origins through the general contract's
