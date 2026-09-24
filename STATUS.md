@@ -478,8 +478,12 @@ preserved after ordinary validation; exit edges share the existing budget and do
 not grant normal fallthrough. Four focused groups and all 1534 library tests pass;
 `/tmp/meowy-scope-exits-lib.log`. HIR leaves now retain optional source IDs, and
 restart metadata retains checked points through RestartId. Both provenance groups
-and all 1536 library tests pass; `/tmp/meowy-exit-hir-lib.log`. Body-fact source
-validation is next. Exit-edge slice: `1f26948`.
+and all 1536 library tests pass; `/tmp/meowy-exit-hir-lib.log`. Body facts now link
+exact exit sources and validate target/function identity while retaining original
+call spans and unknown synthetic sources. All ten compiler checks pass, including
+1540 library/910 native tests; `/tmp/meowy-scope-exits-gate.log`. Exit edges:
+`1f26948`; HIR provenance: `90a2065`. Block/statement/result endpoints and
+propagation remain incomplete; proof outcomes stay gated.
 
 ## Pending descriptor statement accounting
 
@@ -609,10 +613,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Statement roots, core block order and ordinary binary operand sequences passed
-  all ten checks in `python3 -B tools/verify.py --compiler`: 1530 library/910 native
-  tests. Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
-  `/tmp/meowy-sequences-gate.log`. The transfer graph remains partial;
+- Scope-exit ports, HIR provenance and validated body-fact sources passed all ten
+  checks in `python3 -B tools/verify.py --compiler`: 1540 library/910 native tests.
+  Conformance: 10 passed, 13 unsupported, 0 failed in debug/release. Log:
+  `/tmp/meowy-scope-exits-gate.log`. The transfer graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -675,8 +679,9 @@ execution was not part of this documentation edit.
    uses within a statement. HIR branches and body facts now retain validated
    source links. Branch decision/bypass/normal-join edges are now explicit.
    Region ports now link to exact checked contents; core blocks and ordinary binary
-   operands retain explicit sequence edges. Next model leave/restart exits and
-   connect block/statement/result endpoints. Other operand families and contextual
+   operands retain explicit sequence edges. Leave/restart exits now preserve exact
+   target ports and checked sources. Next connect block/statement/result endpoints.
+   Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.
    Normal ports do not imply reachability. Preserve independent matcher arms,
    nested targets and unknown effects; do not

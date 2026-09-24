@@ -52,6 +52,8 @@ pub(crate) struct Walk<'a> {
     pub(crate) storage: Vec<Option<hir::LocalId>>,
     pub(crate) sources: Vec<Option<hir::PointId>>,
     pub(crate) points: &'a [super::Point],
+    pub(crate) exits: &'a std::collections::BTreeMap<hir::PointId, super::ScopeExit>,
+    pub(crate) restarts: &'a std::collections::BTreeMap<hir::RestartId, super::RestartInput>,
     pub(crate) owner: usize,
     pub(crate) block: hir::BlockId,
     pub(crate) link: Option<Link>,
@@ -134,6 +136,46 @@ impl<'a> Walk<'a> {
 
     pub(crate) fn budget(span: Span) -> Diagnostic {
         Diagnostic::unsupported("proof body fact budget exhausted", span)
+    }
+
+    pub(crate) fn exit(
+        &mut self,
+        fact: Fact,
+        id: Option<hir::PointId>,
+        to: super::edges::Port,
+    ) -> Result<()> {
+        use super::edges::{Port, Route};
+        if !self
+            .flow
+            .spend(self.exits.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
+            return Err(Self::budget(self.span));
+        }
+        let source = id
+            .map(|id| {
+                self.exits
+                    .get(&id)
+                    .map(|exit| (exit.owner, exit.span, exit.edge))
+                    .ok_or_else(|| {
+                        Diagnostic::unsupported("proof exit source identity mismatch", self.span)
+                    })
+            })
+            .transpose()?;
+        let span = source.map_or(self.span, |(_, span, _)| span);
+        self.fact(fact, span)?;
+        self.source(id, super::PointKind::Stmt, span)?;
+        if let Some((owner, _, edge)) = source
+            && (owner != self.owner
+                || edge.from != Port::Entry(id.unwrap())
+                || edge.to != to
+                || edge.route != Route::Exit)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof exit source identity mismatch",
+                span,
+            ));
+        }
+        Ok(())
     }
 
     pub(crate) fn path(&mut self, path: &'a [hir::WriteStep]) -> Result<()> {
@@ -268,8 +310,36 @@ impl<'a> Walk<'a> {
                         self.push([Node::Expr(condition)])?;
                     }
                     S::SlotAlias { id, .. } => self.fact(Fact::Alias(*id), self.span)?,
-                    S::Leave { target, .. } => self.fact(Fact::Leave(*target), self.span)?,
-                    S::Restart { site, .. } => self.fact(Fact::Restart(*site), self.span)?,
+                    S::Leave { target, point } => self.exit(
+                        Fact::Leave(*target),
+                        *point,
+                        super::edges::Port::Leave(*target),
+                    )?,
+                    S::Restart { target, site } => {
+                        if !self
+                            .flow
+                            .spend(self.restarts.len().checked_ilog2().unwrap_or(0) as usize + 1)
+                        {
+                            return Err(Self::budget(self.span));
+                        }
+                        let input = self.restarts.get(site);
+                        if input.is_some_and(|input| {
+                            input.owner != self.owner || input.target != *target
+                        }) {
+                            return Err(Diagnostic::unsupported(
+                                "proof exit source identity mismatch",
+                                self.span,
+                            ));
+                        }
+                        self.exit(
+                            Fact::Restart(*site),
+                            input.and_then(|input| input.point),
+                            super::edges::Port::Restart {
+                                target: *target,
+                                site: *site,
+                            },
+                        )?;
+                    }
                     S::Expr(expr) => self.push([Node::Expr(expr)])?,
                 },
             }
@@ -367,6 +437,8 @@ impl Checker {
             storage: Vec::new(),
             sources: Vec::new(),
             points: &self.points,
+            exits: &self.scope_exits,
+            restarts: &self.restart_inputs,
             owner: self.owner,
             block: block.id,
             link: None,
@@ -410,3 +482,6 @@ mod logic;
 
 #[cfg(test)]
 mod sources;
+
+#[cfg(test)]
+mod scope_exits;

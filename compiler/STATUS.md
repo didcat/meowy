@@ -101,7 +101,7 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current scope-exit slices
 
-Dependency-ordered commit plan:
+Completed dependency-ordered commit plan:
 1. Record bounded leave/restart exit edges from checked statement entries to
    explicit target ports after ordinary scope validation. Preserve target/function,
    RestartId, source span and control metadata; share the edge budget.
@@ -131,7 +131,13 @@ Exit-edge implementation: `1f26948`. HIR leaves now carry optional checked
 point IDs; restart metadata retains matching statement points alongside RestartId.
 Both HIR-exit provenance groups and all 1536 library tests pass, covering clones,
 repeated spans and unknown seeded restart origins; `/tmp/meowy-exit-hir-lib.log`.
-No failures remain. Body-fact source validation is next.
+No failures remain. HIR prerequisite: `90a2065`. Body facts now validate scope-
+exit source kind/owner/block/completion and exact target ports, retaining original
+call spans and explicit unknowns. All six focused exit-source/provenance groups
+pass, including derived control, malformed metadata and synthetic sources. All
+ten compiler checks pass, including 1540 library/910 native tests, formatting,
+Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+Log: `/tmp/meowy-scope-exits-gate.log`. No failures remain.
 Block/statement/result endpoint links, remaining operand coverage and propagation
 remain incomplete. Outcomes stay gated.
 
@@ -1461,12 +1467,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- General statement roots, core block sequences and ordinary binary operand
-  sequences passed all ten checks in `python3 -B tools/verify.py --compiler`:
-  1530 library/910 native tests, formatting, Clippy, build and conformance
-  (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-sequences-gate.log`. Explicit exits/results, remaining operand/
-  contextual-block coverage and restart propagation remain pending.
+- Explicit scope-exit ports, HIR provenance and body-fact source validation passed
+  all ten checks in `python3 -B tools/verify.py --compiler`: 1540 library/910 native
+  tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
+  0 failed in debug/release). Log: `/tmp/meowy-scope-exits-gate.log`. Block/statement/
+  result endpoints, remaining operand coverage and restart propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1796,9 +1801,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    and explicit forward-group barriers (`4286bae`). Ordinary binary operands retain
    exact direct roots and normal-to-next-entry edges; composed roots stay unknown.
    `dependencies/sequences.rs` validates ownership and shares the edge budget.
-   Next add explicit leave/restart exit ports in `dependencies/exits.rs` and scope
-   checking, preserving BlockId/RestartId targets. Then connect block/statement
-   entry, normal and result endpoints without inventing fallthrough or pure effects.
+   Scope exits now retain exact statement entries, target ports and control metadata
+   (`1f26948`); HIR leaves and restart evidence retain source IDs (`90a2065`). Body
+   facts validate source identity and exact targets, preserving unknown synthetic
+   origins and original call spans. No normal-fallthrough edge is introduced.
+   Next connect block/statement entry, normal and result endpoints using existing
+   sequences, exit ports and HIR identities. Distinguish target leave completion
+   from restart reentry; preserve owners, emissions and required logical roots.
+   Do not turn a completed check or missing effect metadata into normal completion.
    Call/index/list operand sequencing, composed roots and contextual list/effect
    block builders remain coverage gaps; missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
