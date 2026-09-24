@@ -156,7 +156,7 @@ pub(crate) fn record_equality_preserves_aggregate_and_scalar_contexts() {
 #[test]
 pub(crate) fn union_record_constructors_keep_member_context_and_defaults() {
     accepts(
-        "<R>:<{view<&int32><null>}>;a:1;u<R><null>:{->view:&a};|u<R>|{|u.view<&int32>|x:*(u.view<&int32>)}",
+        "<R>:<{view<&int32><null>}>;a:1;u<R><null>:{->view:&a};|u<R>|{|u.view<&int32>|x:*(u.view~<&int32>)}",
     );
     accepts("<R>:<{view<&int32><null>;count<int64>}>;u<R><null>:{->count:7};|u<R>|x:u.count");
     accepts("<R>:<{-><int64>;tag<string>}>;u<R><null>:{->7;->tag:\"ok\"};|u<R>|x<int64>:u");
@@ -219,7 +219,7 @@ pub(crate) fn union_members_keep_numeric_context_without_widening() {
     rejects("x<int8><int32>:1", "E207");
     rejects("x<float32><float64>:1.5", "E207");
     rejects("x<string><null>:null;y<string>:x", "E207");
-    rejects("x<string><null>:null;y:x<string>", "E208");
+    rejects("x<string><null>:null;y:x~<string>", "E208");
 }
 
 #[test]
@@ -256,19 +256,22 @@ pub(crate) fn stable_predicates_prove_disjoint_emissions() {
 #[test]
 pub(crate) fn distinct_record_variants_keep_their_field_tag_domains() {
     accepts(
-        "<A>:<{name<string><null>}>;<B>:<{name<int32><null>}>;f<null>:(x<A><B>){|x<A>|{|x.name<string>|y:x.name<string>};|x<B>|{|x.name<int32>|y:x.name+1}}",
+        "<A>:<{name<string><null>}>;<B>:<{name<int32><null>}>;f<null>:(x<A><B>){|x<A>|{|x.name<string>|y:x.name~<string>};|x<B>|{|x.name<int32>|y:x.name+1}}",
     );
 }
 
 #[test]
 pub(crate) fn narrowing_tracks_short_circuit_and_leaving_paths() {
-    accepts("f<string>:(v<string><null>) 'r {|v<null>|{'r->\"fallback\";'r.leave()};->v<string>}");
-    accepts("f<null>:(v<string><null>){|v<string>&&v.size()>0|x:v<string>}");
+    accepts("f<string>:(v<string><null>) 'r {|v<null>|{'r->\"fallback\";'r.leave()};->v~<string>}");
+    accepts("f<null>:(v<string><null>){|v<string>&&v.size()>0|x:v~<string>}");
     accepts("f<null>:(v<string><null>){|v<null>||v.size()==0|{}}");
-    accepts("f<null>:(v<{name<string><null>}>){|!(v.name<null>)|x:v.name<string>}");
-    rejects("f<null>:(v<string><null>){|v<null>|{};x:v<string>}", "E208");
+    accepts("f<null>:(v<{name<string><null>}>){|!(v.name<null>)|x:v.name~<string>}");
     rejects(
-        "f<null>:(v<string><null>){|v<string>||true|x:v<string>}",
+        "f<null>:(v<string><null>){|v<null>|{};x:v~<string>}",
+        "E208",
+    );
+    rejects(
+        "f<null>:(v<string><null>){|v<string>||true|x:v~<string>}",
         "E208",
     );
 }
@@ -276,24 +279,24 @@ pub(crate) fn narrowing_tracks_short_circuit_and_leaving_paths() {
 #[test]
 pub(crate) fn assignment_invalidates_scalar_and_field_proofs() {
     rejects(
-        "v<string><null>:=\"x\";|v<string>|{v=null;x:v<string>}",
+        "v<string><null>:=\"x\";|v<string>|{v=null;x:v~<string>}",
         "E208",
     );
     rejects(
-        "v<{name<string><null>}>:={->name:\"x\"};|v.name<string>|{v={};x:v.name<string>}",
+        "v<{name<string><null>}>:={->name:\"x\"};|v.name<string>|{v={};x:v.name~<string>}",
         "E208",
     );
     rejects(
-        "v<string><null>:=\"x\";|v<null>|v=\"x\";x:v<string>",
+        "v<string><null>:=\"x\";|v<null>|v=\"x\";x:v~<string>",
         "E208",
     );
-    accepts("v<string><null>:=\"x\";|v<string>|{x:v<string>;v=null}");
+    accepts("v<string><null>:=\"x\";|v<string>|{x:v~<string>;v=null}");
 }
 
 #[test]
 pub(crate) fn restart_drops_mutable_proofs_and_rejects_outer_slot_hazards() {
     rejects(
-        "v<string><null>:=\"x\";|v<string>|'loop {x:v<string>;v=null;'loop.restart()}",
+        "v<string><null>:=\"x\";|v<string>|'loop {x:v~<string>;v=null;'loop.restart()}",
         "E208",
     );
     rejects("x:'outer {'inner {'outer->1;'inner.restart()}}", "B001");

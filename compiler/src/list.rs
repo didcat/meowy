@@ -729,7 +729,7 @@ mod tests {
             "get<&int32>:(a<&int32[0]>,i<int32>){->&(a[i])}",
             "value:*(&([1,2][1]))",
             "make<int32[2]>:(){->[1,2]};value:*(&(make()[1]))",
-            "a:[1,2];value:*(&(a<int32[2]>[1]))",
+            "a:[1,2];value:*(&(a~<int32[2]>[1]))",
         ] {
             let result = crate::compile(source);
             assert!(result.is_ok(), "{source}: {result:?}");

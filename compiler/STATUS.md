@@ -53,7 +53,13 @@ Root owns both STATUS files; parallel agents own bits-module code, documentation
 and editor support. Explicit ~ ascription passes two parser tests and a native
 debug/release test; logs: `/tmp/meowy-explicit-ascription-parser.log`,
 `/tmp/meowy-explicit-ascription-native.log`. Legacy context-sensitive suffixes remain
-only during fixture migration. Ordinary host-language self/bitwise syntax and unrelated user
+only during fixture migration. AST-based fixture migration passes all 1446 library
+and 908 native tests (debug/release): `/tmp/meowy-ascription-library-migration.log`,
+`/tmp/meowy-ascription-native-migration.log`. Union targets use existing computed
+brackets where needed; required-budget tests account for their actual extra work.
+Migration commits are grouped by checker, ownership, loans, native values, native
+slots, restart headers and reference returns (at most eight files each).
+Ordinary host-language self/bitwise syntax and unrelated user
 work are preserved. The restart/proof handoff remains unchanged.
 
 ## Executable proof plan

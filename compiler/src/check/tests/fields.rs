@@ -30,7 +30,7 @@ pub(crate) fn field_mutability_is_part_of_inferred_and_declared_shapes() {
         "<R>:<{n<int32>:=;label<string>}>;r<R>:={->n:=1;->label:\"x\"};r.n=2",
         "a:{->n:=1};b:={->a};b.n=2",
         "<R>:<{n<int32><null>:=}>;r<R>:={};r.n=1",
-        "<I>:<{n<int32>}>;<M>:<{n<int32>:=}>;r<I><M>:{->n:=1};|r<M>|{n:r<M>.n}",
+        "<I>:<{n<int32>}>;<M>:<{n<int32>:=}>;r<I><M>:{->n:=1};|r<M>|{n:r~<M>.n}",
         "<I>:<{n<int32>}>;<M>:<{n<int32>:=}>;r<I[1]><M[1]>:[{->n:=1}]",
         "d:@\"debug\";<I>:<{n<int32>}>;<M>:<{n<int32>:=}>;r<I[1]><M[1]>:[{d.print(0);->n:=1}]",
     ] {

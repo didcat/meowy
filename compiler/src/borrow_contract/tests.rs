@@ -21,7 +21,7 @@ pub(crate) fn direct_functions_return_symbolic_inputs_and_carrier_components() {
     accepts(
         "copy<{view<&int32>;count<int32>}>:(p<&int32>){->view:p;->count:7};a:1;r:copy(&a);v:*(r.view)",
     );
-    accepts("id<&int32><null>:(p<&int32><null>){->p};u:id(null);|u<&int32>|x:*(u<&int32>)");
+    accepts("id<&int32><null>:(p<&int32><null>){->p};u:id(null);|u<&int32>|x:*(u~<&int32>)");
 }
 
 #[test]

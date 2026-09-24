@@ -43,7 +43,7 @@ pub(crate) fn parses_functions_labels_and_emissions() {
 
 #[test]
 pub(crate) fn honors_context_for_type_suffixes() {
-    let block = parse("|!(value<int32>) && accepts(value<int32>)|copy:value<int32>").unwrap();
+    let block = parse("|!(value<int32>) && accepts(value~<int32>)|copy:value~<int32>").unwrap();
     let StmtKind::Match { arms } = &block.stmts[0].kind else {
         panic!()
     };
@@ -103,7 +103,7 @@ pub(crate) fn gives_predicates_comparison_precedence() {
     assert!(parse("x:1<2<3").is_err());
     assert!(parse("|left<limit&&other>0|f()").is_ok());
     assert_eq!(parse("left<limit<other").unwrap_err()[0].code, "E004");
-    let ExprKind::Binary { left, op, .. } = self::value("copy:value<int32><2").kind else {
+    let ExprKind::Binary { left, op, .. } = self::value("copy:value~<int32><2").kind else {
         panic!()
     };
     assert_eq!(op, "<");

@@ -17,13 +17,13 @@ pub(crate) fn cost(source: &str) -> (usize, usize) {
 #[test]
 pub(crate) fn ascription_roots_charge_targets_once_and_keep_runtime_values_separate() {
     for (source, expected) in [
-        ("v:7<int32>", (1, 1)),
-        ("|false|v:7<int32><int32>", (3, 3)),
-        ("v:(1+2)<int32><int32>", (3, 3)),
-        ("v:((7))<int32><int32>", (3, 3)),
+        ("v:7~<int32>", (1, 1)),
+        ("|false|v:7~<(<int32><int32>)>", (5, 4)),
+        ("v:(1+2)~<(<int32><int32>)>", (5, 4)),
+        ("v:((7))~<(<int32><int32>)>", (5, 4)),
         ("v:7;|v<int32><int32>|copy:v", (3, 3)),
-        ("v:[7];copy:v<int32[1+0]>", (5, 2)),
-        ("v:7<({-><int32>})>", (6, 3)),
+        ("v:[7];copy:v~<int32[1+0]>", (5, 2)),
+        ("v:7~<({-><int32>})>", (6, 3)),
     ] {
         assert_eq!(cost(source), expected, "{source}");
     }
@@ -31,12 +31,12 @@ pub(crate) fn ascription_roots_charge_targets_once_and_keep_runtime_values_separ
 
 #[test]
 pub(crate) fn ascription_roots_preserve_ordinary_extent_gates_and_error_order() {
-    crate::compile("v:[7]<({-><int32[({->1})]>})>").unwrap();
+    crate::compile("v:[7]~<({-><int32[({->1})]>})>").unwrap();
     for (source, code, token) in [
-        ("v:(1/0)<Missing>", "E107", "1/0"),
-        ("v:7<uint8>", "E208", "7<uint8>"),
-        ("v:[7]<int32[1/0]>", "E107", "1/0"),
-        ("v:[7]<int32[({->1})]>", "B001", "({->1})"),
+        ("v:(1/0)~<Missing>", "E107", "1/0"),
+        ("v:7~<uint8>", "E208", "7~<uint8>"),
+        ("v:[7]~<int32[1/0]>", "E107", "1/0"),
+        ("v:[7]~<int32[({->1})]>", "B001", "({->1})"),
     ] {
         let error = crate::compile(source).unwrap_err().remove(0);
         assert_eq!(error.code, code, "{source}");
@@ -46,8 +46,8 @@ pub(crate) fn ascription_roots_preserve_ordinary_extent_gates_and_error_order() 
 
 #[test]
 pub(crate) fn ascription_roots_share_limits_and_leave_target_probes_uncharged() {
-    let block = crate::parser::parse("v:7<int32><int32>").unwrap();
-    let StmtKind::Bind { value, .. } = &block.stmts[0].kind else {
+    let block = crate::parser::parse("source:{->a:7};v:source~<{a<int32>}>").unwrap();
+    let StmtKind::Bind { value, .. } = &block.stmts[1].kind else {
         panic!()
     };
     let ExprKind::Ascribe { ty, .. } = &value.kind else {
@@ -56,11 +56,12 @@ pub(crate) fn ascription_roots_share_limits_and_leave_target_probes_uncharged() 
     let root = Span::new(100, 150);
     for remaining in [2, 3, 4] {
         let mut checker = Checker::new();
+        checker.stmt(&block.stmts[0]).unwrap();
         let result = checker.mode_root(root, true, |checker| {
             checker.ty(ty)?;
             assert_eq!(checker.type_work.as_ref().unwrap().logical.types, 0);
             checker.type_work.as_mut().unwrap().logical.types = MAX_TYPES - remaining;
-            let result = checker.stmt(&block.stmts[0]);
+            let result = checker.stmt(&block.stmts[1]);
             assert!(checker.type_work.as_ref().unwrap().ordinary);
             result
         });
@@ -102,7 +103,7 @@ pub(crate) fn type_identity_bindings_preserve_extent_modes_and_source_failures()
         ("kind:<Missing><int32[1/0]>", "E202"),
         ("kind<null>:<int32>", "B001"),
         ("kind:=<int32>", "B001"),
-        ("kind:(7<int32[1/0]>)<>", "B001"),
+        ("kind:(7~<int32[1/0]>)<>", "B001"),
     ] {
         assert_eq!(
             crate::compile(source).unwrap_err()[0].code,
@@ -210,7 +211,7 @@ pub(crate) fn field_hints_keep_metadata_record_types_and_selected_errors() {
             "B001",
             "(<({-><int32[1/0]>})>.missing)<>",
         ),
-        ("kind:(7<int32[1/0]>)<>", "B001", "(7<int32[1/0]>)<>"),
+        ("kind:(7~<int32[1/0]>)<>", "B001", "(7~<int32[1/0]>)<>"),
     ] {
         let error = crate::compile(source).unwrap_err().remove(0);
         assert_eq!(error.code, code, "{source}");

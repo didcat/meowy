@@ -17,7 +17,7 @@ pub(crate) fn foundation_storage_and_construction_stay_gated() {
         r#"m:@"memory";s:@"strings";s.copy("text",m.heap)"#,
         r#"s:@"strings";<S>:<s.Owned>;f<S>:(){->null}"#,
         r#"s:@"strings";<S>:<s.Owned>;x<&S>:null"#,
-        r#"s:@"strings";x:null;found:x<s.Owned>"#,
+        r#"s:@"strings";x:null;found:x~<s.Owned>"#,
         r#"s:@"strings";copy:=s.copy"#,
     ] {
         rejects(source, "B001");
