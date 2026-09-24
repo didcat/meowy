@@ -1,6 +1,12 @@
 use super::super::{Cells, Checker, Diagnostic, Expr, MAX_DEPTH, MAX_FIELDS, Result, Type};
 use crate::check::dependencies::records::shapes::ShapeKey;
 
+pub(super) struct HiddenPath<'a> {
+    pub(super) key: ShapeKey,
+    pub(super) layers: usize,
+    pub(super) view: Option<&'a Type>,
+}
+
 impl Checker {
     pub(in crate::check::dependencies::calls::cells) fn hidden_union_cells(
         &mut self,
@@ -13,15 +19,18 @@ impl Checker {
         let Some(paths) = self.hidden_union_paths(ty, result, expr)? else {
             return Ok(None);
         };
+        if paths.iter().any(|path| path.view.is_some()) {
+            return Ok(None);
+        }
         let mut cells = Cells {
             complete: true,
             ..Cells::default()
         };
-        for (key, layers) in paths {
+        for path in paths {
             let mut source = self
-                .location_shape_source(locations, prefix, &key, expr.span)?
+                .location_shape_source(locations, prefix, &path.key, expr.span)?
                 .cells;
-            for _ in 0..layers {
+            for _ in 0..path.layers {
                 source = self.expand_reference_cells(source, expr)?;
             }
             self.merge_returned_cells(&mut cells, source, expr)?;
@@ -29,12 +38,12 @@ impl Checker {
         Ok(Some(cells))
     }
 
-    pub(super) fn hidden_union_paths(
+    pub(super) fn hidden_union_paths<'a>(
         &mut self,
-        ty: &Type,
+        ty: &'a Type,
         result: &Type,
         expr: &Expr,
-    ) -> Result<Option<Vec<(ShapeKey, usize)>>> {
+    ) -> Result<Option<Vec<HiddenPath<'a>>>> {
         let Some(result_depth) = self.shared_cell_depth(result, expr)? else {
             return Ok(None);
         };
@@ -108,7 +117,19 @@ impl Checker {
                 terminal = terminal.pointee().unwrap();
             }
             if terminal.has_borrowed() && terminal != target {
-                return Ok(None);
+                if Self::origin_record(terminal).is_none() {
+                    return Ok(None);
+                }
+                let mut view = ty;
+                for _ in 1..depth {
+                    view = view.pointee().unwrap();
+                }
+                paths.push(HiddenPath {
+                    key: ShapeKey::new(&fields, &variants, &mut self.flow, expr.span)?,
+                    layers: depth - 1,
+                    view: Some(view),
+                });
+                continue;
             }
             if depth < result_depth {
                 continue;
@@ -124,10 +145,11 @@ impl Checker {
             if !self.origin_carrier(ty, expr.span)? {
                 return Ok(None);
             }
-            paths.push((
-                ShapeKey::new(&fields, &variants, &mut self.flow, expr.span)?,
+            paths.push(HiddenPath {
+                key: ShapeKey::new(&fields, &variants, &mut self.flow, expr.span)?,
                 layers,
-            ));
+                view: None,
+            });
         }
         Ok(Some(paths))
     }
@@ -135,3 +157,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod continuations;

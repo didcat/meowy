@@ -414,23 +414,25 @@ owned record arguments now retain candidates through nested concrete fields and
 shared layers. All 379 focused tests and all ten compiler checks pass. Borrowed-record
 union fields now read stored references before remaining shared-layer expansion;
 nullable/unknown owners and fields remain conservative. Prerequisite: `40fc5e0`.
-All 384 focused tests and all ten compiler checks pass. Borrowed record contents behind
-union-variant references are next and remain incomplete.
+All 384 focused tests and all ten compiler checks pass. Hidden discovery now retains
+borrowed-record continuation types, variant keys and shared-layer counts. Resolution
+remains incomplete until traversal bounds are shared across union-to-record transitions.
+All 387 focused tests and all ten compiler checks pass. Bounded continuation resolution is next.
 Union-result shaped reads retain their dependencies. By-value returned unions,
 union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1357
-  library/903 native tests (2260 total), 20 Python harness tests, fmt, Clippy,
+- `python3 -B tools/verify.py --compiler`: all ten checks passed, including 1360
+  library/903 native tests (2263 total), 20 Python harness tests, fmt, Clippy,
   build, links and catalog/schema checks. Conformance: 10 passed, 13 unsupported,
-  0 failed in debug/release. Log: `/tmp/meowy-borrowed-union-fields-gate.log`.
-- All 384 dependency-filtered tests pass. Five new borrowed-record union-field
-  groups cover nested/deeper shared fields, unknown owners/contents, nullable
-  owners/null contents, union/carrier returns, no replay, call/work limits and
-  E302/E303 lifetimes. Existing fixtures now retain hidden and direct candidates.
-  Untraversed borrowed contents remain incomplete. Accepted fixtures pass ordinary
-  compilation/ownership; marks remain seeded.
+  0 failed in debug/release. Log: `/tmp/meowy-union-continuations-gate.log`.
+- All 387 dependency-filtered tests pass. Three new typed-continuation groups
+  cover direct/deeper/nullable borrowed-record types, mixed terminal/continuation
+  keys, distinct variant layouts, exclusive/owned-target boundaries, no replay
+  and exhausted work. Existing depth/capacity and incomplete-resolution tests pass.
+  This is a discovery prerequisite; continuation resolution remains unimplemented.
+  Accepted fixtures pass ordinary compilation/ownership; marks remain seeded.
 - Flags/outcomes remain B001-gated. Shape-changing wrappers, broader result shapes,
   allocator-bound analysis, heterogeneous unions, precise joins, callee effect/data/control
   summaries and conditional-exit control remain open. Runtime sources, reference

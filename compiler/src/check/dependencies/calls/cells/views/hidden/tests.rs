@@ -113,8 +113,8 @@ pub(crate) fn hidden_union_candidate_discovery_bounds_types_and_owned_targets() 
         .unwrap()
         .unwrap();
     assert_eq!(paths.len(), 1);
-    assert_eq!(paths[0].0.fields, vec![0]);
-    assert_eq!(paths[0].0.variants.len(), 1);
+    assert_eq!(paths[0].key.fields, vec![0]);
+    assert_eq!(paths[0].key.variants.len(), 1);
     let crate::hir::Type::Union(members) = ty else {
         panic!()
     };

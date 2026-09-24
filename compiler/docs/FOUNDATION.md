@@ -290,7 +290,10 @@ field paths before the same shared-layer expansion, including nested fields and
 unknown contents. Borrowed-record union fields resolve their concrete field address,
 read the stored view, then expand remaining shared layers through the same matcher.
 Nullable and unknown owners retain their completeness state; references whose
-borrowed contents need further traversal remain incomplete. Different layouts never become ordinary
+borrowed contents need further traversal remain incomplete. Discovery retains typed
+borrowed-record continuations, including their variant keys and shared-layer counts,
+but their resolution is not yet admitted. A shared traversal-depth bound across
+union-to-record transitions remains required. Different layouts never become ordinary
 field paths. Unsupported borrowed contents and owned projections inside variants
 remain incomplete. Shared concrete-record field reads and copies resolve stored
 origins through all known returned locations, including hidden union candidates.
