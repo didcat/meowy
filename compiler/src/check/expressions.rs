@@ -1,4 +1,7 @@
-use super::{Checker, Result, Value, dependencies::PointKind};
+use super::{
+    Checker, Result, Value,
+    dependencies::{CoercionKind, PointKind},
+};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
 use crate::flow::FALSE;
@@ -47,16 +50,19 @@ impl Checker {
         };
         if value.ty == Type::Never {
             self.reach = FALSE;
-            if let Some(source) = input
-                && shared
-            {
-                self.reborrow_operation(
-                    self.point.expect("shared context"),
-                    source,
-                    hir::ReferenceMode::Shared,
-                    &value,
-                    expr.span,
-                )?;
+            if let Some(source) = input {
+                let point = self.point.expect("expected context");
+                if shared {
+                    self.reborrow_operation(
+                        point,
+                        source,
+                        hir::ReferenceMode::Shared,
+                        &value,
+                        expr.span,
+                    )?;
+                } else {
+                    self.coercion_operation(point, source, CoercionKind::Stopped, expr.span)?;
+                }
             }
             return Ok(value);
         }
@@ -83,15 +89,17 @@ impl Checker {
             )?;
             return Ok(value);
         }
-        let same = shared && expected == Some(&value.ty);
-        let value = match expected {
-            Some(expected) => Self::expected_value(value, expected, expr.span),
-            None => Ok(value),
-        }?;
-        if let Some(source) = input
-            && same
-        {
-            self.region_edges(self.point.expect("shared context"), source, expr.span)?;
+        let Some(expected) = expected else {
+            return Ok(value);
+        };
+        let (primary, kind, value) = Self::expected_plan(value, expected, expr.span)?;
+        if let Some(source) = input {
+            let point = self.point.expect("expected context");
+            if shared && !primary && kind == CoercionKind::Forward {
+                self.region_edges(point, source, expr.span)?;
+            } else if !self.required {
+                self.coercion_stages(point, source, kind, primary, expr.span)?;
+            }
         }
         Ok(value)
     }

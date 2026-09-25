@@ -21,6 +21,7 @@ pub(crate) struct Coercion {
     pub(crate) owner: usize,
     pub(crate) input: hir::PointId,
     pub(crate) kind: Kind,
+    pub(crate) primary: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
@@ -32,6 +33,17 @@ impl Checker {
         id: hir::PointId,
         input: hir::PointId,
         kind: Kind,
+        span: Span,
+    ) -> Result<()> {
+        self.coercion_stages(id, input, kind, false, span)
+    }
+
+    pub(crate) fn coercion_stages(
+        &mut self,
+        id: hir::PointId,
+        input: hir::PointId,
+        kind: Kind,
+        primary: bool,
         span: Span,
     ) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof coercion-operation budget exhausted", span);
@@ -58,14 +70,16 @@ impl Checker {
             return Err(invalid());
         }
         let mut edges = vec![Edge::new(Port::Entry(id), Port::Entry(input), Route::Next)];
+        let mut from = Port::Normal(input);
+        if primary {
+            let stage = Port::Projection { point: id, step: 0 };
+            edges.push(Edge::new(from, stage, Route::Next));
+            from = stage;
+        }
         match kind {
-            Kind::Forward => edges.push(Edge::new(
-                Port::Normal(input),
-                Port::Normal(id),
-                Route::Next,
-            )),
+            Kind::Forward => edges.push(Edge::new(from, Port::Normal(id), Route::Next)),
             Kind::Convert => edges.extend([
-                Edge::new(Port::Normal(input), Port::Operation(id), Route::Next),
+                Edge::new(from, Port::Operation(id), Route::Next),
                 Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
             ]),
             Kind::Stopped => (),
@@ -74,6 +88,7 @@ impl Checker {
             owner: self.owner,
             input,
             kind,
+            primary,
             control: self.control,
             span,
             edges,
@@ -89,6 +104,9 @@ impl Checker {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod expected;
 
 #[cfg(test)]
 mod tests {

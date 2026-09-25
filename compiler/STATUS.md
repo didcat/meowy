@@ -140,6 +140,18 @@ type, and follow argument/group wrappers to their actual raw call/branch roots.
 The new source-boundary tests share the expected-value test module; required-path
 and shared-reborrow tests remain unchanged. Formatting and all 1752 library tests
 pass; `/tmp/meowy-expected-roots-lib.log`. Stage integration is next.
+Source boundaries committed as `548eaaf`. Expected-value classification now feeds
+the coercion ledger, with an optional primary stage preceding forwarding or
+conversion. Raw Never remains entry-only; Never primary extraction retains its
+projection but no result link. Existing shared forwarding/reborrow paths remain
+separate, and required-only checking gains no new coercion stages. Four focused
+groups pass: forwarding/projection/conversion after raw calls and arithmetic,
+branch sources, direct/projected Never, shared/required/control boundaries, E207
+and atomic shared budgets; `/tmp/meowy-expected-stages-focused.log`.
+All ten compiler checks pass: 1756 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-expected-stages-gate.log`. No outstanding failures remain. Documentation
+and the remaining unary primary-projection audit are next.
 
 ### Completed ordinary binary-operation slices
 
