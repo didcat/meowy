@@ -101,99 +101,48 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current ordinary binary-operation slices
 
-Dependency-ordered commit plan:
-1. Separate bounded sequence preparation from publication, preserving existing
-   generic sequence behavior and tests. Binary integration will need to adjust
-   the operand transition before atomically publishing either ledger.
-2. Capture actual primary-projection decisions, operand completion types and
-   checked-arithmetic classification alongside checked binary HIR. Preserve the
-   existing `project`/`binary_values` APIs and required-only callers.
-3. Integrate ordinary binary entry/projection/operation/result edges with the
-   prepared sequence, eliminating projection bypasses. Add focused regressions
-   and run the full compiler gate; short-circuit graphs remain separate.
-4. Document verified coverage and concrete next steps separately.
+The dependency-ordered plan is complete:
+1. Separate bounded sequence preparation from atomic publication (`07722b5`).
+2. Capture actual primary-projection decisions, stopped operand types and
+   checked-arithmetic classification without changing HIR APIs (`f0162b3`).
+3. Publish binary stages and the adjusted operand sequence together, with focused
+   regressions and the complete compiler gate (`26f4860`).
+4. Document verified coverage and the next prerequisite separately.
 
-Investigation: runtime binary lowering evaluates the projected left operand before
-the right. The current direct Normal(left)-Entry(right) link must therefore be
-replaced when a primary projection was inserted. Prepare the sequence without
-publication, then register its adjusted edge and binary stages together. Integer
-arithmetic uses checked success for +,-,*,/,% (including remainder's zero check);
-floating arithmetic, bit functions and comparisons use ordinary result edges.
-Required integer construction also calls `binary_values`, so only the source
-`binary` caller may publish runtime metadata. Preserve errors and existing HIR.
+`projected` exposes the existing projection decision; `binary_plan_values` returns
+that plan with checked HIR while `project` and `binary_values` keep their APIs.
+Ordinary non-short-circuit `binary` uses the exact operand roots. Entry reaches
+left evaluation, its primary projection precedes right evaluation when present,
+and right projection precedes the operation. The prepared sequence's transition
+uses the post-projection port, so no direct edge bypasses that stage. Both ledgers
+are validated and published atomically through the shared edge budget.
+Integer +,-,*,/,% require a Checked success edge; floating arithmetic, bit
+functions and comparisons retain ordinary results. Stopped operands/projections
+suppress later stages. Conditional call returns and short-circuit graphs remain
+unchanged. Required-only value helpers publish no runtime nodes; the required AST
+path through `integer_result` retains its existing sequence-only metadata.
 
-Baseline: clean `main`; all ten fallback checks passed with 1739 library/910
-native tests; `/tmp/meowy-fallback-stages-gate.log`.
-`prepare_sequence` now returns a validated bounded sequence without publishing it;
-the original API retains idempotence, shared capacity checks and counters. All 12
-existing sequence tests pass; `/tmp/meowy-sequence-prepare-focused.log`.
-Formatting and all 1739 library tests pass; `/tmp/meowy-sequence-prepare-lib.log`.
-Projection/classification capture is next.
-Sequence preparation committed as `07722b5`. `projected` exposes the existing
-primary-wrapper decision, and `binary_plan_values` retains those decisions,
-post-projection stopped types and checked-integer classification. Original APIs
-remain wrappers; no runtime metadata is published by required-only callers.
-All three classification groups pass: actual/inner primary wrappers, aggregate
-equality, checked integer versus plain operations, stopped projections, errors
-and source-free required construction; `/tmp/meowy-binary-plans-focused.log`.
-Formatting, all 1742 library tests and all-target Clippy pass;
-`/tmp/meowy-binary-plans-lib.log`, `/tmp/meowy-binary-plans-lint.log`.
-Atomic binary/sequence integration is next.
-Classification committed as `f0162b3`. The source `binary` caller now prepares the
-existing two-operand sequence, replaces its transition with the post-projection
-port when needed, and atomically publishes both ledgers. Ordinary result edges
-follow both operands; integer arithmetic uses Checked success. Stopped projections
-and operands suppress later stages. Focused tests exposed a required-only AST
-path through `integer_result` in addition to direct value construction. The source
-caller now preserves the old sequence-only behavior whenever `required` is set;
-new runtime stages apply only outside that mode. All four focused groups pass:
-projection order without bypasses, integer success conditions, plain/bit/string
-operations, calls, stops, required/short-circuit isolation, owner/control, original
-errors and atomic two-ledger budgets; `/tmp/meowy-binary-stages-focused.log`.
+All 12 existing sequence tests and 1739 library tests passed the preparation
+slice; `/tmp/meowy-sequence-prepare-focused.log`, `/tmp/meowy-sequence-prepare-lib.log`.
+Three classification groups, all 1742 library tests and all-target Clippy passed;
+`/tmp/meowy-binary-plans-focused.log`, `/tmp/meowy-binary-plans-lib.log`,
+`/tmp/meowy-binary-plans-lint.log`. Four integration groups cover projection order,
+checked/plain results, calls, stops, owner/control, required/short-circuit isolation,
+original errors and atomic two-ledger budgets; `/tmp/meowy-binary-stages-focused.log`.
 All ten compiler checks pass: 1746 library/910 native tests, formatting, Clippy,
 build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-binary-stages-gate.log`. No outstanding failures remain. Documentation
-and the remaining expected-type coercion boundary audit are next.
+`/tmp/meowy-binary-stages-gate.log`. No outstanding failures remain. The guide and
+trackers document this scope. Post-documentation validation passed 1208 local
+links in 110 Markdown files; `/tmp/meowy-binary-stages-docs.log`.
+Remaining expected-type coercion boundaries are
+next; other contextual builders, backedge propagation and proof outcomes remain
+separate.
 
-### Completed composed-fallback slices
-
-The dependency-ordered plan is complete:
-1. Capture exact nested roots and Forward/Convert/Stopped decisions without
-   repeating comparison/acceptance or changing HIR (`dd9be32`).
-2. Record bounded source/forwarding/conversion/result stages using that captured
-   kind, with focused tests and the full compiler gate (`b063010`).
-3. Document verified scope and the next prerequisite separately.
-
-`coercion` exposes the existing wrapper decision while `coerce` retains its API.
-`composed_fallback_point` preserves the nested source and captures Never before
-any expected-type coercion. Forward links source completion to result directly;
-Convert passes through an operation stage; Stopped retains entry only, including
-when its final HIR type is no longer Never. Existing inner coercion wrappers do
-not become new conversions. Metadata retains no aggregate type copies and does
-not replay acceptance, grant loan authority or infer completion from result type.
-Other coercion callers preserve their existing behavior and coverage boundaries.
-
-Three root groups cover record/scalar/union identity, existing wrappers,
-calls/branches, stopped coercion, errors and restoration;
-`/tmp/meowy-fallback-roots-focused.log`. Formatting and all 1735 library tests
-passed the prerequisite; `/tmp/meowy-fallback-roots-lib.log`. Four stage groups
-cover forwarding/conversion order, conditional call returns, stopped inputs,
-owner/control, failures and atomic identity/edge budgets;
-`/tmp/meowy-fallback-stages-focused.log`. After correcting import ordering, all
-ten compiler checks pass: 1739 library/910 native tests, formatting, Clippy, build
-and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-fallback-stages-gate.log`. No outstanding failures remain. The guide
-and trackers document this scope. Post-documentation validation passed 1208 local
-links in 110 Markdown files; `/tmp/meowy-fallback-stages-docs.log`.
-Ordinary non-short-circuit binary stages are
-next; other coercions, contextual builders, backedge propagation and proof outcomes
-remain separate.
-
-Record-equality operand sequencing (`498f9ca`, `4573280`) retains exact composed
-roots and source order without rechecking hints or changing contextual primary
-selection. Its ten-check gate passed with 1732 library/910 native tests;
-`/tmp/meowy-record-sequences-gate.log`. Composed groups, partial blocks and dispatch
-retain their established child/body/receiver identities and prefix barriers.
+Composed fallback (`dd9be32`, `b063010`, `71dfac3`) retains exact nested roots and
+Forward/Convert/Stopped decisions before coercion changes HIR type. Its ten-check
+gate passed with 1739 library/910 native tests; `/tmp/meowy-fallback-stages-gate.log`.
+Record equality, composed groups/partial blocks and dispatch retain their established
+source ordering, receiver identities and opaque prefix boundaries.
 
 ### Proof dependency implementation slices
 
@@ -1976,19 +1925,23 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`dd9be32`), with distinct forwarding/conversion/stopped stages (`b063010`).
    Never inputs have no result link even when existing coercion changes HIR type.
    Other generic coercion callers remain separate.
-   Next audit ordinary non-short-circuit binary stages in `check/scalars.rs`.
-   `binary` now has exact left/right roots and their sequence, but lacks outer
-   entry/operation/result links. `binary_values` may project record primaries
-   before constructing HIR; capture those decisions and checked operator/type
-   boundaries before wiring stages. Do not add a parallel sequence path that
-   bypasses primary projection or imply that a checked arithmetic result always
-   exists. Preserve operand order, stopped inputs, conditional call returns,
-   constant-error precedence and the existing short-circuit branch graph.
-   Keep capture/classification and stage integration independently reviewable,
-   with focused scalar/record/checked-arithmetic/never/budget tests and the full
-   compiler gate. Do not globally instrument `binary_values`: required integer
-   checking in `type_values/operands.rs` also calls it without runtime source roots.
-   Other coercions, contextual builders and required evaluation remain separate.
+   Ordinary non-short-circuit binaries now retain captured primary/normal/success
+   plans (`f0162b3`), and atomically publish entry/projection/operation/result stages
+   with adjusted operand sequences (`26f4860`, prerequisite `07722b5`). Integer
+   arithmetic results require Checked success; stopped inputs/projections have no
+   later stages. Short-circuit graphs and required sequence-only checking remain
+   separate, including required AST evaluation through `integer_result`.
+   Next audit `check/expressions.rs::{expr_point,coerced_expression,expected_value}`
+   for expected types beyond the existing shared-reference boundary. Raw operations
+   already publish the current point's normal result, so establish an exact nested
+   source boundary before adding generic forwarding/primary/coercion stages.
+   Preserve caller-facing roots, raw And/Or identities, shared-reborrow handling,
+   Never behavior, expected typing and required budgets. Capture actual no-op,
+   primary-extraction and conversion decisions during checking; do not infer them
+   from final HIR or add a result bypass. Keep source-boundary prerequisites and
+   operation integration separately reviewable with focused tests and the full gate.
+   `expected_value` also serves source-free/required callers, so avoid a global
+   runtime hook. Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

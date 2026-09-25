@@ -253,8 +253,18 @@ links source completion directly to the result; conversions use a distinct
 operation stage. Stopped inputs retain entry only, even when existing coercion
 gives them a non-Never result type. Existing inner wrappers are not mistaken for
 new conversions. These bounded links retain no aggregate type copies and do not
-replay acceptance. Other generic coercions and binary entry/operation/result stages
-remain separate; the final type does not prove that a stopped operand returns.
+replay acceptance. Other generic coercions remain separate; the final type does
+not prove that a stopped operand returns.
+Ordinary non-short-circuit binaries retain exact operand roots and actual primary
+projection decisions. Entry reaches left evaluation, its projection precedes right
+evaluation, and right projection precedes the operation. Binary stages and the
+adjusted operand sequence publish atomically; no parallel link skips projection.
+Integer arithmetic requires a checked-success edge for overflow/divisor checks;
+floating arithmetic, bit functions and comparisons use ordinary result edges.
+Stopped operands or projections suppress later stages. Short-circuit graphs keep
+their existing branches. Required-only value construction adds no runtime nodes,
+and required AST checking retains its prior sequence-only metadata. These stages
+retain no aggregate type copies and do not evaluate proof outcomes.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow

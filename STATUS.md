@@ -678,8 +678,13 @@ Composed fallback now captures exact source roots and pre-coercion decisions
 (`b063010`). A changed HIR type does not create completion for a Never source.
 All ten compiler checks pass: 1739 library/910 native tests;
 `/tmp/meowy-fallback-stages-gate.log`. The foundation guide documents this scope.
-Ordinary binary-operation stages are next; broader propagation and proof outcomes
-remain incomplete.
+Ordinary binaries now retain captured projection/success decisions (`f0162b3`) and
+publish ordered entry/projection/operation/result stages (`26f4860`) using prepared
+sequences (`07722b5`). Checked arithmetic, stopped inputs and required-only paths
+retain distinct boundaries. All ten compiler checks pass: 1746 library/910 native
+tests; `/tmp/meowy-binary-stages-gate.log`. The foundation guide documents this scope.
+Remaining expected-type coercion boundaries are next; broader propagation and
+proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -809,10 +814,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Composed fallback source/coercion sequencing passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1739 library/910 native tests.
+- Ordinary binary-operation stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1746 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-fallback-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-binary-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -923,13 +928,16 @@ execution was not part of this documentation edit.
    partial-record semantics and caller-specific errors. Record-context equality now
    retains both composed roots in the existing ordered sequence. Composed fallback
    now connects captured forwarding/conversion stages while preserving stopped
-   inputs independently of their final type. Next audit non-short-circuit binary
-   entry/operation/result stages in `compiler/src/check/scalars.rs`, capturing
-   primary-projection and checked-operation decisions before connecting them.
-   Preserve ordering, arithmetic failures, stopped inputs and short-circuit edges;
-   do not bypass projections or globally instrument required-only `binary_values`
-   callers. Split capture and integration with focused tests and the compiler gate.
-   Other generic coercions and contextual builders stay separate.
+   inputs independently of their final type. Ordinary binaries now connect entry,
+   primary projections, operation and result without bypassing operand order or
+   arithmetic success checks. Required-only paths and short-circuit graphs remain
+   separate. Next audit remaining expected-type coercions in
+   `compiler/src/check/expressions.rs`: establish nested raw-source boundaries
+   before forwarding/primary/coercion stages, preserving shared reborrows, raw
+   branch identities, Never handling, typing and budgets. Split boundary capture
+   and integration with focused tests and the compiler gate; avoid global hooks
+   in helpers also used by required/source-free callers. Other contextual builders
+   remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
