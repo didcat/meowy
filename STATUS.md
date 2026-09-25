@@ -639,8 +639,12 @@ checks pass: 1688 library/910 native tests; `/tmp/meowy-exclusive-place-gate.log
 Implementation: `898a519`. The foundation guide documents this boundary.
 Standalone temporary checking now exposes exact initializer roots while preserving
 existing cell/statement IDs and never-input behavior. Formatting and all 1691
-library tests pass; `/tmp/meowy-temporary-roots-lib.log`. Operation/result metadata
-is next; broader propagation and proof outcomes remain incomplete.
+library tests pass; `/tmp/meowy-temporary-roots-lib.log` (`2085cd4`). Standalone
+operations now connect initializer completion to existing cell materialization and
+reference availability, preserving statement IDs and other parent staging. All ten
+compiler checks pass: 1695 library/910 native tests; `/tmp/meowy-temporary-stages-gate.log`.
+Guide/tracker integration is next; broader propagation and proof outcomes remain
+incomplete.
 
 ## Pending descriptor statement accounting
 

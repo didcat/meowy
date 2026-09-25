@@ -353,5 +353,8 @@ pub(crate) use borrow_projections::{Projection, Step as ProjectionStep};
 mod place_borrows;
 pub(crate) use place_borrows::Borrow as PlaceBorrow;
 
+mod temporary_borrows;
+pub(crate) use temporary_borrows::Temporary;
+
 mod emissions;
 pub(crate) use emissions::Emission;

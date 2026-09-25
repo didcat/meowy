@@ -127,8 +127,19 @@ reusing unchanged temporary construction. Three focused groups pass: initializer
 order/cell identities, scalar/aggregate/reference values, stopped inputs and error
 restoration. Log: `/tmp/meowy-temporary-roots-focused.log`. Formatting and all
 1691 library tests pass; `/tmp/meowy-temporary-roots-lib.log`. Slice 1 is complete;
-standalone operation/result metadata and the full compiler gate are next. Implicit conversions, remaining field/builder paths, restart
-propagation and proof outcomes remain separate.
+standalone operation/result metadata is now integrated at the fallback only.
+It retains initializer roots and existing cell/statement IDs, validates bounded
+type equality, and links source completion to materialization/result availability.
+Never inputs retain only an entry link. Projected and element staging is unchanged.
+All four focused operation groups pass after correcting the fixture to inspect
+the existing HIR Statement lifetime wrapper; `/tmp/meowy-temporary-stages-focused.log`.
+They cover scalar/aggregate/reference cells, calls, stopped inputs, owner/control,
+source-family separation, errors and atomic identity/budget validation. The full
+compiler gate passed all ten checks: 1695 library/910 native tests, formatting,
+Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-temporary-stages-gate.log`. Slice 2 is complete; guide/tracker integration
+is next. Implicit conversions, remaining field/builder paths, restart propagation
+and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 

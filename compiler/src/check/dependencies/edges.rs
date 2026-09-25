@@ -87,6 +87,7 @@ impl Checker {
             .saturating_add(self.reborrow_edges)
             .saturating_add(self.projection_edges)
             .saturating_add(self.place_borrow_edges)
+            .saturating_add(self.temporary_borrow_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)
