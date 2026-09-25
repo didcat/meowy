@@ -101,96 +101,43 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current implicit shared-conversion slices
 
-Dependency-ordered commit plan:
-1. Allocate a distinct checked raw-expression child for shared-reference
-   expectations, retaining the caller-facing expression root and existing HIR.
-   Keep all other expression paths unchanged; cover nested operations, groups,
-   branch/read/query ancestry, owners, stopped inputs and failure restoration.
-2. Connect that exact child to the existing implicit reborrow site and result.
-   Reuse bounded reborrow validation and transparent region links when no
-   conversion occurs, without publishing a bypass across conversion or never.
-   Preserve typing, authority and budgets; run focused tests and the compiler gate.
+The dependency-ordered plan is complete:
+1. Establish a checked raw-expression child for shared-reference expectations,
+   preserving caller roots, contextual typing and existing HIR (`62a8a65`).
+2. Connect the exact child to existing implicit reborrow sites and results, with
+   focused regressions and the full compiler gate (`c2c4336`).
 3. Document verified coverage and the next prerequisite in the foundation guide
    and trackers, separately from implementation and focused regressions.
 
-Investigation: `coerced_expression` currently shares its point with raw calls,
-borrows and other operations, which already publish normal-result edges. Allocate
-the raw child while checking, with the same expected type and continuation budget,
-before applying conversion. Only shared-reference expectations need this boundary;
-the outer point is an expression while the raw child retains its original kind.
-Groups may convert their own child, so outer wrappers must distinguish a newly
-created conversion from a shared result that only needs transparent forwarding.
-Never inputs must allocate no site or normal-result edge. The boundary prerequisite
-will deliberately leave its new wrapper links unknown until the integration slice.
+Only shared-reference expectations gain the extra source boundary; the raw child
+retains its expression kind while the caller retains the outer root. Calls and
+explicit borrows publish their results before implicit conversion. Nested groups
+forward already-shared values without duplicating sites; stopped contexts retain
+only entry links and allocate no site. Generic primary/coercion wrappers retain
+unknown links. Existing typing, loan authority and proof gates remain unchanged.
 
-Baseline: clean `main`; standalone temporary slices passed all ten compiler checks
-with 1695 library/910 native tests and conformance 10 passed, 13 unsupported,
-0 failed in debug/release; `/tmp/meowy-temporary-stages-gate.log`.
-The boundary now wraps only shared-reference expectations and retains the raw
-expression kind, exact caller root, expected context and existing HIR conversion.
-Three focused groups pass after correcting test-only type/import names: calls,
-borrows, nested groups, repeated spans, branch/query/read ancestry, owners, never,
-ordinary diagnostics and budget restoration; `/tmp/meowy-conversion-roots-focused.log`.
-Wrapper links remain intentionally pending the conversion integration slice.
-Formatting and all 1698 library tests pass; `/tmp/meowy-conversion-roots-lib.log`.
-No outstanding failures remain in the boundary prerequisite.
-Boundary prerequisite committed as `62a8a65`. Conversion integration now reuses
-the exact returned child and bounded reborrow operation. Unchanged shared results
-use transparent links; other generic coercions retain unknown wrapper links.
-Stopped contexts retain entry only. All four focused stage groups pass after
-resolving a local name collision: raw call/borrow ordering, grouped forwarding,
-unchanged shared results, deliberately unknown generic primary conversion,
-never/owner/control boundaries, existing errors and atomic edge budgets;
-`/tmp/meowy-conversion-stages-focused.log`. The full compiler gate passed all ten
-checks: 1702 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-conversion-stages-gate.log`. No outstanding failures remain.
-Next document the verified boundary and ordinary runtime field-source prerequisite.
+Three root groups cover calls/borrows, nested groups, repeated spans,
+branch/query/read ancestry, owners, never, diagnostics and budget restoration;
+`/tmp/meowy-conversion-roots-focused.log`. Formatting and all 1698 library tests
+passed the prerequisite; `/tmp/meowy-conversion-roots-lib.log`. Four integration
+groups cover effect ordering, absence of result bypasses, transparent forwarding,
+never/owner/control boundaries, permission errors and atomic edge budgets;
+`/tmp/meowy-conversion-stages-focused.log`. All ten compiler checks pass: 1702
+library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-conversion-stages-gate.log`.
+No outstanding failures remain. The foundation guide and trackers now document
+this coverage. Post-documentation validation passed 1208 local links in 110
+Markdown files; `/tmp/meowy-conversion-stages-docs.log`.
+Ordinary runtime field-source roots and projection stages are next;
+generic coercions, contextual builders, propagation and proof outcomes stay separate.
 
-### Completed standalone temporary-borrow slices
-
-Dependency-ordered commit plan:
-1. Expose the exact initializer root in the standalone fallback through a helper
-   that reuses `temporary_borrow`. Preserve evaluation order, existing HIR cells,
-   statement IDs, stopped inputs and errors; validate with library tests.
-2. Record bounded source/materialization/reference-result operations only for that
-   fallback. Validate existing cell/statement/type identities, reference-cell
-   distinction, stopped operands and shared budgets. Keep projected/element-parent
-   staging separate; run the full compiler gate.
-3. Document verified scope and the next coverage prerequisite in the foundation
-   guide and trackers, separately from implementation and focused regressions.
-
-Investigation: the fallback without a field suffix now uses
-`temporary_borrow_point` to preserve the exact initializer root before construction. The constructor
-returns stopped inputs before allocating a local or requiring a statement; other
-inputs receive an existing statement-owned cell and shared-reference HIR. The same
-constructor serves projected and element parents, so a blanket graph hook would
-risk bypassing their later stages. Instrument only the standalone caller.
-
-Baseline: `898a519`, `d9866de` passed all ten compiler checks: 1688 library/910
-native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-exclusive-place-gate.log`. Working tree was clean on `main`.
-`temporary_borrow_point` now exposes the standalone initializer root while
-reusing unchanged temporary construction. Three focused groups pass: initializer
-order/cell identities, scalar/aggregate/reference values, stopped inputs and error
-restoration. Log: `/tmp/meowy-temporary-roots-focused.log`. Formatting and all
-1691 library tests pass; `/tmp/meowy-temporary-roots-lib.log` (`2085cd4`);
-standalone operation/result metadata is now integrated at the fallback only.
-It retains initializer roots and existing cell/statement IDs, validates bounded
-type equality, and links source completion to materialization/result availability.
-Never inputs retain only an entry link. Projected and element staging is unchanged.
-All four focused operation groups pass after correcting the fixture to inspect
-the existing HIR Statement lifetime wrapper; `/tmp/meowy-temporary-stages-focused.log`.
-They cover scalar/aggregate/reference cells, calls, stopped inputs, owner/control,
-source-family separation, errors and atomic identity/budget validation. The full
-compiler gate passed all ten checks: 1695 library/910 native tests, formatting,
-Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-temporary-stages-gate.log`. Operation integration: `4443aac`. The guide
-and trackers now document the boundary. Post-documentation validation passed:
+Standalone temporary borrows are also complete (`2085cd4`, `4443aac`, `51bf884`).
+They retain initializer roots, existing cell/statement IDs and materialization/result
+order at the standalone fallback only. Never inputs allocate no cell, reference
+values remain distinct cells, and projected/element-parent staging stays separate.
+The ten-check compiler gate passed with 1695 library/910 native tests;
+`/tmp/meowy-temporary-stages-gate.log`. Post-documentation validation passed
 1208 local links in 110 Markdown files; `/tmp/meowy-temporary-stages-docs.log`.
-All three slices are complete. Next establish exact raw-expression boundaries for
-implicit reference conversion before wiring conversion sites. Remaining field/builder paths,
-restart propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1945,22 +1892,25 @@ subtraction retains its documented limits. No outstanding failures remain.
    existing local/statement identities with materialization/result links (`4443aac`).
    Never inputs allocate no cell; reference-valued initializers remain distinct
    cells. Projected and element-parent staging receives no duplicate result edges.
-   Next audit implicit exclusive-to-shared conversion in
-   `check/expressions.rs::coerced_expression`. Raw expression operations currently
-   share the outer point and already publish normal-result links, so establish an
-   exact uncoerced source boundary before recording the implicit reborrow site and
-   result. Preserve caller-facing roots, branch/read/query ancestry, owner/control,
-   expected typing, required budgets and ordinary errors. Do not infer a source
-   point from HIR/spans or add a second entry-to-normal bypass. Plan independently
-   reviewable boundary and conversion-integration slices with focused regressions,
-   then run the compiler gate. Preserve existing shared-conversion loan semantics
-   and never-input handling; generic coercions, remaining field projections and
-   contextual builders stay separate.
+   Implicit exclusive-to-shared conversion now retains distinct raw source roots
+   (`62a8a65`) and existing sites/result stages (`c2c4336`). Raw operations cannot
+   bypass conversion; unchanged shared results forward through transparent links.
+   Stopped contexts allocate no site or result edge. Generic coercions remain unknown.
+   Next expose exact runtime receiver roots in `check/expressions.rs::raw_expression`
+   for the `ExprKind::Field` fallback, after required-field and symbol handling.
+   Preserve those early exits, receiver checking order, resolved field indices,
+   implicit shared-reference dereference, narrowing and existing diagnostics.
+   Then record bounded receiver/load/field/result stages without replaying lookup
+   or inferring IDs from HIR/spans. Keep the root prerequisite and stage integration
+   independently reviewable, with focused regressions and the full compiler gate.
+   Capture the checked field before narrowing; result availability must not claim
+   complete field provenance or grant loan authority. Other coercions, predicates,
+   dispatch/contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Implicit conversions, remaining field paths and contextual builders remain
+   Generic coercions, remaining field paths and contextual builders remain
    coverage gaps; missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

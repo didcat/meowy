@@ -202,8 +202,16 @@ and lifetime checks without granting authority. Direct shared `&*p` reborrows al
 retain exact parents, existing sites and distinct parent/result modes. Shared and
 exclusive parents preserve scalar, aggregate and reference-cell pointees; bounded
 comparison work retains no aggregate shape copies. Stopped parents retain the
-requested result mode without a parent mode, site or result edge. Implicit
-conversions remain separate graph-coverage work.
+requested result mode without a parent mode, site or result edge.
+Implicit exclusive-to-shared conversion retains a distinct checked raw-expression
+root and the existing shared reborrow site. Raw call/borrow results precede
+conversion and cannot bypass its result stage. Shared-reference expectations keep
+their caller-facing roots; nested groups forward already-shared results without
+duplicating sites. Stopped contexts allocate no site and retain entry links only.
+These links reuse bounded reborrow validation and the shared edge budget, preserving
+existing typing, parent suspension and lifetime checks. Generic coercions and
+primary extraction retain unknown graph links; ordinary field projections remain
+separate coverage work.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow

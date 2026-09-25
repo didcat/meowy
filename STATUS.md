@@ -644,8 +644,13 @@ operations now connect initializer completion to existing cell materialization a
 reference availability, preserving statement IDs and other parent staging. All ten
 compiler checks pass: 1695 library/910 native tests; `/tmp/meowy-temporary-stages-gate.log`.
 Operation integration: `4443aac`. The foundation guide documents the boundary.
-Implicit reference-conversion source boundaries are next; broader propagation and
-proof outcomes remain incomplete.
+Implicit reference conversion now separates raw source roots from caller results
+(`62a8a65`) and sequences existing shared reborrow sites after raw effects
+(`c2c4336`). Groups and unchanged shared results forward transparently; never inputs
+allocate no site or result edge. All ten compiler checks pass: 1702 library/910
+native tests; `/tmp/meowy-conversion-stages-gate.log`. The foundation guide documents
+the boundary. Ordinary runtime field roots/stages are next; generic coercions,
+broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -775,10 +780,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Standalone temporary-borrow roots and materialization stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1695 library/910 native tests.
+- Implicit shared-conversion roots and stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1702 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-temporary-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-conversion-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -875,12 +880,14 @@ execution was not part of this documentation edit.
    places now share those stages while preserving their existing permission/shape
    gates and alias bookkeeping. Standalone temporaries now retain initializer roots,
    cell/statement IDs and materialization/result order without duplicating other
-   parent staging. Next establish exact uncoerced source boundaries for implicit
-   exclusive-to-shared conversion in `compiler/src/check/expressions.rs::coerced_expression`.
-   Existing raw operations share the outer normal port, so preserve root/branch
-   identities and avoid bypassing source effects. Split boundary and conversion
-   integration, preserve typing/loans/budgets, and run focused tests plus the compiler
-   gate. Remaining field/coercion/builder coverage stays separate.
+   parent staging. Implicit shared conversion now separates raw source roots from
+   caller results and sequences existing reborrow sites after raw effects, without
+   bypassing conversion or stopped inputs. Next expose exact runtime field receiver
+   roots in `compiler/src/check/expressions.rs::raw_expression`, preserving required
+   and symbol early exits. Then connect receiver/load/field/result stages using
+   checked indices before narrowing. Split root and integration slices, preserve
+   typing/loans/budgets, and run focused tests plus the compiler gate. Generic
+   coercions, predicates and contextual builders stay separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
