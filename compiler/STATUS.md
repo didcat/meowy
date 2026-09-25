@@ -99,7 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current implicit shared-conversion slices
+### Current runtime field-access slices
+
+Dependency-ordered commit plan:
+1. Extract the runtime field fallback into a helper returning its exact receiver
+   root, whether checking inserted a shared-reference load, and the checked field
+   before narrowing. Preserve required/symbol exits, lookup and errors; validate
+   root capture with focused tests and the library suite.
+2. Record bounded receiver/load/field/result stages using that captured boundary
+   and resolved field index. Preserve explicit dereference stages, calls, narrowing,
+   owner/control and never-field behavior; run focused tests and the compiler gate.
+3. Document verified coverage and the next source-graph prerequisite separately.
+
+Investigation: the runtime `ExprKind::Field` fallback discards the receiver root,
+optionally inserts a shared-reference dereference, resolves a record index, then
+narrows the resulting field. Capture the load decision during checking: inspecting
+the final HIR alone would confuse an explicit receiver dereference with this
+implicit load. Required fields and resolved static/intrinsic symbols exit earlier.
+Never receivers currently fail E201; preserve that diagnostic rather than inventing
+new field support. Metadata must precede narrowing and retain no aggregate clones.
+
+Baseline: clean `main`; implicit conversion passed all ten compiler checks with
+1702 library/910 native tests; `/tmp/meowy-conversion-stages-gate.log`.
+The runtime fallback now calls `field_point`, which retains the receiver root and
+load decision before returning the declared field for existing narrowing. Two
+focused groups pass: exact roots, indices, groups, explicit/implicit loads, calls,
+declared unions, existing errors and budget restoration;
+`/tmp/meowy-field-roots-focused.log`. Formatting and all 1704 library tests pass;
+`/tmp/meowy-field-roots-lib.log`. Stage metadata remains the next slice.
+
+### Completed implicit shared-conversion slices
 
 The dependency-ordered plan is complete:
 1. Establish a checked raw-expression child for shared-reference expectations,

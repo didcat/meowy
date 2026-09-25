@@ -391,37 +391,8 @@ impl Checker {
                         )),
                     };
                 }
-                let mut value = self.expr(value, None)?;
-                if let Type::Reference(ty) = &value.ty {
-                    value = hir::Expr {
-                        ty: *ty.clone(),
-                        span: value.span,
-                        kind: hir::ExprKind::Deref(Box::new(value)),
-                    };
-                }
-                let Type::Record { fields, .. } = &value.ty else {
-                    return Err(Self::error(
-                        "E201",
-                        format!("type {:?} has no field `{name}`", value.ty),
-                        expr.span,
-                    ));
-                };
-                let (index, field) = fields
-                    .iter()
-                    .enumerate()
-                    .find(|(_, field)| &field.name == name)
-                    .ok_or_else(|| {
-                        Self::error("E201", format!("unknown record field `{name}`"), expr.span)
-                    })?;
-                let ty = field.ty.clone();
-                return self.narrow(hir::Expr {
-                    kind: hir::ExprKind::Field {
-                        value: Box::new(value),
-                        index,
-                    },
-                    ty,
-                    span: expr.span,
-                });
+                let (_, _, value) = self.field_point(value, name, expr.span)?;
+                return self.narrow(value);
             }
             ExprKind::Ascribe {
                 value,
@@ -672,3 +643,5 @@ mod formatting;
 
 #[cfg(test)]
 mod roots;
+
+mod fields;
