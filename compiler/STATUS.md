@@ -123,6 +123,20 @@ API. All five focused root/plan groups pass, including existing expected/inner
 wrappers, once-only effects, stops, invalid primaries and source-free construction;
 `/tmp/meowy-unary-primary-focused.log`. Formatting and all 1758 library tests pass;
 `/tmp/meowy-unary-primary-lib.log`. Projection-stage integration is next.
+Capture committed as `9fdbde3`. Unary metadata now retains the captured primary
+flag and routes source completion through a projection before the operation when
+needed. Existing scalar/checked-result and stopped-input paths remain intact;
+identity validation rejects a fabricated projection on a stopped or scalar input.
+All four focused stage groups pass: negation/inversion/bit primary stages,
+no duplicate expected projections, once-only effects, owner/control, stops,
+signed literals and atomic flag/budget validation;
+`/tmp/meowy-unary-primary-stages-focused.log`. Fixtures preserve the distinction
+between constant E107 and overflow deferred through a block's checked result,
+and use a context-free function expression for the projection case. The full
+compiler gate passed all ten checks: 1762 library/910 native tests, formatting,
+Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-unary-primary-stages-gate.log`. No outstanding failures remain.
+Documentation and the formatting primary-projection handoff are next.
 
 ### Completed expected-type coercion slices
 

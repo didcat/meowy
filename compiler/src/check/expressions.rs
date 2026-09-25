@@ -301,9 +301,9 @@ impl Checker {
                 if ["&!", ">>", "<<"].contains(&op.as_str()) {
                     return Err(Diagnostic::unsupported(format!("unary `{op}`"), expr.span));
                 }
-                let (input, _, value) = self.unary_point(op, value, expected, expr.span)?;
+                let (input, primary, value) = self.unary_point(op, value, expected, expr.span)?;
                 if let Some(point) = self.point {
-                    self.unary_operation(point, input, &value, expr.span)?;
+                    self.unary_operation(point, input, primary, &value, expr.span)?;
                 }
                 return Ok(value);
             }

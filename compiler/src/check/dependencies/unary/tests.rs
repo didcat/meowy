@@ -116,7 +116,7 @@ pub(crate) fn unary_stages_validate_identity_and_publish_with_shared_budgets() {
     let unary = unary.clone();
     let count = checker.unary_edges;
     checker
-        .unary_operation(id, unary.input, value, unary.span)
+        .unary_operation(id, unary.input, unary.primary, value, unary.span)
         .unwrap();
     assert_eq!(checker.unary_edges, count);
     checker.unaries.clear();
@@ -125,7 +125,7 @@ pub(crate) fn unary_stages_validate_identity_and_publish_with_shared_budgets() {
     invalid.ty = hir::Type::String;
     assert!(
         checker
-            .unary_operation(id, unary.input, &invalid, unary.span)
+            .unary_operation(id, unary.input, unary.primary, &invalid, unary.span)
             .unwrap_err()
             .message
             .contains("identity")
@@ -133,7 +133,7 @@ pub(crate) fn unary_stages_validate_identity_and_publish_with_shared_budgets() {
     checker.points[unary.input].parent = None;
     assert!(
         checker
-            .unary_operation(id, unary.input, value, unary.span)
+            .unary_operation(id, unary.input, unary.primary, value, unary.span)
             .unwrap_err()
             .message
             .contains("identity")
@@ -142,7 +142,7 @@ pub(crate) fn unary_stages_validate_identity_and_publish_with_shared_budgets() {
     checker.output_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
-            .unary_operation(id, unary.input, value, unary.span)
+            .unary_operation(id, unary.input, unary.primary, value, unary.span)
             .unwrap_err()
             .message
             .contains("budget")

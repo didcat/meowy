@@ -22,6 +22,7 @@ pub(crate) struct Unary {
     pub(crate) owner: usize,
     pub(crate) input: hir::PointId,
     pub(crate) kind: Kind,
+    pub(crate) primary: bool,
     pub(crate) ty: hir::Type,
     pub(crate) control: bool,
     pub(crate) span: Span,
@@ -33,6 +34,7 @@ impl Checker {
         &mut self,
         id: hir::PointId,
         input: hir::PointId,
+        primary: bool,
         value: &hir::Expr,
         span: Span,
     ) -> Result<()> {
@@ -59,12 +61,20 @@ impl Checker {
             return Err(invalid());
         }
         let kind = if value.ty == hir::Type::Never {
+            if primary {
+                return Err(invalid());
+            }
             Kind::Stopped
         } else {
             let hir::ExprKind::Unary { op, value: child } = &value.kind else {
                 return Err(invalid());
             };
             if child.ty != value.ty {
+                return Err(invalid());
+            }
+            if primary
+                && !matches!(&child.kind, hir::ExprKind::Primary(input) if matches!(input.ty, hir::Type::Record { .. }))
+            {
                 return Err(invalid());
             }
             match (op.as_str(), &value.ty) {
@@ -78,13 +88,19 @@ impl Checker {
         };
         let mut edges = vec![Edge::new(Port::Entry(id), Port::Entry(input), Route::Next)];
         if kind != Kind::Stopped {
+            let mut from = Port::Normal(input);
+            if primary {
+                let stage = Port::Projection { point: id, step: 0 };
+                edges.push(Edge::new(from, stage, Route::Next));
+                from = stage;
+            }
             let route = if kind == Kind::Negate && matches!(value.ty, hir::Type::Int { .. }) {
                 Route::Checked
             } else {
                 Route::Next
             };
             edges.extend([
-                Edge::new(Port::Normal(input), Port::Operation(id), Route::Next),
+                Edge::new(from, Port::Operation(id), Route::Next),
                 Edge::new(Port::Operation(id), Port::Normal(id), route),
             ]);
         }
@@ -92,6 +108,7 @@ impl Checker {
             owner: self.owner,
             input,
             kind,
+            primary,
             ty: value.ty.clone(),
             control: self.control,
             span,
@@ -115,3 +132,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod primary;
