@@ -673,8 +673,13 @@ Record-context equality now retains both composed operand roots and ordered
 sequence links (`498f9ca`), preserving contextual primary projection and existing
 typing. All ten compiler checks pass: 1732 library/910 native tests;
 `/tmp/meowy-record-sequences-gate.log`. The foundation guide documents this scope.
-Composed fallback source/coercion sequencing is next; broader propagation and
-proof outcomes remain incomplete.
+Composed fallback now captures exact source roots and pre-coercion decisions
+(`dd9be32`), then distinguishes forwarding, conversion and stopped-input stages
+(`b063010`). A changed HIR type does not create completion for a Never source.
+All ten compiler checks pass: 1739 library/910 native tests;
+`/tmp/meowy-fallback-stages-gate.log`. The foundation guide documents this scope.
+Ordinary binary-operation stages are next; broader propagation and proof outcomes
+remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -804,10 +809,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Record-equality operand sequencing passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1732 library/910 native tests.
+- Composed fallback source/coercion sequencing passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1739 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-record-sequences-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-fallback-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -916,13 +921,15 @@ execution was not part of this documentation edit.
    or inventing source statements. Composed Group/Block roots now link exact child
    and body results; composed dispatch reuses prefix stages while preserving its
    partial-record semantics and caller-specific errors. Record-context equality now
-   retains both composed roots in the existing ordered sequence. Next capture the
-   nested expression root and original stopped/type state in the fallback of
-   `compiler/src/check/blocks.rs::composed_value`, then connect forwarding/coercion
-   stages. Preserve existing acceptance and HIR behavior: an expected-primary
-   coercion can change a Never input's type without making it return. Split capture
-   and integration slices with focused tests and the compiler gate. Other generic
-   coercions, binary operation/result stages and contextual builders stay separate.
+   retains both composed roots in the existing ordered sequence. Composed fallback
+   now connects captured forwarding/conversion stages while preserving stopped
+   inputs independently of their final type. Next audit non-short-circuit binary
+   entry/operation/result stages in `compiler/src/check/scalars.rs`, capturing
+   primary-projection and checked-operation decisions before connecting them.
+   Preserve ordering, arithmetic failures, stopped inputs and short-circuit edges;
+   do not bypass projections or globally instrument required-only `binary_values`
+   callers. Split capture and integration with focused tests and the compiler gate.
+   Other generic coercions and contextual builders stay separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

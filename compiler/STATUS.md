@@ -101,80 +101,43 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current composed-fallback slices
 
-Dependency-ordered commit plan:
-1. Retain the nested source root and classify forwarding, conversion or stopped
-   input before the fallback loses that distinction. Expose the existing coerce
-   decision without repeating type comparison or acceptance; validate HIR and
-   contextual/error/budget preservation with focused and library checks.
+The dependency-ordered plan is complete:
+1. Capture exact nested roots and Forward/Convert/Stopped decisions without
+   repeating comparison/acceptance or changing HIR (`dd9be32`).
 2. Record bounded source/forwarding/conversion/result stages using that captured
-   kind. Never inputs retain entry only even when their HIR type changes; run
-   focused regressions and the complete compiler gate.
+   kind, with focused tests and the full compiler gate (`b063010`).
 3. Document verified scope and the next prerequisite separately.
 
-Investigation: the fallback already has a nested `expression_point` boundary.
-Record inputs bypass coercion; other values call `coerce` only after expected-type
-acceptance. `coerce` already distinguishes identity from a new wrapper. Return
-that decision from a shared helper while retaining its existing API for other
-callers. Capture Never before coercion; inspecting final HIR would confuse an
-existing inner wrapper with a new conversion or invent completion for Never.
+`coercion` exposes the existing wrapper decision while `coerce` retains its API.
+`composed_fallback_point` preserves the nested source and captures Never before
+any expected-type coercion. Forward links source completion to result directly;
+Convert passes through an operation stage; Stopped retains entry only, including
+when its final HIR type is no longer Never. Existing inner coercion wrappers do
+not become new conversions. Metadata retains no aggregate type copies and does
+not replay acceptance, grant loan authority or infer completion from result type.
+Other coercion callers preserve their existing behavior and coverage boundaries.
 
-Baseline: clean `main`; all ten record-sequencing checks passed with 1732 library/
-910 native tests; `/tmp/meowy-record-sequences-gate.log`.
-The shared `coercion` helper now returns its existing wrapper decision while
-`coerce` retains its original API. `composed_fallback_point` captures the actual
-nested root and Forward/Convert/Stopped kind without cloning source types or
-repeating acceptance. Three focused groups pass: record/scalar/union identity,
-existing inner wrappers, calls/branches, stopped coercion, errors and restoration;
-`/tmp/meowy-fallback-roots-focused.log`. Formatting and all 1735 library tests pass;
-`/tmp/meowy-fallback-roots-lib.log`. Stage integration remains next.
-Capture prerequisite committed as `dd9be32`. The fallback now records its captured
-kind in a bounded ledger: Forward links source/result directly, Convert uses an
-operation stage, and Stopped retains entry only. The original raw root supplies
-all result availability; no generic entry-to-normal bypass is added. Four focused
-stage groups pass: distinct forwarding/conversion, inner wrappers, conditional
-call returns, stopped coercions, owner/control, errors and atomic identity/edge
-budgets; `/tmp/meowy-fallback-stages-focused.log`. Record-sequence tests now expect
-the earlier fallback-stage budget boundary. After correcting import ordering,
-all ten compiler checks pass: 1739 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-fallback-stages-gate.log`. No outstanding failures remain.
-Documentation and the non-short-circuit binary-stage audit are next.
-
-### Completed record-equality sequencing slices
-
-The dependency-ordered plan is complete:
-1. Retain both composed operand roots in record-context equality and use the
-   existing binary sequence, with focused regressions and the full gate (`498f9ca`).
-2. Document verified scope and the next prerequisite separately.
-
-Both branches now retain the exact IDs returned by `composed_point`; the unused
-helper that discarded those IDs is removed. Existing sequence validation supplies
-the bounded left-normal/right-entry link without extra checking, point allocation,
-hint replay or HIR changes. Contextual primary widths, scalar-vs-record projection,
-function ownership, ordinary errors and shared budgets remain unchanged.
-Composed fallback links and binary entry/operation/result stages remain unknown.
-A stopped call can retain an existing expected-primary coercion and yield a
-boolean comparison type; its missing call-return edge still prevents completion.
-The sequencing change preserves that HIR behavior rather than changing typing.
-
-Four focused groups pass: nested groups/repeated spans, owners, once-only calls
-and effects, partial blocks, contextual widths/projections, stopped-call coercion,
-diagnostics and atomic edge budgets; `/tmp/meowy-record-sequences-focused.log`.
-All ten compiler checks pass: 1732 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-record-sequences-gate.log`. No outstanding failures remain. The guide
+Three root groups cover record/scalar/union identity, existing wrappers,
+calls/branches, stopped coercion, errors and restoration;
+`/tmp/meowy-fallback-roots-focused.log`. Formatting and all 1735 library tests
+passed the prerequisite; `/tmp/meowy-fallback-roots-lib.log`. Four stage groups
+cover forwarding/conversion order, conditional call returns, stopped inputs,
+owner/control, failures and atomic identity/edge budgets;
+`/tmp/meowy-fallback-stages-focused.log`. After correcting import ordering, all
+ten compiler checks pass: 1739 library/910 native tests, formatting, Clippy, build
+and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-fallback-stages-gate.log`. No outstanding failures remain. The guide
 and trackers document this scope. Post-documentation validation passed 1208 local
-links in 110 Markdown files; `/tmp/meowy-record-sequences-docs.log`.
-Composed fallback source/coercion sequencing is
-next; broader binary stages, contextual builders, backedge propagation and proof
-outcomes remain separate.
+links in 110 Markdown files; `/tmp/meowy-fallback-stages-docs.log`.
+Ordinary non-short-circuit binary stages are
+next; other coercions, contextual builders, backedge propagation and proof outcomes
+remain separate.
 
-Composed Group/Block links (`85a59dd`) and composed dispatch (`0ade9ed`) preserve
-partial records, expected slots and caller-specific errors. Their ten-check gate
-passed with 1728 library/910 native tests; `/tmp/meowy-composed-stages-gate.log`.
-Ordinary dispatch retains existing receiver-local/source/body identities and only
-connects initialization to the immediate checked successor or empty completion.
-All opaque forward barriers and established type/loan gates remain intact.
+Record-equality operand sequencing (`498f9ca`, `4573280`) retains exact composed
+roots and source order without rechecking hints or changing contextual primary
+selection. Its ten-check gate passed with 1732 library/910 native tests;
+`/tmp/meowy-record-sequences-gate.log`. Composed groups, partial blocks and dispatch
+retain their established child/body/receiver identities and prefix barriers.
 
 ### Proof dependency implementation slices
 
@@ -1948,22 +1911,28 @@ subtraction retains its documented limits. No outstanding failures remain.
    Composed Group/Block roots now link exact children and partial body results
    (`85a59dd`). Composed dispatch captures receiver/local/body identities and
    reuses bounded prefix stages (`0ade9ed`) while preserving partial records,
-   expected slots and caller-specific errors. Generic fallback links stay unknown.
+   expected slots and caller-specific errors.
    Record-context equality now retains both composed operand roots (`498f9ca`)
    and links their checked evaluation order through the existing sequence ledger.
    Contextual primary selection, scalar projection, hints and diagnostics remain
    unchanged; the discard-only `composed` helper has no remaining callers.
-   Next audit the fallback in `check/blocks.rs::composed_value`. It still drops
-   the root returned by nested expression checking before optionally coercing the
-   result. Capture that exact root and original stopped/type state before `coerce`,
-   then distinguish unchanged forwarding from a conversion stage without copying
-   aggregate types or replaying acceptance. Existing expected-primary coercion
-   can turn a Never input into a non-Never HIR type; graph completion must still
-   depend on the original input, not the final type. Preserve this behavior and
-   existing diagnostics. Split source capture and stage integration with focused
-   record/scalar/union/no-op/stopped/budget regressions and the compiler gate.
-   Generic coercions elsewhere, binary entry/operation/result stages, other
-   contextual builders and required evaluation remain separate.
+   Composed fallback now retains exact source roots and pre-coercion decisions
+   (`dd9be32`), with distinct forwarding/conversion/stopped stages (`b063010`).
+   Never inputs have no result link even when existing coercion changes HIR type.
+   Other generic coercion callers remain separate.
+   Next audit ordinary non-short-circuit binary stages in `check/scalars.rs`.
+   `binary` now has exact left/right roots and their sequence, but lacks outer
+   entry/operation/result links. `binary_values` may project record primaries
+   before constructing HIR; capture those decisions and checked operator/type
+   boundaries before wiring stages. Do not add a parallel sequence path that
+   bypasses primary projection or imply that a checked arithmetic result always
+   exists. Preserve operand order, stopped inputs, conditional call returns,
+   constant-error precedence and the existing short-circuit branch graph.
+   Keep capture/classification and stage integration independently reviewable,
+   with focused scalar/record/checked-arithmetic/never/budget tests and the full
+   compiler gate. Do not globally instrument `binary_values`: required integer
+   checking in `type_values/operands.rs` also calls it without runtime source roots.
+   Other coercions, contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

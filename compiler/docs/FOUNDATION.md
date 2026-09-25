@@ -246,9 +246,15 @@ Partial mode, expected slots and caller-specific error order remain unchanged;
 the ordinary caller's early exclusive-receiver gate is not imposed here.
 Record-context equality retains both exact composed operand roots for ordered
 sequencing, including scalar-primary comparisons. Existing hinting, contextual
-widths, projections and once-only effects are preserved. Generic composed fallback
-coercions and binary entry/operation/result stages remain separate gaps; the final
-comparison type does not prove that a stopped operand returns.
+widths, projections and once-only effects are preserved.
+The composed fallback retains its exact nested source and classifies forwarding,
+new conversion and stopped input before coercion changes the HIR type. Forwarding
+links source completion directly to the result; conversions use a distinct
+operation stage. Stopped inputs retain entry only, even when existing coercion
+gives them a non-Never result type. Existing inner wrappers are not mistaken for
+new conversions. These bounded links retain no aggregate type copies and do not
+replay acceptance. Other generic coercions and binary entry/operation/result stages
+remain separate; the final type does not prove that a stopped operand returns.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow
