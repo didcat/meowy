@@ -209,8 +209,8 @@ conversion and cannot bypass its result stage. Shared-reference expectations kee
 their caller-facing roots; nested groups forward already-shared results without
 duplicating sites. Stopped contexts allocate no site and retain entry links only.
 These links reuse bounded reborrow validation and the shared edge budget, preserving
-existing typing, parent suspension and lifetime checks. Generic coercions and
-primary extraction retain unknown graph links.
+existing typing, parent suspension and lifetime checks. Expected primary extraction
+and other coercions use the separate stages described below.
 Ordinary runtime fields retain exact receiver roots, resolved field indices and
 the decision to insert a shared-reference load. Receiver completion precedes that
 load, when present, then field selection and result availability. Explicit receiver
@@ -253,8 +253,16 @@ links source completion directly to the result; conversions use a distinct
 operation stage. Stopped inputs retain entry only, even when existing coercion
 gives them a non-Never result type. Existing inner wrappers are not mistaken for
 new conversions. These bounded links retain no aggregate type copies and do not
-replay acceptance. Other generic coercions remain separate; the final type does
-not prove that a stopped operand returns.
+replay acceptance; the final type does not prove that a stopped operand returns.
+Non-required expected-value contexts retain a caller root and a distinct raw
+source, preserving inner branch/call identities and their result conditions.
+Captured expected-value decisions connect forwarding, optional primary extraction
+and conversion without bypassing raw effects. Direct Never retains entry only;
+a Never primary reaches projection but has no result link, even when coercion
+changes the final HIR type. Existing inner wrappers are not reclassified as new
+work. Shared reborrows and unchanged shared forwarding retain their own paths.
+Required checking and source-free expected-value helpers gain no runtime stages;
+logical budgets, typing, E207 and loan authority remain unchanged.
 Ordinary non-short-circuit binaries retain exact operand roots and actual primary
 projection decisions. Entry reaches left evaluation, its projection precedes right
 evaluation, and right projection precedes the operation. Binary stages and the

@@ -683,8 +683,13 @@ publish ordered entry/projection/operation/result stages (`26f4860`) using prepa
 sequences (`07722b5`). Checked arithmetic, stopped inputs and required-only paths
 retain distinct boundaries. All ten compiler checks pass: 1746 library/910 native
 tests; `/tmp/meowy-binary-stages-gate.log`. The foundation guide documents this scope.
-Remaining expected-type coercion boundaries are next; broader propagation and
-proof outcomes remain incomplete.
+Expected-value decisions (`a9add72`) and separate raw-source roots (`548eaaf`) now
+feed forwarding, primary and coercion stages (`bc18f19`). Raw branch/call identity,
+direct/projected Never, shared reborrows and required budgets remain distinct.
+All ten compiler checks pass: 1756 library/910 native tests;
+`/tmp/meowy-expected-stages-gate.log`. The foundation guide documents this scope.
+Remaining unary primary projections are next; broader propagation and proof
+outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -814,10 +819,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Ordinary binary-operation stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1746 library/910 native tests.
+- Expected-value roots and coercion stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1756 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-binary-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-expected-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -931,13 +936,14 @@ execution was not part of this documentation edit.
    inputs independently of their final type. Ordinary binaries now connect entry,
    primary projections, operation and result without bypassing operand order or
    arithmetic success checks. Required-only paths and short-circuit graphs remain
-   separate. Next audit remaining expected-type coercions in
-   `compiler/src/check/expressions.rs`: establish nested raw-source boundaries
-   before forwarding/primary/coercion stages, preserving shared reborrows, raw
-   branch identities, Never handling, typing and budgets. Split boundary capture
-   and integration with focused tests and the compiler gate; avoid global hooks
-   in helpers also used by required/source-free callers. Other contextual builders
-   remain separate.
+   separate. Expected-value contexts now retain raw-source roots and captured
+   forwarding/primary/coercion stages, preserving shared reborrows, branch identity,
+   stopped inputs and required budgets. Next capture any additional primary
+   extraction in `compiler/src/check/scalars.rs::unary_value`, then connect it before
+   the existing unary operation. Do not duplicate projections already performed
+   by expected-value checking. Preserve signed literals, required-only callers,
+   Never handling and original errors; split capture/integration with focused tests
+   and the compiler gate. Other formatting/contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

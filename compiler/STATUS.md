@@ -101,102 +101,50 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current expected-type coercion slices
 
-Dependency-ordered commit plan:
-1. Expose the existing expected-value decision as primary extraction plus
-   Forward/Convert/Stopped classification, preserving the original API, HIR,
-   acceptance order and E207. Validate focused cases and the library suite.
-2. Establish nested raw-source roots for non-required expected types beyond shared
-   references. Preserve caller roots, raw branch identities, required budgets and
-   existing shared-reborrow links; validate ancestry and diagnostics.
-3. Connect captured forwarding/primary/coercion stages with bounded publication.
-   Preserve Never both before and after primary extraction, then run the full gate.
-4. Document verified coverage and the next prerequisite separately.
-
-Investigation: generic expected values share raw-operation points today; only
-shared-reference expectations have a separate source boundary. Generalizing that
-boundary must not turn ordinary stopped values into shared reborrows or alter
-required AST checking. `expected_value` also serves source-free callers. Keep it
-as a pure wrapper over classification, then publish only from the source caller.
-A record with a Never primary can be coerced to a non-Never expected type, so
-capture the stopped projection before final HIR construction changes its type.
-
-Baseline: clean `main`; all ten binary-stage checks passed with 1746 library/910
-native tests; `/tmp/meowy-binary-stages-gate.log`.
-`expected_plan` now exposes primary selection and Forward/Convert/Stopped while
-`expected_value` keeps its original API. Three focused groups pass: scalar/record/
-union identity, inner wrappers, stopped primary extraction, E207/spans and required
-callers; `/tmp/meowy-expected-plans-focused.log`. Formatting and all 1749 library
-tests pass; `/tmp/meowy-expected-plans-lib.log`. Raw-source boundaries are next.
-Classification committed as `a9add72`. Non-required expected types now use an
-outer caller root and nested raw root, retaining the raw expression kind. Required
-non-reference expectations keep their old checking path, and existing shared
-forwarding/reborrow metadata is unchanged. New non-shared wrapper links remain
-unknown until integration. All three boundary groups pass: exact call/binary/branch
-roots, primary results, required/shared paths, stopped inputs, diagnostics and
-budget precedence; `/tmp/meowy-expected-roots-focused.log`. Library validation
-found seven outdated ancestry assertions in five graph test modules. They now
-distinguish a successfully checked raw expression from a failed outer expected
-type, and follow argument/group wrappers to their actual raw call/branch roots.
-The new source-boundary tests share the expected-value test module; required-path
-and shared-reborrow tests remain unchanged. Formatting and all 1752 library tests
-pass; `/tmp/meowy-expected-roots-lib.log`. Stage integration is next.
-Source boundaries committed as `548eaaf`. Expected-value classification now feeds
-the coercion ledger, with an optional primary stage preceding forwarding or
-conversion. Raw Never remains entry-only; Never primary extraction retains its
-projection but no result link. Existing shared forwarding/reborrow paths remain
-separate, and required-only checking gains no new coercion stages. Four focused
-groups pass: forwarding/projection/conversion after raw calls and arithmetic,
-branch sources, direct/projected Never, shared/required/control boundaries, E207
-and atomic shared budgets; `/tmp/meowy-expected-stages-focused.log`.
-All ten compiler checks pass: 1756 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-expected-stages-gate.log`. No outstanding failures remain. Documentation
-and the remaining unary primary-projection audit are next.
-
-### Completed ordinary binary-operation slices
-
 The dependency-ordered plan is complete:
-1. Separate bounded sequence preparation from atomic publication (`07722b5`).
-2. Capture actual primary-projection decisions, stopped operand types and
-   checked-arithmetic classification without changing HIR APIs (`f0162b3`).
-3. Publish binary stages and the adjusted operand sequence together, with focused
-   regressions and the complete compiler gate (`26f4860`).
-4. Document verified coverage and the next prerequisite separately.
+1. Expose primary/Forward/Convert/Stopped decisions while preserving the pure
+   expected-value API, HIR and E207 (`a9add72`).
+2. Separate caller roots from raw sources for non-required expected types beyond
+   shared references, preserving branch identities and required paths (`548eaaf`).
+3. Connect bounded primary/forwarding/coercion stages with focused regressions
+   and the complete compiler gate (`bc18f19`).
+4. Document verified scope and the next prerequisite separately.
 
-`projected` exposes the existing projection decision; `binary_plan_values` returns
-that plan with checked HIR while `project` and `binary_values` keep their APIs.
-Ordinary non-short-circuit `binary` uses the exact operand roots. Entry reaches
-left evaluation, its primary projection precedes right evaluation when present,
-and right projection precedes the operation. The prepared sequence's transition
-uses the post-projection port, so no direct edge bypasses that stage. Both ledgers
-are validated and published atomically through the shared edge budget.
-Integer +,-,*,/,% require a Checked success edge; floating arithmetic, bit
-functions and comparisons retain ordinary results. Stopped operands/projections
-suppress later stages. Conditional call returns and short-circuit graphs remain
-unchanged. Required-only value helpers publish no runtime nodes; the required AST
-path through `integer_result` retains its existing sequence-only metadata.
+`expected_plan` captures actual selection/conversion decisions without replaying
+acceptance or inferring them from final HIR. Non-required expected values keep an
+outer caller root and a nested raw root; raw And/Or points and call/arithmetic
+result conditions remain distinct. A successful raw check may precede an outer
+E207, so completion flags belong to their own boundaries. Seven old ancestry
+assertions now follow these roots rather than equating calls/branches with wrappers.
+Required non-reference checking retains its old path and logical budgets.
 
-All 12 existing sequence tests and 1739 library tests passed the preparation
-slice; `/tmp/meowy-sequence-prepare-focused.log`, `/tmp/meowy-sequence-prepare-lib.log`.
-Three classification groups, all 1742 library tests and all-target Clippy passed;
-`/tmp/meowy-binary-plans-focused.log`, `/tmp/meowy-binary-plans-lib.log`,
-`/tmp/meowy-binary-plans-lint.log`. Four integration groups cover projection order,
-checked/plain results, calls, stops, owner/control, required/short-circuit isolation,
-original errors and atomic two-ledger budgets; `/tmp/meowy-binary-stages-focused.log`.
-All ten compiler checks pass: 1746 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-binary-stages-gate.log`. No outstanding failures remain. The guide and
-trackers document this scope. Post-documentation validation passed 1208 local
-links in 110 Markdown files; `/tmp/meowy-binary-stages-docs.log`.
-Remaining expected-type coercion boundaries are
-next; other contextual builders, backedge propagation and proof outcomes remain
-separate.
+Expected stages reuse the shared coercion ledger with an optional primary step.
+Raw Never has entry only; Never primary extraction has a projection but no result,
+even when existing HIR coercion changes its type. Shared forwarding and reborrows
+retain their separate paths, while shared primary extraction uses coercion stages.
+Source-free helpers gain no runtime hook, and metadata retains no aggregate copies.
 
-Composed fallback (`dd9be32`, `b063010`, `71dfac3`) retains exact nested roots and
-Forward/Convert/Stopped decisions before coercion changes HIR type. Its ten-check
-gate passed with 1739 library/910 native tests; `/tmp/meowy-fallback-stages-gate.log`.
-Record equality, composed groups/partial blocks and dispatch retain their established
-source ordering, receiver identities and opaque prefix boundaries.
+Three classification groups and all 1749 library tests passed;
+`/tmp/meowy-expected-plans-focused.log`, `/tmp/meowy-expected-plans-lib.log`.
+Three boundary groups and all 1752 library tests passed;
+`/tmp/meowy-expected-roots-focused.log`, `/tmp/meowy-expected-roots-lib.log`.
+Four integration groups cover raw effects/branches, primary/conversion order,
+direct/projected Never, shared/required/control boundaries, E207 and atomic budgets;
+`/tmp/meowy-expected-stages-focused.log`. All ten compiler checks pass: 1756 library/
+910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-expected-stages-gate.log`.
+No outstanding failures remain. The guide and trackers document this scope.
+Post-documentation validation passed 1208 local links in 110 Markdown files;
+`/tmp/meowy-expected-stages-docs.log`.
+Remaining unary primary-projection capture is next; other contextual builders,
+backedge propagation and proof outcomes remain separate.
+
+Ordinary binary stages (`07722b5`, `f0162b3`, `26f4860`, `3f76542`) publish adjusted
+operand sequences and entry/projection/operation/result edges atomically, preserving
+checked arithmetic, stopped inputs, short-circuit graphs and required-only checking.
+Their ten-check gate passed with 1746 library/910 native tests;
+`/tmp/meowy-binary-stages-gate.log`. Composed fallback and record-equality sequencing
+retain their established source roots and pre-coercion stopped state.
 
 ### Proof dependency implementation slices
 
@@ -1985,17 +1933,21 @@ subtraction retains its documented limits. No outstanding failures remain.
    arithmetic results require Checked success; stopped inputs/projections have no
    later stages. Short-circuit graphs and required sequence-only checking remain
    separate, including required AST evaluation through `integer_result`.
-   Next audit `check/expressions.rs::{expr_point,coerced_expression,expected_value}`
-   for expected types beyond the existing shared-reference boundary. Raw operations
-   already publish the current point's normal result, so establish an exact nested
-   source boundary before adding generic forwarding/primary/coercion stages.
-   Preserve caller-facing roots, raw And/Or identities, shared-reborrow handling,
-   Never behavior, expected typing and required budgets. Capture actual no-op,
-   primary-extraction and conversion decisions during checking; do not infer them
-   from final HIR or add a result bypass. Keep source-boundary prerequisites and
-   operation integration separately reviewable with focused tests and the full gate.
-   `expected_value` also serves source-free/required callers, so avoid a global
-   runtime hook. Other contextual builders and required evaluation remain separate.
+   Expected-value decisions (`a9add72`) and non-required raw-source boundaries
+   (`548eaaf`) now feed forwarding/primary/coercion stages (`bc18f19`). Caller
+   roots stay distinct from raw branches/calls; direct and projected Never gain
+   no result edge. Shared reborrows and required/source-free paths remain separate.
+   Next audit the remaining primary extraction inside `check/scalars.rs::unary_value`
+   and its `unary_point` / `check/expressions.rs` source caller. Expected contexts
+   may already project the input; capture only the actual additional projection
+   from `projected`, not an existing inner HIR wrapper. Preserve the original
+   unary value API for required construction, signed-literal fast paths, early
+   Never return, E222 for an invalid projected primary and checked negation errors.
+   Then extend `dependencies/unary.rs` so source completion reaches any captured
+   primary stage before the unary operation/result, with no bypass or duplicate
+   projection. Split capture and integration into reviewable slices with focused
+   context-free record/expected-context/never/budget tests and the full gate.
+   Other formatting/contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
