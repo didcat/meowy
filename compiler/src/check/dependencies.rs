@@ -338,5 +338,8 @@ pub(crate) use exclusive::Operation as ExclusiveOperation;
 mod outputs;
 pub(crate) use outputs::Output;
 
+mod unary;
+pub(crate) use unary::Unary;
+
 mod emissions;
 pub(crate) use emissions::Emission;

@@ -130,8 +130,16 @@ preserving contextual inference and primary projection. Three focused groups pas
 nested roots and once-only writes, scalar-before-union typing, nonreturning inputs,
 original errors and active-point restoration. Log:
 `/tmp/meowy-unary-roots-focused.log`. Formatting and all 1647 library tests pass;
-`/tmp/meowy-unary-roots-lib.log`. Slice 1 is complete; operation/result metadata
-and the full compiler gate are next.
+`/tmp/meowy-unary-roots-lib.log` (`7932a09`). Unary operations now retain validated
+scalar types, exact inputs and owner/control metadata. Integer negation results
+use checked overflow-success edges; stopped operands omit operation/result links.
+Signed literals and required-only construction keep their existing paths. All
+three focused operation groups pass; `/tmp/meowy-unary-stages-focused.log`.
+All ten compiler checks pass: 1650 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+Log: `/tmp/meowy-unary-stages-gate.log`. Existing native unary/union and signed-
+minimum overflow cases pass in both profiles; required accounting remains green.
+Slice 2 is complete; guide/tracker integration is next.
 Dereference/projection/builder coverage, restart propagation and proof outcomes
 remain incomplete.
 

@@ -596,8 +596,11 @@ All ten compiler checks pass: 1644 library/910 native tests;
 `/tmp/meowy-group-links-gate.log` (`a3a44e3`). The foundation guide documents the
 boundary. Scalar unary checking now exposes exact operand roots while retaining
 contextual inference and primary projection. Formatting and all 1647 library tests
-pass; `/tmp/meowy-unary-roots-lib.log`. Operation/result metadata is next; broader
-propagation and proof outcomes remain incomplete.
+pass; `/tmp/meowy-unary-roots-lib.log` (`7932a09`). Unary metadata now retains exact
+scalar types and ordered operation/results, with checked integer negation and no
+result edge for stopped operands. All ten compiler checks pass: 1650 library/910
+native tests; `/tmp/meowy-unary-stages-gate.log`. Guide/tracker integration is next;
+broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
