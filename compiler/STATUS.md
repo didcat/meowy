@@ -129,8 +129,18 @@ both profiles; `/tmp/meowy-unary-stages-gate.log`. Working tree was clean on `ma
 All three focused groups pass: grouped/effectful pointers, shared/exclusive and
 aggregate/cell types, stopped inputs, original errors and E302/E303 boundaries.
 Log: `/tmp/meowy-deref-roots-focused.log`. Formatting and all 1653 library tests
-pass; `/tmp/meowy-deref-roots-lib.log`. Slice 1 is complete; bounded dereference
-operations and the full compiler gate are next.
+pass; `/tmp/meowy-deref-roots-lib.log` (`89d255f`). Dereference operations now
+capture exact inputs and shared/exclusive mode before HIR wrapping. They retain
+pointer-before-load/result edges; a stopped pointer has no load, and an
+uninhabited referent has no normal result. Metadata stores no aggregate type copy
+or inferred pointee local. All three focused operation groups pass, including
+returned/temporary pointers, stopped inputs, owner/control identities and atomic
+shared-budget publication; `/tmp/meowy-deref-stages-focused.log`. All ten compiler
+checks pass: 1656 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-deref-stages-gate.log`. Slice 2 is complete; guide/tracker integration
+is next. The uninhabited-referent case is checker metadata evidence, not an
+executable value-construction capability.
 Reborrow/projection/builder coverage, restart propagation and proof outcomes
 remain incomplete.
 

@@ -341,5 +341,8 @@ pub(crate) use outputs::Output;
 mod unary;
 pub(crate) use unary::Unary;
 
+mod dereferences;
+pub(crate) use dereferences::Deref;
+
 mod emissions;
 pub(crate) use emissions::Emission;

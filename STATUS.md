@@ -602,8 +602,12 @@ result edge for stopped operands. All ten compiler checks pass: 1650 library/910
 native tests; `/tmp/meowy-unary-stages-gate.log` (`fdeb564`). The foundation guide
 documents the boundary. Explicit dereference checking now exposes exact pointer
 roots while preserving HIR, types and loan errors. Formatting and all 1653 library
-tests pass; `/tmp/meowy-deref-roots-lib.log`. Load/result metadata is next; broader
-propagation and proof outcomes remain incomplete.
+tests pass; `/tmp/meowy-deref-roots-lib.log` (`89d255f`). Explicit dereference
+metadata now preserves pointer-before-load/result order and reference mode without
+copying aggregate shapes or inferring pointee storage. All ten compiler checks
+pass: 1656 library/910 native tests; `/tmp/meowy-deref-stages-gate.log`.
+Guide/tracker integration is next; broader propagation and proof outcomes remain
+incomplete.
 
 ## Pending descriptor statement accounting
 

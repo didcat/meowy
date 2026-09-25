@@ -10,24 +10,32 @@ impl Checker {
         span: Span,
     ) -> Result<(hir::PointId, hir::Expr)> {
         let (point, value) = self.expr_point(value, None)?;
-        if value.ty == Type::Never {
-            return Ok((point, value));
-        }
-        let Some(ty) = value.ty.pointee() else {
-            return Err(Self::error(
-                "E222",
-                "dereference requires a safe reference",
-                span,
-            ));
+        let ty = if value.ty == Type::Never {
+            None
+        } else {
+            Some(
+                value
+                    .ty
+                    .pointee()
+                    .ok_or_else(|| {
+                        Self::error("E222", "dereference requires a safe reference", span)
+                    })?
+                    .clone(),
+            )
         };
-        Ok((
-            point,
+        if let Some(id) = self.point {
+            self.deref_operation(id, point, &value, span)?;
+        }
+        let value = if let Some(ty) = ty {
             hir::Expr {
-                ty: ty.clone(),
+                ty,
                 kind: hir::ExprKind::Deref(Box::new(value)),
                 span,
-            },
-        ))
+            }
+        } else {
+            value
+        };
+        Ok((point, value))
     }
 
     pub(crate) fn reference_type(&mut self, ty: Type, span: Span) -> Result<Type> {
