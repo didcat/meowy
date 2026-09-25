@@ -22,8 +22,19 @@ impl Checker {
         receiver: Option<hir::Expr>,
         partial: bool,
     ) -> Result<hir::Block> {
+        self.block_parts(block, expected, receiver, partial)
+            .map(|(_, body)| body)
+    }
+
+    pub(crate) fn block_parts(
+        &mut self,
+        block: &ast::Block,
+        expected: Option<Type>,
+        receiver: Option<hir::Expr>,
+        partial: bool,
+    ) -> Result<(Option<hir::LocalId>, hir::Block)> {
         let opaque = receiver.is_some();
-        let mut stmts = self.block_start(block, expected, receiver, partial)?;
+        let (local, mut stmts) = self.block_prefix(block, expected, receiver, partial)?;
         let mut points = Vec::new();
         if opaque {
             points.push(None);
@@ -47,7 +58,7 @@ impl Checker {
             block.span,
         )?;
         self.block_endpoints(&body, block.span)?;
-        Ok(body)
+        Ok((local, body))
     }
 
     pub(crate) fn block_start(
@@ -57,6 +68,17 @@ impl Checker {
         receiver: Option<hir::Expr>,
         partial: bool,
     ) -> Result<Vec<hir::Stmt>> {
+        self.block_prefix(block, expected, receiver, partial)
+            .map(|(_, stmts)| stmts)
+    }
+
+    pub(crate) fn block_prefix(
+        &mut self,
+        block: &ast::Block,
+        expected: Option<Type>,
+        receiver: Option<hir::Expr>,
+        partial: bool,
+    ) -> Result<(Option<hir::LocalId>, Vec<hir::Stmt>)> {
         let id = self.block;
         self.block += 1;
         self.scopes.push(Scope::default());
@@ -80,7 +102,7 @@ impl Checker {
             owner: self.owner,
         });
         let mut stmts = Vec::new();
-        if let Some(value) = receiver {
+        let local = if let Some(value) = receiver {
             self.proofs.dispatches.insert(id);
             let ty = value.ty.clone();
             let local = self.local(ty.clone());
@@ -95,8 +117,11 @@ impl Checker {
             };
             self.declare("$", binding, block.span)?;
             stmts.push(hir::Stmt::Bind { id: local, value });
-        }
-        Ok(stmts)
+            Some(local)
+        } else {
+            None
+        };
+        Ok((local, stmts))
     }
 
     pub(crate) fn block_end(

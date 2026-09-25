@@ -329,14 +329,7 @@ impl Checker {
                 args,
             } => return self.call(callee, args, Some(value), expr.span),
             ExprKind::DispatchBlock { value, block } => {
-                let value = self.expr(value, None)?;
-                if value.ty.has_exclusive() {
-                    return Err(Diagnostic::unsupported(
-                        "exclusive dispatch receivers",
-                        expr.span,
-                    ));
-                }
-                let block = self.block(block, expected.cloned(), Some(value))?;
+                let (_, _, block) = self.dispatch_point(value, block, expected, expr.span)?;
                 let ty = block.ty.clone();
                 (hir::ExprKind::Block(block), ty)
             }
@@ -652,3 +645,5 @@ mod roots;
 mod fields;
 
 mod typed;
+
+mod dispatch;

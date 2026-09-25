@@ -99,7 +99,38 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current predicate/ascription slices
+### Current ordinary dispatch-block slices
+
+Dependency-ordered commit plan:
+1. Return the existing receiver-local identity from block startup/checking and
+   retain the exact ordinary dispatch receiver root alongside the checked body.
+   Preserve HIR, expected types, `$`, gates and opaque sequence prefixes; validate
+   focused identity/error cases and the library suite.
+2. Record bounded receiver evaluation, initialization, body continuation and result
+   links using those identities. Preserve the synthetic-prefix marker and other
+   barriers; cover empty/forward/stopped/nested bodies and run the compiler gate.
+3. Document verified ordinary-dispatch scope and the next prerequisite separately.
+
+Investigation: `block_start` allocates the receiver local and inserts a synthetic
+Bind; `block_inner` represents it by a leading `None` in its sequence. Capture the
+local at allocation, return it with the checked body, and retain the source from
+`expr_point`. Prefix integration must connect only the immediate next checked
+statement (or an actually empty body), never search past another `None`. Keep
+composed dispatch on its existing opaque path. Receiver completion and body
+result availability remain structural ports, not reachability or loan authority.
+
+Baseline: clean `main`; all ten typed-stage compiler checks passed with 1715
+library/910 native tests; `/tmp/meowy-typed-stages-gate.log`.
+The root helper now returns receiver point/local/body identities from checking.
+`block_parts` and `block_prefix` expose those identities while `block_start`
+retains its original Vec API for contextual-list callers discovered by the compile
+check. No list/composed paths changed. Three focused groups pass: exact source/
+local/body identities, expected results, nested `$` scopes, once-only effects,
+stopped receivers, lifetime/permission gates and budget restoration;
+`/tmp/meowy-dispatch-roots-focused.log`. Formatting and all 1718 library tests pass;
+`/tmp/meowy-dispatch-roots-lib.log`. Prefix integration remains the next slice.
+
+### Completed predicate/ascription slices
 
 The dependency-ordered plan is complete:
 1. Retain exact operand roots alongside checked values and constructed targets,
