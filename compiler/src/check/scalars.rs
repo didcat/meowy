@@ -334,7 +334,7 @@ impl Checker {
         } else {
             None
         };
-        let (_, value) = self.binary_plan_values(op, left, right, span)?;
+        let (plan, value) = self.binary_plan_values(op, left, right, span)?;
         if let hir::ExprKind::Binary {
             point: Some(point), ..
         } = &value.kind
@@ -351,9 +351,22 @@ impl Checker {
             self.region_edges(arm, content.expect("operand root"), span)?;
             self.branch_edges(*point, test, then, otherwise, span)?;
         } else if !boolean && let Some(point) = self.point {
-            self.sequence(
-                super::dependencies::SequenceSource::Expr(point),
-                vec![input, content],
+            if self.required {
+                self.sequence(
+                    super::dependencies::SequenceSource::Expr(point),
+                    vec![input, content],
+                    span,
+                )?;
+                return Ok(value);
+            }
+            self.binary_operation(
+                point,
+                [
+                    input.expect("left operand"),
+                    content.expect("right operand"),
+                ],
+                plan,
+                &value,
                 span,
             )?;
         }

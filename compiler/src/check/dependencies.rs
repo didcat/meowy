@@ -354,7 +354,7 @@ mod coercions;
 pub(crate) use coercions::{Coercion, Kind as CoercionKind};
 
 mod binaries;
-pub(crate) use binaries::Plan as BinaryPlan;
+pub(crate) use binaries::{Binary, Plan as BinaryPlan};
 
 mod dispatch;
 pub(crate) use dispatch::Dispatch;

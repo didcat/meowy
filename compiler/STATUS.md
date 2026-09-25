@@ -139,6 +139,21 @@ and source-free required construction; `/tmp/meowy-binary-plans-focused.log`.
 Formatting, all 1742 library tests and all-target Clippy pass;
 `/tmp/meowy-binary-plans-lib.log`, `/tmp/meowy-binary-plans-lint.log`.
 Atomic binary/sequence integration is next.
+Classification committed as `f0162b3`. The source `binary` caller now prepares the
+existing two-operand sequence, replaces its transition with the post-projection
+port when needed, and atomically publishes both ledgers. Ordinary result edges
+follow both operands; integer arithmetic uses Checked success. Stopped projections
+and operands suppress later stages. Focused tests exposed a required-only AST
+path through `integer_result` in addition to direct value construction. The source
+caller now preserves the old sequence-only behavior whenever `required` is set;
+new runtime stages apply only outside that mode. All four focused groups pass:
+projection order without bypasses, integer success conditions, plain/bit/string
+operations, calls, stops, required/short-circuit isolation, owner/control, original
+errors and atomic two-ledger budgets; `/tmp/meowy-binary-stages-focused.log`.
+All ten compiler checks pass: 1746 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-binary-stages-gate.log`. No outstanding failures remain. Documentation
+and the remaining expected-type coercion boundary audit are next.
 
 ### Completed composed-fallback slices
 
