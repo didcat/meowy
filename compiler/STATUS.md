@@ -128,8 +128,17 @@ exclusive reborrow HIR and site allocation. All three focused groups pass,
 including grouped/effectful parents, no sites for stopped/invalid inputs, E301/
 E302/E303 preservation and parent transfers. Log:
 `/tmp/meowy-reborrow-roots-focused.log`. Formatting and all 1659 library tests
-pass; `/tmp/meowy-reborrow-roots-lib.log`. Slice 1 is complete; bounded reborrow
-operation/result metadata and the full compiler gate are next.
+pass; `/tmp/meowy-reborrow-roots-lib.log` (`03f5e54`). Reborrow operations now retain
+exact parents, existing sites and exclusive mode, with parent-before-reborrow/result
+links and no dereference load. Stopped parents have no site/operation/result;
+implicit shared conversions retain separate sites. All three focused operation
+groups pass, including returned parents, ownership/control and atomic shared-budget
+publication; `/tmp/meowy-reborrow-stages-focused.log`. All ten compiler checks
+pass: 1662 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-reborrow-stages-gate.log`. Existing native suspension, parent-transfer
+and child-liveness cases pass. Slice 2 is complete; guide/tracker integration is
+next.
 Broader reference/projection/builder coverage, restart propagation and proof
 outcomes remain incomplete.
 

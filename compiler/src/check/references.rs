@@ -101,9 +101,11 @@ impl Checker {
         if let ExprKind::Unary { op, value } = &expr.kind
             && op == "*"
         {
-            return self
-                .exclusive_reborrow_point(value, span)
-                .map(|(_, value)| value);
+            let (parent, value) = self.exclusive_reborrow_point(value, span)?;
+            if let Some(point) = self.point {
+                self.reborrow_operation(point, parent, &value, span)?;
+            }
+            return Ok(value);
         }
         if let Some(value) = self.exclusive_indexed(expr, span)? {
             return Ok(value);

@@ -344,5 +344,8 @@ pub(crate) use unary::Unary;
 mod dereferences;
 pub(crate) use dereferences::Deref;
 
+mod reborrows;
+pub(crate) use reborrows::Reborrow;
+
 mod emissions;
 pub(crate) use emissions::Emission;

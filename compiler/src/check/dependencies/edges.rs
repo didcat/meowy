@@ -80,6 +80,7 @@ impl Checker {
             .saturating_add(self.output_edges)
             .saturating_add(self.unary_edges)
             .saturating_add(self.deref_edges)
+            .saturating_add(self.reborrow_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)

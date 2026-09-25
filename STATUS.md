@@ -608,9 +608,12 @@ copying aggregate shapes or inferring pointee storage. All ten compiler checks
 pass: 1656 library/910 native tests; `/tmp/meowy-deref-stages-gate.log` (`15f1c74`).
 The foundation guide documents the boundary. Exclusive scalar reborrows now
 expose exact parent roots while preserving HIR, site allocation and loan errors.
-Formatting and all 1659 library tests pass; `/tmp/meowy-reborrow-roots-lib.log`.
-Reborrow operation/result metadata is next; broader propagation and proof outcomes
-remain incomplete.
+Formatting and all 1659 library tests pass; `/tmp/meowy-reborrow-roots-lib.log`
+(`03f5e54`). Exclusive reborrow metadata now retains parent/site/mode identities and
+ordered result availability without a dereference load. Stopped parents allocate
+no site. All ten compiler checks pass: 1662 library/910 native tests;
+`/tmp/meowy-reborrow-stages-gate.log`. Guide/tracker integration is next; broader
+propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
