@@ -94,34 +94,7 @@ impl Checker {
         expected: &Type,
         span: Span,
     ) -> Result<hir::Expr> {
-        if value.ty == Type::Never {
-            return Ok(value);
-        }
-        if value.ty != *expected {
-            if expected.accepts(&value.ty) {
-                return Ok(Self::coerce(value, expected.clone()));
-            }
-            if let Type::Record { primary, .. } = &value.ty
-                && expected.accepts(primary)
-                && !matches!(expected, Type::Record { .. })
-            {
-                let ty = *primary.clone();
-                return Ok(Self::coerce(
-                    hir::Expr {
-                        ty,
-                        span,
-                        kind: hir::ExprKind::Primary(Box::new(value)),
-                    },
-                    expected.clone(),
-                ));
-            }
-            return Err(Self::error(
-                "E207",
-                format!("expected {expected:?}, found {:?}", value.ty),
-                span,
-            ));
-        }
-        Ok(value)
+        Self::expected_plan(value, expected, span).map(|(_, _, value)| value)
     }
 
     pub(crate) fn expression(
@@ -658,3 +631,5 @@ mod fields;
 mod typed;
 
 mod dispatch;
+
+mod expected;

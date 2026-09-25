@@ -99,7 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current ordinary binary-operation slices
+### Current expected-type coercion slices
+
+Dependency-ordered commit plan:
+1. Expose the existing expected-value decision as primary extraction plus
+   Forward/Convert/Stopped classification, preserving the original API, HIR,
+   acceptance order and E207. Validate focused cases and the library suite.
+2. Establish nested raw-source roots for non-required expected types beyond shared
+   references. Preserve caller roots, raw branch identities, required budgets and
+   existing shared-reborrow links; validate ancestry and diagnostics.
+3. Connect captured forwarding/primary/coercion stages with bounded publication.
+   Preserve Never both before and after primary extraction, then run the full gate.
+4. Document verified coverage and the next prerequisite separately.
+
+Investigation: generic expected values share raw-operation points today; only
+shared-reference expectations have a separate source boundary. Generalizing that
+boundary must not turn ordinary stopped values into shared reborrows or alter
+required AST checking. `expected_value` also serves source-free callers. Keep it
+as a pure wrapper over classification, then publish only from the source caller.
+A record with a Never primary can be coerced to a non-Never expected type, so
+capture the stopped projection before final HIR construction changes its type.
+
+Baseline: clean `main`; all ten binary-stage checks passed with 1746 library/910
+native tests; `/tmp/meowy-binary-stages-gate.log`.
+`expected_plan` now exposes primary selection and Forward/Convert/Stopped while
+`expected_value` keeps its original API. Three focused groups pass: scalar/record/
+union identity, inner wrappers, stopped primary extraction, E207/spans and required
+callers; `/tmp/meowy-expected-plans-focused.log`. Formatting and all 1749 library
+tests pass; `/tmp/meowy-expected-plans-lib.log`. Raw-source boundaries are next.
+
+### Completed ordinary binary-operation slices
 
 The dependency-ordered plan is complete:
 1. Separate bounded sequence preparation from atomic publication (`07722b5`).
