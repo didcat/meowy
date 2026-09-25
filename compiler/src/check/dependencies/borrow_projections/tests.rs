@@ -105,6 +105,7 @@ pub(crate) fn projection_plans_bound_steps_and_publish_atomically() {
     assert_eq!(checker.projection_items, count);
     checker.projections.clear();
     checker.projection_items = 0;
+    checker.projection_edges = 0;
     let mut invalid = plan.clone();
     invalid.steps.push(Step::Field(0));
     assert!(
@@ -143,4 +144,117 @@ pub(crate) fn projection_plans_bound_steps_and_publish_atomically() {
     );
     assert!(checker.projections.is_empty());
     assert_eq!(checker.projection_items, MAX_ITEMS);
+}
+
+#[test]
+pub(crate) fn projection_edges_follow_checked_steps_before_reborrow_and_result() {
+    for source in [
+        "r:{->n:1};h:{->p:&r};v:&h;q:&(v.p.n)",
+        "<R>:<{n<int32>}>;make<R>:(){->n:1};x:*(&(make().n))",
+        "rows:[{->xs:[{->n:1}]}];q:&(rows[1].xs[1].n);x:*q",
+    ] {
+        crate::compile(source).unwrap();
+        let checker = check(source);
+        for (&id, plan) in &checker.projections {
+            assert_eq!(
+                plan.edges[0],
+                Edge::new(Port::Entry(id), Port::Entry(plan.parent), Route::Next)
+            );
+            let mut from = Port::Normal(plan.parent);
+            for step in 0..plan.steps.len() {
+                let to = Port::Projection { point: id, step };
+                assert!(plan.edges.contains(&Edge::new(from, to, Route::Next)));
+                from = to;
+            }
+            assert!(
+                plan.edges
+                    .contains(&Edge::new(from, Port::Operation(id), Route::Next))
+            );
+            assert!(plan.edges.contains(&Edge::new(
+                Port::Operation(id),
+                Port::Normal(id),
+                Route::Next
+            )));
+            assert!(
+                !plan
+                    .edges
+                    .iter()
+                    .any(|edge| edge.from == Port::Entry(id) && edge.to == Port::Normal(id))
+            );
+        }
+        assert_eq!(
+            checker.projection_edges,
+            checker
+                .projections
+                .values()
+                .map(|plan| plan.edges.len())
+                .sum()
+        );
+    }
+}
+
+#[test]
+pub(crate) fn projection_edges_preserve_stopped_and_opaque_parent_boundaries() {
+    let source = r#"d:@"debug";stop<never>:(){d.panic("stop")};q:&(stop().missing)"#;
+    crate::compile(source).unwrap();
+    let checker = check(source);
+    let (&id, plan) = checker.projections.first_key_value().unwrap();
+    assert_eq!(
+        plan.edges,
+        [Edge::new(
+            Port::Entry(id),
+            Port::Entry(plan.parent),
+            Route::Next
+        )]
+    );
+    let checker = check("<R>:<{n<int32>}>;get<&R>:(p<&R>){->p};r<R>:{->n:1};q:&(get(&r).n)");
+    let plan = checker.projections.values().next().unwrap();
+    let call = checker.invocations.values().next().unwrap();
+    assert_eq!(plan.parent, call.point);
+    assert!(call.edges.contains(&Edge::new(
+        Port::Operation(call.point),
+        Port::Normal(call.point),
+        Route::Returned
+    )));
+    assert!(
+        !plan
+            .edges
+            .iter()
+            .any(|edge| edge.from == Port::Entry(plan.parent))
+    );
+}
+
+#[test]
+pub(crate) fn projection_edges_publish_atomically_without_allocating_source_ids() {
+    let mut checker = check("r:{->n:1};p:&r;q:&(p.n)");
+    let (&id, plan) = checker.projections.first_key_value().unwrap();
+    let plan = plan.clone();
+    let ids = (checker.points.len(), checker.reborrows);
+    let count = checker.projection_edges;
+    checker.capture_projection(id, plan.clone()).unwrap();
+    assert_eq!(checker.projection_edges, count);
+    assert_eq!((checker.points.len(), checker.reborrows), ids);
+    checker.projections.clear();
+    checker.projection_items = 0;
+    checker.projection_edges = 0;
+    checker.points[plan.parent].parent = None;
+    assert!(
+        checker
+            .capture_projection(id, plan.clone())
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    checker.points[plan.parent].parent = Some(id);
+    checker.reborrow_edges = super::super::edges::MAX_EDGES;
+    assert!(
+        checker
+            .capture_projection(id, plan)
+            .unwrap_err()
+            .message
+            .contains("budget")
+    );
+    assert!(checker.projections.is_empty());
+    assert_eq!((checker.projection_items, checker.projection_edges), (0, 0));
+    assert_eq!((checker.points.len(), checker.reborrows), ids);
 }

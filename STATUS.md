@@ -622,17 +622,14 @@ checks pass: 1668 library/910 native tests;
 `/tmp/meowy-shared-reborrow-stages-gate.log` (`4c6c381`). The foundation guide
 documents the boundary. Projected parent selection now exposes exact expression,
 indexed-borrow and reference roots alongside unchanged HIR and temporary identity.
-All ten compiler checks pass: 1672 library/910 native tests;
-`/tmp/meowy-projected-parent-roots-gate.log` (`0a540a8`). The foundation guide
-records this root prerequisite; checked path capture and projection/result graph
-integration remain next. The parent helper now distinguishes storage it materializes
-after source evaluation from existing reference values. Formatting, all 1673
-library tests and library Clippy pass; `/tmp/meowy-projection-temporaries-lib.log`,
-`/tmp/meowy-projection-temporaries-lint.log` (`3133214`). Bounded checked plans now
-retain materialization, field reads, intermediate loads, final address paths and
-reborrow sites. Formatting, all 1677 library tests and library Clippy pass;
-`/tmp/meowy-projection-plans-lib.log`, `/tmp/meowy-projection-plans-lint.log`.
-Graph edges are next; broader propagation and proof outcomes remain incomplete.
+The root prerequisite (`0a540a8`) now feeds checked projection plans. Helper-created
+temporary storage is explicit (`3133214`); owned field reads, intermediate loads,
+final addresses and reborrow sites are captured during checking (`ea6a625`).
+Projection stage edges preserve that order and depend on exact parent completion;
+stopped parents gain no result, and callee return conditions remain explicit.
+All ten compiler checks pass: 1680 library/910 native tests;
+`/tmp/meowy-borrow-projections-gate.log`. Guide/tracker integration is next;
+broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

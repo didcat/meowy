@@ -1,4 +1,7 @@
-use super::PointKind;
+use super::{
+    PointKind,
+    edges::{Edge, Port, Route},
+};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -28,6 +31,7 @@ pub(crate) struct Projection {
     pub(crate) mode: Option<hir::ReferenceMode>,
     pub(crate) control: bool,
     pub(crate) span: Span,
+    pub(crate) edges: Vec<Edge>,
 }
 
 impl Checker {
@@ -42,14 +46,18 @@ impl Checker {
         Ok(())
     }
 
-    pub(crate) fn capture_projection(&mut self, id: hir::PointId, plan: Projection) -> Result<()> {
+    pub(crate) fn capture_projection(
+        &mut self,
+        id: hir::PointId,
+        mut plan: Projection,
+    ) -> Result<()> {
         let budget =
             || Diagnostic::unsupported("proof borrow-projection budget exhausted", plan.span);
         let invalid =
             || Diagnostic::unsupported("proof borrow-projection identity mismatch", plan.span);
         if plan.steps.len() > crate::list::MAX_WRITE_PATH
             || !self.flow.spend(
-                plan.steps.len()
+                plan.steps.len() * 2
                     + self.projections.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.temporaries.len().checked_ilog2().unwrap_or(0) as usize
                     + 4,
@@ -107,6 +115,23 @@ impl Checker {
                 }
             }
         }
+        plan.edges = vec![Edge::new(
+            Port::Entry(id),
+            Port::Entry(plan.parent),
+            Route::Next,
+        )];
+        if plan.site.is_some() {
+            let mut from = Port::Normal(plan.parent);
+            for step in 0..plan.steps.len() {
+                let to = Port::Projection { point: id, step };
+                plan.edges.push(Edge::new(from, to, Route::Next));
+                from = to;
+            }
+            plan.edges.extend([
+                Edge::new(from, Port::Operation(id), Route::Next),
+                Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+            ]);
+        }
         if let Some(prior) = self.projections.get(&id) {
             return if *prior == plan {
                 Ok(())
@@ -119,6 +144,10 @@ impl Checker {
             .checked_add(plan.steps.len() + 1)
             .filter(|count| *count <= MAX_ITEMS)
             .ok_or_else(budget)?;
+        if !self.edge_room(plan.edges.len()) {
+            return Err(budget());
+        }
+        self.projection_edges += plan.edges.len();
         self.projections.insert(id, plan);
         self.projection_items = count;
         Ok(())

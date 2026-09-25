@@ -137,7 +137,15 @@ nothing. All four focused plan groups pass; `/tmp/meowy-projection-plans-focused
 Formatting, all 1677 library tests and library Clippy pass, including the projected
 loan fixture; `/tmp/meowy-projection-plans-lib.log`,
 `/tmp/meowy-projection-plans-lint.log`. Slice 2 is complete; graph edges remain the
-next independently reviewed slice. Ordinary place borrows, implicit
+next independently reviewed slice. Checked-plan commit: `ea6a625`.
+Projection stage ports now link exact parent completion through captured steps to
+the existing reborrow operation and result. Stopped parents have only their entry
+link; call-return conditions remain owned by the source invocation. Edge and item
+publication is atomic and allocates no source IDs. All three focused edge groups
+pass; `/tmp/meowy-projection-edges-focused.log`. All ten compiler checks pass:
+1680 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-borrow-projections-gate.log`.
+Slice 3 is complete; guide/tracker integration is next. Ordinary place borrows, implicit
 conversions, other builders, restart propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices

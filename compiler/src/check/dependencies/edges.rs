@@ -14,6 +14,10 @@ pub(crate) enum Port {
         point: PointId,
         part: usize,
     },
+    Projection {
+        point: PointId,
+        step: usize,
+    },
     Address {
         point: PointId,
         step: usize,
@@ -81,6 +85,7 @@ impl Checker {
             .saturating_add(self.unary_edges)
             .saturating_add(self.deref_edges)
             .saturating_add(self.reborrow_edges)
+            .saturating_add(self.projection_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)

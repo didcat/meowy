@@ -425,6 +425,7 @@ impl Checker {
             mode: None,
             control: self.control,
             span,
+            edges: Vec::new(),
         };
         if let Some((local, statement)) = temporary {
             self.projection_step(&mut plan, ProjectionStep::Materialize { local, statement })?;
