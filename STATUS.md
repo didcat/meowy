@@ -594,8 +594,10 @@ link their entry/result ports to exact checked children, reusing the bounded
 region ledger. HIR, expected typing and logical grouping costs are preserved.
 All ten compiler checks pass: 1644 library/910 native tests;
 `/tmp/meowy-group-links-gate.log` (`a3a44e3`). The foundation guide documents the
-boundary. Scalar unary sequencing is next; broader propagation and proof outcomes
-remain incomplete.
+boundary. Scalar unary checking now exposes exact operand roots while retaining
+contextual inference and primary projection. Formatting and all 1647 library tests
+pass; `/tmp/meowy-unary-roots-lib.log`. Operation/result metadata is next; broader
+propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

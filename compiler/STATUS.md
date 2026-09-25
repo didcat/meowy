@@ -99,42 +99,41 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current grouped-expression slices
+### Current scalar unary sequencing slices
 
 Dependency-ordered commit plan:
-1. Capture the exact child returned by `expr_point` in the ordinary Group arm and
-   reuse bounded region entry/result links. Admit expression parents only for
-   explicit transparent links; preserve expected typing, HIR, errors and logical
-   charges. Test nested groups around calls/branches, nonreturning children,
-   owner/block validation and shared budgets, then run the compiler gate.
-2. Update the foundation guide and trackers with verified group-link boundaries
-   and the next missing operand family, separately from implementation/tests.
+1. Expose exact ordinary unary operand roots through a helper that preserves
+   contextual inference, primary projection, original errors and once-only checking.
+   Keep signed integer literals and required-evaluator unary construction separate.
+   Validate the root prerequisite with focused regressions and library tests.
+2. Publish bounded unary operations with operand/operation/result links, exact
+   scalar result types and lexical ownership/control. Integer negation results
+   require overflow success; nonreturning operands have no operation/result edge.
+   Validate bool/int/float and bits-not aliases, errors, owners and shared budgets;
+   run the full compiler gate.
+3. Document verified boundaries and the next operand family in the foundation
+   guide and trackers, separately from implementation and focused regressions.
 
-Investigation: `raw_expression` previously delegated groups to `expr`, discarding
-the child ID. Existing `region_edges` validates complete child/parent ownership,
-shares the bounded edge ledger and links entry-to-child and child-normal-to-parent.
-It now also admits explicit transparent expression wrappers; never add an
-entry-to-normal shortcut or infer completion from a successful check. Grouping stays erased in HIR and contributes
-no logical required-evaluation work. Formatting's deliberate group flattening and
-other special checking paths remain distinct.
+Investigation: ordinary scalar unary checking in `raw_expression` uses
+`unary_context`, `expr` and `unary_value`, dropping the operand root. `unary_value`
+also serves `type_values/operands.rs`, which must not gain synthetic runtime links.
+The signed integer literal fast path checks its literal directly and has no child
+point. Ordinary checked integer negation can fail at runtime; boolean/bits-not
+and floating negation do not use that overflow branch. Expected union coercion
+happens after unary validation, and record primary projection precedes the operator.
 
-Baseline: `ff58f82`, `99208a3`, `01b793d` passed all ten compiler checks: 1640
-library/910 native tests, conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-output-stages-gate.log`. Working tree was clean on
-`main`. Ordinary groups now retain the exact returned child and reuse region
-entry/normal links. Expression parents reject statement children and retain the
-existing same-owner/block/completion checks. No HIR shape or logical charge was
-added. All four focused groups pass; `/tmp/meowy-group-links-focused.log`.
-The existing grouped-logic expectation now includes its two group links. All ten
-compiler checks pass: 1644 library/910 native tests, formatting, Clippy, build and
-conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
-`/tmp/meowy-group-links-gate.log`. Existing required integer/statement tests confirm
-grouping still adds no logical charges. Implementation: `a3a44e3`. The foundation
-guide and trackers now document the supported boundary. Post-documentation link
-validation passed (1208 local links in 110 Markdown files);
-`/tmp/meowy-group-links-docs.log`. Both slices are complete. Next capture scalar
-unary operand roots and checked result stages; dereference and other operand
-coverage, restart propagation and proof outcomes remain incomplete.
+Baseline: `a3a44e3`, `4390561` passed all ten compiler checks: 1644 library/910
+native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
+Log: `/tmp/meowy-group-links-gate.log`. Working tree was clean on `main`.
+`unary_point` now exposes the exact operand ID with the validated unary result,
+preserving contextual inference and primary projection. Three focused groups pass:
+nested roots and once-only writes, scalar-before-union typing, nonreturning inputs,
+original errors and active-point restoration. Log:
+`/tmp/meowy-unary-roots-focused.log`. Formatting and all 1647 library tests pass;
+`/tmp/meowy-unary-roots-lib.log`. Slice 1 is complete; operation/result metadata
+and the full compiler gate are next.
+Dereference/projection/builder coverage, restart propagation and proof outcomes
+remain incomplete.
 
 ### Proof dependency implementation slices
 

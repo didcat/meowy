@@ -4,6 +4,19 @@ use crate::flow::FALSE;
 use crate::hir::{self, Type};
 
 impl Checker {
+    pub(crate) fn unary_point(
+        &mut self,
+        op: &str,
+        value: &ast::Expr,
+        expected: Option<&Type>,
+        span: Span,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        let context = self.unary_context(op, value, expected)?;
+        let (point, value) = self.expr_point(value, context.as_ref())?;
+        self.unary_value(op, value, span)
+            .map(|value| (point, value))
+    }
+
     pub(crate) fn unary_context(
         &mut self,
         op: &str,
@@ -580,3 +593,6 @@ impl Checker {
         }
     }
 }
+
+#[cfg(test)]
+mod unary;

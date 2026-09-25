@@ -291,9 +291,9 @@ impl Checker {
                 if ["&!", ">>", "<<"].contains(&op.as_str()) {
                     return Err(Diagnostic::unsupported(format!("unary `{op}`"), expr.span));
                 }
-                let context = self.unary_context(op, value, expected)?;
-                let value = self.expr(value, context.as_ref())?;
-                return self.unary_value(op, value, expr.span);
+                return self
+                    .unary_point(op, value, expected, expr.span)
+                    .map(|(_, value)| value);
             }
             ExprKind::Binary { op, left, right } => {
                 return self.binary(op, left, right, expected, expr.span);
