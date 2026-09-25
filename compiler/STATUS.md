@@ -99,43 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current ordinary exclusive place-borrow slice
+### Current standalone temporary-borrow slices
 
 Dependency-ordered commit plan:
-1. Extend checked place-borrow metadata to exclusive scalar references and integrate
-   only the terminal ordinary-place branch of `exclusive_borrow`. Preserve
-   `exclusive_place` mutability/shape checks and alias-exclusive bookkeeping.
-   Validate scalar/nested-field places, emitted aliases, source modes, existing
-   errors and shared budgets; run the full compiler gate.
-2. Document verified scope and the next borrow prerequisite in the foundation guide
-   and trackers, separately from implementation and focused regressions.
+1. Expose the exact initializer root in the standalone fallback through a helper
+   that reuses `temporary_borrow`. Preserve evaluation order, existing HIR cells,
+   statement IDs, stopped inputs and errors; validate with library tests.
+2. Record bounded source/materialization/reference-result operations only for that
+   fallback. Validate existing cell/statement/type identities, reference-cell
+   distinction, stopped operands and shared budgets. Keep projected/element-parent
+   staging separate; run the full compiler gate.
+3. Document verified scope and the next coverage prerequisite in the foundation
+   guide and trackers, separately from implementation and focused regressions.
 
-Investigation: ordinary exclusive place selection already validates scalar target
-shape, mutable root or final-field permission, reference-free record paths and
-emitted-slot restrictions. It returns `Borrow` HIR without operand evaluation.
-The existing shared-place operation can reuse its checked paths, canonical storage
-and address/result links by deriving the mode from the checked reference type.
-Metadata must not grant permission or route indexed paths/reborrows through this
-ordinary-place operation. Wider exclusive types and exclusive reference-cell targets
-remain gated.
+Investigation: the fallback without a field suffix evaluates its value with `expr`
+then calls `temporary_borrow`, discarding the exact initializer root. The constructor
+returns stopped inputs before allocating a local or requiring a statement; other
+inputs receive an existing statement-owned cell and shared-reference HIR. The same
+constructor serves projected and element parents, so a blanket graph hook would
+risk bypassing their later stages. Instrument only the standalone caller.
 
-Baseline: `6f34439`, `c1794ee` passed all ten compiler checks: 1684 library/910
+Baseline: `898a519`, `d9866de` passed all ten compiler checks: 1688 library/910
 native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-place-borrows-gate.log`. Working tree was clean on `main`.
-Ordinary exclusive places now reuse the bounded place-borrow operation and derive
-the exclusive mode from validated scalar-reference HIR. The original mutability,
-record-shape checks and alias-exclusive marking precede publication; completed-block
-alias backing validation is unchanged. Indexed/reborrow paths stay separate. All 14 filtered tests pass, including four new exclusive groups, shared
-regressions, field permissions, exact emitted backing, errors and atomic budgets.
-Log: `/tmp/meowy-exclusive-place-focused.log`. All ten compiler checks pass:
-1688 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-place-gate.log`.
-Implementation: `898a519`. The guide and trackers now document the boundary.
-Post-documentation validation passed: 1208 local links in 110 Markdown files;
-`/tmp/meowy-exclusive-place-docs.log`. Both slices are complete. Next capture
-standalone temporary-borrow roots and local/statement identities before connecting
-materialization and result stages. Keep projected/element-parent staging separate.
-Standalone temporaries, implicit conversions, other field/builder paths, restart
+Log: `/tmp/meowy-exclusive-place-gate.log`. Working tree was clean on `main`.
+`temporary_borrow_point` now exposes the standalone initializer root while
+reusing unchanged temporary construction. Three focused groups pass: initializer
+order/cell identities, scalar/aggregate/reference values, stopped inputs and error
+restoration. Log: `/tmp/meowy-temporary-roots-focused.log`. Formatting and all
+1691 library tests pass; `/tmp/meowy-temporary-roots-lib.log`. Slice 1 is complete;
+standalone operation/result metadata and the full compiler gate are next. Implicit conversions, remaining field/builder paths, restart
 propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices

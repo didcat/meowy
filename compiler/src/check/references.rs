@@ -419,8 +419,9 @@ impl Checker {
                 }
                 ExprKind::Index { .. } => {}
                 _ => {
-                    let value = self.expr(root, None)?;
-                    return self.temporary_borrow(value, span);
+                    return self
+                        .temporary_borrow_point(root, span)
+                        .map(|(_, value)| value);
                 }
             }
         }

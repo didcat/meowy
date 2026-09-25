@@ -1,9 +1,19 @@
 use super::{Checker, Result};
-use crate::ast::Span;
+use crate::ast::{self, Span};
 use crate::diagnostic::Diagnostic;
-use crate::hir::{Expr, ExprKind, Type};
+use crate::hir::{Expr, ExprKind, PointId, Type};
 
 impl Checker {
+    pub(crate) fn temporary_borrow_point(
+        &mut self,
+        expr: &ast::Expr,
+        span: Span,
+    ) -> Result<(PointId, Expr)> {
+        let (point, value) = self.expr_point(expr, None)?;
+        self.temporary_borrow(value, span)
+            .map(|value| (point, value))
+    }
+
     pub(crate) fn temporary_borrow(&mut self, value: Expr, span: Span) -> Result<Expr> {
         if value.ty == Type::Never {
             return Ok(value);
@@ -43,3 +53,6 @@ impl Checker {
         })
     }
 }
+
+#[cfg(test)]
+mod roots;

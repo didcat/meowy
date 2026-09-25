@@ -637,8 +637,10 @@ Ordinary exclusive places now reuse checked address/reference stages with exclus
 mode, preserving mutability, scalar gates and alias bookkeeping. All ten compiler
 checks pass: 1688 library/910 native tests; `/tmp/meowy-exclusive-place-gate.log`.
 Implementation: `898a519`. The foundation guide documents this boundary.
-Standalone temporary-borrow sequencing is next; broader propagation and proof
-outcomes remain incomplete.
+Standalone temporary checking now exposes exact initializer roots while preserving
+existing cell/statement IDs and never-input behavior. Formatting and all 1691
+library tests pass; `/tmp/meowy-temporary-roots-lib.log`. Operation/result metadata
+is next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
