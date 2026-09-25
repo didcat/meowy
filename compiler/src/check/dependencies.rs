@@ -347,6 +347,9 @@ pub(crate) use dereferences::Deref;
 mod fields;
 pub(crate) use fields::Field;
 
+mod typed;
+pub(crate) use typed::Typed;
+
 mod reborrows;
 pub(crate) use reborrows::Reborrow;
 

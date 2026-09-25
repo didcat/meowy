@@ -126,6 +126,18 @@ effects, operand/target error precedence, never inputs, restoration, predicate
 results, no-op HIR and E208; `/tmp/meowy-typed-roots-focused.log`.
 Formatting and all 1711 library tests pass; `/tmp/meowy-typed-roots-lib.log`.
 Operation stages remain the next slice; no outstanding failures remain.
+Operand prerequisite committed as `e5d5653`. The `Ascribe` branch now publishes
+kind/source/result stages after target construction and existing E208 checks,
+before HIR construction/coercion. Never operands keep entry only. Records retain
+no target shape or predicate answer. All four focused stage groups pass: operation
+kinds, erased no-op HIR, calls/fields/short-circuit operands, computed target reads,
+owner/control, never inputs, original errors and atomic identity/edge budgets;
+`/tmp/meowy-typed-stages-focused.log`. The required-read fixture uses an explicit
+computed target block, matching the existing read-tracking boundary. No source
+semantics changed. All ten compiler checks pass: 1715 library/910 native tests,
+formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in
+debug/release); `/tmp/meowy-typed-stages-gate.log`. No outstanding failures remain.
+Documentation and the dispatch-block receiver-prefix handoff are next.
 
 ### Completed runtime field-access slices
 

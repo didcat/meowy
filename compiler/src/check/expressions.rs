@@ -402,7 +402,20 @@ impl Checker {
                 ty,
                 predicate,
             } => {
-                let (_, value, ty) = self.typed_point(value, ty)?;
+                let (input, value, ty) = self.typed_point(value, ty)?;
+                if value.ty != Type::Never && !*predicate && !ty.accepts(&value.ty) {
+                    return Err(Self::error(
+                        "E208",
+                        format!(
+                            "value of type {:?} is not proven to have type {ty:?}",
+                            value.ty
+                        ),
+                        expr.span,
+                    ));
+                }
+                if let Some(point) = self.point {
+                    self.typed_operation(point, input, *predicate, &value, expr.span)?;
+                }
                 if value.ty == Type::Never {
                     return Ok(value);
                 }
@@ -415,16 +428,6 @@ impl Checker {
                         ty: Type::Bool,
                         span: expr.span,
                     });
-                }
-                if !ty.accepts(&value.ty) {
-                    return Err(Self::error(
-                        "E208",
-                        format!(
-                            "value of type {:?} is not proven to have type {ty:?}",
-                            value.ty
-                        ),
-                        expr.span,
-                    ));
                 }
                 return Ok(Self::coerce(value, ty));
             }
