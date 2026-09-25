@@ -126,6 +126,16 @@ formatting groups pass: nested text/roots, additional versus existing projection
 once-only effects, direct/projected Never, suffix checking and original errors;
 `/tmp/meowy-format-plans-focused.log`. Formatting and all 1764 library tests pass;
 `/tmp/meowy-format-plans-lib.log`. Output projection-stage integration is next.
+Capture committed as `39670ee`. Output validation now checks captured primary
+wrappers and inserts their projection before output or the stopped-part break.
+Literal text, panic prefixes and returned-I/O links retain their existing order.
+All four focused stage groups pass: interleaved print/panic order without bypasses,
+Never-primary suppression of output/suffixes, calls/scalar results/control, original
+errors and atomic flag/shared-budget checks; `/tmp/meowy-format-primary-stages-focused.log`.
+All ten compiler checks pass: 1768 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-format-primary-stages-gate.log`. No outstanding failures remain.
+Documentation and the implicit shared-list receiver-load audit are next.
 
 ### Completed unary primary-projection slices
 

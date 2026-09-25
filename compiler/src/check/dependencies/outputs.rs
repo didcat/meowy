@@ -71,6 +71,11 @@ impl Checker {
                 {
                     return Err(invalid());
                 }
+                if child.primary
+                    && !matches!(&part.kind, hir::ExprKind::Primary(value) if matches!(value.ty, hir::Type::Record { .. }))
+                {
+                    return Err(invalid());
+                }
             } else if !matches!(part.kind, hir::ExprKind::String(_)) || part.ty != hir::Type::String
             {
                 return Err(invalid());
@@ -87,6 +92,14 @@ impl Checker {
             if let Some(child) = child {
                 edges.push(Edge::new(from, Port::Entry(child.point), route));
                 (from, route) = (Port::Normal(child.point), Route::Next);
+                if child.primary {
+                    let stage = Port::Projection {
+                        point: id,
+                        step: part,
+                    };
+                    edges.push(Edge::new(from, stage, route));
+                    (from, route) = (stage, Route::Next);
+                }
             }
             if stopped == Some(part) {
                 break;
@@ -132,3 +145,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod primary;
