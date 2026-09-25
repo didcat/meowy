@@ -575,7 +575,10 @@ view boundaries and direct temporary ownership. Address/length capture precedes
 index evaluation; bounds success admits the resulting reference. Parent helpers:
 `ff1373c`. All ten compiler checks pass: 1629 library/910 native tests;
 `/tmp/meowy-element-order-gate.log`.
-Exclusive path borrows, broader propagation and proof outcomes remain incomplete.
+Exclusive indexed-borrow checking now exposes exact path/index roots without
+changing HIR or replaying effects. Formatting and all 1631 library tests pass;
+`/tmp/meowy-exclusive-roots-lib.log`. Reservation/acquisition metadata is next;
+broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

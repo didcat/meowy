@@ -465,16 +465,6 @@ impl Checker {
         })
     }
 
-    pub(crate) fn list_position(
-        &mut self,
-        index: &ast::Expr,
-        length: Option<usize>,
-        capacity: usize,
-    ) -> Result<hir::Expr> {
-        self.list_position_point(index, length, capacity)
-            .map(|(_, value)| value)
-    }
-
     pub(crate) fn list_position_point(
         &mut self,
         index: &ast::Expr,

@@ -99,44 +99,34 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current shared element-borrow slices
+### Current exclusive indexed-borrow slices
 
 Dependency-ordered commit plan:
-1. Expose exact borrowed-parent roots and extract element-parent checking without
-   changing place/view/temporary selection. Preserve nested projected roots and
-   temporary statement ownership; validate the prerequisite independently.
-2. Retain parent/index roots, parent representation and reborrow identities with
-   address/length capture before index evaluation and bounds-success/result edges.
-   Keep nonreturning operands explicit; validate ordinary lifetime/loan errors,
-   nested paths and shared budgets, then run the full compiler gate.
+1. Expose exact exclusive path/index roots through a checked-path helper, reusing
+   `PathStep` and preserving HIR, diagnostics and once-only index checking.
+   Validate nested/projected paths and error restoration with library tests.
+2. Publish bounded exclusive-borrow operations with canonical storage, original
+   paths and index roots. Connect each container reservation/length capture to
+   its index, bounds success to the next address, and completed paths to final
+   acquisition. Validate nonreturning indices, owners, aliases and shared budgets;
+   run the full compiler gate and update the foundation guide.
 
-Investigation: shared element borrowing obtains a parent reference, loads its
-length, evaluates the index and returns a pointer only after bounds success.
-Unlike ordinary list indexing, it does not copy the source list. Parent checking
-selects ordinary places, existing views or statement-owned temporaries. Existing
-loan/lifetime validation remains authoritative; metadata must not treat a view
-cell as its pointee or extend temporary ownership. Exclusive paths stay separate.
+Investigation: `check/indexed.rs::exclusive_indexed` currently discards exact roots
+from `list_position_point`. `loans/elements.rs` reserves every containing list
+before its index and demands prior reservations through final acquisition. The
+backend captures lengths in the same order. Reuse existing address/reserve ports;
+metadata must not grant authority, infer normal completion or evaluate indices
+again. Prefix fields live in `hir::Place`; later fields/indices live in `WriteStep`.
 
-Baseline: `1fd816d`, `7d7fdc8` passed all ten compiler checks: 1624 library/910 native
+Baseline: `ff1373c`, `f8fc922` passed all ten compiler checks: 1629 library/910 native
 tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-method-order-gate.log`.
-
-`borrowed_point` and `element_parent` now expose exact parent roots without replay.
-Nested indexed roots beneath projected borrows also retain distinct identities.
-Place/view/temporary selection and HIR remain unchanged; tests cover statement
-ownership, grouping and error restoration. Formatting and all 1626 library tests
-pass. Log: `/tmp/meowy-element-parents-lib.log` (`ff1373c`). Shared element metadata
-now retains parent/index roots, checked place paths or view/temporary distinctions,
-reborrow IDs and address/length capture before index evaluation. Bounds-success
-edges admit results only after normal index completion. It grants no new loan
-authority. All three focused element groups pass, including exact address/index
-ordering, temporary ownership, nested projections, E101/E222/E302/E303 errors and
-atomic publication. Log: `/tmp/meowy-element-order-focused.log`.
-All ten compiler checks pass: 1629 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-element-order-gate.log`. Post-documentation link checks pass:
-1208 local links in 110 Markdown files. Exclusive indexed-borrow metadata is next;
-remaining graph coverage, propagation and proof outcomes stay incomplete.
+Log: `/tmp/meowy-element-order-gate.log`. Working tree was clean on `main`.
+The checked-path helper now exposes exact index roots alongside unchanged HIR.
+Nested projected paths preserve prefix fields, index spans (including grouped AST
+roots), once-only writes and error restoration. Formatting and all 1631 library
+tests pass; `/tmp/meowy-exclusive-roots-lib.log`. Slice 1 is complete; operation
+publication and the full compiler gate are next. Other graph coverage, restart
+propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 

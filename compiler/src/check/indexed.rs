@@ -1,3 +1,4 @@
+use super::dependencies::PathStep;
 use super::{Checker, Result};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
@@ -9,6 +10,15 @@ impl Checker {
         target: &ast::Expr,
         span: Span,
     ) -> Result<Option<hir::Expr>> {
+        self.exclusive_indexed_points(target, span)
+            .map(|result| result.map(|(value, _)| value))
+    }
+
+    pub(crate) fn exclusive_indexed_points(
+        &mut self,
+        target: &ast::Expr,
+        span: Span,
+    ) -> Result<Option<(hir::Expr, Vec<PathStep>)>> {
         let mut root = target;
         let mut steps = Vec::new();
         loop {
@@ -35,6 +45,7 @@ impl Checker {
         };
         let (place, mut ty, mut mutable) = self.exclusive_place(base, span, true)?;
         let mut path = Vec::new();
+        let mut points = Vec::new();
         let mut diverges = false;
         for step in steps[..=first].iter().rev() {
             match &step.kind {
@@ -42,6 +53,7 @@ impl Checker {
                     let (index, field, writable) = self.record_field(ty, name, step.span)?;
                     mutable = writable;
                     path.push(hir::WriteStep::Field(index));
+                    points.push(PathStep::Field(index));
                     ty = field;
                 }
                 ExprKind::Index { index, .. } => {
@@ -56,7 +68,12 @@ impl Checker {
                     } else {
                         None
                     };
-                    let index = self.list_position(index, length, capacity)?;
+                    let (point, index) = self.list_position_point(index, length, capacity)?;
+                    points.push(PathStep::Index {
+                        point,
+                        capacity,
+                        span: step.span,
+                    });
                     diverges |= index.ty == Type::Never;
                     path.push(hir::WriteStep::Index(hir::IndexStep {
                         index,
@@ -70,6 +87,9 @@ impl Checker {
         if let Some(hir::WriteStep::Index(step)) = path.last_mut() {
             step.span = span;
         }
+        if let Some(PathStep::Index { span: last, .. }) = points.last_mut() {
+            *last = span;
+        }
         let result = self.exclusive_type(ty, span)?;
         if !mutable {
             return Err(Self::error(
@@ -78,10 +98,16 @@ impl Checker {
                 span,
             ));
         }
-        Ok(Some(hir::Expr {
-            kind: hir::ExprKind::ExclusivePath { place, path },
-            ty: if diverges { Type::Never } else { result },
-            span,
-        }))
+        Ok(Some((
+            hir::Expr {
+                kind: hir::ExprKind::ExclusivePath { place, path },
+                ty: if diverges { Type::Never } else { result },
+                span,
+            },
+            points,
+        )))
     }
 }
+
+#[cfg(test)]
+mod tests;
