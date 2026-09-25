@@ -582,7 +582,10 @@ canonical storage and ordered reservation/length, bounds-success and acquisition
 stages. Nonreturning indices do not acquire a result. All ten compiler checks pass:
 1634 library/910 native tests; `/tmp/meowy-exclusive-order-gate.log`. Operation
 integration: `3920c12`. The foundation guide documents the boundary. Debug output
-sequencing is next; broader propagation and proof outcomes remain incomplete.
+sequencing is underway: formatting now exposes exact operand roots alongside
+flattened HIR parts, preserving static text and primary projection. Formatting and
+all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log`. Output-stage
+integration is next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

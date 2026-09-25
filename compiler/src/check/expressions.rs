@@ -583,23 +583,40 @@ impl Checker {
         &mut self,
         expr: &ast::Expr,
         parts: &mut Vec<hir::Expr>,
+    ) -> Result<Vec<Option<hir::PointId>>> {
+        let mut points = Vec::new();
+        self.format_points(expr, parts, &mut points)?;
+        Ok(points)
+    }
+
+    pub(crate) fn format_points(
+        &mut self,
+        expr: &ast::Expr,
+        parts: &mut Vec<hir::Expr>,
+        points: &mut Vec<Option<hir::PointId>>,
     ) -> Result<()> {
         match &expr.kind {
             ExprKind::String(values) => {
                 for value in values {
                     match value {
-                        ast::StringPart::Text(text) => parts.push(hir::Expr {
-                            kind: hir::ExprKind::String(text.clone()),
-                            ty: Type::String,
-                            span: expr.span,
-                        }),
-                        ast::StringPart::Value(value) => self.format_parts(value, parts)?,
+                        ast::StringPart::Text(text) => {
+                            parts.push(hir::Expr {
+                                kind: hir::ExprKind::String(text.clone()),
+                                ty: Type::String,
+                                span: expr.span,
+                            });
+                            points.push(None);
+                        }
+                        ast::StringPart::Value(value) => {
+                            self.format_points(value, parts, points)?
+                        }
                     }
                 }
             }
-            ExprKind::Group(value) => self.format_parts(value, parts)?,
+            ExprKind::Group(value) => self.format_points(value, parts, points)?,
             _ => {
-                let value = Self::project(self.expr(expr, None)?);
+                let (point, value) = self.expr_point(expr, None)?;
+                let value = Self::project(value);
                 if value.ty.has_reference() {
                     return Err(Diagnostic::unsupported(
                         "reference formatting; dereference the copyable value",
@@ -613,8 +630,12 @@ impl Checker {
                     ));
                 }
                 parts.push(value);
+                points.push(Some(point));
             }
         }
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod formatting;

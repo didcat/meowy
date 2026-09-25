@@ -99,48 +99,39 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current exclusive indexed-borrow slices
+### Current debug-output sequencing slices
 
 Dependency-ordered commit plan:
-1. Expose exact exclusive path/index roots through a checked-path helper, reusing
-   `PathStep` and preserving HIR, diagnostics and once-only index checking.
-   Validate nested/projected paths and error restoration with library tests.
-2. Publish bounded exclusive-borrow operations with canonical storage, original
-   paths and index roots. Connect each container reservation/length capture to
-   its index, bounds success to the next address, and completed paths to final
-   acquisition. Validate nonreturning indices, owners, aliases and shared budgets;
-   run the full compiler gate.
-3. Document the supported metadata boundary and next graph-coverage step in the
-   foundation guide and trackers. Keep this independently useful handoff separate
-   so the implementation/tests slice stays within the eight-file review limit.
+1. Expose exact formatting operand roots alongside existing HIR parts. Static text
+   stays explicitly distinct; grouping/interpolation flattening, primary projection
+   and ordinary errors retain their current behavior. Validate once-only effects,
+   nested interpolation, nonreturning operands and error restoration.
+2. Record bounded debug output operations and connect each operand to its streamed
+   part before the next operand. Panic prefix precedes message evaluation; print
+   newline and panic publication follow completed messages. Nonreturning operands
+   do not gain later output/result edges. Validate ownership/control identities,
+   shared budgets and runtime order with focused checks and the compiler gate.
+3. Update the foundation guide and trackers with verified boundaries and the next
+   graph-coverage prerequisite, separately from implementation and regressions.
 
-Investigation: `check/indexed.rs::exclusive_indexed` previously discarded exact roots
-from `list_position_point`. `loans/elements.rs` reserves every containing list
-before its index and demands prior reservations through final acquisition. The
-backend captures lengths in the same order. Reuse existing address/reserve ports;
-metadata must not grant authority, infer normal completion or evaluate indices
-again. Prefix fields live in `hir::Place`; later fields/indices live in `WriteStep`.
+Investigation: `check/expressions.rs::format_parts` flattens text/interpolation and
+projects primary values while discarding expression IDs. `backend/output.rs::print`
+interleaves evaluation and output. `backend/panic.rs::panic` first creates pending
+storage and streams the prefix, then interleaves message evaluation/output; it only
+publishes the outer panic after full message completion. A nested failure or scope
+exit preserves streamed bytes but skips remaining parts and outer publication.
+Do not model this as evaluating all arguments before one output effect. Ordinary
+checking still visits suffix operands; checked points do not prove reachability.
 
-Baseline: `ff1373c`, `f8fc922` passed all ten compiler checks: 1629 library/910 native
-tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-element-order-gate.log`. Working tree was clean on `main`.
-The checked-path helper now exposes exact index roots alongside unchanged HIR.
-Nested projected paths preserve prefix fields, index spans (including grouped AST
-roots), once-only writes and error restoration. Formatting and all 1631 library
-tests pass; `/tmp/meowy-exclusive-roots-lib.log` (`f078e24`).
-Exclusive operations now capture canonical storage, checked prefix/path identities
-and exact index roots. Each list reservation/length capture precedes its index;
-bounds-success edges advance addresses. Nonreturning indices omit their checked
-success edge and the final acquisition/result. Publication shares the bounded edge
-ledger and validates same-function roots atomically. All three focused groups pass;
-`/tmp/meowy-exclusive-order-focused.log`. All ten compiler checks pass: 1634
-library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+Baseline: exclusive roots/stages `f078e24`, `3920c12`, handoff `4acd663` passed all
+ten compiler checks (1634 library/910 native tests; conformance 10 passed,
 13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-order-gate.log`.
-Operation integration: `3920c12`. The foundation guide and trackers now document
-this boundary. Post-documentation link validation passes (1208 local links in
-110 Markdown files); `/tmp/meowy-exclusive-order-links.log`. All three slices are
-complete. Next capture debug formatting/output operand roots; restart propagation
-and proof outcomes remain incomplete.
+Working tree was clean on `main`. Formatting now exposes one optional root per
+flattened HIR part; static text has no expression root. New tests preserve nested
+text order, scalar primary projection, once-only effects and error restoration.
+Formatting and all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log`.
+Slice 1 is complete; streamed output-stage integration and the full gate are next.
+Restart propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 
