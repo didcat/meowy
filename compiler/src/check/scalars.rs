@@ -280,7 +280,8 @@ impl Checker {
         } else if equality && matches!(context, Some(Type::Record { .. })) {
             let record = context.clone().expect("record context");
             let primary = Self::primary_type(&record);
-            (None, None, self.composed(left, record, Some(&primary))?)
+            let (root, value) = self.composed_point(left, record, Some(&primary))?;
+            (None, Some(root), value)
         } else {
             let (root, value) = self.expression_point(left, context.as_ref())?;
             (None, Some(root), value)
@@ -316,11 +317,8 @@ impl Checker {
             (Some(id), Some(root), value)
         } else if equality && matches!(right_context, Type::Record { .. }) {
             let primary = Self::primary_type(&right_context);
-            (
-                None,
-                None,
-                self.composed(right, right_context, Some(&primary))?,
-            )
+            let (root, value) = self.composed_point(right, right_context, Some(&primary))?;
+            (None, Some(root), value)
         } else {
             let (root, value) = self.expression_point(right, Some(&right_context))?;
             (None, Some(root), value)

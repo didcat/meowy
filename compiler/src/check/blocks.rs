@@ -333,16 +333,6 @@ impl Checker {
         (!types.is_empty()).then(|| Type::union(types))
     }
 
-    pub(crate) fn composed(
-        &mut self,
-        value: &ast::Expr,
-        record: Type,
-        expected: Option<&Type>,
-    ) -> Result<hir::Expr> {
-        self.composed_point(value, record, expected)
-            .map(|(_, value)| value)
-    }
-
     pub(crate) fn composed_point(
         &mut self,
         value: &ast::Expr,

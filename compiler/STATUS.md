@@ -99,7 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current composed-expression slices
+### Current record-equality sequencing slices
+
+Dependency-ordered commit plan:
+1. Retain the returned composed root on both record-context equality operands so
+   the existing binary sequence can link their evaluation order. Remove the
+   discard-only helper once unused; preserve typing, hints, coercion and errors.
+   Add focused regressions and run the complete compiler gate.
+2. Document verified scope and the next prerequisite separately.
+
+Investigation: both record-context branches in `scalars.rs` already check through
+`composed_point` indirectly, but discard its ID and publish `None` sequence items.
+Returning those IDs requires no extra checking, allocation or HIR change. The
+existing sequence validator supplies bounded ordering links. Composed fallback
+coercions and binary entry/operation/result links remain separate unknowns.
+
+Baseline: clean `main`; composed sequencing passed all ten compiler checks with
+1728 library/910 native tests; `/tmp/meowy-composed-stages-gate.log`.
+Both branches now retain exact roots and the unused discard-only helper is gone.
+Four focused groups pass: repeated spans/groups, owners, once-only calls/effects,
+partial blocks, contextual primary widths/projection, diagnostics and atomic edge
+budgets; `/tmp/meowy-record-sequences-focused.log`. The stopped-call fixture also
+preserves the existing fallback coercion of Never to the expected primary while
+retaining the call's absent return edge. No fallback or binary result behavior
+changed. All ten compiler checks pass: 1732 library/910 native tests, formatting,
+Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-record-sequences-gate.log`. No outstanding failures remain.
+Documentation and the composed-fallback source/coercion handoff are next.
+
+### Completed composed-expression slices
 
 The dependency-ordered plan is complete:
 1. Connect exact Group children and plain partial-block results using existing

@@ -138,3 +138,6 @@ mod tests;
 
 #[cfg(test)]
 mod operands;
+
+#[cfg(test)]
+mod equality;

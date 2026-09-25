@@ -57,7 +57,7 @@ pub(crate) fn operand_sequences_keep_nested_functions_and_short_circuit_paths_di
 }
 
 #[test]
-pub(crate) fn operand_sequences_keep_composed_roots_unknown() {
+pub(crate) fn operand_sequences_keep_composed_roots_and_unknown_fallbacks_distinct() {
     let source = "a:{->1;->n:2};b:{->2;->n:3};same:a==b";
     crate::compile(source).unwrap();
     let (checker, _) = check(source);
@@ -66,8 +66,20 @@ pub(crate) fn operand_sequences_keep_composed_roots_unknown() {
         .iter()
         .find_map(|(source, sequence)| matches!(source, Source::Expr(_)).then_some(sequence))
         .unwrap();
-    assert_eq!(sequence.items, [None, None]);
-    assert!(sequence.edges.is_empty());
+    let left = sequence.items[0].unwrap();
+    let right = sequence.items[1].unwrap();
+    assert_eq!(
+        sequence.edges,
+        [Edge::new(
+            Port::Normal(left),
+            Port::Entry(right),
+            Route::Next
+        )]
+    );
+    for root in [left, right] {
+        assert!(!checker.region_edges.contains_key(&root));
+        assert!(!checker.endpoints.contains_key(&Source::Expr(root)));
+    }
 }
 
 #[test]
