@@ -109,7 +109,10 @@ Dependency-ordered commit plan:
    paths and index roots. Connect each container reservation/length capture to
    its index, bounds success to the next address, and completed paths to final
    acquisition. Validate nonreturning indices, owners, aliases and shared budgets;
-   run the full compiler gate and update the foundation guide.
+   run the full compiler gate.
+3. Document the supported metadata boundary and next graph-coverage step in the
+   foundation guide and trackers. Keep this independently useful handoff separate
+   so the implementation/tests slice stays within the eight-file review limit.
 
 Investigation: `check/indexed.rs::exclusive_indexed` currently discards exact roots
 from `list_position_point`. `loans/elements.rs` reserves every containing list
@@ -124,9 +127,17 @@ Log: `/tmp/meowy-element-order-gate.log`. Working tree was clean on `main`.
 The checked-path helper now exposes exact index roots alongside unchanged HIR.
 Nested projected paths preserve prefix fields, index spans (including grouped AST
 roots), once-only writes and error restoration. Formatting and all 1631 library
-tests pass; `/tmp/meowy-exclusive-roots-lib.log`. Slice 1 is complete; operation
-publication and the full compiler gate are next. Other graph coverage, restart
-propagation and proof outcomes remain incomplete.
+tests pass; `/tmp/meowy-exclusive-roots-lib.log` (`f078e24`).
+Exclusive operations now capture canonical storage, checked prefix/path identities
+and exact index roots. Each list reservation/length capture precedes its index;
+bounds-success edges advance addresses. Nonreturning indices omit their checked
+success edge and the final acquisition/result. Publication shares the bounded edge
+ledger and validates same-function roots atomically. All three focused groups pass;
+`/tmp/meowy-exclusive-order-focused.log`. All ten compiler checks pass: 1634
+library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-order-gate.log`.
+Slice 2 is complete. Guide/tracker integration is next; other graph coverage,
+restart propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 

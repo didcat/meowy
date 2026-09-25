@@ -10,8 +10,13 @@ impl Checker {
         target: &ast::Expr,
         span: Span,
     ) -> Result<Option<hir::Expr>> {
-        self.exclusive_indexed_points(target, span)
-            .map(|result| result.map(|(value, _)| value))
+        let Some((value, steps)) = self.exclusive_indexed_points(target, span)? else {
+            return Ok(None);
+        };
+        if let Some(id) = self.point {
+            self.exclusive_operation(id, &value, steps)?;
+        }
+        Ok(Some(value))
     }
 
     pub(crate) fn exclusive_indexed_points(

@@ -71,6 +71,7 @@ impl Checker {
             .saturating_add(self.index_edges)
             .saturating_add(self.method_edges)
             .saturating_add(self.element_edges)
+            .saturating_add(self.exclusive_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)

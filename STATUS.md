@@ -577,8 +577,11 @@ index evaluation; bounds success admits the resulting reference. Parent helpers:
 `/tmp/meowy-element-order-gate.log`.
 Exclusive indexed-borrow checking now exposes exact path/index roots without
 changing HIR or replaying effects. Formatting and all 1631 library tests pass;
-`/tmp/meowy-exclusive-roots-lib.log`. Reservation/acquisition metadata is next;
-broader propagation and proof outcomes remain incomplete.
+`/tmp/meowy-exclusive-roots-lib.log` (`f078e24`). Exclusive operations now retain
+canonical storage and ordered reservation/length, bounds-success and acquisition
+stages. Nonreturning indices do not acquire a result. All ten compiler checks pass:
+1634 library/910 native tests; `/tmp/meowy-exclusive-order-gate.log`. Guide/tracker
+integration is next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

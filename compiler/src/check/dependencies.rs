@@ -332,5 +332,8 @@ pub(crate) use methods::{Kind as MethodKind, Method};
 mod elements;
 pub(crate) use elements::{Access as ElementAccess, Element};
 
+mod exclusive;
+pub(crate) use exclusive::Operation as ExclusiveOperation;
+
 mod emissions;
 pub(crate) use emissions::Emission;
