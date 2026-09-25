@@ -127,6 +127,19 @@ focused groups pass: exact roots, indices, groups, explicit/implicit loads, call
 declared unions, existing errors and budget restoration;
 `/tmp/meowy-field-roots-focused.log`. Formatting and all 1704 library tests pass;
 `/tmp/meowy-field-roots-lib.log`. Stage metadata remains the next slice.
+Receiver prerequisite committed as `ed85184`. The fallback now records the
+captured receiver, implicit load and checked index before narrowing. Stage records
+validate bounded type identities and use the shared edge ledger; never fields
+have no result edge, while explicit receiver dereferences keep their own stages.
+All four focused stage groups pass after grouping a numeric-literal test receiver
+to preserve lexical syntax. Coverage includes owned/shared receivers, explicit
+loads, call returns, nested fields, narrowing, owners/control, never fields,
+required/static exits, ordinary errors and atomic identity/type/edge budgets;
+`/tmp/meowy-field-stages-focused.log`. All ten compiler checks pass: 1708 library/
+910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-field-stages-gate.log`.
+No outstanding failures remain. Documentation and the next predicate/ascription
+source-boundary handoff are next.
 
 ### Completed implicit shared-conversion slices
 

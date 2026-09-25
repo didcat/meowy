@@ -344,6 +344,9 @@ pub(crate) use unary::Unary;
 mod dereferences;
 pub(crate) use dereferences::Deref;
 
+mod fields;
+pub(crate) use fields::Field;
+
 mod reborrows;
 pub(crate) use reborrows::Reborrow;
 

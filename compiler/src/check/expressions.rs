@@ -391,7 +391,10 @@ impl Checker {
                         )),
                     };
                 }
-                let (_, _, value) = self.field_point(value, name, expr.span)?;
+                let (input, load, value) = self.field_point(value, name, expr.span)?;
+                if let Some(point) = self.point {
+                    self.field_operation(point, input, load, &value, expr.span)?;
+                }
                 return self.narrow(value);
             }
             ExprKind::Ascribe {
