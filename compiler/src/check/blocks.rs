@@ -394,9 +394,13 @@ impl Checker {
                     span: value.span,
                 })
             }
-            _ => self
-                .composed_fallback_point(value, expected)
-                .map(|(_, _, value)| value),
+            _ => {
+                let (input, kind, result) = self.composed_fallback_point(value, expected)?;
+                if let Some(point) = self.point {
+                    self.coercion_operation(point, input, kind, value.span)?;
+                }
+                Ok(result)
+            }
         }
     }
 }

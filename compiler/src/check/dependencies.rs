@@ -351,7 +351,7 @@ mod typed;
 pub(crate) use typed::Typed;
 
 mod coercions;
-pub(crate) use coercions::Kind as CoercionKind;
+pub(crate) use coercions::{Coercion, Kind as CoercionKind};
 
 mod dispatch;
 pub(crate) use dispatch::Dispatch;

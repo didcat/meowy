@@ -127,6 +127,18 @@ repeating acceptance. Three focused groups pass: record/scalar/union identity,
 existing inner wrappers, calls/branches, stopped coercion, errors and restoration;
 `/tmp/meowy-fallback-roots-focused.log`. Formatting and all 1735 library tests pass;
 `/tmp/meowy-fallback-roots-lib.log`. Stage integration remains next.
+Capture prerequisite committed as `dd9be32`. The fallback now records its captured
+kind in a bounded ledger: Forward links source/result directly, Convert uses an
+operation stage, and Stopped retains entry only. The original raw root supplies
+all result availability; no generic entry-to-normal bypass is added. Four focused
+stage groups pass: distinct forwarding/conversion, inner wrappers, conditional
+call returns, stopped coercions, owner/control, errors and atomic identity/edge
+budgets; `/tmp/meowy-fallback-stages-focused.log`. Record-sequence tests now expect
+the earlier fallback-stage budget boundary. After correcting import ordering,
+all ten compiler checks pass: 1739 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-fallback-stages-gate.log`. No outstanding failures remain.
+Documentation and the non-short-circuit binary-stage audit are next.
 
 ### Completed record-equality sequencing slices
 

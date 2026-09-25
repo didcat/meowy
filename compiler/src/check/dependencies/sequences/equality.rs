@@ -149,7 +149,8 @@ pub(crate) fn record_sequences_use_shared_edge_budgets_without_partial_publicati
     checker.dispatch_edges = super::super::edges::MAX_EDGES;
     let error = checker.expr_point(&expr("a==a"), None).unwrap_err();
     assert_eq!(error.code, "B001");
-    assert!(error.message.contains("sequence budget"));
+    assert!(error.message.contains("coercion-operation budget"));
+    assert!(checker.coercions.is_empty());
     assert_eq!(checker.sequences.len(), count);
     assert!(checker.point.is_none());
 }
