@@ -114,9 +114,9 @@ Dependency-ordered commit plan:
 Investigation: after ordinary address resolution fails, `borrowed` chooses an
 indexed borrowed parent, an explicitly dereferenced reference value or an ordinary
 expression, sometimes materializing temporary storage. Each path already creates
-an exact point but discards its ID. The projection loops then synthesize fields and
-dereferences. Extract only parent selection; preserve the direct `&*p` operation
-path and ordinary temporary borrow return. Do not add projection result edges or
+an exact point; the new helper exposes its ID while the projection loops still
+synthesize fields and dereferences. This slice extracts only parent selection and
+preserves the direct `&*p` operation path and ordinary temporary borrow return. Do not add projection result edges or
 infer intermediate source IDs from HIR/spans. The helper's returned ID is the
 prerequisite for subsequent checked path capture, not a completed transfer graph.
 
@@ -133,8 +133,12 @@ errors/stopped inputs and budget restoration. Log:
 `/tmp/meowy-projected-parent-roots-focused.log`. All ten compiler checks pass:
 1672 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-projected-parent-roots-gate.log`. Slice 1 is complete; guide/tracker
-updates are next.
+`/tmp/meowy-projected-parent-roots-gate.log`. Implementation: `0a540a8`. The guide
+and trackers now describe the root prerequisite. Post-documentation validation
+passed: 1208 local links in 110 Markdown files;
+`/tmp/meowy-projected-parent-roots-docs.log`. Both slices are complete. Next capture
+checked paths and distinguish helper-created temporary materialization from
+already-evaluated parent references before graph publication.
 Projected operation edges, implicit conversions, restart propagation and proof
 outcomes remain incomplete.
 
@@ -1464,10 +1468,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Direct shared reborrow roots and mode/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1668 library/910
+- Projected shared-parent root extraction passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1672 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-shared-reborrow-stages-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-projected-parent-roots-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1873,17 +1877,22 @@ subtraction retains its documented limits. No outstanding failures remain.
    requested result/actual parent modes and result links (`4c6c381`). Aggregate
    comparisons are bounded and retain no shape copies; stopped parents preserve
    requested mode without allocating a site or adding operation/result edges.
-   Next expose exact roots for projected shared-parent selection in
-   `check/references.rs::borrowed`: expression parents, indexed borrowed parents
-   and roots in temporary storage. Preserve source selection, temporary local and
-   statement identities, saved address errors, stopped inputs and once-only effects.
-   Validate
-   nested calls/indices, reference-valued fields, ordinary ownership errors and
-   budgets. Keep this root prerequisite independently reviewable, then capture
-   checked field paths and implicit-dereference stages during checking before
-   linking projected reborrow results. Never infer synthetic links from spans or
-   HIR inventory order. Run focused regressions and the compiler gate. Ordinary
-   place-borrow operations, implicit conversions and other builders stay separate.
+   Projected parent selection now exposes exact checked roots through
+   `check/references/parents.rs::projected_parent` (`0a540a8`), preserving indexed,
+   expression and temporary choices. The projection caller still discards that ID;
+   this is a root prerequisite, not projected-operation graph integration.
+   Next consume the returned ID in `check/references.rs::borrowed` and capture
+   bounded ordered steps while checking owned fields, implicit dereferences and
+   final shared reborrow paths/sites. Distinguish helper-created temporary storage
+   after source evaluation from reference values already produced by the source.
+   Preserve temporary local/statement IDs, checked field indices, parent/result
+   modes, original errors and stopped-parent boundaries. Keep checked path capture
+   separately reviewable before publishing stage/result edges on the shared ledger.
+   Validate nested reference-valued fields, calls/indices, temporary parents,
+   source/site/owner/control identities, loan/lifetime errors and budgets, then run
+   the compiler gate. Never infer synthetic source points from HIR or spans, or
+   bypass unknown effects. Ordinary place borrows, implicit conversions and other
+   builders remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

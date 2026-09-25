@@ -204,6 +204,11 @@ exclusive parents preserve scalar, aggregate and reference-cell pointees; bounde
 comparison work retains no aggregate shape copies. Stopped parents retain the
 requested result mode without a parent mode, site or result edge. Projected shared
 reborrows and implicit conversions remain separate graph-coverage work.
+Projected parent selection now has a separate helper exposing exact expression
+and indexed-borrow roots alongside unchanged HIR and temporary local/statement
+identities. A value root can precede temporary materialization performed by that
+helper; it does not identify synthetic projection or dereference stages. Those
+stages and projected result links still require explicit capture during checking.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

@@ -623,9 +623,9 @@ checks pass: 1668 library/910 native tests;
 documents the boundary. Projected parent selection now exposes exact expression,
 indexed-borrow and reference roots alongside unchanged HIR and temporary identity.
 All ten compiler checks pass: 1672 library/910 native tests;
-`/tmp/meowy-projected-parent-roots-gate.log`. This is the root prerequisite; checked
-projection/result graph integration remains next. Broader propagation and proof
-outcomes remain incomplete.
+`/tmp/meowy-projected-parent-roots-gate.log` (`0a540a8`). The foundation guide
+records this root prerequisite; checked path capture and projection/result graph
+integration remain next. Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -755,10 +755,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Direct shared reborrow roots and mode/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1668 library/910 native tests.
+- Projected shared-parent root extraction passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1672 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-shared-reborrow-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-projected-parent-roots-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -848,11 +848,12 @@ execution was not part of this documentation edit.
    Exclusive scalar reborrows retain parent/site/mode identities and ordered result
    availability without dereference loads. Direct shared reborrows now preserve
    requested result and actual parent modes with bounded aggregate comparisons.
-   Next capture exact projected shared-parent roots in
-   `compiler/src/check/references.rs::borrowed`, preserving expression/indexed/
-   temporary source selection, error order and once-only effects. Validate focused
-   tests and the compiler gate before separately integrating checked projection
-   and implicit-dereference sequences. Ordinary place-borrow operations, implicit
+   Projected parent selection now exposes exact roots and preserves temporary
+   identities. Next consume those roots in `compiler/src/check/references.rs::borrowed`
+   while capturing bounded field/dereference/reborrow steps. Distinguish temporary
+   materialization after source evaluation, preserve modes/sites/errors and
+   validate focused tests plus the compiler gate before publishing result edges.
+   Projected graph integration, ordinary place-borrow operations, implicit
    conversions and remaining builders stay separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
