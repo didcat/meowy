@@ -582,13 +582,14 @@ canonical storage and ordered reservation/length, bounds-success and acquisition
 stages. Nonreturning indices do not acquire a result. All ten compiler checks pass:
 1634 library/910 native tests; `/tmp/meowy-exclusive-order-gate.log`. Operation
 integration: `3920c12`. The foundation guide documents the boundary. Debug output
-sequencing is underway: formatting now exposes exact operand roots alongside
-flattened HIR parts, preserving static text and primary projection. Formatting and
+formatting now exposes exact operand roots alongside flattened HIR parts,
+preserving static text and primary projection. Formatting and
 all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log` (`ff58f82`). Output
 metadata now interleaves operands and streamed parts, preserves panic prefixes and
 only completes fully evaluated messages. All ten compiler checks pass: 1640
 library/910 native tests; `/tmp/meowy-output-stages-gate.log`. Debug/release native
-probes also confirm partial output on scope leave. Guide/tracker integration is
+probes also confirm partial output on scope leave. Output integration: `99208a3`.
+The foundation guide documents the boundary. Grouped-expression result links are
 next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -719,10 +720,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Exclusive indexed-borrow roots and reservation/acquisition stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1634 library/910 native tests.
+- Debug formatting roots and streamed-output stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1640 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-exclusive-order-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-output-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -801,10 +802,12 @@ execution was not part of this documentation edit.
    and item roots, snapshots and capacity-success stages. Shared element borrows
    now retain parent/index roots, address stages and temporary ownership. Exclusive
    paths retain canonical storage and ordered reservation/bounds/acquisition stages.
-   Next capture formatting roots in `compiler/src/check/expressions.rs::format_parts`
-   and connect debug output effects in `compiler/src/check/functions.rs::call`.
-   Preserve interpolation/dispatch order, nonreturning operands, panic boundaries,
-   errors and shared budgets; validate focused regressions and the compiler gate.
+   Debug output retains exact formatting roots and interleaved output stages,
+   including panic prefix, conditional output returns and stopped suffixes.
+   Next connect grouped-expression roots to their exact child entry/result ports
+   in `compiler/src/check/expressions.rs::raw_expression`. Preserve HIR, expected
+   typing, nonreturning children and budgets; validate nested groups and errors,
+   then run the compiler gate. Other unary/projection/builder coverage remains open.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

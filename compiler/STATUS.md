@@ -115,8 +115,8 @@ Dependency-ordered commit plan:
    graph-coverage prerequisite, separately from implementation and regressions.
 
 Investigation: `check/expressions.rs::format_parts` flattens text/interpolation and
-projects primary values while discarding expression IDs. `backend/output.rs::print`
-interleaves evaluation and output. `backend/panic.rs::panic` first creates pending
+projects primary values; it now retains their exact expression IDs.
+`backend/output.rs::print` interleaves evaluation and output. `backend/panic.rs::panic` first creates pending
 storage and streams the prefix, then interleaves message evaluation/output; it only
 publishes the outer panic after full message completion. A nested failure or scope
 exit preserves streamed bytes but skips remaining parts and outer publication.
@@ -140,8 +140,13 @@ All ten compiler checks pass: 1640 library/910 native tests, formatting, Clippy,
 build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
 `/tmp/meowy-output-stages-gate.log`. Additional debug/release native probes confirm
 operand/output interleaving and preserved partial output on scope leave, without
-a trailing newline; `/tmp/meowy-output-stream-probes.log`. Slice 2 is complete;
-guide/tracker integration is next.
+a trailing newline; `/tmp/meowy-output-stream-probes.log`. Operation integration:
+`99208a3`. The foundation guide and trackers now describe this boundary.
+Post-documentation validation passed: 1208 local links in 110 Markdown files;
+`/tmp/meowy-output-stages-links.log`. All three slices are complete. Next connect
+grouped-expression roots to checked child results; ordinary groups currently drop
+child IDs without publishing entry/result links. Unary/dereference and other operand coverage,
+restart propagation and proof outcomes remain separate.
 
 Split review: slice 2 needs nine files, including both required trackers. New
 prefix/part ports require the exhaustive existing test helper to change with the
@@ -1476,10 +1481,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Exclusive indexed-borrow roots and reservation/acquisition stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1634 library/910
+- Debug formatting roots and streamed-output stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1640 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-exclusive-order-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-output-stages-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1861,19 +1866,24 @@ subtraction retains its documented limits. No outstanding failures remain.
    roots (`f078e24`, `3920c12`). Each reservation/length capture precedes its index;
    checked success advances the address and completed paths acquire the reference.
    Nonreturning indices omit success and final acquisition/result edges.
-   Next expose exact formatting operand roots in `check/expressions.rs::format_parts`
-   and integrate debug `Print`/`Panic` ordering in `check/functions.rs::call`.
-   Preserve interpolation/dispatch order, static text segments, ordinary errors,
-   nonreturning operands and panic's absent normal continuation. Separate root
-   capture from effect/result integration, with focused regressions and the
-   compiler gate. Do not infer output success or normal completion from checking.
+   Debug output now retains exact formatting roots (`ff58f82`) and streamed stages
+   (`99208a3`). Static text stays explicit; each operand precedes its output and
+   that effect's return precedes the next part. Panic prefix comes first; only
+   completed messages reach print newline or outer panic publication. Nonreturning
+   operands omit suffix output and completion edges; panic has no normal result.
+   Next connect `ExprKind::Group` in `check/expressions.rs::raw_expression` to the
+   exact child ID returned by `expr_point`. Validate same-owner/block identities,
+   nested grouped calls/branches, nonreturning children, original errors, required
+   budgets and shared edge limits. Preserve HIR and typing; connect child entry and
+   normal-result ports without a generic entry-to-normal bypass. Keep unary,
+   dereference, field/coercion and contextual builder coverage separate. Add focused
+   regressions, then run the compiler gate before any propagation/enforcement work.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Debug formatting and other contextual
-   block builders remain coverage gaps; missing sequences
-   are not independence.
+   Group/unary wrappers and other contextual block builders remain coverage gaps;
+   missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
    Record source identities during checking; do not infer links or runtime order from spans,

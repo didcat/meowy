@@ -167,6 +167,14 @@ follows the completed path. A nonreturning index has no success edge, and its
 borrow has no acquisition/result edge. These bounded metadata share the graph's
 edge budget and preserve existing loan validation; they neither grant exclusive
 authority nor complete restart propagation or proof evaluation.
+Debug output retains exact roots for evaluated parts and distinguishes static text
+segments. Each operand completes before its part is streamed; that output must
+return before the next part begins. Panic initializes its pending message and
+streams its prefix before evaluating message operands. Print newline and outer
+panic publication follow full message completion. A nonreturning operand keeps
+later checked roots without adding later output or completion edges; panic has no
+normal result edge. Conditional output-return edges do not assert that I/O succeeds.
+These are bounded ordering facts, not effect summaries or proof outcomes.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
