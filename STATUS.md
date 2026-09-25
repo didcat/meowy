@@ -612,8 +612,9 @@ Formatting and all 1659 library tests pass; `/tmp/meowy-reborrow-roots-lib.log`
 (`03f5e54`). Exclusive reborrow metadata now retains parent/site/mode identities and
 ordered result availability without a dereference load. Stopped parents allocate
 no site. All ten compiler checks pass: 1662 library/910 native tests;
-`/tmp/meowy-reborrow-stages-gate.log`. Guide/tracker integration is next; broader
-propagation and proof outcomes remain incomplete.
+`/tmp/meowy-reborrow-stages-gate.log` (`a6e9d05`). The foundation guide documents the
+boundary. Direct shared reborrow sequencing is next; broader propagation and proof
+outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -743,10 +744,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Explicit dereference roots and load/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1656 library/910 native tests.
+- Exclusive scalar reborrow roots and site/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1662 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-deref-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-reborrow-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -833,11 +834,12 @@ execution was not part of this documentation edit.
    integer negation and stopped-operand boundaries. Signed literals and required
    construction retain their own paths. Explicit dereferences now retain pointer
    roots and load/result order without inferring pointee storage or loan authority.
-   Next capture exclusive scalar reborrow parents and existing site identities in
-   `compiler/src/check/references.rs::exclusive_borrow`, then connect reborrow/result
-   stages. Preserve mode, nonreturning operands, errors and loan/lifetime checks;
-   validate focused tests and the compiler gate. Shared/projected reborrows,
-   implicit dereferences, field/coercion and builder coverage remain separate.
+   Exclusive scalar reborrows retain parent/site/mode identities and ordered result
+   availability without dereference loads. Next capture direct shared reborrow
+   parents in `compiler/src/check/references.rs::borrowed` for `&*p` without a field
+   suffix. Preserve modes, aggregate types, stopped parents, errors and loan checks;
+   validate focused tests and the compiler gate. Projected shared paths, implicit
+   conversions/dereferences and field/builder coverage remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

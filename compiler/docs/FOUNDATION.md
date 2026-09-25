@@ -193,7 +193,13 @@ pointer-before-load/result order. A nonreturning pointer has no load stage; a
 `never` referent has no normal result. This records availability without copying
 aggregate type shapes, identifying pointee storage from a reference cell, or
 creating loan authority. HIR typing and existing move/lifetime checks remain
-unchanged. Implicit dereferences and reborrows retain separate source boundaries.
+unchanged. Implicit dereferences retain separate source boundaries.
+Explicit exclusive scalar reborrows retain exact parent roots, their existing
+reborrow sites and exclusive mode. Parent evaluation precedes reborrow and result
+availability, with no referent load. Stopped parents allocate no site and have no
+operation/result edge. These links preserve existing parent suspension, transfers
+and lifetime checks without granting authority. Shared/projected reborrows and
+implicit shared conversions remain separate graph-coverage work.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
