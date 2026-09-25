@@ -130,9 +130,11 @@ canonical-root member types. All four focused groups pass;
 `/tmp/meowy-place-borrows-focused.log`. All ten compiler checks pass: 1684 library/
 910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release); `/tmp/meowy-place-borrows-gate.log`.
-Implementation is complete; guide/tracker integration is next.
-Exclusive place borrows,
-standalone temporaries, implicit conversions, other field/builder paths, restart
+Implementation: `6f34439`. The foundation guide and trackers now document the
+supported boundary. Post-documentation validation passed: 1208 local links in
+110 Markdown files; `/tmp/meowy-place-borrows-docs.log`. Both slices are complete.
+Next extend place-borrow metadata to the existing exclusive scalar place path.
+Standalone temporaries, implicit conversions, other field/builder paths, restart
 propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
@@ -1461,10 +1463,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Checked shared-borrow projection plans and stage edges passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1680 library/910
+- Ordinary shared place-borrow operations passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1684 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-borrow-projections-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-place-borrows-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1876,21 +1878,24 @@ subtraction retains its documented limits. No outstanding failures remain.
    final address projections; source return conditions are not bypassed. Plans
    retain temporary identities, field indices, final parent modes and existing
    reborrow sites without adding source point IDs or loan authority.
-   Next record ordinary shared place-borrow operations in the successful `address`
-   branch of `check/references.rs::borrowed`. Retain checked `hir::Place` roots and
-   field paths, canonical emitted-slot storage through `Alias::root`, and shared
-   mode. Model address/reference creation without reading the pointee value or
-   inventing an operand evaluation. Preserve alias bookkeeping and ordinary
-   diagnostics/ownership/lifetimes. Validate scalar/record/reference-cell borrows,
-   emitted aliases, owner/control identities and shared budgets, then run the
-   compiler gate. Keep representation/integration slices reviewable. Exclusive
-   place borrows, standalone temporary borrows, implicit conversions and general
-   field/coercion/builder paths remain separate coverage work.
+   Ordinary shared place borrows now retain checked places, canonical alias roots,
+   shared mode and address/reference stages (`6f34439`). No operand point or pointee
+   read is invented. Paths use source-local types so canonical aliases can retain
+   different member types; reference-cell identities and bookkeeping are preserved.
+   Next extend `dependencies/place_borrows.rs` and the terminal ordinary-place branch
+   of `check/references.rs::exclusive_borrow` to exclusive mode. Preserve the existing
+   `exclusive_place` mutability/scalar-shape checks and alias-exclusive marking;
+   keep indexed exclusive paths and reborrows on their separate operations. Validate
+   scalar/nested-field places, emitted aliases, per-field permissions, E301/E302/
+   E303/E305 boundaries, source/owner/control identity and shared budgets, then run
+   the compiler gate. Do not grant permission from metadata or widen reference/
+   aggregate gates. Standalone temporaries, implicit conversions and general
+   field/coercion/builder paths remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Place-borrow/implicit reference paths and contextual builders remain coverage gaps;
+   Exclusive-place/implicit reference paths and contextual builders remain coverage gaps;
    missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
