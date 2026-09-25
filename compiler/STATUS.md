@@ -99,41 +99,37 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current ordinary shared place-borrow slice
+### Current ordinary exclusive place-borrow slice
 
 Dependency-ordered commit plan:
-1. Record ordinary shared borrows after successful address/type checking. Retain
-   the original checked place, canonical alias storage, shared mode and owner/control
-   identities. Link root/field address stages to reference creation and normal
-   availability, with no operand evaluation or pointee load. Validate paths, cells,
-   widened emitted aliases, errors and shared budgets; run the compiler gate.
-2. Document verified scope and the next missing borrow family in the foundation
-   guide and trackers, separately from implementation and focused regressions.
+1. Extend checked place-borrow metadata to exclusive scalar references and integrate
+   only the terminal ordinary-place branch of `exclusive_borrow`. Preserve
+   `exclusive_place` mutability/shape checks and alias-exclusive bookkeeping.
+   Validate scalar/nested-field places, emitted aliases, source modes, existing
+   errors and shared budgets; run the full compiler gate.
+2. Document verified scope and the next borrow prerequisite in the foundation guide
+   and trackers, separately from implementation and focused regressions.
 
-Investigation: the successful `address` branch in `borrowed` resolves named local
-storage and owned record-field paths without evaluating a value operand. It marks
-emitted aliases as borrowed before constructing the shared-reference type. Preserve
-that order and all existing fallback paths. Canonical `Alias::root` identifies the
-slot, but a source alias can have a different member type from the canonical alias;
-validate field/type paths against the original local, never the canonical type.
-Reference-cell borrows address the cell, not its pointee. Metadata creates no loan
-authority and preserves the existing emitted-slot/ownership/lifetime validators.
+Investigation: ordinary exclusive place selection already validates scalar target
+shape, mutable root or final-field permission, reference-free record paths and
+emitted-slot restrictions. It returns `Borrow` HIR without operand evaluation.
+The existing shared-place operation can reuse its checked paths, canonical storage
+and address/result links by deriving the mode from the checked reference type.
+Metadata must not grant permission or route indexed paths/reborrows through this
+ordinary-place operation. Wider exclusive types and reference cells remain gated.
 
-Baseline: `3133214`, `ea6a625`, `7ca8a3a`, `0523a8f` passed all ten compiler checks:
-1680 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-borrow-projections-gate.log`. Working tree was clean on
-`main`. Ordinary shared place borrows now retain source places, canonical slot
-storage, shared mode and owner/control metadata. Root/field address stages lead
-to reference creation and normal availability without allocating operand points
-or reading pointees. Source-local types validate widened aliases independently of
-canonical-root member types. All four focused groups pass;
-`/tmp/meowy-place-borrows-focused.log`. All ten compiler checks pass: 1684 library/
-910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-place-borrows-gate.log`.
-Implementation: `6f34439`. The foundation guide and trackers now document the
-supported boundary. Post-documentation validation passed: 1208 local links in
-110 Markdown files; `/tmp/meowy-place-borrows-docs.log`. Both slices are complete.
-Next extend place-borrow metadata to the existing exclusive scalar place path.
+Baseline: `6f34439`, `c1794ee` passed all ten compiler checks: 1684 library/910
+native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
+Log: `/tmp/meowy-place-borrows-gate.log`. Working tree was clean on `main`.
+Ordinary exclusive places now reuse the bounded place-borrow operation and derive
+the exclusive mode from validated scalar-reference HIR. The original mutability,
+record-shape checks and alias-exclusive marking precede publication; completed-block
+alias backing validation is unchanged. Indexed/reborrow paths stay separate. All 14 filtered tests pass, including four new exclusive groups, shared
+regressions, field permissions, exact emitted backing, errors and atomic budgets.
+Log: `/tmp/meowy-exclusive-place-focused.log`. All ten compiler checks pass:
+1688 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-place-gate.log`.
+Implementation is complete; guide/tracker integration is next.
 Standalone temporaries, implicit conversions, other field/builder paths, restart
 propagation and proof outcomes remain separate.
 

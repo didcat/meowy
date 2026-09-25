@@ -633,8 +633,11 @@ the boundary. Ordinary shared place borrows now retain checked paths, canonical
 slot IDs and address/reference stages without operand or pointee reads. All ten
 compiler checks pass: 1684 library/910 native tests; `/tmp/meowy-place-borrows-gate.log`.
 Implementation: `6f34439`. The foundation guide documents this boundary.
-Exclusive place-borrow operations are next; broader propagation and proof outcomes
-remain incomplete.
+Ordinary exclusive places now reuse checked address/reference stages with exclusive
+mode, preserving mutability, scalar gates and alias bookkeeping. All ten compiler
+checks pass: 1688 library/910 native tests; `/tmp/meowy-exclusive-place-gate.log`.
+Guide/tracker integration is next; broader propagation and proof outcomes remain
+incomplete.
 
 ## Pending descriptor statement accounting
 

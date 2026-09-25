@@ -121,11 +121,15 @@ impl Checker {
         }
         let (place, ty, _) = self.exclusive_place(expr, span, false)?;
         let ty = self.exclusive_type(ty, span)?;
-        Ok(hir::Expr {
+        let value = hir::Expr {
             kind: hir::ExprKind::Borrow(place),
             ty,
             span,
-        })
+        };
+        if let Some(point) = self.point {
+            self.place_borrow_operation(point, &value, span)?;
+        }
+        Ok(value)
     }
 
     pub(crate) fn exclusive_reborrow_point(

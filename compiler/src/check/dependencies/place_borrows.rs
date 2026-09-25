@@ -32,8 +32,17 @@ impl Checker {
         let hir::ExprKind::Borrow(place) = &value.kind else {
             return Err(invalid());
         };
-        let hir::Type::Reference(target) = &value.ty else {
-            return Err(invalid());
+        let (mode, target) = match &value.ty {
+            hir::Type::Reference(target) => (hir::ReferenceMode::Shared, target),
+            hir::Type::Exclusive(target)
+                if matches!(
+                    target.as_ref(),
+                    hir::Type::Bool | hir::Type::Int { .. } | hir::Type::Float { .. }
+                ) =>
+            {
+                (hir::ReferenceMode::Exclusive, target)
+            }
+            _ => return Err(invalid()),
         };
         if place.fields.len() > crate::list::MAX_WRITE_PATH
             || !self.flow.spend(
@@ -93,7 +102,7 @@ impl Checker {
             owner: self.owner,
             place: place.clone(),
             storage,
-            mode: hir::ReferenceMode::Shared,
+            mode,
             control: self.control,
             span,
             edges,
@@ -116,3 +125,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod exclusive;

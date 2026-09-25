@@ -104,7 +104,7 @@ pub(crate) fn place_borrows_preserve_control_errors_and_other_borrow_families() 
     ] {
         assert_eq!(crate::compile(source).unwrap_err()[0].code, code);
     }
-    for source in ["n:=1;p:&!n", "p:&1"] {
+    for source in ["xs:=[1];p:&!(xs[1])", "p:&1"] {
         crate::compile(source).unwrap();
         assert!(check(source).0.place_borrows.is_empty());
     }
