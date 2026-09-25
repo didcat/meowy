@@ -628,8 +628,9 @@ final addresses and reborrow sites are captured during checking (`ea6a625`).
 Projection stage edges preserve that order and depend on exact parent completion;
 stopped parents gain no result, and callee return conditions remain explicit.
 All ten compiler checks pass: 1680 library/910 native tests;
-`/tmp/meowy-borrow-projections-gate.log`. Guide/tracker integration is next;
-broader propagation and proof outcomes remain incomplete.
+`/tmp/meowy-borrow-projections-gate.log` (`7ca8a3a`). The foundation guide documents
+the boundary. Ordinary shared place-borrow operations are next; broader propagation
+and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -759,10 +760,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Projected shared-parent root extraction passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1672 library/910 native tests.
+- Checked shared-borrow projection plans and stage edges passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1680 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-projected-parent-roots-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-borrow-projections-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -852,13 +853,14 @@ execution was not part of this documentation edit.
    Exclusive scalar reborrows retain parent/site/mode identities and ordered result
    availability without dereference loads. Direct shared reborrows now preserve
    requested result and actual parent modes with bounded aggregate comparisons.
-   Projected parent selection now exposes exact roots and preserves temporary
-   identities. Next consume those roots in `compiler/src/check/references.rs::borrowed`
-   while capturing bounded field/dereference/reborrow steps. Distinguish temporary
-   materialization after source evaluation, preserve modes/sites/errors and
-   validate focused tests plus the compiler gate before publishing result edges.
-   Projected graph integration, ordinary place-borrow operations, implicit
-   conversions and remaining builders stay separate.
+   Projected shared borrows now connect captured materialization, owned-field,
+   intermediate-load and final-address stages to reborrow/result availability.
+   Next record ordinary shared place-borrow operations in the successful address
+   branch of `compiler/src/check/references.rs::borrowed`. Preserve checked paths,
+   canonical slot storage, mode and existing loan/lifetime rules without inventing
+   operand or pointee reads. Validate focused tests and the compiler gate; exclusive
+   place borrows, standalone temporaries, implicit conversions and remaining
+   field/builder coverage stay separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

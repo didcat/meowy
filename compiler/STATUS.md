@@ -136,8 +136,7 @@ control. Per-path and total metadata limits bound capture; failed plans publish
 nothing. All four focused plan groups pass; `/tmp/meowy-projection-plans-focused.log`.
 Formatting, all 1677 library tests and library Clippy pass, including the projected
 loan fixture; `/tmp/meowy-projection-plans-lib.log`,
-`/tmp/meowy-projection-plans-lint.log`. Slice 2 is complete; graph edges remain the
-next independently reviewed slice. Checked-plan commit: `ea6a625`.
+`/tmp/meowy-projection-plans-lint.log`. Checked-plan commit: `ea6a625`.
 Projection stage ports now link exact parent completion through captured steps to
 the existing reborrow operation and result. Stopped parents have only their entry
 link; call-return conditions remain owned by the source invocation. Edge and item
@@ -145,8 +144,12 @@ publication is atomic and allocates no source IDs. All three focused edge groups
 pass; `/tmp/meowy-projection-edges-focused.log`. All ten compiler checks pass:
 1680 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release); `/tmp/meowy-borrow-projections-gate.log`.
-Slice 3 is complete; guide/tracker integration is next. Ordinary place borrows, implicit
-conversions, other builders, restart propagation and proof outcomes remain separate.
+Graph integration: `7ca8a3a`. The foundation guide and trackers now describe the
+supported boundary. Post-documentation validation passed: 1208 local links in
+110 Markdown files; `/tmp/meowy-borrow-projections-docs.log`. All four slices are
+complete. Next record ordinary shared place-borrow operations. Exclusive place
+borrows, standalone temporaries, implicit conversions, other builders, restart
+propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1474,10 +1477,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Projected shared-parent root extraction passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1672 library/910
+- Checked shared-borrow projection plans and stage edges passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1680 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-projected-parent-roots-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-borrow-projections-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1883,27 +1886,27 @@ subtraction retains its documented limits. No outstanding failures remain.
    requested result/actual parent modes and result links (`4c6c381`). Aggregate
    comparisons are bounded and retain no shape copies; stopped parents preserve
    requested mode without allocating a site or adding operation/result edges.
-   Projected parent selection now exposes exact checked roots through
-   `check/references/parents.rs::projected_parent` (`0a540a8`), preserving indexed,
-   expression and temporary choices. The projection caller still discards that ID;
-   this is a root prerequisite, not projected-operation graph integration.
-   Next consume the returned ID in `check/references.rs::borrowed` and capture
-   bounded ordered steps while checking owned fields, implicit dereferences and
-   final shared reborrow paths/sites. Distinguish helper-created temporary storage
-   after source evaluation from reference values already produced by the source.
-   Preserve temporary local/statement IDs, checked field indices, parent/result
-   modes, original errors and stopped-parent boundaries. Keep checked path capture
-   separately reviewable before publishing stage/result edges on the shared ledger.
-   Validate nested reference-valued fields, calls/indices, temporary parents,
-   source/site/owner/control identities, loan/lifetime errors and budgets, then run
-   the compiler gate. Never infer synthetic source points from HIR or spans, or
-   bypass unknown effects. Ordinary place borrows, implicit conversions and other
-   builders remain separate.
+   Projected shared borrows now retain exact roots (`0a540a8`), explicit post-source
+   materialization (`3133214`), bounded checked plans (`ea6a625`) and stage/result
+   edges (`7ca8a3a`). Owned field reads and intermediate loads remain distinct from
+   final address projections; source return conditions are not bypassed. Plans
+   retain temporary identities, field indices, final parent modes and existing
+   reborrow sites without adding source point IDs or loan authority.
+   Next record ordinary shared place-borrow operations in the successful `address`
+   branch of `check/references.rs::borrowed`. Retain checked `hir::Place` roots and
+   field paths, canonical emitted-slot storage through `Alias::root`, and shared
+   mode. Model address/reference creation without reading the pointee value or
+   inventing an operand evaluation. Preserve alias bookkeeping and ordinary
+   diagnostics/ownership/lifetimes. Validate scalar/record/reference-cell borrows,
+   emitted aliases, owner/control identities and shared budgets, then run the
+   compiler gate. Keep representation/integration slices reviewable. Exclusive
+   place borrows, standalone temporary borrows, implicit conversions and general
+   field/coercion/builder paths remain separate coverage work.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Projected/implicit reference paths and contextual builders remain coverage gaps;
+   Place-borrow/implicit reference paths and contextual builders remain coverage gaps;
    missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
