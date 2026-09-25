@@ -584,8 +584,12 @@ stages. Nonreturning indices do not acquire a result. All ten compiler checks pa
 integration: `3920c12`. The foundation guide documents the boundary. Debug output
 sequencing is underway: formatting now exposes exact operand roots alongside
 flattened HIR parts, preserving static text and primary projection. Formatting and
-all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log`. Output-stage
-integration is next; broader propagation and proof outcomes remain incomplete.
+all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log` (`ff58f82`). Output
+metadata now interleaves operands and streamed parts, preserves panic prefixes and
+only completes fully evaluated messages. All ten compiler checks pass: 1640
+library/910 native tests; `/tmp/meowy-output-stages-gate.log`. Debug/release native
+probes also confirm partial output on scope leave. Guide/tracker integration is
+next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

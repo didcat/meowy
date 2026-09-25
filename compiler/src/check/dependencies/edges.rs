@@ -9,6 +9,11 @@ pub(crate) enum Port {
     Normal(PointId),
     Operation(PointId),
     Snapshot(PointId),
+    Prefix(PointId),
+    Output {
+        point: PointId,
+        part: usize,
+    },
     Address {
         point: PointId,
         step: usize,
@@ -72,6 +77,7 @@ impl Checker {
             .saturating_add(self.method_edges)
             .saturating_add(self.element_edges)
             .saturating_add(self.exclusive_edges)
+            .saturating_add(self.output_edges)
             .saturating_add(self.emission_edges)
             .checked_add(count)
             .is_some_and(|total| total <= MAX_EDGES)

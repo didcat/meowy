@@ -130,7 +130,24 @@ Working tree was clean on `main`. Formatting now exposes one optional root per
 flattened HIR part; static text has no expression root. New tests preserve nested
 text order, scalar primary projection, once-only effects and error restoration.
 Formatting and all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log`.
-Slice 1 is complete; streamed output-stage integration and the full gate are next.
+Slice 1 is committed as `ff58f82`. Output-stage integration now preserves prefix,
+per-part effects and final newline/publication with conditional return edges.
+Nonreturning parts retain checked suffix roots without linking suffix output.
+All three focused output groups pass; `/tmp/meowy-output-stages-focused.log`.
+They cover streamed part order, panic prefix, dispatch aliases, stopped suffixes,
+function/control ownership, original errors and atomic shared-budget publication.
+All ten compiler checks pass: 1640 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-output-stages-gate.log`. Additional debug/release native probes confirm
+operand/output interleaving and preserved partial output on scope leave, without
+a trailing newline; `/tmp/meowy-output-stream-probes.log`. Slice 2 is complete;
+guide/tracker integration is next.
+
+Split review: slice 2 needs nine files, including both required trackers. New
+prefix/part ports require the exhaustive existing test helper to change with the
+production enum. Checker storage, budget accounting, exports and call integration
+must land with the graph implementation and regressions to remain buildable and
+lint-clean. The slice remains below 400 lines; documentation stays separate.
 Restart propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices

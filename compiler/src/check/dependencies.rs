@@ -335,5 +335,8 @@ pub(crate) use elements::{Access as ElementAccess, Element};
 mod exclusive;
 pub(crate) use exclusive::Operation as ExclusiveOperation;
 
+mod outputs;
+pub(crate) use outputs::Output;
+
 mod emissions;
 pub(crate) use emissions::Emission;

@@ -247,7 +247,14 @@ impl Checker {
                     ));
                 }
                 let mut parts = Vec::new();
-                self.format_parts(args[0], &mut parts)?;
+                let points = self.format_parts(args[0], &mut parts)?;
+                self.output_operation(
+                    self.point.expect("output expression"),
+                    matches!(value, Value::Panic),
+                    &parts,
+                    points,
+                    span,
+                )?;
                 if matches!(value, Value::Print) {
                     (
                         hir::ExprKind::Print {
