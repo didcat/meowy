@@ -99,58 +99,44 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current direct shared reborrow slices
+### Current projected shared-parent root prerequisite
 
 Dependency-ordered commit plan:
-1. Isolate direct `&*p` checking after ordinary address resolution when there is no
-   field suffix. Expose the exact parent root while preserving the saved address
-   error, shared type construction, traversal charges, site allocation and HIR.
-   Validate grouped/effectful parents, aggregate/reference-cell types and stopped
-   inputs with focused regressions and library tests.
-2. Extend bounded reborrow metadata for shared results and shared/exclusive parent
-   modes. Compare aggregate pointees with charged traversal, retaining no shape
-   copies. Preserve exclusive metadata, sites and stopped-parent behavior. Validate
-   returned parents, loan/move errors, identity and budget checks; run the compiler
-   gate.
-3. Document verified scope and the next projection prerequisite in the foundation
-   guide and trackers, separately from implementation and focused regressions.
+1. Extract projected parent selection into a helper returning its exact checked
+   point and existing HIR value. Preserve expression/indexed-parent selection,
+   explicit dereferenced parents, temporary local/statement identities, direct
+   temporary/direct shared fast paths, saved errors and once-only evaluation.
+   Add focused source/ownership/budget regressions and run the compiler gate.
+2. Document the root prerequisite and the next checked projection/dereference
+   capture step in the foundation guide and trackers. Keep graph integration
+   separate from this behavior-preserving extraction.
 
-Investigation: `borrowed` already resolves ordinary storage and preserves its
-original address diagnostic before checking a dereferenced parent. With no field
-suffix, its projection loop only weighs the pointee, constructs a shared reference
-and allocates a site. The extracted helper preserves projected fallback, temporary
-ownership, error precedence and the no-load semantics of reborrowing.
-Stopped parents return before type construction/site allocation. Metadata now
-retains the requested result mode and compares aggregate pointees with bounded
-work, preserving parent modes separately.
+Investigation: after ordinary address resolution fails, `borrowed` chooses an
+indexed borrowed parent, an explicitly dereferenced reference value or an ordinary
+expression, sometimes materializing temporary storage. Each path already creates
+an exact point but discards its ID. The projection loops then synthesize fields and
+dereferences. Extract only parent selection; preserve the direct `&*p` operation
+path and ordinary temporary borrow return. Do not add projection result edges or
+infer intermediate source IDs from HIR/spans. The helper's returned ID is the
+prerequisite for subsequent checked path capture, not a completed transfer graph.
 
-Baseline: `03f5e54`, `a6e9d05`, `b66d8c0` passed all ten compiler checks: 1662
+Baseline: `5332455`, `4c6c381`, `3beab1b` passed all ten compiler checks: 1668
 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-reborrow-stages-gate.log`. Working tree was clean on `main`.
-`shared_reborrow_point` now handles only direct dereferenced parents with no
-field suffix after the original address check. All three focused groups pass:
-grouped/effectful shared/exclusive parents, aggregate/reference-cell types, saved
-errors, stopped allocation and E301/E302/E303 boundaries. Log:
-`/tmp/meowy-shared-reborrow-roots-focused.log`. Formatting and all 1665 library
-tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log` (`5332455`). Reborrow
-metadata now retains requested result mode and optional parent mode, including
-stopped shared parents. Shared aggregate pointee comparisons use charged bounded
-traversal without retaining type copies; existing exclusive restrictions remain.
-Direct shared callers now publish parent/reborrow/result links while projected
-paths and implicit conversions remain separate. All six shared/exclusive operation
-groups pass; `/tmp/meowy-shared-reborrow-stages-focused.log`. They cover modes,
-scalar/aggregate/cell types, returned/nested parents, source boundaries, identity,
-shape limits and atomic shared-budget publication. All ten compiler checks pass:
-1668 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+both profiles; `/tmp/meowy-shared-reborrow-stages-gate.log`. Working tree was clean
+on `main`. `references/parents.rs::projected_parent` now returns exact roots for
+expression, explicit dereferenced and indexed borrowed parents, preserving the
+existing temporary materialization and HIR. Direct shared/temporary fast paths
+remain in `borrowed`; projected callers will consume the returned ID during the
+next path-capture slice. All four focused groups pass: values/views/indices,
+temporary ownership and once-only writes, returned owners/reference fields,
+errors/stopped inputs and budget restoration. Log:
+`/tmp/meowy-projected-parent-roots-focused.log`. All ten compiler checks pass:
+1672 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-shared-reborrow-stages-gate.log`. Operation integration: `4c6c381`.
-The guide and trackers now document this boundary. Post-documentation validation
-passed: 1208 local links in 110 Markdown files;
-`/tmp/meowy-shared-reborrow-stages-docs.log`. All three slices are complete. Next
-expose exact projected shared-parent roots before adding checked projection and
-dereference sequences.
-Projected/implicit reference paths, restart propagation and proof outcomes remain
-incomplete.
+`/tmp/meowy-projected-parent-roots-gate.log`. Slice 1 is complete; guide/tracker
+updates are next.
+Projected operation edges, implicit conversions, restart propagation and proof
+outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 

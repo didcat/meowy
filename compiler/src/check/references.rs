@@ -3,6 +3,8 @@ use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
 use crate::hir::{self, Type};
 
+mod parents;
+
 impl Checker {
     pub(crate) fn deref_point(
         &mut self,
@@ -391,38 +393,29 @@ impl Checker {
         };
         let mut names = Vec::new();
         let root = Self::address_root(expr, &mut names);
-        let mut value = if matches!(root.kind, ExprKind::Index { .. }) {
-            self.borrowed_point(root, root.span)?.1
-        } else if let ExprKind::Unary { op, value } = &root.kind
-            && op == "*"
-        {
-            if names.is_empty() {
-                let (parent, value) = self.shared_reborrow_point(value, span, error)?;
-                if let Some(point) = self.point {
-                    self.reborrow_operation(
-                        point,
-                        parent,
-                        hir::ReferenceMode::Shared,
-                        &value,
-                        span,
-                    )?;
+        if names.is_empty() {
+            match &root.kind {
+                ExprKind::Unary { op, value } if op == "*" => {
+                    let (parent, value) = self.shared_reborrow_point(value, span, error)?;
+                    if let Some(point) = self.point {
+                        self.reborrow_operation(
+                            point,
+                            parent,
+                            hir::ReferenceMode::Shared,
+                            &value,
+                            span,
+                        )?;
+                    }
+                    return Ok(value);
                 }
-                return Ok(value);
+                ExprKind::Index { .. } => {}
+                _ => {
+                    let value = self.expr(root, None)?;
+                    return self.temporary_borrow(value, span);
+                }
             }
-            self.expr(value, None)?
-        } else {
-            let value = self.expr(root, None)?;
-            if names.is_empty() {
-                return self.temporary_borrow(value, span);
-            }
-            if !matches!(value.ty, Type::Reference(_) | Type::Exclusive(_))
-                && self.address(root).is_err()
-            {
-                self.temporary_borrow(value, root.span)?
-            } else {
-                value
-            }
-        };
+        }
+        let (_, mut value) = self.projected_parent(root)?;
         if value.ty == Type::Never {
             return Ok(value);
         }

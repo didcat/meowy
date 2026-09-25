@@ -620,8 +620,12 @@ and all 1665 library tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`
 sites with bounded aggregate comparisons and no shape copies. All ten compiler
 checks pass: 1668 library/910 native tests;
 `/tmp/meowy-shared-reborrow-stages-gate.log` (`4c6c381`). The foundation guide
-documents the boundary. Projected shared-parent root capture is next; broader
-propagation and proof outcomes remain incomplete.
+documents the boundary. Projected parent selection now exposes exact expression,
+indexed-borrow and reference roots alongside unchanged HIR and temporary identity.
+All ten compiler checks pass: 1672 library/910 native tests;
+`/tmp/meowy-projected-parent-roots-gate.log`. This is the root prerequisite; checked
+projection/result graph integration remains next. Broader propagation and proof
+outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
