@@ -101,85 +101,47 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current runtime field-access slices
 
-Dependency-ordered commit plan:
-1. Extract the runtime field fallback into a helper returning its exact receiver
-   root, whether checking inserted a shared-reference load, and the checked field
-   before narrowing. Preserve required/symbol exits, lookup and errors; validate
-   root capture with focused tests and the library suite.
-2. Record bounded receiver/load/field/result stages using that captured boundary
-   and resolved field index. Preserve explicit dereference stages, calls, narrowing,
-   owner/control and never-field behavior; run focused tests and the compiler gate.
-3. Document verified coverage and the next source-graph prerequisite separately.
-
-Investigation: the runtime `ExprKind::Field` fallback discards the receiver root,
-optionally inserts a shared-reference dereference, resolves a record index, then
-narrows the resulting field. Capture the load decision during checking: inspecting
-the final HIR alone would confuse an explicit receiver dereference with this
-implicit load. Required fields and resolved static/intrinsic symbols exit earlier.
-Never receivers currently fail E201; preserve that diagnostic rather than inventing
-new field support. Metadata must precede narrowing and retain no aggregate clones.
-
-Baseline: clean `main`; implicit conversion passed all ten compiler checks with
-1702 library/910 native tests; `/tmp/meowy-conversion-stages-gate.log`.
-The runtime fallback now calls `field_point`, which retains the receiver root and
-load decision before returning the declared field for existing narrowing. Two
-focused groups pass: exact roots, indices, groups, explicit/implicit loads, calls,
-declared unions, existing errors and budget restoration;
-`/tmp/meowy-field-roots-focused.log`. Formatting and all 1704 library tests pass;
-`/tmp/meowy-field-roots-lib.log`. Stage metadata remains the next slice.
-Receiver prerequisite committed as `ed85184`. The fallback now records the
-captured receiver, implicit load and checked index before narrowing. Stage records
-validate bounded type identities and use the shared edge ledger; never fields
-have no result edge, while explicit receiver dereferences keep their own stages.
-All four focused stage groups pass after grouping a numeric-literal test receiver
-to preserve lexical syntax. Coverage includes owned/shared receivers, explicit
-loads, call returns, nested fields, narrowing, owners/control, never fields,
-required/static exits, ordinary errors and atomic identity/type/edge budgets;
-`/tmp/meowy-field-stages-focused.log`. All ten compiler checks pass: 1708 library/
-910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-field-stages-gate.log`.
-No outstanding failures remain. Documentation and the next predicate/ascription
-source-boundary handoff are next.
-
-### Completed implicit shared-conversion slices
-
 The dependency-ordered plan is complete:
-1. Establish a checked raw-expression child for shared-reference expectations,
-   preserving caller roots, contextual typing and existing HIR (`62a8a65`).
-2. Connect the exact child to existing implicit reborrow sites and results, with
-   focused regressions and the full compiler gate (`c2c4336`).
-3. Document verified coverage and the next prerequisite in the foundation guide
-   and trackers, separately from implementation and focused regressions.
+1. Retain the exact receiver root, inserted-load decision and declared field
+   before narrowing (`ed85184`), preserving required/symbol exits and errors.
+2. Record bounded receiver/load/field/result stages with focused regressions and
+   the full compiler gate (`b806c44`).
+3. Document verified scope and the next source-boundary prerequisite separately.
 
-Only shared-reference expectations gain the extra source boundary; the raw child
-retains its expression kind while the caller retains the outer root. Calls and
-explicit borrows publish their results before implicit conversion. Nested groups
-forward already-shared values without duplicating sites; stopped contexts retain
-only entry links and allocate no site. Generic primary/coercion wrappers retain
-unknown links. Existing typing, loan authority and proof gates remain unchanged.
+The runtime fallback uses `field_point` to capture the source boundary and whether
+checking inserted a shared-reference load. This distinguishes an implicit load
+from a receiver that was already explicitly dereferenced. Metadata retains the
+resolved index before narrowing, validates type identities with bounded work, and
+uses the shared edge ledger without storing aggregate type copies. Calls retain
+conditional return edges and nested field accesses keep distinct source roots.
+Never fields have no result edge; never receivers retain their existing E201.
+Required/static/intrinsic paths exit before runtime field metadata. These stages
+preserve typing, ownership and proof gates without proving full field provenance.
 
-Three root groups cover calls/borrows, nested groups, repeated spans,
-branch/query/read ancestry, owners, never, diagnostics and budget restoration;
-`/tmp/meowy-conversion-roots-focused.log`. Formatting and all 1698 library tests
-passed the prerequisite; `/tmp/meowy-conversion-roots-lib.log`. Four integration
-groups cover effect ordering, absence of result bypasses, transparent forwarding,
-never/owner/control boundaries, permission errors and atomic edge budgets;
-`/tmp/meowy-conversion-stages-focused.log`. All ten compiler checks pass: 1702
-library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-conversion-stages-gate.log`.
-No outstanding failures remain. The foundation guide and trackers now document
-this coverage. Post-documentation validation passed 1208 local links in 110
-Markdown files; `/tmp/meowy-conversion-stages-docs.log`.
-Ordinary runtime field-source roots and projection stages are next;
-generic coercions, contextual builders, propagation and proof outcomes stay separate.
+Two focused root groups and all 1704 library tests passed the prerequisite;
+`/tmp/meowy-field-roots-focused.log`, `/tmp/meowy-field-roots-lib.log`. Four stage
+groups pass: owned/shared receivers, explicit loads, call returns, nested fields,
+narrowing, owners/control, never fields, required/static exits, ordinary errors and
+atomic identity/type/edge budgets; `/tmp/meowy-field-stages-focused.log`. All ten
+compiler checks pass: 1708 library/910 native tests, formatting, Clippy, build and
+conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-field-stages-gate.log`. No outstanding failures remain. The foundation
+guide and trackers now document this boundary. Post-documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-field-stages-docs.log`.
+Predicate/ascription operand roots
+and stages are next; generic coercions, contextual builders, backedge propagation
+and proof outcomes remain separate.
 
-Standalone temporary borrows are also complete (`2085cd4`, `4443aac`, `51bf884`).
-They retain initializer roots, existing cell/statement IDs and materialization/result
-order at the standalone fallback only. Never inputs allocate no cell, reference
-values remain distinct cells, and projected/element-parent staging stays separate.
-The ten-check compiler gate passed with 1695 library/910 native tests;
-`/tmp/meowy-temporary-stages-gate.log`. Post-documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-temporary-stages-docs.log`.
+Implicit shared conversion is complete (`62a8a65`, `c2c4336`, `d1ea9c0`). Distinct
+raw roots prevent calls/borrows from bypassing conversion. Groups forward unchanged
+shared results without duplicate sites; stopped contexts retain only entry links.
+Generic primary/coercion wrappers stay unknown. The ten-check gate passed with
+1702 library/910 native tests; `/tmp/meowy-conversion-stages-gate.log`.
+Standalone temporary borrows (`2085cd4`, `4443aac`, `51bf884`) retain initializer
+roots, existing cell/statement IDs and materialization/result order only at their
+fallback, preserving distinct reference cells and projected/element-parent staging.
+Their ten-check gate passed with 1695 library/910 native tests;
+`/tmp/meowy-temporary-stages-gate.log`.
 
 ### Proof dependency implementation slices
 
@@ -1938,21 +1900,25 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`62a8a65`) and existing sites/result stages (`c2c4336`). Raw operations cannot
    bypass conversion; unchanged shared results forward through transparent links.
    Stopped contexts allocate no site or result edge. Generic coercions remain unknown.
-   Next expose exact runtime receiver roots in `check/expressions.rs::raw_expression`
-   for the `ExprKind::Field` fallback, after required-field and symbol handling.
-   Preserve those early exits, receiver checking order, resolved field indices,
-   implicit shared-reference dereference, narrowing and existing diagnostics.
-   Then record bounded receiver/load/field/result stages without replaying lookup
-   or inferring IDs from HIR/spans. Keep the root prerequisite and stage integration
-   independently reviewable, with focused regressions and the full compiler gate.
-   Capture the checked field before narrowing; result availability must not claim
-   complete field provenance or grant loan authority. Other coercions, predicates,
-   dispatch/contextual builders and required evaluation remain separate.
+   Ordinary runtime fields now retain exact receiver roots and captured implicit
+   load decisions (`ed85184`), with receiver/load/field/result stages (`b806c44`).
+   Resolved indices are recorded before narrowing; explicit loads, call returns,
+   never fields and required/static early exits retain their existing boundaries.
+   Next capture exact operand roots in `check/expressions.rs::raw_expression` for
+   `ExprKind::Ascribe`, covering both type predicates and explicit ascriptions.
+   Preserve operand checking before `construct_type`, including target errors even
+   for never operands, predicate boolean results, E208 and no-op coercion HIR.
+   Keep root capture and bounded predicate/ascription stage integration separately
+   reviewable, with focused tests and the full compiler gate. Capture checked
+   source/result distinctions before coercion can erase them; do not infer IDs
+   from HIR/spans or treat compile-time target construction as a runtime operand.
+   Generic coercions, dispatch/contextual builders and required evaluation remain
+   separate. Result availability is not complete field/value provenance.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Generic coercions, remaining field paths and contextual builders remain
+   Generic coercions, predicates and contextual builders remain
    coverage gaps; missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

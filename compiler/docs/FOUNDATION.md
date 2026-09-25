@@ -210,8 +210,16 @@ their caller-facing roots; nested groups forward already-shared results without
 duplicating sites. Stopped contexts allocate no site and retain entry links only.
 These links reuse bounded reborrow validation and the shared edge budget, preserving
 existing typing, parent suspension and lifetime checks. Generic coercions and
-primary extraction retain unknown graph links; ordinary field projections remain
-separate coverage work.
+primary extraction retain unknown graph links.
+Ordinary runtime fields retain exact receiver roots, resolved field indices and
+the decision to insert a shared-reference load. Receiver completion precedes that
+load, when present, then field selection and result availability. Explicit receiver
+dereferences keep their own stages, and call-return conditions are not bypassed.
+The selected field is recorded before narrowing, with bounded type validation and
+no retained aggregate type copies. A `never` field has no result edge; a `never`
+receiver keeps its existing field-lookup error. Required fields and resolved
+static/intrinsic symbols retain their separate paths. These links use the shared
+edge budget without proving full field provenance or changing loan authority.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow

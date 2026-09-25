@@ -649,8 +649,13 @@ Implicit reference conversion now separates raw source roots from caller results
 (`c2c4336`). Groups and unchanged shared results forward transparently; never inputs
 allocate no site or result edge. All ten compiler checks pass: 1702 library/910
 native tests; `/tmp/meowy-conversion-stages-gate.log`. The foundation guide documents
-the boundary. Ordinary runtime field roots/stages are next; generic coercions,
-broader propagation and proof outcomes remain incomplete.
+the boundary. Runtime field checking now retains receiver roots and inserted-load
+decisions (`ed85184`). Bounded stages connect receiver completion, optional shared
+load, resolved field selection and result availability before narrowing (`b806c44`).
+All ten compiler checks pass: 1708 library/910 native tests;
+`/tmp/meowy-field-stages-gate.log`. The foundation guide documents the boundary.
+Predicate/ascription operand roots are next; generic coercions, broader propagation
+and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -780,10 +785,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Implicit shared-conversion roots and stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1702 library/910 native tests.
+- Runtime field receiver roots and stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1708 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-conversion-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-field-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -882,12 +887,14 @@ execution was not part of this documentation edit.
    cell/statement IDs and materialization/result order without duplicating other
    parent staging. Implicit shared conversion now separates raw source roots from
    caller results and sequences existing reborrow sites after raw effects, without
-   bypassing conversion or stopped inputs. Next expose exact runtime field receiver
-   roots in `compiler/src/check/expressions.rs::raw_expression`, preserving required
-   and symbol early exits. Then connect receiver/load/field/result stages using
-   checked indices before narrowing. Split root and integration slices, preserve
-   typing/loans/budgets, and run focused tests plus the compiler gate. Generic
-   coercions, predicates and contextual builders stay separate.
+   bypassing conversion or stopped inputs. Ordinary runtime fields now retain
+   receiver roots, optional shared loads and field/result stages using checked
+   indices before narrowing. Required/static paths and explicit loads stay distinct.
+   Next capture predicate/ascription operand roots in the `ExprKind::Ascribe` branch
+   of `compiler/src/check/expressions.rs::raw_expression`, then record bounded stages.
+   Preserve target construction order, never handling, E208 and no-op coercions.
+   Split root and integration slices; run focused tests and the compiler gate.
+   Generic coercions and contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
