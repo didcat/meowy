@@ -654,7 +654,12 @@ decisions (`ed85184`). Bounded stages connect receiver completion, optional shar
 load, resolved field selection and result availability before narrowing (`b806c44`).
 All ten compiler checks pass: 1708 library/910 native tests;
 `/tmp/meowy-field-stages-gate.log`. The foundation guide documents the boundary.
-Predicate/ascription operand roots are next; generic coercions, broader propagation
+Predicates and explicit ascriptions now retain exact operand roots (`e5d5653`)
+and ordered result stages before HIR coercion (`5ad03a7`). Target construction,
+E208, no-op ascriptions and stopped inputs preserve their existing semantics.
+All ten compiler checks pass: 1715 library/910 native tests;
+`/tmp/meowy-typed-stages-gate.log`. The foundation guide documents this boundary.
+Dispatch-block receiver prefixes are next; generic coercions, broader propagation
 and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -785,10 +790,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Runtime field receiver roots and stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1708 library/910 native tests.
+- Predicate/ascription roots and stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1715 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-field-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-typed-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -890,11 +895,16 @@ execution was not part of this documentation edit.
    bypassing conversion or stopped inputs. Ordinary runtime fields now retain
    receiver roots, optional shared loads and field/result stages using checked
    indices before narrowing. Required/static paths and explicit loads stay distinct.
-   Next capture predicate/ascription operand roots in the `ExprKind::Ascribe` branch
-   of `compiler/src/check/expressions.rs::raw_expression`, then record bounded stages.
-   Preserve target construction order, never handling, E208 and no-op coercions.
-   Split root and integration slices; run focused tests and the compiler gate.
-   Generic coercions and contextual builders remain separate.
+   Predicates/ascriptions now retain operand roots and logical result stages,
+   preserving target construction, never handling, E208 and no-op coercions.
+   Next capture ordinary dispatch-block receiver and existing receiver-local/block
+   identities in `compiler/src/check/expressions.rs` and
+   `compiler/src/check/blocks.rs`. Audit
+   the synthetic receiver's opaque sequence prefix before connecting initialization
+   and body/result stages; do not bypass it or invent a source statement point.
+   Split capture and integration slices, preserving `$`, expected types, ownership,
+   budgets and errors; run focused tests and the compiler gate. Composed dispatch,
+   generic coercions and other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

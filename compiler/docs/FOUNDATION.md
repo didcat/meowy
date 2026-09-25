@@ -220,6 +220,15 @@ no retained aggregate type copies. A `never` field has no result edge; a `never`
 receiver keeps its existing field-lookup error. Required fields and resolved
 static/intrinsic symbols retain their separate paths. These links use the shared
 edge budget without proving full field provenance or changing loan authority.
+Type predicates and explicit ascriptions retain exact operand roots and distinct
+operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
+Operand completion precedes result availability; never operands retain entry only.
+Target construction keeps its original compile-time order and error precedence,
+including target errors after a never operand. Required target reads are not
+runtime operand links. Stage publication follows existing ascription acceptance
+checks and retains neither target descriptors nor evaluated predicate answers.
+These bounded links preserve boolean predicates, E208, ownership and proof gates;
+they introduce no runtime cast or additional type-shape copies.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow

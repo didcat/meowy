@@ -101,87 +101,47 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current predicate/ascription slices
 
-Dependency-ordered commit plan:
-1. Retain the exact operand root alongside the checked operand and constructed
-   target type, preserving operand-before-target checking, required work, never
-   handling and errors. Add focused regressions and run the library suite.
-2. Record bounded predicate/ascription availability stages from that root before
-   HIR coercion can erase the source distinction. Preserve boolean predicates,
-   E208, stopped operands and no-op ascriptions; run the full compiler gate.
-3. Document the verified boundary and concrete next prerequisite separately.
-
-Investigation: `ExprKind::Ascribe` currently discards its operand root, then
-constructs the target even for a never operand. Predicates build `TypeTest` while
-ascriptions require `accepts` before `coerce`, which can erase a no-op wrapper.
-Capture the source during checking and publish stages after existing validation;
-target construction remains compile-time work, not a runtime operand or proof result.
-Stage metadata needs operation kind and stopped status, not aggregate type copies
-or evaluated predicate truth. Existing required-target accounting stays authoritative.
-
-Baseline: clean `main`; all ten field-stage compiler checks passed with 1708
-library/910 native tests; `/tmp/meowy-field-stages-gate.log`.
-`typed_point` now returns the exact checked operand root and value alongside the
-constructed target. Three focused groups pass: call/field/group roots, once-only
-effects, operand/target error precedence, never inputs, restoration, predicate
-results, no-op HIR and E208; `/tmp/meowy-typed-roots-focused.log`.
-Formatting and all 1711 library tests pass; `/tmp/meowy-typed-roots-lib.log`.
-Operation stages remain the next slice; no outstanding failures remain.
-Operand prerequisite committed as `e5d5653`. The `Ascribe` branch now publishes
-kind/source/result stages after target construction and existing E208 checks,
-before HIR construction/coercion. Never operands keep entry only. Records retain
-no target shape or predicate answer. All four focused stage groups pass: operation
-kinds, erased no-op HIR, calls/fields/short-circuit operands, computed target reads,
-owner/control, never inputs, original errors and atomic identity/edge budgets;
-`/tmp/meowy-typed-stages-focused.log`. The required-read fixture uses an explicit
-computed target block, matching the existing read-tracking boundary. No source
-semantics changed. All ten compiler checks pass: 1715 library/910 native tests,
-formatting, Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in
-debug/release); `/tmp/meowy-typed-stages-gate.log`. No outstanding failures remain.
-Documentation and the dispatch-block receiver-prefix handoff are next.
-
-### Completed runtime field-access slices
-
 The dependency-ordered plan is complete:
-1. Retain the exact receiver root, inserted-load decision and declared field
-   before narrowing (`ed85184`), preserving required/symbol exits and errors.
-2. Record bounded receiver/load/field/result stages with focused regressions and
-   the full compiler gate (`b806c44`).
+1. Retain exact operand roots alongside checked values and constructed targets,
+   preserving evaluation/error order and required accounting (`e5d5653`).
+2. Record bounded predicate/ascription availability stages before HIR coercion
+   can erase a no-op wrapper, with focused tests and the full gate (`5ad03a7`).
 3. Document verified scope and the next source-boundary prerequisite separately.
 
-The runtime fallback uses `field_point` to capture the source boundary and whether
-checking inserted a shared-reference load. This distinguishes an implicit load
-from a receiver that was already explicitly dereferenced. Metadata retains the
-resolved index before narrowing, validates type identities with bounded work, and
-uses the shared edge ledger without storing aggregate type copies. Calls retain
-conditional return edges and nested field accesses keep distinct source roots.
-Never fields have no result edge; never receivers retain their existing E201.
-Required/static/intrinsic paths exit before runtime field metadata. These stages
-preserve typing, ownership and proof gates without proving full field provenance.
+`typed_point` checks the operand before constructing the target, including target
+errors for never operands. Stage publication follows existing E208 checks, retains
+predicate/ascription kind and exact source identity, and uses the shared edge
+ledger. Never operands have entry links only. No-op ascriptions retain their
+logical result stage without changing HIR or introducing a runtime cast. The
+metadata retains no aggregate type copies, target descriptor or predicate answer.
+Computed-target reads remain separate compile-time identities; fixed flag type
+queries and other type-only paths retain their existing behavior.
 
-Two focused root groups and all 1704 library tests passed the prerequisite;
-`/tmp/meowy-field-roots-focused.log`, `/tmp/meowy-field-roots-lib.log`. Four stage
-groups pass: owned/shared receivers, explicit loads, call returns, nested fields,
-narrowing, owners/control, never fields, required/static exits, ordinary errors and
-atomic identity/type/edge budgets; `/tmp/meowy-field-stages-focused.log`. All ten
-compiler checks pass: 1708 library/910 native tests, formatting, Clippy, build and
-conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-field-stages-gate.log`. No outstanding failures remain. The foundation
-guide and trackers now document this boundary. Post-documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-field-stages-docs.log`.
-Predicate/ascription operand roots
-and stages are next; generic coercions, contextual builders, backedge propagation
-and proof outcomes remain separate.
+Three root groups cover calls/fields/groups, once-only effects, error precedence,
+never, restoration, boolean results, no-op HIR and E208;
+`/tmp/meowy-typed-roots-focused.log`. Formatting and all 1711 library tests passed
+the prerequisite; `/tmp/meowy-typed-roots-lib.log`. Four stage groups cover ordered
+results, nested short-circuit operands, computed-target reads, owner/control,
+stopped inputs, ordinary failures and atomic identity/edge budgets;
+`/tmp/meowy-typed-stages-focused.log`. All ten compiler checks pass: 1715 library/
+910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-typed-stages-gate.log`.
+No outstanding failures remain. The foundation guide and trackers document this
+coverage. Post-documentation validation passed 1208 local links in 110 Markdown
+files; `/tmp/meowy-typed-stages-docs.log`.
+Dispatch-block receiver capture and its opaque sequence prefix are next;
+generic coercions, other contextual builders, backedge propagation and proof
+outcomes remain separate.
 
-Implicit shared conversion is complete (`62a8a65`, `c2c4336`, `d1ea9c0`). Distinct
-raw roots prevent calls/borrows from bypassing conversion. Groups forward unchanged
-shared results without duplicate sites; stopped contexts retain only entry links.
-Generic primary/coercion wrappers stay unknown. The ten-check gate passed with
-1702 library/910 native tests; `/tmp/meowy-conversion-stages-gate.log`.
-Standalone temporary borrows (`2085cd4`, `4443aac`, `51bf884`) retain initializer
-roots, existing cell/statement IDs and materialization/result order only at their
-fallback, preserving distinct reference cells and projected/element-parent staging.
-Their ten-check gate passed with 1695 library/910 native tests;
-`/tmp/meowy-temporary-stages-gate.log`.
+Runtime fields are complete (`ed85184`, `b806c44`, `70f9e1b`). Their exact receiver
+roots and inserted-load decisions distinguish implicit loads from explicit
+receiver dereferences. Checked indices precede narrowing, never fields have no
+result edge, and required/static paths stay separate. The ten-check gate passed
+with 1708 library/910 native tests; `/tmp/meowy-field-stages-gate.log`.
+Implicit shared conversion (`62a8a65`, `c2c4336`, `d1ea9c0`) keeps distinct raw
+roots and conversion sites, forwarding unchanged shared results without duplicate
+sites. Standalone temporary borrows (`2085cd4`, `4443aac`, `51bf884`) retain exact
+initializer/cell/statement identities without duplicating other parent staging.
 
 ### Proof dependency implementation slices
 
@@ -1944,21 +1904,28 @@ subtraction retains its documented limits. No outstanding failures remain.
    load decisions (`ed85184`), with receiver/load/field/result stages (`b806c44`).
    Resolved indices are recorded before narrowing; explicit loads, call returns,
    never fields and required/static early exits retain their existing boundaries.
-   Next capture exact operand roots in `check/expressions.rs::raw_expression` for
-   `ExprKind::Ascribe`, covering both type predicates and explicit ascriptions.
-   Preserve operand checking before `construct_type`, including target errors even
-   for never operands, predicate boolean results, E208 and no-op coercion HIR.
-   Keep root capture and bounded predicate/ascription stage integration separately
-   reviewable, with focused tests and the full compiler gate. Capture checked
-   source/result distinctions before coercion can erase them; do not infer IDs
-   from HIR/spans or treat compile-time target construction as a runtime operand.
-   Generic coercions, dispatch/contextual builders and required evaluation remain
-   separate. Result availability is not complete field/value provenance.
+   Predicates and explicit ascriptions now retain exact operand roots (`e5d5653`)
+   and ordered result stages (`5ad03a7`), including erased no-op wrappers. Existing
+   target construction, E208, stopped inputs and required-read identities remain
+   unchanged; metadata does not evaluate answers or store target descriptors.
+   Next audit ordinary `ExprKind::DispatchBlock` in `check/expressions.rs` together
+   with `check/blocks.rs::{block_inner,block_start}` and
+   `check/dependencies/edges/blocks.rs`. Capture the exact receiver root plus the
+   existing block/receiver-local identities during checking, preserving expected
+   types, `$` binding, exclusive-receiver gates, owner/control and error restoration.
+   `block_inner` currently inserts a `None` sequence prefix for the synthetic
+   receiver binding. Keep that barrier until a validated receiver-initialization
+   stage connects to the body; never bypass it with ordinary block-result links
+   or fabricate a source statement point. Split capture and prefix/result integration
+   into reviewable slices with focused tests and the compiler gate. Ordinary and
+   composed dispatch paths are distinct; audit partial builders separately before
+   broadening a shared hook. Generic coercions, other contextual builders and
+   required evaluation remain separate. Availability is not complete provenance.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Generic coercions, predicates and contextual builders remain
+   Generic coercions and contextual builders remain
    coverage gaps; missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
