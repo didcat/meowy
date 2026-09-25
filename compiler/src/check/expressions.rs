@@ -1,6 +1,6 @@
 use super::{
     Checker, Result, Value,
-    dependencies::{CoercionKind, PointKind},
+    dependencies::{CoercionKind, FormatInput, PointKind},
 };
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
@@ -455,10 +455,6 @@ impl Checker {
         }
     }
 
-    pub(crate) fn project(value: hir::Expr) -> hir::Expr {
-        Self::projected(value).1
-    }
-
     pub(crate) fn projected(value: hir::Expr) -> (bool, hir::Expr) {
         let ty = Self::primary_type(&value.ty);
         if ty == value.ty {
@@ -581,7 +577,7 @@ impl Checker {
         &mut self,
         expr: &ast::Expr,
         parts: &mut Vec<hir::Expr>,
-    ) -> Result<Vec<Option<hir::PointId>>> {
+    ) -> Result<Vec<Option<FormatInput>>> {
         let mut points = Vec::new();
         self.format_points(expr, parts, &mut points)?;
         Ok(points)
@@ -591,7 +587,7 @@ impl Checker {
         &mut self,
         expr: &ast::Expr,
         parts: &mut Vec<hir::Expr>,
-        points: &mut Vec<Option<hir::PointId>>,
+        points: &mut Vec<Option<FormatInput>>,
     ) -> Result<()> {
         match &expr.kind {
             ExprKind::String(values) => {
@@ -614,7 +610,7 @@ impl Checker {
             ExprKind::Group(value) => self.format_points(value, parts, points)?,
             _ => {
                 let (point, value) = self.expr_point(expr, None)?;
-                let value = Self::project(value);
+                let (primary, value) = Self::projected(value);
                 if value.ty.has_reference() {
                     return Err(Diagnostic::unsupported(
                         "reference formatting; dereference the copyable value",
@@ -628,7 +624,7 @@ impl Checker {
                     ));
                 }
                 parts.push(value);
-                points.push(Some(point));
+                points.push(Some(FormatInput { point, primary }));
             }
         }
         Ok(())

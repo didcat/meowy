@@ -99,7 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current unary primary-projection slices
+### Current formatting primary-projection slices
+
+Dependency-ordered commit plan:
+1. Retain each evaluated formatting part's exact point and actual projection
+   decision together, preserving literal None entries, flattening, HIR and errors.
+   Keep output routes unchanged initially; run focused and library checks.
+2. Validate captured projections and sequence them before their Output ports,
+   including stopped primaries, without changing panic/returned-I/O order. Run
+   focused regressions and the complete compiler gate.
+3. Document verified coverage and the next prerequisite separately.
+
+Investigation: `format_points` currently drops the decision returned implicitly by
+`project` after checking each dynamic part. Carry a point/primary pair in each
+Some entry instead of adding parallel arrays; literal text stays None. The output
+recorder already interleaves sources and writes and stops at a Never part. Insert
+projection before that stop test so a Never primary reaches extraction but never
+its Output or suffix. Capture once; do not reconstruct the decision from HIR.
+
+Baseline: clean `main`; all ten unary-projection checks passed with 1762 library/
+910 native tests; `/tmp/meowy-unary-primary-stages-gate.log`.
+Formatting now returns optional point/primary pairs, and output metadata retains
+them while its routes remain unchanged. The unused value-only `project` wrapper
+is removed; all remaining callers use captured projection decisions. Five focused
+formatting groups pass: nested text/roots, additional versus existing projections,
+once-only effects, direct/projected Never, suffix checking and original errors;
+`/tmp/meowy-format-plans-focused.log`. Formatting and all 1764 library tests pass;
+`/tmp/meowy-format-plans-lib.log`. Output projection-stage integration is next.
+
+### Completed unary primary-projection slices
 
 The dependency-ordered plan is complete:
 1. Retain the actual unary projection decision with the checked operand root/HIR,

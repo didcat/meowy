@@ -9,11 +9,17 @@ use crate::{
     hir,
 };
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct Input {
+    pub(crate) point: hir::PointId,
+    pub(crate) primary: bool,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Output {
     pub(crate) owner: usize,
     pub(crate) panic: bool,
-    pub(crate) parts: Vec<Option<hir::PointId>>,
+    pub(crate) parts: Vec<Option<Input>>,
     pub(crate) stopped: Option<usize>,
     pub(crate) control: bool,
     pub(crate) span: Span,
@@ -26,7 +32,7 @@ impl Checker {
         id: hir::PointId,
         panic: bool,
         parts: &[hir::Expr],
-        points: Vec<Option<hir::PointId>>,
+        points: Vec<Option<Input>>,
         span: Span,
     ) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof output-operation budget exhausted", span);
@@ -51,8 +57,8 @@ impl Checker {
         let mut seen = std::collections::BTreeSet::new();
         for (child, part) in points.iter().zip(parts) {
             if let Some(child) = child {
-                if !seen.insert(*child)
-                    || !self.points.get(*child).is_some_and(|child| {
+                if !seen.insert(child.point)
+                    || !self.points.get(child.point).is_some_and(|child| {
                         child.parent == Some(id)
                             && child.owner == self.owner
                             && child.block == point.block
@@ -79,8 +85,8 @@ impl Checker {
         }
         for (part, child) in points.iter().enumerate() {
             if let Some(child) = child {
-                edges.push(Edge::new(from, Port::Entry(*child), route));
-                (from, route) = (Port::Normal(*child), Route::Next);
+                edges.push(Edge::new(from, Port::Entry(child.point), route));
+                (from, route) = (Port::Normal(child.point), Route::Next);
             }
             if stopped == Some(part) {
                 break;

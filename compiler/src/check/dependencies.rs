@@ -336,7 +336,7 @@ mod exclusive;
 pub(crate) use exclusive::Operation as ExclusiveOperation;
 
 mod outputs;
-pub(crate) use outputs::Output;
+pub(crate) use outputs::{Input as FormatInput, Output};
 
 mod unary;
 pub(crate) use unary::Unary;

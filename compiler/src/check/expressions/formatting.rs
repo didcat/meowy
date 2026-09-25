@@ -24,7 +24,7 @@ pub(crate) fn format_roots_keep_nested_text_and_primary_values_in_source_order()
     let mut inputs = Vec::new();
     for (point, value) in points.iter().zip(&parts) {
         if let Some(point) = point {
-            let point = &checker.points[*point];
+            let point = &checker.points[point.point];
             assert_eq!(point.parent, Some(id));
             assert!(point.complete);
             inputs.push(&source[point.span.start..point.span.end]);
@@ -44,6 +44,14 @@ pub(crate) fn format_roots_keep_nested_text_and_primary_values_in_source_order()
     }
     assert_eq!(texts, ["a", "b", "c", "d", "e"]);
     assert_eq!(inputs, ["1+2", "{->7;->extra:8}"]);
+    assert_eq!(
+        points
+            .iter()
+            .flatten()
+            .map(|input| input.primary)
+            .collect::<Vec<_>>(),
+        [false, true]
+    );
     assert!(checker.point.is_none());
 }
 
@@ -96,4 +104,55 @@ pub(crate) fn format_roots_restore_points_and_keep_original_errors() {
         assert!(parts.is_empty());
         assert!(checker.point.is_none());
     }
+}
+
+#[test]
+pub(crate) fn format_plans_keep_primary_sources_distinct_from_scalar_results() {
+    let mut checker = Checker::new();
+    checker
+        .stmt(&crate::parser::parse("r:{->7;->tag:true}").unwrap().stmts[0])
+        .unwrap();
+    let mut parts = Vec::new();
+    let points = checker
+        .format_parts(&expr(r#""{r}{-r}{r+0}""#), &mut parts)
+        .unwrap();
+    assert_eq!(
+        points
+            .iter()
+            .flatten()
+            .map(|input| input.primary)
+            .collect::<Vec<_>>(),
+        [true, false, false]
+    );
+    assert!(matches!(parts[0].kind, hir::ExprKind::Primary(_)));
+    assert!(matches!(parts[1].kind, hir::ExprKind::Unary { .. }));
+    assert!(matches!(parts[2].kind, hir::ExprKind::Binary { .. }));
+}
+
+#[test]
+pub(crate) fn format_plans_keep_direct_and_projected_never_with_checked_suffixes() {
+    let mut checker = Checker::new();
+    for stmt in crate::parser::parse("d:@\"debug\";stop<never>:(){d.panic(\"stop\")}")
+        .unwrap()
+        .stmts
+    {
+        checker.stmt(&stmt).unwrap();
+    }
+    let mut parts = Vec::new();
+    let points = checker
+        .format_parts(&expr(r#""{stop()}tail{1}""#), &mut parts)
+        .unwrap();
+    assert!(!points[0].unwrap().primary);
+    assert_eq!(parts[0].ty, Type::Never);
+    assert!(points[1].is_none());
+    assert!(checker.points[points[2].unwrap().point].complete);
+    let source = "f<null>:(r<{-><never>;tag<boolean>}>){(@\"debug\").print(r)}";
+    crate::compile(source).unwrap();
+    let mut checker = Checker::new();
+    checker
+        .block(&crate::parser::parse(source).unwrap(), None, None)
+        .unwrap();
+    let output = checker.outputs.values().next().unwrap();
+    assert!(output.parts[0].unwrap().primary);
+    assert_eq!(output.stopped, Some(0));
 }

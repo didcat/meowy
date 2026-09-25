@@ -18,8 +18,8 @@ pub(crate) fn output_stages_interleave_operands_and_streamed_parts_before_comple
         assert_eq!(output.panic, method == "panic");
         assert!(output.stopped.is_none());
         assert_eq!(output.parts.len(), 4);
-        let first = output.parts[1].unwrap();
-        let second = output.parts[3].unwrap();
+        let first = output.parts[1].unwrap().point;
+        let second = output.parts[3].unwrap().point;
         let port = |part| Port::Output { point: id, part };
         for edge in [
             Edge::new(port(0), Port::Entry(first), Route::Returned),
@@ -66,10 +66,10 @@ pub(crate) fn output_stages_preserve_prefixes_stopped_operands_and_checked_suffi
             .find(|(_, output)| output.owner == 0)
             .unwrap();
         assert_eq!(output.stopped, Some(1));
-        assert!(checker.points[output.parts[3].unwrap()].complete);
+        assert!(checker.points[output.parts[3].unwrap().point].complete);
         assert_eq!(
             output.edges.last().unwrap().to,
-            Port::Entry(output.parts[1].unwrap())
+            Port::Entry(output.parts[1].unwrap().point)
         );
         assert!(
             !output
@@ -133,7 +133,7 @@ pub(crate) fn output_stages_validate_parts_and_publish_with_shared_budgets() {
         );
         assert!(checker.outputs.is_empty());
     }
-    checker.points[points[0].unwrap()].owner += 1;
+    checker.points[points[0].unwrap().point].owner += 1;
     assert!(
         checker
             .output_operation(id, false, parts, points.clone(), value.span)
@@ -141,7 +141,7 @@ pub(crate) fn output_stages_validate_parts_and_publish_with_shared_budgets() {
             .message
             .contains("identity")
     );
-    checker.points[points[0].unwrap()].owner -= 1;
+    checker.points[points[0].unwrap().point].owner -= 1;
     checker.exclusive_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
