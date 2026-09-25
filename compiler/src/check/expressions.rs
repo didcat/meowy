@@ -402,8 +402,7 @@ impl Checker {
                 ty,
                 predicate,
             } => {
-                let value = self.expr(value, None)?;
-                let ty = self.construct_type(ty)?;
+                let (_, value, ty) = self.typed_point(value, ty)?;
                 if value.ty == Type::Never {
                     return Ok(value);
                 }
@@ -648,3 +647,5 @@ mod formatting;
 mod roots;
 
 mod fields;
+
+mod typed;

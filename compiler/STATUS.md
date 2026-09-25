@@ -99,7 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current runtime field-access slices
+### Current predicate/ascription slices
+
+Dependency-ordered commit plan:
+1. Retain the exact operand root alongside the checked operand and constructed
+   target type, preserving operand-before-target checking, required work, never
+   handling and errors. Add focused regressions and run the library suite.
+2. Record bounded predicate/ascription availability stages from that root before
+   HIR coercion can erase the source distinction. Preserve boolean predicates,
+   E208, stopped operands and no-op ascriptions; run the full compiler gate.
+3. Document the verified boundary and concrete next prerequisite separately.
+
+Investigation: `ExprKind::Ascribe` currently discards its operand root, then
+constructs the target even for a never operand. Predicates build `TypeTest` while
+ascriptions require `accepts` before `coerce`, which can erase a no-op wrapper.
+Capture the source during checking and publish stages after existing validation;
+target construction remains compile-time work, not a runtime operand or proof result.
+Stage metadata needs operation kind and stopped status, not aggregate type copies
+or evaluated predicate truth. Existing required-target accounting stays authoritative.
+
+Baseline: clean `main`; all ten field-stage compiler checks passed with 1708
+library/910 native tests; `/tmp/meowy-field-stages-gate.log`.
+`typed_point` now returns the exact checked operand root and value alongside the
+constructed target. Three focused groups pass: call/field/group roots, once-only
+effects, operand/target error precedence, never inputs, restoration, predicate
+results, no-op HIR and E208; `/tmp/meowy-typed-roots-focused.log`.
+Formatting and all 1711 library tests pass; `/tmp/meowy-typed-roots-lib.log`.
+Operation stages remain the next slice; no outstanding failures remain.
+
+### Completed runtime field-access slices
 
 The dependency-ordered plan is complete:
 1. Retain the exact receiver root, inserted-load decision and declared field
