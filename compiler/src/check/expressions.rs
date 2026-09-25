@@ -15,7 +15,12 @@ impl Checker {
         expected: Option<&Type>,
     ) -> Result<(hir::PointId, hir::Expr)> {
         self.with_continuation(expr.span, "expression", |checker| {
-            checker.with_point_id(PointKind::expression(expr), expr.span, |checker| {
+            let kind = if matches!(expected, Some(Type::Reference(_))) {
+                PointKind::Expr
+            } else {
+                PointKind::expression(expr)
+            };
+            checker.with_point_id(kind, expr.span, |checker| {
                 checker.coerced_expression(expr, expected)
             })
         })
@@ -26,7 +31,14 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
-        let mut value = self.expression_value(expr, expected)?;
+        let mut value = if matches!(expected, Some(Type::Reference(_))) {
+            self.with_point_id(PointKind::expression(expr), expr.span, |checker| {
+                checker.expression_value(expr, expected)
+            })?
+            .1
+        } else {
+            self.expression_value(expr, expected)?
+        };
         if value.ty == Type::Never {
             self.reach = FALSE;
             return Ok(value);
@@ -632,3 +644,6 @@ impl Checker {
 
 #[cfg(test)]
 mod formatting;
+
+#[cfg(test)]
+mod roots;

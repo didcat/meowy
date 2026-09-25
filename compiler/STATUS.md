@@ -99,7 +99,43 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current standalone temporary-borrow slices
+### Current implicit shared-conversion slices
+
+Dependency-ordered commit plan:
+1. Allocate a distinct checked raw-expression child for shared-reference
+   expectations, retaining the caller-facing expression root and existing HIR.
+   Keep all other expression paths unchanged; cover nested operations, groups,
+   branch/read/query ancestry, owners, stopped inputs and failure restoration.
+2. Connect that exact child to the existing implicit reborrow site and result.
+   Reuse bounded reborrow validation and transparent region links when no
+   conversion occurs, without publishing a bypass across conversion or never.
+   Preserve typing, authority and budgets; run focused tests and the compiler gate.
+3. Document verified coverage and the next prerequisite in the foundation guide
+   and trackers, separately from implementation and focused regressions.
+
+Investigation: `coerced_expression` currently shares its point with raw calls,
+borrows and other operations, which already publish normal-result edges. Allocate
+the raw child while checking, with the same expected type and continuation budget,
+before applying conversion. Only shared-reference expectations need this boundary;
+the outer point is an expression while the raw child retains its original kind.
+Groups may convert their own child, so outer wrappers must distinguish a newly
+created conversion from a shared result that only needs transparent forwarding.
+Never inputs must allocate no site or normal-result edge. The boundary prerequisite
+will deliberately leave its new wrapper links unknown until the integration slice.
+
+Baseline: clean `main`; standalone temporary slices passed all ten compiler checks
+with 1695 library/910 native tests and conformance 10 passed, 13 unsupported,
+0 failed in debug/release; `/tmp/meowy-temporary-stages-gate.log`.
+The boundary now wraps only shared-reference expectations and retains the raw
+expression kind, exact caller root, expected context and existing HIR conversion.
+Three focused groups pass after correcting test-only type/import names: calls,
+borrows, nested groups, repeated spans, branch/query/read ancestry, owners, never,
+ordinary diagnostics and budget restoration; `/tmp/meowy-conversion-roots-focused.log`.
+Wrapper links remain intentionally pending the conversion integration slice.
+Formatting and all 1698 library tests pass; `/tmp/meowy-conversion-roots-lib.log`.
+No outstanding failures remain in the boundary prerequisite.
+
+### Completed standalone temporary-borrow slices
 
 Dependency-ordered commit plan:
 1. Expose the exact initializer root in the standalone fallback through a helper
