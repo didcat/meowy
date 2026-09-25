@@ -229,6 +229,16 @@ runtime operand links. Stage publication follows existing ascription acceptance
 checks and retains neither target descriptors nor evaluated predicate answers.
 These bounded links preserve boolean predicates, E208, ownership and proof gates;
 they introduce no runtime cast or additional type-shape copies.
+Ordinary dispatch blocks retain exact receiver roots and the existing `$` local
+and body identities. Entry reaches receiver evaluation through the block prefix;
+receiver completion precedes initialization of that local and the immediate
+checked body successor. An empty body completes after initialization. Synthetic
+prefix markers remain explicit, and later opaque entries such as forward
+declarations are not skipped. Stopped receivers have no initialization/result
+link, and stopped bodies have no result link. These bounded stages preserve
+expected typing, nested receiver scope, permission/lifetime checks and call-return
+conditions without inventing source statements. Composed dispatch retains its
+separate partial-record path and remains a sequencing-coverage gap.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow

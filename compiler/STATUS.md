@@ -101,90 +101,49 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current ordinary dispatch-block slices
 
-Dependency-ordered commit plan:
-1. Return the existing receiver-local identity from block startup/checking and
-   retain the exact ordinary dispatch receiver root alongside the checked body.
-   Preserve HIR, expected types, `$`, gates and opaque sequence prefixes; validate
-   focused identity/error cases and the library suite.
-2. Record bounded receiver evaluation, initialization, body continuation and result
-   links using those identities. Preserve the synthetic-prefix marker and other
-   barriers; cover empty/forward/stopped/nested bodies and run the compiler gate.
+The dependency-ordered plan is complete:
+1. Retain exact receiver roots and existing receiver-local/body identities during
+   checking, preserving HIR, scope and prefix barriers (`b0bee6b`).
+2. Record bounded evaluation/initialization/body/result links with focused tests
+   and the complete compiler gate (`63367e7`).
 3. Document verified ordinary-dispatch scope and the next prerequisite separately.
 
-Investigation: `block_start` allocates the receiver local and inserts a synthetic
-Bind; `block_inner` represents it by a leading `None` in its sequence. Capture the
-local at allocation, return it with the checked body, and retain the source from
-`expr_point`. Prefix integration must connect only the immediate next checked
-statement (or an actually empty body), never search past another `None`. Keep
-composed dispatch on its existing opaque path. Receiver completion and body
-result availability remain structural ports, not reachability or loan authority.
+`dispatch_point` retains the receiver root; `block_parts` and `block_prefix`
+return the local allocated for `$`. Existing block APIs preserve their results
+for contextual-list/composed callers. Ordinary dispatch now links entry through
+block entry to receiver evaluation, then initialization of that existing local.
+Initialization connects only to the immediate checked successor or an empty
+body's normal port. The original leading `None` marker and core endpoint maps
+remain intact. Later opaque entries, including forward declarations, are not
+skipped. Stopped receivers gain no initialization/result link; stopped bodies
+have no result link. Types and identities are validated with bounded work and the
+shared edge ledger, with no invented source statements or aggregate type copies.
+Expected types, nested `$` bindings, permission/lifetime rules and exclusive gates
+are unchanged. Composed dispatch remains on its separate opaque path.
 
-Baseline: clean `main`; all ten typed-stage compiler checks passed with 1715
-library/910 native tests; `/tmp/meowy-typed-stages-gate.log`.
-The root helper now returns receiver point/local/body identities from checking.
-`block_parts` and `block_prefix` expose those identities while `block_start`
-retains its original Vec API for contextual-list callers discovered by the compile
-check. No list/composed paths changed. Three focused groups pass: exact source/
-local/body identities, expected results, nested `$` scopes, once-only effects,
-stopped receivers, lifetime/permission gates and budget restoration;
-`/tmp/meowy-dispatch-roots-focused.log`. Formatting and all 1718 library tests pass;
-`/tmp/meowy-dispatch-roots-lib.log`. Prefix integration remains the next slice.
-Receiver capture committed as `b0bee6b`. Ordinary dispatch now connects its entry
-through block entry to the exact receiver, then initializes the existing local
-before only the immediate sequence successor (or empty-body completion). The
-original `None` prefix and endpoint maps remain intact; later opaque entries are
-not skipped. Stopped receivers gain no initialization/result link. All four focused
-stage groups pass: ordinary/reference/record/call receivers, empty/forward/stopped
-prefixes, nested owners/control, composed-path isolation, permission/lifetime gates
-and atomic identity/edge budgets; `/tmp/meowy-dispatch-stages-focused.log`.
-All ten compiler checks pass: 1722 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-dispatch-stages-gate.log`. No outstanding failures remain. Documentation
-and the composed-expression source-boundary handoff are next.
-
-### Completed predicate/ascription slices
-
-The dependency-ordered plan is complete:
-1. Retain exact operand roots alongside checked values and constructed targets,
-   preserving evaluation/error order and required accounting (`e5d5653`).
-2. Record bounded predicate/ascription availability stages before HIR coercion
-   can erase a no-op wrapper, with focused tests and the full gate (`5ad03a7`).
-3. Document verified scope and the next source-boundary prerequisite separately.
-
-`typed_point` checks the operand before constructing the target, including target
-errors for never operands. Stage publication follows existing E208 checks, retains
-predicate/ascription kind and exact source identity, and uses the shared edge
-ledger. Never operands have entry links only. No-op ascriptions retain their
-logical result stage without changing HIR or introducing a runtime cast. The
-metadata retains no aggregate type copies, target descriptor or predicate answer.
-Computed-target reads remain separate compile-time identities; fixed flag type
-queries and other type-only paths retain their existing behavior.
-
-Three root groups cover calls/fields/groups, once-only effects, error precedence,
-never, restoration, boolean results, no-op HIR and E208;
-`/tmp/meowy-typed-roots-focused.log`. Formatting and all 1711 library tests passed
-the prerequisite; `/tmp/meowy-typed-roots-lib.log`. Four stage groups cover ordered
-results, nested short-circuit operands, computed-target reads, owner/control,
-stopped inputs, ordinary failures and atomic identity/edge budgets;
-`/tmp/meowy-typed-stages-focused.log`. All ten compiler checks pass: 1715 library/
-910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-typed-stages-gate.log`.
-No outstanding failures remain. The foundation guide and trackers document this
-coverage. Post-documentation validation passed 1208 local links in 110 Markdown
-files; `/tmp/meowy-typed-stages-docs.log`.
-Dispatch-block receiver capture and its opaque sequence prefix are next;
+Three root groups cover source/local/body identity, expected types, once-only
+effects, scopes, never, diagnostics and budget restoration;
+`/tmp/meowy-dispatch-roots-focused.log`. Formatting and all 1718 library tests
+passed the prerequisite; `/tmp/meowy-dispatch-roots-lib.log`. Four stage groups
+cover scalar/reference/record/call receivers, empty/forward/stopped prefixes,
+nested owners/control, composed isolation, permission/lifetime gates and atomic
+identity/edge budgets; `/tmp/meowy-dispatch-stages-focused.log`. All ten compiler
+checks pass: 1722 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-dispatch-stages-gate.log`. No outstanding failures remain. The guide
+and trackers document the boundary. Post-documentation validation passed 1208
+local links in 110 Markdown files; `/tmp/meowy-dispatch-stages-docs.log`.
+Composed-expression roots and stages are next;
 generic coercions, other contextual builders, backedge propagation and proof
 outcomes remain separate.
 
-Runtime fields are complete (`ed85184`, `b806c44`, `70f9e1b`). Their exact receiver
-roots and inserted-load decisions distinguish implicit loads from explicit
-receiver dereferences. Checked indices precede narrowing, never fields have no
-result edge, and required/static paths stay separate. The ten-check gate passed
-with 1708 library/910 native tests; `/tmp/meowy-field-stages-gate.log`.
-Implicit shared conversion (`62a8a65`, `c2c4336`, `d1ea9c0`) keeps distinct raw
-roots and conversion sites, forwarding unchanged shared results without duplicate
-sites. Standalone temporary borrows (`2085cd4`, `4443aac`, `51bf884`) retain exact
-initializer/cell/statement identities without duplicating other parent staging.
+Predicates/ascriptions (`e5d5653`, `5ad03a7`, `8a01d73`) retain operand roots and
+logical result stages without evaluating answers, duplicating target descriptors
+or changing target construction and E208. Their ten-check gate passed with 1715
+library/910 native tests; `/tmp/meowy-typed-stages-gate.log`.
+Runtime fields (`ed85184`, `b806c44`, `70f9e1b`) retain receiver roots, load decisions
+and resolved indices before narrowing. Implicit shared conversion and standalone
+temporary borrows retain their established source/site/cell/statement boundaries.
 
 ### Proof dependency implementation slices
 
@@ -1951,19 +1910,23 @@ subtraction retains its documented limits. No outstanding failures remain.
    and ordered result stages (`5ad03a7`), including erased no-op wrappers. Existing
    target construction, E208, stopped inputs and required-read identities remain
    unchanged; metadata does not evaluate answers or store target descriptors.
-   Next audit ordinary `ExprKind::DispatchBlock` in `check/expressions.rs` together
-   with `check/blocks.rs::{block_inner,block_start}` and
-   `check/dependencies/edges/blocks.rs`. Capture the exact receiver root plus the
-   existing block/receiver-local identities during checking, preserving expected
-   types, `$` binding, exclusive-receiver gates, owner/control and error restoration.
-   `block_inner` currently inserts a `None` sequence prefix for the synthetic
-   receiver binding. Keep that barrier until a validated receiver-initialization
-   stage connects to the body; never bypass it with ordinary block-result links
-   or fabricate a source statement point. Split capture and prefix/result integration
-   into reviewable slices with focused tests and the compiler gate. Ordinary and
-   composed dispatch paths are distinct; audit partial builders separately before
-   broadening a shared hook. Generic coercions, other contextual builders and
-   required evaluation remain separate. Availability is not complete provenance.
+   Ordinary dispatch blocks now retain receiver point/local/body identities
+   (`b0bee6b`) and receiver initialization/body/result stages (`63367e7`). The
+   synthetic `None` prefix remains explicit, later barriers are never skipped,
+   and stopped inputs/bodies gain no invented completion or source statement.
+   Next audit `check/blocks.rs::composed_value`: grouped composition drops its
+   child point, plain partial blocks lack result links, and composed dispatch
+   drops receiver identities. First connect exact composed Group/Block roots
+   through existing region/block endpoint helpers. Then capture composed dispatch
+   source/local/body identities using `block_parts` and integrate its prefix stages
+   separately, preserving `partial=true`, expected record slots, `$`, current
+   permission gates and emission semantics. Do not blindly reuse ordinary
+   `dispatch_point`, whose exclusive-receiver gate belongs to that caller.
+   Keep the fallback's generic coercions unknown until their own source/result
+   boundary is captured. Plan reviewable slices with focused composition, missing
+   slot, nested group, never and error regressions, then run the compiler gate.
+   Generic coercions, other contextual builders and required evaluation remain
+   separate. Availability is not complete provenance.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
