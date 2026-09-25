@@ -468,15 +468,22 @@ impl Checker {
     }
 
     pub(crate) fn project(value: hir::Expr) -> hir::Expr {
+        Self::projected(value).1
+    }
+
+    pub(crate) fn projected(value: hir::Expr) -> (bool, hir::Expr) {
         let ty = Self::primary_type(&value.ty);
         if ty == value.ty {
-            value
+            (false, value)
         } else {
-            hir::Expr {
-                ty,
-                span: value.span,
-                kind: hir::ExprKind::Primary(Box::new(value)),
-            }
+            (
+                true,
+                hir::Expr {
+                    ty,
+                    span: value.span,
+                    kind: hir::ExprKind::Primary(Box::new(value)),
+                },
+            )
         }
     }
 

@@ -129,6 +129,16 @@ the original API retains idempotence, shared capacity checks and counters. All 1
 existing sequence tests pass; `/tmp/meowy-sequence-prepare-focused.log`.
 Formatting and all 1739 library tests pass; `/tmp/meowy-sequence-prepare-lib.log`.
 Projection/classification capture is next.
+Sequence preparation committed as `07722b5`. `projected` exposes the existing
+primary-wrapper decision, and `binary_plan_values` retains those decisions,
+post-projection stopped types and checked-integer classification. Original APIs
+remain wrappers; no runtime metadata is published by required-only callers.
+All three classification groups pass: actual/inner primary wrappers, aggregate
+equality, checked integer versus plain operations, stopped projections, errors
+and source-free required construction; `/tmp/meowy-binary-plans-focused.log`.
+Formatting, all 1742 library tests and all-target Clippy pass;
+`/tmp/meowy-binary-plans-lib.log`, `/tmp/meowy-binary-plans-lint.log`.
+Atomic binary/sequence integration is next.
 
 ### Completed composed-fallback slices
 

@@ -334,7 +334,7 @@ impl Checker {
         } else {
             None
         };
-        let value = self.binary_values(op, left, right, span)?;
+        let (_, value) = self.binary_plan_values(op, left, right, span)?;
         if let hir::ExprKind::Binary {
             point: Some(point), ..
         } = &value.kind
@@ -363,22 +363,38 @@ impl Checker {
     pub(crate) fn binary_values(
         &mut self,
         op: &str,
+        left: hir::Expr,
+        right: hir::Expr,
+        span: Span,
+    ) -> Result<hir::Expr> {
+        self.binary_plan_values(op, left, right, span)
+            .map(|(_, value)| value)
+    }
+
+    pub(crate) fn binary_plan_values(
+        &mut self,
+        op: &str,
         mut left: hir::Expr,
         mut right: hir::Expr,
         span: Span,
-    ) -> Result<hir::Expr> {
+    ) -> Result<(super::dependencies::BinaryPlan, hir::Expr)> {
         let boolean = ["&&", "||"].contains(&op);
         let compare = ["==", "!=", "<", ">", "<=", ">="].contains(&op);
-        if !["==", "!="].contains(&op)
+        let primary = if !["==", "!="].contains(&op)
             || !matches!(
                 (&left.ty, &right.ty),
                 (Type::Record { .. }, Type::Record { .. })
-            )
-        {
-            left = Self::project(left);
-            right = Self::project(right);
-        }
-        let diverges = !boolean && (left.ty == Type::Never || right.ty == Type::Never);
+            ) {
+            let (a, first) = Self::projected(left);
+            let (b, second) = Self::projected(right);
+            left = first;
+            right = second;
+            [a, b]
+        } else {
+            [false, false]
+        };
+        let normal = [left.ty != Type::Never, right.ty != Type::Never];
+        let diverges = !boolean && (!normal[0] || !normal[1]);
         if !diverges
             && left.ty != right.ty
             && !(boolean
@@ -446,21 +462,31 @@ impl Checker {
         } else {
             left.ty.clone()
         };
-        Ok(hir::Expr {
-            kind: hir::ExprKind::Binary {
-                point: self.point.filter(|id| {
-                    let point = &self.points[*id];
-                    point.owner == self.owner
-                        && ((op == "&&" && point.kind == PointKind::And)
-                            || (op == "||" && point.kind == PointKind::Or))
-                }),
-                op: op.into(),
-                left: Box::new(left),
-                right: Box::new(right),
+        let plan = super::dependencies::BinaryPlan {
+            primary,
+            normal,
+            checked: !diverges
+                && matches!(left.ty, Type::Int { .. })
+                && matches!(op, "+" | "-" | "*" | "/" | "%"),
+        };
+        Ok((
+            plan,
+            hir::Expr {
+                kind: hir::ExprKind::Binary {
+                    point: self.point.filter(|id| {
+                        let point = &self.points[*id];
+                        point.owner == self.owner
+                            && ((op == "&&" && point.kind == PointKind::And)
+                                || (op == "||" && point.kind == PointKind::Or))
+                    }),
+                    op: op.into(),
+                    left: Box::new(left),
+                    right: Box::new(right),
+                },
+                ty,
+                span,
             },
-            ty,
-            span,
-        })
+        ))
     }
 
     pub(crate) fn constant_expr(value: Constant, span: Span) -> hir::Expr {
@@ -594,3 +620,6 @@ impl Checker {
 
 #[cfg(test)]
 mod unary;
+
+#[cfg(test)]
+mod binary;
