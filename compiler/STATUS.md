@@ -114,8 +114,8 @@ Dependency-ordered commit plan:
 3. Document the verified boundary and next coverage step in the foundation guide
    and trackers, separately from implementation and focused regressions.
 
-Investigation: the explicit unary `*` arm in `raw_expression` drops the exact
-operand root, then constructs `Deref` after checking a safe reference. Backend
+Investigation: the explicit unary `*` arm previously dropped the operand root
+before constructing `Deref`; it now uses `deref_point`. Backend
 lowering evaluates the pointer once and only loads if that evaluation returns.
 Implicit field/list dereferences, borrowed-place inspection and reborrows have
 separate checking paths; do not infer their source points from HIR or spans.
@@ -138,9 +138,13 @@ returned/temporary pointers, stopped inputs, owner/control identities and atomic
 shared-budget publication; `/tmp/meowy-deref-stages-focused.log`. All ten compiler
 checks pass: 1656 library/910 native tests, formatting, Clippy, build and conformance
 (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-deref-stages-gate.log`. Slice 2 is complete; guide/tracker integration
-is next. The uninhabited-referent case is checker metadata evidence, not an
-executable value-construction capability.
+`/tmp/meowy-deref-stages-gate.log`. Operation integration: `15f1c74`. The guide and
+trackers now describe the boundary. Post-documentation validation passed: 1208
+local links in 110 Markdown files; `/tmp/meowy-deref-stages-docs.log`. All three
+slices are complete.
+The uninhabited-referent case is checker metadata evidence, not an executable
+value-construction capability. Next retain exclusive scalar reborrow parent roots
+and existing site identities before extending projected/shared reborrow paths.
 Reborrow/projection/builder coverage, restart propagation and proof outcomes
 remain incomplete.
 
@@ -1470,10 +1474,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Scalar unary roots and operation/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1650 library/910
+- Explicit dereference roots and load/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1656 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-unary-stages-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-deref-stages-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1868,20 +1872,24 @@ subtraction retains its documented limits. No outstanding failures remain.
    overflow success; stopped operands omit operations/results. Context, primary
    projection and outer union coercion remain distinct. Signed literals and
    required-only construction keep their existing paths and logical charges.
-   Next capture the exact operand of explicit unary `*` in
-   `check/expressions.rs::raw_expression`, then link pointer evaluation, dereference
-   and result availability. Preserve shared/exclusive reference typing, original
-   nonreference errors, nonreturning operands and temporary/loan validation. Do not
-   confuse a reference carrier cell with its pointee or grant new loan authority.
-   Validate grouped/call-returned pointers, scalar/aggregate dereferences, E302/E303
-   boundaries, owner/control identities and shared budgets, then run the compiler
-   gate. Reborrow, implicit dereference, field/coercion and contextual builder
-   paths remain separate; keep exact root capture and result integration reviewable.
+   Explicit dereferences now retain exact pointer roots (`89d255f`) and shared/
+   exclusive mode with load/result stages (`15f1c74`). Stopped pointers omit loads;
+   uninhabited referents omit normal results. Metadata does not copy aggregate
+   shapes, infer pointee storage from cells or grant authority.
+   Next capture parent roots in the explicit exclusive scalar reborrow branch of
+   `check/references.rs::exclusive_borrow` (`&!*p`). Retain the existing reborrow
+   site and exclusive mode, then connect parent evaluation to reborrow/result
+   stages without a dereference load. Preserve E305, scalar-shape gates,
+   nonreturning operands, moved-parent behavior and existing loan/lifetime checks.
+   Validate grouped/call-returned parents, site/owner/control identities, source
+   spans and shared budgets, then run the compiler gate. Keep parent-root capture
+   and graph integration independently reviewable. Shared/projected reborrows,
+   implicit dereferences, field/coercion and contextual builders remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Dereference/projection paths and contextual block builders remain coverage gaps;
+   Reborrow/implicit-projection paths and contextual builders remain coverage gaps;
    missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

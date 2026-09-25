@@ -605,9 +605,9 @@ roots while preserving HIR, types and loan errors. Formatting and all 1653 libra
 tests pass; `/tmp/meowy-deref-roots-lib.log` (`89d255f`). Explicit dereference
 metadata now preserves pointer-before-load/result order and reference mode without
 copying aggregate shapes or inferring pointee storage. All ten compiler checks
-pass: 1656 library/910 native tests; `/tmp/meowy-deref-stages-gate.log`.
-Guide/tracker integration is next; broader propagation and proof outcomes remain
-incomplete.
+pass: 1656 library/910 native tests; `/tmp/meowy-deref-stages-gate.log` (`15f1c74`).
+The foundation guide documents the boundary. Exclusive scalar reborrow sequencing
+is next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -737,10 +737,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Scalar unary roots and operation/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1650 library/910 native tests.
+- Explicit dereference roots and load/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1656 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-unary-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-deref-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -825,12 +825,13 @@ execution was not part of this documentation edit.
    region ledger, preserving HIR, expected typing and logical grouping charges.
    Scalar unary operations retain exact roots and result types, with checked
    integer negation and stopped-operand boundaries. Signed literals and required
-   construction retain their own paths. Next capture explicit dereference roots
-   and load/result stages in `compiler/src/check/expressions.rs::raw_expression`.
-   Preserve reference-cell/pointee distinctions, shared/exclusive typing, errors,
-   nonreturning operands and loan/lifetime checks; validate focused tests and the
-   compiler gate. Reborrow/implicit-dereference/projection/builder coverage remains
-   separate.
+   construction retain their own paths. Explicit dereferences now retain pointer
+   roots and load/result order without inferring pointee storage or loan authority.
+   Next capture exclusive scalar reborrow parents and existing site identities in
+   `compiler/src/check/references.rs::exclusive_borrow`, then connect reborrow/result
+   stages. Preserve mode, nonreturning operands, errors and loan/lifetime checks;
+   validate focused tests and the compiler gate. Shared/projected reborrows,
+   implicit dereferences, field/coercion and builder coverage remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

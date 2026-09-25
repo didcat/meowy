@@ -188,6 +188,12 @@ negation and the inversion operations use ordinary completion. A nonreturning
 operand has no operation/result edge. Signed integer literals keep their direct
 literal path, and required-only unary construction gains no synthetic runtime
 points. Contextual typing, primary projection and logical charges stay unchanged.
+Explicit dereferences retain exact pointer roots, shared/exclusive mode and
+pointer-before-load/result order. A nonreturning pointer has no load stage; a
+`never` referent has no normal result. This records availability without copying
+aggregate type shapes, identifying pointee storage from a reference cell, or
+creating loan authority. HIR typing and existing move/lifetime checks remain
+unchanged. Implicit dereferences and reborrows retain separate source boundaries.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
