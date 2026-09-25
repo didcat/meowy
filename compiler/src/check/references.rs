@@ -4,6 +4,32 @@ use crate::diagnostic::Diagnostic;
 use crate::hir::{self, Type};
 
 impl Checker {
+    pub(crate) fn deref_point(
+        &mut self,
+        value: &ast::Expr,
+        span: Span,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        let (point, value) = self.expr_point(value, None)?;
+        if value.ty == Type::Never {
+            return Ok((point, value));
+        }
+        let Some(ty) = value.ty.pointee() else {
+            return Err(Self::error(
+                "E222",
+                "dereference requires a safe reference",
+                span,
+            ));
+        };
+        Ok((
+            point,
+            hir::Expr {
+                ty: ty.clone(),
+                kind: hir::ExprKind::Deref(Box::new(value)),
+                span,
+            },
+        ))
+    }
+
     pub(crate) fn reference_type(&mut self, ty: Type, span: Span) -> Result<Type> {
         if ty.has_exclusive() {
             return Err(Diagnostic::unsupported(
@@ -492,3 +518,6 @@ impl Checker {
         }
     }
 }
+
+#[cfg(test)]
+mod dereference;

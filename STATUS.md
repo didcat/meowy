@@ -600,7 +600,9 @@ pass; `/tmp/meowy-unary-roots-lib.log` (`7932a09`). Unary metadata now retains e
 scalar types and ordered operation/results, with checked integer negation and no
 result edge for stopped operands. All ten compiler checks pass: 1650 library/910
 native tests; `/tmp/meowy-unary-stages-gate.log` (`fdeb564`). The foundation guide
-documents the boundary. Explicit dereference sequencing is next; broader
+documents the boundary. Explicit dereference checking now exposes exact pointer
+roots while preserving HIR, types and loan errors. Formatting and all 1653 library
+tests pass; `/tmp/meowy-deref-roots-lib.log`. Load/result metadata is next; broader
 propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

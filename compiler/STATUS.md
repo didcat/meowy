@@ -99,51 +99,39 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current scalar unary sequencing slices
+### Current explicit dereference sequencing slices
 
 Dependency-ordered commit plan:
-1. Expose exact ordinary unary operand roots through a helper that preserves
-   contextual inference, primary projection, original errors and once-only checking.
-   Keep signed integer literals and required-evaluator unary construction separate.
-   Validate the root prerequisite with focused regressions and library tests.
-2. Publish bounded unary operations with operand/operation/result links, exact
-   scalar result types and lexical ownership/control. Integer negation results
-   require overflow success; nonreturning operands have no operation/result edge.
-   Validate bool/int/float and bits-not aliases, errors, owners and shared budgets;
-   run the full compiler gate.
-3. Document verified boundaries and the next operand family in the foundation
-   guide and trackers, separately from implementation and focused regressions.
+1. Expose exact explicit-dereference operand roots through a helper preserving
+   the existing safe-reference check, HIR and nonreturning behavior. Validate
+   grouped/effectful pointers, shared/exclusive and aggregate values, and errors
+   with focused regressions and library tests.
+2. Publish bounded dereference operations linking pointer evaluation, load and
+   result availability. Retain shared/exclusive mode without treating reference
+   cells as pointee storage or granting authority. Validate stopped operands,
+   returned/temporary references, identity checks and shared budgets; run the
+   full compiler gate.
+3. Document the verified boundary and next coverage step in the foundation guide
+   and trackers, separately from implementation and focused regressions.
 
-Investigation: ordinary scalar unary checking previously dropped the operand root
-between contextual inference and `unary_value`. That helper also serves `type_values/operands.rs`, which must not gain synthetic runtime links.
-The signed integer literal fast path checks its literal directly and has no child
-point. Ordinary checked integer negation can fail at runtime; boolean/bits-not
-and floating negation do not use that overflow branch. Expected union coercion
-happens after unary validation, and record primary projection precedes the operator.
+Investigation: the explicit unary `*` arm in `raw_expression` drops the exact
+operand root, then constructs `Deref` after checking a safe reference. Backend
+lowering evaluates the pointer once and only loads if that evaluation returns.
+Implicit field/list dereferences, borrowed-place inspection and reborrows have
+separate checking paths; do not infer their source points from HIR or spans.
+Borrow/loan validation remains authoritative for moves, temporary expiry and
+pointee access. Aggregate results must not introduce unbounded metadata cloning.
 
-Baseline: `a3a44e3`, `4390561` passed all ten compiler checks: 1644 library/910
-native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-group-links-gate.log`. Working tree was clean on `main`.
-`unary_point` now exposes the exact operand ID with the validated unary result,
-preserving contextual inference and primary projection. Three focused groups pass:
-nested roots and once-only writes, scalar-before-union typing, nonreturning inputs,
-original errors and active-point restoration. Log:
-`/tmp/meowy-unary-roots-focused.log`. Formatting and all 1647 library tests pass;
-`/tmp/meowy-unary-roots-lib.log` (`7932a09`). Unary operations now retain validated
-scalar types, exact inputs and owner/control metadata. Integer negation results
-use checked overflow-success edges; stopped operands omit operation/result links.
-Signed literals and required-only construction keep their existing paths. All
-three focused operation groups pass; `/tmp/meowy-unary-stages-focused.log`.
-All ten compiler checks pass: 1650 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-Log: `/tmp/meowy-unary-stages-gate.log`. Existing native unary/union and signed-
-minimum overflow cases pass in both profiles; required accounting remains green.
-Operation integration: `fdeb564`. The foundation guide and trackers now describe
-the supported boundary. Post-documentation validation passed: 1208 local links in
-110 Markdown files; `/tmp/meowy-unary-stages-docs.log`. All three slices are complete.
-Next capture explicit dereference roots and load/result stages, keeping reference
-cells distinct from pointees and preserving existing loan checks.
-Dereference/projection/builder coverage, restart propagation and proof outcomes
+Baseline: `7932a09`, `fdeb564`, `00e591e` passed all ten compiler checks: 1650
+library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+both profiles; `/tmp/meowy-unary-stages-gate.log`. Working tree was clean on `main`.
+`deref_point` now exposes the exact pointer root alongside unchanged checked HIR.
+All three focused groups pass: grouped/effectful pointers, shared/exclusive and
+aggregate/cell types, stopped inputs, original errors and E302/E303 boundaries.
+Log: `/tmp/meowy-deref-roots-focused.log`. Formatting and all 1653 library tests
+pass; `/tmp/meowy-deref-roots-lib.log`. Slice 1 is complete; bounded dereference
+operations and the full compiler gate are next.
+Reborrow/projection/builder coverage, restart propagation and proof outcomes
 remain incomplete.
 
 ### Proof dependency implementation slices

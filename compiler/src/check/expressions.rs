@@ -271,22 +271,7 @@ impl Checker {
                     return self.exclusive_borrow(value, expr.span);
                 }
                 if op == "*" {
-                    let value = self.expr(value, None)?;
-                    if value.ty == Type::Never {
-                        return Ok(value);
-                    }
-                    let Some(ty) = value.ty.pointee() else {
-                        return Err(Self::error(
-                            "E222",
-                            "dereference requires a safe reference",
-                            expr.span,
-                        ));
-                    };
-                    return Ok(hir::Expr {
-                        ty: ty.clone(),
-                        kind: hir::ExprKind::Deref(Box::new(value)),
-                        span: expr.span,
-                    });
+                    return self.deref_point(value, expr.span).map(|(_, value)| value);
                 }
                 if ["&!", ">>", "<<"].contains(&op.as_str()) {
                     return Err(Diagnostic::unsupported(format!("unary `{op}`"), expr.span));
