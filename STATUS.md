@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-24. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-25. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -580,8 +580,9 @@ changing HIR or replaying effects. Formatting and all 1631 library tests pass;
 `/tmp/meowy-exclusive-roots-lib.log` (`f078e24`). Exclusive operations now retain
 canonical storage and ordered reservation/length, bounds-success and acquisition
 stages. Nonreturning indices do not acquire a result. All ten compiler checks pass:
-1634 library/910 native tests; `/tmp/meowy-exclusive-order-gate.log`. Guide/tracker
-integration is next; broader propagation and proof outcomes remain incomplete.
+1634 library/910 native tests; `/tmp/meowy-exclusive-order-gate.log`. Operation
+integration: `3920c12`. The foundation guide documents the boundary. Debug output
+sequencing is next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -711,10 +712,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Shared element-parent roots and address/bounds links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1629 library/910 native tests.
+- Exclusive indexed-borrow roots and reservation/acquisition stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1634 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-element-order-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-exclusive-order-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -791,12 +792,13 @@ execution was not part of this documentation edit.
    source-ordered element roots and construction endpoints, including exact custom
    effect-block roots and body links after recognition. `size`/`add` retain receiver
    and item roots, snapshots and capacity-success stages. Shared element borrows
-   now retain parent/index roots, address stages and temporary ownership. Next
-   capture exclusive indexed-borrow path/index roots in `compiler/src/check/indexed.rs`,
-   preserving each container reservation, bounds check and final loan acquisition.
-   Validate nested paths, nonreturning indices, error order and budgets.
-   Debug formatting and
-   required/type-only calls remain separate.
+   now retain parent/index roots, address stages and temporary ownership. Exclusive
+   paths retain canonical storage and ordered reservation/bounds/acquisition stages.
+   Next capture formatting roots in `compiler/src/check/expressions.rs::format_parts`
+   and connect debug output effects in `compiler/src/check/functions.rs::call`.
+   Preserve interpolation/dispatch order, nonreturning operands, panic boundaries,
+   errors and shared budgets; validate focused regressions and the compiler gate.
+   Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
    list/effect blocks remain sequence-coverage gaps.

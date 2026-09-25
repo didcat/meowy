@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-24. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-25. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -114,7 +114,7 @@ Dependency-ordered commit plan:
    foundation guide and trackers. Keep this independently useful handoff separate
    so the implementation/tests slice stays within the eight-file review limit.
 
-Investigation: `check/indexed.rs::exclusive_indexed` currently discards exact roots
+Investigation: `check/indexed.rs::exclusive_indexed` previously discarded exact roots
 from `list_position_point`. `loans/elements.rs` reserves every containing list
 before its index and demands prior reservations through final acquisition. The
 backend captures lengths in the same order. Reuse existing address/reserve ports;
@@ -136,8 +136,11 @@ ledger and validates same-function roots atomically. All three focused groups pa
 `/tmp/meowy-exclusive-order-focused.log`. All ten compiler checks pass: 1634
 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-order-gate.log`.
-Slice 2 is complete. Guide/tracker integration is next; other graph coverage,
-restart propagation and proof outcomes remain incomplete.
+Operation integration: `3920c12`. The foundation guide and trackers now document
+this boundary. Post-documentation link validation passes (1208 local links in
+110 Markdown files); `/tmp/meowy-exclusive-order-links.log`. All three slices are
+complete. Next capture debug formatting/output operand roots; restart propagation
+and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1465,10 +1468,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Shared element-parent roots and address/bounds links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1629 library/910
+- Exclusive indexed-borrow roots and reservation/acquisition stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1634 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-element-order-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-exclusive-order-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1846,15 +1849,21 @@ subtraction retains its documented limits. No outstanding failures remain.
    view boundaries and direct temporary/statement IDs. Address/length stages
    precede indices, and bounds-success stages precede reference results. No new
    loan authority or lifetime extension is inferred.
-   Next capture exclusive path/index roots in `check/indexed.rs::exclusive_indexed`,
-   preserving source paths, each containing-list reservation/length capture and
-   final loan acquisition. Validate nested/projected paths, nonreturning indices,
-   original errors and shared budgets with focused tests and the compiler gate.
+   Exclusive paths now retain canonical storage, prefix fields and exact index
+   roots (`f078e24`, `3920c12`). Each reservation/length capture precedes its index;
+   checked success advances the address and completed paths acquire the reference.
+   Nonreturning indices omit success and final acquisition/result edges.
+   Next expose exact formatting operand roots in `check/expressions.rs::format_parts`
+   and integrate debug `Print`/`Panic` ordering in `check/functions.rs::call`.
+   Preserve interpolation/dispatch order, static text segments, ordinary errors,
+   nonreturning operands and panic's absent normal continuation. Separate root
+   capture from effect/result integration, with focused regressions and the
+   compiler gate. Do not infer output success or normal completion from checking.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Exclusive indexed-borrow sequencing, debug formatting and other contextual
+   Debug formatting and other contextual
    block builders remain coverage gaps; missing sequences
    are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.

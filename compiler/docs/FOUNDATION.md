@@ -160,6 +160,13 @@ distinguishes checked places, existing views and direct statement-owned temporar
 Address and length capture precede index evaluation; bounds success precedes the
 reference result. These stages retain source storage without copying the list,
 granting new loan authority or extending temporary lifetimes.
+Exclusive indexed borrows retain canonical storage, checked prefix fields and exact
+field/index paths. Every containing list has a reservation and length-capture stage
+before its index; only bounds success reaches the next address. Final acquisition
+follows the completed path. A nonreturning index has no success edge, and its
+borrow has no acquisition/result edge. These bounded metadata share the graph's
+edge budget and preserve existing loan validation; they neither grant exclusive
+authority nor complete restart propagation or proof evaluation.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
