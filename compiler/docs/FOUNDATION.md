@@ -214,12 +214,14 @@ The final address path does not load its referent. Stopped parents have only an
 entry link, and unknown call effects retain their own return conditions. These
 links use the shared edge budget without inventing source points, reconstructing
 order from spans, extending lifetimes or granting loan authority.
-Ordinary shared place borrows retain the checked local/field path, canonical
-emitted-slot storage and shared mode. Root and field-address stages lead to
-reference creation without an evaluated operand or pointee read. Field/type
-validation uses the source local's declared type, preserving aliases with different
-member types at the same canonical slot. Borrowing a reference cell retains that
-cell's identity. Existing alias bookkeeping and loan/lifetime checks remain intact.
+Ordinary place borrows retain the checked local/field path, canonical emitted-slot
+storage and shared/exclusive mode. Root and field-address stages lead to reference
+creation without an evaluated operand or pointee read. Field/type validation uses
+the source local's declared type, retaining that identity when aliases share a
+canonical slot. Shared reference-cell borrows retain the cell's identity. Exclusive
+scalar targets preserve root/final-field permissions, record-shape restrictions and
+identical emitted backing requirements. Wider exclusive shapes remain gated;
+alias bookkeeping and loan/lifetime checks are unchanged.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

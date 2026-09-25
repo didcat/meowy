@@ -636,8 +636,9 @@ Implementation: `6f34439`. The foundation guide documents this boundary.
 Ordinary exclusive places now reuse checked address/reference stages with exclusive
 mode, preserving mutability, scalar gates and alias bookkeeping. All ten compiler
 checks pass: 1688 library/910 native tests; `/tmp/meowy-exclusive-place-gate.log`.
-Guide/tracker integration is next; broader propagation and proof outcomes remain
-incomplete.
+Implementation: `898a519`. The foundation guide documents this boundary.
+Standalone temporary-borrow sequencing is next; broader propagation and proof
+outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -767,10 +768,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Ordinary shared place-borrow operations passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1684 library/910 native tests.
+- Ordinary exclusive place-borrow operations passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1688 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-place-borrows-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-exclusive-place-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -863,13 +864,14 @@ execution was not part of this documentation edit.
    Projected shared borrows now connect captured materialization, owned-field,
    intermediate-load and final-address stages to reborrow/result availability.
    Ordinary shared place borrows now retain checked paths, canonical storage and
-   address/reference stages without operand or pointee reads. Next extend that
-   metadata to the ordinary exclusive-place branch in
-   `compiler/src/check/references.rs::exclusive_borrow`. Preserve mutability,
-   scalar-shape and alias bookkeeping rules; validate field permissions, loan/
-   lifetime errors and shared budgets with focused tests and the compiler gate.
-   Indexed/reborrow operations stay separate; standalone temporaries, implicit
-   conversions and remaining field/builder coverage remain pending.
+   address/reference stages without operand or pointee reads. Ordinary exclusive
+   places now share those stages while preserving their existing permission/shape
+   gates and alias bookkeeping. Next capture standalone temporary-borrow roots in
+   the empty-suffix fallback of `compiler/src/check/references.rs::borrowed`, then
+   connect materialization and result stages using existing local/statement IDs.
+   Preserve stopped inputs, effects, cell identities and lifetimes; avoid duplicating
+   projected/element-parent staging. Validate focused tests and the compiler gate;
+   implicit conversions and remaining field/builder coverage remain pending.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

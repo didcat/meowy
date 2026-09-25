@@ -116,7 +116,8 @@ emitted-slot restrictions. It returns `Borrow` HIR without operand evaluation.
 The existing shared-place operation can reuse its checked paths, canonical storage
 and address/result links by deriving the mode from the checked reference type.
 Metadata must not grant permission or route indexed paths/reborrows through this
-ordinary-place operation. Wider exclusive types and reference cells remain gated.
+ordinary-place operation. Wider exclusive types and exclusive reference-cell targets
+remain gated.
 
 Baseline: `6f34439`, `c1794ee` passed all ten compiler checks: 1684 library/910
 native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
@@ -129,7 +130,11 @@ regressions, field permissions, exact emitted backing, errors and atomic budgets
 Log: `/tmp/meowy-exclusive-place-focused.log`. All ten compiler checks pass:
 1688 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-place-gate.log`.
-Implementation is complete; guide/tracker integration is next.
+Implementation: `898a519`. The guide and trackers now document the boundary.
+Post-documentation validation passed: 1208 local links in 110 Markdown files;
+`/tmp/meowy-exclusive-place-docs.log`. Both slices are complete. Next capture
+standalone temporary-borrow roots and local/statement identities before connecting
+materialization and result stages. Keep projected/element-parent staging separate.
 Standalone temporaries, implicit conversions, other field/builder paths, restart
 propagation and proof outcomes remain separate.
 
@@ -1459,10 +1464,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Ordinary shared place-borrow operations passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1684 library/910
+- Ordinary exclusive place-borrow operations passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1688 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-place-borrows-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-exclusive-place-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1878,21 +1883,27 @@ subtraction retains its documented limits. No outstanding failures remain.
    shared mode and address/reference stages (`6f34439`). No operand point or pointee
    read is invented. Paths use source-local types so canonical aliases can retain
    different member types; reference-cell identities and bookkeeping are preserved.
-   Next extend `dependencies/place_borrows.rs` and the terminal ordinary-place branch
-   of `check/references.rs::exclusive_borrow` to exclusive mode. Preserve the existing
-   `exclusive_place` mutability/scalar-shape checks and alias-exclusive marking;
-   keep indexed exclusive paths and reborrows on their separate operations. Validate
-   scalar/nested-field places, emitted aliases, per-field permissions, E301/E302/
-   E303/E305 boundaries, source/owner/control identity and shared budgets, then run
-   the compiler gate. Do not grant permission from metadata or widen reference/
-   aggregate gates. Standalone temporaries, implicit conversions and general
-   field/coercion/builder paths remain separate.
+   Ordinary exclusive scalar places now reuse that operation with exclusive mode
+   (`898a519`). Existing mutability, final-field permission and record-shape checks
+   precede publication; alias-exclusive marking and later backing validation stay
+   intact. Indexed exclusive paths and reborrows retain their own operations.
+   Next capture exact source roots for standalone temporary borrows in the fallback
+   without a field suffix in `check/references.rs::borrowed`, then connect source completion
+   to the existing `temporary_borrow` local/statement materialization and reference
+   result. Preserve stopped inputs without allocating storage, once-only effects,
+   reference-cell identities, shape gates and actual statement lifetimes. Avoid a
+   blanket hook in `temporary_borrow`: projected and element-parent paths already
+   own their staging and must not gain premature result edges. Keep root/identity
+   capture and graph integration reviewable. Validate scalar/record/list/reference
+   temporaries, calls, E303 and existing errors, owner/control identities and shared
+   budgets; run the compiler gate. Implicit conversions, remaining field/coercion
+   paths and contextual builders stay separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Exclusive-place/implicit reference paths and contextual builders remain coverage gaps;
-   missing sequences are not independence.
+   Standalone temporaries, implicit reference paths and contextual builders remain
+   coverage gaps; missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
    Record source identities during checking; do not infer links or runtime order from spans,
