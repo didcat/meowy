@@ -669,8 +669,12 @@ and body results (`85a59dd`). Composed dispatch reuses receiver initialization a
 body/result stages while preserving partial-record semantics (`0ade9ed`). All ten
 compiler checks pass: 1728 library/910 native tests;
 `/tmp/meowy-composed-stages-gate.log`. The foundation guide documents this coverage.
-Record-equality operand roots are next; generic coercions, broader propagation
-and proof outcomes remain incomplete.
+Record-context equality now retains both composed operand roots and ordered
+sequence links (`498f9ca`), preserving contextual primary projection and existing
+typing. All ten compiler checks pass: 1732 library/910 native tests;
+`/tmp/meowy-record-sequences-gate.log`. The foundation guide documents this scope.
+Composed fallback source/coercion sequencing is next; broader propagation and
+proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -800,10 +804,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Composed Group/Block/dispatch sequencing passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1728 library/910 native tests.
+- Record-equality operand sequencing passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1732 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-composed-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-record-sequences-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -911,12 +915,14 @@ execution was not part of this documentation edit.
    evaluation, initialization and body/result stages without skipping later barriers
    or inventing source statements. Composed Group/Block roots now link exact child
    and body results; composed dispatch reuses prefix stages while preserving its
-   partial-record semantics and caller-specific errors. Next retain both composed
-   operand roots in the record-equality branches of `compiler/src/check/scalars.rs`
-   so the existing sequence can express their order. Preserve hints, contextual
-   primary selection, scalar projection, never behavior and diagnostics; run focused
-   regressions and the compiler gate. Generic composed fallback coercions, binary
-   operation/result stages and other contextual builders remain separate.
+   partial-record semantics and caller-specific errors. Record-context equality now
+   retains both composed roots in the existing ordered sequence. Next capture the
+   nested expression root and original stopped/type state in the fallback of
+   `compiler/src/check/blocks.rs::composed_value`, then connect forwarding/coercion
+   stages. Preserve existing acceptance and HIR behavior: an expected-primary
+   coercion can change a Never input's type without making it return. Split capture
+   and integration slices with focused tests and the compiler gate. Other generic
+   coercions, binary operation/result stages and contextual builders stay separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

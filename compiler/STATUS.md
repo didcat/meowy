@@ -101,73 +101,39 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current record-equality sequencing slices
 
-Dependency-ordered commit plan:
-1. Retain the returned composed root on both record-context equality operands so
-   the existing binary sequence can link their evaluation order. Remove the
-   discard-only helper once unused; preserve typing, hints, coercion and errors.
-   Add focused regressions and run the complete compiler gate.
+The dependency-ordered plan is complete:
+1. Retain both composed operand roots in record-context equality and use the
+   existing binary sequence, with focused regressions and the full gate (`498f9ca`).
 2. Document verified scope and the next prerequisite separately.
 
-Investigation: both record-context branches in `scalars.rs` already check through
-`composed_point` indirectly, but discard its ID and publish `None` sequence items.
-Returning those IDs requires no extra checking, allocation or HIR change. The
-existing sequence validator supplies bounded ordering links. Composed fallback
-coercions and binary entry/operation/result links remain separate unknowns.
+Both branches now retain the exact IDs returned by `composed_point`; the unused
+helper that discarded those IDs is removed. Existing sequence validation supplies
+the bounded left-normal/right-entry link without extra checking, point allocation,
+hint replay or HIR changes. Contextual primary widths, scalar-vs-record projection,
+function ownership, ordinary errors and shared budgets remain unchanged.
+Composed fallback links and binary entry/operation/result stages remain unknown.
+A stopped call can retain an existing expected-primary coercion and yield a
+boolean comparison type; its missing call-return edge still prevents completion.
+The sequencing change preserves that HIR behavior rather than changing typing.
 
-Baseline: clean `main`; composed sequencing passed all ten compiler checks with
-1728 library/910 native tests; `/tmp/meowy-composed-stages-gate.log`.
-Both branches now retain exact roots and the unused discard-only helper is gone.
-Four focused groups pass: repeated spans/groups, owners, once-only calls/effects,
-partial blocks, contextual primary widths/projection, diagnostics and atomic edge
-budgets; `/tmp/meowy-record-sequences-focused.log`. The stopped-call fixture also
-preserves the existing fallback coercion of Never to the expected primary while
-retaining the call's absent return edge. No fallback or binary result behavior
-changed. All ten compiler checks pass: 1732 library/910 native tests, formatting,
-Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-record-sequences-gate.log`. No outstanding failures remain.
-Documentation and the composed-fallback source/coercion handoff are next.
+Four focused groups pass: nested groups/repeated spans, owners, once-only calls
+and effects, partial blocks, contextual widths/projections, stopped-call coercion,
+diagnostics and atomic edge budgets; `/tmp/meowy-record-sequences-focused.log`.
+All ten compiler checks pass: 1732 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-record-sequences-gate.log`. No outstanding failures remain. The guide
+and trackers document this scope. Post-documentation validation passed 1208 local
+links in 110 Markdown files; `/tmp/meowy-record-sequences-docs.log`.
+Composed fallback source/coercion sequencing is
+next; broader binary stages, contextual builders, backedge propagation and proof
+outcomes remain separate.
 
-### Completed composed-expression slices
-
-The dependency-ordered plan is complete:
-1. Connect exact Group children and plain partial-block results using existing
-   region/body endpoint validators (`85a59dd`).
-2. Capture composed-dispatch receiver/local/body identities and reuse bounded
-   initialization/body/result stages, preserving partial semantics (`0ade9ed`).
-3. Document verified scope and the next source-graph prerequisite separately.
-
-Grouped composition retains the child root returned during checking; partial
-blocks link their checked bodies without requiring all outer fields to be present.
-Composed dispatch captures receiver and storage identities through `expr_point`
-and `block_parts`, with `partial=true`, existing expected slots and unchanged
-caller-specific permission/error order. It reuses the prefix validator without
-adding the ordinary caller's early exclusive-receiver gate. Empty and stopped
-bodies retain their existing boundaries; later opaque prefixes are not skipped.
-No source point, HIR shape, runtime behavior or loan authority is invented.
-Generic fallback coercion links remain unknown. Record equality still drops its
-composed operand roots in `scalars.rs`, so caller sequencing is the next step.
-
-Three Group/Block groups cover exact nested roots, partial shapes, never/function
-boundaries, scalar fallback isolation, slot errors and shared budgets;
-`/tmp/meowy-composed-links-focused.log`. Formatting and all 1725 library tests
-passed the first slice; `/tmp/meowy-composed-links-lib.log`. Three dispatch groups
-cover grouped identity, partial fields, calls, empty/forward prefixes, stopped
-inputs/bodies and caller-specific diagnostics;
-`/tmp/meowy-composed-dispatch-focused.log`. All ten compiler checks pass: 1728
-library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-composed-stages-gate.log`.
-No outstanding failures remain. The foundation guide and trackers now document
-this coverage. Post-documentation validation passed 1208 local links in 110
-Markdown files; `/tmp/meowy-composed-stages-docs.log`.
-Generic coercions, other contextual builders, backedge propagation
-and proof outcomes remain separate.
-
-Ordinary dispatch (`b0bee6b`, `63367e7`, `e9e44c7`) retains the allocation-time
-receiver local and exact source/body roots. Prefix stages initialize that local
-before only the immediate checked successor or empty-body completion, leaving
-all other opaque entries intact. Its ten-check gate passed with 1722 library/910
-native tests; `/tmp/meowy-dispatch-stages-gate.log`. Predicates/ascriptions and
-runtime fields retain their established operand/load/result boundaries.
+Composed Group/Block links (`85a59dd`) and composed dispatch (`0ade9ed`) preserve
+partial records, expected slots and caller-specific errors. Their ten-check gate
+passed with 1728 library/910 native tests; `/tmp/meowy-composed-stages-gate.log`.
+Ordinary dispatch retains existing receiver-local/source/body identities and only
+connects initialization to the immediate checked successor or empty completion.
+All opaque forward barriers and established type/loan gates remain intact.
 
 ### Proof dependency implementation slices
 
@@ -1942,17 +1908,21 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`85a59dd`). Composed dispatch captures receiver/local/body identities and
    reuses bounded prefix stages (`0ade9ed`) while preserving partial records,
    expected slots and caller-specific errors. Generic fallback links stay unknown.
-   Next retain both composed operand roots in the record-equality branches of
-   `check/scalars.rs`. They currently call `composed` and place `None` in the
-   existing binary sequence. Use the returned `composed_point` identities to
-   preserve source order without replaying hints, operands or coercion. Keep
-   contextual primary selection, scalar-vs-record projection, never behavior,
-   expected typing and diagnostics unchanged; remove the discard-only wrapper
-   only if it has no callers. Validate once-only effects, nested groups/partial
-   blocks, calls, repeated spans, errors and shared budgets, then run the compiler
-   gate. Record-operand sequencing does not complete the composed fallback's
-   generic coercion or binary operation/result stages; keep those separate.
-   Other contextual builders and required evaluation also remain separate.
+   Record-context equality now retains both composed operand roots (`498f9ca`)
+   and links their checked evaluation order through the existing sequence ledger.
+   Contextual primary selection, scalar projection, hints and diagnostics remain
+   unchanged; the discard-only `composed` helper has no remaining callers.
+   Next audit the fallback in `check/blocks.rs::composed_value`. It still drops
+   the root returned by nested expression checking before optionally coercing the
+   result. Capture that exact root and original stopped/type state before `coerce`,
+   then distinguish unchanged forwarding from a conversion stage without copying
+   aggregate types or replaying acceptance. Existing expected-primary coercion
+   can turn a Never input into a non-Never HIR type; graph completion must still
+   depend on the original input, not the final type. Preserve this behavior and
+   existing diagnostics. Split source capture and stage integration with focused
+   record/scalar/union/no-op/stopped/budget regressions and the compiler gate.
+   Generic coercions elsewhere, binary entry/operation/result stages, other
+   contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

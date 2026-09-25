@@ -243,8 +243,12 @@ connect through existing body endpoints while allowing outer fields to be suppli
 elsewhere. Composed dispatch retains its separate partial-record checking path
 and now captures receiver/local/body identities for the same bounded prefix stages.
 Partial mode, expected slots and caller-specific error order remain unchanged;
-the ordinary caller's early exclusive-receiver gate is not imposed here. Generic
-fallback coercions and record-equality caller sequencing remain separate gaps.
+the ordinary caller's early exclusive-receiver gate is not imposed here.
+Record-context equality retains both exact composed operand roots for ordered
+sequencing, including scalar-primary comparisons. Existing hinting, contextual
+widths, projections and once-only effects are preserved. Generic composed fallback
+coercions and binary entry/operation/result stages remain separate gaps; the final
+comparison type does not prove that a stopped operand returns.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow
