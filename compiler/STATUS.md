@@ -99,54 +99,39 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current explicit dereference sequencing slices
+### Current exclusive scalar reborrow slices
 
 Dependency-ordered commit plan:
-1. Expose exact explicit-dereference operand roots through a helper preserving
-   the existing safe-reference check, HIR and nonreturning behavior. Validate
-   grouped/effectful pointers, shared/exclusive and aggregate values, and errors
-   with focused regressions and library tests.
-2. Publish bounded dereference operations linking pointer evaluation, load and
-   result availability. Retain shared/exclusive mode without treating reference
-   cells as pointee storage or granting authority. Validate stopped operands,
-   returned/temporary references, identity checks and shared budgets; run the
-   full compiler gate.
-3. Document the verified boundary and next coverage step in the foundation guide
-   and trackers, separately from implementation and focused regressions.
+1. Expose exact exclusive reborrow parent roots through a helper preserving
+   exclusive/scalar validation, existing site allocation and HIR. Validate grouped
+   and effectful parents, stopped operands, errors and loan boundaries with focused
+   regressions and library tests.
+2. Publish bounded parent/reborrow/result links with existing site identities and
+   exclusive mode. Do not add a dereference load or grant authority. Validate
+   returned parents, owner/control/source identities, moved-parent behavior and
+   shared budgets; run the full compiler gate.
+3. Update the foundation guide and trackers with verified scope and the next
+   coverage prerequisite, separately from implementation and focused regressions.
 
-Investigation: the explicit unary `*` arm previously dropped the operand root
-before constructing `Deref`; it now uses `deref_point`. Backend
-lowering evaluates the pointer once and only loads if that evaluation returns.
-Implicit field/list dereferences, borrowed-place inspection and reborrows have
-separate checking paths; do not infer their source points from HIR or spans.
-Borrow/loan validation remains authoritative for moves, temporary expiry and
-pointee access. Aggregate results must not introduce unbounded metadata cloning.
+Investigation: `exclusive_borrow` recognizes `&!*p`, evaluates `p` with `expr`,
+checks exclusive scalar access and allocates an existing reborrow site. It drops
+that evaluation's exact root. Stopped parents return before allocating a site.
+This is pointer evaluation and child-loan creation, not a referent load. Existing
+loan analysis controls parent suspension, transfers and liveness; metadata only
+records ordering. Shared/projected paths and implicit conversions remain separate.
 
-Baseline: `7932a09`, `fdeb564`, `00e591e` passed all ten compiler checks: 1650
+Baseline: `89d255f`, `15f1c74`, `aaf9dea` passed all ten compiler checks: 1656
 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-unary-stages-gate.log`. Working tree was clean on `main`.
-`deref_point` now exposes the exact pointer root alongside unchanged checked HIR.
-All three focused groups pass: grouped/effectful pointers, shared/exclusive and
-aggregate/cell types, stopped inputs, original errors and E302/E303 boundaries.
-Log: `/tmp/meowy-deref-roots-focused.log`. Formatting and all 1653 library tests
-pass; `/tmp/meowy-deref-roots-lib.log` (`89d255f`). Dereference operations now
-capture exact inputs and shared/exclusive mode before HIR wrapping. They retain
-pointer-before-load/result edges; a stopped pointer has no load, and an
-uninhabited referent has no normal result. Metadata stores no aggregate type copy
-or inferred pointee local. All three focused operation groups pass, including
-returned/temporary pointers, stopped inputs, owner/control identities and atomic
-shared-budget publication; `/tmp/meowy-deref-stages-focused.log`. All ten compiler
-checks pass: 1656 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-deref-stages-gate.log`. Operation integration: `15f1c74`. The guide and
-trackers now describe the boundary. Post-documentation validation passed: 1208
-local links in 110 Markdown files; `/tmp/meowy-deref-stages-docs.log`. All three
-slices are complete.
-The uninhabited-referent case is checker metadata evidence, not an executable
-value-construction capability. Next retain exclusive scalar reborrow parent roots
-and existing site identities before extending projected/shared reborrow paths.
-Reborrow/projection/builder coverage, restart propagation and proof outcomes
-remain incomplete.
+both profiles; `/tmp/meowy-deref-stages-gate.log`. Working tree was clean on `main`.
+`exclusive_reborrow_point` now exposes exact parent roots alongside unchanged
+exclusive reborrow HIR and site allocation. All three focused groups pass,
+including grouped/effectful parents, no sites for stopped/invalid inputs, E301/
+E302/E303 preservation and parent transfers. Log:
+`/tmp/meowy-reborrow-roots-focused.log`. Formatting and all 1659 library tests
+pass; `/tmp/meowy-reborrow-roots-lib.log`. Slice 1 is complete; bounded reborrow
+operation/result metadata and the full compiler gate are next.
+Broader reference/projection/builder coverage, restart propagation and proof
+outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 

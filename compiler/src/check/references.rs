@@ -101,29 +101,9 @@ impl Checker {
         if let ExprKind::Unary { op, value } = &expr.kind
             && op == "*"
         {
-            let value = self.expr(value, None)?;
-            if value.ty == Type::Never {
-                return Ok(value);
-            }
-            let Type::Exclusive(ty) = &value.ty else {
-                return Err(Self::error(
-                    "E305",
-                    "exclusive reborrow requires exclusive access",
-                    span,
-                ));
-            };
-            let ty = self.exclusive_type(*ty.clone(), span)?;
-            let site = self.reborrows;
-            self.reborrows += 1;
-            return Ok(hir::Expr {
-                kind: hir::ExprKind::Reborrow {
-                    site,
-                    value: Box::new(value),
-                    fields: Vec::new(),
-                },
-                ty,
-                span,
-            });
+            return self
+                .exclusive_reborrow_point(value, span)
+                .map(|(_, value)| value);
         }
         if let Some(value) = self.exclusive_indexed(expr, span)? {
             return Ok(value);
@@ -135,6 +115,39 @@ impl Checker {
             ty,
             span,
         })
+    }
+
+    pub(crate) fn exclusive_reborrow_point(
+        &mut self,
+        value: &ast::Expr,
+        span: Span,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        let (point, value) = self.expr_point(value, None)?;
+        if value.ty == Type::Never {
+            return Ok((point, value));
+        }
+        let Type::Exclusive(ty) = &value.ty else {
+            return Err(Self::error(
+                "E305",
+                "exclusive reborrow requires exclusive access",
+                span,
+            ));
+        };
+        let ty = self.exclusive_type(*ty.clone(), span)?;
+        let site = self.reborrows;
+        self.reborrows += 1;
+        Ok((
+            point,
+            hir::Expr {
+                kind: hir::ExprKind::Reborrow {
+                    site,
+                    value: Box::new(value),
+                    fields: Vec::new(),
+                },
+                ty,
+                span,
+            },
+        ))
     }
 
     pub(crate) fn exclusive_place(
@@ -529,3 +542,6 @@ impl Checker {
 
 #[cfg(test)]
 mod dereference;
+
+#[cfg(test)]
+mod reborrow;
