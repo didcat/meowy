@@ -415,7 +415,7 @@ impl Checker {
                 }
             }
         }
-        let (_, mut value) = self.projected_parent(root)?;
+        let (_, _, mut value) = self.projected_parent(root)?;
         if value.ty == Type::Never {
             return Ok(value);
         }

@@ -625,7 +625,11 @@ indexed-borrow and reference roots alongside unchanged HIR and temporary identit
 All ten compiler checks pass: 1672 library/910 native tests;
 `/tmp/meowy-projected-parent-roots-gate.log` (`0a540a8`). The foundation guide
 records this root prerequisite; checked path capture and projection/result graph
-integration remain next. Broader propagation and proof outcomes remain incomplete.
+integration remain next. The parent helper now distinguishes storage it materializes
+after source evaluation from existing reference values. Formatting, all 1673
+library tests and library Clippy pass; `/tmp/meowy-projection-temporaries-lib.log`,
+`/tmp/meowy-projection-temporaries-lint.log`. Checked plans are next; broader
+propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

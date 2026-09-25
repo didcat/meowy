@@ -99,48 +99,39 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current projected shared-parent root prerequisite
+### Current projected shared-reborrow path series
 
 Dependency-ordered commit plan:
-1. Extract projected parent selection into a helper returning its exact checked
-   point and existing HIR value. Preserve expression/indexed-parent selection,
-   explicit dereferenced parents, temporary local/statement identities, direct
-   temporary/direct shared fast paths, saved errors and once-only evaluation.
-   Add focused source/ownership/budget regressions and run the compiler gate.
-2. Document the root prerequisite and the next checked projection/dereference
-   capture step in the foundation guide and trackers. Keep graph integration
-   separate from this behavior-preserving extraction.
+1. Return explicit helper-created temporary identities from `projected_parent`,
+   distinguishing materialization after source evaluation from a reference already
+   returned by the source. Preserve HIR and validate that prerequisite separately.
+2. Capture bounded checked plans: source root, materialization, owned field reads,
+   intermediate reference loads, final address path, reborrow site and parent mode.
+   Record during checking, publish atomically, and validate paths/errors/budgets.
+3. Connect validated plan stages and result availability through the shared edge
+   ledger, preserving stopped parents and unknown source effects. Add graph
+   regressions and run the full compiler gate across the series.
+4. Update the foundation guide and trackers with evidence and remaining coverage.
 
-Investigation: after ordinary address resolution fails, `borrowed` chooses an
-indexed borrowed parent, an explicitly dereferenced reference value or an ordinary
-expression, sometimes materializing temporary storage. Each path already creates
-an exact point; the new helper exposes its ID while the projection loops still
-synthesize fields and dereferences. This slice extracts only parent selection and
-preserves the direct `&*p` operation path and ordinary temporary borrow return. Do not add projection result edges or
-infer intermediate source IDs from HIR/spans. The helper's returned ID is the
-prerequisite for subsequent checked path capture, not a completed transfer graph.
+Investigation: the first projection loop reads owned fields until a reference is
+reached. Each non-final reference segment loads its referent then reads fields;
+the final segment computes field addresses and creates a shared reborrow without
+loading that final referent. The parent helper may materialize a value after its
+source point, while already-produced references must not be materialized again.
+Capture that distinction at construction. No new source point IDs, loan authority,
+proof outcome or inferred callee completion is introduced by this series.
 
-Baseline: `5332455`, `4c6c381`, `3beab1b` passed all ten compiler checks: 1668
-library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-shared-reborrow-stages-gate.log`. Working tree was clean
-on `main`. `references/parents.rs::projected_parent` now returns exact roots for
-expression, explicit dereferenced and indexed borrowed parents, preserving the
-existing temporary materialization and HIR. Direct shared/temporary fast paths
-remain in `borrowed`; projected callers will consume the returned ID during the
-next path-capture slice. All four focused groups pass: values/views/indices,
-temporary ownership and once-only writes, returned owners/reference fields,
-errors/stopped inputs and budget restoration. Log:
-`/tmp/meowy-projected-parent-roots-focused.log`. All ten compiler checks pass:
-1672 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-projected-parent-roots-gate.log`. Implementation: `0a540a8`. The guide
-and trackers now describe the root prerequisite. Post-documentation validation
-passed: 1208 local links in 110 Markdown files;
-`/tmp/meowy-projected-parent-roots-docs.log`. Both slices are complete. Next capture
-checked paths and distinguish helper-created temporary materialization from
-already-evaluated parent references before graph publication.
-Projected operation edges, implicit conversions, restart propagation and proof
-outcomes remain incomplete.
+Baseline: `0a540a8`, `d735cf9` passed all ten compiler checks: 1672 library/910
+native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
+Log: `/tmp/meowy-projected-parent-roots-gate.log`. Working tree was clean on `main`.
+The parent helper now explicitly returns only temporary identities it creates
+after source evaluation. An already-produced temporary reference retains its
+existing HIR cell but returns no new-materialization marker. All five focused
+parent groups pass; `/tmp/meowy-projection-temporaries-focused.log`. Formatting,
+all 1673 library tests and library Clippy pass; logs:
+`/tmp/meowy-projection-temporaries-lib.log`, `/tmp/meowy-projection-temporaries-lint.log`.
+Slice 1 is complete; bounded checked plans are next. Ordinary place borrows, implicit
+conversions, other builders, restart propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
