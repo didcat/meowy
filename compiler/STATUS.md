@@ -132,8 +132,19 @@ field suffix after the original address check. All three focused groups pass:
 grouped/effectful shared/exclusive parents, aggregate/reference-cell types, saved
 errors, stopped allocation and E301/E302/E303 boundaries. Log:
 `/tmp/meowy-shared-reborrow-roots-focused.log`. Formatting and all 1665 library
-tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`. Slice 1 is complete;
-shared-mode metadata and the full compiler gate are next.
+tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log` (`5332455`). Reborrow
+metadata now retains requested result mode and optional parent mode, including
+stopped shared parents. Shared aggregate pointee comparisons use charged bounded
+traversal without retaining type copies; existing exclusive restrictions remain.
+Direct shared callers now publish parent/reborrow/result links while projected
+paths and implicit conversions remain separate. All six shared/exclusive operation
+groups pass; `/tmp/meowy-shared-reborrow-stages-focused.log`. They cover modes,
+scalar/aggregate/cell types, returned/nested parents, source boundaries, identity,
+shape limits and atomic shared-budget publication. All ten compiler checks pass:
+1668 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-shared-reborrow-stages-gate.log`. Slice 2 is complete; guide/tracker
+integration is next.
 Projected/implicit reference paths, restart propagation and proof outcomes remain
 incomplete.
 

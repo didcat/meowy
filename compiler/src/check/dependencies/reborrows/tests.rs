@@ -29,6 +29,7 @@ pub(crate) fn reborrow_stages_keep_sites_and_parent_before_child_order_without_l
             .find(|(_, op)| op.site == Some(site))
             .unwrap();
         assert_eq!(op.mode, hir::ReferenceMode::Exclusive);
+        assert_eq!(op.parent_mode, Some(hir::ReferenceMode::Exclusive));
         assert_eq!(op.span, value.span);
         assert_eq!(checker.points[op.parent].parent, Some(id));
         assert_eq!(
@@ -97,7 +98,7 @@ pub(crate) fn reborrow_stages_validate_existing_sites_and_publish_with_shared_bu
     let op = op.clone();
     let count = checker.reborrow_edges;
     checker
-        .reborrow_operation(id, op.parent, value, op.span)
+        .reborrow_operation(id, op.parent, op.mode, value, op.span)
         .unwrap();
     assert_eq!(checker.reborrow_edges, count);
     checker.reborrow_ops.clear();
@@ -115,7 +116,7 @@ pub(crate) fn reborrow_stages_validate_existing_sites_and_publish_with_shared_bu
         }
         assert!(
             checker
-                .reborrow_operation(id, op.parent, &invalid, op.span)
+                .reborrow_operation(id, op.parent, op.mode, &invalid, op.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -124,7 +125,7 @@ pub(crate) fn reborrow_stages_validate_existing_sites_and_publish_with_shared_bu
     checker.points[op.parent].parent = None;
     assert!(
         checker
-            .reborrow_operation(id, op.parent, value, op.span)
+            .reborrow_operation(id, op.parent, op.mode, value, op.span)
             .unwrap_err()
             .message
             .contains("identity")
@@ -133,7 +134,7 @@ pub(crate) fn reborrow_stages_validate_existing_sites_and_publish_with_shared_bu
     checker.deref_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
-            .reborrow_operation(id, op.parent, value, op.span)
+            .reborrow_operation(id, op.parent, op.mode, value, op.span)
             .unwrap_err()
             .message
             .contains("budget")

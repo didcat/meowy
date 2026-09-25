@@ -13,6 +13,7 @@ use crate::{
 pub(crate) struct Reborrow {
     pub(crate) owner: usize,
     pub(crate) parent: hir::PointId,
+    pub(crate) parent_mode: Option<hir::ReferenceMode>,
     pub(crate) site: Option<hir::ReborrowId>,
     pub(crate) mode: hir::ReferenceMode,
     pub(crate) control: bool,
@@ -25,6 +26,7 @@ impl Checker {
         &mut self,
         id: hir::PointId,
         parent: hir::PointId,
+        mode: hir::ReferenceMode,
         value: &hir::Expr,
         span: Span,
     ) -> Result<()> {
@@ -51,8 +53,8 @@ impl Checker {
         {
             return Err(invalid());
         }
-        let site = if value.ty == hir::Type::Never {
-            None
+        let (site, parent_mode) = if value.ty == hir::Type::Never {
+            (None, None)
         } else {
             let hir::ExprKind::Reborrow {
                 site,
@@ -62,19 +64,42 @@ impl Checker {
             else {
                 return Err(invalid());
             };
-            let hir::Type::Exclusive(ty) = &value.ty else {
-                return Err(invalid());
-            };
-            if !matches!(
-                ty.as_ref(),
-                hir::Type::Bool | hir::Type::Int { .. } | hir::Type::Float { .. }
-            ) || input.ty != value.ty
-                || !fields.is_empty()
-                || *site >= self.reborrows
-            {
+            if !fields.is_empty() || *site >= self.reborrows {
                 return Err(invalid());
             }
-            Some(*site)
+            let (parent_mode, pointee) = match &input.ty {
+                hir::Type::Reference(ty) => (hir::ReferenceMode::Shared, ty.as_ref()),
+                hir::Type::Exclusive(ty) => (hir::ReferenceMode::Exclusive, ty.as_ref()),
+                _ => return Err(invalid()),
+            };
+            match (mode, &value.ty) {
+                (hir::ReferenceMode::Exclusive, hir::Type::Exclusive(ty)) => {
+                    if parent_mode != mode
+                        || !matches!(
+                            ty.as_ref(),
+                            hir::Type::Bool | hir::Type::Int { .. } | hir::Type::Float { .. }
+                        )
+                        || pointee != ty.as_ref()
+                    {
+                        return Err(invalid());
+                    }
+                }
+                (hir::ReferenceMode::Shared, hir::Type::Reference(ty)) => {
+                    let size = crate::borrow_contract::type_weight(ty, &mut self.flow, span)?;
+                    let count = crate::borrow_contract::type_weight(pointee, &mut self.flow, span)?;
+                    if !self
+                        .flow
+                        .spend(size.saturating_mul(2).saturating_add(count))
+                    {
+                        return Err(budget());
+                    }
+                    if ty.has_exclusive() || pointee != ty.as_ref() {
+                        return Err(invalid());
+                    }
+                }
+                _ => return Err(invalid()),
+            }
+            (Some(*site), Some(parent_mode))
         };
         let mut edges = vec![Edge::new(Port::Entry(id), Port::Entry(parent), Route::Next)];
         if site.is_some() {
@@ -86,8 +111,9 @@ impl Checker {
         let reborrow = Reborrow {
             owner: self.owner,
             parent,
+            parent_mode,
             site,
-            mode: hir::ReferenceMode::Exclusive,
+            mode,
             control: self.control,
             span,
             edges,
@@ -110,3 +136,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod shared;

@@ -615,9 +615,12 @@ no site. All ten compiler checks pass: 1662 library/910 native tests;
 `/tmp/meowy-reborrow-stages-gate.log` (`a6e9d05`). The foundation guide documents the
 boundary. Direct shared reborrow checking now exposes exact parent roots while
 preserving original diagnostics, aggregate types and site allocation. Formatting
-and all 1665 library tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`.
-Shared-mode metadata is next; broader propagation and proof outcomes remain
-incomplete.
+and all 1665 library tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`
+(`5332455`). Direct shared metadata now retains parent/result modes and existing
+sites with bounded aggregate comparisons and no shape copies. All ten compiler
+checks pass: 1668 library/910 native tests;
+`/tmp/meowy-shared-reborrow-stages-gate.log`. Guide/tracker integration is next;
+broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

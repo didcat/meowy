@@ -103,7 +103,13 @@ impl Checker {
         {
             let (parent, value) = self.exclusive_reborrow_point(value, span)?;
             if let Some(point) = self.point {
-                self.reborrow_operation(point, parent, &value, span)?;
+                self.reborrow_operation(
+                    point,
+                    parent,
+                    hir::ReferenceMode::Exclusive,
+                    &value,
+                    span,
+                )?;
             }
             return Ok(value);
         }
@@ -391,9 +397,17 @@ impl Checker {
             && op == "*"
         {
             if names.is_empty() {
-                return self
-                    .shared_reborrow_point(value, span, error)
-                    .map(|(_, value)| value);
+                let (parent, value) = self.shared_reborrow_point(value, span, error)?;
+                if let Some(point) = self.point {
+                    self.reborrow_operation(
+                        point,
+                        parent,
+                        hir::ReferenceMode::Shared,
+                        &value,
+                        span,
+                    )?;
+                }
+                return Ok(value);
             }
             self.expr(value, None)?
         } else {
