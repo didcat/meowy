@@ -82,7 +82,7 @@ pub(crate) fn dispatch_stages_preserve_empty_forward_and_stopped_prefixes() {
 }
 
 #[test]
-pub(crate) fn dispatch_stages_keep_nested_owners_control_and_composed_boundaries() {
+pub(crate) fn dispatch_stages_keep_nested_owners_control_and_composed_metadata() {
     let source = "flag:false;|flag|v:2.{inner:3.{->$};->$};f<int32>:(n<int32>){->n.{->$}}";
     crate::compile(source).unwrap();
     let mut checker = Checker::new();
@@ -102,7 +102,7 @@ pub(crate) fn dispatch_stages_keep_nested_owners_control_and_composed_boundaries
     crate::compile(source).unwrap();
     let (checker, _) = check(source);
     assert!(!checker.proofs.dispatches.is_empty());
-    assert!(checker.dispatch_ops.is_empty());
+    assert_eq!(checker.dispatch_ops.len(), 1);
     for (source, code) in [
         ("v:3.{->&$}", "E303"),
         ("n:=1;v:(&n).{n=2;->*$}", "E302"),

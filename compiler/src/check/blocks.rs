@@ -385,8 +385,17 @@ impl Checker {
                 value: receiver,
                 block,
             } => {
-                let receiver = self.expr(receiver, None)?;
-                let block = self.block_inner(block, Some(record), Some(receiver), true)?;
+                let (input, receiver) = self.expr_point(receiver, None)?;
+                let (local, block) = self.block_parts(block, Some(record), Some(receiver), true)?;
+                if let Some(point) = self.point {
+                    self.dispatch_operation(
+                        point,
+                        input,
+                        local.expect("composed dispatch receiver"),
+                        &block,
+                        value.span,
+                    )?;
+                }
                 Ok(hir::Expr {
                     ty: block.ty.clone(),
                     kind: hir::ExprKind::Block(block),

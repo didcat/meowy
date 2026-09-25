@@ -126,6 +126,17 @@ documented E204 missing-component expectation: exact nested roots, partial shape
 never/function boundaries, unknown scalar fallback, slot errors and shared budgets;
 `/tmp/meowy-composed-links-focused.log`. Formatting and all 1725 library tests pass;
 `/tmp/meowy-composed-links-lib.log`. Composed dispatch integration is next.
+Group/Block links committed as `85a59dd`. Composed dispatch now captures the
+receiver root and allocation-time local from `block_parts`, then reuses bounded
+dispatch stages without adding the ordinary caller's exclusive gate. Partial
+record and fallback coercion behavior remain unchanged. Three focused composed
+dispatch groups pass: grouped identities and partial fields, call/empty/forward
+prefixes, stopped inputs/bodies and caller-specific error order;
+`/tmp/meowy-composed-dispatch-focused.log`. All ten compiler checks pass: 1728
+library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-composed-stages-gate.log`.
+No outstanding failures remain. Documentation and the record-equality operand
+handoff are next.
 
 ### Completed ordinary dispatch-block slices
 
