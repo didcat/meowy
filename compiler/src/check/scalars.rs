@@ -10,11 +10,11 @@ impl Checker {
         value: &ast::Expr,
         expected: Option<&Type>,
         span: Span,
-    ) -> Result<(hir::PointId, hir::Expr)> {
+    ) -> Result<(hir::PointId, bool, hir::Expr)> {
         let context = self.unary_context(op, value, expected)?;
         let (point, value) = self.expr_point(value, context.as_ref())?;
-        self.unary_value(op, value, span)
-            .map(|value| (point, value))
+        self.unary_plan_value(op, value, span)
+            .map(|(primary, value)| (point, primary, value))
     }
 
     pub(crate) fn unary_context(
@@ -182,15 +182,27 @@ impl Checker {
     pub(crate) fn unary_value(
         &mut self,
         op: &str,
-        mut value: hir::Expr,
+        value: hir::Expr,
         span: Span,
     ) -> Result<hir::Expr> {
+        self.unary_plan_value(op, value, span)
+            .map(|(_, value)| value)
+    }
+
+    pub(crate) fn unary_plan_value(
+        &mut self,
+        op: &str,
+        value: hir::Expr,
+        span: Span,
+    ) -> Result<(bool, hir::Expr)> {
         if value.ty == Type::Never {
-            return Ok(value);
+            return Ok((false, value));
         }
-        if matches!(value.ty, Type::Record { .. }) {
-            value = Self::project(value);
-        }
+        let (primary, value) = if matches!(value.ty, Type::Record { .. }) {
+            Self::projected(value)
+        } else {
+            (false, value)
+        };
         let valid = match op {
             "-" => matches!(
                 value.ty,
@@ -221,14 +233,17 @@ impl Checker {
             ));
         }
         let ty = value.ty.clone();
-        Ok(hir::Expr {
-            kind: hir::ExprKind::Unary {
-                op: op.into(),
-                value: Box::new(value),
+        Ok((
+            primary,
+            hir::Expr {
+                kind: hir::ExprKind::Unary {
+                    op: op.into(),
+                    value: Box::new(value),
+                },
+                ty,
+                span,
             },
-            ty,
-            span,
-        })
+        ))
     }
 
     pub(crate) fn binary(

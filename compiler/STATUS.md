@@ -99,7 +99,32 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current expected-type coercion slices
+### Current unary primary-projection slices
+
+Dependency-ordered commit plan:
+1. Return the actual unary primary-projection decision with the existing operand
+   root and checked HIR, preserving the value-only API for required construction.
+   Cover context-free records, preprojected inputs, stops and errors; run library checks.
+2. Extend unary metadata with that captured decision and a source/primary/operation
+   path, preserving checked negation and shared budgets; run the complete gate.
+3. Document verified scope and the next prerequisite separately.
+
+Investigation: expected-value checking may already supply a scalar primary, while
+context-free record operands are still projected inside `unary_value`. Capture the
+decision at `projected` instead of inspecting the final inner HIR. Direct Never
+returns before projection; a record with an invalid/Never primary still fails
+E222. Signed literal fast paths and source-free required helpers must stay intact.
+
+Baseline: clean `main`; all ten expected-coercion checks passed with 1756 library/
+910 native tests; `/tmp/meowy-expected-stages-gate.log`.
+`unary_plan_value` now returns the actual projection decision, and `unary_point`
+retains it alongside the exact source root. `unary_value` keeps its old value-only
+API. All five focused root/plan groups pass, including existing expected/inner
+wrappers, once-only effects, stops, invalid primaries and source-free construction;
+`/tmp/meowy-unary-primary-focused.log`. Formatting and all 1758 library tests pass;
+`/tmp/meowy-unary-primary-lib.log`. Projection-stage integration is next.
+
+### Completed expected-type coercion slices
 
 The dependency-ordered plan is complete:
 1. Expose primary/Forward/Convert/Stopped decisions while preserving the pure
