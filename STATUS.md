@@ -589,8 +589,12 @@ metadata now interleaves operands and streamed parts, preserves panic prefixes a
 only completes fully evaluated messages. All ten compiler checks pass: 1640
 library/910 native tests; `/tmp/meowy-output-stages-gate.log`. Debug/release native
 probes also confirm partial output on scope leave. Output integration: `99208a3`.
-The foundation guide documents the boundary. Grouped-expression result links are
-next; broader propagation and proof outcomes remain incomplete.
+The foundation guide documents the boundary. Ordinary grouped expressions now
+link their entry/result ports to exact checked children, reusing the bounded
+region ledger. HIR, expected typing and logical grouping costs are preserved.
+All ten compiler checks pass: 1644 library/910 native tests;
+`/tmp/meowy-group-links-gate.log`. Guide/tracker updates are next; broader
+propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

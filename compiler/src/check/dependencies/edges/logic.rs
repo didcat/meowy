@@ -126,7 +126,7 @@ pub(crate) fn logic_contents_keep_group_roots_and_nested_function_owners() {
     let source = "x:((true&&false))||{f<boolean>:(){->true&&false};->true}";
     crate::compile(source).unwrap();
     let checker = check(source);
-    assert_eq!(checker.region_edges.len(), 6);
+    assert_eq!(checker.region_edges.len(), 8);
     let outer = checker
         .points
         .iter()

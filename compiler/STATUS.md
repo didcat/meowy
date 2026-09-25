@@ -99,61 +99,40 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current debug-output sequencing slices
+### Current grouped-expression slices
 
 Dependency-ordered commit plan:
-1. Expose exact formatting operand roots alongside existing HIR parts. Static text
-   stays explicitly distinct; grouping/interpolation flattening, primary projection
-   and ordinary errors retain their current behavior. Validate once-only effects,
-   nested interpolation, nonreturning operands and error restoration.
-2. Record bounded debug output operations and connect each operand to its streamed
-   part before the next operand. Panic prefix precedes message evaluation; print
-   newline and panic publication follow completed messages. Nonreturning operands
-   do not gain later output/result edges. Validate ownership/control identities,
-   shared budgets and runtime order with focused checks and the compiler gate.
-3. Update the foundation guide and trackers with verified boundaries and the next
-   graph-coverage prerequisite, separately from implementation and regressions.
+1. Capture the exact child returned by `expr_point` in the ordinary Group arm and
+   reuse bounded region entry/result links. Admit expression parents only for
+   explicit transparent links; preserve expected typing, HIR, errors and logical
+   charges. Test nested groups around calls/branches, nonreturning children,
+   owner/block validation and shared budgets, then run the compiler gate.
+2. Update the foundation guide and trackers with verified group-link boundaries
+   and the next missing operand family, separately from implementation/tests.
 
-Investigation: `check/expressions.rs::format_parts` flattens text/interpolation and
-projects primary values; it now retains their exact expression IDs.
-`backend/output.rs::print` interleaves evaluation and output. `backend/panic.rs::panic` first creates pending
-storage and streams the prefix, then interleaves message evaluation/output; it only
-publishes the outer panic after full message completion. A nested failure or scope
-exit preserves streamed bytes but skips remaining parts and outer publication.
-Do not model this as evaluating all arguments before one output effect. Ordinary
-checking still visits suffix operands; checked points do not prove reachability.
+Investigation: `raw_expression` delegates groups to `expr`, discarding the child
+ID. Existing `region_edges` already validates complete child/parent ownership,
+shares the bounded edge ledger and links entry-to-child and child-normal-to-parent.
+It currently admits only branch regions/statements. Extend that validated shape
+for explicit expression wrappers; never add an entry-to-normal shortcut or infer
+completion from a successful check. Grouping stays erased in HIR and contributes
+no logical required-evaluation work. Formatting's deliberate group flattening and
+other special checking paths remain distinct.
 
-Baseline: exclusive roots/stages `f078e24`, `3920c12`, handoff `4acd663` passed all
-ten compiler checks (1634 library/910 native tests; conformance 10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-exclusive-order-gate.log`.
-Working tree was clean on `main`. Formatting now exposes one optional root per
-flattened HIR part; static text has no expression root. New tests preserve nested
-text order, scalar primary projection, once-only effects and error restoration.
-Formatting and all 1637 library tests pass; `/tmp/meowy-format-roots-lib.log`.
-Slice 1 is committed as `ff58f82`. Output-stage integration now preserves prefix,
-per-part effects and final newline/publication with conditional return edges.
-Nonreturning parts retain checked suffix roots without linking suffix output.
-All three focused output groups pass; `/tmp/meowy-output-stages-focused.log`.
-They cover streamed part order, panic prefix, dispatch aliases, stopped suffixes,
-function/control ownership, original errors and atomic shared-budget publication.
-All ten compiler checks pass: 1640 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-output-stages-gate.log`. Additional debug/release native probes confirm
-operand/output interleaving and preserved partial output on scope leave, without
-a trailing newline; `/tmp/meowy-output-stream-probes.log`. Operation integration:
-`99208a3`. The foundation guide and trackers now describe this boundary.
-Post-documentation validation passed: 1208 local links in 110 Markdown files;
-`/tmp/meowy-output-stages-links.log`. All three slices are complete. Next connect
-grouped-expression roots to checked child results; ordinary groups currently drop
-child IDs without publishing entry/result links. Unary/dereference and other operand coverage,
-restart propagation and proof outcomes remain separate.
-
-Split review: slice 2 needs nine files, including both required trackers. New
-prefix/part ports require the exhaustive existing test helper to change with the
-production enum. Checker storage, budget accounting, exports and call integration
-must land with the graph implementation and regressions to remain buildable and
-lint-clean. The slice remains below 400 lines; documentation stays separate.
-Restart propagation and proof outcomes remain incomplete.
+Baseline: `ff58f82`, `99208a3`, `01b793d` passed all ten compiler checks: 1640
+library/910 native tests, conformance 10 passed, 13 unsupported, 0 failed in
+both profiles; `/tmp/meowy-output-stages-gate.log`. Working tree is clean on
+`main`. Ordinary groups now retain the exact returned child and reuse region
+entry/normal links. Expression parents reject statement children and retain the
+existing same-owner/block/completion checks. No HIR shape or logical charge was
+added. All four focused groups pass; `/tmp/meowy-group-links-focused.log`.
+The existing grouped-logic expectation now includes its two group links. All ten
+compiler checks pass: 1644 library/910 native tests, formatting, Clippy, build and
+conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
+`/tmp/meowy-group-links-gate.log`. Existing required integer/statement tests confirm
+grouping still adds no logical charges. Slice 1 is complete; guide/tracker updates
+are next. Unary/dereference and other operand coverage, restart propagation and
+proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 

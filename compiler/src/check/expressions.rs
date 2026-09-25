@@ -251,7 +251,13 @@ impl Checker {
                     ));
                 }
             },
-            ExprKind::Group(value) => return self.expr(value, expected),
+            ExprKind::Group(value) => {
+                let (child, value) = self.expr_point(value, expected)?;
+                if let Some(point) = self.point {
+                    self.region_edges(point, child, expr.span)?;
+                }
+                return Ok(value);
+            }
             ExprKind::Unary { op, value } => {
                 if op == "-"
                     && let ExprKind::Int(text) = &value.kind
