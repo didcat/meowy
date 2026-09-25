@@ -257,6 +257,37 @@ impl Checker {
         Ok((hir::Place { root: id, fields }, ty, mutable))
     }
 
+    pub(crate) fn shared_reborrow_point(
+        &mut self,
+        value: &ast::Expr,
+        span: Span,
+        error: Diagnostic,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        let (point, value) = self.expr_point(value, None)?;
+        if value.ty == Type::Never {
+            return Ok((point, value));
+        }
+        let Some(ty) = value.ty.pointee() else {
+            return Err(error);
+        };
+        crate::borrow_contract::type_weight(ty, &mut self.flow, span)?;
+        let ty = self.reference_type(ty.clone(), span)?;
+        let site = self.reborrows;
+        self.reborrows += 1;
+        Ok((
+            point,
+            hir::Expr {
+                kind: hir::ExprKind::Reborrow {
+                    site,
+                    value: Box::new(value),
+                    fields: Vec::new(),
+                },
+                ty,
+                span,
+            },
+        ))
+    }
+
     pub(crate) fn address_root<'a>(expr: &'a ast::Expr, fields: &mut Vec<String>) -> &'a ast::Expr {
         match &expr.kind {
             ExprKind::Group(value) => Self::address_root(value, fields),
@@ -359,6 +390,11 @@ impl Checker {
         } else if let ExprKind::Unary { op, value } = &root.kind
             && op == "*"
         {
+            if names.is_empty() {
+                return self
+                    .shared_reborrow_point(value, span, error)
+                    .map(|(_, value)| value);
+            }
             self.expr(value, None)?
         } else {
             let value = self.expr(root, None)?;
@@ -547,3 +583,6 @@ mod dereference;
 
 #[cfg(test)]
 mod reborrow;
+
+#[cfg(test)]
+mod shared_reborrow;

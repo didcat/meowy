@@ -613,8 +613,11 @@ Formatting and all 1659 library tests pass; `/tmp/meowy-reborrow-roots-lib.log`
 ordered result availability without a dereference load. Stopped parents allocate
 no site. All ten compiler checks pass: 1662 library/910 native tests;
 `/tmp/meowy-reborrow-stages-gate.log` (`a6e9d05`). The foundation guide documents the
-boundary. Direct shared reborrow sequencing is next; broader propagation and proof
-outcomes remain incomplete.
+boundary. Direct shared reborrow checking now exposes exact parent roots while
+preserving original diagnostics, aggregate types and site allocation. Formatting
+and all 1665 library tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`.
+Shared-mode metadata is next; broader propagation and proof outcomes remain
+incomplete.
 
 ## Pending descriptor statement accounting
 

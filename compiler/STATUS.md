@@ -99,52 +99,43 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current exclusive scalar reborrow slices
+### Current direct shared reborrow slices
 
 Dependency-ordered commit plan:
-1. Expose exact exclusive reborrow parent roots through a helper preserving
-   exclusive/scalar validation, existing site allocation and HIR. Validate grouped
-   and effectful parents, stopped operands, errors and loan boundaries with focused
-   regressions and library tests.
-2. Publish bounded parent/reborrow/result links with existing site identities and
-   exclusive mode. Do not add a dereference load or grant authority. Validate
-   returned parents, owner/control/source identities, moved-parent behavior and
-   shared budgets; run the full compiler gate.
-3. Update the foundation guide and trackers with verified scope and the next
-   coverage prerequisite, separately from implementation and focused regressions.
+1. Isolate direct `&*p` checking after ordinary address resolution when there is no
+   field suffix. Expose the exact parent root while preserving the saved address
+   error, shared type construction, traversal charges, site allocation and HIR.
+   Validate grouped/effectful parents, aggregate/reference-cell types and stopped
+   inputs with focused regressions and library tests.
+2. Extend bounded reborrow metadata for shared results and shared/exclusive parent
+   modes. Compare aggregate pointees with charged traversal, retaining no shape
+   copies. Preserve exclusive metadata, sites and stopped-parent behavior. Validate
+   returned parents, loan/move errors, identity and budget checks; run the compiler
+   gate.
+3. Document verified scope and the next projection prerequisite in the foundation
+   guide and trackers, separately from implementation and focused regressions.
 
-Investigation: `exclusive_borrow` recognizes `&!*p`, checks exclusive scalar access
-and allocates an existing reborrow site. Its parent evaluation now uses
-`exclusive_reborrow_point` to retain the exact root. Stopped parents return before
-allocating a site.
-This is pointer evaluation and child-loan creation, not a referent load. Existing
-loan analysis controls parent suspension, transfers and liveness; metadata only
-records ordering. Shared/projected paths and implicit conversions remain separate.
+Investigation: `borrowed` already resolves ordinary storage and preserves its
+original address diagnostic before checking a dereferenced parent. With no field
+suffix, its projection loop only weighs the pointee, constructs a shared reference
+and allocates a site. Extract that exact path without changing projected fallback,
+temporary ownership, error precedence or the no-load semantics of reborrowing.
+Stopped parents return before type construction/site allocation. Existing exclusive
+metadata needs an explicit requested mode for stopped shared parents and bounded
+pointee comparisons for aggregate results.
 
-Baseline: `89d255f`, `15f1c74`, `aaf9dea` passed all ten compiler checks: 1656
+Baseline: `03f5e54`, `a6e9d05`, `b66d8c0` passed all ten compiler checks: 1662
 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-deref-stages-gate.log`. Working tree was clean on `main`.
-`exclusive_reborrow_point` now exposes exact parent roots alongside unchanged
-exclusive reborrow HIR and site allocation. All three focused groups pass,
-including grouped/effectful parents, no sites for stopped/invalid inputs, E301/
-E302/E303 preservation and parent transfers. Log:
-`/tmp/meowy-reborrow-roots-focused.log`. Formatting and all 1659 library tests
-pass; `/tmp/meowy-reborrow-roots-lib.log` (`03f5e54`). Reborrow operations now retain
-exact parents, existing sites and exclusive mode, with parent-before-reborrow/result
-links and no dereference load. Stopped parents have no site/operation/result;
-implicit shared conversions retain separate sites. All three focused operation
-groups pass, including returned parents, ownership/control and atomic shared-budget
-publication; `/tmp/meowy-reborrow-stages-focused.log`. All ten compiler checks
-pass: 1662 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-reborrow-stages-gate.log`. Existing native suspension, parent-transfer
-and child-liveness cases pass. Operation integration: `a6e9d05`. The foundation
-guide and trackers now describe this boundary. Post-documentation validation
-passed: 1208 local links in 110 Markdown files; `/tmp/meowy-reborrow-stages-docs.log`.
-All three slices are complete. Next retain direct shared reborrow parent roots and
-modes without folding projected paths or implicit conversions into this boundary.
-Broader reference/projection/builder coverage, restart propagation and proof
-outcomes remain incomplete.
+both profiles; `/tmp/meowy-reborrow-stages-gate.log`. Working tree was clean on `main`.
+`shared_reborrow_point` now handles only direct dereferenced parents with no
+field suffix after the original address check. All three focused groups pass:
+grouped/effectful shared/exclusive parents, aggregate/reference-cell types, saved
+errors, stopped allocation and E301/E302/E303 boundaries. Log:
+`/tmp/meowy-shared-reborrow-roots-focused.log`. Formatting and all 1665 library
+tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`. Slice 1 is complete;
+shared-mode metadata and the full compiler gate are next.
+Projected/implicit reference paths, restart propagation and proof outcomes remain
+incomplete.
 
 ### Proof dependency implementation slices
 
