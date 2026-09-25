@@ -222,6 +222,12 @@ canonical slot. Shared reference-cell borrows retain the cell's identity. Exclus
 scalar targets preserve root/final-field permissions, record-shape restrictions and
 identical emitted backing requirements. Wider exclusive shapes remain gated;
 alias bookkeeping and loan/lifetime checks are unchanged.
+Standalone temporary borrows retain exact initializer roots and existing local/
+statement identities. Initializer completion precedes cell materialization and
+reference availability; `never` inputs allocate no cell and gain no result edge.
+A reference-valued initializer is stored in a distinct reference cell. These links
+preserve the original statement lifetime and do not duplicate projected or indexed
+parent staging. Type comparisons are charged; publication uses the shared edge budget.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

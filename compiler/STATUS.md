@@ -112,8 +112,8 @@ Dependency-ordered commit plan:
 3. Document verified scope and the next coverage prerequisite in the foundation
    guide and trackers, separately from implementation and focused regressions.
 
-Investigation: the fallback without a field suffix evaluates its value with `expr`
-then calls `temporary_borrow`, discarding the exact initializer root. The constructor
+Investigation: the fallback without a field suffix now uses
+`temporary_borrow_point` to preserve the exact initializer root before construction. The constructor
 returns stopped inputs before allocating a local or requiring a statement; other
 inputs receive an existing statement-owned cell and shared-reference HIR. The same
 constructor serves projected and element parents, so a blanket graph hook would
@@ -126,7 +126,7 @@ Log: `/tmp/meowy-exclusive-place-gate.log`. Working tree was clean on `main`.
 reusing unchanged temporary construction. Three focused groups pass: initializer
 order/cell identities, scalar/aggregate/reference values, stopped inputs and error
 restoration. Log: `/tmp/meowy-temporary-roots-focused.log`. Formatting and all
-1691 library tests pass; `/tmp/meowy-temporary-roots-lib.log`. Slice 1 is complete;
+1691 library tests pass; `/tmp/meowy-temporary-roots-lib.log` (`2085cd4`);
 standalone operation/result metadata is now integrated at the fallback only.
 It retains initializer roots and existing cell/statement IDs, validates bounded
 type equality, and links source completion to materialization/result availability.
@@ -137,9 +137,12 @@ They cover scalar/aggregate/reference cells, calls, stopped inputs, owner/contro
 source-family separation, errors and atomic identity/budget validation. The full
 compiler gate passed all ten checks: 1695 library/910 native tests, formatting,
 Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-temporary-stages-gate.log`. Slice 2 is complete; guide/tracker integration
-is next. Implicit conversions, remaining field/builder paths, restart propagation
-and proof outcomes remain separate.
+`/tmp/meowy-temporary-stages-gate.log`. Operation integration: `4443aac`. The guide
+and trackers now document the boundary. Post-documentation validation passed:
+1208 local links in 110 Markdown files; `/tmp/meowy-temporary-stages-docs.log`.
+All three slices are complete. Next establish exact raw-expression boundaries for
+implicit reference conversion before wiring conversion sites. Remaining field/builder paths,
+restart propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1467,10 +1470,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Ordinary exclusive place-borrow operations passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1688 library/910
+- Standalone temporary-borrow roots and materialization stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1695 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-exclusive-place-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-temporary-stages-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1890,22 +1893,26 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`898a519`). Existing mutability, final-field permission and record-shape checks
    precede publication; alias-exclusive marking and later backing validation stay
    intact. Indexed exclusive paths and reborrows retain their own operations.
-   Next capture exact source roots for standalone temporary borrows in the fallback
-   without a field suffix in `check/references.rs::borrowed`, then connect source completion
-   to the existing `temporary_borrow` local/statement materialization and reference
-   result. Preserve stopped inputs without allocating storage, once-only effects,
-   reference-cell identities, shape gates and actual statement lifetimes. Avoid a
-   blanket hook in `temporary_borrow`: projected and element-parent paths already
-   own their staging and must not gain premature result edges. Keep root/identity
-   capture and graph integration reviewable. Validate scalar/record/list/reference
-   temporaries, calls, E303 and existing errors, owner/control identities and shared
-   budgets; run the compiler gate. Implicit conversions, remaining field/coercion
-   paths and contextual builders stay separate.
+   Standalone temporary borrows now retain exact initializer roots (`2085cd4`) and
+   existing local/statement identities with materialization/result links (`4443aac`).
+   Never inputs allocate no cell; reference-valued initializers remain distinct
+   cells. Projected and element-parent staging receives no duplicate result edges.
+   Next audit implicit exclusive-to-shared conversion in
+   `check/expressions.rs::coerced_expression`. Raw expression operations currently
+   share the outer point and already publish normal-result links, so establish an
+   exact uncoerced source boundary before recording the implicit reborrow site and
+   result. Preserve caller-facing roots, branch/read/query ancestry, owner/control,
+   expected typing, required budgets and ordinary errors. Do not infer a source
+   point from HIR/spans or add a second entry-to-normal bypass. Plan independently
+   reviewable boundary and conversion-integration slices with focused regressions,
+   then run the compiler gate. Preserve existing shared-conversion loan semantics
+   and never-input handling; generic coercions, remaining field projections and
+   contextual builders stay separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Standalone temporaries, implicit reference paths and contextual builders remain
+   Implicit conversions, remaining field paths and contextual builders remain
    coverage gaps; missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

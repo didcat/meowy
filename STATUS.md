@@ -643,8 +643,9 @@ library tests pass; `/tmp/meowy-temporary-roots-lib.log` (`2085cd4`). Standalone
 operations now connect initializer completion to existing cell materialization and
 reference availability, preserving statement IDs and other parent staging. All ten
 compiler checks pass: 1695 library/910 native tests; `/tmp/meowy-temporary-stages-gate.log`.
-Guide/tracker integration is next; broader propagation and proof outcomes remain
-incomplete.
+Operation integration: `4443aac`. The foundation guide documents the boundary.
+Implicit reference-conversion source boundaries are next; broader propagation and
+proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -774,10 +775,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Ordinary exclusive place-borrow operations passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1688 library/910 native tests.
+- Standalone temporary-borrow roots and materialization stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1695 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-exclusive-place-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-temporary-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -872,12 +873,14 @@ execution was not part of this documentation edit.
    Ordinary shared place borrows now retain checked paths, canonical storage and
    address/reference stages without operand or pointee reads. Ordinary exclusive
    places now share those stages while preserving their existing permission/shape
-   gates and alias bookkeeping. Next capture standalone temporary-borrow roots in
-   the empty-suffix fallback of `compiler/src/check/references.rs::borrowed`, then
-   connect materialization and result stages using existing local/statement IDs.
-   Preserve stopped inputs, effects, cell identities and lifetimes; avoid duplicating
-   projected/element-parent staging. Validate focused tests and the compiler gate;
-   implicit conversions and remaining field/builder coverage remain pending.
+   gates and alias bookkeeping. Standalone temporaries now retain initializer roots,
+   cell/statement IDs and materialization/result order without duplicating other
+   parent staging. Next establish exact uncoerced source boundaries for implicit
+   exclusive-to-shared conversion in `compiler/src/check/expressions.rs::coerced_expression`.
+   Existing raw operations share the outer normal port, so preserve root/branch
+   identities and avoid bypassing source effects. Split boundary and conversion
+   integration, preserve typing/loans/budgets, and run focused tests plus the compiler
+   gate. Remaining field/coercion/builder coverage stays separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
