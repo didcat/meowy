@@ -347,5 +347,8 @@ pub(crate) use dereferences::Deref;
 mod reborrows;
 pub(crate) use reborrows::Reborrow;
 
+mod borrow_projections;
+pub(crate) use borrow_projections::{Projection, Step as ProjectionStep};
+
 mod emissions;
 pub(crate) use emissions::Emission;

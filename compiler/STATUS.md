@@ -130,7 +130,14 @@ existing HIR cell but returns no new-materialization marker. All five focused
 parent groups pass; `/tmp/meowy-projection-temporaries-focused.log`. Formatting,
 all 1673 library tests and library Clippy pass; logs:
 `/tmp/meowy-projection-temporaries-lib.log`, `/tmp/meowy-projection-temporaries-lint.log`.
-Slice 1 is complete; bounded checked plans are next. Ordinary place borrows, implicit
+Materialization prerequisite: `3133214`. Checked plans now retain source roots,
+ordered materialization/field/load/address steps, final sites/modes, ownership and
+control. Per-path and total metadata limits bound capture; failed plans publish
+nothing. All four focused plan groups pass; `/tmp/meowy-projection-plans-focused.log`.
+Formatting, all 1677 library tests and library Clippy pass, including the projected
+loan fixture; `/tmp/meowy-projection-plans-lib.log`,
+`/tmp/meowy-projection-plans-lint.log`. Slice 2 is complete; graph edges remain the
+next independently reviewed slice. Ordinary place borrows, implicit
 conversions, other builders, restart propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices

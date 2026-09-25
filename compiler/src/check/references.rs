@@ -1,3 +1,4 @@
+use super::dependencies::{Projection, ProjectionStep};
 use super::{Checker, Place, Result, Value};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
@@ -415,8 +416,23 @@ impl Checker {
                 }
             }
         }
-        let (_, _, mut value) = self.projected_parent(root)?;
+        let (parent, temporary, mut value) = self.projected_parent(root)?;
+        let mut plan = Projection {
+            owner: self.owner,
+            parent,
+            steps: Vec::new(),
+            site: None,
+            mode: None,
+            control: self.control,
+            span,
+        };
+        if let Some((local, statement)) = temporary {
+            self.projection_step(&mut plan, ProjectionStep::Materialize { local, statement })?;
+        }
         if value.ty == Type::Never {
+            if let Some(point) = self.point {
+                self.capture_projection(point, plan)?;
+            }
             return Ok(value);
         }
         let mut names = names.into_iter().peekable();
@@ -443,11 +459,17 @@ impl Checker {
                 ty,
                 span: expr.span,
             })?;
+            self.projection_step(&mut plan, ProjectionStep::Field(index))?;
             if names.peek().is_none() {
                 return Err(error);
             }
         }
         loop {
+            let mode = if matches!(value.ty, Type::Exclusive(_)) {
+                hir::ReferenceMode::Exclusive
+            } else {
+                hir::ReferenceMode::Shared
+            };
             let (Type::Reference(target) | Type::Exclusive(target)) = &value.ty else {
                 unreachable!()
             };
@@ -481,6 +503,14 @@ impl Checker {
                 let ty = self.reference_type(ty.clone(), span)?;
                 let site = self.reborrows;
                 self.reborrows += 1;
+                for index in &path {
+                    self.projection_step(&mut plan, ProjectionStep::Address(*index))?;
+                }
+                plan.site = Some(site);
+                plan.mode = Some(mode);
+                if let Some(point) = self.point {
+                    self.capture_projection(point, plan)?;
+                }
                 return Ok(hir::Expr {
                     kind: hir::ExprKind::Reborrow {
                         site,
@@ -492,6 +522,7 @@ impl Checker {
                 });
             }
             crate::borrow_contract::type_weight(target, &mut self.flow, span)?;
+            self.projection_step(&mut plan, ProjectionStep::Load(mode))?;
             value = hir::Expr {
                 ty: *target.clone(),
                 kind: hir::ExprKind::Deref(Box::new(value)),
@@ -511,6 +542,7 @@ impl Checker {
                     },
                     span,
                 };
+                self.projection_step(&mut plan, ProjectionStep::Field(index))?;
             }
         }
     }
