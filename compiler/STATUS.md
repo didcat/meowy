@@ -101,88 +101,45 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current composed-expression slices
 
-Dependency-ordered commit plan:
-1. Link grouped composed roots to their exact checked children and plain partial
-   block roots to existing body endpoints. Preserve partial shapes, emission
-   semantics, never inputs and errors; run focused tests and the library suite.
-2. Capture composed-dispatch receiver/local/body identities through `expr_point`
-   and `block_parts`, then reuse validated dispatch-prefix stages. Preserve this
-   caller's `partial=true` and permission gates; run the full compiler gate.
+The dependency-ordered plan is complete:
+1. Connect exact Group children and plain partial-block results using existing
+   region/body endpoint validators (`85a59dd`).
+2. Capture composed-dispatch receiver/local/body identities and reuse bounded
+   initialization/body/result stages, preserving partial semantics (`0ade9ed`).
 3. Document verified scope and the next source-graph prerequisite separately.
 
-Investigation: `composed_point` already returns exact outer roots. Its Group and
-Block branches can reuse region/body-result validators without new points or HIR
-changes. Composed dispatch can capture existing receiver storage through
-`block_parts`; do not add the ordinary dispatch helper's early exclusive gate.
-The generic fallback still may coerce its nested expression, so keep its links
-unknown. Record equality also drops composed operand roots in `scalars.rs`;
-that caller integration remains separate from this work.
+Grouped composition retains the child root returned during checking; partial
+blocks link their checked bodies without requiring all outer fields to be present.
+Composed dispatch captures receiver and storage identities through `expr_point`
+and `block_parts`, with `partial=true`, existing expected slots and unchanged
+caller-specific permission/error order. It reuses the prefix validator without
+adding the ordinary caller's early exclusive-receiver gate. Empty and stopped
+bodies retain their existing boundaries; later opaque prefixes are not skipped.
+No source point, HIR shape, runtime behavior or loan authority is invented.
+Generic fallback coercion links remain unknown. Record equality still drops its
+composed operand roots in `scalars.rs`, so caller sequencing is the next step.
 
-Baseline: clean `main`; all ten ordinary-dispatch checks passed with 1722 library/
-910 native tests; `/tmp/meowy-dispatch-stages-gate.log`.
-Group and plain Block branches now reuse the existing region/result validators.
-Three focused groups pass after correcting fixture record separators and the
-documented E204 missing-component expectation: exact nested roots, partial shapes,
-never/function boundaries, unknown scalar fallback, slot errors and shared budgets;
-`/tmp/meowy-composed-links-focused.log`. Formatting and all 1725 library tests pass;
-`/tmp/meowy-composed-links-lib.log`. Composed dispatch integration is next.
-Group/Block links committed as `85a59dd`. Composed dispatch now captures the
-receiver root and allocation-time local from `block_parts`, then reuses bounded
-dispatch stages without adding the ordinary caller's exclusive gate. Partial
-record and fallback coercion behavior remain unchanged. Three focused composed
-dispatch groups pass: grouped identities and partial fields, call/empty/forward
-prefixes, stopped inputs/bodies and caller-specific error order;
+Three Group/Block groups cover exact nested roots, partial shapes, never/function
+boundaries, scalar fallback isolation, slot errors and shared budgets;
+`/tmp/meowy-composed-links-focused.log`. Formatting and all 1725 library tests
+passed the first slice; `/tmp/meowy-composed-links-lib.log`. Three dispatch groups
+cover grouped identity, partial fields, calls, empty/forward prefixes, stopped
+inputs/bodies and caller-specific diagnostics;
 `/tmp/meowy-composed-dispatch-focused.log`. All ten compiler checks pass: 1728
 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release); `/tmp/meowy-composed-stages-gate.log`.
-No outstanding failures remain. Documentation and the record-equality operand
-handoff are next.
+No outstanding failures remain. The foundation guide and trackers now document
+this coverage. Post-documentation validation passed 1208 local links in 110
+Markdown files; `/tmp/meowy-composed-stages-docs.log`.
+Generic coercions, other contextual builders, backedge propagation
+and proof outcomes remain separate.
 
-### Completed ordinary dispatch-block slices
-
-The dependency-ordered plan is complete:
-1. Retain exact receiver roots and existing receiver-local/body identities during
-   checking, preserving HIR, scope and prefix barriers (`b0bee6b`).
-2. Record bounded evaluation/initialization/body/result links with focused tests
-   and the complete compiler gate (`63367e7`).
-3. Document verified ordinary-dispatch scope and the next prerequisite separately.
-
-`dispatch_point` retains the receiver root; `block_parts` and `block_prefix`
-return the local allocated for `$`. Existing block APIs preserve their results
-for contextual-list/composed callers. Ordinary dispatch now links entry through
-block entry to receiver evaluation, then initialization of that existing local.
-Initialization connects only to the immediate checked successor or an empty
-body's normal port. The original leading `None` marker and core endpoint maps
-remain intact. Later opaque entries, including forward declarations, are not
-skipped. Stopped receivers gain no initialization/result link; stopped bodies
-have no result link. Types and identities are validated with bounded work and the
-shared edge ledger, with no invented source statements or aggregate type copies.
-Expected types, nested `$` bindings, permission/lifetime rules and exclusive gates
-are unchanged. Composed dispatch remains on its separate opaque path.
-
-Three root groups cover source/local/body identity, expected types, once-only
-effects, scopes, never, diagnostics and budget restoration;
-`/tmp/meowy-dispatch-roots-focused.log`. Formatting and all 1718 library tests
-passed the prerequisite; `/tmp/meowy-dispatch-roots-lib.log`. Four stage groups
-cover scalar/reference/record/call receivers, empty/forward/stopped prefixes,
-nested owners/control, composed isolation, permission/lifetime gates and atomic
-identity/edge budgets; `/tmp/meowy-dispatch-stages-focused.log`. All ten compiler
-checks pass: 1722 library/910 native tests, formatting, Clippy, build and conformance
-(10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-dispatch-stages-gate.log`. No outstanding failures remain. The guide
-and trackers document the boundary. Post-documentation validation passed 1208
-local links in 110 Markdown files; `/tmp/meowy-dispatch-stages-docs.log`.
-Composed-expression roots and stages are next;
-generic coercions, other contextual builders, backedge propagation and proof
-outcomes remain separate.
-
-Predicates/ascriptions (`e5d5653`, `5ad03a7`, `8a01d73`) retain operand roots and
-logical result stages without evaluating answers, duplicating target descriptors
-or changing target construction and E208. Their ten-check gate passed with 1715
-library/910 native tests; `/tmp/meowy-typed-stages-gate.log`.
-Runtime fields (`ed85184`, `b806c44`, `70f9e1b`) retain receiver roots, load decisions
-and resolved indices before narrowing. Implicit shared conversion and standalone
-temporary borrows retain their established source/site/cell/statement boundaries.
+Ordinary dispatch (`b0bee6b`, `63367e7`, `e9e44c7`) retains the allocation-time
+receiver local and exact source/body roots. Prefix stages initialize that local
+before only the immediate checked successor or empty-body completion, leaving
+all other opaque entries intact. Its ten-check gate passed with 1722 library/910
+native tests; `/tmp/meowy-dispatch-stages-gate.log`. Predicates/ascriptions and
+runtime fields retain their established operand/load/result boundaries.
 
 ### Proof dependency implementation slices
 
@@ -1953,19 +1910,21 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`b0bee6b`) and receiver initialization/body/result stages (`63367e7`). The
    synthetic `None` prefix remains explicit, later barriers are never skipped,
    and stopped inputs/bodies gain no invented completion or source statement.
-   Next audit `check/blocks.rs::composed_value`: grouped composition drops its
-   child point, plain partial blocks lack result links, and composed dispatch
-   drops receiver identities. First connect exact composed Group/Block roots
-   through existing region/block endpoint helpers. Then capture composed dispatch
-   source/local/body identities using `block_parts` and integrate its prefix stages
-   separately, preserving `partial=true`, expected record slots, `$`, current
-   permission gates and emission semantics. Do not blindly reuse ordinary
-   `dispatch_point`, whose exclusive-receiver gate belongs to that caller.
-   Keep the fallback's generic coercions unknown until their own source/result
-   boundary is captured. Plan reviewable slices with focused composition, missing
-   slot, nested group, never and error regressions, then run the compiler gate.
-   Generic coercions, other contextual builders and required evaluation remain
-   separate. Availability is not complete provenance.
+   Composed Group/Block roots now link exact children and partial body results
+   (`85a59dd`). Composed dispatch captures receiver/local/body identities and
+   reuses bounded prefix stages (`0ade9ed`) while preserving partial records,
+   expected slots and caller-specific errors. Generic fallback links stay unknown.
+   Next retain both composed operand roots in the record-equality branches of
+   `check/scalars.rs`. They currently call `composed` and place `None` in the
+   existing binary sequence. Use the returned `composed_point` identities to
+   preserve source order without replaying hints, operands or coercion. Keep
+   contextual primary selection, scalar-vs-record projection, never behavior,
+   expected typing and diagnostics unchanged; remove the discard-only wrapper
+   only if it has no callers. Validate once-only effects, nested groups/partial
+   blocks, calls, repeated spans, errors and shared budgets, then run the compiler
+   gate. Record-operand sequencing does not complete the composed fallback's
+   generic coercion or binary operation/result stages; keep those separate.
+   Other contextual builders and required evaluation also remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

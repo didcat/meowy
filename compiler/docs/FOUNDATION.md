@@ -237,8 +237,14 @@ prefix markers remain explicit, and later opaque entries such as forward
 declarations are not skipped. Stopped receivers have no initialization/result
 link, and stopped bodies have no result link. These bounded stages preserve
 expected typing, nested receiver scope, permission/lifetime checks and call-return
-conditions without inventing source statements. Composed dispatch retains its
-separate partial-record path and remains a sequencing-coverage gap.
+conditions without inventing source statements.
+Grouped composition links exact checked child roots, and plain partial blocks
+connect through existing body endpoints while allowing outer fields to be supplied
+elsewhere. Composed dispatch retains its separate partial-record checking path
+and now captures receiver/local/body identities for the same bounded prefix stages.
+Partial mode, expected slots and caller-specific error order remain unchanged;
+the ordinary caller's early exclusive-receiver gate is not imposed here. Generic
+fallback coercions and record-equality caller sequencing remain separate gaps.
 Projected shared borrows retain bounded plans captured during checking: exact
 parent roots, new temporary local/statement identities, owned field reads,
 intermediate reference loads, final field-address paths and existing reborrow

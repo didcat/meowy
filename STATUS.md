@@ -664,8 +664,13 @@ and connects evaluation, initialization, immediate body continuation and result
 availability (`63367e7`). Opaque prefix markers and later barriers remain explicit;
 no source statement is invented. All ten compiler checks pass: 1722 library/910
 native tests; `/tmp/meowy-dispatch-stages-gate.log`. The foundation guide documents
-this boundary. Composed-expression sequencing is next; generic coercions, broader
-propagation and proof outcomes remain incomplete.
+this boundary. Composed groups and plain partial blocks now link exact children
+and body results (`85a59dd`). Composed dispatch reuses receiver initialization and
+body/result stages while preserving partial-record semantics (`0ade9ed`). All ten
+compiler checks pass: 1728 library/910 native tests;
+`/tmp/meowy-composed-stages-gate.log`. The foundation guide documents this coverage.
+Record-equality operand roots are next; generic coercions, broader propagation
+and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -795,10 +800,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Ordinary dispatch receiver roots and stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1722 library/910 native tests.
+- Composed Group/Block/dispatch sequencing passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1728 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-dispatch-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-composed-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -904,13 +909,14 @@ execution was not part of this documentation edit.
    preserving target construction, never handling, E208 and no-op coercions.
    Ordinary dispatch now retains receiver point/local/body identities and connects
    evaluation, initialization and body/result stages without skipping later barriers
-   or inventing source statements. Next audit composed expressions in
-   `compiler/src/check/blocks.rs::composed_value`: first link exact Group/Block roots,
-   then capture composed dispatch identities and integrate its prefix separately.
-   Preserve partial records, expected slots, `$`, existing permission gates and
-   emission semantics; leave fallback coercions unknown. Split reviewable slices
-   with focused regressions and the compiler gate. Generic coercions and other
-   contextual builders remain separate.
+   or inventing source statements. Composed Group/Block roots now link exact child
+   and body results; composed dispatch reuses prefix stages while preserving its
+   partial-record semantics and caller-specific errors. Next retain both composed
+   operand roots in the record-equality branches of `compiler/src/check/scalars.rs`
+   so the existing sequence can express their order. Preserve hints, contextual
+   primary selection, scalar projection, never behavior and diagnostics; run focused
+   regressions and the compiler gate. Generic composed fallback coercions, binary
+   operation/result stages and other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
