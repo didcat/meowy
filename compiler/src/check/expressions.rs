@@ -5,6 +5,10 @@ use crate::flow::FALSE;
 use crate::hir::{self, Type};
 
 impl Checker {
+    pub(crate) fn expected_boundary(&self, expected: Option<&Type>) -> bool {
+        expected.is_some() && (!self.required || matches!(expected, Some(Type::Reference(_))))
+    }
+
     pub(crate) fn expr(&mut self, expr: &ast::Expr, expected: Option<&Type>) -> Result<hir::Expr> {
         self.expr_point(expr, expected).map(|(_, value)| value)
     }
@@ -15,7 +19,7 @@ impl Checker {
         expected: Option<&Type>,
     ) -> Result<(hir::PointId, hir::Expr)> {
         self.with_continuation(expr.span, "expression", |checker| {
-            let kind = if matches!(expected, Some(Type::Reference(_))) {
+            let kind = if checker.expected_boundary(expected) {
                 PointKind::Expr
             } else {
                 PointKind::expression(expr)
@@ -31,7 +35,8 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
-        let (input, mut value) = if matches!(expected, Some(Type::Reference(_))) {
+        let shared = matches!(expected, Some(Type::Reference(_)));
+        let (input, mut value) = if self.expected_boundary(expected) {
             let (source, value) =
                 self.with_point_id(PointKind::expression(expr), expr.span, |checker| {
                     checker.expression_value(expr, expected)
@@ -42,7 +47,9 @@ impl Checker {
         };
         if value.ty == Type::Never {
             self.reach = FALSE;
-            if let Some(source) = input {
+            if let Some(source) = input
+                && shared
+            {
                 self.reborrow_operation(
                     self.point.expect("shared context"),
                     source,
@@ -76,7 +83,7 @@ impl Checker {
             )?;
             return Ok(value);
         }
-        let same = input.is_some() && expected == Some(&value.ty);
+        let same = shared && expected == Some(&value.ty);
         let value = match expected {
             Some(expected) => Self::expected_value(value, expected, expr.span),
             None => Ok(value),

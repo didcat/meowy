@@ -119,8 +119,12 @@ pub(crate) fn expression_roots_return_outer_ids_through_nested_groups_and_coerci
     else {
         panic!()
     };
-    let group = checker.points[inner].parent.unwrap();
-    assert_eq!(checker.points[group].parent, Some(first));
+    let mut point = inner;
+    for _ in 0..5 {
+        point = checker.points[point].parent.unwrap();
+        assert_eq!(checker.points[point].kind, Kind::Expr);
+    }
+    assert_eq!(point, first);
     assert!(checker.point.is_none());
 }
 

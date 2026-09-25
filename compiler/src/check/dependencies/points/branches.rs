@@ -129,7 +129,10 @@ pub(crate) fn branch_points_preserve_independent_nested_short_circuit_conditions
         children(&checker, inner),
         [Kind::Condition, Kind::Else, Kind::Then]
     );
-    let group = checker.points[inner].parent.unwrap();
+    let wrapper = checker.points[inner].parent.unwrap();
+    assert_eq!(checker.points[wrapper].kind, Kind::Expr);
+    assert_eq!(checker.points[wrapper].span, checker.points[inner].span);
+    let group = checker.points[wrapper].parent.unwrap();
     let arm = checker.points[group].parent.unwrap();
     assert_eq!(checker.points[arm].kind, Kind::Then);
     assert_eq!(checker.points[arm].parent, Some(outer));

@@ -98,7 +98,8 @@ pub(crate) fn operand_sequences_preserve_failures_and_unknown_call_completion() 
     let Source::Expr(root) = checker.sequences.keys().next().unwrap() else {
         panic!()
     };
-    assert!(!checker.points[*root].complete);
+    assert!(checker.points[*root].complete);
+    assert!(!checker.points[checker.points[*root].parent.unwrap()].complete);
     assert!(checker.bodies.is_empty());
     let (checker, _) = check("f<int32>:(){->1};x:f()+2");
     let sequence = checker

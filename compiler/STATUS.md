@@ -127,6 +127,19 @@ native tests; `/tmp/meowy-binary-stages-gate.log`.
 union identity, inner wrappers, stopped primary extraction, E207/spans and required
 callers; `/tmp/meowy-expected-plans-focused.log`. Formatting and all 1749 library
 tests pass; `/tmp/meowy-expected-plans-lib.log`. Raw-source boundaries are next.
+Classification committed as `a9add72`. Non-required expected types now use an
+outer caller root and nested raw root, retaining the raw expression kind. Required
+non-reference expectations keep their old checking path, and existing shared
+forwarding/reborrow metadata is unchanged. New non-shared wrapper links remain
+unknown until integration. All three boundary groups pass: exact call/binary/branch
+roots, primary results, required/shared paths, stopped inputs, diagnostics and
+budget precedence; `/tmp/meowy-expected-roots-focused.log`. Library validation
+found seven outdated ancestry assertions in five graph test modules. They now
+distinguish a successfully checked raw expression from a failed outer expected
+type, and follow argument/group wrappers to their actual raw call/branch roots.
+The new source-boundary tests share the expected-value test module; required-path
+and shared-reborrow tests remain unchanged. Formatting and all 1752 library tests
+pass; `/tmp/meowy-expected-roots-lib.log`. Stage integration is next.
 
 ### Completed ordinary binary-operation slices
 

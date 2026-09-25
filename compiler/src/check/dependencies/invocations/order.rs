@@ -61,7 +61,7 @@ pub(crate) fn call_edges_keep_empty_and_nested_calls_as_separate_effects() {
         .filter(|call| call.function != 2)
         .zip(&outer.args)
     {
-        assert_eq!(inner.point, *arg);
+        assert_eq!(checker.points[inner.point].parent, Some(*arg));
         assert_eq!(
             inner.edges,
             [
@@ -103,9 +103,9 @@ pub(crate) fn call_edges_do_not_turn_never_calls_or_exiting_arguments_into_norma
             .iter()
             .any(|edge| edge.to == Port::Normal(stop.point))
     );
-    assert_eq!(outer.args[0], stop.point);
+    assert_eq!(checker.points[stop.point].parent, Some(outer.args[0]));
     assert!(outer.edges.contains(&Edge::new(
-        Port::Normal(stop.point),
+        Port::Normal(outer.args[0]),
         Port::Entry(outer.args[1]),
         Route::Next
     )));

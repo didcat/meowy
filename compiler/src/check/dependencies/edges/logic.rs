@@ -80,7 +80,8 @@ pub(crate) fn logic_edges_preserve_failures_without_claiming_completed_regions()
     let block = crate::parser::parse("x<int32>:false&&true").unwrap();
     assert_eq!(checker.block(&block, None, None).unwrap_err().code, "E207");
     let branch = *checker.branch_edges.keys().next().unwrap();
-    assert!(!checker.points[branch].complete);
+    assert!(checker.points[branch].complete);
+    assert!(!checker.points[checker.points[branch].parent.unwrap()].complete);
     assert!(checker.bodies.is_empty());
     assert!(checker.point.is_none());
     assert!(check("x:1+2;y:1==2").branch_edges.is_empty());
@@ -155,7 +156,8 @@ pub(crate) fn logic_contents_preserve_errors_and_unknown_call_completion() {
     assert_eq!(checker.block(&block, None, None).unwrap_err().code, "E207");
     assert_eq!(checker.region_edges.len(), 2);
     let branch = *checker.branch_edges.keys().next().unwrap();
-    assert!(!checker.points[branch].complete);
+    assert!(checker.points[branch].complete);
+    assert!(!checker.points[checker.points[branch].parent.unwrap()].complete);
     assert!(checker.bodies.is_empty());
     let checker = check("f<boolean>:(){->true};x:false&&f()");
     let routes = checker.branch_edges.values().next().unwrap();
