@@ -329,7 +329,11 @@ impl Checker {
                 args,
             } => return self.call(callee, args, Some(value), expr.span),
             ExprKind::DispatchBlock { value, block } => {
-                let (_, _, block) = self.dispatch_point(value, block, expected, expr.span)?;
+                let (input, local, block) =
+                    self.dispatch_point(value, block, expected, expr.span)?;
+                if let Some(point) = self.point {
+                    self.dispatch_operation(point, input, local, &block, expr.span)?;
+                }
                 let ty = block.ty.clone();
                 (hir::ExprKind::Block(block), ty)
             }

@@ -86,6 +86,7 @@ impl Checker {
             .saturating_add(self.deref_edges)
             .saturating_add(self.field_edges)
             .saturating_add(self.typed_edges)
+            .saturating_add(self.dispatch_edges)
             .saturating_add(self.reborrow_edges)
             .saturating_add(self.projection_edges)
             .saturating_add(self.place_borrow_edges)

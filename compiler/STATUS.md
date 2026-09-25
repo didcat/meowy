@@ -129,6 +129,18 @@ local/body identities, expected results, nested `$` scopes, once-only effects,
 stopped receivers, lifetime/permission gates and budget restoration;
 `/tmp/meowy-dispatch-roots-focused.log`. Formatting and all 1718 library tests pass;
 `/tmp/meowy-dispatch-roots-lib.log`. Prefix integration remains the next slice.
+Receiver capture committed as `b0bee6b`. Ordinary dispatch now connects its entry
+through block entry to the exact receiver, then initializes the existing local
+before only the immediate sequence successor (or empty-body completion). The
+original `None` prefix and endpoint maps remain intact; later opaque entries are
+not skipped. Stopped receivers gain no initialization/result link. All four focused
+stage groups pass: ordinary/reference/record/call receivers, empty/forward/stopped
+prefixes, nested owners/control, composed-path isolation, permission/lifetime gates
+and atomic identity/edge budgets; `/tmp/meowy-dispatch-stages-focused.log`.
+All ten compiler checks pass: 1722 library/910 native tests, formatting, Clippy,
+build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-dispatch-stages-gate.log`. No outstanding failures remain. Documentation
+and the composed-expression source-boundary handoff are next.
 
 ### Completed predicate/ascription slices
 

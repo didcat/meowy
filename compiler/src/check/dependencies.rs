@@ -350,6 +350,9 @@ pub(crate) use fields::Field;
 mod typed;
 pub(crate) use typed::Typed;
 
+mod dispatch;
+pub(crate) use dispatch::Dispatch;
+
 mod reborrows;
 pub(crate) use reborrows::Reborrow;
 
