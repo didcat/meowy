@@ -99,7 +99,35 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current ordinary dispatch-block slices
+### Current composed-expression slices
+
+Dependency-ordered commit plan:
+1. Link grouped composed roots to their exact checked children and plain partial
+   block roots to existing body endpoints. Preserve partial shapes, emission
+   semantics, never inputs and errors; run focused tests and the library suite.
+2. Capture composed-dispatch receiver/local/body identities through `expr_point`
+   and `block_parts`, then reuse validated dispatch-prefix stages. Preserve this
+   caller's `partial=true` and permission gates; run the full compiler gate.
+3. Document verified scope and the next source-graph prerequisite separately.
+
+Investigation: `composed_point` already returns exact outer roots. Its Group and
+Block branches can reuse region/body-result validators without new points or HIR
+changes. Composed dispatch can capture existing receiver storage through
+`block_parts`; do not add the ordinary dispatch helper's early exclusive gate.
+The generic fallback still may coerce its nested expression, so keep its links
+unknown. Record equality also drops composed operand roots in `scalars.rs`;
+that caller integration remains separate from this work.
+
+Baseline: clean `main`; all ten ordinary-dispatch checks passed with 1722 library/
+910 native tests; `/tmp/meowy-dispatch-stages-gate.log`.
+Group and plain Block branches now reuse the existing region/result validators.
+Three focused groups pass after correcting fixture record separators and the
+documented E204 missing-component expectation: exact nested roots, partial shapes,
+never/function boundaries, unknown scalar fallback, slot errors and shared budgets;
+`/tmp/meowy-composed-links-focused.log`. Formatting and all 1725 library tests pass;
+`/tmp/meowy-composed-links-lib.log`. Composed dispatch integration is next.
+
+### Completed ordinary dispatch-block slices
 
 The dependency-ordered plan is complete:
 1. Retain exact receiver roots and existing receiver-local/body identities during

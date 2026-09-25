@@ -170,6 +170,9 @@ mod regions;
 
 mod blocks;
 
+#[cfg(test)]
+mod composed;
+
 mod matchers;
 
 #[cfg(test)]

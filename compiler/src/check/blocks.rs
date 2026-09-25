@@ -363,9 +363,18 @@ impl Checker {
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
         match &value.kind {
-            ExprKind::Group(value) => self.composed(value, record, expected),
+            ExprKind::Group(child) => {
+                let (input, result) = self.composed_point(child, record, expected)?;
+                if let Some(point) = self.point {
+                    self.region_edges(point, input, value.span)?;
+                }
+                Ok(result)
+            }
             ExprKind::Block(block) => {
                 let block = self.block_inner(block, Some(record), None, true)?;
+                if let Some(point) = self.point {
+                    self.block_result(point, block.id, value.span)?;
+                }
                 Ok(hir::Expr {
                     ty: block.ty.clone(),
                     kind: hir::ExprKind::Block(block),
