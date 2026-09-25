@@ -181,6 +181,13 @@ the bounded region ledger; a normal port does not prove that the child returns.
 Nested calls and short-circuit branches retain their own effect/exit boundaries.
 Grouping remains erased in HIR and adds no logical required-evaluation charges.
 Formatting and other specialized group-flattening paths retain their own rules.
+Ordinary scalar negation, boolean inversion and `bits.not` retain exact operand
+roots, operation stages and scalar types before outer union coercion. Integer
+negation reaches its result only through an overflow-success edge; floating
+negation and the inversion operations use ordinary completion. A nonreturning
+operand has no operation/result edge. Signed integer literals keep their direct
+literal path, and required-only unary construction gains no synthetic runtime
+points. Contextual typing, primary projection and logical charges stay unchanged.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

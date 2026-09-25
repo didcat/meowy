@@ -599,8 +599,9 @@ contextual inference and primary projection. Formatting and all 1647 library tes
 pass; `/tmp/meowy-unary-roots-lib.log` (`7932a09`). Unary metadata now retains exact
 scalar types and ordered operation/results, with checked integer negation and no
 result edge for stopped operands. All ten compiler checks pass: 1650 library/910
-native tests; `/tmp/meowy-unary-stages-gate.log`. Guide/tracker integration is next;
-broader propagation and proof outcomes remain incomplete.
+native tests; `/tmp/meowy-unary-stages-gate.log` (`fdeb564`). The foundation guide
+documents the boundary. Explicit dereference sequencing is next; broader
+propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -730,10 +731,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Grouped-expression child links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1644 library/910 native tests.
+- Scalar unary roots and operation/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1650 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-group-links-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-unary-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -816,11 +817,14 @@ execution was not part of this documentation edit.
    including panic prefix, conditional output returns and stopped suffixes.
    Ordinary groups now link exact child entry/result ports through the shared
    region ledger, preserving HIR, expected typing and logical grouping charges.
-   Next capture scalar unary roots in `compiler/src/check/expressions.rs` and link
-   their validated operations/results from `compiler/src/check/scalars.rs`.
-   Preserve signed-literal fast paths, contextual types, overflow/nonreturning
-   boundaries and required budgets; validate focused tests and the compiler gate.
-   Dereference/projection/builder coverage remains separate.
+   Scalar unary operations retain exact roots and result types, with checked
+   integer negation and stopped-operand boundaries. Signed literals and required
+   construction retain their own paths. Next capture explicit dereference roots
+   and load/result stages in `compiler/src/check/expressions.rs::raw_expression`.
+   Preserve reference-cell/pointee distinctions, shared/exclusive typing, errors,
+   nonreturning operands and loan/lifetime checks; validate focused tests and the
+   compiler gate. Reborrow/implicit-dereference/projection/builder coverage remains
+   separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

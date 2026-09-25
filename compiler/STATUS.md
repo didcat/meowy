@@ -114,9 +114,8 @@ Dependency-ordered commit plan:
 3. Document verified boundaries and the next operand family in the foundation
    guide and trackers, separately from implementation and focused regressions.
 
-Investigation: ordinary scalar unary checking in `raw_expression` uses
-`unary_context`, `expr` and `unary_value`, dropping the operand root. `unary_value`
-also serves `type_values/operands.rs`, which must not gain synthetic runtime links.
+Investigation: ordinary scalar unary checking previously dropped the operand root
+between contextual inference and `unary_value`. That helper also serves `type_values/operands.rs`, which must not gain synthetic runtime links.
 The signed integer literal fast path checks its literal directly and has no child
 point. Ordinary checked integer negation can fail at runtime; boolean/bits-not
 and floating negation do not use that overflow branch. Expected union coercion
@@ -139,7 +138,11 @@ All ten compiler checks pass: 1650 library/910 native tests, formatting, Clippy,
 build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
 Log: `/tmp/meowy-unary-stages-gate.log`. Existing native unary/union and signed-
 minimum overflow cases pass in both profiles; required accounting remains green.
-Slice 2 is complete; guide/tracker integration is next.
+Operation integration: `fdeb564`. The foundation guide and trackers now describe
+the supported boundary. Post-documentation validation passed: 1208 local links in
+110 Markdown files; `/tmp/meowy-unary-stages-docs.log`. All three slices are complete.
+Next capture explicit dereference roots and load/result stages, keeping reference
+cells distinct from pointees and preserving existing loan checks.
 Dereference/projection/builder coverage, restart propagation and proof outcomes
 remain incomplete.
 
@@ -1469,10 +1472,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Grouped-expression child links passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1644 library/910
+- Scalar unary roots and operation/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1650 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-group-links-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-unary-stages-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1862,20 +1865,25 @@ subtraction retains its documented limits. No outstanding failures remain.
    Ordinary groups now reuse region links from group entry to exact child entry
    and child normal to group normal (`a3a44e3`). Same-owner/block identities, HIR,
    expected typing and logical charges are preserved; no return is inferred.
-   Next capture scalar unary operands in `check/expressions.rs::raw_expression`
-   and connect operations validated by `check/scalars.rs::unary_value`. Preserve
-   contextual typing, primary projection, boolean/negation/internal bits-not
-   semantics, original errors and required budgets. Integer negation result
-   availability must follow overflow success; nonreturning operands must not gain
-   results. Keep the signed-literal fast path distinct instead of inventing a child
-   root. Split exact root capture from operation/result integration when meaningful,
-   add focused boundary tests, then run the compiler gate. Dereference, field and
-   coercion paths and contextual builders remain separate coverage work.
+   Ordinary scalar unary operands now retain exact roots (`7932a09`) and validated
+   scalar operation/result stages (`fdeb564`). Integer negation results follow
+   overflow success; stopped operands omit operations/results. Context, primary
+   projection and outer union coercion remain distinct. Signed literals and
+   required-only construction keep their existing paths and logical charges.
+   Next capture the exact operand of explicit unary `*` in
+   `check/expressions.rs::raw_expression`, then link pointer evaluation, dereference
+   and result availability. Preserve shared/exclusive reference typing, original
+   nonreference errors, nonreturning operands and temporary/loan validation. Do not
+   confuse a reference carrier cell with its pointee or grant new loan authority.
+   Validate grouped/call-returned pointers, scalar/aggregate dereferences, E302/E303
+   boundaries, owner/control identities and shared budgets, then run the compiler
+   gate. Reborrow, implicit dereference, field/coercion and contextual builder
+   paths remain separate; keep exact root capture and result integration reviewable.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Unary/projection paths and other contextual block builders remain coverage gaps;
+   Dereference/projection paths and contextual block builders remain coverage gaps;
    missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.
