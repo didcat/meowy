@@ -198,8 +198,12 @@ Explicit exclusive scalar reborrows retain exact parent roots, their existing
 reborrow sites and exclusive mode. Parent evaluation precedes reborrow and result
 availability, with no referent load. Stopped parents allocate no site and have no
 operation/result edge. These links preserve existing parent suspension, transfers
-and lifetime checks without granting authority. Shared/projected reborrows and
-implicit shared conversions remain separate graph-coverage work.
+and lifetime checks without granting authority. Direct shared `&*p` reborrows also
+retain exact parents, existing sites and distinct parent/result modes. Shared and
+exclusive parents preserve scalar, aggregate and reference-cell pointees; bounded
+comparison work retains no aggregate shape copies. Stopped parents retain the
+requested result mode without a parent mode, site or result edge. Projected shared
+reborrows and implicit conversions remain separate graph-coverage work.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference

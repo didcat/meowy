@@ -118,11 +118,11 @@ Dependency-ordered commit plan:
 Investigation: `borrowed` already resolves ordinary storage and preserves its
 original address diagnostic before checking a dereferenced parent. With no field
 suffix, its projection loop only weighs the pointee, constructs a shared reference
-and allocates a site. Extract that exact path without changing projected fallback,
-temporary ownership, error precedence or the no-load semantics of reborrowing.
-Stopped parents return before type construction/site allocation. Existing exclusive
-metadata needs an explicit requested mode for stopped shared parents and bounded
-pointee comparisons for aggregate results.
+and allocates a site. The extracted helper preserves projected fallback, temporary
+ownership, error precedence and the no-load semantics of reborrowing.
+Stopped parents return before type construction/site allocation. Metadata now
+retains the requested result mode and compares aggregate pointees with bounded
+work, preserving parent modes separately.
 
 Baseline: `03f5e54`, `a6e9d05`, `b66d8c0` passed all ten compiler checks: 1662
 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
@@ -143,8 +143,12 @@ scalar/aggregate/cell types, returned/nested parents, source boundaries, identit
 shape limits and atomic shared-budget publication. All ten compiler checks pass:
 1668 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-shared-reborrow-stages-gate.log`. Slice 2 is complete; guide/tracker
-integration is next.
+`/tmp/meowy-shared-reborrow-stages-gate.log`. Operation integration: `4c6c381`.
+The guide and trackers now document this boundary. Post-documentation validation
+passed: 1208 local links in 110 Markdown files;
+`/tmp/meowy-shared-reborrow-stages-docs.log`. All three slices are complete. Next
+expose exact projected shared-parent roots before adding checked projection and
+dereference sequences.
 Projected/implicit reference paths, restart propagation and proof outcomes remain
 incomplete.
 
@@ -1474,10 +1478,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Exclusive scalar reborrow roots and site/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1662 library/910
+- Direct shared reborrow roots and mode/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1668 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-reborrow-stages-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-shared-reborrow-stages-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1879,21 +1883,26 @@ subtraction retains its documented limits. No outstanding failures remain.
    Exclusive scalar reborrows now retain exact parent roots (`03f5e54`), existing
    sites and mode, and parent-before-reborrow/result stages (`a6e9d05`). No referent
    load or new loan authority is inferred; stopped parents allocate no site.
-   Next retain parent roots for direct shared `&*p` in `check/references.rs::borrowed`
-   when `address_root` has no field suffix. Preserve shared and exclusive parent
-   modes, existing shared site allocation, scalar/aggregate pointee types, stopped
-   parents and original errors. Extend bounded reborrow metadata for that explicit
-   shared boundary without cloning unbounded type shapes or inventing loads.
-   Validate grouped/call-returned parents, parent suspension, moves, lifetimes,
-   source/site/owner/control identities and shared budgets; run the compiler gate.
-   Keep root capture and graph integration reviewable. Projected shared paths,
-   implicit conversions/dereferences, field/coercion and contextual builders remain
-   separate; do not infer synthetic path links from HIR spans or allocation order.
+   Direct shared reborrows retain exact parent roots (`5332455`), existing sites,
+   requested result/actual parent modes and result links (`4c6c381`). Aggregate
+   comparisons are bounded and retain no shape copies; stopped parents preserve
+   requested mode without allocating a site or adding operation/result edges.
+   Next expose exact roots for projected shared-parent selection in
+   `check/references.rs::borrowed`: expression parents, indexed borrowed parents
+   and roots in temporary storage. Preserve source selection, temporary local and
+   statement identities, saved address errors, stopped inputs and once-only effects.
+   Validate
+   nested calls/indices, reference-valued fields, ordinary ownership errors and
+   budgets. Keep this root prerequisite independently reviewable, then capture
+   checked field paths and implicit-dereference stages during checking before
+   linking projected reborrow results. Never infer synthetic links from spans or
+   HIR inventory order. Run focused regressions and the compiler gate. Ordinary
+   place-borrow operations, implicit conversions and other builders stay separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Shared/implicit-projection paths and contextual builders remain coverage gaps;
+   Projected/implicit reference paths and contextual builders remain coverage gaps;
    missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

@@ -619,8 +619,9 @@ and all 1665 library tests pass; `/tmp/meowy-shared-reborrow-roots-lib.log`
 (`5332455`). Direct shared metadata now retains parent/result modes and existing
 sites with bounded aggregate comparisons and no shape copies. All ten compiler
 checks pass: 1668 library/910 native tests;
-`/tmp/meowy-shared-reborrow-stages-gate.log`. Guide/tracker integration is next;
-broader propagation and proof outcomes remain incomplete.
+`/tmp/meowy-shared-reborrow-stages-gate.log` (`4c6c381`). The foundation guide
+documents the boundary. Projected shared-parent root capture is next; broader
+propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -750,10 +751,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Exclusive scalar reborrow roots and site/result stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1662 library/910 native tests.
+- Direct shared reborrow roots and mode/result stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1668 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-reborrow-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-shared-reborrow-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -841,11 +842,14 @@ execution was not part of this documentation edit.
    construction retain their own paths. Explicit dereferences now retain pointer
    roots and load/result order without inferring pointee storage or loan authority.
    Exclusive scalar reborrows retain parent/site/mode identities and ordered result
-   availability without dereference loads. Next capture direct shared reborrow
-   parents in `compiler/src/check/references.rs::borrowed` for `&*p` without a field
-   suffix. Preserve modes, aggregate types, stopped parents, errors and loan checks;
-   validate focused tests and the compiler gate. Projected shared paths, implicit
-   conversions/dereferences and field/builder coverage remain separate.
+   availability without dereference loads. Direct shared reborrows now preserve
+   requested result and actual parent modes with bounded aggregate comparisons.
+   Next capture exact projected shared-parent roots in
+   `compiler/src/check/references.rs::borrowed`, preserving expression/indexed/
+   temporary source selection, error order and once-only effects. Validate focused
+   tests and the compiler gate before separately integrating checked projection
+   and implicit-dereference sequences. Ordinary place-borrow operations, implicit
+   conversions and remaining builders stay separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
