@@ -110,18 +110,17 @@ Dependency-ordered commit plan:
 2. Update the foundation guide and trackers with verified group-link boundaries
    and the next missing operand family, separately from implementation/tests.
 
-Investigation: `raw_expression` delegates groups to `expr`, discarding the child
-ID. Existing `region_edges` already validates complete child/parent ownership,
+Investigation: `raw_expression` previously delegated groups to `expr`, discarding
+the child ID. Existing `region_edges` validates complete child/parent ownership,
 shares the bounded edge ledger and links entry-to-child and child-normal-to-parent.
-It currently admits only branch regions/statements. Extend that validated shape
-for explicit expression wrappers; never add an entry-to-normal shortcut or infer
-completion from a successful check. Grouping stays erased in HIR and contributes
+It now also admits explicit transparent expression wrappers; never add an
+entry-to-normal shortcut or infer completion from a successful check. Grouping stays erased in HIR and contributes
 no logical required-evaluation work. Formatting's deliberate group flattening and
 other special checking paths remain distinct.
 
 Baseline: `ff58f82`, `99208a3`, `01b793d` passed all ten compiler checks: 1640
 library/910 native tests, conformance 10 passed, 13 unsupported, 0 failed in
-both profiles; `/tmp/meowy-output-stages-gate.log`. Working tree is clean on
+both profiles; `/tmp/meowy-output-stages-gate.log`. Working tree was clean on
 `main`. Ordinary groups now retain the exact returned child and reuse region
 entry/normal links. Expression parents reject statement children and retain the
 existing same-owner/block/completion checks. No HIR shape or logical charge was
@@ -130,9 +129,12 @@ The existing grouped-logic expectation now includes its two group links. All ten
 compiler checks pass: 1644 library/910 native tests, formatting, Clippy, build and
 conformance (10 passed, 13 unsupported, 0 failed in debug/release). Log:
 `/tmp/meowy-group-links-gate.log`. Existing required integer/statement tests confirm
-grouping still adds no logical charges. Slice 1 is complete; guide/tracker updates
-are next. Unary/dereference and other operand coverage, restart propagation and
-proof outcomes remain incomplete.
+grouping still adds no logical charges. Implementation: `a3a44e3`. The foundation
+guide and trackers now document the supported boundary. Post-documentation link
+validation passed (1208 local links in 110 Markdown files);
+`/tmp/meowy-group-links-docs.log`. Both slices are complete. Next capture scalar
+unary operand roots and checked result stages; dereference and other operand
+coverage, restart propagation and proof outcomes remain incomplete.
 
 ### Proof dependency implementation slices
 
@@ -1460,10 +1462,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Debug formatting roots and streamed-output stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1640 library/910
+- Grouped-expression child links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1644 library/910
   native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-output-stages-gate.log`.
+  0 failed in debug/release). Log: `/tmp/meowy-group-links-gate.log`.
   Precise projected write locations, remaining operand coverage and dependency propagation
   stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
@@ -1850,18 +1852,23 @@ subtraction retains its documented limits. No outstanding failures remain.
    that effect's return precedes the next part. Panic prefix comes first; only
    completed messages reach print newline or outer panic publication. Nonreturning
    operands omit suffix output and completion edges; panic has no normal result.
-   Next connect `ExprKind::Group` in `check/expressions.rs::raw_expression` to the
-   exact child ID returned by `expr_point`. Validate same-owner/block identities,
-   nested grouped calls/branches, nonreturning children, original errors, required
-   budgets and shared edge limits. Preserve HIR and typing; connect child entry and
-   normal-result ports without a generic entry-to-normal bypass. Keep unary,
-   dereference, field/coercion and contextual builder coverage separate. Add focused
-   regressions, then run the compiler gate before any propagation/enforcement work.
+   Ordinary groups now reuse region links from group entry to exact child entry
+   and child normal to group normal (`a3a44e3`). Same-owner/block identities, HIR,
+   expected typing and logical charges are preserved; no return is inferred.
+   Next capture scalar unary operands in `check/expressions.rs::raw_expression`
+   and connect operations validated by `check/scalars.rs::unary_value`. Preserve
+   contextual typing, primary projection, boolean/negation/internal bits-not
+   semantics, original errors and required budgets. Integer negation result
+   availability must follow overflow success; nonreturning operands must not gain
+   results. Keep the signed-literal fast path distinct instead of inventing a child
+   root. Split exact root capture from operation/result integration when meaningful,
+   add focused boundary tests, then run the compiler gate. Dereference, field and
+   coercion paths and contextual builders remain separate coverage work.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.
    Do not turn a completed check or missing effect metadata into normal completion.
-   Group/unary wrappers and other contextual block builders remain coverage gaps;
+   Unary/projection paths and other contextual block builders remain coverage gaps;
    missing sequences are not independence.
    Never add a generic entry-to-normal bypass across exits or unknown effects.
    Keep independent matcher arms, nested targets and function ownership distinct.

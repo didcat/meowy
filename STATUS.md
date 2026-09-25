@@ -593,8 +593,9 @@ The foundation guide documents the boundary. Ordinary grouped expressions now
 link their entry/result ports to exact checked children, reusing the bounded
 region ledger. HIR, expected typing and logical grouping costs are preserved.
 All ten compiler checks pass: 1644 library/910 native tests;
-`/tmp/meowy-group-links-gate.log`. Guide/tracker updates are next; broader
-propagation and proof outcomes remain incomplete.
+`/tmp/meowy-group-links-gate.log` (`a3a44e3`). The foundation guide documents the
+boundary. Scalar unary sequencing is next; broader propagation and proof outcomes
+remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -724,10 +725,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Debug formatting roots and streamed-output stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1640 library/910 native tests.
+- Grouped-expression child links passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1644 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-output-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-group-links-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -808,10 +809,13 @@ execution was not part of this documentation edit.
    paths retain canonical storage and ordered reservation/bounds/acquisition stages.
    Debug output retains exact formatting roots and interleaved output stages,
    including panic prefix, conditional output returns and stopped suffixes.
-   Next connect grouped-expression roots to their exact child entry/result ports
-   in `compiler/src/check/expressions.rs::raw_expression`. Preserve HIR, expected
-   typing, nonreturning children and budgets; validate nested groups and errors,
-   then run the compiler gate. Other unary/projection/builder coverage remains open.
+   Ordinary groups now link exact child entry/result ports through the shared
+   region ledger, preserving HIR, expected typing and logical grouping charges.
+   Next capture scalar unary roots in `compiler/src/check/expressions.rs` and link
+   their validated operations/results from `compiler/src/check/scalars.rs`.
+   Preserve signed-literal fast paths, contextual types, overflow/nonreturning
+   boundaries and required budgets; validate focused tests and the compiler gate.
+   Dereference/projection/builder coverage remains separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

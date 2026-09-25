@@ -175,6 +175,12 @@ panic publication follow full message completion. A nonreturning operand keeps
 later checked roots without adding later output or completion edges; panic has no
 normal result edge. Conditional output-return edges do not assert that I/O succeeds.
 These are bounded ordering facts, not effect summaries or proof outcomes.
+Ordinary grouped expressions now connect their entry to the exact checked child
+and the child's normal result to the group result. These transparent links reuse
+the bounded region ledger; a normal port does not prove that the child returns.
+Nested calls and short-circuit branches retain their own effect/exit boundaries.
+Grouping remains erased in HIR and adds no logical required-evaluation charges.
+Formatting and other specialized group-flattening paths retain their own rules.
 Named scalar-reference emissions use the same bounded sets at their canonical
 slot root. Sibling aliases share later retargets; ordinary copies keep snapshots.
 This does not enable exclusive-reference carriers or mutable exclusive-reference
