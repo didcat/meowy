@@ -101,89 +101,42 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current unary primary-projection slices
 
-Dependency-ordered commit plan:
-1. Return the actual unary primary-projection decision with the existing operand
-   root and checked HIR, preserving the value-only API for required construction.
-   Cover context-free records, preprojected inputs, stops and errors; run library checks.
-2. Extend unary metadata with that captured decision and a source/primary/operation
-   path, preserving checked negation and shared budgets; run the complete gate.
+The dependency-ordered plan is complete:
+1. Retain the actual unary projection decision with the checked operand root/HIR,
+   preserving the value-only API and existing errors (`9fdbde3`).
+2. Sequence the captured primary stage before the unary operation/result, with
+   focused regressions and the complete compiler gate (`4f26bbd`).
 3. Document verified scope and the next prerequisite separately.
 
-Investigation: expected-value checking may already supply a scalar primary, while
-context-free record operands are still projected inside `unary_value`. Capture the
-decision at `projected` instead of inspecting the final inner HIR. Direct Never
-returns before projection; a record with an invalid/Never primary still fails
-E222. Signed literal fast paths and source-free required helpers must stay intact.
+`unary_plan_value` reports only the projection it actually inserts. An input
+already projected by expected-value checking or containing an existing Primary
+wrapper is not projected again. `unary_point` returns that flag with its exact
+source root; `unary_value` remains a source-free wrapper for required construction.
+Unary metadata validates the flag, inserts a primary stage only when captured,
+and retains existing checked integer negation and ordinary inversion/float results.
+Direct Never remains entry-only. Invalid projected primaries keep E222; signed
+literal fast paths and the existing constant/runtime overflow boundary are unchanged.
+No additional aggregate copies, source points or loan authority are introduced.
 
-Baseline: clean `main`; all ten expected-coercion checks passed with 1756 library/
-910 native tests; `/tmp/meowy-expected-stages-gate.log`.
-`unary_plan_value` now returns the actual projection decision, and `unary_point`
-retains it alongside the exact source root. `unary_value` keeps its old value-only
-API. All five focused root/plan groups pass, including existing expected/inner
-wrappers, once-only effects, stops, invalid primaries and source-free construction;
-`/tmp/meowy-unary-primary-focused.log`. Formatting and all 1758 library tests pass;
-`/tmp/meowy-unary-primary-lib.log`. Projection-stage integration is next.
-Capture committed as `9fdbde3`. Unary metadata now retains the captured primary
-flag and routes source completion through a projection before the operation when
-needed. Existing scalar/checked-result and stopped-input paths remain intact;
-identity validation rejects a fabricated projection on a stopped or scalar input.
-All four focused stage groups pass: negation/inversion/bit primary stages,
-no duplicate expected projections, once-only effects, owner/control, stops,
-signed literals and atomic flag/budget validation;
-`/tmp/meowy-unary-primary-stages-focused.log`. Fixtures preserve the distinction
-between constant E107 and overflow deferred through a block's checked result,
-and use a context-free function expression for the projection case. The full
-compiler gate passed all ten checks: 1762 library/910 native tests, formatting,
-Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-unary-primary-stages-gate.log`. No outstanding failures remain.
-Documentation and the formatting primary-projection handoff are next.
-
-### Completed expected-type coercion slices
-
-The dependency-ordered plan is complete:
-1. Expose primary/Forward/Convert/Stopped decisions while preserving the pure
-   expected-value API, HIR and E207 (`a9add72`).
-2. Separate caller roots from raw sources for non-required expected types beyond
-   shared references, preserving branch identities and required paths (`548eaaf`).
-3. Connect bounded primary/forwarding/coercion stages with focused regressions
-   and the complete compiler gate (`bc18f19`).
-4. Document verified scope and the next prerequisite separately.
-
-`expected_plan` captures actual selection/conversion decisions without replaying
-acceptance or inferring them from final HIR. Non-required expected values keep an
-outer caller root and a nested raw root; raw And/Or points and call/arithmetic
-result conditions remain distinct. A successful raw check may precede an outer
-E207, so completion flags belong to their own boundaries. Seven old ancestry
-assertions now follow these roots rather than equating calls/branches with wrappers.
-Required non-reference checking retains its old path and logical budgets.
-
-Expected stages reuse the shared coercion ledger with an optional primary step.
-Raw Never has entry only; Never primary extraction has a projection but no result,
-even when existing HIR coercion changes its type. Shared forwarding and reborrows
-retain their separate paths, while shared primary extraction uses coercion stages.
-Source-free helpers gain no runtime hook, and metadata retains no aggregate copies.
-
-Three classification groups and all 1749 library tests passed;
-`/tmp/meowy-expected-plans-focused.log`, `/tmp/meowy-expected-plans-lib.log`.
-Three boundary groups and all 1752 library tests passed;
-`/tmp/meowy-expected-roots-focused.log`, `/tmp/meowy-expected-roots-lib.log`.
-Four integration groups cover raw effects/branches, primary/conversion order,
-direct/projected Never, shared/required/control boundaries, E207 and atomic budgets;
-`/tmp/meowy-expected-stages-focused.log`. All ten compiler checks pass: 1756 library/
-910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-expected-stages-gate.log`.
+All five root/plan groups and 1758 library tests pass;
+`/tmp/meowy-unary-primary-focused.log`, `/tmp/meowy-unary-primary-lib.log`.
+Four stage groups cover each operator, expected-projection isolation, once-only
+effects, owner/control, stops/literals, errors and atomic flag/budget validation;
+`/tmp/meowy-unary-primary-stages-focused.log`. All ten compiler checks pass: 1762
+library/910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-unary-primary-stages-gate.log`.
 No outstanding failures remain. The guide and trackers document this scope.
 Post-documentation validation passed 1208 local links in 110 Markdown files;
-`/tmp/meowy-expected-stages-docs.log`.
-Remaining unary primary-projection capture is next; other contextual builders,
-backedge propagation and proof outcomes remain separate.
+`/tmp/meowy-unary-primary-stages-docs.log`.
+Formatting primary-projection capture is next; other contextual builders, backedge
+propagation and proof outcomes remain separate.
 
-Ordinary binary stages (`07722b5`, `f0162b3`, `26f4860`, `3f76542`) publish adjusted
-operand sequences and entry/projection/operation/result edges atomically, preserving
-checked arithmetic, stopped inputs, short-circuit graphs and required-only checking.
-Their ten-check gate passed with 1746 library/910 native tests;
-`/tmp/meowy-binary-stages-gate.log`. Composed fallback and record-equality sequencing
-retain their established source roots and pre-coercion stopped state.
+Expected-value classification/source/stages (`a9add72`, `548eaaf`, `bc18f19`,
+`4749669`) keep raw branches/calls distinct from outer results and preserve both
+direct and projected Never. Their ten-check gate passed with 1756 library/910
+native tests; `/tmp/meowy-expected-stages-gate.log`. Binary stages, composed
+fallbacks and record equality retain their established ordering and required-path
+boundaries.
 
 ### Proof dependency implementation slices
 
@@ -1976,17 +1929,22 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`548eaaf`) now feed forwarding/primary/coercion stages (`bc18f19`). Caller
    roots stay distinct from raw branches/calls; direct and projected Never gain
    no result edge. Shared reborrows and required/source-free paths remain separate.
-   Next audit the remaining primary extraction inside `check/scalars.rs::unary_value`
-   and its `unary_point` / `check/expressions.rs` source caller. Expected contexts
-   may already project the input; capture only the actual additional projection
-   from `projected`, not an existing inner HIR wrapper. Preserve the original
-   unary value API for required construction, signed-literal fast paths, early
-   Never return, E222 for an invalid projected primary and checked negation errors.
-   Then extend `dependencies/unary.rs` so source completion reaches any captured
-   primary stage before the unary operation/result, with no bypass or duplicate
-   projection. Split capture and integration into reviewable slices with focused
-   context-free record/expected-context/never/budget tests and the full gate.
-   Other formatting/contextual builders and required evaluation remain separate.
+   Unary checking now captures its actual additional primary projection
+   (`9fdbde3`) and sequences it before the operation/result (`4f26bbd`). Existing
+   expected projections are not repeated; direct Never, invalid primaries, signed
+   literals, required helpers and checked negation retain their prior boundaries.
+   Next capture formatting projection decisions in
+   `check/expressions.rs::{format_parts,format_points}` alongside each exact source
+   root, then integrate them in `check/dependencies/outputs.rs::output_operation`
+   through the `check/functions.rs` caller. Preserve literal-text None entries,
+   recursive interpolation/group flattening, once-only evaluation and existing
+   reference/formattability errors. Sequence source completion through an actual
+   primary projection before that part's Output port; never bypass it or infer
+   the decision from an existing HIR wrapper. A Never primary must reach its
+   projection but no output/suffix stage. Preserve panic-prefix ordering, returned
+   I/O edges and stopped-part handling. Split capture and integration with focused
+   nested/primary/stopped/identity/budget tests and the complete compiler gate.
+   Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
    until the loop-header analysis is implemented.

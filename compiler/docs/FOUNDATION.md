@@ -188,6 +188,12 @@ negation and the inversion operations use ordinary completion. A nonreturning
 operand has no operation/result edge. Signed integer literals keep their direct
 literal path, and required-only unary construction gains no synthetic runtime
 points. Contextual typing, primary projection and logical charges stay unchanged.
+Unary checking also captures primary extraction performed inside its value helper.
+That projection occurs after source completion and before the unary operation,
+with no direct bypass. Primaries already extracted by expected-value checking are
+not repeated or inferred from an existing inner wrapper. Direct Never retains
+entry only; invalid projected primaries keep their original rejection. Signed
+literals and source-free required construction retain their separate paths.
 Explicit dereferences retain exact pointer roots, shared/exclusive mode and
 pointer-before-load/result order. A nonreturning pointer has no load stage; a
 `never` referent has no normal result. This records availability without copying

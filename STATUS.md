@@ -688,8 +688,12 @@ feed forwarding, primary and coercion stages (`bc18f19`). Raw branch/call identi
 direct/projected Never, shared reborrows and required budgets remain distinct.
 All ten compiler checks pass: 1756 library/910 native tests;
 `/tmp/meowy-expected-stages-gate.log`. The foundation guide documents this scope.
-Remaining unary primary projections are next; broader propagation and proof
-outcomes remain incomplete.
+Unary checking now captures additional primary projections (`9fdbde3`) and
+sequences them before the operator (`4f26bbd`), preserving existing expected-value
+projections, stops, literal paths and checked negation. All ten compiler checks
+pass: 1762 library/910 native tests; `/tmp/meowy-unary-primary-stages-gate.log`.
+The foundation guide documents this scope. Formatting primary projections are
+next; broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -819,10 +823,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Expected-value roots and coercion stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1756 library/910 native tests.
+- Unary primary-projection stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1762 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-expected-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-unary-primary-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -938,12 +942,14 @@ execution was not part of this documentation edit.
    arithmetic success checks. Required-only paths and short-circuit graphs remain
    separate. Expected-value contexts now retain raw-source roots and captured
    forwarding/primary/coercion stages, preserving shared reborrows, branch identity,
-   stopped inputs and required budgets. Next capture any additional primary
-   extraction in `compiler/src/check/scalars.rs::unary_value`, then connect it before
-   the existing unary operation. Do not duplicate projections already performed
-   by expected-value checking. Preserve signed literals, required-only callers,
-   Never handling and original errors; split capture/integration with focused tests
-   and the compiler gate. Other formatting/contextual builders remain separate.
+   stopped inputs and required budgets. Unary checking now captures and sequences
+   additional primary extraction without repeating expected-value projections.
+   Next retain formatting projection decisions with exact roots in
+   `compiler/src/check/expressions.rs::format_points`, then connect them before
+   per-part Output ports in `compiler/src/check/dependencies/outputs.rs`. Preserve
+   literal text, flattened interpolation, formattability errors, panic prefixes,
+   returned I/O edges and stopped suffixes. Split capture/integration with focused
+   tests and the compiler gate. Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual
