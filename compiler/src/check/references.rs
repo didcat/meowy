@@ -384,11 +384,15 @@ impl Checker {
                 if let Some(alias) = self.proofs.aliases.get_mut(&place.root) {
                     alias.borrowed.get_or_insert(span);
                 }
-                return Ok(hir::Expr {
+                let value = hir::Expr {
                     kind: hir::ExprKind::Borrow(place),
                     ty: self.reference_type(ty, span)?,
                     span,
-                });
+                };
+                if let Some(point) = self.point {
+                    self.place_borrow_operation(point, &value, span)?;
+                }
+                return Ok(value);
             }
             Err(error) => error,
         };

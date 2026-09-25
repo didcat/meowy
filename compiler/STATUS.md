@@ -99,56 +99,40 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current projected shared-reborrow path series
+### Current ordinary shared place-borrow slice
 
 Dependency-ordered commit plan:
-1. Return explicit helper-created temporary identities from `projected_parent`,
-   distinguishing materialization after source evaluation from a reference already
-   returned by the source. Preserve HIR and validate that prerequisite separately.
-2. Capture bounded checked plans: source root, materialization, owned field reads,
-   intermediate reference loads, final address path, reborrow site and parent mode.
-   Record during checking, publish atomically, and validate paths/errors/budgets.
-3. Connect validated plan stages and result availability through the shared edge
-   ledger, preserving stopped parents and unknown source effects. Add graph
-   regressions and run the full compiler gate across the series.
-4. Update the foundation guide and trackers with evidence and remaining coverage.
+1. Record ordinary shared borrows after successful address/type checking. Retain
+   the original checked place, canonical alias storage, shared mode and owner/control
+   identities. Link root/field address stages to reference creation and normal
+   availability, with no operand evaluation or pointee load. Validate paths, cells,
+   widened emitted aliases, errors and shared budgets; run the compiler gate.
+2. Document verified scope and the next missing borrow family in the foundation
+   guide and trackers, separately from implementation and focused regressions.
 
-Investigation: the first projection loop reads owned fields until a reference is
-reached. Each non-final reference segment loads its referent then reads fields;
-the final segment computes field addresses and creates a shared reborrow without
-loading that final referent. The parent helper may materialize a value after its
-source point, while already-produced references must not be materialized again.
-Capture that distinction at construction. No new source point IDs, loan authority,
-proof outcome or inferred callee completion is introduced by this series.
+Investigation: the successful `address` branch in `borrowed` resolves named local
+storage and owned record-field paths without evaluating a value operand. It marks
+emitted aliases as borrowed before constructing the shared-reference type. Preserve
+that order and all existing fallback paths. Canonical `Alias::root` identifies the
+slot, but a source alias can have a different member type from the canonical alias;
+validate field/type paths against the original local, never the canonical type.
+Reference-cell borrows address the cell, not its pointee. Metadata creates no loan
+authority and preserves the existing emitted-slot/ownership/lifetime validators.
 
-Baseline: `0a540a8`, `d735cf9` passed all ten compiler checks: 1672 library/910
-native tests; conformance 10 passed, 13 unsupported, 0 failed in debug/release.
-Log: `/tmp/meowy-projected-parent-roots-gate.log`. Working tree was clean on `main`.
-The parent helper now explicitly returns only temporary identities it creates
-after source evaluation. An already-produced temporary reference retains its
-existing HIR cell but returns no new-materialization marker. All five focused
-parent groups pass; `/tmp/meowy-projection-temporaries-focused.log`. Formatting,
-all 1673 library tests and library Clippy pass; logs:
-`/tmp/meowy-projection-temporaries-lib.log`, `/tmp/meowy-projection-temporaries-lint.log`.
-Materialization prerequisite: `3133214`. Checked plans now retain source roots,
-ordered materialization/field/load/address steps, final sites/modes, ownership and
-control. Per-path and total metadata limits bound capture; failed plans publish
-nothing. All four focused plan groups pass; `/tmp/meowy-projection-plans-focused.log`.
-Formatting, all 1677 library tests and library Clippy pass, including the projected
-loan fixture; `/tmp/meowy-projection-plans-lib.log`,
-`/tmp/meowy-projection-plans-lint.log`. Checked-plan commit: `ea6a625`.
-Projection stage ports now link exact parent completion through captured steps to
-the existing reborrow operation and result. Stopped parents have only their entry
-link; call-return conditions remain owned by the source invocation. Edge and item
-publication is atomic and allocates no source IDs. All three focused edge groups
-pass; `/tmp/meowy-projection-edges-focused.log`. All ten compiler checks pass:
-1680 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-borrow-projections-gate.log`.
-Graph integration: `7ca8a3a`. The foundation guide and trackers now describe the
-supported boundary. Post-documentation validation passed: 1208 local links in
-110 Markdown files; `/tmp/meowy-borrow-projections-docs.log`. All four slices are
-complete. Next record ordinary shared place-borrow operations. Exclusive place
-borrows, standalone temporaries, implicit conversions, other builders, restart
+Baseline: `3133214`, `ea6a625`, `7ca8a3a`, `0523a8f` passed all ten compiler checks:
+1680 library/910 native tests; conformance 10 passed, 13 unsupported, 0 failed in
+both profiles; `/tmp/meowy-borrow-projections-gate.log`. Working tree was clean on
+`main`. Ordinary shared place borrows now retain source places, canonical slot
+storage, shared mode and owner/control metadata. Root/field address stages lead
+to reference creation and normal availability without allocating operand points
+or reading pointees. Source-local types validate widened aliases independently of
+canonical-root member types. All four focused groups pass;
+`/tmp/meowy-place-borrows-focused.log`. All ten compiler checks pass: 1684 library/
+910 native tests, formatting, Clippy, build and conformance (10 passed,
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-place-borrows-gate.log`.
+Implementation is complete; guide/tracker integration is next.
+Exclusive place borrows,
+standalone temporaries, implicit conversions, other field/builder paths, restart
 propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices

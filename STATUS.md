@@ -629,8 +629,11 @@ Projection stage edges preserve that order and depend on exact parent completion
 stopped parents gain no result, and callee return conditions remain explicit.
 All ten compiler checks pass: 1680 library/910 native tests;
 `/tmp/meowy-borrow-projections-gate.log` (`7ca8a3a`). The foundation guide documents
-the boundary. Ordinary shared place-borrow operations are next; broader propagation
-and proof outcomes remain incomplete.
+the boundary. Ordinary shared place borrows now retain checked paths, canonical
+slot IDs and address/reference stages without operand or pointee reads. All ten
+compiler checks pass: 1684 library/910 native tests; `/tmp/meowy-place-borrows-gate.log`.
+Guide/tracker integration is next; broader propagation and proof outcomes remain
+incomplete.
 
 ## Pending descriptor statement accounting
 
