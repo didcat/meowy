@@ -99,7 +99,38 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current composed-fallback slices
+### Current ordinary binary-operation slices
+
+Dependency-ordered commit plan:
+1. Separate bounded sequence preparation from publication, preserving existing
+   generic sequence behavior and tests. Binary integration will need to adjust
+   the operand transition before atomically publishing either ledger.
+2. Capture actual primary-projection decisions, operand completion types and
+   checked-arithmetic classification alongside checked binary HIR. Preserve the
+   existing `project`/`binary_values` APIs and required-only callers.
+3. Integrate ordinary binary entry/projection/operation/result edges with the
+   prepared sequence, eliminating projection bypasses. Add focused regressions
+   and run the full compiler gate; short-circuit graphs remain separate.
+4. Document verified coverage and concrete next steps separately.
+
+Investigation: runtime binary lowering evaluates the projected left operand before
+the right. The current direct Normal(left)-Entry(right) link must therefore be
+replaced when a primary projection was inserted. Prepare the sequence without
+publication, then register its adjusted edge and binary stages together. Integer
+arithmetic uses checked success for +,-,*,/,% (including remainder's zero check);
+floating arithmetic, bit functions and comparisons use ordinary result edges.
+Required integer construction also calls `binary_values`, so only the source
+`binary` caller may publish runtime metadata. Preserve errors and existing HIR.
+
+Baseline: clean `main`; all ten fallback checks passed with 1739 library/910
+native tests; `/tmp/meowy-fallback-stages-gate.log`.
+`prepare_sequence` now returns a validated bounded sequence without publishing it;
+the original API retains idempotence, shared capacity checks and counters. All 12
+existing sequence tests pass; `/tmp/meowy-sequence-prepare-focused.log`.
+Formatting and all 1739 library tests pass; `/tmp/meowy-sequence-prepare-lib.log`.
+Projection/classification capture is next.
+
+### Completed composed-fallback slices
 
 The dependency-ordered plan is complete:
 1. Capture exact nested roots and Forward/Convert/Stopped decisions without

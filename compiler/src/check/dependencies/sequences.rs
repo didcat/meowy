@@ -33,6 +33,34 @@ impl Checker {
         items: Vec<Option<hir::PointId>>,
         span: Span,
     ) -> Result<()> {
+        let sequence = self.prepare_sequence(source, items, span)?;
+        if let Some(prior) = self.sequences.get(&source) {
+            return if *prior == sequence {
+                Ok(())
+            } else {
+                Err(Diagnostic::unsupported(
+                    "proof sequence identity mismatch",
+                    span,
+                ))
+            };
+        }
+        if !self.edge_room(sequence.edges.len()) {
+            return Err(Diagnostic::unsupported(
+                "proof sequence budget exhausted",
+                span,
+            ));
+        }
+        self.sequence_edges += sequence.edges.len();
+        self.sequences.insert(source, sequence);
+        Ok(())
+    }
+
+    pub(crate) fn prepare_sequence(
+        &mut self,
+        source: Source,
+        items: Vec<Option<hir::PointId>>,
+        span: Span,
+    ) -> Result<Sequence> {
         let budget = || Diagnostic::unsupported("proof sequence budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof sequence identity mismatch", span);
         if items.len() > MAX_ITEMS
@@ -96,20 +124,6 @@ impl Checker {
                 return Err(invalid());
             }
         }
-        if let Some(prior) = self.sequences.get(&source) {
-            return if prior.owner == owner && prior.items == items {
-                Ok(())
-            } else {
-                Err(invalid())
-            };
-        }
-        let count = items
-            .windows(2)
-            .filter(|pair| pair[0].is_some() && pair[1].is_some())
-            .count();
-        if !self.edge_room(count) {
-            return Err(budget());
-        }
         let edges = items
             .windows(2)
             .filter_map(|pair| {
@@ -120,16 +134,11 @@ impl Checker {
                 ))
             })
             .collect();
-        self.sequences.insert(
-            source,
-            Sequence {
-                owner,
-                items,
-                edges,
-            },
-        );
-        self.sequence_edges += count;
-        Ok(())
+        Ok(Sequence {
+            owner,
+            items,
+            edges,
+        })
     }
 }
 
