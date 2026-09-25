@@ -74,8 +74,19 @@ pub(crate) fn reborrow_stages_preserve_stopped_parents_owners_and_other_reborrow
     crate::compile(source).unwrap();
     let (checker, _) = check(source);
     assert_eq!(checker.reborrows, 2);
-    assert_eq!(checker.reborrow_ops.len(), 1);
-    assert_eq!(checker.reborrow_ops.values().next().unwrap().site, Some(0));
+    assert_eq!(checker.reborrow_ops.len(), 2);
+    assert!(
+        checker
+            .reborrow_ops
+            .values()
+            .any(|op| op.site == Some(0) && op.mode == hir::ReferenceMode::Exclusive)
+    );
+    assert!(
+        checker
+            .reborrow_ops
+            .values()
+            .any(|op| op.site == Some(1) && op.mode == hir::ReferenceMode::Shared)
+    );
     let mut checker = Checker::new();
     checker.derived.insert(0);
     checker

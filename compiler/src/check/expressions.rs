@@ -31,16 +31,26 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
-        let mut value = if matches!(expected, Some(Type::Reference(_))) {
-            self.with_point_id(PointKind::expression(expr), expr.span, |checker| {
-                checker.expression_value(expr, expected)
-            })?
-            .1
+        let (input, mut value) = if matches!(expected, Some(Type::Reference(_))) {
+            let (source, value) =
+                self.with_point_id(PointKind::expression(expr), expr.span, |checker| {
+                    checker.expression_value(expr, expected)
+                })?;
+            (Some(source), value)
         } else {
-            self.expression_value(expr, expected)?
+            (None, self.expression_value(expr, expected)?)
         };
         if value.ty == Type::Never {
             self.reach = FALSE;
+            if let Some(source) = input {
+                self.reborrow_operation(
+                    self.point.expect("shared context"),
+                    source,
+                    hir::ReferenceMode::Shared,
+                    &value,
+                    expr.span,
+                )?;
+            }
             return Ok(value);
         }
         if let (Some(Type::Reference(target)), Type::Exclusive(source)) = (expected, &value.ty)
@@ -57,11 +67,26 @@ impl Checker {
                 ty: expected.unwrap().clone(),
                 span: expr.span,
             };
+            self.reborrow_operation(
+                self.point.expect("shared context"),
+                input.expect("shared conversion source"),
+                hir::ReferenceMode::Shared,
+                &value,
+                expr.span,
+            )?;
+            return Ok(value);
         }
-        match expected {
+        let same = input.is_some() && expected == Some(&value.ty);
+        let value = match expected {
             Some(expected) => Self::expected_value(value, expected, expr.span),
             None => Ok(value),
+        }?;
+        if let Some(source) = input
+            && same
+        {
+            self.region_edges(self.point.expect("shared context"), source, expr.span)?;
         }
+        Ok(value)
     }
 
     pub(crate) fn expected_value(

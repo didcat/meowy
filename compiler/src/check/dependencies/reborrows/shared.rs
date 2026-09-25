@@ -64,10 +64,9 @@ pub(crate) fn shared_reborrow_stages_keep_stopped_modes_control_and_source_bound
         )
         .unwrap();
     assert!(checker.reborrow_ops.values().next().unwrap().control);
-    for source in ["r:{->n:1};p:&r;q:&(p.n)", "n:=1;p:&!n;q<&int32>:p"] {
-        crate::compile(source).unwrap();
-        assert!(check(source).0.reborrow_ops.is_empty());
-    }
+    let source = "r:{->n:1};p:&r;q:&(p.n)";
+    crate::compile(source).unwrap();
+    assert!(check(source).0.reborrow_ops.is_empty());
 }
 
 #[test]

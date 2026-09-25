@@ -134,6 +134,18 @@ ordinary diagnostics and budget restoration; `/tmp/meowy-conversion-roots-focuse
 Wrapper links remain intentionally pending the conversion integration slice.
 Formatting and all 1698 library tests pass; `/tmp/meowy-conversion-roots-lib.log`.
 No outstanding failures remain in the boundary prerequisite.
+Boundary prerequisite committed as `62a8a65`. Conversion integration now reuses
+the exact returned child and bounded reborrow operation. Unchanged shared results
+use transparent links; other generic coercions retain unknown wrapper links.
+Stopped contexts retain entry only. All four focused stage groups pass after
+resolving a local name collision: raw call/borrow ordering, grouped forwarding,
+unchanged shared results, deliberately unknown generic primary conversion,
+never/owner/control boundaries, existing errors and atomic edge budgets;
+`/tmp/meowy-conversion-stages-focused.log`. The full compiler gate passed all ten
+checks: 1702 library/910 native tests, formatting, Clippy, build and conformance
+(10 passed, 13 unsupported, 0 failed in debug/release);
+`/tmp/meowy-conversion-stages-gate.log`. No outstanding failures remain.
+Next document the verified boundary and ordinary runtime field-source prerequisite.
 
 ### Completed standalone temporary-borrow slices
 
