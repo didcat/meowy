@@ -692,8 +692,12 @@ Unary checking now captures additional primary projections (`9fdbde3`) and
 sequences them before the operator (`4f26bbd`), preserving existing expected-value
 projections, stops, literal paths and checked negation. All ten compiler checks
 pass: 1762 library/910 native tests; `/tmp/meowy-unary-primary-stages-gate.log`.
-The foundation guide documents this scope. Formatting primary projections are
-next; broader propagation and proof outcomes remain incomplete.
+The foundation guide documents this scope. Formatting now retains source/primary
+pairs (`39670ee`) and inserts projection before per-part output (`d660709`), preserving
+literal parts, panic prefixes and stopped suffixes. All ten compiler checks pass:
+1768 library/910 native tests; `/tmp/meowy-format-primary-stages-gate.log`.
+The guide documents this scope. Implicit shared-list receiver loads are next;
+broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 
@@ -823,10 +827,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Unary primary-projection stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1762 library/910 native tests.
+- Formatting primary-projection stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1768 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-unary-primary-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-format-primary-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -944,12 +948,14 @@ execution was not part of this documentation edit.
    forwarding/primary/coercion stages, preserving shared reborrows, branch identity,
    stopped inputs and required budgets. Unary checking now captures and sequences
    additional primary extraction without repeating expected-value projections.
-   Next retain formatting projection decisions with exact roots in
-   `compiler/src/check/expressions.rs::format_points`, then connect them before
-   per-part Output ports in `compiler/src/check/dependencies/outputs.rs`. Preserve
-   literal text, flattened interpolation, formattability errors, panic prefixes,
-   returned I/O edges and stopped suffixes. Split capture/integration with focused
-   tests and the compiler gate. Other contextual builders remain separate.
+   Formatting now sequences captured primary projections before per-part output
+   while preserving literals, panic prefixes and stopped suffixes. Next capture
+   implicit shared-list loads in `compiler/src/list.rs::list_receiver_point`, then
+   integrate them before index/method snapshots or size operations. Preserve owned
+   and explicit-dereference paths, receiver/index/item order, stopped inputs,
+   existing errors and bounds/capacity conditions. Keep element-borrow handling
+   separate; split capture and integration with focused tests and the compiler gate.
+   Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
    Other operand families and contextual

@@ -101,80 +101,40 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current formatting primary-projection slices
 
-Dependency-ordered commit plan:
-1. Retain each evaluated formatting part's exact point and actual projection
-   decision together, preserving literal None entries, flattening, HIR and errors.
-   Keep output routes unchanged initially; run focused and library checks.
-2. Validate captured projections and sequence them before their Output ports,
-   including stopped primaries, without changing panic/returned-I/O order. Run
-   focused regressions and the complete compiler gate.
+The dependency-ordered plan is complete:
+1. Capture each evaluated part's exact root and primary decision together,
+   preserving literal None entries, HIR and checking order (`39670ee`).
+2. Validate and sequence primary extraction before per-part output, including
+   stopped primaries, with focused tests and the full compiler gate (`d660709`).
 3. Document verified coverage and the next prerequisite separately.
 
-Investigation: `format_points` currently drops the decision returned implicitly by
-`project` after checking each dynamic part. Carry a point/primary pair in each
-Some entry instead of adding parallel arrays; literal text stays None. The output
-recorder already interleaves sources and writes and stops at a Never part. Insert
-projection before that stop test so a Never primary reaches extraction but never
-its Output or suffix. Capture once; do not reconstruct the decision from HIR.
+`format_points` now returns optional point/primary pairs while preserving recursive
+interpolation/group flattening and once-only evaluation. Literal text has no source
+point. Actual projections use `projected`; the unused value-only `project` wrapper
+is removed. Output metadata retains the captured decisions and inserts a projection
+between source completion and that part's Output port. A Never primary reaches
+projection but no output, suffix, operation or normal-result edge. Panic prefixes
+and returned-I/O links retain their original order. Existing scalar results are not
+projected again, and reference/formattability errors remain unchanged.
 
-Baseline: clean `main`; all ten unary-projection checks passed with 1762 library/
-910 native tests; `/tmp/meowy-unary-primary-stages-gate.log`.
-Formatting now returns optional point/primary pairs, and output metadata retains
-them while its routes remain unchanged. The unused value-only `project` wrapper
-is removed; all remaining callers use captured projection decisions. Five focused
-formatting groups pass: nested text/roots, additional versus existing projections,
-once-only effects, direct/projected Never, suffix checking and original errors;
-`/tmp/meowy-format-plans-focused.log`. Formatting and all 1764 library tests pass;
-`/tmp/meowy-format-plans-lib.log`. Output projection-stage integration is next.
-Capture committed as `39670ee`. Output validation now checks captured primary
-wrappers and inserts their projection before output or the stopped-part break.
-Literal text, panic prefixes and returned-I/O links retain their existing order.
-All four focused stage groups pass: interleaved print/panic order without bypasses,
-Never-primary suppression of output/suffixes, calls/scalar results/control, original
-errors and atomic flag/shared-budget checks; `/tmp/meowy-format-primary-stages-focused.log`.
-All ten compiler checks pass: 1768 library/910 native tests, formatting, Clippy,
-build and conformance (10 passed, 13 unsupported, 0 failed in debug/release);
-`/tmp/meowy-format-primary-stages-gate.log`. No outstanding failures remain.
-Documentation and the implicit shared-list receiver-load audit are next.
-
-### Completed unary primary-projection slices
-
-The dependency-ordered plan is complete:
-1. Retain the actual unary projection decision with the checked operand root/HIR,
-   preserving the value-only API and existing errors (`9fdbde3`).
-2. Sequence the captured primary stage before the unary operation/result, with
-   focused regressions and the complete compiler gate (`4f26bbd`).
-3. Document verified scope and the next prerequisite separately.
-
-`unary_plan_value` reports only the projection it actually inserts. An input
-already projected by expected-value checking or containing an existing Primary
-wrapper is not projected again. `unary_point` returns that flag with its exact
-source root; `unary_value` remains a source-free wrapper for required construction.
-Unary metadata validates the flag, inserts a primary stage only when captured,
-and retains existing checked integer negation and ordinary inversion/float results.
-Direct Never remains entry-only. Invalid projected primaries keep E222; signed
-literal fast paths and the existing constant/runtime overflow boundary are unchanged.
-No additional aggregate copies, source points or loan authority are introduced.
-
-All five root/plan groups and 1758 library tests pass;
-`/tmp/meowy-unary-primary-focused.log`, `/tmp/meowy-unary-primary-lib.log`.
-Four stage groups cover each operator, expected-projection isolation, once-only
-effects, owner/control, stops/literals, errors and atomic flag/budget validation;
-`/tmp/meowy-unary-primary-stages-focused.log`. All ten compiler checks pass: 1762
+All five formatting capture groups and 1764 library tests pass;
+`/tmp/meowy-format-plans-focused.log`, `/tmp/meowy-format-plans-lib.log`.
+Four stage groups cover interleaved print/panic output, stopped primaries, calls,
+scalar results, owner/control, errors and atomic flag/shared-budget validation;
+`/tmp/meowy-format-primary-stages-focused.log`. All ten compiler checks pass: 1768
 library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-unary-primary-stages-gate.log`.
+13 unsupported, 0 failed in debug/release); `/tmp/meowy-format-primary-stages-gate.log`.
 No outstanding failures remain. The guide and trackers document this scope.
 Post-documentation validation passed 1208 local links in 110 Markdown files;
-`/tmp/meowy-unary-primary-stages-docs.log`.
-Formatting primary-projection capture is next; other contextual builders, backedge
-propagation and proof outcomes remain separate.
+`/tmp/meowy-format-primary-stages-docs.log`.
+Implicit shared-list receiver-load capture is next; other contextual builders,
+backedge propagation and proof outcomes remain separate.
 
-Expected-value classification/source/stages (`a9add72`, `548eaaf`, `bc18f19`,
-`4749669`) keep raw branches/calls distinct from outer results and preserve both
-direct and projected Never. Their ten-check gate passed with 1756 library/910
-native tests; `/tmp/meowy-expected-stages-gate.log`. Binary stages, composed
-fallbacks and record equality retain their established ordering and required-path
-boundaries.
+Unary projection capture/stages (`9fdbde3`, `4f26bbd`, `782c76b`) preserve expected
+projections, stops, signed literals and checked negation. Their ten-check gate
+passed with 1762 library/910 native tests; `/tmp/meowy-unary-primary-stages-gate.log`.
+Expected-value, binary and composed-fallback stages retain their established source
+boundaries without granting new type/loan authority or enabling proof outcomes.
 
 ### Proof dependency implementation slices
 
@@ -1971,17 +1931,21 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`9fdbde3`) and sequences it before the operation/result (`4f26bbd`). Existing
    expected projections are not repeated; direct Never, invalid primaries, signed
    literals, required helpers and checked negation retain their prior boundaries.
-   Next capture formatting projection decisions in
-   `check/expressions.rs::{format_parts,format_points}` alongside each exact source
-   root, then integrate them in `check/dependencies/outputs.rs::output_operation`
-   through the `check/functions.rs` caller. Preserve literal-text None entries,
-   recursive interpolation/group flattening, once-only evaluation and existing
-   reference/formattability errors. Sequence source completion through an actual
-   primary projection before that part's Output port; never bypass it or infer
-   the decision from an existing HIR wrapper. A Never primary must reach its
-   projection but no output/suffix stage. Preserve panic-prefix ordering, returned
-   I/O edges and stopped-part handling. Split capture and integration with focused
-   nested/primary/stopped/identity/budget tests and the complete compiler gate.
+   Formatting now captures source/primary pairs (`39670ee`) and places validated
+   projections before per-part output (`d660709`). Literal None entries, recursive
+   flattening, panic prefixes, returned-I/O conditions and stopped suffixes remain
+   intact; a Never primary has extraction but no output/result edge.
+   Next audit `list.rs::list_receiver_point`, which inserts an implicit Deref for
+   shared list references but returns only the original root and resulting HIR.
+   Capture that load decision during checking, distinguishing owned lists, explicit
+   dereferences and strings. Then integrate it before existing snapshots or size
+   operations in `check/dependencies/{indices,methods}.rs`, preserving receiver
+   evaluation before index/item effects. Never bypass the load with the old direct
+   source-to-snapshot link. Keep stopped receivers, arity/type errors, known/unknown
+   lengths and capacity/bounds-success stages unchanged. Shared element borrows
+   use separate parent handling; do not broaden a shared edge helper blindly.
+   Split capture and index/method integration into reviewable slices, with focused
+   owned/shared/explicit/stopped/order/budget tests and the complete compiler gate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

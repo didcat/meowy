@@ -194,6 +194,13 @@ with no direct bypass. Primaries already extracted by expected-value checking ar
 not repeated or inferred from an existing inner wrapper. Direct Never retains
 entry only; invalid projected primaries keep their original rejection. Signed
 literals and source-free required construction retain their separate paths.
+Formatting retains each evaluated part's exact root and actual primary-projection
+decision together; literal text retains no source point. A captured projection
+occurs after its source and before that part's output, without a direct bypass.
+Never primaries reach extraction but no output or suffix stage. Recursive string
+flattening, once-only effects, reference/formattability checks, panic prefixes and
+returned-I/O conditions remain unchanged. Scalar results already produced by
+another operation are not projected again.
 Explicit dereferences retain exact pointer roots, shared/exclusive mode and
 pointer-before-load/result order. A nonreturning pointer has no load stage; a
 `never` referent has no normal result. This records availability without copying
