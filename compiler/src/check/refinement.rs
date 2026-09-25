@@ -129,16 +129,23 @@ impl Checker {
     }
 
     pub(crate) fn coerce(value: hir::Expr, ty: Type) -> hir::Expr {
+        Self::coercion(value, ty).1
+    }
+
+    pub(crate) fn coercion(value: hir::Expr, ty: Type) -> (bool, hir::Expr) {
         if value.ty == ty {
-            value
+            (false, value)
         } else {
-            hir::Expr {
-                span: value.span,
-                ty,
-                kind: hir::ExprKind::Coerce {
-                    value: Box::new(value),
+            (
+                true,
+                hir::Expr {
+                    span: value.span,
+                    ty,
+                    kind: hir::ExprKind::Coerce {
+                        value: Box::new(value),
+                    },
                 },
-            }
+            )
         }
     }
 

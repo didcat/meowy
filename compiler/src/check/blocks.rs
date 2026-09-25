@@ -5,6 +5,8 @@ use crate::flow::FALSE;
 use crate::hir::{self, Type};
 use std::collections::BTreeMap;
 
+mod fallback;
+
 impl Checker {
     pub(crate) fn block(
         &mut self,
@@ -392,18 +394,9 @@ impl Checker {
                     span: value.span,
                 })
             }
-            _ => {
-                let value = self.expression(value, expected)?;
-                if matches!(value.ty, Type::Record { .. }) {
-                    Ok(value)
-                } else if let Some(expected) = expected
-                    && expected.accepts(&value.ty)
-                {
-                    Ok(Self::coerce(value, expected.clone()))
-                } else {
-                    Ok(value)
-                }
-            }
+            _ => self
+                .composed_fallback_point(value, expected)
+                .map(|(_, _, value)| value),
         }
     }
 }

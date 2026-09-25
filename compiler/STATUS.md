@@ -99,7 +99,36 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current record-equality sequencing slices
+### Current composed-fallback slices
+
+Dependency-ordered commit plan:
+1. Retain the nested source root and classify forwarding, conversion or stopped
+   input before the fallback loses that distinction. Expose the existing coerce
+   decision without repeating type comparison or acceptance; validate HIR and
+   contextual/error/budget preservation with focused and library checks.
+2. Record bounded source/forwarding/conversion/result stages using that captured
+   kind. Never inputs retain entry only even when their HIR type changes; run
+   focused regressions and the complete compiler gate.
+3. Document verified scope and the next prerequisite separately.
+
+Investigation: the fallback already has a nested `expression_point` boundary.
+Record inputs bypass coercion; other values call `coerce` only after expected-type
+acceptance. `coerce` already distinguishes identity from a new wrapper. Return
+that decision from a shared helper while retaining its existing API for other
+callers. Capture Never before coercion; inspecting final HIR would confuse an
+existing inner wrapper with a new conversion or invent completion for Never.
+
+Baseline: clean `main`; all ten record-sequencing checks passed with 1732 library/
+910 native tests; `/tmp/meowy-record-sequences-gate.log`.
+The shared `coercion` helper now returns its existing wrapper decision while
+`coerce` retains its original API. `composed_fallback_point` captures the actual
+nested root and Forward/Convert/Stopped kind without cloning source types or
+repeating acceptance. Three focused groups pass: record/scalar/union identity,
+existing inner wrappers, calls/branches, stopped coercion, errors and restoration;
+`/tmp/meowy-fallback-roots-focused.log`. Formatting and all 1735 library tests pass;
+`/tmp/meowy-fallback-roots-lib.log`. Stage integration remains next.
+
+### Completed record-equality sequencing slices
 
 The dependency-ordered plan is complete:
 1. Retain both composed operand roots in record-context equality and use the
