@@ -710,8 +710,10 @@ The foundation guide documents the scope. Ordinary narrowing decisions
 (`1fb0156`) and raw roots (`29a5e6f`) now feed forwarding/conversion/result stages
 (`699fc42`). All ten compiler checks pass: 1794 library/910 native tests;
 `/tmp/meowy-narrow-stages-gate.log`. The guide documents this scope; narrowing
-inside projected-borrow field traversal is in progress. The compiler handoff
-records separate capture, sequencing and documentation commits.
+inside projected-borrow field traversal is captured (`108b41d`) and sequenced
+before further projections/reborrows. All ten compiler checks pass: 1801 library/
+910 native tests; `/tmp/meowy-borrow-narrow-gate.log`. Guide documentation and the
+raw local-read handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -842,10 +844,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Ordinary narrowing stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1794 library/910 native tests.
+- Projected-borrow narrowing stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1801 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-narrow-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-borrow-narrow-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -973,13 +975,13 @@ execution was not part of this documentation edit.
    deferred source order, stops and prior expected conversions. The compiler gate
    passes, and the guide documents coverage. Ordinary narrowing now retains raw
    local/field roots and ordered forwarding/conversion/result stages. The compiler
-   gate passes, and the guide documents this scope. Next capture owned-field
-   narrowing in `compiler/src/check/references.rs::borrowed` alongside projection
-   metadata. Then sequence it in `check/dependencies/borrow_projections.rs`. Split
-   capture and integration; preserve path-step limits, site/mode identity, typing/
-   loan gates, temporary lifetimes and required paths. Test guarded nullable
-   references, nested/unchanged fields, stopped/error paths and atomic budgets
-   before the compiler gate. Shared element borrows remain separate.
+   gate passes, and the guide documents this scope. Projected-borrow owned-field
+   narrowing now retains actual flags and conversion-before-successor stages,
+   preserving path limits, reborrow identities and existing gates. The compiler
+   gate passes. Document this scope next, then capture ordinary raw local-read
+   identities in `compiler/src/check/expressions.rs` before narrowing, followed by
+   bounded read stages and the compiler gate. Required/static/file-module paths
+   and shared element borrows remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

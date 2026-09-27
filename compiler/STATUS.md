@@ -109,17 +109,28 @@ must remain unchanged. The working tree was clean before this continuation.
 Dependency-ordered commit plan:
 1. Retain the actual narrowing flag alongside each owned Field step, preserving
    HIR, path-step counts and errors. Test guarded nullable references, nested owned
-   fields, unchanged/load paths and stopped/errors; run the library suite.
+   fields, unchanged/load paths and stopped/errors; the library suite passes (`108b41d`).
 2. Sequence captured conversion after field selection and before further traversal
    or reborrow, preserving path budgets and site/mode identity. Test order, no
-   bypasses and atomic shared-edge budgets, then run the compiler gate.
+   bypasses and atomic shared-edge budgets; the compiler gate passes.
 3. Document verified coverage and the next concrete prerequisite.
 
 Field metadata now retains the actual `narrow_plan` flag for owned traversal.
 Loaded fields explicitly retain false; HIR and graph edges are unchanged in this
 prerequisite. All three capture groups, formatting and all 1797 library tests
 pass; `/tmp/meowy-borrow-narrow-capture-lib.log`. The unguarded nullable-reference
-fixture retains B001. No outstanding failures remain. Conversion edges are next. Ordinary narrowing is complete (`1fb0156`, `29a5e6f`, `699fc42`,
+fixture retains B001 (`108b41d`). Conversion edges now follow captured owned-field
+steps before further traversal/reborrow; flags after intermediate loads reject.
+Path-step counts remain unchanged and extra edges use the shared budget. All 14
+borrow-projection groups and formatting pass; `/tmp/meowy-borrow-narrow-stages.log`.
+All ten compiler checks pass: 1801 library/910 native tests, formatting, Clippy,
+build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-borrow-narrow-gate.log`. No outstanding failures remain. Guide/handoff
+documentation is next. Then capture ordinary raw local-read identities in
+`expressions.rs::expression_value` before narrowing: current Local construction
+creates a source point without a storage-read operation. Retain exact local and
+canonical emitted-slot storage IDs; sequence reads separately from narrowing
+without replaying initializers or inferring borrow authority. Ordinary narrowing is complete (`1fb0156`, `29a5e6f`, `699fc42`,
 `2ebd7c9`); its gate passed 1794 library/910 native tests and conformance
 10 passed/13 unsupported/0 failed in debug/release.
 `/tmp/meowy-narrow-stages-gate.log`. Proof outcomes remain gated.
@@ -1938,11 +1949,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    conversion/result stages (`699fc42`). Never results are omitted and shared-
    budget failures publish no narrowing operation. The compiler gate passes; the
    guide documents the scope. Owned-field narrowing decisions are now captured
-   alongside `ProjectionStep::Field` without changing path-step counts. Next
-   integrate conversion stages in `dependencies/borrow_projections.rs`
-   without changing path-step limits, site/mode identity, permission gates or
-   temporary lifetimes. Verify guarded nullable references, nested/unchanged fields,
-   stopped/error paths and atomic budgets, then run the compiler gate.
+   alongside `ProjectionStep::Field` (`108b41d`) and conversion stages now precede
+   further traversal/reborrow without changing path-step counts. All 14 focused
+   groups and the compiler gate pass. Document the scope next, then capture raw
+   local-read identities at `expressions.rs::expression_value` before narrowing.
+   Retain actual local/canonical storage IDs and owner/control; add bounded read
+   stages in a separate slice. Preserve required/static/file-module paths, Never,
+   initialization/ownership checks and budget failures; rerun the compiler gate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

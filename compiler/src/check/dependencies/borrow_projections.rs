@@ -90,6 +90,7 @@ impl Checker {
             return Err(invalid());
         }
         let mut address = false;
+        let mut loaded = false;
         for (index, step) in plan.steps.iter().enumerate() {
             match step {
                 Step::Materialize { local, statement } => {
@@ -100,8 +101,11 @@ impl Checker {
                         return Err(invalid());
                     }
                 }
-                Step::Field { index: field, .. } => {
-                    if address || *field >= crate::borrow_value::MAX_PARTS {
+                Step::Field {
+                    index: field,
+                    narrow,
+                } => {
+                    if address || (loaded && *narrow) || *field >= crate::borrow_value::MAX_PARTS {
                         return Err(invalid());
                     }
                 }
@@ -109,6 +113,7 @@ impl Checker {
                     if address {
                         return Err(invalid());
                     }
+                    loaded = true;
                 }
                 Step::Address(field) => {
                     if *field >= crate::borrow_value::MAX_PARTS {
@@ -125,10 +130,21 @@ impl Checker {
         )];
         if plan.site.is_some() {
             let mut from = Port::Normal(plan.parent);
-            for step in 0..plan.steps.len() {
+            for (step, item) in plan.steps.iter().enumerate() {
                 let to = Port::Projection { point: id, step };
                 plan.edges.push(Edge::new(from, to, Route::Next));
                 from = to;
+                if matches!(item, Step::Field { narrow: true, .. }) {
+                    if !self.flow.spend(1) {
+                        return Err(budget());
+                    }
+                    let to = Port::Conversion {
+                        point: id,
+                        part: step,
+                    };
+                    plan.edges.push(Edge::new(from, to, Route::Next));
+                    from = to;
+                }
             }
             plan.edges.extend([
                 Edge::new(from, Port::Operation(id), Route::Next),
@@ -162,3 +178,6 @@ mod tests;
 
 #[cfg(test)]
 mod narrowing;
+
+#[cfg(test)]
+mod conversions;
