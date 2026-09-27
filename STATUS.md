@@ -713,7 +713,8 @@ The foundation guide documents the scope. Ordinary narrowing decisions
 inside projected-borrow field traversal is captured (`108b41d`) and sequenced
 before further projections/reborrows (`e909bd0`). All ten compiler checks pass:
 1801 library/910 native tests; `/tmp/meowy-borrow-narrow-gate.log`. The guide
-documents this scope. Ordinary raw local-read identities and stages are next.
+documents this scope. Raw local-read work is in progress; the compiler handoff
+records separate capture, stage integration and documentation commits.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

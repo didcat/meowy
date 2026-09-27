@@ -238,12 +238,23 @@ impl Checker {
                             span: expr.span,
                         });
                     }
-                    return self.narrow_source(expr.span, |_| {
-                        Ok(hir::Expr {
+                    return self.narrow_source(expr.span, |checker| {
+                        let value = hir::Expr {
                             kind: hir::ExprKind::Local(id),
                             ty,
                             span: expr.span,
-                        })
+                        };
+                        if !checker.required
+                            && let Some(point) = checker.point
+                        {
+                            checker.capture_local_read(
+                                point,
+                                id,
+                                value.ty != Type::Never,
+                                expr.span,
+                            )?;
+                        }
+                        Ok(value)
                     });
                 }
                 Value::Constant(value) => return Ok(Self::constant_expr(value, expr.span)),

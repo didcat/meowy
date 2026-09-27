@@ -99,46 +99,32 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current projected-borrow narrowing slices
+### Current raw local-read slices
 
-The dependency-ordered series is complete:
-1. Retain actual owned-field narrowing flags without changing HIR, path-step
-   counts or existing errors (`108b41d`).
-2. Sequence conversion after field selection and before further traversal/reborrow,
-   preserving path limits and atomic shared-edge budgets (`e909bd0`).
+Investigation confirms the ordinary Value::Local branch constructs HIR inside its
+raw narrowing root without recording storage-read identity or stages. Existing
+binding/write metadata already canonicalizes emitted-slot aliases through
+`proofs.aliases`; local reads will reuse that identity rule. Required reads and
+static/file-module locals retain their separate branches. The working tree is clean.
+
+Dependency-ordered commit plan:
+1. Capture raw local-read point/local/canonical-storage identities, owner/control
+   and completion before narrowing; preserve HIR and required paths. Add focused
+   plain/mutable/parameter/alias/reference/Never/error tests and run library checks.
+2. Publish bounded entry/read/result stages under the shared edge budget, preserving
+   Never, narrowing order, ownership and reference-cell identity. Verify graph
+   ordering and atomic failures, then run the compiler gate.
 3. Document verified coverage and the next concrete prerequisite.
 
-`references.rs::borrowed` captures `narrow_plan` decisions on existing Field steps.
-The bounded projection graph inserts a distinct conversion port after each changed
-field, with no direct bypass. Nested fields retain independent decisions. Fields
-selected after intermediate loads remain unconverted and reject inconsistent
-narrowing flags. Each extra conversion charges work and the shared edge budget;
-path-step and projection-item counts remain unchanged. Stopped parents retain
-entry only, and rejected traversals never become successful borrows. Original
-HIR, guards, temporary storage, owner/control, site/mode identity, type/loan checks
-and B001/E201/E302 gates remain preserved. Metadata grants no new authority and
-does not enable proof outcomes.
-
-All three capture groups and all 1797 then-current library tests pass;
-`/tmp/meowy-borrow-narrow-capture-lib.log`. All 14 borrow-projection groups pass;
-`/tmp/meowy-borrow-narrow-stages.log`. All ten compiler checks pass: 1801 library/
-910 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-borrow-narrow-gate.log`. No outstanding failures remain.
-The foundation guide documents this scope. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-borrow-narrow-docs.log`.
-
-Next capture raw ordinary local-read identities in the Value::Local branch of
-`check/expressions.rs::expression_value`, inside the existing `narrow_source`
-boundary. Its raw Local construction currently has no storage-read operation.
-Retain the actual PointId, local ID, canonical emitted-slot storage ID, owner,
-control and completion without replaying an initializer. Then add bounded read
-stages before narrowing in a separate slice; a completed check is not evidence
-of runtime reachability. Preserve Never, initialization/ownership checks and
-reference-cell identities without inferring pointee reads. Required reads, static
-constants and file-module locals retain separate paths. Verify plain/mutable/
-parameter/alias/narrowed/reference reads, errors and atomic budgets, then run the
-compiler gate. Broader propagation and evaluated proof outcomes remain separate.
+Capture now records actual raw roots, local/canonical storage IDs and completion
+inside the narrowing boundary, skipping required reads. HIR and graph edges are
+unchanged in this prerequisite. All three focused capture groups pass;
+`/tmp/meowy-local-read-capture.log`. Formatting and all 1804 library tests pass;
+`/tmp/meowy-local-read-capture-lib.log`. No outstanding failures remain.
+Bounded entry/read/result integration is next. Projected-borrow narrowing is complete (`108b41d`, `e909bd0`,
+`db56916`); its gate passed 1801 library/910 native tests and conformance
+10 passed/13 unsupported/0 failed in debug/release.
+`/tmp/meowy-borrow-narrow-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1956,10 +1942,10 @@ subtraction retains its documented limits. No outstanding failures remain.
    guide documents the scope. Owned-field narrowing decisions are now captured
    alongside `ProjectionStep::Field` (`108b41d`) and conversion stages now precede
    further traversal/reborrow (`e909bd0`) without changing path-step counts. All 14
-   focused groups and the compiler gate pass; the guide documents the scope. Next
-   capture raw local-read identities at `expressions.rs::expression_value` inside
-   the existing narrowing boundary. Retain actual local/canonical storage IDs and
-   owner/control; add bounded read stages in a separate slice. Preserve required/
+   focused groups and the compiler gate pass; the guide documents the scope. Raw
+   local-read point/local/canonical-storage identities and completion are captured
+   inside the narrowing boundary. Next add entry/read/result stages in
+   `dependencies/local_reads.rs` with atomic shared-budget publication. Preserve required/
    static/file-module paths, Never, initialization/ownership checks and reference-
    cell identities. Verify ordinary/mutable/parameter/alias/narrowed/reference reads,
    errors and atomic budgets, then rerun the compiler gate.
