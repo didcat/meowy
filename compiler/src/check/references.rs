@@ -463,7 +463,7 @@ impl Checker {
                 .ok_or_else(|| {
                     Self::error("E201", format!("unknown record field `{name}`"), span)
                 })?;
-            value = self.narrow(hir::Expr {
+            let (narrow, field) = self.narrow_plan(hir::Expr {
                 kind: hir::ExprKind::Field {
                     value: Box::new(value),
                     index,
@@ -471,7 +471,8 @@ impl Checker {
                 ty,
                 span: expr.span,
             })?;
-            self.projection_step(&mut plan, ProjectionStep::Field(index))?;
+            value = field;
+            self.projection_step(&mut plan, ProjectionStep::Field { index, narrow })?;
             if names.peek().is_none() {
                 return Err(error);
             }
@@ -554,7 +555,13 @@ impl Checker {
                     },
                     span,
                 };
-                self.projection_step(&mut plan, ProjectionStep::Field(index))?;
+                self.projection_step(
+                    &mut plan,
+                    ProjectionStep::Field {
+                        index,
+                        narrow: false,
+                    },
+                )?;
             }
         }
     }

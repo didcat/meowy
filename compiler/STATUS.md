@@ -99,47 +99,30 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current ordinary narrowing slices
+### Current projected-borrow narrowing slices
 
-The dependency-ordered series is complete:
-1. Expose actual narrowing decisions, preserving refinement and mutable
-   observations (`1fb0156`).
-2. Retain distinct raw local/field roots and changed/completion metadata while
-   preserving required and projected-borrow paths (`29a5e6f`).
-3. Sequence raw completion through forwarding or conversion to the result,
-   omitting Never results under the shared edge budget (`699fc42`).
-4. Document verified coverage and the next bounded prerequisite.
+Investigation confirms `references.rs::borrowed` narrows owned field values before
+continuing toward a reference, but its Field metadata omits that conversion.
+Fields selected after an intermediate reference load do not call narrowing and
+must remain unchanged. The working tree was clean before this continuation.
 
-`narrow_plan` reports whether this invocation inserted a Coerce wrapper. Ordinary
-local and runtime-field checking use `narrow_source` to keep raw evaluation roots
-separate from narrowing results. Field operations keep their pre-narrowing types
-and receiver/load/result stages; caller expected-value boundaries remain distinct.
-Unchanged values forward from raw completion. Changed values pass through a
-conversion stage; direct Never has entry only and conversion to Never has no normal
-result. Existing guards, mutable observations, required accounting and type/loan
-rules remain authoritative. Source/owner validation and shared-budget failures
-publish no narrowing operation. Projected-borrow traversal keeps its separate
-builder; these metadata do not establish complete provenance or proof outcomes.
+Dependency-ordered commit plan:
+1. Retain the actual narrowing flag alongside each owned Field step, preserving
+   HIR, path-step counts and errors. Test guarded nullable references, nested owned
+   fields, unchanged/load paths and stopped/errors; run the library suite.
+2. Sequence captured conversion after field selection and before further traversal
+   or reborrow, preserving path budgets and site/mode identity. Test order, no
+   bypasses and atomic shared-edge budgets, then run the compiler gate.
+3. Document verified coverage and the next concrete prerequisite.
 
-Plan capture passed three focused groups and all 1787 then-current library tests;
-`/tmp/meowy-narrow-plans-lib.log`. Root capture passed all 1789 library tests;
-`/tmp/meowy-narrow-roots-lib.log`. All seven narrowing root/stage groups pass;
-`/tmp/meowy-narrow-stages.log`. All ten compiler checks pass: 1794 library/910
-native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-narrow-stages-gate.log`. No outstanding failures remain.
-The foundation guide documents this coverage. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-narrow-docs.log`.
-
-Next capture owned-field narrowing decisions in `check/references.rs::borrowed`.
-That path still calls `narrow` while recording only `ProjectionStep::Field`.
-Retain the actual changed flag alongside the existing field step, then separately
-integrate conversion ordering in `check/dependencies/borrow_projections.rs` before
-further projection or reborrow. Preserve path-step limits separately from the new
-edge count, source roots, temporary materialization, site/mode identity and existing
-type/loan gates. Verify guarded nullable reference fields, nested owned fields,
-unchanged paths, stopped/error cases and atomic budgets, then run the compiler
-gate. Required reads, broader propagation and proof evaluation remain separate.
+Field metadata now retains the actual `narrow_plan` flag for owned traversal.
+Loaded fields explicitly retain false; HIR and graph edges are unchanged in this
+prerequisite. All three capture groups, formatting and all 1797 library tests
+pass; `/tmp/meowy-borrow-narrow-capture-lib.log`. The unguarded nullable-reference
+fixture retains B001. No outstanding failures remain. Conversion edges are next. Ordinary narrowing is complete (`1fb0156`, `29a5e6f`, `699fc42`,
+`2ebd7c9`); its gate passed 1794 library/910 native tests and conformance
+10 passed/13 unsupported/0 failed in debug/release.
+`/tmp/meowy-narrow-stages-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1954,9 +1937,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    ordinary local/field raw-source roots (`29a5e6f`) now feed bounded forwarding/
    conversion/result stages (`699fc42`). Never results are omitted and shared-
    budget failures publish no narrowing operation. The compiler gate passes; the
-   guide documents the scope. Next capture owned-field narrowing decisions in
-   `references.rs::borrowed` alongside existing `ProjectionStep::Field` metadata.
-   Integrate their conversion stages separately in `dependencies/borrow_projections.rs`
+   guide documents the scope. Owned-field narrowing decisions are now captured
+   alongside `ProjectionStep::Field` without changing path-step counts. Next
+   integrate conversion stages in `dependencies/borrow_projections.rs`
    without changing path-step limits, site/mode identity, permission gates or
    temporary lifetimes. Verify guarded nullable references, nested/unchanged fields,
    stopped/error paths and atomic budgets, then run the compiler gate.

@@ -710,7 +710,8 @@ The foundation guide documents the scope. Ordinary narrowing decisions
 (`1fb0156`) and raw roots (`29a5e6f`) now feed forwarding/conversion/result stages
 (`699fc42`). All ten compiler checks pass: 1794 library/910 native tests;
 `/tmp/meowy-narrow-stages-gate.log`. The guide documents this scope; narrowing
-inside projected-borrow field traversal is next.
+inside projected-borrow field traversal is in progress. The compiler handoff
+records separate capture, sequencing and documentation commits.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

@@ -14,19 +14,38 @@ pub(crate) fn projection_plans_distinguish_owned_fields_loads_and_final_addresse
     for (source, steps) in [
         (
             "r:{->n:1};h:{->p:&r};q:&(h.p.n)",
-            vec![Step::Field(0), Step::Address(0)],
+            vec![
+                Step::Field {
+                    index: 0,
+                    narrow: false,
+                },
+                Step::Address(0),
+            ],
         ),
         (
             "r:{->n:1};h:{->p:&r};v:&h;q:&(v.p.n)",
-            vec![Step::Load(Shared), Step::Field(0), Step::Address(0)],
+            vec![
+                Step::Load(Shared),
+                Step::Field {
+                    index: 0,
+                    narrow: false,
+                },
+                Step::Address(0),
+            ],
         ),
         (
             "r:{->n:1};h:{->p:&r};m:{->v:&h};p:&m;q:&(p.v.p.n)",
             vec![
                 Step::Load(Shared),
-                Step::Field(0),
+                Step::Field {
+                    index: 0,
+                    narrow: false,
+                },
                 Step::Load(Shared),
-                Step::Field(0),
+                Step::Field {
+                    index: 0,
+                    narrow: false,
+                },
                 Step::Address(0),
             ],
         ),
@@ -107,7 +126,10 @@ pub(crate) fn projection_plans_bound_steps_and_publish_atomically() {
     checker.projection_items = 0;
     checker.projection_edges = 0;
     let mut invalid = plan.clone();
-    invalid.steps.push(Step::Field(0));
+    invalid.steps.push(Step::Field {
+        index: 0,
+        narrow: false,
+    });
     assert!(
         checker
             .capture_projection(id, invalid)
@@ -125,7 +147,13 @@ pub(crate) fn projection_plans_bound_steps_and_publish_atomically() {
             .contains("identity")
     );
     let mut full = plan.clone();
-    full.steps = vec![Step::Field(0); crate::list::MAX_WRITE_PATH];
+    full.steps = vec![
+        Step::Field {
+            index: 0,
+            narrow: false
+        };
+        crate::list::MAX_WRITE_PATH
+    ];
     assert!(
         checker
             .projection_step(&mut full, Step::Address(0))

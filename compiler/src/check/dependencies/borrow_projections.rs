@@ -17,7 +17,10 @@ pub(crate) enum Step {
         local: hir::LocalId,
         statement: hir::StatementId,
     },
-    Field(usize),
+    Field {
+        index: usize,
+        narrow: bool,
+    },
     Load(hir::ReferenceMode),
     Address(usize),
 }
@@ -97,7 +100,7 @@ impl Checker {
                         return Err(invalid());
                     }
                 }
-                Step::Field(field) => {
+                Step::Field { index: field, .. } => {
                     if address || *field >= crate::borrow_value::MAX_PARTS {
                         return Err(invalid());
                     }
@@ -156,3 +159,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod narrowing;
