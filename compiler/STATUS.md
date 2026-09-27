@@ -101,45 +101,43 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current shared-list receiver-load slices
 
-Investigation confirms `list.rs::list_receiver_point` inserts a shared-list Deref
-while returning only its original source root. Index and method edges currently
-connect that root directly to a snapshot or size operation. Explicit dereferences
-already have their own operation graph; shared element borrows use separate parent
-handling. The working tree was clean before this continuation.
+The dependency-ordered series is complete:
+1. Capture and retain implicit-load decisions with exact index/method receiver
+   roots, preserving HIR and checking behavior (`da35e36`).
+2. Sequence captured index loads before snapshots and index evaluation (`0b6193f`).
+3. Sequence method loads before size operations or add snapshots (`4993f8d`).
+4. Document verified coverage and the next bounded graph prerequisite.
 
-Dependency-ordered commit plan:
-1. Capture and retain the implicit-load decision with receiver roots for index and
-   method metadata, preserving HIR/checking behavior; shared, owned, explicit,
-   string and stopped fixtures and the library suite pass (`da35e36`).
-2. Index loads now precede snapshots and index evaluation; eight groups cover
-   order, stops, bounds/errors, identity and shared edge-budget failures.
-3. Method loads now precede size operations or add snapshots; 11 focused groups
-   and the full compiler gate pass, including item effects, stops, errors and budgets.
-4. Document verified coverage and identify the next bounded graph prerequisite.
+`list.rs::list_receiver_point` captures its inserted shared-list Deref. Index and
+method metadata retain that decision and route receiver completion through a
+projection before the snapshot/size operation, without a direct bypass. Owned
+lists, explicit dereferences and strings gain no extra load. Stopped receivers
+cannot request loads; stopped positions/items gain no operation/result edge.
+Call effects and returned conditions, nested field/group/reborrow sources, control
+and function owners, unknown lengths and original errors remain preserved.
+Shared element borrows retain their separate parent handling. Identity and shared
+edge-budget failures publish no partial operation. These stages do not establish
+pointee storage, loan authority, reachability or complete value provenance.
 
-Capture now retains a load flag with the exact receiver root in index/method
-metadata. Focused fixtures distinguish implicit and explicit dereferences, owned
-lists, strings and stopped receivers; existing graph edges are unchanged.
-Formatting and all 1768 library tests pass;
-`/tmp/meowy-list-load-capture-lib.log`. Index stages now route captured loads
-through a projection before receiver snapshots, with no direct bypass. Stopped
-receivers cannot request a load; publication still uses the shared edge budget.
-All eight index groups and formatting pass; `/tmp/meowy-list-load-indices.log`.
-The call-source fixture now follows `Invocation.point`, distinct from its CallId
-map key. No outstanding failures remain. Index stages are committed as `0b6193f`. Method stages now place captured loads
-before size operations or add snapshots and reject load flags on stopped/string
-methods. All 11 method groups and formatting pass;
-`/tmp/meowy-list-load-methods.log`. Temporary shared list values preserve unknown
-length and runtime capacity checks. No outstanding focused failures remain.
+Capture passed all 1768 then-current library tests;
+`/tmp/meowy-list-load-capture-lib.log`. All eight index and 11 method groups pass;
+`/tmp/meowy-list-load-indices.log`, `/tmp/meowy-list-load-methods.log`.
 All ten compiler checks pass: 1776 library/910 native tests, formatting, Clippy,
 build, harness and conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-list-load-stages-gate.log`. Guide/handoff documentation is next.
-The next source gap is final element conversion in `list_context.rs::list_union`: its `expected_value` pass can add projections/coercions after captured roots.
-Capture those decisions before integrating them into bounded list sequences.
-Formatting primary projections remain verified by the prior ten-check compiler
-gate: 1768 library/910 native tests, conformance 10 passed/13 unsupported/0 failed;
-`/tmp/meowy-format-primary-stages-gate.log`. Broader contextual builders, backedge
-propagation and proof outcomes remain separate.
+`/tmp/meowy-list-load-stages-gate.log`. No outstanding failures remain.
+The foundation guide documents this coverage. Documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-list-load-stages-docs.log`.
+
+Next capture final element-conversion decisions in `list_context.rs::list_union`.
+Its final `expected_value` pass can add primary/coercion HIR after original element
+roots have been collected. Retain the actual decisions and pre-conversion stopped
+state without rechecking effects or allocating roots in candidate probes. Then
+integrate per-element stages into `check/dependencies/lists.rs`, preserving deferred
+source order and conversions already performed by expected-value checking. Split
+capture and integration; validate primary/union/no-op/stopped elements, effect
+ordering, candidate purity, errors and shared budgets, followed by the compiler gate.
+Other contextual builders, required evaluation, backedge propagation and proof
+outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1467,12 +1465,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Standalone temporary-borrow roots and materialization stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1695 library/910
-  native tests, formatting, Clippy, build and conformance (10 passed, 13 unsupported,
-  0 failed in debug/release). Log: `/tmp/meowy-temporary-stages-gate.log`.
-  Precise projected write locations, remaining operand coverage and dependency propagation
-  stay pending.
+- Shared-list receiver-load stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1776 library/910 native tests, formatting,
+  Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
+  Log: `/tmp/meowy-list-load-stages-gate.log`. Final contextual list conversions,
+  precise projected write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1944,12 +1941,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    decision (`da35e36`). Index metadata sequences that load before the receiver
    snapshot and index evaluation, preserving explicit dereferences, stopped
    positions, bounds-success and shared element-borrow handling. Eight index
-   groups pass. Method loads now precede size operations or add snapshots,
-   preserving item effects, stopped receivers, errors and capacity-success stages.
-   All 11 method groups and the compiler gate pass. Document this coverage next;
-   then capture final element-conversion decisions in `list_context.rs::list_union`
-   before connecting them to bounded list sequence stages. Preserve candidate
-   probing, deferred source order, stops and already-applied expected conversions.
+   groups pass (`0b6193f`). Method loads precede size operations or add snapshots
+   (`4993f8d`), preserving effects, stops, errors and capacity-success stages.
+   All 11 method groups and the compiler gate pass; the guide documents coverage.
+   Next capture final element-conversion decisions in `list_context.rs::list_union`
+   before connecting them to stages in `check/dependencies/lists.rs`. Preserve
+   candidate probing, deferred source order, pre-conversion stops and conversions
+   already applied during expected-value checking. Split capture and integration,
+   testing primary/union/no-op/stopped inputs, effect order and atomic shared-budget
+   failures before the full compiler gate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

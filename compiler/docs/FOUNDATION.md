@@ -155,6 +155,14 @@ operations. List `add` snapshots the receiver and its length before checking the
 item; capacity-success edges then lead to a new list result. Nonreturning receivers
 skip arguments, and nonreturning items have no result edge. Original argument,
 capacity and loan checks remain authoritative; the receiver is not mutated by `add`.
+List indexing and list methods capture implicit shared-receiver loads during
+checking. Receiver completion precedes the load; the load precedes the index/add
+snapshot or size operation, with no direct bypass. Owned lists, explicit
+dereferences and strings do not gain another load. Stopped receivers have no load,
+and stopped index/item expressions have no bounds/capacity-success result. These
+stages share the existing edge budget and preserve known/unknown lengths, source
+owners, call-return conditions and diagnostics. They do not infer pointee storage,
+grant loan authority or establish complete value provenance.
 Shared element borrows retain parent/index roots and reborrow IDs. Parent metadata
 distinguishes checked places, existing views and direct statement-owned temporaries.
 Address and length capture precede index evaluation; bounds success precedes the

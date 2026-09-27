@@ -698,9 +698,11 @@ literal parts, panic prefixes and stopped suffixes. All ten compiler checks pass
 1768 library/910 native tests; `/tmp/meowy-format-primary-stages-gate.log`.
 The guide documents this scope. Shared-list receiver loads are captured
 (`da35e36`) and precede index snapshots (`0b6193f`), size operations and add
-snapshots. All eight index/11 method groups and all ten compiler checks pass:
+snapshots (`4993f8d`). All eight index/11 method groups and all ten compiler
+checks pass:
 1776 library/910 native tests; `/tmp/meowy-list-load-stages-gate.log`.
-Guide documentation and the final element-conversion handoff are next.
+The foundation guide documents this scope. Final contextual list element
+conversions are the next graph prerequisite.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -957,9 +959,12 @@ execution was not part of this documentation edit.
    shared-list load decisions are captured; index loads now precede snapshots and
    index effects. Method loads now precede size operations or add snapshots,
    preserving existing order, stops, errors and capacity conditions. The compiler
-   gate passes. Document this coverage next, then capture final element-conversion
-   decisions in `list_context.rs::list_union` before integrating list sequence
-   stages. Shared element-borrow handling remains separate.
+   gate passes, and the guide documents coverage. Next capture final element
+   projection/coercion decisions in `list_context.rs::list_union`, then integrate
+   stages in `check/dependencies/lists.rs`. Preserve candidate purity, deferred
+   source order, pre-conversion stops and existing expected conversions; split
+   capture/integration with focused tests and the compiler gate. Shared element
+   borrow handling remains separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
