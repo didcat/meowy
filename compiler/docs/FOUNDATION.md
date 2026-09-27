@@ -250,6 +250,15 @@ no retained aggregate type copies. A `never` field has no result edge; a `never`
 receiver keeps its existing field-lookup error. Required fields and resolved
 static/intrinsic symbols retain their separate paths. These links use the shared
 edge budget without proving full field provenance or changing loan authority.
+Ordinary local and runtime-field reads now retain distinct raw-source roots for
+narrowing. The checker records whether that invocation inserted a conversion;
+unchanged values forward from source completion, while changed values pass through
+a conversion stage before the caller result. Direct `never` sources have no result
+edge; conversion to `never` has a conversion stage but no result edge. Field loads
+and call-return conditions remain before narrowing, and outer expected conversions
+remain after it. Mutable observations, guards, type/loan checks and required reads
+are preserved. Projected-borrow traversal retains its separate builder. These
+bounded links record ordering without granting narrowing or ownership permission.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.

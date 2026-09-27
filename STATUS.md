@@ -706,10 +706,11 @@ conversions are captured (`fcc193f`) and sequenced before successors/constructio
 (`0c05427`),
 with no suffix/result edges after stopped inputs. All ten compiler checks pass:
 1784 library/910 native tests; `/tmp/meowy-list-conversion-gate.log`.
-The foundation guide documents the scope. Ordinary narrowing decisions (`1fb0156`) and raw roots (`29a5e6f`) now feed
-forwarding/conversion/result stages. All ten compiler checks pass: 1794 library/910
-native tests; `/tmp/meowy-narrow-stages-gate.log`. Guide documentation and the
-projected-borrow narrowing handoff are next.
+The foundation guide documents the scope. Ordinary narrowing decisions
+(`1fb0156`) and raw roots (`29a5e6f`) now feed forwarding/conversion/result stages
+(`699fc42`). All ten compiler checks pass: 1794 library/910 native tests;
+`/tmp/meowy-narrow-stages-gate.log`. The guide documents this scope; narrowing
+inside projected-borrow field traversal is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -971,11 +972,13 @@ execution was not part of this documentation edit.
    deferred source order, stops and prior expected conversions. The compiler gate
    passes, and the guide documents coverage. Ordinary narrowing now retains raw
    local/field roots and ordered forwarding/conversion/result stages. The compiler
-   gate passes. Document this scope next, then capture owned-field narrowing in
-   `compiler/src/check/references.rs::borrowed` alongside projection metadata.
-   Split capture and stage integration; preserve path-step limits, typing/loan
-   gates, temporary lifetimes and required paths. Shared element borrows remain
-   separate.
+   gate passes, and the guide documents this scope. Next capture owned-field
+   narrowing in `compiler/src/check/references.rs::borrowed` alongside projection
+   metadata. Then sequence it in `check/dependencies/borrow_projections.rs`. Split
+   capture and integration; preserve path-step limits, site/mode identity, typing/
+   loan gates, temporary lifetimes and required paths. Test guarded nullable
+   references, nested/unchanged fields, stopped/error paths and atomic budgets
+   before the compiler gate. Shared element borrows remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
