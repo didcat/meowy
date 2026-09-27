@@ -221,6 +221,11 @@ impl Checker {
                             expr.span,
                         ));
                     }
+                    if !self.required
+                        && let Some(point) = self.point
+                    {
+                        self.capture_local_read(point, id, ty != Type::Never, expr.span)?;
+                    }
                     return Ok(hir::Expr {
                         kind: hir::ExprKind::Local(id),
                         ty,

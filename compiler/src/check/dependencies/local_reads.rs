@@ -89,6 +89,9 @@ impl Checker {
 mod stages;
 
 #[cfg(test)]
+mod modules;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

@@ -716,7 +716,8 @@ before further projections/reborrows (`e909bd0`). All ten compiler checks pass:
 documents this scope. Raw local-read identities (`371d866`) now feed entry/read/
 result stages before narrowing (`d1cfcf6`). All ten compiler checks pass: 1809
 library/910 native tests; `/tmp/meowy-local-read-gate.log`. The guide documents
-this scope. Runtime file-module read integration is next.
+this scope. Runtime file-module read work is in progress; the compiler handoff
+records checker integration, native verification and documentation slices.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
