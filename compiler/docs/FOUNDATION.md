@@ -150,6 +150,15 @@ roots after form recognition, then connect checked prefix/emission statements an
 block results. Candidate probes allocate no roots and effects are checked once.
 Failed checks restore the active point, scope/frame depths, owner and reach.
 Construction links do not establish complete value provenance or proof outcomes.
+Union-context lists also retain the final conversion decision for each exact
+element root. Primary extraction and union conversion occur after that source
+completes and before the next element or list construction. Earlier contextual
+conversions are not repeated. Deferred checking still uses source position for
+execution order; candidate probes remain free of graph roots. Direct or projected
+`never` stops the sequence without suffix/construction edges, even if coercion
+changes the final HIR type. Inputs, sequence links and endpoints are validated
+together before publication and share the existing edge budget. Candidate
+selection, HIR, ordinary diagnostics and required-evaluation gates are preserved.
 List/string `size` operations retain exact receiver roots and distinct length
 operations. List `add` snapshots the receiver and its length before checking the
 item; capacity-success edges then lead to a new list result. Nonreturning receivers

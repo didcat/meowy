@@ -101,44 +101,45 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current contextual list-conversion slices
 
-Investigation confirms `list_context.rs::list_union` applies a final value-only
-`expected_value` pass after collecting element roots. Its list sequence therefore
-omits any additional primary extraction or union conversion. Existing expected
-checking may already have converted an element; capture only the final decision.
-The working tree was clean before this continuation.
-
-Dependency-ordered commit plan:
-1. Capture each final element's exact point, primary decision and coercion kind,
-   retaining pre-conversion stops and existing HIR. Keep the current graph links
-   for this prerequisite; focused tests and the library suite pass (`fcc193f`).
-2. Integrate captured stages into prepared list sequences and endpoints atomically,
-   preserving source order, stopped prefixes and existing candidate behavior.
-   Conversion/order/stop/error/budget cases and the compiler gate now pass.
+The dependency-ordered series is complete:
+1. Capture exact element roots and final primary/coercion decisions while retaining
+   pre-conversion stops and existing HIR (`fcc193f`).
+2. Sequence captured primary extraction and per-element conversion before
+   successors/construction; publish metadata atomically (`0c05427`).
 3. Document verified coverage and the next concrete graph prerequisite.
 
-Capture now retains exact element roots and final primary/coercion decisions.
-Three focused groups pass, including narrowed source types, deferred literals,
-conversions already applied by expected checking, and direct/projected Never.
-Dispatch-block list elements retain their existing B001 contextual-inference gate.
-`/tmp/meowy-list-conversion-capture.log`. Formatting and all 1779 library tests
-pass; `/tmp/meowy-list-conversion-capture-lib.log` (`fcc193f`).
-Stage integration now routes primary extraction and distinct per-element conversion
-ports before successors/construction. It uses prepared sequences and validates
-all roots before atomic publication across input, sequence and endpoint metadata.
-All 16 initial list groups, the additional stopped-prefix case and formatting
-pass; `/tmp/meowy-list-conversion-stages.log`,
+`list_context.rs::list_union` now uses `expected_plan` in its final element pass.
+It retains additional primary extraction and Forward/Convert/Stopped decisions.
+Conversions already applied during contextual checking are not repeated. Prepared
+sequences validate all original roots, including stopped suffixes, before inputs,
+sequence links and endpoints are published together under the shared edge budget.
+Direct Never stops after source entry; projected Never reaches primary extraction
+but no conversion, suffix or construction, even when final HIR has a different type.
+Earlier completed conversions remain linked to a later stopped input. Deferred
+literal checking preserves source order without inferring order from point IDs.
+Candidate probes allocate no new graph roots. Existing HIR, diagnostics, function
+ownership and required-evaluation gates are preserved; proof outcomes remain gated.
+
+Capture passed three focused groups and all 1779 then-current library tests;
+`/tmp/meowy-list-conversion-capture.log`,
+`/tmp/meowy-list-conversion-capture-lib.log`. All 16 initial list groups and an
+additional stopped-prefix case pass; `/tmp/meowy-list-conversion-stages.log`,
 `/tmp/meowy-list-conversion-prefix.log`. All ten compiler checks pass: 1784
 library/910 native tests, formatting, Clippy, build, tooling and conformance
 (10 passed/13 unsupported/0 failed in debug/release);
 `/tmp/meowy-list-conversion-gate.log`. No outstanding failures remain.
-Guide/handoff documentation is next. Then audit `refinement.rs::narrow`: it inserts
-Coerce HIR for local/field reads after ordinary field result metadata is published.
-Capture no-op/changed/stopped narrowing decisions before adding bounded stages;
-keep required reads and projected-borrow field traversal separate.
-Shared-list receiver loads are complete (`da35e36`, `0b6193f`,
-`4993f8d`, `6a57f7a`); the prior gate passed 1776 library/910 native tests and
-conformance 10 passed/13 unsupported/0 failed in debug/release.
-`/tmp/meowy-list-load-stages-gate.log`. Proof outcomes remain gated.
+The foundation guide documents this coverage. Documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-list-conversion-docs.log`.
+
+Next audit `check/refinement.rs::narrow` and its ordinary local/field callers in
+`check/expressions.rs`. Narrowing can insert Coerce HIR after field-operation result
+metadata. Capture no-op/changed/stopped decisions and exact raw-source boundaries
+before integrating narrowing stages. Split capture and stage integration, preserving
+refinement guards, mutable observations, expected contexts, required reads and
+original errors. Keep `check/references.rs` projected-borrow field traversal separate.
+Verify narrowed/unchanged/never locals and fields, effect order, identity/shared
+budgets and the compiler gate. Metadata must not create new narrowing or loan
+permissions. Backedge propagation and evaluated proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1466,11 +1467,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Shared-list receiver-load stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1776 library/910 native tests, formatting,
+- Contextual list-conversion stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1784 library/910 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-list-load-stages-gate.log`. Final contextual list conversions,
-  precise projected write locations and dependency propagation stay pending.
+  Log: `/tmp/meowy-list-conversion-gate.log`. Runtime narrowing stages, precise
+  projected write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1947,11 +1948,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    All 11 method groups and the compiler gate pass; the guide documents coverage.
    Final element-conversion decisions in `list_context.rs::list_union` are now
    captured (`fcc193f`) and sequenced before successors/construction using
-   prepared list sequences. Stopped primaries retain no suffix or result edges;
-   input/sequence/endpoint publication is atomic. The compiler gate passes.
-   Document this coverage next, then audit `refinement.rs::narrow` and its ordinary
-   local/field callers for conversions after current result stages. Preserve
-   refinement guards, observations, required paths and separate borrow projections.
+   prepared list sequences (`0c05427`). Stopped primaries retain no suffix or result
+   edges; input/sequence/endpoint publication is atomic. The guide documents the
+   scope and the compiler gate passes. Next audit `refinement.rs::narrow` and
+   ordinary local/field callers in `expressions.rs` for conversions after current
+   result stages. Capture exact raw-source boundaries and no-op/changed/stopped
+   decisions before stage integration. Preserve guards, mutable observations,
+   expected contexts, required reads and separate projected-borrow traversal.
+   Verify narrowed/unchanged/never local and field cases, effect order, identity
+   and shared budgets, then the compiler gate; retain current typing/loan rules.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

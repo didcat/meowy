@@ -702,10 +702,11 @@ snapshots (`4993f8d`). All eight index/11 method groups and all ten compiler
 checks pass:
 1776 library/910 native tests; `/tmp/meowy-list-load-stages-gate.log`.
 The foundation guide documents this scope. Final contextual list element
-conversions are captured (`fcc193f`) and sequenced before successors/construction,
+conversions are captured (`fcc193f`) and sequenced before successors/construction
+(`0c05427`),
 with no suffix/result edges after stopped inputs. All ten compiler checks pass:
 1784 library/910 native tests; `/tmp/meowy-list-conversion-gate.log`.
-Guide documentation and the narrowing handoff are next.
+The foundation guide documents the scope. Runtime narrowing stages are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -965,9 +966,12 @@ execution was not part of this documentation edit.
    gate passes, and the guide documents coverage. Final contextual list
    projection/coercion decisions now feed ordered sequence stages, preserving
    deferred source order, stops and prior expected conversions. The compiler gate
-   passes. Document this coverage next, then audit runtime narrowing in
-   `compiler/src/check/refinement.rs` and ordinary local/field callers. Shared
-   element-borrow handling remains separate.
+   passes, and the guide documents coverage. Next audit runtime narrowing in
+   `compiler/src/check/refinement.rs` and ordinary local/field callers. Capture
+   exact raw-source boundaries and no-op/changed/stopped decisions before stage
+   integration; preserve guards, observations, required reads and diagnostics.
+   Split capture/integration with focused checks and the compiler gate. Projected
+   borrow traversal and shared element-borrow handling remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
