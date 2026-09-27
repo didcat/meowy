@@ -714,9 +714,9 @@ inside projected-borrow field traversal is captured (`108b41d`) and sequenced
 before further projections/reborrows (`e909bd0`). All ten compiler checks pass:
 1801 library/910 native tests; `/tmp/meowy-borrow-narrow-gate.log`. The guide
 documents this scope. Raw local-read identities (`371d866`) now feed entry/read/
-result stages before narrowing. All ten compiler checks pass: 1809 library/910
-native tests; `/tmp/meowy-local-read-gate.log`. Guide documentation and the
-runtime file-module read handoff are next.
+result stages before narrowing (`d1cfcf6`). All ten compiler checks pass: 1809
+library/910 native tests; `/tmp/meowy-local-read-gate.log`. The guide documents
+this scope. Runtime file-module read integration is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -983,11 +983,13 @@ execution was not part of this documentation edit.
    preserving path limits, reborrow identities and existing gates. The compiler
    gate passes, and the guide documents the scope. Raw ordinary local reads now
    retain actual storage identities and ordered read/result stages before narrowing.
-   The compiler gate passes. Document this scope next, then audit runtime
-   Value::FileModule reads in `compiler/src/check/expressions.rs`, reusing the read
-   machinery after existing required-primary and function-capture gates. Preserve
-   import identity/startup, required reads and static symbols; validate focused
-   imports/facades/errors and the compiler gate.
+   The compiler gate passes, and the guide documents coverage. Next integrate
+   runtime Value::FileModule reads in `compiler/src/check/expressions.rs`, reusing
+   the read machinery after existing required-primary and function-capture gates.
+   Preserve import identity/startup, required reads and static symbols; validate
+   direct/aliased imports, field/primary consumers, capture errors and atomic budgets
+   with module fixtures before the compiler gate. Runtime literal/static leaves
+   remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

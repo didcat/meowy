@@ -101,41 +101,44 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current raw local-read slices
 
-Investigation confirms the ordinary Value::Local branch constructs HIR inside its
-raw narrowing root without recording storage-read identity or stages. Existing
-binding/write metadata already canonicalizes emitted-slot aliases through
-`proofs.aliases`; local reads will reuse that identity rule. Required reads and
-static/file-module locals retain their separate branches. The working tree is clean.
-
-Dependency-ordered commit plan:
+The dependency-ordered series is complete:
 1. Capture raw local-read point/local/canonical-storage identities, owner/control
-   and completion before narrowing; preserve HIR and required paths. Add focused
-   plain/mutable/parameter/alias/reference/Never/error and library checks pass (`371d866`).
-2. Publish bounded entry/read/result stages under the shared edge budget, preserving
-   Never, narrowing order, ownership and reference-cell identity. Verify graph
-   ordering, atomic-failure checks and the compiler gate pass.
+   and completion before narrowing (`371d866`).
+2. Sequence bounded entry/read/result stages under the shared graph budget,
+   preserving Never, ownership and reference-cell identity (`d1cfcf6`).
 3. Document verified coverage and the next concrete prerequisite.
 
-Capture now records actual raw roots, local/canonical storage IDs and completion
-inside the narrowing boundary, skipping required reads. HIR and graph edges are
-unchanged in this prerequisite. All three focused capture groups pass;
-`/tmp/meowy-local-read-capture.log`. Formatting and all 1804 library tests pass;
-`/tmp/meowy-local-read-capture-lib.log`. No outstanding failures remain.
-Capture is committed as `371d866`. Bounded entry/read/result stages now precede
-narrowing; Never omits its result edge. Publication shares the graph edge budget.
-The equality budget fixture now checks the earlier local-read failure and no
-partial publication. All eight local-read groups and formatting pass, including
-invalid alias storage and E207/E208/E302 checks; `/tmp/meowy-local-read-stages.log`.
-All ten compiler checks pass: 1809 library/910 native tests, formatting, Clippy,
-build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-local-read-gate.log`. No outstanding failures remain. Guide/handoff
-documentation is next. Then audit the Value::FileModule runtime branch in
-`expressions.rs::expression_value`: it constructs Local HIR without the new read
-metadata. Reuse the bounded storage-read machinery after its existing required
-primary and function-capture gates; preserve import identity and module startup. Projected-borrow narrowing is complete (`108b41d`, `e909bd0`,
-`db56916`); its gate passed 1801 library/910 native tests and conformance
-10 passed/13 unsupported/0 failed in debug/release.
-`/tmp/meowy-borrow-narrow-gate.log`. Proof outcomes remain gated.
+Ordinary Value::Local checking captures the existing raw source point inside
+`narrow_source`. Local and canonical emitted-slot storage IDs use the same alias
+rule as writes; sibling aliases retain their own local IDs and shared storage.
+Entry reaches the read stage and completing reads reach the raw result before
+narrowing and expected-value conversion. Never reads retain no normal result.
+Reference values keep their cell identities without inferring pointee loads or
+replaying initializers. Owners, control, initialization/ownership diagnostics,
+required accounting and static/file-module branches remain preserved. Identity
+and shared-budget failures publish no read operation; metadata does not prove
+reachability, complete value provenance or evaluated proof outcomes.
+
+All three capture groups and all 1804 then-current library tests pass;
+`/tmp/meowy-local-read-capture.log`, `/tmp/meowy-local-read-capture-lib.log`.
+All eight local-read groups pass, including invalid alias storage and E207/E208/
+E302 checks; `/tmp/meowy-local-read-stages.log`. All ten compiler checks pass:
+1809 library/910 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-local-read-gate.log`. No outstanding failures remain.
+The foundation guide documents this scope. Documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-local-read-docs.log`.
+
+Next integrate runtime Value::FileModule reads in `check/expressions.rs::expression_value`.
+That separate branch constructs Local HIR without read metadata. Reuse bounded
+local-read capture/stages only after existing required-primary and function-capture
+gates, retaining the module's actual local identity and exact expression point.
+Do not turn required primary folding or static exported values into runtime reads.
+Keep imports, facades, module initialization order and lifetime restrictions
+unchanged. Verify direct and aliased imports, field/primary consumers, required
+reads, capture errors and atomic budgets with existing module fixtures, then run
+the compiler gate. Runtime literal/static leaves, broader propagation and proof
+outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1463,10 +1466,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Projected-borrow narrowing stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1801 library/910 native tests, formatting,
+- Raw local-read stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1809 library/910 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-borrow-narrow-gate.log`. Raw local-read stages, precise write
+  Log: `/tmp/meowy-local-read-gate.log`. Runtime file-module reads, precise write
   locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1956,11 +1959,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    focused groups and the compiler gate pass; the guide documents the scope. Raw
    local-read point/local/canonical-storage identities and completion are captured
    inside the narrowing boundary (`371d866`) and feed bounded entry/read/result
-   stages. All eight focused groups and the compiler gate pass. Document the scope
-   next, then audit runtime Value::FileModule reads in `expressions.rs`: reuse the
-   storage-read machinery after existing required-primary and function-capture
-   gates. Keep module initialization, exports, required reads and static symbols
-   unchanged; validate imports/facades, guards, errors and the compiler gate.
+   stages (`d1cfcf6`). All eight focused groups and the compiler gate pass; the
+   guide documents the scope. Next integrate runtime Value::FileModule reads in
+   `expressions.rs`, reusing bounded storage-read machinery after existing required-
+   primary and function-capture gates. Preserve exact module/point identity, startup,
+   exports and static/required paths. Verify direct/aliased imports, field/primary
+   consumers, capture errors and atomic budgets with module fixtures, then run the
+   compiler gate. Runtime literal/static leaves remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

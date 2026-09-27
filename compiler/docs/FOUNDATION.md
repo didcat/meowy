@@ -259,6 +259,14 @@ and call-return conditions remain before narrowing, and outer expected conversio
 remain after it. Mutable observations, guards, type/loan checks and required reads
 are preserved. Projected-borrow traversal retains its separate builder. These
 bounded links record ordering without granting narrowing or ownership permission.
+Raw ordinary local reads retain their resolved local and canonical emitted-slot
+storage IDs at the exact source point. Entry reaches the storage-read stage, then
+normal completion before narrowing and outer expected conversion. A `never` local
+has no normal-result edge. Reference-valued locals retain their own cell identity;
+explicit dereference loads remain separate. These bounded read stages preserve
+initialization, ownership and control checks without replaying initializers or
+inferring pointee reads. Invalid identities and exhausted shared edge budgets
+publish no read operation. Required, static and file-module reads remain separate.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.
