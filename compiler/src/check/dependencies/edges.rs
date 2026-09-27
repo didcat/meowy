@@ -78,6 +78,7 @@ impl Checker {
             .saturating_add(self.endpoint_edges)
             .saturating_add(self.restart_edges.len())
             .saturating_add(self.operation_edges)
+            .saturating_add(self.local_read_edges)
             .saturating_add(self.path_edges)
             .saturating_add(self.store_edges)
             .saturating_add(self.invocation_edges)

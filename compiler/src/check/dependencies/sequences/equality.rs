@@ -149,7 +149,9 @@ pub(crate) fn record_sequences_use_shared_edge_budgets_without_partial_publicati
     checker.dispatch_edges = super::super::edges::MAX_EDGES;
     let error = checker.expr_point(&expr("a==a"), None).unwrap_err();
     assert_eq!(error.code, "B001");
-    assert!(error.message.contains("narrowing budget"));
+    assert!(error.message.contains("local-read budget"));
+    assert!(checker.local_reads.is_empty());
+    assert_eq!(checker.local_read_edges, 0);
     assert!(checker.narrowings.is_empty());
     assert_eq!(checker.narrowing_edges, 0);
     assert!(checker.coercions.is_empty());

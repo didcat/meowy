@@ -1,4 +1,7 @@
-use super::PointKind;
+use super::{
+    PointKind,
+    edges::{Edge, Port, Route},
+};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -14,6 +17,7 @@ pub(crate) struct LocalRead {
     pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
+    pub(crate) edges: Vec<Edge>,
 }
 
 impl Checker {
@@ -49,6 +53,14 @@ impl Checker {
         {
             return Err(invalid());
         }
+        let mut edges = vec![Edge::new(Port::Entry(id), Port::Operation(id), Route::Next)];
+        if normal {
+            edges.push(Edge::new(
+                Port::Operation(id),
+                Port::Normal(id),
+                Route::Next,
+            ));
+        }
         let op = LocalRead {
             owner: self.owner,
             local,
@@ -56,14 +68,25 @@ impl Checker {
             normal,
             control: self.control,
             span,
+            edges,
         };
         if let Some(prior) = self.local_reads.get(&id) {
             return if *prior == op { Ok(()) } else { Err(invalid()) };
         }
+        if !self.edge_room(op.edges.len()) {
+            return Err(Diagnostic::unsupported(
+                "proof local-read budget exhausted",
+                span,
+            ));
+        }
+        self.local_read_edges += op.edges.len();
         self.local_reads.insert(id, op);
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod stages;
 
 #[cfg(test)]
 mod tests {
