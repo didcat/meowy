@@ -720,8 +720,10 @@ this scope. Runtime file-module reads now share bounded storage stages (`ea57a8f
 Four checker groups and three native groups pass, including once-only startup and
 required/capture boundaries. All ten compiler checks pass: 1813 library/913 native
 tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
-`ed70fbb`; the guide documents this scope. Scalar-leaf work is in progress; the
-compiler handoff records separate capture, stage and documentation commits.
+`ed70fbb`; the guide documents this scope. Scalar-leaf identities (`a4b385a`) now
+feed bounded construction/result stages. All ten compiler checks pass: 1820 library/
+913 native tests; `/tmp/meowy-scalar-leaf-gate.log`. Guide documentation and the
+foundation-handle handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -852,10 +854,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Runtime file-module read integration passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1813 library/913 native tests.
+- Scalar-leaf stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1820 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-module-read-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-scalar-leaf-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -991,12 +993,12 @@ execution was not part of this documentation edit.
    The compiler gate passes, and the guide documents coverage. Runtime file-module
    reads now share bounded storage stages, preserving module identity, startup,
    required evaluation and capture gates. Checker/native groups and the compiler
-   gate pass, and the guide documents scope. Next capture ordinary scalar leaves
-   at successful branches in `compiler/src/check/expressions.rs`, then add bounded
-   result stages. Retain checked scalar kind/type and exact roots without copying
-   text payloads. Preserve signed literals, lexical constants, expected coercions,
-   required/probe paths and formatting literal None entries; validate focused
-   scalar/alias/shadowing/error/budget cases and the compiler gate.
+   gate pass, and the guide documents scope. Scalar leaves now retain bounded
+   checked kind/type metadata and construction/result stages; the compiler gate
+   passes. Document this scope next, then capture resolved static Heap leaves in
+   `compiler/src/check/expressions.rs::raw_expression`, followed by bounded result
+   stages. Preserve nominal identity, lookup, required paths and ownership gates;
+   do not equate handle construction with allocation.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

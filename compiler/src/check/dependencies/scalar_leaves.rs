@@ -1,4 +1,7 @@
-use super::PointKind;
+use super::{
+    PointKind,
+    edges::{Edge, Port, Route},
+};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -21,6 +24,7 @@ pub(crate) struct ScalarLeaf {
     pub(crate) kind: Kind,
     pub(crate) control: bool,
     pub(crate) span: Span,
+    pub(crate) edges: [Edge; 2],
 }
 
 impl Checker {
@@ -71,6 +75,10 @@ impl Checker {
             kind,
             control: self.control,
             span: value.span,
+            edges: [
+                Edge::new(Port::Entry(id), Port::Operation(id), Route::Next),
+                Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+            ],
         };
         if let Some(prior) = self.scalar_leaves.get(&id) {
             return if *prior == leaf {
@@ -79,10 +87,20 @@ impl Checker {
                 Err(invalid())
             };
         }
+        if !self.edge_room(leaf.edges.len()) {
+            return Err(Diagnostic::unsupported(
+                "proof scalar-leaf budget exhausted",
+                value.span,
+            ));
+        }
+        self.scalar_leaf_edges += leaf.edges.len();
         self.scalar_leaves.insert(id, leaf);
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod stages;
 
 #[cfg(test)]
 mod tests {

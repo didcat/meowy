@@ -106,13 +106,15 @@ pub(crate) fn region_edges_share_branch_capacity_and_preserve_atomic_registratio
             checker.region_edges.clear();
             checker.endpoints.clear();
             checker.endpoint_edges = 0;
-            for id in 1..=MAX_EDGES / routes.len() {
+            let free = MAX_EDGES - checker.scalar_leaf_edges;
+            for id in 1..=free / routes.len() {
                 checker
                     .branch_edges
                     .insert(checker.points.len() + id, routes);
             }
-            checker.region_edges.insert(usize::MAX, edges);
-            checker.region_edges.insert(usize::MAX - 1, edges);
+            for id in 0..(free % routes.len()) / edges.len() {
+                checker.region_edges.insert(usize::MAX - id, edges);
+            }
             assert!(checker.edge_room(0));
             assert!(!checker.edge_room(1));
         } else {
