@@ -724,9 +724,9 @@ tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
 feed bounded construction/result stages (`7a42833`). All ten compiler checks pass:
 1820 library/913 native tests; `/tmp/meowy-scalar-leaf-gate.log`. The guide documents
 this scope. Static Heap identities (`46ea8f3`) now feed bounded handle/result
-stages. All ten compiler checks pass: 1827 library/913 native tests;
-`/tmp/meowy-heap-leaf-gate.log`. Guide documentation and the bounded edge-inventory
-handoff are next.
+stages (`c5e248b`). All ten compiler checks pass: 1827 library/913 native tests;
+`/tmp/meowy-heap-leaf-gate.log`. The guide documents this scope. A bounded
+read-only inventory of stored graph edges is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -1000,10 +1000,13 @@ execution was not part of this documentation edit.
    checked kind/type metadata and construction/result stages; the compiler gate
    passes, and the guide documents scope. Static Heap leaves now retain nominal
    identity and bounded handle/result stages without allocation effects. The compiler
-   gate passes. Document this scope next, then add bounded read-only edge enumeration
-   across existing ledgers, verifying counts before a separate forward lookup slice.
-   Preserve exact ports/routes, ownership, Backedge markers and unknown boundaries;
-   an inventory does not imply reachability or complete propagation.
+   gate passes, and the guide documents scope. Next add bounded read-only edge
+   enumeration across existing ledgers in `compiler/src/check/dependencies/edges.rs`
+   and Checker. Verify actual family counts against counters before separate owner/
+   port validation and forward lookup. Preserve duplicates, exact ports/routes,
+   Backedge markers and unknown boundaries; test mixed owners, conditional routes,
+   restarts and atomic bounds with the compiler gate. Inventory order is not
+   execution order, and missing links do not prove independence.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

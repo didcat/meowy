@@ -280,6 +280,13 @@ text payloads. Core/static aliases follow lexical resolution, and ordinary bindi
 remain storage reads. Required evaluation and shared probe constructors gain no
 runtime leaf stages; formatting text keeps its existing absent source entries.
 Invalid shapes and exhausted shared budgets publish no scalar leaf operation.
+Resolved static Heap values also retain exact roots, nominal Allocator identity
+and handle/result stages before expected conversion, call arguments or temporary
+materialization. Module aliases preserve resolution; ordinary handle bindings
+remain local reads. Required evaluation and hints gain no runtime handle stages.
+The operation represents availability of the static handle, not resource allocation.
+Nominal-type validation and shared-budget failures publish no partial operation;
+existing borrow lifetimes, conflicts and unsupported member/equality rules remain.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.

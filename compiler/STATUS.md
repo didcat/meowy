@@ -101,43 +101,44 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current static foundation-handle slices
 
-Investigation confirms two resolved Item::Heap branches in `raw_expression` create
-Heap HIR with nominal Allocator type. Module aliases follow symbol resolution;
-ordinary handle bindings use local reads. Capturing these static results must not
-introduce allocation effects, alter nominal typing or extend handle-cell lifetimes.
-The working tree was clean before this continuation.
-
-Dependency-ordered commit plan:
-1. Capture exact Heap source roots and nominal identity after lexical resolution,
-   preserving HIR and required paths. Verify direct/module-alias/grouped sources,
-   local reads, shadowing, nominal errors and the library suite pass (`46ea8f3`).
-2. Add bounded entry/handle/result stages with atomic shared-budget publication.
-   Verify expected/call/borrow consumers, owner/control, errors and required gates;
-   the complete compiler gate passes.
+The dependency-ordered series is complete:
+1. Capture exact resolved Heap roots and nominal Allocator identity, preserving
+   HIR, required paths, aliases and ordinary handle reads (`46ea8f3`).
+2. Sequence bounded handle/result stages with atomic shared-budget publication,
+   preserving consumers and ownership rules (`c5e248b`).
 3. Document verified coverage and the next concrete prerequisite.
 
-Both resolved Heap branches now retain exact source/owner/control and nominal
-Allocator identity without altering HIR. Required paths skip runtime capture.
-All three focused capture groups, formatting and all 1823 library tests pass;
-`/tmp/meowy-heap-leaf-capture-lib.log`. No outstanding failures remain.
-Capture is committed as `46ea8f3`. Entry/handle/result stages now share the
-graph edge budget. Focused checks cover expected and call consumers, temporary
-materialization, lifetime/ownership gates, owner/control, hints and atomic errors.
-All seven heap capture/stage groups pass in the final gate. Temporary materialization
-uses a supported value block; direct member borrows retain B001, and lifetime,
-conflict and equality fixtures retain E303/E302/E222. All ten compiler checks pass:
-1827 library/913 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-heap-leaf-gate.log`. No outstanding failures remain. Guide/handoff
-documentation is next. The next prerequisite is a bounded read-only inventory of
-existing graph edges: ledgers are separately stored and `edges.rs::edge_room`
-counts them, but no common enumeration exists for auditing coverage/forward lookup.
-Preserve exact ports and routes, explicit Backedge markers and unknown boundaries;
-an inventory must not infer reachability or enable proof propagation.
-Scalar leaves are complete (`a4b385a`, `7a42833`, `a07c5e7`);
-the prior gate passed 1820 library/913 native tests and conformance
-10 passed/13 unsupported/0 failed in debug/release.
-`/tmp/meowy-scalar-leaf-gate.log`. Proof outcomes remain gated.
+Both resolved Heap branches in `raw_expression` record source/owner/control and
+nominal identity. Entry reaches static handle availability and then the result;
+expected conversions, call arguments and temporary materialization keep their
+existing source boundaries. Groups do not duplicate capture. Module aliases
+retain lexical resolution, ordinary bindings remain local reads, and required
+checking/hints emit no runtime handle stages. This is not resource allocation.
+Malformed nominal shapes, foreign owners and exhausted shared budgets publish no
+handle operation. Supported temporary value blocks preserve statement lifetime;
+direct module-member borrows keep B001, local expiry/conflicts keep E303/E302 and
+allocator equality keeps E222. No new ownership authority or proof outcome exists.
+
+All three capture groups and all 1823 then-current library tests pass;
+`/tmp/meowy-heap-leaf-capture-lib.log`. All seven heap capture/stage groups pass in
+the final gate. All ten compiler checks pass: 1827 library/913 native tests,
+formatting, Clippy, build, tooling and conformance (10 passed/13 unsupported/0 failed
+in debug/release); `/tmp/meowy-heap-leaf-gate.log`. No outstanding failures remain.
+The foundation guide documents this scope. Documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-heap-leaf-docs.log`.
+
+Next add bounded read-only enumeration across existing edge ledgers. Inspect
+`dependencies/edges.rs::edge_room` and the corresponding Checker maps/counters;
+there is currently no common edge inventory for auditing coverage and forward
+lookup. Enumerate stored edges without creating new links, retaining exact ports,
+routes and explicit Backedge markers. Check actual family totals against retained
+counters and enforce work/edge bounds before publication. Separate enumeration/
+count validation from owner/port validation and forward lookup where independently
+reviewable. Verify every ledger family, mixed source/function owners, duplicate
+stored edges, conditional routes, restarts and atomic budget failures, then run the
+compiler gate. Missing edges remain unknown; inventory order is not runtime order,
+and an inventory neither proves reachability nor enables dependency propagation.
+Broader provenance, restart-header analysis and proof evaluation remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1465,10 +1466,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Scalar-leaf stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1820 library/913 native tests, formatting,
+- Static Heap leaf stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1827 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-scalar-leaf-gate.log`. Static foundation-handle leaves, precise
+  Log: `/tmp/meowy-heap-leaf-gate.log`. A common bounded edge inventory, precise
   write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1969,11 +1970,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    and resolved constants. Bounded construction/result stages (`7a42833`) and the
    compiler gate pass; the guide documents the scope. Static Heap leaf identities
    are captured at resolved branches (`46ea8f3`) and bounded handle/result stages
-   now pass the compiler gate. Document the scope next, then add bounded read-only
-   enumeration across the existing edge ledgers in `dependencies/edges.rs` and
-   `Checker`. Check actual counts against ledger counters before a separate forward
-   lookup slice. Preserve exact ports/routes, owners, Backedge markers and unknown
-   boundaries; enumeration does not prove reachability or enable propagation.
+   (`c5e248b`) pass the compiler gate; the guide documents scope. Next add bounded
+   read-only edge enumeration across existing ledgers in `dependencies/edges.rs`
+   and Checker. Check actual family totals against counters, preserving duplicate
+   stored edges, exact ports/routes and Backedge markers. Split enumeration/count
+   validation from owner/port validation and forward lookup where independently
+   useful. Verify mixed owners, conditional routes, restarts and atomic bounds with
+   the compiler gate; missing links remain unknown and ordering proves no execution.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
