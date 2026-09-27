@@ -711,9 +711,9 @@ The foundation guide documents the scope. Ordinary narrowing decisions
 (`699fc42`). All ten compiler checks pass: 1794 library/910 native tests;
 `/tmp/meowy-narrow-stages-gate.log`. The guide documents this scope; narrowing
 inside projected-borrow field traversal is captured (`108b41d`) and sequenced
-before further projections/reborrows. All ten compiler checks pass: 1801 library/
-910 native tests; `/tmp/meowy-borrow-narrow-gate.log`. Guide documentation and the
-raw local-read handoff are next.
+before further projections/reborrows (`e909bd0`). All ten compiler checks pass:
+1801 library/910 native tests; `/tmp/meowy-borrow-narrow-gate.log`. The guide
+documents this scope. Ordinary raw local-read identities and stages are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -978,10 +978,12 @@ execution was not part of this documentation edit.
    gate passes, and the guide documents this scope. Projected-borrow owned-field
    narrowing now retains actual flags and conversion-before-successor stages,
    preserving path limits, reborrow identities and existing gates. The compiler
-   gate passes. Document this scope next, then capture ordinary raw local-read
-   identities in `compiler/src/check/expressions.rs` before narrowing, followed by
-   bounded read stages and the compiler gate. Required/static/file-module paths
-   and shared element borrows remain separate.
+   gate passes, and the guide documents the scope. Next capture ordinary raw
+   local-read identities in `compiler/src/check/expressions.rs` inside the narrowing
+   boundary, followed by bounded read stages. Preserve actual local/canonical
+   storage IDs, owner/control, Never and existing ownership rules; verify ordinary,
+   mutable, parameter, alias and reference reads plus atomic budgets before the
+   compiler gate. Required/static/file-module paths remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

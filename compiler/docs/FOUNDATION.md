@@ -322,6 +322,13 @@ The final address path does not load its referent. Stopped parents have only an
 entry link, and unknown call effects retain their own return conditions. These
 links use the shared edge budget without inventing source points, reconstructing
 order from spans, extending lifetimes or granting loan authority.
+Owned field steps also retain the actual narrowing decision. A captured conversion
+follows that field selection before further projection, an intermediate load or
+reborrow. Nested narrowed fields retain separate conversion stages, and unchanged
+fields gain none. Fields selected after an intermediate load preserve their
+existing behavior without narrowing. Conversion edges share the graph budget while
+path-step counts retain their existing limits. Guard requirements, stopped parents,
+temporary materialization, site/mode identities and loan checks remain unchanged.
 Ordinary place borrows retain the checked local/field path, canonical emitted-slot
 storage and shared/exclusive mode. Root and field-address stages lead to reference
 creation without an evaluated operand or pointee read. Field/type validation uses
