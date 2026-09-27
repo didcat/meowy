@@ -16,36 +16,95 @@ impl Checker {
         normal: bool,
         span: Span,
     ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof list-conversion budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof list-conversion identity mismatch", span);
         if inputs.len() > super::super::sequences::MAX_ITEMS
             || !self.flow.spend(
                 inputs.len() * 2 + self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize + 4,
             )
         {
-            return Err(Diagnostic::unsupported(
-                "proof list-conversion budget exhausted",
-                span,
-            ));
+            return Err(budget());
         }
-        if self
-            .list_inputs
-            .get(&id)
-            .is_some_and(|prior| *prior != inputs)
+        if (!normal
+            && !inputs
+                .iter()
+                .any(|input| input.kind == CoercionKind::Stopped))
+            || (normal
+                && inputs
+                    .iter()
+                    .any(|input| input.kind == CoercionKind::Stopped && !input.primary))
         {
-            return Err(Diagnostic::unsupported(
-                "proof list-conversion identity mismatch",
-                span,
-            ));
+            return Err(invalid());
         }
-        self.list_sequence(
-            id,
+        let key = SequenceSource::Expr(id);
+        let mut sequence = self.prepare_sequence(
+            key,
             inputs.iter().map(|input| Some(input.point)).collect(),
-            normal,
             span,
         )?;
+        sequence.edges.clear();
+        let mut edges = Vec::new();
+        let mut from = Port::Entry(id);
+        let mut stopped = false;
+        for (part, input) in inputs.iter().enumerate() {
+            let entry = Edge::new(from, Port::Entry(input.point), Route::Next);
+            if part == 0 {
+                edges.push(entry);
+            } else {
+                sequence.edges.push(entry);
+            }
+            from = Port::Normal(input.point);
+            if input.primary {
+                let stage = Port::Projection {
+                    point: id,
+                    step: part,
+                };
+                edges.push(Edge::new(from, stage, Route::Next));
+                from = stage;
+            }
+            if input.kind == CoercionKind::Stopped {
+                stopped = true;
+                break;
+            }
+            if input.kind == CoercionKind::Convert {
+                let stage = Port::Conversion { point: id, part };
+                edges.push(Edge::new(from, stage, Route::Next));
+                from = stage;
+            }
+        }
+        if normal && !stopped {
+            edges.extend([
+                Edge::new(from, Port::Operation(id), Route::Next),
+                Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+            ]);
+        }
+        match (
+            self.list_inputs.get(&id),
+            self.sequences.get(&key),
+            self.endpoints.get(&key),
+        ) {
+            (Some(prior), Some(seq), Some(ends))
+                if *prior == inputs && *seq == sequence && *ends == edges =>
+            {
+                return Ok(());
+            }
+            (None, None, None) => (),
+            _ => return Err(invalid()),
+        }
+        if !self.edge_room(sequence.edges.len() + edges.len()) {
+            return Err(budget());
+        }
+        self.sequence_edges += sequence.edges.len();
+        self.endpoint_edges += edges.len();
+        self.sequences.insert(key, sequence);
+        self.endpoints.insert(key, edges);
         self.list_inputs.insert(id, inputs);
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod stages;
 
 #[cfg(test)]
 mod tests {

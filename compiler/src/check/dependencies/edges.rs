@@ -18,6 +18,10 @@ pub(crate) enum Port {
         point: PointId,
         step: usize,
     },
+    Conversion {
+        point: PointId,
+        part: usize,
+    },
     Address {
         point: PointId,
         step: usize,

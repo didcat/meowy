@@ -110,10 +110,10 @@ The working tree was clean before this continuation.
 Dependency-ordered commit plan:
 1. Capture each final element's exact point, primary decision and coercion kind,
    retaining pre-conversion stops and existing HIR. Keep the current graph links
-   for this prerequisite; add focused capture tests and run the library suite.
+   for this prerequisite; focused tests and the library suite pass (`fcc193f`).
 2. Integrate captured stages into prepared list sequences and endpoints atomically,
    preserving source order, stopped prefixes and existing candidate behavior.
-   Verify conversion/order/stop/error/budget cases and run the compiler gate.
+   Conversion/order/stop/error/budget cases and the compiler gate now pass.
 3. Document verified coverage and the next concrete graph prerequisite.
 
 Capture now retains exact element roots and final primary/coercion decisions.
@@ -121,7 +121,20 @@ Three focused groups pass, including narrowed source types, deferred literals,
 conversions already applied by expected checking, and direct/projected Never.
 Dispatch-block list elements retain their existing B001 contextual-inference gate.
 `/tmp/meowy-list-conversion-capture.log`. Formatting and all 1779 library tests
-pass; `/tmp/meowy-list-conversion-capture-lib.log`. Stage integration is next.
+pass; `/tmp/meowy-list-conversion-capture-lib.log` (`fcc193f`).
+Stage integration now routes primary extraction and distinct per-element conversion
+ports before successors/construction. It uses prepared sequences and validates
+all roots before atomic publication across input, sequence and endpoint metadata.
+All 16 initial list groups, the additional stopped-prefix case and formatting
+pass; `/tmp/meowy-list-conversion-stages.log`,
+`/tmp/meowy-list-conversion-prefix.log`. All ten compiler checks pass: 1784
+library/910 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-list-conversion-gate.log`. No outstanding failures remain.
+Guide/handoff documentation is next. Then audit `refinement.rs::narrow`: it inserts
+Coerce HIR for local/field reads after ordinary field result metadata is published.
+Capture no-op/changed/stopped narrowing decisions before adding bounded stages;
+keep required reads and projected-borrow field traversal separate.
 Shared-list receiver loads are complete (`da35e36`, `0b6193f`,
 `4993f8d`, `6a57f7a`); the prior gate passed 1776 library/910 native tests and
 conformance 10 passed/13 unsupported/0 failed in debug/release.
@@ -1933,12 +1946,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`4993f8d`), preserving effects, stops, errors and capacity-success stages.
    All 11 method groups and the compiler gate pass; the guide documents coverage.
    Final element-conversion decisions in `list_context.rs::list_union` are now
-   captured. Next connect them to prepared sequences and endpoints in
-   `check/dependencies/lists/conversions.rs`, publishing metadata atomically. Preserve
-   candidate probing, deferred source order, pre-conversion stops and conversions
-   already applied during expected-value checking. Split capture and integration,
-   testing primary/union/no-op/stopped inputs, effect order and atomic shared-budget
-   failures before the full compiler gate.
+   captured (`fcc193f`) and sequenced before successors/construction using
+   prepared list sequences. Stopped primaries retain no suffix or result edges;
+   input/sequence/endpoint publication is atomic. The compiler gate passes.
+   Document this coverage next, then audit `refinement.rs::narrow` and its ordinary
+   local/field callers for conversions after current result stages. Preserve
+   refinement guards, observations, required paths and separate borrow projections.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

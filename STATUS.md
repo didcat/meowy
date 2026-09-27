@@ -702,8 +702,10 @@ snapshots (`4993f8d`). All eight index/11 method groups and all ten compiler
 checks pass:
 1776 library/910 native tests; `/tmp/meowy-list-load-stages-gate.log`.
 The foundation guide documents this scope. Final contextual list element
-conversion work is in progress; the compiler handoff records the ordered capture,
-sequence integration and documentation commits.
+conversions are captured (`fcc193f`) and sequenced before successors/construction,
+with no suffix/result edges after stopped inputs. All ten compiler checks pass:
+1784 library/910 native tests; `/tmp/meowy-list-conversion-gate.log`.
+Guide documentation and the narrowing handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -834,10 +836,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Shared-list receiver-load stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1776 library/910 native tests.
+- Contextual list-conversion stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1784 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-list-load-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-list-conversion-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -960,12 +962,12 @@ execution was not part of this documentation edit.
    shared-list load decisions are captured; index loads now precede snapshots and
    index effects. Method loads now precede size operations or add snapshots,
    preserving existing order, stops, errors and capacity conditions. The compiler
-   gate passes, and the guide documents coverage. Next capture final element
-   projection/coercion decisions in `list_context.rs::list_union`, then integrate
-   stages in `check/dependencies/lists.rs`. Preserve candidate purity, deferred
-   source order, pre-conversion stops and existing expected conversions; split
-   capture/integration with focused tests and the compiler gate. Shared element
-   borrow handling remains separate.
+   gate passes, and the guide documents coverage. Final contextual list
+   projection/coercion decisions now feed ordered sequence stages, preserving
+   deferred source order, stops and prior expected conversions. The compiler gate
+   passes. Document this coverage next, then audit runtime narrowing in
+   `compiler/src/check/refinement.rs` and ordinary local/field callers. Shared
+   element-borrow handling remains separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
