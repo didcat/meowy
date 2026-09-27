@@ -21,6 +21,7 @@ pub(crate) struct Access {
 pub(crate) struct Index {
     pub(crate) owner: usize,
     pub(crate) receiver: hir::PointId,
+    pub(crate) load: bool,
     pub(crate) access: Option<Access>,
     pub(crate) control: bool,
     pub(crate) span: Span,
@@ -32,6 +33,7 @@ impl Checker {
         &mut self,
         id: hir::PointId,
         receiver: hir::PointId,
+        load: bool,
         access: Option<Access>,
         span: Span,
     ) -> Result<()> {
@@ -97,6 +99,7 @@ impl Checker {
         let index = Index {
             owner: self.owner,
             receiver,
+            load,
             access,
             control: self.control,
             span,
@@ -132,20 +135,28 @@ mod tests {
 
     #[test]
     pub(crate) fn indices_snapshot_values_and_lengths_before_side_effectful_positions() {
-        for (source, text, length) in [
-            ("xs<int32[3]>:=[1,2];y:xs[{xs=[];->1}]", "xs", None),
+        for (source, text, length, load) in [
+            ("xs<int32[3]>:=[1,2];y:xs[{xs=[];->1}]", "xs", None, false),
             (
                 "xs<int32[3]>:=[1,2];view:&xs;y:view[{xs=[];->1}]",
                 "view",
                 None,
+                true,
             ),
-            ("xs<int32[3]>:[1,2];y:xs[1]", "xs", Some(2)),
+            ("xs<int32[3]>:[1,2];y:xs[1]", "xs", Some(2), false),
+            (
+                "xs<int32[3]>:[1,2];view:&xs;y:(*view)[1]",
+                "(*view)",
+                None,
+                false,
+            ),
         ] {
             crate::compile(source).unwrap();
             let checker = check(source);
             let (&id, index) = checker.indices.first_key_value().unwrap();
             let access = index.access.unwrap();
             assert_eq!(access.capacity, 3);
+            assert_eq!(index.load, load);
             let receiver = &checker.points[index.receiver];
             assert_eq!(&source[receiver.span.start..receiver.span.end], text);
             assert_eq!(
@@ -201,6 +212,7 @@ mod tests {
                 Route::Next
             )]
         );
+        assert!(!stopped.load);
         let source = "xs:[1];'out{y:xs[{'out.leave()}]}";
         crate::compile(source).unwrap();
         let checker = check(source);
@@ -235,7 +247,7 @@ mod tests {
         let index = index.clone();
         let count = checker.index_edges;
         checker
-            .index_operation(id, index.receiver, index.access, index.span)
+            .index_operation(id, index.receiver, index.load, index.access, index.span)
             .unwrap();
         assert_eq!(checker.index_edges, count);
         checker.indices.clear();
@@ -244,7 +256,7 @@ mod tests {
         access.position = index.receiver;
         assert!(
             checker
-                .index_operation(id, index.receiver, Some(access), index.span)
+                .index_operation(id, index.receiver, index.load, Some(access), index.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -253,7 +265,7 @@ mod tests {
         access.length = Some(access.capacity + 1);
         assert!(
             checker
-                .index_operation(id, index.receiver, Some(access), index.span)
+                .index_operation(id, index.receiver, index.load, Some(access), index.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -261,7 +273,7 @@ mod tests {
         checker.sequence_edges = super::super::edges::MAX_EDGES;
         assert!(
             checker
-                .index_operation(id, index.receiver, index.access, index.span)
+                .index_operation(id, index.receiver, index.load, index.access, index.span)
                 .unwrap_err()
                 .message
                 .contains("budget")

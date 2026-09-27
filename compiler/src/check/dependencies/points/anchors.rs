@@ -340,16 +340,21 @@ pub(crate) fn position_roots_preserve_type_one_based_length_and_capacity_errors(
 pub(crate) fn list_receiver_roots_keep_shared_dereference_and_exact_outer_identity() {
     let mut checker = Checker::new();
     super::super::tests::statements(&mut checker, "xs:[1,2];view:&xs");
-    for (source, borrowed) in [("((xs))", false), ("((view))", true)] {
+    for (source, borrowed, load) in [
+        ("((xs))", false, false),
+        ("((view))", true, true),
+        ("(*view)", true, false),
+    ] {
         let stmt = crate::parser::parse(source).unwrap().stmts.remove(0);
         let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
             panic!()
         };
         let before = checker.points.len();
-        let (first, value) = checker.list_receiver_point(&expr).unwrap();
+        let (first, value, first_load) = checker.list_receiver_point(&expr).unwrap();
         let count = checker.points.len() - before;
-        let (second, copy) = checker.list_receiver_point(&expr).unwrap();
+        let (second, copy, second_load) = checker.list_receiver_point(&expr).unwrap();
         assert_ne!(first, second);
+        assert_eq!((first_load, second_load), (load, load));
         assert_eq!(checker.points.len() - before, count * 2);
         assert_eq!(checker.points[first].span, expr.span);
         assert!(checker.points[first].complete);
@@ -371,8 +376,9 @@ pub(crate) fn list_receiver_roots_preserve_never_and_ordinary_errors() {
     let crate::ast::StmtKind::Expr(expr) = stmt.kind else {
         panic!()
     };
-    let (point, value) = checker.list_receiver_point(&expr).unwrap();
+    let (point, value, load) = checker.list_receiver_point(&expr).unwrap();
     assert_eq!(value.ty, hir::Type::Never);
+    assert!(!load);
     assert!(checker.points[point].complete);
     assert!(checker.point.is_none());
     let stmt = crate::parser::parse("missing").unwrap().stmts.remove(0);

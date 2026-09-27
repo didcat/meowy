@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-25. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-27. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -696,8 +696,10 @@ The foundation guide documents this scope. Formatting now retains source/primary
 pairs (`39670ee`) and inserts projection before per-part output (`d660709`), preserving
 literal parts, panic prefixes and stopped suffixes. All ten compiler checks pass:
 1768 library/910 native tests; `/tmp/meowy-format-primary-stages-gate.log`.
-The guide documents this scope. Implicit shared-list receiver loads are next;
-broader propagation and proof outcomes remain incomplete.
+The guide documents this scope. Shared-list receiver-load work is in progress:
+capture the inserted load, integrate index stages, then method stages, with focused
+checks and the compiler gate. The compiler handoff records the commit plan.
+Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
 

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-25. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-27. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -99,42 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current formatting primary-projection slices
+### Current shared-list receiver-load slices
 
-The dependency-ordered plan is complete:
-1. Capture each evaluated part's exact root and primary decision together,
-   preserving literal None entries, HIR and checking order (`39670ee`).
-2. Validate and sequence primary extraction before per-part output, including
-   stopped primaries, with focused tests and the full compiler gate (`d660709`).
-3. Document verified coverage and the next prerequisite separately.
+Investigation confirms `list.rs::list_receiver_point` inserts a shared-list Deref
+while returning only its original source root. Index and method edges currently
+connect that root directly to a snapshot or size operation. Explicit dereferences
+already have their own operation graph; shared element borrows use separate parent
+handling. The working tree was clean before this continuation.
 
-`format_points` now returns optional point/primary pairs while preserving recursive
-interpolation/group flattening and once-only evaluation. Literal text has no source
-point. Actual projections use `projected`; the unused value-only `project` wrapper
-is removed. Output metadata retains the captured decisions and inserts a projection
-between source completion and that part's Output port. A Never primary reaches
-projection but no output, suffix, operation or normal-result edge. Panic prefixes
-and returned-I/O links retain their original order. Existing scalar results are not
-projected again, and reference/formattability errors remain unchanged.
+Dependency-ordered commit plan:
+1. Capture and retain the implicit-load decision with receiver roots for index and
+   method metadata, preserving HIR/checking behavior; test shared, owned, explicit,
+   string and stopped receivers and run the library suite.
+2. Sequence captured index loads before snapshots and index evaluation; test order,
+   stops, bounds/errors, identity and shared edge-budget failures.
+3. Sequence captured method loads before size operations or add snapshots; test
+   item effects, stops, ownership/errors and atomic budgets, then run the compiler gate.
+4. Document verified coverage and identify the next bounded graph prerequisite.
 
-All five formatting capture groups and 1764 library tests pass;
-`/tmp/meowy-format-plans-focused.log`, `/tmp/meowy-format-plans-lib.log`.
-Four stage groups cover interleaved print/panic output, stopped primaries, calls,
-scalar results, owner/control, errors and atomic flag/shared-budget validation;
-`/tmp/meowy-format-primary-stages-focused.log`. All ten compiler checks pass: 1768
-library/910 native tests, formatting, Clippy, build and conformance (10 passed,
-13 unsupported, 0 failed in debug/release); `/tmp/meowy-format-primary-stages-gate.log`.
-No outstanding failures remain. The guide and trackers document this scope.
-Post-documentation validation passed 1208 local links in 110 Markdown files;
-`/tmp/meowy-format-primary-stages-docs.log`.
-Implicit shared-list receiver-load capture is next; other contextual builders,
-backedge propagation and proof outcomes remain separate.
-
-Unary projection capture/stages (`9fdbde3`, `4f26bbd`, `782c76b`) preserve expected
-projections, stops, signed literals and checked negation. Their ten-check gate
-passed with 1762 library/910 native tests; `/tmp/meowy-unary-primary-stages-gate.log`.
-Expected-value, binary and composed-fallback stages retain their established source
-boundaries without granting new type/loan authority or enabling proof outcomes.
+Capture now retains a load flag with the exact receiver root in index/method
+metadata. Focused fixtures distinguish implicit and explicit dereferences, owned
+lists, strings and stopped receivers; existing graph edges are unchanged.
+Formatting and all 1768 library tests pass;
+`/tmp/meowy-list-load-capture-lib.log`. Index-stage integration is next.
+Formatting primary projections remain verified by the prior ten-check compiler
+gate: 1768 library/910 native tests, conformance 10 passed/13 unsupported/0 failed;
+`/tmp/meowy-format-primary-stages-gate.log`. Broader contextual builders, backedge
+propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 

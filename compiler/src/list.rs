@@ -403,18 +403,20 @@ impl Checker {
     pub(crate) fn list_receiver_point(
         &mut self,
         value: &ast::Expr,
-    ) -> Result<(hir::PointId, hir::Expr)> {
+    ) -> Result<(hir::PointId, hir::Expr, bool)> {
         let (point, mut value) = self.expr_point(value, None)?;
+        let mut load = false;
         if let Type::Reference(ty) = &value.ty
             && matches!(ty.as_ref(), Type::List { .. })
         {
+            load = true;
             value = hir::Expr {
                 ty: *ty.clone(),
                 span: value.span,
                 kind: hir::ExprKind::Deref(Box::new(value)),
             };
         }
-        Ok((point, value))
+        Ok((point, value, load))
     }
 
     pub(crate) fn list_index(
@@ -423,10 +425,10 @@ impl Checker {
         index: &ast::Expr,
         span: Span,
     ) -> Result<hir::Expr> {
-        let (receiver, value) = self.list_receiver_point(value)?;
+        let (receiver, value, load) = self.list_receiver_point(value)?;
         let point = self.point.expect("list index expression");
         if value.ty == Type::Never {
-            self.index_operation(point, receiver, None, span)?;
+            self.index_operation(point, receiver, load, None, span)?;
             return Ok(value);
         }
         let Type::List { element, capacity } = &value.ty else {
@@ -447,6 +449,7 @@ impl Checker {
         self.index_operation(
             point,
             receiver,
+            load,
             Some(crate::check::IndexAccess {
                 position,
                 capacity,
@@ -630,10 +633,16 @@ impl Checker {
         args: &[ast::Expr],
         span: Span,
     ) -> Result<hir::Expr> {
-        let (receiver, value) = self.list_receiver_point(value)?;
+        let (receiver, value, load) = self.list_receiver_point(value)?;
         let point = self.point.expect("collection method");
         if value.ty == Type::Never {
-            self.method_operation(point, receiver, crate::check::MethodKind::Stopped, span)?;
+            self.method_operation(
+                point,
+                receiver,
+                load,
+                crate::check::MethodKind::Stopped,
+                span,
+            )?;
             return Ok(value);
         }
         if name == "size" {
@@ -651,7 +660,7 @@ impl Checker {
                 ),
                 _ => return Err(Self::error("E201", "size requires a list or string", span)),
             };
-            self.method_operation(point, receiver, method, span)?;
+            self.method_operation(point, receiver, load, method, span)?;
             return Ok(hir::Expr {
                 kind,
                 ty: Type::Int {
@@ -685,6 +694,7 @@ impl Checker {
         self.method_operation(
             point,
             receiver,
+            load,
             crate::check::MethodKind::Add {
                 item: input,
                 capacity,

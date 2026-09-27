@@ -2,13 +2,15 @@ use super::{tests::check, *};
 
 #[test]
 pub(crate) fn add_captures_receiver_and_length_before_item_effects_and_capacity_check() {
-    for (source, length) in [
-        ("xs<int32[3]>:=[1];ys:xs.add({xs=[2,3];->4})", None),
+    for (source, length, load) in [
+        ("xs<int32[3]>:=[1];ys:xs.add({xs=[2,3];->4})", None, false),
         (
             "xs<int32[3]>:=[1];view:&xs;ys:view.add({xs=[2,3];->4})",
             None,
+            true,
         ),
-        ("xs<int32[3]>:[1];ys:xs.add(2)", Some(1)),
+        ("xs<int32[3]>:[1];ys:xs.add(2)", Some(1), false),
+        ("xs<int32[3]>:[1];view:&xs;ys:(*view).add(2)", None, false),
     ] {
         crate::compile(source).unwrap();
         let checker = check(source);
@@ -23,6 +25,7 @@ pub(crate) fn add_captures_receiver_and_length_before_item_effects_and_capacity_
             panic!()
         };
         assert_eq!(capacity, 3);
+        assert_eq!(method.load, load);
         assert_eq!(known, length);
         assert!(may_return);
         assert_ne!(method.receiver, item);
@@ -125,7 +128,7 @@ pub(crate) fn add_rejects_reused_roots_invalid_lengths_and_exhausted_shared_edge
     ] {
         assert!(
             checker
-                .method_operation(id, method.receiver, kind, method.span)
+                .method_operation(id, method.receiver, method.load, kind, method.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -135,7 +138,7 @@ pub(crate) fn add_rejects_reused_roots_invalid_lengths_and_exhausted_shared_edge
     checker.index_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
-            .method_operation(id, method.receiver, method.kind, method.span)
+            .method_operation(id, method.receiver, method.load, method.kind, method.span)
             .unwrap_err()
             .message
             .contains("budget")

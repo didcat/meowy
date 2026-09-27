@@ -26,6 +26,7 @@ pub(crate) enum Kind {
 pub(crate) struct Method {
     pub(crate) owner: usize,
     pub(crate) receiver: hir::PointId,
+    pub(crate) load: bool,
     pub(crate) kind: Kind,
     pub(crate) control: bool,
     pub(crate) span: Span,
@@ -37,6 +38,7 @@ impl Checker {
         &mut self,
         id: hir::PointId,
         receiver: hir::PointId,
+        load: bool,
         kind: Kind,
         span: Span,
     ) -> Result<()> {
@@ -111,6 +113,7 @@ impl Checker {
         let method = Method {
             owner: self.owner,
             receiver,
+            load,
             kind,
             control: self.control,
             span,
@@ -149,18 +152,20 @@ mod tests {
 
     #[test]
     pub(crate) fn size_methods_keep_receiver_roots_and_distinct_list_string_operations() {
-        let source = "xs:[1];view:&xs;xs.size();view.size();\"é\".size()";
+        let source = "xs:[1];view:&xs;xs.size();view.size();(*view).size();\"é\".size()";
         crate::compile(source).unwrap();
         let checker = check(source);
-        assert_eq!(checker.methods.len(), 3);
-        for ((&id, method), (text, kind)) in checker.methods.iter().zip([
-            ("xs", Kind::ListSize),
-            ("view", Kind::ListSize),
-            ("\"é\"", Kind::StringSize),
+        assert_eq!(checker.methods.len(), 4);
+        for ((&id, method), (text, kind, load)) in checker.methods.iter().zip([
+            ("xs", Kind::ListSize, false),
+            ("view", Kind::ListSize, true),
+            ("(*view)", Kind::ListSize, false),
+            ("\"é\"", Kind::StringSize, false),
         ]) {
             let point = &checker.points[method.receiver];
             assert_eq!(&source[point.span.start..point.span.end], text);
             assert_eq!(method.kind, kind);
+            assert_eq!(method.load, load);
             assert!(method.edges.contains(&Edge::new(
                 Port::Normal(method.receiver),
                 Port::Operation(id),
@@ -176,6 +181,7 @@ mod tests {
         let checker = check(source);
         let (&id, method) = checker.methods.first_key_value().unwrap();
         assert_eq!(method.kind, Kind::Stopped);
+        assert!(!method.load);
         assert_eq!(
             method.edges,
             [Edge::new(
@@ -200,13 +206,13 @@ mod tests {
         let method = method.clone();
         let count = checker.method_edges;
         checker
-            .method_operation(id, method.receiver, method.kind, method.span)
+            .method_operation(id, method.receiver, method.load, method.kind, method.span)
             .unwrap();
         assert_eq!(checker.method_edges, count);
         checker.points[method.receiver].parent = None;
         assert!(
             checker
-                .method_operation(id, method.receiver, method.kind, method.span)
+                .method_operation(id, method.receiver, method.load, method.kind, method.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -217,7 +223,7 @@ mod tests {
         checker.index_edges = super::super::edges::MAX_EDGES;
         assert!(
             checker
-                .method_operation(id, method.receiver, method.kind, method.span)
+                .method_operation(id, method.receiver, method.load, method.kind, method.span)
                 .unwrap_err()
                 .message
                 .contains("budget")
