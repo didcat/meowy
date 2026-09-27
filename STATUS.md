@@ -716,8 +716,11 @@ before further projections/reborrows (`e909bd0`). All ten compiler checks pass:
 documents this scope. Raw local-read identities (`371d866`) now feed entry/read/
 result stages before narrowing (`d1cfcf6`). All ten compiler checks pass: 1809
 library/910 native tests; `/tmp/meowy-local-read-gate.log`. The guide documents
-this scope. Runtime file-module read work is in progress; the compiler handoff
-records checker integration, native verification and documentation slices.
+this scope. Runtime file-module reads now share bounded storage stages (`ea57a8f`).
+Four checker groups and three native groups pass, including once-only startup and
+required/capture boundaries. All ten compiler checks pass: 1813 library/913 native
+tests; `/tmp/meowy-module-read-gate.log`. Guide documentation and the scalar-leaf
+handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -848,10 +851,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Raw local-read stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1809 library/910 native tests.
+- Runtime file-module read integration passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1813 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-local-read-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-module-read-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -984,13 +987,12 @@ execution was not part of this documentation edit.
    preserving path limits, reborrow identities and existing gates. The compiler
    gate passes, and the guide documents the scope. Raw ordinary local reads now
    retain actual storage identities and ordered read/result stages before narrowing.
-   The compiler gate passes, and the guide documents coverage. Next integrate
-   runtime Value::FileModule reads in `compiler/src/check/expressions.rs`, reusing
-   the read machinery after existing required-primary and function-capture gates.
-   Preserve import identity/startup, required reads and static symbols; validate
-   direct/aliased imports, field/primary consumers, capture errors and atomic budgets
-   with module fixtures before the compiler gate. Runtime literal/static leaves
-   remain separate.
+   The compiler gate passes, and the guide documents coverage. Runtime file-module
+   reads now share bounded storage stages, preserving module identity, startup,
+   required evaluation and capture gates. Checker/native groups and the compiler
+   gate pass. Document this scope next, then capture ordinary scalar leaves in
+   `compiler/src/check/expressions.rs` before adding result stages. Preserve signed
+   literals, lexical constants, required/probe paths and formatting literals.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

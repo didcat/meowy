@@ -38,6 +38,42 @@ pub(crate) fn file_modules_read_immutable_records_lists_strings_and_primary_expo
 }
 
 #[test]
+pub(crate) fn file_module_read_stages_preserve_facades_aliases_and_once_only_startup() {
+    case(
+        "d:@\"debug\";d.print(\"entry\");m:@\"./facade.mwy\";alias:m;direct:@\"./data.mwy\";s:@\"./scalar.mwy\";<Items>:{-><int32[s]>};xs<Items>:[9];d.print(alias+1);d.print(m.n);d.print(direct.n);d.print(xs.size());|false|d.print(m+2)",
+        &[
+            ("data.mwy", "d:@\"debug\";d.print(\"data\");->4;->n:7"),
+            ("facade.mwy", "m:@\"./data.mwy\";d:@\"debug\";d.print(\"facade\");->m"),
+            ("scalar.mwy", "d:@\"debug\";d.print(\"scalar\");->2"),
+        ],
+    ).runs(b"data\nfacade\nscalar\nentry\n5\n7\n7\n1\n");
+}
+
+#[test]
+pub(crate) fn file_module_read_stages_keep_required_function_inputs_without_runtime_capture() {
+    case(
+        "m:@\"./scalar.mwy\";f<int32>:(){alias:m;<Items>:{-><int32[alias]>};xs<Items>:[9];->xs[1]};d:@\"debug\";d.print(f())",
+        &[("scalar.mwy", "d:@\"debug\";d.print(\"scalar\");->2")],
+    ).runs(b"scalar\n9\n");
+}
+
+#[test]
+pub(crate) fn file_module_read_stages_retain_runtime_capture_rejections() {
+    for read in ["m", "alias", "m.n"] {
+        let source = format!("m:@\"./data.mwy\";alias:m;f:(){{{read}}}");
+        let case = case(&source, &[("data.mwy", "->4;->n:7")]);
+        let output = case.command("check", &["--json"]);
+        assert_eq!(output.status.code(), Some(1));
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(error.contains("\"code\":\"B001\""), "{error}");
+        assert!(
+            error.contains("file-module values in function bodies"),
+            "{error}"
+        );
+    }
+}
+
+#[test]
 pub(crate) fn file_modules_map_dependency_parse_and_semantic_diagnostics() {
     for (module, code, text) in [
         ("#é🙂#\n->n:missing", "E201", "missing"),

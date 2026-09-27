@@ -109,9 +109,9 @@ without changing source roots, imports or module startup. The tree was clean.
 Dependency-ordered commit plan:
 1. Integrate runtime file-module reads after existing required/capture gates using
    `capture_local_read`; add focused direct/alias/field/primary/required/error/budget
-   checks with registered module fixtures and run library validation.
+   checks with registered module fixtures and library validation pass (`ea57a8f`).
 2. Verify real file imports/facades and once-only startup in debug/release, including
-   required reads and forbidden captures; run the complete compiler gate.
+   required reads and forbidden captures; native groups and the compiler gate pass.
 3. Document verified coverage and the next concrete prerequisite.
 
 Runtime module reads now reuse the bounded read operation after existing gates.
@@ -119,7 +119,17 @@ All four focused groups and all 1813 library tests pass;
 `/tmp/meowy-module-read-lib.log`. Scalar required primaries and named required
 fields remain source-only. Module alias declarations retain their existing behavior;
 actual function-body value reads still report B001. Formatting passed and no
-outstanding failures remain. Native import/facade/startup validation is next.
+outstanding failures remain. Checker integration is committed as `ea57a8f`.
+All three native groups pass: facades/aliases with once-only startup, scalar
+required inputs inside functions and rejected module value captures;
+`/tmp/meowy-module-read-native.log`. Accepted cases execute in debug/release.
+All ten compiler checks pass: 1813 library/913 native tests, formatting, Clippy,
+build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-module-read-gate.log`. No outstanding failures remain. Guide/handoff
+documentation is next. Then capture ordinary scalar literal/result leaves at
+successful expression branches, including signed-integer literals and resolved
+constants; shared literal constructors also serve probes and required evaluation,
+so they must not publish runtime stages unconditionally.
 Ordinary local reads are complete (`371d866`,
 `d1cfcf6`, `d715fe6`); their gate passed 1809 library/910 native tests and
 conformance 10 passed/13 unsupported/0 failed in debug/release.
@@ -1947,10 +1957,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    stages (`d1cfcf6`). All eight focused groups and the compiler gate pass; the
    guide documents the scope. Runtime Value::FileModule reads now reuse bounded
    storage-read machinery after existing required-primary and capture gates. Four
-   focused groups and 1813 library tests pass. Next verify real imports/facades,
-   aliases, field/primary consumers, once-only startup and required/capture boundaries
-   in `tests/native/file_modules.rs`, then run the full compiler gate. Runtime
-   literal/static leaves remain separate.
+   focused groups and 1813 library tests pass (`ea57a8f`). Three native groups
+   verify real imports/facades, aliases, once-only startup and required/capture
+   boundaries; the full compiler gate passes. Document the scope next, then capture
+   ordinary scalar leaves at successful branches in `expressions.rs`, including
+   signed-integer shortcuts and resolved constants. Preserve lexical resolution,
+   required/probe paths and formatting literals; split capture from result stages.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
