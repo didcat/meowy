@@ -721,9 +721,9 @@ Four checker groups and three native groups pass, including once-only startup an
 required/capture boundaries. All ten compiler checks pass: 1813 library/913 native
 tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
 `ed70fbb`; the guide documents this scope. Scalar-leaf identities (`a4b385a`) now
-feed bounded construction/result stages. All ten compiler checks pass: 1820 library/
-913 native tests; `/tmp/meowy-scalar-leaf-gate.log`. Guide documentation and the
-foundation-handle handoff are next.
+feed bounded construction/result stages (`7a42833`). All ten compiler checks pass:
+1820 library/913 native tests; `/tmp/meowy-scalar-leaf-gate.log`. The guide documents
+this scope. Static foundation-handle leaves are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -995,10 +995,12 @@ execution was not part of this documentation edit.
    required evaluation and capture gates. Checker/native groups and the compiler
    gate pass, and the guide documents scope. Scalar leaves now retain bounded
    checked kind/type metadata and construction/result stages; the compiler gate
-   passes. Document this scope next, then capture resolved static Heap leaves in
-   `compiler/src/check/expressions.rs::raw_expression`, followed by bounded result
-   stages. Preserve nominal identity, lookup, required paths and ownership gates;
-   do not equate handle construction with allocation.
+   passes, and the guide documents scope. Next capture resolved static Heap leaves
+   in `compiler/src/check/expressions.rs::raw_expression`, followed by bounded result
+   stages. Preserve nominal identity, lexical/module aliases, ordinary local-handle
+   reads, expected coercions, required/probe paths and ownership gates. Verify focused
+   consumer/budget cases and the compiler gate; static handle construction is not
+   allocation.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

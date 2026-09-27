@@ -101,43 +101,43 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current scalar-leaf slices
 
-Investigation confirms `expression_value` delegates construction to `raw_expression`
-and then records boolean/never facts. Literal and resolved-constant branches return
-scalar HIR without leaf metadata; groups and no-op wrappers can return that same
-HIR, so capture must occur only at the actual construction branches. Shared numeric
-constructors also serve probes/required checking and will remain untouched.
-The working tree was clean before this continuation.
-
-Dependency-ordered commit plan:
-1. Capture exact source roots and bounded scalar kind/type metadata at successful
-   numeric/text/resolved-constant and signed-integer branches. Preserve payloads,
-   lexical resolution, grouping, expected typing and required/probe paths; validate
-   focused capture cases and the library suite pass (`a4b385a`).
-2. Add bounded entry/construction/result stages with atomic shared-budget handling.
-   Test parent consumers, aliases/shadowing, formatting and required/error boundaries;
-   the compiler gate passes.
+The dependency-ordered series is complete:
+1. Capture bounded scalar kind/type and exact source roots at successful raw
+   literal/resolved-constant branches, preserving checking paths (`a4b385a`).
+2. Sequence construction/result stages with atomic shared-budget handling and
+   focused consumer/boundary tests (`7a42833`).
 3. Document verified coverage and the next concrete prerequisite.
 
-Successful raw scalar-construction branches now retain bounded kind/type and
-source/owner/control metadata, with no text payload copies. Shared numeric helpers,
-required paths and grouping remain separate. All three capture groups, formatting
-and all 1816 library tests pass; `/tmp/meowy-scalar-leaf-capture-lib.log`. Ordinary
-boolean bindings remain local reads; core/static aliases retain resolved kind and
-width (`a4b385a`). Construction/result edges now connect captured scalar roots
-under the shared graph budget. Focused stage checks cover coercions/groups,
-formatting, required/probe boundaries, owners/control, errors and atomic failures.
-The exact-capacity region fixture now accounts for scalar edges when filling the
-remaining shared budget. All ten compiler checks pass: 1820 library/913 native
-tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-scalar-leaf-gate.log`. No outstanding failures remain. Guide/handoff
-documentation is next. Then capture static foundation-handle leaves: the two
-resolved Item::Heap branches in `raw_expression` still return Heap HIR without
-leaf metadata. Preserve lexical lookup, nominal allocator identity, required
-evaluation and ownership gates; a static handle result is not an allocation effect. File-module reads are complete (`ea57a8f`, `ed70fbb`, `08e863a`);
-the prior gate passed 1813 library/913 native tests and conformance
-10 passed/13 unsupported/0 failed in debug/release.
-`/tmp/meowy-module-read-gate.log`. Proof outcomes remain gated.
+`raw_expression` captures numeric/text construction, resolved scalar constants and
+signed-integer shortcuts after successful validation. Scalar metadata retains kind,
+width, source, owner and control without text payload copies. Entry reaches a
+construction stage and then the normal result before expected conversion. Groups
+and no-op wrappers retain their own links without duplicating leaves. Core/static
+aliases follow lexical resolution; ordinary boolean bindings remain local reads.
+Shared numeric constructors used by probes and required checking are unchanged;
+required budgets and formatting literal None entries retain their original paths.
+Invalid shape/owner identities and shared-budget failures publish no leaf operation.
+These stages do not establish complete value provenance or evaluate proof outcomes.
+
+All three capture groups and all 1816 then-current library tests pass;
+`/tmp/meowy-scalar-leaf-capture-lib.log`. Four stage groups cover expected conversion,
+grouping, formatting, required/probe boundaries, owners/control, errors and atomic
+budgets. The exact-capacity region fixture now includes scalar edges in its shared
+budget. All ten compiler checks pass: 1820 library/913 native tests, formatting,
+Clippy, build, tooling and conformance (10 passed/13 unsupported/0 failed in
+debug/release); `/tmp/meowy-scalar-leaf-gate.log`. No outstanding failures remain.
+The foundation guide documents this scope. Documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-scalar-leaf-docs.log`.
+
+Next capture static foundation-handle leaves at the two resolved Item::Heap
+branches in `check/expressions.rs::raw_expression`, then integrate bounded result
+stages separately. Preserve Heap HIR and the nominal Allocator type; a static
+handle result is not an allocation effect. Module aliases follow lexical resolution,
+while ordinary handle bindings continue through local-read stages. Keep required
+and probe paths, expected coercions, ownership/capture checks and unsupported
+foundation members unchanged. Verify direct/aliased/grouped handles, local reads,
+consumer order and atomic budgets, then run the compiler gate. Broader provenance,
+backedge propagation and proof evaluation remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1465,11 +1465,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Runtime file-module read integration passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1813 library/913 native tests, formatting,
+- Scalar-leaf stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1820 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-module-read-gate.log`. Scalar literal/result leaves, precise write
-  locations and dependency propagation stay pending.
+  Log: `/tmp/meowy-scalar-leaf-gate.log`. Static foundation-handle leaves, precise
+  write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1966,11 +1966,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    boundaries (`ed70fbb`); the compiler gate passes and the guide documents scope.
    Ordinary scalar leaves now retain checked kind/type and exact roots at actual
    construction branches in `expressions.rs` (`a4b385a`), including signed integers
-   and resolved constants. Bounded construction/result stages are now integrated;
-   the compiler gate passes. Document this scope next, then capture static Heap
-   foundation leaves at the two resolved branches in `raw_expression`. Preserve
-   nominal allocator identity, lexical lookup, expected coercions, required/probe
-   paths and ownership gates; split capture from stages without implying allocation.
+   and resolved constants. Bounded construction/result stages (`7a42833`) and the
+   compiler gate pass; the guide documents the scope. Next capture static Heap
+   foundation leaves at the two resolved branches in `raw_expression`, then add
+   bounded result stages. Preserve nominal Allocator identity, lexical/module
+   aliases, local-handle reads, expected coercions, required/probe paths and ownership
+   gates. Test direct/aliased/grouped handles, consumer order and atomic budgets,
+   then run the compiler gate. Static handle construction is not allocation.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

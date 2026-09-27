@@ -272,6 +272,14 @@ or primary consumers. Aliases share the module storage without replaying startup
 Required primary folding and static symbols retain their separate paths; runtime
 module value reads inside functions keep their B001 gate. Module alias declarations
 and required scalar inputs inside functions retain their existing behavior.
+Ordinary scalar literals and resolved constants retain exact construction roots,
+scalar kinds and numeric widths. Entry reaches construction and then result
+availability before expected conversion. Signed integer literals keep their direct
+path; groups and unchanged wrappers do not duplicate leaves. Metadata retains no
+text payloads. Core/static aliases follow lexical resolution, and ordinary bindings
+remain storage reads. Required evaluation and shared probe constructors gain no
+runtime leaf stages; formatting text keeps its existing absent source entries.
+Invalid shapes and exhausted shared budgets publish no scalar leaf operation.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.
