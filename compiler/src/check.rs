@@ -19,7 +19,9 @@ mod statements;
 mod temporaries;
 mod type_values;
 
-pub(crate) use dependencies::{ElementAccess, IndexAccess, MethodKind, PointKind, SequenceSource};
+pub(crate) use dependencies::{
+    ElementAccess, IndexAccess, ListInput, MethodKind, PointKind, SequenceSource,
+};
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -177,6 +179,7 @@ pub(crate) struct Checker {
     pub(crate) invocation_edges: usize,
     pub(crate) indices: BTreeMap<hir::PointId, dependencies::Index>,
     pub(crate) index_edges: usize,
+    pub(crate) list_inputs: BTreeMap<hir::PointId, Vec<dependencies::ListInput>>,
     pub(crate) methods: BTreeMap<hir::PointId, dependencies::Method>,
     pub(crate) method_edges: usize,
     pub(crate) elements: BTreeMap<hir::PointId, dependencies::Element>,
@@ -374,6 +377,7 @@ impl Checker {
             invocation_edges: 0,
             indices: BTreeMap::new(),
             index_edges: 0,
+            list_inputs: BTreeMap::new(),
             methods: BTreeMap::new(),
             method_edges: 0,
             elements: BTreeMap::new(),

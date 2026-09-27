@@ -1,0 +1,146 @@
+use super::*;
+use crate::check::dependencies::CoercionKind;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct Input {
+    pub(crate) point: hir::PointId,
+    pub(crate) primary: bool,
+    pub(crate) kind: CoercionKind,
+}
+
+impl Checker {
+    pub(crate) fn contextual_list_sequence(
+        &mut self,
+        id: hir::PointId,
+        inputs: Vec<Input>,
+        normal: bool,
+        span: Span,
+    ) -> Result<()> {
+        if inputs.len() > super::super::sequences::MAX_ITEMS
+            || !self.flow.spend(
+                inputs.len() * 2 + self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize + 4,
+            )
+        {
+            return Err(Diagnostic::unsupported(
+                "proof list-conversion budget exhausted",
+                span,
+            ));
+        }
+        if self
+            .list_inputs
+            .get(&id)
+            .is_some_and(|prior| *prior != inputs)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof list-conversion identity mismatch",
+                span,
+            ));
+        }
+        self.list_sequence(
+            id,
+            inputs.iter().map(|input| Some(input.point)).collect(),
+            normal,
+            span,
+        )?;
+        self.list_inputs.insert(id, inputs);
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::tests::check;
+    use super::*;
+
+    #[test]
+    pub(crate) fn contextual_list_plans_capture_only_final_primary_and_union_conversions() {
+        for (types, param, narrowed, primary) in [
+            ("", "int32><string", "int32", false),
+            (
+                "<R>:<{-><int32>;tag<boolean>}>;<S>:<{-><string>;tag<boolean>}>;",
+                "R><S",
+                "R",
+                true,
+            ),
+        ] {
+            for (target, kind) in [
+                ("int32", CoercionKind::Forward),
+                ("T", CoercionKind::Convert),
+            ] {
+                let source = format!(
+                    "<T>:<int32><boolean>;{types}f:(v<{param}>){{|v<{narrowed}>|xs<{target}[1]><string[1]>:[v]}}"
+                );
+                crate::compile(&source).unwrap();
+                let checker = check(&source);
+                assert_eq!(checker.list_inputs.len(), 1, "{source}");
+                let (&id, inputs) = checker.list_inputs.first_key_value().unwrap();
+                assert_eq!(inputs.len(), 1);
+                assert_eq!((inputs[0].primary, inputs[0].kind), (primary, kind));
+                let point = &checker.points[inputs[0].point];
+                assert_eq!(point.parent, Some(id));
+                assert_eq!(&source[point.span.start..point.span.end], "v");
+                assert_eq!(
+                    checker.sequences[&SequenceSource::Expr(id)].items,
+                    [Some(inputs[0].point)]
+                );
+            }
+        }
+    }
+
+    #[test]
+    pub(crate) fn contextual_list_plans_preserve_deferred_order_and_existing_conversions() {
+        let source = "<T>:<uint8><boolean>;<U>:<uint16><boolean>;f:(v<uint8><uint16>){|v<uint8>|xs<T[3]><U[3]>:[1,v,3]}";
+        crate::compile(source).unwrap();
+        let checker = check(source);
+        let inputs = checker.list_inputs.values().next().unwrap();
+        assert_eq!(
+            inputs.iter().map(|input| input.kind).collect::<Vec<_>>(),
+            [
+                CoercionKind::Forward,
+                CoercionKind::Convert,
+                CoercionKind::Forward
+            ]
+        );
+        assert!(inputs.iter().all(|input| !input.primary));
+        for (input, text) in inputs.iter().zip(["1", "v", "3"]) {
+            let span = checker.points[input.point].span;
+            assert_eq!(&source[span.start..span.end], text);
+        }
+    }
+
+    #[test]
+    pub(crate) fn contextual_list_plans_keep_stopped_sources_and_candidate_errors() {
+        for (source, primary) in [
+            (
+                "d:@\"debug\";stop<never>:(){d.panic(\"stop\")};xs<int32[2]><uint8[2]>:[stop(),{x:300;->x}]",
+                false,
+            ),
+            (
+                "<R>:<{-><never>;tag<boolean>}>;<S>:<{-><string>;tag<boolean>}>;f:(v<R><S>){|v<R>|xs<int32[2]><string[2]>:[v,{x:1;->x}]}",
+                true,
+            ),
+        ] {
+            crate::compile(source).unwrap();
+            let checker = check(source);
+            let inputs = checker.list_inputs.values().next().unwrap();
+            assert_eq!(
+                (inputs[0].kind, inputs[0].primary),
+                (CoercionKind::Stopped, primary)
+            );
+        }
+        for (source, code) in [
+            ("xs<int32[1]><string[1]>:[1,2]", "E103"),
+            ("xs<uint8[1]><uint16[1]>:[1]", "E207"),
+        ] {
+            let mut checker = Checker::new();
+            assert_eq!(
+                checker
+                    .block(&crate::parser::parse(source).unwrap(), None, None)
+                    .unwrap_err()
+                    .code,
+                code
+            );
+            assert!(checker.list_inputs.is_empty());
+        }
+    }
+}

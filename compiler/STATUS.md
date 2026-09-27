@@ -99,45 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current shared-list receiver-load slices
+### Current contextual list-conversion slices
 
-The dependency-ordered series is complete:
-1. Capture and retain implicit-load decisions with exact index/method receiver
-   roots, preserving HIR and checking behavior (`da35e36`).
-2. Sequence captured index loads before snapshots and index evaluation (`0b6193f`).
-3. Sequence method loads before size operations or add snapshots (`4993f8d`).
-4. Document verified coverage and the next bounded graph prerequisite.
+Investigation confirms `list_context.rs::list_union` applies a final value-only
+`expected_value` pass after collecting element roots. Its list sequence therefore
+omits any additional primary extraction or union conversion. Existing expected
+checking may already have converted an element; capture only the final decision.
+The working tree was clean before this continuation.
 
-`list.rs::list_receiver_point` captures its inserted shared-list Deref. Index and
-method metadata retain that decision and route receiver completion through a
-projection before the snapshot/size operation, without a direct bypass. Owned
-lists, explicit dereferences and strings gain no extra load. Stopped receivers
-cannot request loads; stopped positions/items gain no operation/result edge.
-Call effects and returned conditions, nested field/group/reborrow sources, control
-and function owners, unknown lengths and original errors remain preserved.
-Shared element borrows retain their separate parent handling. Identity and shared
-edge-budget failures publish no partial operation. These stages do not establish
-pointee storage, loan authority, reachability or complete value provenance.
+Dependency-ordered commit plan:
+1. Capture each final element's exact point, primary decision and coercion kind,
+   retaining pre-conversion stops and existing HIR. Keep the current graph links
+   for this prerequisite; add focused capture tests and run the library suite.
+2. Integrate captured stages into prepared list sequences and endpoints atomically,
+   preserving source order, stopped prefixes and existing candidate behavior.
+   Verify conversion/order/stop/error/budget cases and run the compiler gate.
+3. Document verified coverage and the next concrete graph prerequisite.
 
-Capture passed all 1768 then-current library tests;
-`/tmp/meowy-list-load-capture-lib.log`. All eight index and 11 method groups pass;
-`/tmp/meowy-list-load-indices.log`, `/tmp/meowy-list-load-methods.log`.
-All ten compiler checks pass: 1776 library/910 native tests, formatting, Clippy,
-build, harness and conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-list-load-stages-gate.log`. No outstanding failures remain.
-The foundation guide documents this coverage. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-list-load-stages-docs.log`.
-
-Next capture final element-conversion decisions in `list_context.rs::list_union`.
-Its final `expected_value` pass can add primary/coercion HIR after original element
-roots have been collected. Retain the actual decisions and pre-conversion stopped
-state without rechecking effects or allocating roots in candidate probes. Then
-integrate per-element stages into `check/dependencies/lists.rs`, preserving deferred
-source order and conversions already performed by expected-value checking. Split
-capture and integration; validate primary/union/no-op/stopped elements, effect
-ordering, candidate purity, errors and shared budgets, followed by the compiler gate.
-Other contextual builders, required evaluation, backedge propagation and proof
-outcomes remain separate.
+Capture now retains exact element roots and final primary/coercion decisions.
+Three focused groups pass, including narrowed source types, deferred literals,
+conversions already applied by expected checking, and direct/projected Never.
+Dispatch-block list elements retain their existing B001 contextual-inference gate.
+`/tmp/meowy-list-conversion-capture.log`. Formatting and all 1779 library tests
+pass; `/tmp/meowy-list-conversion-capture-lib.log`. Stage integration is next.
+Shared-list receiver loads are complete (`da35e36`, `0b6193f`,
+`4993f8d`, `6a57f7a`); the prior gate passed 1776 library/910 native tests and
+conformance 10 passed/13 unsupported/0 failed in debug/release.
+`/tmp/meowy-list-load-stages-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1944,8 +1932,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    groups pass (`0b6193f`). Method loads precede size operations or add snapshots
    (`4993f8d`), preserving effects, stops, errors and capacity-success stages.
    All 11 method groups and the compiler gate pass; the guide documents coverage.
-   Next capture final element-conversion decisions in `list_context.rs::list_union`
-   before connecting them to stages in `check/dependencies/lists.rs`. Preserve
+   Final element-conversion decisions in `list_context.rs::list_union` are now
+   captured. Next connect them to prepared sequences and endpoints in
+   `check/dependencies/lists/conversions.rs`, publishing metadata atomically. Preserve
    candidate probing, deferred source order, pre-conversion stops and conversions
    already applied during expected-value checking. Split capture and integration,
    testing primary/union/no-op/stopped inputs, effect order and atomic shared-budget

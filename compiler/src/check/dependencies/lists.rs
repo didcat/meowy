@@ -9,6 +9,9 @@ use crate::{
     hir,
 };
 
+mod conversions;
+pub(crate) use conversions::Input;
+
 impl Checker {
     pub(crate) fn list_sequence(
         &mut self,

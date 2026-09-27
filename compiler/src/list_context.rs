@@ -4,7 +4,7 @@ pub(crate) mod source;
 pub(crate) mod types;
 
 use crate::ast::{self, Span};
-use crate::check::{Checker, Result};
+use crate::check::{Checker, ListInput, Result};
 use crate::diagnostic::Diagnostic;
 use crate::flow::{FALSE, Guard};
 use crate::hir::{self, Type};
@@ -167,25 +167,34 @@ impl Checker {
             points[index] = Some(point);
             items[index] = Some(value);
         }
-        let values = items
+        let checked = items
             .into_iter()
             .enumerate()
             .map(|(index, value)| {
-                Self::expected_value(
+                let (primary, kind, value) = Self::expected_plan(
                     value.expect("checked list element"),
                     element,
                     values[index].span,
-                )
+                )?;
+                Ok((
+                    ListInput {
+                        point: points[index].expect("checked list element root"),
+                        primary,
+                        kind,
+                    },
+                    value,
+                ))
             })
             .collect::<Result<Vec<_>>>()?;
+        let (inputs, values): (Vec<_>, Vec<_>) = checked.into_iter().unzip();
         let ty = if values.iter().any(|value| value.ty == Type::Never) {
             Type::Never
         } else {
             list.clone()
         };
-        self.list_sequence(
+        self.contextual_list_sequence(
             self.point.expect("union list literal"),
-            points,
+            inputs,
             ty != Type::Never,
             span,
         )?;

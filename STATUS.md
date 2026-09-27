@@ -702,7 +702,8 @@ snapshots (`4993f8d`). All eight index/11 method groups and all ten compiler
 checks pass:
 1776 library/910 native tests; `/tmp/meowy-list-load-stages-gate.log`.
 The foundation guide documents this scope. Final contextual list element
-conversions are the next graph prerequisite.
+conversion work is in progress; the compiler handoff records the ordered capture,
+sequence integration and documentation commits.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
