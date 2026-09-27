@@ -99,47 +99,32 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current contextual list-conversion slices
+### Current ordinary narrowing slices
 
-The dependency-ordered series is complete:
-1. Capture exact element roots and final primary/coercion decisions while retaining
-   pre-conversion stops and existing HIR (`fcc193f`).
-2. Sequence captured primary extraction and per-element conversion before
-   successors/construction; publish metadata atomically (`0c05427`).
-3. Document verified coverage and the next concrete graph prerequisite.
+Investigation confirms ordinary local reads and runtime fields call `narrow`,
+which may insert Coerce HIR. Field-operation metadata currently ends at the same
+point before that conversion. Projected-borrow traversal also calls `narrow` and
+must retain its separate graph builder. The working tree was clean at entry.
 
-`list_context.rs::list_union` now uses `expected_plan` in its final element pass.
-It retains additional primary extraction and Forward/Convert/Stopped decisions.
-Conversions already applied during contextual checking are not repeated. Prepared
-sequences validate all original roots, including stopped suffixes, before inputs,
-sequence links and endpoints are published together under the shared edge budget.
-Direct Never stops after source entry; projected Never reaches primary extraction
-but no conversion, suffix or construction, even when final HIR has a different type.
-Earlier completed conversions remain linked to a later stopped input. Deferred
-literal checking preserves source order without inferring order from point IDs.
-Candidate probes allocate no new graph roots. Existing HIR, diagnostics, function
-ownership and required-evaluation gates are preserved; proof outcomes remain gated.
+Dependency-ordered commit plan:
+1. Expose the actual narrowing decision while preserving refinement and mutable
+   observations; add focused plan tests and validate the library suite.
+2. Give ordinary local/field narrowing distinct raw-source roots and retained
+   changed/completion metadata; preserve required and projected-borrow paths.
+   Verify roots, nesting, expected contexts and existing diagnostics.
+3. Sequence source completion through captured narrowing to the caller result,
+   omitting results for Never and publishing under the shared graph budget.
+   Add focused ordering/stop/budget tests and run the compiler gate.
+4. Document verified coverage and the next bounded prerequisite.
 
-Capture passed three focused groups and all 1779 then-current library tests;
-`/tmp/meowy-list-conversion-capture.log`,
-`/tmp/meowy-list-conversion-capture-lib.log`. All 16 initial list groups and an
-additional stopped-prefix case pass; `/tmp/meowy-list-conversion-stages.log`,
-`/tmp/meowy-list-conversion-prefix.log`. All ten compiler checks pass: 1784
-library/910 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-list-conversion-gate.log`. No outstanding failures remain.
-The foundation guide documents this coverage. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-list-conversion-docs.log`.
-
-Next audit `check/refinement.rs::narrow` and its ordinary local/field callers in
-`check/expressions.rs`. Narrowing can insert Coerce HIR after field-operation result
-metadata. Capture no-op/changed/stopped decisions and exact raw-source boundaries
-before integrating narrowing stages. Split capture and stage integration, preserving
-refinement guards, mutable observations, expected contexts, required reads and
-original errors. Keep `check/references.rs` projected-borrow field traversal separate.
-Verify narrowed/unchanged/never locals and fields, effect order, identity/shared
-budgets and the compiler gate. Metadata must not create new narrowing or loan
-permissions. Backedge propagation and evaluated proof outcomes remain separate.
+`narrow_plan` now exposes whether this invocation inserted a conversion; the
+existing `narrow` wrapper preserves all callers. Three focused groups cover
+unchanged/already-wrapped values, local/field paths, mutable observations, Never
+and original E207/E208 diagnostics. Formatting and all 1787 library tests pass;
+`/tmp/meowy-narrow-plans-lib.log`. Ordinary raw-root capture is next. Contextual list conversions are complete (`fcc193f`,
+`0c05427`, `3f83f50`); the prior compiler gate passed 1784 library/910 native tests,
+with conformance 10 passed/13 unsupported/0 failed in debug/release.
+`/tmp/meowy-list-conversion-gate.log`. Proof evaluation remains gated.
 
 ### Proof dependency implementation slices
 

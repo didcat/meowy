@@ -706,7 +706,8 @@ conversions are captured (`fcc193f`) and sequenced before successors/constructio
 (`0c05427`),
 with no suffix/result edges after stopped inputs. All ten compiler checks pass:
 1784 library/910 native tests; `/tmp/meowy-list-conversion-gate.log`.
-The foundation guide documents the scope. Runtime narrowing stages are next.
+The foundation guide documents the scope. Ordinary narrowing work is in progress; the compiler handoff records separate
+decision, root-capture, stage and documentation slices.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

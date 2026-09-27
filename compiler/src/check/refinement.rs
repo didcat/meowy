@@ -150,6 +150,10 @@ impl Checker {
     }
 
     pub(crate) fn narrow(&mut self, value: hir::Expr) -> Result<hir::Expr> {
+        self.narrow_plan(value).map(|(_, value)| value)
+    }
+
+    pub(crate) fn narrow_plan(&mut self, value: hir::Expr) -> Result<(bool, hir::Expr)> {
         if let Some(place) = Self::place(&value) {
             let ty = self.refined(place.clone(), &value.ty);
             if matches!(value.ty, Type::Union(_)) && self.proofs.variable(place.0) {
@@ -160,9 +164,9 @@ impl Checker {
                     .observations
                     .insert((value.span.start, value.span.end), tags);
             }
-            Ok(Self::coerce(value, ty))
+            Ok(Self::coercion(value, ty))
         } else {
-            Ok(value)
+            Ok((false, value))
         }
     }
 
@@ -236,3 +240,6 @@ impl Checker {
         guard
     }
 }
+
+#[cfg(test)]
+mod narrowing;
