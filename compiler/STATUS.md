@@ -109,10 +109,10 @@ handling. The working tree was clean before this continuation.
 
 Dependency-ordered commit plan:
 1. Capture and retain the implicit-load decision with receiver roots for index and
-   method metadata, preserving HIR/checking behavior; test shared, owned, explicit,
-   string and stopped receivers and run the library suite.
-2. Sequence captured index loads before snapshots and index evaluation; test order,
-   stops, bounds/errors, identity and shared edge-budget failures.
+   method metadata, preserving HIR/checking behavior; shared, owned, explicit,
+   string and stopped fixtures and the library suite pass (`da35e36`).
+2. Index loads now precede snapshots and index evaluation; eight groups cover
+   order, stops, bounds/errors, identity and shared edge-budget failures.
 3. Sequence captured method loads before size operations or add snapshots; test
    item effects, stops, ownership/errors and atomic budgets, then run the compiler gate.
 4. Document verified coverage and identify the next bounded graph prerequisite.
@@ -121,7 +121,12 @@ Capture now retains a load flag with the exact receiver root in index/method
 metadata. Focused fixtures distinguish implicit and explicit dereferences, owned
 lists, strings and stopped receivers; existing graph edges are unchanged.
 Formatting and all 1768 library tests pass;
-`/tmp/meowy-list-load-capture-lib.log`. Index-stage integration is next.
+`/tmp/meowy-list-load-capture-lib.log`. Index stages now route captured loads
+through a projection before receiver snapshots, with no direct bypass. Stopped
+receivers cannot request a load; publication still uses the shared edge budget.
+All eight index groups and formatting pass; `/tmp/meowy-list-load-indices.log`.
+The call-source fixture now follows `Invocation.point`, distinct from its CallId
+map key. No outstanding failures remain. Method-stage integration is next.
 Formatting primary projections remain verified by the prior ten-check compiler
 gate: 1768 library/910 native tests, conformance 10 passed/13 unsupported/0 failed;
 `/tmp/meowy-format-primary-stages-gate.log`. Broader contextual builders, backedge
@@ -1926,17 +1931,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    projections before per-part output (`d660709`). Literal None entries, recursive
    flattening, panic prefixes, returned-I/O conditions and stopped suffixes remain
    intact; a Never primary has extraction but no output/result edge.
-   Next audit `list.rs::list_receiver_point`, which inserts an implicit Deref for
-   shared list references but returns only the original root and resulting HIR.
-   Capture that load decision during checking, distinguishing owned lists, explicit
-   dereferences and strings. Then integrate it before existing snapshots or size
-   operations in `check/dependencies/{indices,methods}.rs`, preserving receiver
-   evaluation before index/item effects. Never bypass the load with the old direct
-   source-to-snapshot link. Keep stopped receivers, arity/type errors, known/unknown
-   lengths and capacity/bounds-success stages unchanged. Shared element borrows
-   use separate parent handling; do not broaden a shared edge helper blindly.
-   Split capture and index/method integration into reviewable slices, with focused
-   owned/shared/explicit/stopped/order/budget tests and the complete compiler gate.
+   `list.rs::list_receiver_point` now captures its implicit shared-list load
+   decision (`da35e36`). Index metadata sequences that load before the receiver
+   snapshot and index evaluation, preserving explicit dereferences, stopped
+   positions, bounds-success and shared element-borrow handling. Eight index
+   groups pass. Next integrate method loads in `check/dependencies/methods.rs`
+   before size operations or add snapshots, preserving item effects, stopped
+   receivers, arity/type errors, known/unknown lengths and capacity-success stages.
+   Verify focused method order/stop/error/budget groups, then the compiler gate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

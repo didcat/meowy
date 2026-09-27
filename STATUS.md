@@ -697,8 +697,8 @@ pairs (`39670ee`) and inserts projection before per-part output (`d660709`), pre
 literal parts, panic prefixes and stopped suffixes. All ten compiler checks pass:
 1768 library/910 native tests; `/tmp/meowy-format-primary-stages-gate.log`.
 The guide documents this scope. Shared-list receiver-load work is in progress:
-capture the inserted load, integrate index stages, then method stages, with focused
-checks and the compiler gate. The compiler handoff records the commit plan.
+capture is complete (`da35e36`), and index loads now precede snapshots and index
+effects. All eight index groups pass; method stages and the compiler gate are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -951,12 +951,13 @@ execution was not part of this documentation edit.
    stopped inputs and required budgets. Unary checking now captures and sequences
    additional primary extraction without repeating expected-value projections.
    Formatting now sequences captured primary projections before per-part output
-   while preserving literals, panic prefixes and stopped suffixes. Next capture
-   implicit shared-list loads in `compiler/src/list.rs::list_receiver_point`, then
-   integrate them before index/method snapshots or size operations. Preserve owned
-   and explicit-dereference paths, receiver/index/item order, stopped inputs,
-   existing errors and bounds/capacity conditions. Keep element-borrow handling
-   separate; split capture and integration with focused tests and the compiler gate.
+   while preserving literals, panic prefixes and stopped suffixes. Implicit
+   shared-list load decisions are captured; index loads now precede snapshots and
+   index effects. Next integrate method loads before size operations or add
+   snapshots in `check/dependencies/methods.rs`. Preserve owned and explicit
+   dereferences, receiver/item order, stopped inputs, existing errors and capacity
+   conditions. Verify focused method groups and the compiler gate; shared element
+   borrow handling remains separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

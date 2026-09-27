@@ -49,6 +49,7 @@ impl Checker {
         if point.kind != PointKind::Expr
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
+            || (load && access.is_none())
         {
             return Err(invalid());
         }
@@ -77,8 +78,14 @@ impl Checker {
             {
                 return Err(invalid());
             }
+            let mut from = Port::Normal(receiver);
+            if load {
+                let stage = Port::Projection { point: id, step: 0 };
+                edges.push(Edge::new(from, stage, Route::Next));
+                from = stage;
+            }
             edges.extend([
-                Edge::new(Port::Normal(receiver), Port::Snapshot(id), Route::Next),
+                Edge::new(from, Port::Snapshot(id), Route::Next),
                 Edge::new(
                     Port::Snapshot(id),
                     Port::Entry(access.position),
@@ -122,6 +129,9 @@ impl Checker {
 }
 
 #[cfg(test)]
+mod loads;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -159,28 +169,34 @@ mod tests {
             assert_eq!(index.load, load);
             let receiver = &checker.points[index.receiver];
             assert_eq!(&source[receiver.span.start..receiver.span.end], text);
-            assert_eq!(
-                index.edges,
-                [
-                    Edge::new(Port::Entry(id), Port::Entry(index.receiver), Route::Next),
-                    Edge::new(
-                        Port::Normal(index.receiver),
-                        Port::Snapshot(id),
-                        Route::Next
-                    ),
-                    Edge::new(
-                        Port::Snapshot(id),
-                        Port::Entry(access.position),
-                        Route::Next
-                    ),
-                    Edge::new(
-                        Port::Normal(access.position),
-                        Port::Operation(id),
-                        Route::Checked
-                    ),
-                    Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
-                ]
-            );
+            let mut expected = vec![
+                Edge::new(Port::Entry(id), Port::Entry(index.receiver), Route::Next),
+                Edge::new(
+                    Port::Normal(index.receiver),
+                    Port::Snapshot(id),
+                    Route::Next,
+                ),
+                Edge::new(
+                    Port::Snapshot(id),
+                    Port::Entry(access.position),
+                    Route::Next,
+                ),
+                Edge::new(
+                    Port::Normal(access.position),
+                    Port::Operation(id),
+                    Route::Checked,
+                ),
+                Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+            ];
+            if load {
+                let stage = Port::Projection { point: id, step: 0 };
+                expected[1].from = stage;
+                expected.insert(
+                    1,
+                    Edge::new(Port::Normal(index.receiver), stage, Route::Next),
+                );
+            }
+            assert_eq!(index.edges, expected);
             assert_eq!(access.length, length);
         }
     }
