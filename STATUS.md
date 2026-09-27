@@ -723,7 +723,8 @@ tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
 `ed70fbb`; the guide documents this scope. Scalar-leaf identities (`a4b385a`) now
 feed bounded construction/result stages (`7a42833`). All ten compiler checks pass:
 1820 library/913 native tests; `/tmp/meowy-scalar-leaf-gate.log`. The guide documents
-this scope. Static foundation-handle leaves are next.
+this scope. Static foundation-handle work is in progress; the compiler handoff
+records separate capture, stage integration and documentation slices.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

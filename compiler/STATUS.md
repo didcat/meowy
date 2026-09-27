@@ -99,45 +99,31 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current scalar-leaf slices
+### Current static foundation-handle slices
 
-The dependency-ordered series is complete:
-1. Capture bounded scalar kind/type and exact source roots at successful raw
-   literal/resolved-constant branches, preserving checking paths (`a4b385a`).
-2. Sequence construction/result stages with atomic shared-budget handling and
-   focused consumer/boundary tests (`7a42833`).
+Investigation confirms two resolved Item::Heap branches in `raw_expression` create
+Heap HIR with nominal Allocator type. Module aliases follow symbol resolution;
+ordinary handle bindings use local reads. Capturing these static results must not
+introduce allocation effects, alter nominal typing or extend handle-cell lifetimes.
+The working tree was clean before this continuation.
+
+Dependency-ordered commit plan:
+1. Capture exact Heap source roots and nominal identity after lexical resolution,
+   preserving HIR and required paths. Verify direct/module-alias/grouped sources,
+   local reads, shadowing, nominal errors and the library suite.
+2. Add bounded entry/handle/result stages with atomic shared-budget publication.
+   Verify expected/call/borrow consumers, owner/control, errors and required gates;
+   run the complete compiler gate.
 3. Document verified coverage and the next concrete prerequisite.
 
-`raw_expression` captures numeric/text construction, resolved scalar constants and
-signed-integer shortcuts after successful validation. Scalar metadata retains kind,
-width, source, owner and control without text payload copies. Entry reaches a
-construction stage and then the normal result before expected conversion. Groups
-and no-op wrappers retain their own links without duplicating leaves. Core/static
-aliases follow lexical resolution; ordinary boolean bindings remain local reads.
-Shared numeric constructors used by probes and required checking are unchanged;
-required budgets and formatting literal None entries retain their original paths.
-Invalid shape/owner identities and shared-budget failures publish no leaf operation.
-These stages do not establish complete value provenance or evaluate proof outcomes.
-
-All three capture groups and all 1816 then-current library tests pass;
-`/tmp/meowy-scalar-leaf-capture-lib.log`. Four stage groups cover expected conversion,
-grouping, formatting, required/probe boundaries, owners/control, errors and atomic
-budgets. The exact-capacity region fixture now includes scalar edges in its shared
-budget. All ten compiler checks pass: 1820 library/913 native tests, formatting,
-Clippy, build, tooling and conformance (10 passed/13 unsupported/0 failed in
-debug/release); `/tmp/meowy-scalar-leaf-gate.log`. No outstanding failures remain.
-The foundation guide documents this scope. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-scalar-leaf-docs.log`.
-
-Next capture static foundation-handle leaves at the two resolved Item::Heap
-branches in `check/expressions.rs::raw_expression`, then integrate bounded result
-stages separately. Preserve Heap HIR and the nominal Allocator type; a static
-handle result is not an allocation effect. Module aliases follow lexical resolution,
-while ordinary handle bindings continue through local-read stages. Keep required
-and probe paths, expected coercions, ownership/capture checks and unsupported
-foundation members unchanged. Verify direct/aliased/grouped handles, local reads,
-consumer order and atomic budgets, then run the compiler gate. Broader provenance,
-backedge propagation and proof evaluation remain separate.
+Both resolved Heap branches now retain exact source/owner/control and nominal
+Allocator identity without altering HIR. Required paths skip runtime capture.
+All three focused capture groups, formatting and all 1823 library tests pass;
+`/tmp/meowy-heap-leaf-capture-lib.log`. No outstanding failures remain.
+Bounded handle/result stage integration is next. Scalar leaves are complete (`a4b385a`, `7a42833`, `a07c5e7`);
+the prior gate passed 1820 library/913 native tests and conformance
+10 passed/13 unsupported/0 failed in debug/release.
+`/tmp/meowy-scalar-leaf-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1967,9 +1953,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    Ordinary scalar leaves now retain checked kind/type and exact roots at actual
    construction branches in `expressions.rs` (`a4b385a`), including signed integers
    and resolved constants. Bounded construction/result stages (`7a42833`) and the
-   compiler gate pass; the guide documents the scope. Next capture static Heap
-   foundation leaves at the two resolved branches in `raw_expression`, then add
-   bounded result stages. Preserve nominal Allocator identity, lexical/module
+   compiler gate pass; the guide documents the scope. Static Heap leaf identities
+   are now captured at the two resolved branches in `raw_expression`. Next add
+   bounded entry/handle/result stages in `dependencies/heap_leaves.rs`. Preserve nominal Allocator identity, lexical/module
    aliases, local-handle reads, expected coercions, required/probe paths and ownership
    gates. Test direct/aliased/grouped handles, consumer order and atomic budgets,
    then run the compiler gate. Static handle construction is not allocation.

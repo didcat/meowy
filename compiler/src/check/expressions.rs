@@ -189,7 +189,7 @@ impl Checker {
             | ExprKind::TypeValue(_)
             | ExprKind::TypeQuery(_) => match self.symbol(expr)?.expect("symbol") {
                 Value::Foundation(crate::foundation::Item::Heap) => {
-                    return Ok(hir::Expr {
+                    return self.heap_leaf(hir::Expr {
                         kind: hir::ExprKind::Heap,
                         ty: Type::Foundation(hir::FoundationType::Allocator),
                         span: expr.span,
@@ -386,11 +386,13 @@ impl Checker {
                 }
                 if let Some(symbol) = self.symbol(expr)? {
                     return match symbol {
-                        Value::Foundation(crate::foundation::Item::Heap) => Ok(hir::Expr {
-                            kind: hir::ExprKind::Heap,
-                            ty: Type::Foundation(hir::FoundationType::Allocator),
-                            span: expr.span,
-                        }),
+                        Value::Foundation(crate::foundation::Item::Heap) => {
+                            self.heap_leaf(hir::Expr {
+                                kind: hir::ExprKind::Heap,
+                                ty: Type::Foundation(hir::FoundationType::Allocator),
+                                span: expr.span,
+                            })
+                        }
                         Value::Foundation(item) => Err(Diagnostic::unsupported(
                             format!("runtime use of `{}`", item.name()),
                             expr.span,

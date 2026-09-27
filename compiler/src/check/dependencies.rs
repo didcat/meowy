@@ -318,6 +318,9 @@ pub(crate) use local_reads::LocalRead;
 mod scalar_leaves;
 pub(crate) use scalar_leaves::ScalarLeaf;
 
+mod heap_leaves;
+pub(crate) use heap_leaves::HeapLeaf;
+
 mod path_operations;
 pub(crate) use path_operations::{Operation as PathOperation, Step as PathStep};
 
