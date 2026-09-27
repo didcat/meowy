@@ -121,7 +121,14 @@ Dependency-ordered commit plan:
 existing `narrow` wrapper preserves all callers. Three focused groups cover
 unchanged/already-wrapped values, local/field paths, mutable observations, Never
 and original E207/E208 diagnostics. Formatting and all 1787 library tests pass;
-`/tmp/meowy-narrow-plans-lib.log`. Ordinary raw-root capture is next. Contextual list conversions are complete (`fcc193f`,
+`/tmp/meowy-narrow-plans-lib.log` (`1fb0156`). Ordinary local/field roots now
+separate raw reads/field operations from narrowing results. Captured metadata
+retains changed/completion decisions and owner/control without adding stage edges.
+Required paths and projected-borrow traversal retain the original wrapper.
+Formatting and all 1789 library tests pass; `/tmp/meowy-narrow-roots-lib.log`.
+Existing nested-field and ascription assertions now follow the captured raw-source
+link. No outstanding failures remain. Stage integration is next.
+Contextual list conversions are complete (`fcc193f`,
 `0c05427`, `3f83f50`); the prior compiler gate passed 1784 library/910 native tests,
 with conformance 10 passed/13 unsupported/0 failed in debug/release.
 `/tmp/meowy-list-conversion-gate.log`. Proof evaluation remains gated.
@@ -1935,11 +1942,11 @@ subtraction retains its documented limits. No outstanding failures remain.
    captured (`fcc193f`) and sequenced before successors/construction using
    prepared list sequences (`0c05427`). Stopped primaries retain no suffix or result
    edges; input/sequence/endpoint publication is atomic. The guide documents the
-   scope and the compiler gate passes. Next audit `refinement.rs::narrow` and
-   ordinary local/field callers in `expressions.rs` for conversions after current
-   result stages. Capture exact raw-source boundaries and no-op/changed/stopped
-   decisions before stage integration. Preserve guards, mutable observations,
-   expected contexts, required reads and separate projected-borrow traversal.
+   scope and the compiler gate passes. Narrowing decisions (`1fb0156`) and
+   ordinary local/field raw-source roots are now captured. Next integrate bounded
+   forwarding/conversion/result stages in `check/dependencies/narrowing.rs`,
+   omitting Never results and sharing the edge budget. Preserve guards, mutable
+   observations, expected contexts, required reads and projected-borrow traversal.
    Verify narrowed/unchanged/never local and field cases, effect order, identity
    and shared budgets, then the compiler gate; retain current typing/loan rules.
    Other contextual builders and required evaluation remain separate.

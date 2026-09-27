@@ -170,6 +170,21 @@ impl Checker {
         }
     }
 
+    pub(crate) fn narrow_source(
+        &mut self,
+        span: Span,
+        build: impl FnOnce(&mut Self) -> Result<hir::Expr>,
+    ) -> Result<hir::Expr> {
+        let Some(id) = self.point.filter(|_| !self.required) else {
+            let value = build(self)?;
+            return self.narrow(value);
+        };
+        let (input, value) = self.with_point_id(super::PointKind::Expr, span, build)?;
+        let (changed, value) = self.narrow_plan(value)?;
+        self.capture_narrowing(id, input, changed, value.ty != Type::Never, span)?;
+        Ok(value)
+    }
+
     pub(crate) fn storage_type(value: &hir::Expr) -> &Type {
         match &value.kind {
             hir::ExprKind::Coerce { value } => Self::storage_type(value),

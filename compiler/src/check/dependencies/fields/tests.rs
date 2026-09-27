@@ -68,7 +68,10 @@ pub(crate) fn field_stages_preserve_call_returns_nested_fields_and_narrowing() {
         checker
             .fields
             .values()
-            .filter(|field| checker.fields.contains_key(&field.input))
+            .filter(|field| checker
+                .narrowings
+                .get(&field.input)
+                .is_some_and(|op| checker.fields.contains_key(&op.input)))
             .count(),
         1
     );

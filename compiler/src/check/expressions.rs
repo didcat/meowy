@@ -238,10 +238,12 @@ impl Checker {
                             span: expr.span,
                         });
                     }
-                    return self.narrow(hir::Expr {
-                        kind: hir::ExprKind::Local(id),
-                        ty,
-                        span: expr.span,
+                    return self.narrow_source(expr.span, |_| {
+                        Ok(hir::Expr {
+                            kind: hir::ExprKind::Local(id),
+                            ty,
+                            span: expr.span,
+                        })
                     });
                 }
                 Value::Constant(value) => return Ok(Self::constant_expr(value, expr.span)),
@@ -376,11 +378,13 @@ impl Checker {
                         )),
                     };
                 }
-                let (input, load, value) = self.field_point(value, name, expr.span)?;
-                if let Some(point) = self.point {
-                    self.field_operation(point, input, load, &value, expr.span)?;
-                }
-                return self.narrow(value);
+                return self.narrow_source(expr.span, |checker| {
+                    let (input, load, value) = checker.field_point(value, name, expr.span)?;
+                    if let Some(point) = checker.point {
+                        checker.field_operation(point, input, load, &value, expr.span)?;
+                    }
+                    Ok(value)
+                });
             }
             ExprKind::Ascribe {
                 value,

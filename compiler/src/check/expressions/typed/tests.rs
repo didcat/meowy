@@ -28,7 +28,11 @@ pub(crate) fn typed_roots_keep_operand_identity_before_target_construction() {
             assert!(checker.invocations.values().any(|call| call.point == input));
         }
         if matches!(value.kind, ExprKind::Field { .. }) {
-            assert!(checker.fields.contains_key(&input));
+            assert!(
+                checker
+                    .fields
+                    .contains_key(&checker.narrowings[&input].input)
+            );
         }
     }
     assert_eq!(

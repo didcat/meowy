@@ -354,6 +354,9 @@ pub(crate) use typed::Typed;
 mod coercions;
 pub(crate) use coercions::{Coercion, Kind as CoercionKind};
 
+mod narrowing;
+pub(crate) use narrowing::Narrowing;
+
 mod binaries;
 pub(crate) use binaries::{Binary, Plan as BinaryPlan};
 
