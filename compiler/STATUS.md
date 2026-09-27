@@ -110,17 +110,31 @@ The working tree was clean before this continuation.
 Dependency-ordered commit plan:
 1. Capture exact Heap source roots and nominal identity after lexical resolution,
    preserving HIR and required paths. Verify direct/module-alias/grouped sources,
-   local reads, shadowing, nominal errors and the library suite.
+   local reads, shadowing, nominal errors and the library suite pass (`46ea8f3`).
 2. Add bounded entry/handle/result stages with atomic shared-budget publication.
    Verify expected/call/borrow consumers, owner/control, errors and required gates;
-   run the complete compiler gate.
+   the complete compiler gate passes.
 3. Document verified coverage and the next concrete prerequisite.
 
 Both resolved Heap branches now retain exact source/owner/control and nominal
 Allocator identity without altering HIR. Required paths skip runtime capture.
 All three focused capture groups, formatting and all 1823 library tests pass;
 `/tmp/meowy-heap-leaf-capture-lib.log`. No outstanding failures remain.
-Bounded handle/result stage integration is next. Scalar leaves are complete (`a4b385a`, `7a42833`, `a07c5e7`);
+Capture is committed as `46ea8f3`. Entry/handle/result stages now share the
+graph edge budget. Focused checks cover expected and call consumers, temporary
+materialization, lifetime/ownership gates, owner/control, hints and atomic errors.
+All seven heap capture/stage groups pass in the final gate. Temporary materialization
+uses a supported value block; direct member borrows retain B001, and lifetime,
+conflict and equality fixtures retain E303/E302/E222. All ten compiler checks pass:
+1827 library/913 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-heap-leaf-gate.log`. No outstanding failures remain. Guide/handoff
+documentation is next. The next prerequisite is a bounded read-only inventory of
+existing graph edges: ledgers are separately stored and `edges.rs::edge_room`
+counts them, but no common enumeration exists for auditing coverage/forward lookup.
+Preserve exact ports and routes, explicit Backedge markers and unknown boundaries;
+an inventory must not infer reachability or enable proof propagation.
+Scalar leaves are complete (`a4b385a`, `7a42833`, `a07c5e7`);
 the prior gate passed 1820 library/913 native tests and conformance
 10 passed/13 unsupported/0 failed in debug/release.
 `/tmp/meowy-scalar-leaf-gate.log`. Proof outcomes remain gated.
@@ -1954,11 +1968,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    construction branches in `expressions.rs` (`a4b385a`), including signed integers
    and resolved constants. Bounded construction/result stages (`7a42833`) and the
    compiler gate pass; the guide documents the scope. Static Heap leaf identities
-   are now captured at the two resolved branches in `raw_expression`. Next add
-   bounded entry/handle/result stages in `dependencies/heap_leaves.rs`. Preserve nominal Allocator identity, lexical/module
-   aliases, local-handle reads, expected coercions, required/probe paths and ownership
-   gates. Test direct/aliased/grouped handles, consumer order and atomic budgets,
-   then run the compiler gate. Static handle construction is not allocation.
+   are captured at resolved branches (`46ea8f3`) and bounded handle/result stages
+   now pass the compiler gate. Document the scope next, then add bounded read-only
+   enumeration across the existing edge ledgers in `dependencies/edges.rs` and
+   `Checker`. Check actual counts against ledger counters before a separate forward
+   lookup slice. Preserve exact ports/routes, owners, Backedge markers and unknown
+   boundaries; enumeration does not prove reachability or enable propagation.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

@@ -723,8 +723,10 @@ tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
 `ed70fbb`; the guide documents this scope. Scalar-leaf identities (`a4b385a`) now
 feed bounded construction/result stages (`7a42833`). All ten compiler checks pass:
 1820 library/913 native tests; `/tmp/meowy-scalar-leaf-gate.log`. The guide documents
-this scope. Static foundation-handle work is in progress; the compiler handoff
-records separate capture, stage integration and documentation slices.
+this scope. Static Heap identities (`46ea8f3`) now feed bounded handle/result
+stages. All ten compiler checks pass: 1827 library/913 native tests;
+`/tmp/meowy-heap-leaf-gate.log`. Guide documentation and the bounded edge-inventory
+handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -855,10 +857,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Scalar-leaf stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1820 library/913 native tests.
+- Static Heap leaf stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1827 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-scalar-leaf-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-heap-leaf-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -996,12 +998,12 @@ execution was not part of this documentation edit.
    required evaluation and capture gates. Checker/native groups and the compiler
    gate pass, and the guide documents scope. Scalar leaves now retain bounded
    checked kind/type metadata and construction/result stages; the compiler gate
-   passes, and the guide documents scope. Next capture resolved static Heap leaves
-   in `compiler/src/check/expressions.rs::raw_expression`, followed by bounded result
-   stages. Preserve nominal identity, lexical/module aliases, ordinary local-handle
-   reads, expected coercions, required/probe paths and ownership gates. Verify focused
-   consumer/budget cases and the compiler gate; static handle construction is not
-   allocation.
+   passes, and the guide documents scope. Static Heap leaves now retain nominal
+   identity and bounded handle/result stages without allocation effects. The compiler
+   gate passes. Document this scope next, then add bounded read-only edge enumeration
+   across existing ledgers, verifying counts before a separate forward lookup slice.
+   Preserve exact ports/routes, ownership, Backedge markers and unknown boundaries;
+   an inventory does not imply reachability or complete propagation.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

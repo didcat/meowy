@@ -80,6 +80,7 @@ impl Checker {
             .saturating_add(self.operation_edges)
             .saturating_add(self.local_read_edges)
             .saturating_add(self.scalar_leaf_edges)
+            .saturating_add(self.heap_leaf_edges)
             .saturating_add(self.path_edges)
             .saturating_add(self.store_edges)
             .saturating_add(self.invocation_edges)

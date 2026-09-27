@@ -1,4 +1,7 @@
-use super::PointKind;
+use super::{
+    PointKind,
+    edges::{Edge, Port, Route},
+};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -12,6 +15,7 @@ pub(crate) struct HeapLeaf {
     pub(crate) ty: hir::FoundationType,
     pub(crate) control: bool,
     pub(crate) span: Span,
+    pub(crate) edges: [Edge; 2],
 }
 
 impl Checker {
@@ -49,6 +53,10 @@ impl Checker {
             ty: hir::FoundationType::Allocator,
             control: self.control,
             span: value.span,
+            edges: [
+                Edge::new(Port::Entry(id), Port::Operation(id), Route::Next),
+                Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+            ],
         };
         if let Some(prior) = self.heap_leaves.get(&id) {
             return if *prior == leaf {
@@ -57,10 +65,20 @@ impl Checker {
                 Err(invalid())
             };
         }
+        if !self.edge_room(leaf.edges.len()) {
+            return Err(Diagnostic::unsupported(
+                "proof heap-leaf budget exhausted",
+                value.span,
+            ));
+        }
+        self.heap_leaf_edges += leaf.edges.len();
         self.heap_leaves.insert(id, leaf);
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod stages;
 
 #[cfg(test)]
 mod tests {
