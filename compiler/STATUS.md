@@ -108,13 +108,13 @@ must retain its separate graph builder. The working tree was clean at entry.
 
 Dependency-ordered commit plan:
 1. Expose the actual narrowing decision while preserving refinement and mutable
-   observations; add focused plan tests and validate the library suite.
+   observations; focused tests and the library suite pass (`1fb0156`).
 2. Give ordinary local/field narrowing distinct raw-source roots and retained
    changed/completion metadata; preserve required and projected-borrow paths.
-   Verify roots, nesting, expected contexts and existing diagnostics.
+   Root, nesting, expected-context and library checks pass (`29a5e6f`).
 3. Sequence source completion through captured narrowing to the caller result,
    omitting results for Never and publishing under the shared graph budget.
-   Add focused ordering/stop/budget tests and run the compiler gate.
+   Focused ordering/stop/budget tests and the compiler gate pass.
 4. Document verified coverage and the next bounded prerequisite.
 
 `narrow_plan` now exposes whether this invocation inserted a conversion; the
@@ -127,7 +127,20 @@ retains changed/completion decisions and owner/control without adding stage edge
 Required paths and projected-borrow traversal retain the original wrapper.
 Formatting and all 1789 library tests pass; `/tmp/meowy-narrow-roots-lib.log`.
 Existing nested-field and ascription assertions now follow the captured raw-source
-link. No outstanding failures remain. Stage integration is next.
+link (`29a5e6f`). Stage integration now adds forwarding/conversion/result links
+under the shared edge budget, omitting Never results. All seven narrowing root/
+stage groups and formatting pass; `/tmp/meowy-narrow-stages.log`. All ten compiler
+checks pass: 1794 library/910 native tests, formatting, Clippy, build, tooling and
+conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-narrow-stages-gate.log`. The shared-budget equality fixture now checks
+the earlier narrowing B001 and zero partial publication. No outstanding failures
+remain. Guide/handoff documentation is next.
+
+The next gap is `references.rs::borrowed`: its owned-field traversal still calls
+`narrow` while recording only a Field projection step. Capture the actual changed
+flag alongside that field step, then sequence conversion before further projection
+or reborrow. Preserve existing path-step budgets, type/loan gates and temporary
+lifetimes; do not route this path through ordinary local/field roots.
 Contextual list conversions are complete (`fcc193f`,
 `0c05427`, `3f83f50`); the prior compiler gate passed 1784 library/910 native tests,
 with conformance 10 passed/13 unsupported/0 failed in debug/release.
@@ -1943,12 +1956,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    prepared list sequences (`0c05427`). Stopped primaries retain no suffix or result
    edges; input/sequence/endpoint publication is atomic. The guide documents the
    scope and the compiler gate passes. Narrowing decisions (`1fb0156`) and
-   ordinary local/field raw-source roots are now captured. Next integrate bounded
-   forwarding/conversion/result stages in `check/dependencies/narrowing.rs`,
-   omitting Never results and sharing the edge budget. Preserve guards, mutable
-   observations, expected contexts, required reads and projected-borrow traversal.
-   Verify narrowed/unchanged/never local and field cases, effect order, identity
-   and shared budgets, then the compiler gate; retain current typing/loan rules.
+   ordinary local/field raw-source roots (`29a5e6f`) now feed bounded forwarding/
+   conversion/result stages. Never results are omitted and shared-budget failures
+   publish no narrowing operation. The compiler gate passes. Document the scope
+   next, then capture owned-field narrowing decisions in `references.rs::borrowed`
+   alongside existing `ProjectionStep::Field` metadata. Integrate their conversion
+   stages separately without changing path-step limits, permission gates or
+   temporary lifetimes. Preserve required paths and stopped/error behavior.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

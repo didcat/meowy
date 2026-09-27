@@ -1,4 +1,7 @@
-use super::PointKind;
+use super::{
+    PointKind,
+    edges::{Edge, Port, Route},
+};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -14,6 +17,7 @@ pub(crate) struct Narrowing {
     pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
+    pub(crate) edges: Vec<Edge>,
 }
 
 impl Checker {
@@ -49,6 +53,15 @@ impl Checker {
         {
             return Err(invalid());
         }
+        let mut edges = vec![Edge::new(Port::Entry(id), Port::Entry(input), Route::Next)];
+        let mut from = Port::Normal(input);
+        if changed {
+            edges.push(Edge::new(from, Port::Operation(id), Route::Next));
+            from = Port::Operation(id);
+        }
+        if normal {
+            edges.push(Edge::new(from, Port::Normal(id), Route::Next));
+        }
         let op = Narrowing {
             owner: self.owner,
             input,
@@ -56,14 +69,25 @@ impl Checker {
             normal,
             control: self.control,
             span,
+            edges,
         };
         if let Some(prior) = self.narrowings.get(&id) {
             return if *prior == op { Ok(()) } else { Err(invalid()) };
         }
+        if !self.edge_room(op.edges.len()) {
+            return Err(Diagnostic::unsupported(
+                "proof narrowing budget exhausted",
+                span,
+            ));
+        }
+        self.narrowing_edges += op.edges.len();
         self.narrowings.insert(id, op);
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod stages;
 
 #[cfg(test)]
 mod tests {
