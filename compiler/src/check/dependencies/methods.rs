@@ -54,6 +54,7 @@ impl Checker {
         if point.kind != PointKind::Expr
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
+            || (load && matches!(kind, Kind::Stopped | Kind::StringSize))
         {
             return Err(invalid());
         }
@@ -90,12 +91,18 @@ impl Checker {
             Port::Entry(receiver),
             Route::Next,
         )];
+        let mut from = Port::Normal(receiver);
+        if load {
+            let stage = Port::Projection { point: id, step: 0 };
+            edges.push(Edge::new(from, stage, Route::Next));
+            from = stage;
+        }
         if let Kind::Add {
             item, may_return, ..
         } = kind
         {
             edges.extend([
-                Edge::new(Port::Normal(receiver), Port::Snapshot(id), Route::Next),
+                Edge::new(from, Port::Snapshot(id), Route::Next),
                 Edge::new(Port::Snapshot(id), Port::Entry(item), Route::Next),
             ]);
             if may_return {
@@ -106,7 +113,7 @@ impl Checker {
             }
         } else if kind != Kind::Stopped {
             edges.extend([
-                Edge::new(Port::Normal(receiver), Port::Operation(id), Route::Next),
+                Edge::new(from, Port::Operation(id), Route::Next),
                 Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
             ]);
         }
@@ -139,6 +146,9 @@ impl Checker {
 mod add;
 
 #[cfg(test)]
+mod loads;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -166,11 +176,28 @@ mod tests {
             assert_eq!(&source[point.span.start..point.span.end], text);
             assert_eq!(method.kind, kind);
             assert_eq!(method.load, load);
-            assert!(method.edges.contains(&Edge::new(
-                Port::Normal(method.receiver),
-                Port::Operation(id),
-                Route::Next
-            )));
+            let from = if load {
+                let stage = Port::Projection { point: id, step: 0 };
+                assert!(method.edges.contains(&Edge::new(
+                    Port::Normal(method.receiver),
+                    stage,
+                    Route::Next
+                )));
+                assert!(!method.edges.contains(&Edge::new(
+                    Port::Normal(method.receiver),
+                    Port::Operation(id),
+                    Route::Next
+                )));
+                stage
+            } else {
+                Port::Normal(method.receiver)
+            };
+            assert!(
+                method
+                    .edges
+                    .contains(&Edge::new(from, Port::Operation(id), Route::Next))
+            );
+            assert_eq!(method.edges.len(), if load { 4 } else { 3 });
         }
     }
 

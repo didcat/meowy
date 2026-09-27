@@ -696,9 +696,11 @@ The foundation guide documents this scope. Formatting now retains source/primary
 pairs (`39670ee`) and inserts projection before per-part output (`d660709`), preserving
 literal parts, panic prefixes and stopped suffixes. All ten compiler checks pass:
 1768 library/910 native tests; `/tmp/meowy-format-primary-stages-gate.log`.
-The guide documents this scope. Shared-list receiver-load work is in progress:
-capture is complete (`da35e36`), and index loads now precede snapshots and index
-effects. All eight index groups pass; method stages and the compiler gate are next.
+The guide documents this scope. Shared-list receiver loads are captured
+(`da35e36`) and precede index snapshots (`0b6193f`), size operations and add
+snapshots. All eight index/11 method groups and all ten compiler checks pass:
+1776 library/910 native tests; `/tmp/meowy-list-load-stages-gate.log`.
+Guide documentation and the final element-conversion handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -829,10 +831,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Formatting primary-projection stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1768 library/910 native tests.
+- Shared-list receiver-load stages passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1776 library/910 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-format-primary-stages-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-list-load-stages-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -953,11 +955,11 @@ execution was not part of this documentation edit.
    Formatting now sequences captured primary projections before per-part output
    while preserving literals, panic prefixes and stopped suffixes. Implicit
    shared-list load decisions are captured; index loads now precede snapshots and
-   index effects. Next integrate method loads before size operations or add
-   snapshots in `check/dependencies/methods.rs`. Preserve owned and explicit
-   dereferences, receiver/item order, stopped inputs, existing errors and capacity
-   conditions. Verify focused method groups and the compiler gate; shared element
-   borrow handling remains separate.
+   index effects. Method loads now precede size operations or add snapshots,
+   preserving existing order, stops, errors and capacity conditions. The compiler
+   gate passes. Document this coverage next, then capture final element-conversion
+   decisions in `list_context.rs::list_union` before integrating list sequence
+   stages. Shared element-borrow handling remains separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

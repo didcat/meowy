@@ -113,8 +113,8 @@ Dependency-ordered commit plan:
    string and stopped fixtures and the library suite pass (`da35e36`).
 2. Index loads now precede snapshots and index evaluation; eight groups cover
    order, stops, bounds/errors, identity and shared edge-budget failures.
-3. Sequence captured method loads before size operations or add snapshots; test
-   item effects, stops, ownership/errors and atomic budgets, then run the compiler gate.
+3. Method loads now precede size operations or add snapshots; 11 focused groups
+   and the full compiler gate pass, including item effects, stops, errors and budgets.
 4. Document verified coverage and identify the next bounded graph prerequisite.
 
 Capture now retains a load flag with the exact receiver root in index/method
@@ -126,7 +126,16 @@ through a projection before receiver snapshots, with no direct bypass. Stopped
 receivers cannot request a load; publication still uses the shared edge budget.
 All eight index groups and formatting pass; `/tmp/meowy-list-load-indices.log`.
 The call-source fixture now follows `Invocation.point`, distinct from its CallId
-map key. No outstanding failures remain. Method-stage integration is next.
+map key. No outstanding failures remain. Index stages are committed as `0b6193f`. Method stages now place captured loads
+before size operations or add snapshots and reject load flags on stopped/string
+methods. All 11 method groups and formatting pass;
+`/tmp/meowy-list-load-methods.log`. Temporary shared list values preserve unknown
+length and runtime capacity checks. No outstanding focused failures remain.
+All ten compiler checks pass: 1776 library/910 native tests, formatting, Clippy,
+build, harness and conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-list-load-stages-gate.log`. Guide/handoff documentation is next.
+The next source gap is final element conversion in `list_context.rs::list_union`: its `expected_value` pass can add projections/coercions after captured roots.
+Capture those decisions before integrating them into bounded list sequences.
 Formatting primary projections remain verified by the prior ten-check compiler
 gate: 1768 library/910 native tests, conformance 10 passed/13 unsupported/0 failed;
 `/tmp/meowy-format-primary-stages-gate.log`. Broader contextual builders, backedge
@@ -1935,10 +1944,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    decision (`da35e36`). Index metadata sequences that load before the receiver
    snapshot and index evaluation, preserving explicit dereferences, stopped
    positions, bounds-success and shared element-borrow handling. Eight index
-   groups pass. Next integrate method loads in `check/dependencies/methods.rs`
-   before size operations or add snapshots, preserving item effects, stopped
-   receivers, arity/type errors, known/unknown lengths and capacity-success stages.
-   Verify focused method order/stop/error/budget groups, then the compiler gate.
+   groups pass. Method loads now precede size operations or add snapshots,
+   preserving item effects, stopped receivers, errors and capacity-success stages.
+   All 11 method groups and the compiler gate pass. Document this coverage next;
+   then capture final element-conversion decisions in `list_context.rs::list_union`
+   before connecting them to bounded list sequence stages. Preserve candidate
+   probing, deferred source order, stops and already-applied expected conversions.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

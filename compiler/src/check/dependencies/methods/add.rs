@@ -29,20 +29,26 @@ pub(crate) fn add_captures_receiver_and_length_before_item_effects_and_capacity_
         assert_eq!(known, length);
         assert!(may_return);
         assert_ne!(method.receiver, item);
-        assert_eq!(
-            method.edges,
-            [
-                Edge::new(Port::Entry(id), Port::Entry(method.receiver), Route::Next),
-                Edge::new(
-                    Port::Normal(method.receiver),
-                    Port::Snapshot(id),
-                    Route::Next
-                ),
-                Edge::new(Port::Snapshot(id), Port::Entry(item), Route::Next),
-                Edge::new(Port::Normal(item), Port::Operation(id), Route::Checked),
-                Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
-            ]
-        );
+        let mut expected = vec![
+            Edge::new(Port::Entry(id), Port::Entry(method.receiver), Route::Next),
+            Edge::new(
+                Port::Normal(method.receiver),
+                Port::Snapshot(id),
+                Route::Next,
+            ),
+            Edge::new(Port::Snapshot(id), Port::Entry(item), Route::Next),
+            Edge::new(Port::Normal(item), Port::Operation(id), Route::Checked),
+            Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
+        ];
+        if load {
+            let stage = Port::Projection { point: id, step: 0 };
+            expected[1].from = stage;
+            expected.insert(
+                1,
+                Edge::new(Port::Normal(method.receiver), stage, Route::Next),
+            );
+        }
+        assert_eq!(method.edges, expected);
     }
 }
 
