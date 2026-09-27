@@ -720,7 +720,8 @@ this scope. Runtime file-module reads now share bounded storage stages (`ea57a8f
 Four checker groups and three native groups pass, including once-only startup and
 required/capture boundaries. All ten compiler checks pass: 1813 library/913 native
 tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
-`ed70fbb`; the guide documents this scope. Scalar literal/result leaves are next.
+`ed70fbb`; the guide documents this scope. Scalar-leaf work is in progress; the
+compiler handoff records separate capture, stage and documentation commits.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

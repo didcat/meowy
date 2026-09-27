@@ -157,8 +157,14 @@ impl Checker {
         let expr = bits.as_ref().unwrap_or(expr);
         self.charge_integer(expr)?;
         let (kind, ty) = match &expr.kind {
-            ExprKind::Int(text) => return self.integer(text, false, expected, expr.span),
-            ExprKind::Float(text) => return Self::floating(text, expected, expr.span),
+            ExprKind::Int(text) => {
+                let value = self.integer(text, false, expected, expr.span)?;
+                return self.scalar_leaf(value);
+            }
+            ExprKind::Float(text) => {
+                let value = Self::floating(text, expected, expr.span)?;
+                return self.scalar_leaf(value);
+            }
             ExprKind::String(parts) => {
                 let mut text = String::new();
                 for part in parts {
@@ -172,7 +178,11 @@ impl Checker {
                         }
                     }
                 }
-                (hir::ExprKind::String(text), Type::String)
+                return self.scalar_leaf(hir::Expr {
+                    kind: hir::ExprKind::String(text),
+                    ty: Type::String,
+                    span: expr.span,
+                });
             }
             ExprKind::Name(_)
             | ExprKind::Import(_)
@@ -262,11 +272,13 @@ impl Checker {
                         Ok(value)
                     });
                 }
-                Value::Constant(value) => return Ok(Self::constant_expr(value, expr.span)),
+                Value::Constant(value) => {
+                    return self.scalar_leaf(Self::constant_expr(value, expr.span));
+                }
                 Value::Static { value, ty } => {
                     let mut value = Self::constant_expr(value, expr.span);
                     value.ty = ty;
-                    return Ok(value);
+                    return self.scalar_leaf(value);
                 }
                 Value::Pending(_) => {
                     return Err(Self::error(
@@ -305,7 +317,8 @@ impl Checker {
                 if op == "-"
                     && let ExprKind::Int(text) = &value.kind
                 {
-                    return self.integer(text, true, expected, expr.span);
+                    let value = self.integer(text, true, expected, expr.span)?;
+                    return self.scalar_leaf(value);
                 }
                 if op == "&" {
                     return self.borrowed(value, expr.span);
@@ -385,9 +398,11 @@ impl Checker {
                         Value::Static { value, ty } => {
                             let mut value = Self::constant_expr(value, expr.span);
                             value.ty = ty;
-                            Ok(value)
+                            self.scalar_leaf(value)
                         }
-                        Value::Constant(value) => Ok(Self::constant_expr(value, expr.span)),
+                        Value::Constant(value) => {
+                            self.scalar_leaf(Self::constant_expr(value, expr.span))
+                        }
                         _ => Err(Diagnostic::unsupported(
                             "runtime use of intrinsic operation values",
                             expr.span,

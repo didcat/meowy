@@ -99,44 +99,34 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current file-module read slices
+### Current scalar-leaf slices
 
-The dependency-ordered series is complete:
-1. Connect runtime file-module values to bounded read metadata after existing
-   required/capture gates, with focused checker tests (`ea57a8f`).
-2. Verify real imports/facades, aliases, once-only startup and required/capture
-   boundaries through native cases and the compiler gate (`ed70fbb`).
+Investigation confirms `expression_value` delegates construction to `raw_expression`
+and then records boolean/never facts. Literal and resolved-constant branches return
+scalar HIR without leaf metadata; groups and no-op wrappers can return that same
+HIR, so capture must occur only at the actual construction branches. Shared numeric
+constructors also serve probes/required checking and will remain untouched.
+The working tree was clean before this continuation.
+
+Dependency-ordered commit plan:
+1. Capture exact source roots and bounded scalar kind/type metadata at successful
+   numeric/text/resolved-constant and signed-integer branches. Preserve payloads,
+   lexical resolution, grouping, expected typing and required/probe paths; validate
+   focused capture cases and the library suite.
+2. Add bounded entry/construction/result stages with atomic shared-budget handling.
+   Test parent consumers, aliases/shadowing, formatting and required/error boundaries;
+   run the compiler gate.
 3. Document verified coverage and the next concrete prerequisite.
 
-Value::FileModule now reuses `capture_local_read` at its existing expression point
-when checking a runtime value. Module and canonical storage IDs remain unchanged;
-read completion precedes field/primary consumers without adding narrowing roots.
-Required scalar primary folding and named required fields remain source-only.
-Module alias declarations preserve namespace identity, while actual runtime module
-reads inside functions retain B001. No new initialization, import, export or
-lifetime behavior is introduced. Shared-budget failures publish no read operation.
-
-All four checker groups and all 1813 library tests pass;
-`/tmp/meowy-module-read-lib.log`. Three native groups pass; accepted startup and
-required-function cases execute in debug/release, and capture checks retain B001;
-`/tmp/meowy-module-read-native.log`. All ten compiler checks pass: 1813 library/
-913 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-module-read-gate.log`. No outstanding failures remain.
-The foundation guide documents this scope. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-module-read-docs.log`.
-Proof outcomes remain gated.
-
-Next capture ordinary scalar literal/result leaves at successful branches in
-`check/expressions.rs::expression_value`: numeric/text literals, resolved scalar
-constants and the signed-integer shortcut. Retain the actual source point, checked
-scalar kind/type and owner/control without copying text payloads into graph metadata.
-Shared integer/floating/constant constructors also serve probes and required
-checking; do not add unconditional graph hooks there. Preserve lexical resolution,
-expected coercions, signed widths/errors, required budgets and formatting's literal
-None entries. Split decision capture from bounded entry/result stage integration,
-with focused scalar/alias/shadowing/expected/required/error/budget tests followed by
-the compiler gate. Foundation handles and broader value provenance remain separate.
+Successful raw scalar-construction branches now retain bounded kind/type and
+source/owner/control metadata, with no text payload copies. Shared numeric helpers,
+required paths and grouping remain separate. All three capture groups, formatting
+and all 1816 library tests pass; `/tmp/meowy-scalar-leaf-capture-lib.log`. Ordinary
+boolean bindings remain local reads; core/static aliases retain resolved kind and
+width. No outstanding failures remain. Construction/result stages are next. File-module reads are complete (`ea57a8f`, `ed70fbb`, `08e863a`);
+the prior gate passed 1813 library/913 native tests and conformance
+10 passed/13 unsupported/0 failed in debug/release.
+`/tmp/meowy-module-read-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
@@ -1963,10 +1953,11 @@ subtraction retains its documented limits. No outstanding failures remain.
    focused groups and 1813 library tests pass (`ea57a8f`). Three native groups
    verify real imports/facades, aliases, once-only startup and required/capture
    boundaries (`ed70fbb`); the compiler gate passes and the guide documents scope.
-   Next capture ordinary scalar leaves at successful branches in `expressions.rs`,
-   including signed-integer shortcuts and resolved constants. Retain checked scalar
-   kind/type and exact roots without copying text payloads. Keep hooks out of shared
-   constructors used by probes/required evaluation. Preserve lexical resolution,
+   Ordinary scalar leaves now retain checked kind/type and exact roots at actual
+   construction branches in `expressions.rs`, including signed integers and resolved
+   constants. Next add bounded entry/construction/result stages in
+   `dependencies/scalar_leaves.rs` with atomic shared-budget publication. Shared
+   numeric/probe/required constructors remain untouched. Preserve lexical resolution,
    expected coercions, widths/errors, required budgets and formatting literal None
    entries; split capture from stages and run focused tests plus the compiler gate.
    Other contextual builders and required evaluation remain separate.

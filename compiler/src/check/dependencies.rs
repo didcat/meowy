@@ -315,6 +315,9 @@ pub(crate) use operations::{Kind as OperationKind, Operation};
 mod local_reads;
 pub(crate) use local_reads::LocalRead;
 
+mod scalar_leaves;
+pub(crate) use scalar_leaves::ScalarLeaf;
+
 mod path_operations;
 pub(crate) use path_operations::{Operation as PathOperation, Step as PathStep};
 
