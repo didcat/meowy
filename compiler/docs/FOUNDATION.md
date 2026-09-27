@@ -266,7 +266,12 @@ has no normal-result edge. Reference-valued locals retain their own cell identit
 explicit dereference loads remain separate. These bounded read stages preserve
 initialization, ownership and control checks without replaying initializers or
 inferring pointee reads. Invalid identities and exhausted shared edge budgets
-publish no read operation. Required, static and file-module reads remain separate.
+publish no read operation. Runtime file-module values reuse those bounded read
+stages at their existing expression roots, preserving module identity before field
+or primary consumers. Aliases share the module storage without replaying startup.
+Required primary folding and static symbols retain their separate paths; runtime
+module value reads inside functions keep their B001 gate. Module alias declarations
+and required scalar inputs inside functions retain their existing behavior.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.

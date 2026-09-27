@@ -719,8 +719,8 @@ library/910 native tests; `/tmp/meowy-local-read-gate.log`. The guide documents
 this scope. Runtime file-module reads now share bounded storage stages (`ea57a8f`).
 Four checker groups and three native groups pass, including once-only startup and
 required/capture boundaries. All ten compiler checks pass: 1813 library/913 native
-tests; `/tmp/meowy-module-read-gate.log`. Guide documentation and the scalar-leaf
-handoff are next.
+tests; `/tmp/meowy-module-read-gate.log`. Native coverage is committed as
+`ed70fbb`; the guide documents this scope. Scalar literal/result leaves are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -990,9 +990,12 @@ execution was not part of this documentation edit.
    The compiler gate passes, and the guide documents coverage. Runtime file-module
    reads now share bounded storage stages, preserving module identity, startup,
    required evaluation and capture gates. Checker/native groups and the compiler
-   gate pass. Document this scope next, then capture ordinary scalar leaves in
-   `compiler/src/check/expressions.rs` before adding result stages. Preserve signed
-   literals, lexical constants, required/probe paths and formatting literals.
+   gate pass, and the guide documents scope. Next capture ordinary scalar leaves
+   at successful branches in `compiler/src/check/expressions.rs`, then add bounded
+   result stages. Retain checked scalar kind/type and exact roots without copying
+   text payloads. Preserve signed literals, lexical constants, expected coercions,
+   required/probe paths and formatting literal None entries; validate focused
+   scalar/alias/shadowing/error/budget cases and the compiler gate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
