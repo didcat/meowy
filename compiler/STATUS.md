@@ -52,50 +52,51 @@ traceability and promotion of passing exceptions. This is not release qualificat
 
 ### Current companion-file conformance slices
 
-Dependency-ordered commit plan:
+The companion-file series is complete. Catalog version 2 adds declared `.mwy`
+companions under each entry source's directory; version-1 single-file catalogs
+remain readable. Shared checks reject missing, escaping, noncanonical, duplicate,
+symlinked and out-of-bundle declarations. Empty companion modules remain valid.
+The orphan audit includes every entry/companion. Only declared files are copied,
+byte for byte, after input preflight into a fresh temporary directory per case.
+Nested relative layout is preserved; failures are reported per case and staging is
+cleaned before the next case. No compiler implementation behavior was changed.
 
-1. Add shared validation for canonical source paths and declared companion files.
-   Introduce catalog version 2 while preserving version-1 single-file compatibility.
-   Reject missing, escaping, symlinked, duplicate and out-of-bundle declarations;
-   count declared companions in the orphan-source audit. Include focused tests.
-2. Stage only declared files into a fresh per-case directory, preserving relative
-   layout and bytes. Preflight inputs before writing; test isolation, rejected
-   assets, collisions and runner failure reporting. Document and render companions.
-3. Add independently reviewable relative-module fixtures for initialization order,
-   nested resolution, exported data/functions/types and language rejections.
-4. Run compiler/default gates, strict-gap execution and fixture-preservation checks;
-   update documentation evidence and the continuation handoff.
+Ten required module cases cover diamond initialization, nested importer resolution,
+record/list exports, borrowed returns, typed function/type facades, namespace
+separation, private value/type errors, dependency errors, re-export cycles, missing
+imports and signature mismatch. Companion links are visible in the coverage report.
+The previous 64 case records/source bytes, 19 capability pins and all reference
+contracts are unchanged. The catalog now has 74 cases: 55 required passes,
+19 pinned gaps and zero failures in debug/release.
 
-Inspection: the runner currently puts every case source in one shared temporary
-folder and stages no imports. A companion list will name catalog-relative .mwy files
-under the entry file's directory; staging preserves that directory's relative layout.
-The catalog and runner will share path checks, with fresh directories preventing
-cross-case visibility. Original outcomes, source bytes and capability pins stay fixed.
-No compiler implementation change is planned. Shared file validation and version-2
-catalog admission now pass 16 harness and 29 tooling groups. Cases reject escaping,
-noncanonical, missing, symlinked, duplicate and out-of-bundle files; empty companion
-modules remain valid. All 64 existing cases and 37 coverage records validate.
-Shared validation is committed as `2afe88b`. Preflighted per-case staging now
-passes 22 harness and 29 tooling groups, including byte/layout preservation,
-undeclared-file exclusion, fresh/cleaned case directories, occupied-target rejection,
-missing-asset failure reporting and version-1 compatibility. The catalog is version 2;
-all 64 existing cases remain 45 passed/19 pinned gaps/0 failed in both profiles;
-`/tmp/meowy-companion-baseline.log`. Link checks pass. Runner integration is committed as `a22e003`. The first declared
-module bundle now proves diamond dependencies initialize once, before entry and in
-sibling import order. All 65 cases pass their gate: 46 required, 19 pinned gaps,
-zero failures in debug/release; `/tmp/meowy-modules-diamond.log`.
-Nested resolution/data exports and imported borrowed results also pass. Current
-catalog: 67 cases, 48 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-modules-imports.log`. Typed function/type re-exports, aliases and separate type/value namespaces pass
-through a facade: 49 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-modules-exports.log`. Private value/type access rejects with E201/E202. Current catalog: 70 cases,
-51 required passes, 19 pinned gaps, zero failures; `/tmp/meowy-modules-privacy.log`.
-Dependency semantic errors and re-export cycles now reject with E201/E502.
-Current catalog: 72 cases, 53 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-modules-diagnostics.log`. Missing imports and mismatched re-export signatures reject with E501/E207.
-All 74 catalog cases now give 55 required passes, 19 unchanged pinned gaps and
-zero failures; `/tmp/meowy-modules-rejections.log`. Next run the full compiler gate,
-strict-gap and preservation checks, then refresh the coverage handoff.
+| Reviewable slice | Commit |
+| --- | --- |
+| Companion declaration/path validation | `2afe88b` |
+| Isolated staging and version-2 runner | `a22e003` |
+| Diamond initialization | `46e9ff1` |
+| Nested imports and borrowed returns | `0a1f087` |
+| Typed re-exports and namespaces | `5f4f9d2` |
+| Private value/type diagnostics | `f8276b9` |
+| Dependency errors and re-export cycles | `8db5622` |
+| Missing imports and signature mismatch | `c6cf01e` |
+
+All ten compiler checks pass: 1890 library/913 native tests, 29 tooling and 22
+harness groups, formatting, Clippy, build, catalog/coverage and conformance.
+Log: `/tmp/meowy-companion-conformance-gate.log`. Strict mode correctly exits 1
+for the 19 unchanged gaps; `/tmp/meowy-companion-strict.log`. The preservation
+audit passed. Final default checks also pass; `/tmp/meowy-companion-final-docs.log`.
+No outstanding test failures remain. Compiler AGENTS now documents
+companion staging and the distinction between missing assets and missing imports.
+Package policy, symlink fixtures, public FFI and full release qualification remain open.
+
+Next coverage slice: represent defined runtime panics separately from successful
+checking and infrastructure failures in the versioned catalog/runner. Preserve
+exact stdout prefixes, require the documented panic code/exit and reject crashes,
+timeouts or capability failures as runtime success. Add focused harness regressions
+before promoting dynamic bounds/arithmetic and module-initialization panic cases
+from native tests. Keep expected checking errors separate, refresh the coverage
+inventory, then run the full compiler and strict-gap checks. Graph implementation
+remains deferred while coverage is the user's priority.
 
 ## Documentation conventions and layout
 
@@ -1565,6 +1566,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
+- Companion conformance: all ten compiler checks pass, including 1890 library/913
+  native tests, 29 tooling and 22 harness groups. Conformance: 55 passed, 19 pinned
+  gaps, zero failures in both profiles; `/tmp/meowy-companion-conformance-gate.log`.
+  Strict mode correctly rejects those gaps; `/tmp/meowy-companion-strict.log`.
+  Prior fixture/reference bytes and capability exceptions are preserved.
+
 - Coverage audit: all ten compiler checks pass, including 1890 library/913 native,
   28 tooling and 11 harness test groups. Conformance: 45 passed, 19 pinned gaps,
   zero failures in both profiles; `/tmp/meowy-conformance-coverage-gate.log`.
@@ -1662,13 +1669,13 @@ Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. No outstanding failures remain.
 
-1. Continue coverage with declared companion-file fixtures for relative modules.
-   Extend catalog validation and isolated staging before adding source cases for
-   imports, exported identities and module error precedence. Reject missing,
-   escaping and duplicate assets; preserve default-required support policy and
-   update the checked coverage inventory. Run focused harness tests and the full
-   compiler gate. The compiler implementation sequence below remains deferred
-   while coverage is the active priority.
+1. Continue coverage with defined runtime-panic expectations in the versioned
+   catalog/runner. Require successful checking, exact stdout prefixes, documented
+   panic codes and expected exits; crashes, timeouts and capability gates must fail.
+   Add harness regressions before source cases for dynamic bounds/arithmetic and
+   module-initialization panics. Update the coverage inventory and run the compiler
+   and strict-gap checks. Compiler implementation below remains deferred while
+   coverage is the active priority.
 
 2. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.

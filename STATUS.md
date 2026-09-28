@@ -7,24 +7,25 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Coverage work is the current priority
 
-The initial strengthening series is complete: 64 source conformance cases now yield
-45 required passes, 19 explicitly pinned capability gaps and zero failures in both
-profiles. All original fixtures and reference contracts are unchanged. Unsupported
-exceptions now require exact diagnostics and explicit promotion when they pass.
+The catalog now has 74 source conformance cases: 55 required passes, 19 explicitly
+pinned capability gaps and zero failures in debug/release. Version 2 supports
+validated companion files, staged byte for byte in fresh per-case directories;
+version-1 single-file catalogs remain readable. Ten module cases now pin imports,
+initialization, data/function/type exports and selected rejection diagnostics.
+The prior 64 fixtures, capability exceptions and reference contracts are unchanged.
 
 The [coverage inventory](docs/conformance/COVERAGE.md) tracks all 37 reference
-files and 33 proof obligations with internal evidence and explicit remaining gaps.
-Default checks reject document/evidence/obligation drift and stale reports.
-Root/compiler AGENTS require this maintenance alongside future behavior changes.
-The [compiler handoff](compiler/STATUS.md#documentation-coverage-and-conformance-audit)
-lists the reviewed commits and validation. All ten compiler checks pass, including
-1890 library/913 native tests, 28 tooling and 11 harness groups;
-`/tmp/meowy-conformance-coverage-gate.log`. Strict mode correctly rejects 19 known
-gaps. Full language qualification remains incomplete.
+files and 33 proof obligations, with explicit remaining gaps. Default checks reject
+reference/evidence drift and stale reports. Root/compiler AGENTS require maintenance;
+compiler instructions also cover companion declarations and isolated staging.
+The [compiler handoff](compiler/STATUS.md#current-companion-file-conformance-slices)
+lists the reviewable commits. All ten compiler checks pass: 1890 library/913 native
+and 51 Python test groups; `/tmp/meowy-companion-conformance-gate.log`. Strict mode
+correctly rejects the 19 known gaps. This is not full language qualification.
 
-Companion-file coverage is in progress: shared path/schema validation passes 16
-harness and 29 tooling groups. Runner isolation and module cases are next. Graph implementation is deferred;
-its existing declaration-completion handoff is retained below.
+Next coverage work is defined runtime-panic expectations, including exact output
+prefixes and rejection of infrastructure failures. Graph implementation remains
+deferred; its declaration-completion handoff is retained below.
 
 ## Documentation conventions
 
@@ -915,6 +916,11 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
+- Companion conformance passed all ten compiler checks: 1890 library/913 native
+  tests, 29 tooling and 22 harness groups. Conformance: 55 passed, 19 pinned gaps,
+  zero failures in debug/release; `/tmp/meowy-companion-conformance-gate.log`.
+  Strict mode correctly rejects known gaps; prior fixtures/contracts are unchanged.
+
 - Coverage audit passed all ten compiler checks: 1890 library/913 native tests,
   28 tooling and 11 harness groups. Conformance: 45 passed, 19 pinned gaps, zero
   failures in debug/release; `/tmp/meowy-conformance-coverage-gate.log`.
@@ -981,13 +987,13 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Continue coverage with declared companion-file fixtures for relative modules.
-   Extend catalog validation and isolated staging before adding source cases for
-   imports, exported identities and module error precedence. Reject missing,
-   escaping and duplicate assets; preserve default-required support policy and
-   update the checked coverage inventory. Run focused harness tests and the full
-   compiler gate. The compiler implementation sequence below remains deferred
-   while coverage is the active priority.
+1. Continue coverage with defined runtime-panic expectations in the versioned
+   catalog/runner. Require successful checking, exact stdout prefixes, documented
+   panic codes and expected exits; crashes, timeouts and capability gates must fail.
+   Add harness regressions before source cases for dynamic bounds/arithmetic and
+   module-initialization panics. Update the coverage inventory and run the compiler
+   and strict-gap checks. Compiler implementation below remains deferred while
+   coverage is the active priority.
 
 2. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.

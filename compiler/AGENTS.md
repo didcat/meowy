@@ -60,6 +60,10 @@ These instructions apply to this directory and all descendants.
 - Add source-level conformance cases for documented behavior changes alongside
   focused internal tests. Link each case to its owning reference and preserve the
   distinction between seeded metadata checks and end-to-end language behavior.
+- Multi-file conformance cases use catalog version 2 and declare each companion
+  source under the entry file's directory. Use the shared validator/stager to copy
+  only declared files into fresh per-case directories. Keep missing declared assets
+  as harness failures; missing-import language tests intentionally omit the file.
 - New cases are required unless their exact B001 blocker is recorded in
   `tests/conformance_support.json`. A changed blocker or newly passing exception
   fails the gate and requires review; promote passing cases by removing the exception.
