@@ -320,9 +320,19 @@ missing source. Both conditional paths are inspected, and Checked/Returned label
 remain uninterpreted. Visit order is not execution order or runtime reachability.
 The edge limit bounds scanned positions, and inventory length + 1 bounds visited
 and pending ports. Shared work is charged before growth, including empty walks;
-failure returns no partial report and leaves the index reusable. Successful
-compilation inspects the exact program BlockEntry after existing gates. Function
-entries can be inspected independently; calls do not traverse callee bodies.
+failure returns no partial report and leaves the index reusable.
+Successful compilation now collects independent reports for the exact HIR program
+and function BlockEntry ports after existing gates. The collection retains one
+validated index alongside reports keyed by owner, so edge positions remain
+resolvable. Program owner 0 and each function's assigned owner are checked against
+retained block metadata; duplicate, missing or mismatched identities are rejected.
+Unused and recursive functions are inspected independently of call reachability;
+calls do not traverse callee bodies. HIR function ordering does not assign owners.
+The collection admits at most 65,536 entries and 917,504 retained report items
+(visited ports, forward/backedge positions and missing-source boundaries). Each
+walk checks the remaining item allowance before growth. Entry selection, index
+construction and walks share the work ledger, including empty programs. Failure
+returns no partial collection and preserves stored graph metadata.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct

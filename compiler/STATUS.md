@@ -101,34 +101,49 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current independent-entry report slices
 
-Dependency-ordered commit plan:
-1. Add a retained-item allowance to the existing structural walker, with focused
-   boundary tests. Keep single-walk behavior and diagnostics unchanged by default.
-2. Retain one validated index with independently owned program/function reports.
-   Select exact HIR entries after existing gates, validate expected owners and bound
-   roots, total retained items and shared work. Test unused/recursive functions,
-   duplicate/invalid owners and late collection exhaustion.
-3. Run the compiler gate, document scope and replace the continuation handoff.
+The dependency-ordered implementation series is complete:
 
-Inspection: the current compiler walks only `program.body.id` and drops the index.
-Functions use owner `function.id + 1`; program owner is 0. Runtime function/local
-vectors have already moved into HIR at the metadata gate, so roots must come from
-that HIR, not emptied checker fields. Edge validation already enforces owner-local
-links. A per-walk remaining-item allowance will prevent allocating beyond the
-collection's aggregate storage budget before a report is retained. Calls and
-Backedges remain uninterpreted; function inspection does not prove reachability.
+1. Retained-item allowance before walk growth (`80feac6`).
+2. Independent HIR entry collection and checker integration (`eaa1c2c`).
+3. Compiler gate and documentation handoff: complete.
 
-Previous compiler gate: all ten checks passed, 1864 library/913 native tests;
-`/tmp/meowy-structural-walk-gate.log`. The retained-item allowance is committed as `80feac6`; all nine walk groups pass;
-`/tmp/meowy-entry-allowance.log`. Zero, partial and exact allowances cover seeds,
-edges, newly discovered ports and missing boundaries. Collection and HIR entry integration now pass all 1869 library tests and all-target
-Clippy; `/tmp/meowy-entry-reports-lib.log`, `/tmp/meowy-entry-reports-clippy.log`.
-Four collection groups cover unused recursive functions, reversed HIR function
-order, resolvable positions, empty programs, duplicate/wrong/missing/overflowing
-owners and aggregate root/item/work limits. Late failures preserve graph counts;
-exact remaining work and storage succeed. No outstanding failures remain.
-Next run the full compiler gate and finish documentation.
-Proof outcomes, precise writes/unknown effects and propagation remain separate.
+`edges/forward/entries.rs` retains one validated index alongside reports keyed by
+owner, with exact program/function HIR BlockIds and resolvable edge positions.
+Root selection uses HIR after runtime vectors move out of the checker. Program
+owner 0 and function owner `id + 1` are checked against block metadata, with checked
+ID arithmetic and duplicate-owner rejection. Function vector order assigns no
+identity. Unused and recursive functions receive independent reports; calls never
+expand callee bodies. Routes, Backedges and missing boundaries remain uninterpreted.
+
+The root cap is 65,536. Aggregate report items (ports, forward/backedge positions,
+missing boundaries) are capped at 917,504 = 3 * MAX_EDGES + 2 * MAX_ENTRIES. Each
+walk receives only the remaining allowance and checks it before growth. Root
+selection, index construction and all walks share work. Failed collection returns
+no partial reports and preserves graph ledgers. Existing semantic/query/doc gates
+still precede graph inspection; proof outcomes and propagation remain gated.
+
+All nine walk groups and four collection groups pass. All 1869 library tests and
+all-target Clippy pass; `/tmp/meowy-entry-allowance.log`,
+`/tmp/meowy-entry-reports-lib.log`, `/tmp/meowy-entry-reports-clippy.log`.
+Tests cover reordered HIR functions, unused recursion, resolvable positions, empty
+programs, duplicate/wrong/missing/overflowing owners, exact root/item allowances
+and late aggregate work failure with successful exact-budget retry. No outstanding
+failures remain. All ten compiler checks pass: 1869 library/913 native tests,
+formatting, Clippy, build, tooling and conformance (10 passed/13 unsupported/0 failed
+in debug/release); `/tmp/meowy-entry-reports-gate.log`.
+The foundation guide documents collection guarantees and limits. All four default
+checks pass, including 1208 local links in 110 Markdown files;
+`/tmp/meowy-entry-reports-docs.log`.
+
+Next connect encountered Operation ports to a bounded read-only effect view, starting
+with direct Bind/Write producer metadata in `dependencies/operations.rs`. Preserve
+exact point, owner, canonical storage, RHS root and control metadata; classify other
+operations explicitly as unknown rather than pure. Reuse the producer registry and
+retained entry reports without rescanning all producers for each port. Separate
+representation/lookup from integration where useful. Test aliases/reference cells,
+duplicate paths, stopped RHS and work exhaustion, then run the compiler gate.
+Do not propagate facts, clear conservative marks or enable proof outcomes yet.
+Precise path/indirect writes, callee effects and restart headers remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1456,10 +1471,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Bounded structural walks passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1864 library/913 native tests, formatting,
+- Independent entry reports passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1869 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-structural-walk-gate.log`. Independent entry-report collection,
+  Log: `/tmp/meowy-entry-reports-gate.log`. Operation-effect integration,
   precise write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1973,13 +1988,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    compiler gate; the guide documents scope. Bounded structural walks (`1732485`)
    now retain visited ports and original forward/Backedge positions, report missing
    sources and stop repeated-port cycles. Boundary coverage (`f932bf5`) and all ten
-   compiler checks pass; the guide documents scope. The production seed is the exact
-   program BlockEntry after existing gates.
-   Next retain one validated index with reports for independent program/function
-   HIR entry roots. Bound roots, aggregate storage and shared work; preserve owner
-   separation, diagnostic priority and atomic failure. Test unused/recursive
-   functions and late aggregate exhaustion, then run the compiler gate. Calls must
-   not imply callee reachability, and routes must remain uninterpreted.
+   compiler checks pass; the guide documents scope.
+   Independent HIR program/function reports (`eaa1c2c`) now retain one validated
+   index with exact roots and owner checks. The allowance prerequisite (`80feac6`)
+   bounds report growth; unused/recursive, identity and aggregate-budget tests and
+   all ten compiler checks pass. The guide documents collection scope.
+   Next connect encountered Operation ports to bounded direct Bind/Write effect
+   metadata from `dependencies/operations.rs`, retaining exact storage, RHS roots
+   and control while classifying other operations as unknown. Reuse the producer
+   registry without per-port full scans; test aliases/reference cells, duplicates,
+   stopped RHS and atomic exhaustion before the compiler gate. No propagation or
+   proof outcomes are enabled; precise path/indirect and callee effects remain open.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

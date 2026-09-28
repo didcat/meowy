@@ -744,10 +744,11 @@ uninterpreted. Boundary coverage (`f932bf5`) includes nested restart targets,
 independent function entries, cycles and exact capacity/work failures. All ten
 compiler checks pass: 1864 library/913 native tests;
 `/tmp/meowy-structural-walk-gate.log`. The guide documents scope. Independent
-program/function entry reports now retain one validated index with exact HIR roots
-and expected owners, including unused functions. Root/item/work limits and owner
-failures pass all 1869 library tests and Clippy; `/tmp/meowy-entry-reports-lib.log`.
-The full compiler gate and documentation handoff are next.
+program/function entry reports (`eaa1c2c`) retain one validated index with exact HIR
+roots and expected owners, including unused functions. The retained-item allowance
+(`80feac6`) bounds growth across all reports. All ten compiler checks pass:
+1869 library/913 native tests; `/tmp/meowy-entry-reports-gate.log`. The guide
+documents scope. Direct storage-operation effect integration is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -878,10 +879,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Bounded structural walks passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1864 library/913 native tests.
+- Independent entry reports passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1869 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-structural-walk-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-entry-reports-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1033,11 +1034,14 @@ execution was not part of this documentation edit.
    Bounded structural walks now retain visited ports and original edge positions,
    report Backedges/missing sources and stop repeated-port cycles. Core and boundary
    tests and all ten compiler checks pass; the guide documents scope. The production
-   seed is the exact program BlockEntry after existing gates. Next retain one
-   validated index with reports for independent program/function HIR entries. Bound roots, aggregate
-   storage and work; test unused/recursive functions, owner separation and late
-   exhaustion before the compiler gate. Keep conditional routes uninterpreted and
-   proof outcomes gated.
+   seeds now include independent HIR program/function entries with exact roots and
+   owner checks. One validated index stays with the reports; root/item/work limits
+   cover unused/recursive functions and atomic exhaustion. Next connect encountered
+   Operation ports to bounded direct Bind/Write metadata, preserving canonical
+   storage, RHS and control. Keep other effects explicitly unknown. Reuse producer
+   lookup; test aliases/reference cells, duplicate paths, stopped RHS and exhaustion
+   before the compiler gate. Precise path/indirect writes and callee effects remain
+   separate; do not propagate facts or enable proof outcomes yet.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
