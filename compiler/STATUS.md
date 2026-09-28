@@ -311,6 +311,35 @@ with scope/error/budget tests and source conformance, then run compiler/strict-g
 gates. Records, file-module/control aliases, forward groups, callee summaries and
 proof propagation/outcomes remain separate; never add a generic empty-HIR bypass.
 
+## Current immutable static-binding completion
+
+Dependency-ordered commit plan:
+
+1. Classify resolved Value::Static in the existing identity-binding path and reuse
+   bounded statement completion after successful declaration. Include alias/width/
+   scope, required-only isolation, typed/mutable runtime storage, error and budget
+   regressions; preserve remaining control/file-module/forward barriers.
+2. Add source conformance for revision aliases, lexical shadowing, runtime copies,
+   required extents and relevant rejections. Preserve all prior fixtures/reference
+   contracts and exact capability pins; run compiler, strict-gap and preservation
+   checks before committing the source slice.
+3. Refresh coverage evidence, the foundation guide and current root/compiler
+   handoffs, then run documentation checks and commit the final handoff.
+
+Inspection: ordinary member lookup produces proof.revision as Static(Int(1),
+uint32). Other Static producers belong to required scalar/record evaluation;
+required statements use their own declaration path. Ordinary annotated or mutable
+Static bindings already fall through to runtime storage checking before identity
+classification. Classify the resolved variant, not its spelling, without changing
+payloads, copying types or re-evaluating inputs. Proof descriptors remain separate.
+The tree starts clean at `f3e1085`. Static classification passes all five focused
+groups; `/tmp/meowy-static-bindings-focused.log`. Alias payloads/widths, nested owners,
+typed/mutable and shadowed storage, required costs/isolation, errors, stopped paths
+and exact publication limits are preserved. Unsupported required imports and proof
+evaluation remain B001. All 1932 library tests and all-target Clippy pass;
+`/tmp/meowy-static-bindings-lib.log`, `/tmp/meowy-static-bindings-clippy.log`.
+No outstanding test failures remain. Source conformance and the final handoff follow.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;

@@ -9,6 +9,7 @@ pub(crate) enum BindingIdentity {
     Function(crate::hir::FunctionId),
     Foundation,
     Type,
+    Static,
 }
 
 impl BindingIdentity {
@@ -16,6 +17,7 @@ impl BindingIdentity {
         match value {
             Value::Function { id, .. } => Some(Self::Function(*id)),
             Value::Type(_) | Value::Foundation(Item::Type(_)) => Some(Self::Type),
+            Value::Static { .. } => Some(Self::Static),
             Value::Module(
                 Module::Core
                 | Module::Debug
@@ -79,3 +81,6 @@ mod types;
 
 #[cfg(test)]
 mod exports;
+
+#[cfg(test)]
+mod statics;

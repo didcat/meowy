@@ -63,9 +63,8 @@ pub(crate) fn identity_endpoints_admit_self_and_reserved_forward_function_items(
 }
 
 #[test]
-pub(crate) fn identity_endpoints_preserve_control_static_and_forward_barriers() {
+pub(crate) fn identity_endpoints_preserve_control_and_forward_barriers() {
     for source in [
-        "p:@\"proof\";revision:p.revision;x:2",
         "'out{finish:'out.leave;x:2}",
         "f<()->int32>;f<int32>:(){->1};x:2",
     ] {

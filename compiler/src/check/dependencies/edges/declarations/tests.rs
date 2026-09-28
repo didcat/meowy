@@ -151,7 +151,7 @@ pub(crate) fn function_endpoints_preserve_nested_owners_and_opaque_statement_bar
         .collect();
     assert_eq!(owners, [0, 1]);
     for source in [
-        "p:@\"proof\";revision:p.revision;x:2",
+        "'out{finish:'out.leave};x:2",
         "f<()->int32>;f<int32>:(){->1};x:2",
     ] {
         crate::compile(source).unwrap();
