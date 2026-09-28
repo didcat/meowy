@@ -691,6 +691,32 @@
         "sources/modules/module_typed_facade/api.mwy",
         "sources/modules/module_typed_facade/ops.mwy"
       ]
+    },
+    {
+      "id": "module_private_value",
+      "phase": "check",
+      "source": "sources/modules/module_private_value/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_private_value/value.mwy"
+      ]
+    },
+    {
+      "id": "module_private_type",
+      "phase": "check",
+      "source": "sources/modules/module_private_type/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E202"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_private_type/types.mwy"
+      ]
     }
   ]
 }

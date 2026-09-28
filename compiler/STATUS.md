@@ -88,7 +88,9 @@ Nested resolution/data exports and imported borrowed results also pass. Current
 catalog: 67 cases, 48 required passes, 19 pinned gaps, zero failures;
 `/tmp/meowy-modules-imports.log`. Typed function/type re-exports, aliases and separate type/value namespaces pass
 through a facade: 49 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-modules-exports.log`. Next add privacy and module rejection fixtures.
+`/tmp/meowy-modules-exports.log`. Private value/type access rejects with E201/E202. Current catalog: 70 cases,
+51 required passes, 19 pinned gaps, zero failures; `/tmp/meowy-modules-privacy.log`.
+Next add dependency diagnostics, cycles, missing imports and signature rejections.
 
 ## Documentation conventions and layout
 
