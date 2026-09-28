@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::SequenceSource;
 
+mod forward;
 mod type_aliases;
 
 impl Checker {

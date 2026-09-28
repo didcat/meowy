@@ -33,6 +33,24 @@ impl Forward {
 }
 
 impl Checker {
+    pub(crate) fn forward_point(
+        &mut self,
+        stmts: &[ast::Stmt],
+        start: usize,
+    ) -> Result<(hir::PointId, Forward)> {
+        let first = stmts
+            .get(start)
+            .filter(|stmt| matches!(stmt.kind, StmtKind::Forward { .. }))
+            .ok_or_else(|| {
+                Diagnostic::unsupported("invalid forward group source", Span::default())
+            })?;
+        self.with_point_id(
+            super::dependencies::PointKind::Stmt,
+            first.span,
+            |checker| checker.forward(stmts, start),
+        )
+    }
+
     pub(crate) fn declare_function(
         &mut self,
         name: &str,

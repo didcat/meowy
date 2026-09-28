@@ -44,7 +44,9 @@ impl Checker {
         let mut index = 0;
         while index < block.stmts.len() {
             if matches!(block.stmts[index].kind, StmtKind::Forward { .. }) {
-                index = self.forward(&block.stmts, index)?.end;
+                let (point, group) = self.forward_point(&block.stmts, index)?;
+                self.forward_group_endpoint(point, &group.functions, block.stmts[index].span)?;
+                index = group.end;
                 points.push(None);
             } else {
                 let (point, checked) = self.checked_stmt(&block.stmts[index])?;

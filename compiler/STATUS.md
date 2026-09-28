@@ -378,7 +378,13 @@ unrelated `.gitignore` and `docs/programs/hey.mwy` edits remain outside this ser
 Reserved-ID capture passes all 22 matching forward groups, including three new
 identity/error/capacity groups; `/tmp/meowy-forward-identities.log`. Nested function
 allocations and reversed definition order preserve the actual reservation IDs.
-Existing block sequences still use None. No outstanding test failures remain.
+Identity capture is committed as `82595c3`. Checked group points and bounded
+completion validation pass all nine matching group checks, including four new
+endpoint groups; `/tmp/meowy-forward-endpoints.log`. Definitions are validated
+as a whole before one completion edge is published. Block sequences still use
+None. All 1957 library tests and all-target Clippy pass;
+`/tmp/meowy-forward-endpoints-lib.log`, `/tmp/meowy-forward-endpoints-clippy.log`.
+No outstanding test failures remain; sequence integration is next.
 
 ## Documentation conventions and layout
 
