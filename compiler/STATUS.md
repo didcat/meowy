@@ -115,7 +115,12 @@ Initial catalog remains 74 cases: 55 passes, 19 pinned gaps, zero failures.
 Version-3 schema admission and distinct report rendering now pass 32 tooling groups.
 The tests reject pre-v3 panic forms, invalid codes/exits, ambiguous expectation
 shapes and noninteger versions. Existing metadata/coverage validation passes.
-Runner integration and source panic fixtures are next; graph work remains deferred.
+Schema support is committed as `e927e30`. Version-3 runner integration now passes
+30 harness groups. It requires clean checking, exact stdout/exit and one complete
+UTF-8 panic record, rejecting wrong codes, malformed sites, mixed diagnostics,
+signals, timeouts and capability errors. All 74 existing cases remain 55 passed,
+19 pinned gaps, zero failures; `/tmp/meowy-panic-runner-baseline.log`.
+Source panic fixtures are next; graph work remains deferred.
 
 ## Documentation conventions and layout
 

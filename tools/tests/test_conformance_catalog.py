@@ -100,6 +100,7 @@ class CatalogTests(unittest.TestCase):
             with self.subTest(expected=expected), self.assertRaises(AssertionError):
                 self.data["cases"][0].update(phase="run", expected=expected)
                 catalog.validate(self.data, self.base)
+
     def test_missing_and_fenced_heading_references_fail(self):
         for reference in ["../reference/missing.md", "../reference/syntax.md#fake", "../../outside.md"]:
             data = copy.deepcopy(self.data)

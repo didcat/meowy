@@ -2,7 +2,7 @@
 
 [Documentation index](../README.md)
 
-These cases pin observable rules to small source files. `cases.json` is version 2
+These cases pin observable rules to small source files. `cases.json` is version 3
 of the fixture catalog and targets language contract revision 1. Every case is
 independent: do not concatenate sources or let a failed declaration contaminate
 another case's name lookup. This is a core regression set, not a claim to cover
@@ -35,6 +35,17 @@ The runner preflights inputs and copies only declared files, byte for byte, into
 fresh temporary directory for each case. Relative layout is preserved; one case
 cannot depend on another case's files. A missing declared file is a harness failure;
 an intentional missing-import test omits that file and expects a language diagnostic.
+
+Version 3 adds expected runtime panics to accepted `run` cases:
+`{"accepted":true,"stdout":"before\n","panic":"P002","exit":1}`.
+Both profiles must first pass checking without diagnostics. Execution must then
+produce exactly the listed stdout bytes and exit 1 with the requested documented
+panic code. The runner recognizes one complete current bootstrap stderr record,
+including its byte-site suffix and optional source path; human wording and site
+values are not golden strings. Multi-line panic/cleanup reports require separate
+future harness support. Missing/mixed diagnostics, signals, abnormal exits,
+capability errors and timeouts fail. Successful runs still require exit zero and
+empty stderr. Version-1/2 expectations remain readable and cannot declare panics.
 
 Every case is required by default. The bootstrap's
 [support manifest](../../compiler/tests/conformance_support.json) lists only

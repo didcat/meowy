@@ -85,9 +85,15 @@ class StagingTests(unittest.TestCase):
         single = {**self.case}
         single.pop("companions")
         self.assertEqual(self.run_catalog([single], mock.Mock(return_value=None), version=1)[0], 0)
-        for version in [1, 3]:
+        for version in [1, 4, True, 2.0]:
             with self.subTest(version=version), self.assertRaisesRegex(ValueError, "catalog format"):
                 self.run_catalog([self.case], mock.Mock(), version=version)
+
+    def test_panic_expectations_require_version_three(self):
+        panic = {**self.case, "phase": "run", "expected": {"accepted": True, "stdout": "", "panic": "P001", "exit": 1}}
+        with self.assertRaisesRegex(ValueError, "catalog format"):
+            self.run_catalog([panic], mock.Mock(), version=2)
+        self.assertEqual(self.run_catalog([panic], mock.Mock(return_value=None), version=3)[0], 0)
 
 
 if __name__ == "__main__":

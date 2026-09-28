@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import pathlib
+import re
 import signal
 import subprocess
 import tempfile
@@ -11,6 +12,8 @@ from conformance_fixtures import stage_case
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CATALOG = ROOT / "docs/conformance/cases.json"
 SUPPORT = ROOT / "compiler/tests/conformance_support.json"
+PANIC_CODES = set(re.findall(r"`(P\d{3})`", (ROOT / "docs/reference/diagnostic-codes.md").read_text()))
+PANIC_RECORD = re.compile(rb'panic\[(P[0-9]{3})\]: [^\r\n]* at (?:"(?:[^"\\\r\n]|\\.)*" )?bytes ([0-9]+)\.\.([0-9]+)\n')
 
 
 def load_support(catalog, path=SUPPORT):
@@ -48,6 +51,26 @@ def invoke(compiler, action, source, profile):
     return subprocess.CompletedProcess(args, process.returncode, stdout, stderr)
 
 
+def check_run(result, expected, profile):
+    if result.stdout != expected["stdout"].encode():
+        raise AssertionError(f"{profile}: unexpected runtime stdout {result.stdout!r}")
+    if "panic" not in expected:
+        if result.returncode != 0 or result.stderr:
+            raise AssertionError(f"{profile}: run exit {result.returncode}, stderr={result.stderr!r}")
+        return
+    code = expected["panic"]
+    if not isinstance(code, str) or code not in PANIC_CODES or type(expected.get("exit")) is not int or expected["exit"] != 1:
+        raise AssertionError("invalid runtime panic expectation")
+    try:
+        result.stderr.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise AssertionError("malformed panic encoding") from error
+    record = PANIC_RECORD.fullmatch(result.stderr)
+    if (result.returncode != expected["exit"] or record is None or
+            record[1].decode() != code or int(record[2]) > int(record[3])):
+        raise AssertionError(f"{profile}: expected {code}/exit 1, got exit {result.returncode}, stderr={result.stderr!r}")
+
+
 def check_case(compiler, case, source, blocked=None):
     expected = case["expected"]
     unsupported = None
@@ -82,8 +105,7 @@ def check_case(compiler, case, source, blocked=None):
             raise AssertionError(f"{profile}: accepted source failed with {codes}")
         if case["phase"] == "run":
             result = invoke(compiler, "run", source, profile)
-            if result.returncode != 0 or result.stdout != expected["stdout"].encode() or result.stderr:
-                raise AssertionError(f"{profile}: run exit {result.returncode}, stdout={result.stdout!r}, stderr={result.stderr!r}")
+            check_run(result, expected, profile)
     if blocked is not None and unsupported is None:
         raise AssertionError("case now passes; remove its unsupported exception")
     return unsupported
@@ -96,7 +118,10 @@ def main():
     args = parser.parse_args()
     compiler = args.compiler.resolve()
     catalog = json.loads(CATALOG.read_text())
-    if catalog["version"] not in (1, 2) or (catalog["version"] == 1 and any("companions" in case for case in catalog["cases"])):
+    version = catalog["version"]
+    if (type(version) is not int or version not in (1, 2, 3) or
+            (version == 1 and any("companions" in case for case in catalog["cases"])) or
+            (version < 3 and any("panic" in case["expected"] for case in catalog["cases"]))):
         raise ValueError("unsupported conformance catalog format")
     gaps = load_support(catalog)
     passed = 0

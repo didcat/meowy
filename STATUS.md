@@ -23,8 +23,9 @@ lists the reviewable commits. All ten compiler checks pass: 1890 library/913 nat
 and 51 Python test groups; `/tmp/meowy-companion-conformance-gate.log`. Strict mode
 correctly rejects the 19 known gaps. This is not full language qualification.
 
-Next coverage work is defined runtime-panic expectations, including exact output
-prefixes and rejection of infrastructure failures. Graph implementation remains
+Runtime-panic coverage is in progress: version-3 expectations and runner validation
+pass 32 tooling and 30 harness groups, with all 74 prior cases unchanged. Dynamic
+arithmetic, collection and module-initialization panic fixtures are next. Graph implementation remains
 deferred; its declaration-completion handoff is retained below.
 
 ## Documentation conventions
