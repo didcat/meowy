@@ -434,9 +434,19 @@ shape copy. Alias creation adds no module-body execution or extra storage; globa
 module identity may be aliased within a function while the statement retains its
 own function owner. Privacy, required-read eligibility, annotated/mutable alias
 gates and runtime module-capture restrictions remain unchanged. Required-only
-evaluation keeps its existing path. Synthetic initializer operations still have
-no captured input point, and alias completion does not bypass that boundary or
-alter eager module initialization order.
+evaluation keeps its existing path; alias creation does not initialize a module.
+Synthetic module-initializer bindings now retain the exact expression point
+returned by `module_value_point`, after module and documentation checks succeed.
+The helper exposes the existing checked root without adding a point or evaluating
+the body again; expected-value wrappers and prior module/docs state are preserved.
+Storage operations validate the root's parent, owner, block and completion, then
+connect statement entry to input evaluation and input normal completion to storage
+and continuation. The existing three-edge/work bounds apply atomically.
+Program-entry reports can now collect initializer effects in module order. An
+emission does not complete initialization: tail effects precede materialization,
+and stopped/Never inputs have no path to the store or later modules. No empty-HIR
+bypass or unconditional completion is added; errors publish no outer storage
+operation and original privacy/export/initialization checks remain authoritative.
 Forward groups retain explicit barriers. Record values and pending descriptors
 retain their existing metadata.
 Heap handles keep their separate runtime value path. There is no general bypass

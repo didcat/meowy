@@ -7,28 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-File-module aliases now retain bounded completion after successful declaration
-and validation of their exact backing local and exports registration. Aliases
-preserve type payloads and caller ownership without replaying initialization or
-creating storage. Privacy, required reads and existing binding/capture gates remain.
-Implementation: `1143ce5`; source conformance: `43a4308`.
+Synthetic module initializers now retain exact checked expression roots and feed
+them into bounded storage-operation metadata. Program-entry reports follow module
+body evaluation before materialization and continuation; stopped/Never inputs
+cannot reach the store or later modules. Root capture preserves module/docs checks
+and state restoration without re-evaluation. Implementation: `514324d`, `97209a5`;
+source conformance: `6ea543a`, `90791b1`.
 
-The catalog has 113 cases: 94 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Two new fixtures pin repeated/function-local imports,
-alias chains, once-only startup, required extents and privacy. All prior cases/assets
+The catalog has 115 cases: 96 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. New cases pin tail effects after primary emission,
+dependency/once-only startup and failure after a partial result. Prior cases/assets
 and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1943 library/913 native and 62 Python test groups;
-`/tmp/meowy-module-aliases-gate.log`. Strict mode rejects only the known gaps.
+1950 library/913 native and 62 Python test groups;
+`/tmp/meowy-module-initializers-gate.log`. Strict mode rejects only the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next capture exact expression input points for synthetic module-initializer
-bindings in `compiler/src/check/exports.rs` and `compiler/src/check/statements.rs`.
-Their storage operations still have input=None; alias completion does not bypass
-that graph boundary. The
-[compiler handoff](compiler/STATUS.md#current-file-module-alias-completion)
-records the scope, evidence and next validation requirements.
+Next inspect forward-function group sequencing in `compiler/src/check/blocks.rs`
+and `compiler/src/check/functions.rs`. Its explicit None barrier remains; capture
+checked group/source identities before planning any completion links. The
+[compiler handoff](compiler/STATUS.md#current-synthetic-module-initializer-inputs)
+records scope, evidence and next validation requirements. Unrelated workspace edits
+in `.gitignore` and `docs/programs/hey.mwy` remain outside this committed series.
 
 ## Documentation conventions
 
@@ -1126,12 +1127,14 @@ execution was not part of this documentation edit.
    and the compiler gate pass. File-module aliases now connect after bounded
    local/exports registration checks, preserving payloads, privacy and required reads
    without re-entering module bodies. Focused/source coverage and the compiler gate
-   pass. Next capture exact module-initializer expression roots in
-   `compiler/src/check/exports.rs` and wire those inputs into synthetic storage
-   operations in `compiler/src/check/statements.rs`. Keep stopped initialization,
-   module order and ordinary errors intact; add focused/source coverage and run the
-   compiler gate. Other erased forms and forward groups stay separate; proof
-   outcomes remain gated.
+   pass. Synthetic module-initializer operations now retain their exact checked
+   expression roots, connecting body completion to storage without bypassing stopped
+   inputs or successful-check boundaries. Focused/source coverage and the compiler
+   gate pass. Next inspect forward-group sequencing in `compiler/src/check/blocks.rs`
+   and `compiler/src/check/functions.rs`; capture checked source/group identities
+   before any completion publication. Preserve adjacency/signature errors and
+   independent bodies, add focused/source coverage and run the compiler gate.
+   Other erased forms remain separate; proof outcomes remain gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

@@ -287,108 +287,66 @@ argument/lifetime/control checks. Source coverage (`8d47955`) pins alias creatio
 real exits/restarts and rejections. The full gate below retains these checks; the
 foundation guide records the metadata/control-transfer boundary.
 
-## Current file-module alias completion
+## File-module alias completion
+
+File-module aliases connect after bounded local/exports registry validation
+(`1143ce5`), preserving exact IDs, caller ownership, privacy and required-read rules
+without replaying module bodies. Source coverage (`43a4308`) pins initialization,
+function-local aliases and privacy. The initializer-input extension below replaces
+the prior input=None boundary; other synthetic prefixes remain separate.
+
+## Current synthetic module-initializer inputs
 
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Connect registered file-module aliases with bounded identity validation | `1143ce5` |
-| Pin initialization, function-local aliases, required reads and privacy | `43a4308` |
+| Return exact checked module-expression roots | `514324d` |
+| Wire synthetic initializer storage to the checked input | `97209a5` |
+| Pin tail effects and dependency/once-only initialization | `6ea543a` |
+| Pin failed initialization after a partial primary result | `90791b1` |
 
-`BindingIdentity::FileModule` captures the resolved backing LocalId, preserving the
-original Value and type payload. After successful immutable unannotated declaration,
-charged lookup validates both local presence and exports registration before
-publishing bounded Entry-to-Normal. Alias chains create no extra locals or links
-into module bodies. A global module identity may be aliased in a function while
-its statement retains the caller's owner. Required-only paths, privacy, annotated/
-mutable binding gates and runtime module-value capture restrictions are unchanged.
+`module_value_point` returns the existing expression PointId with its checked value
+and exports, only after module/documentation checks succeed. It does not add points,
+re-evaluate initializers or infer identities from spans/block IDs/allocation order.
+Prior module/docs state is restored before failure propagation. The old two-value
+helper remains test-only for existing helper tests.
 
-Six focused groups cover direct imports/aliases, storage IDs, function owners,
-required reads, privacy/gates, missing metadata and exact work/edge limits. Synthetic
-initializer operations still have input=None: program-entry walks stop there rather
-than treating alias completion as initialization. Record/pending values, forward
-groups and proof propagation/outcomes remain separate; normal ports do not prove
-runtime reachability.
+Synthetic Bind passes that root to the existing storage-operation validator.
+Parent/owner/block/completion checks and atomic three-edge/work limits precede
+publication. Program-entry reports now include initializer storage in module order,
+without entering unused function bodies. Primary emission is not completion:
+module tail effects run before materialization. Stopped/Never roots have no path
+to the store or later modules, and expression/export/documentation failures publish
+no outer storage operation. Three root-helper groups and four integration groups
+cover these identities, boundaries, restoration, effects and exact budgets.
 
-All ten compiler checks pass: 1943 library/913 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 1950 library/913 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, metadata/coverage and conformance;
-`/tmp/meowy-module-aliases-gate.log`. The 113 cases report 94 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. Two new cases cover repeated and
-function-local imports, alias chains, once-only startup, required extents and privacy.
-Strict mode exits 1 only for known gaps; `/tmp/meowy-module-aliases-strict.log`.
-All 111 prior case records, 133 source assets, 37 reference files and capability
-exceptions are preserved; `/tmp/meowy-module-aliases-preservation.log`.
-No outstanding compiler/test failures remain. All four final documentation checks
-pass; `/tmp/meowy-module-aliases-docs.log`.
-AGENTS already covers the required conformance/evidence workflow; no rule change
-is needed.
+`/tmp/meowy-module-initializers-gate.log`. The 115 cases report 96 passes,
+19 unchanged pinned gaps and zero failures in debug/release. Two new multi-file
+cases pin post-emission tail order and panic after a partial primary result, with
+no later-module/entry output. Strict mode exits 1 only for known gaps;
+`/tmp/meowy-module-initializers-strict.log`. All 113 prior case records, 137 source
+assets, 37 reference files and capability exceptions are preserved;
+`/tmp/meowy-module-initializers-preservation.log`. No outstanding compiler/test
+failures remain. All four final documentation checks pass;
+`/tmp/meowy-module-initializers-docs.log`. AGENTS already covers the required
+conformance/evidence workflow; no rule change is needed.
+Concurrent unrelated `.gitignore` and `docs/programs/hey.mwy` changes remain outside
+this committed series; they were not modified or included here.
 
-Next inspect synthetic module-initializer bindings in `src/check/statements.rs`
-and `module_value` in `src/check/exports.rs`. The helper currently discards the
-checked expression point and the caller records storage input=None. Plan exact
-module-expression point capture as a prerequisite, then wire that returned root
-into the existing storage-operation validation after successful module checking,
-documentation and export gates. Do not infer roots from block IDs, spans or allocation
-order, recheck initializers, or add a generic entry-to-normal bypass. Preserve eager
-module order, once-only startup, stopped/Never inputs and ordinary errors. Test
-synthetic and multi-module ordering, failure boundaries, identities and budgets;
-extend source coverage and run compiler/strict-gap gates. Other synthetic prefixes,
-record/pending values, forward groups, callee summaries and proof outcomes remain
-separate.
-
-## Current synthetic module-initializer inputs
-
-Dependency-ordered commit plan:
-
-1. Add a module-value helper returning the actual checked expression PointId with
-   its value/exports. Preserve the current wrapper and statement behavior while
-   testing parent/owner/expected-context identity, single checking and restoration
-   after failures. Return the root only after module/documentation checks succeed.
-2. Wire that exact root into synthetic initializer storage operations, reusing
-   existing source validation and bounds. Keep stopped inputs without continuation,
-   preserve initialization/export gates and include multi-module/order/error/budget
-   regressions. Retain a test-only compatibility wrapper for existing helper tests.
-3. Add source conformance for initialization tail order, preserving prior fixtures.
-4. Add a separate stopped-initialization source case with partial emissions, keeping
-   each source slice below the eight-file threshold. Preserve contracts/capability
-   gaps and run compiler, strict-gap and byte-preservation checks.
-5. Update coverage evidence, the foundation guide and root/compiler handoffs,
-   run final documentation checks and commit the handoff.
-
-Inspection: `module_value` calls `expr`, which discards the ID already returned by
-`expr_point`; no new point or second evaluation is needed. Module/docs state is
-restored before propagating expression failure, and documentation finish precedes
-success. Synthetic Bind currently feeds input=None into otherwise reusable bounded
-storage metadata. The tree starts clean at `f1a7573`. Root capture passes all 19
-matching module groups, including the three new identity/expected-context/Never
-and restoration groups; `/tmp/meowy-module-points-checks.log`. Expression and late
-documentation failures restore the prior module/docs context and return no root.
-Root capture is committed as `514324d`. Synthetic storage now receives the exact
-returned root; the old two-value helper is test-only. All four new integration
-groups pass; `/tmp/meowy-module-initializers-focused.log`. Program-entry effects
-include ordered initializer stores, stopped/Never roots block stores and later
-modules, and expression/export/documentation errors and three-edge budget failures
-publish no partial operation. All 1950 library tests and all-target Clippy pass;
-`/tmp/meowy-module-initializers-lib.log`, `/tmp/meowy-module-initializers-clippy.log`.
-No outstanding compiler/test failures remain. Source conformance follows in separate
-order/stopped slices, then the final handoff.
-Integration is committed as `97209a5`. The first new source case pins initializer
-tail effects after primary emission, dependency-before-importer order, repeated
-imports and an unused Never function. Metadata passes for 114 cases. A fresh CLI
-build and isolated debug/release execution pass; `/tmp/meowy-module-initializers-build.log`
-and `/tmp/meowy-module-order-case.log`; committed as `6ea543a`. The separate panic
-case now pins a partial primary emission followed by initialization failure,
-excluding later modules and entry output. All ten compiler checks pass: 1950 library/
-913 native tests, 32 tooling and 30 harness groups, formatting, Clippy, build and
-conformance; `/tmp/meowy-module-initializers-gate.log`. The 115 cases report
-96 passes, 19 unchanged pinned gaps and zero failures in debug/release. All prior
-113 case records, 137 source assets, 37 reference files and capability exceptions
-are preserved; `/tmp/meowy-module-initializers-preservation.log`. Strict mode
-correctly exits 1 only for known gaps; `/tmp/meowy-module-initializers-strict.log`.
-The final coverage/guide handoff remains; no outstanding test failures remain.
-Concurrent unrelated workspace edits appeared in `.gitignore` and
-`docs/programs/hey.mwy`; they are outside this series and remain uncommitted.
+Next inspect forward-function groups in `src/check/blocks.rs` and
+`src/check/functions.rs`. `forward` consumes signatures/definitions and returns only
+the next AST index; the enclosing sequence still inserts an explicit None barrier.
+Plan source/group identity capture separately from completion publication. Retain
+actual reserved FunctionIds and source checking boundaries; publish completion only
+after every group definition succeeds, without entering function bodies or granting
+callee effect/return facts. Preserve adjacency/signature/capture diagnostics, nested
+owners and bounded work. Test mutual/self recursion, interrupted/rejected groups,
+unused Never bodies and budgets; add source coverage and run compiler/strict-gap
+gates. Other synthetic prefixes, record/pending values, callee summaries, backedge
+propagation and proof outcomes remain separate. Never bypass arbitrary None entries.
 
 ## Documentation conventions and layout
 
@@ -1850,13 +1808,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- File-module alias completion passes all ten compiler checks: 1943 library/
-  913 native tests, 32 tooling and 30 harness groups. Conformance: 94 passed,
+- Synthetic module-initializer inputs pass all ten compiler checks: 1950 library/
+  913 native tests, 32 tooling and 30 harness groups. Conformance: 96 passed,
   19 pinned gaps, zero failures in debug/release;
-  `/tmp/meowy-module-aliases-gate.log`. Strict mode rejects only those gaps;
-  `/tmp/meowy-module-aliases-strict.log`. Prior fixtures/expectations and reference
-  contracts are unchanged; `/tmp/meowy-module-aliases-preservation.log`.
-  All four final documentation checks pass; `/tmp/meowy-module-aliases-docs.log`.
+  `/tmp/meowy-module-initializers-gate.log`. Strict mode rejects only those gaps;
+  `/tmp/meowy-module-initializers-strict.log`. Prior fixtures/expectations and
+  reference contracts are unchanged; `/tmp/meowy-module-initializers-preservation.log`.
+  All four final documentation checks pass; `/tmp/meowy-module-initializers-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2431,13 +2389,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    and the compiler gate pass. File-module aliases now retain exact backing IDs
    and validate local/exports registration before completion (`1143ce5`), preserving
    module order, privacy, required reads and caller ownership. Source conformance
-   (`43a4308`) and the compiler gate pass. Synthetic initializer storage still has
-   input=None. Next return exact module-expression roots from `module_value` in
-   `exports.rs`, then wire them into storage operations in `statements.rs`. Preserve
-   stopped inputs, successful-check boundaries, startup order and diagnostics; test
-   identities/budgets and multi-module cases before the compiler gate. Other erased
-   forms, synthetic prefixes, forward groups, callee summaries, propagation and proof
-   outcomes remain separate; no generic empty-HIR bypass.
+   (`43a4308`) and the compiler gate pass. Synthetic initializer storage now keeps
+   exact module-expression roots (`514324d`, `97209a5`), exposing ordered initializer
+   effects while preserving stopped inputs and successful-check boundaries. Source
+   conformance (`6ea543a`, `90791b1`) and the compiler gate pass. Next inspect forward
+   groups in `blocks.rs`/`functions.rs`: capture checked group/source identities and
+   reserved function IDs before completion publication. Preserve signature/adjacency/
+   capture errors, independent bodies and work limits; test groups/errors/budgets,
+   extend source coverage and run the compiler gate. Other erased forms, synthetic
+   prefixes, callee summaries, backedge propagation and proof outcomes remain
+   separate; never bypass arbitrary None entries.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
