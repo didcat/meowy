@@ -101,7 +101,7 @@ impl Checker {
         &mut self,
         edges: &[(Family, Edge)],
         span: Span,
-    ) -> Result<()> {
+    ) -> Result<std::collections::BTreeMap<PointId, usize>> {
         if edges.len() > MAX_EDGES || !self.flow.spend(edges.len() + 1) {
             return Err(Diagnostic::unsupported(
                 "proof graph-port budget exhausted",
@@ -138,7 +138,7 @@ impl Checker {
                 }
             }
         }
-        Ok(())
+        Ok(operations)
     }
 }
 

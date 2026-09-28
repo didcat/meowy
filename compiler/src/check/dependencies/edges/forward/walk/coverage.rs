@@ -211,6 +211,7 @@ pub(crate) fn structural_walk_retains_the_full_edge_capacity_and_rejects_overflo
     let oversized = ForwardIndex {
         edges: vec![(Family::Region, edges[0]); MAX_EDGES + 1],
         outgoing: BTreeMap::new(),
+        operations: BTreeMap::new(),
     };
     assert!(
         oversized

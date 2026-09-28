@@ -14,6 +14,7 @@ pub(crate) struct Links {
 pub(crate) struct ForwardIndex {
     pub(crate) edges: Vec<(Family, Edge)>,
     pub(crate) outgoing: BTreeMap<Port, Links>,
+    pub(crate) operations: BTreeMap<PointId, usize>,
 }
 
 impl ForwardIndex {
@@ -29,6 +30,7 @@ impl ForwardIndex {
         let mut index = Self {
             edges,
             outgoing: BTreeMap::new(),
+            operations: BTreeMap::new(),
         };
         for (position, (_, edge)) in index.edges.iter().enumerate() {
             if !flow.spend(index.outgoing.len().checked_ilog2().unwrap_or(0) as usize * 2 + 3) {
@@ -48,8 +50,10 @@ impl ForwardIndex {
 impl Checker {
     pub(crate) fn forward_index(&mut self, span: Span) -> Result<ForwardIndex> {
         let edges = self.edge_inventory(span)?;
-        self.validate_edge_ports(&edges, span)?;
-        ForwardIndex::build(edges, &mut self.flow, span)
+        let operations = self.validate_edge_ports(&edges, span)?;
+        let mut index = ForwardIndex::build(edges, &mut self.flow, span)?;
+        index.operations = operations;
+        Ok(index)
     }
 }
 

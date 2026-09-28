@@ -99,51 +99,29 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current independent-entry report slices
+### Current direct storage-effect slices
 
-The dependency-ordered implementation series is complete:
+Dependency-ordered commit plan:
+1. Retain the validated operation-owner registry in ForwardIndex without another
+   producer scan; preserve validation order and cover registry identity/ownership.
+2. Attach a bounded effect map for Operation ports encountered by entry reports.
+   Copy direct Bind/Write kind, local/storage IDs, RHS root and control; preserve
+   owner/point identity and explicitly classify other producers as unknown. Include
+   focused alias/reference-cell, duplicate, stopped-RHS and exhaustion regressions.
+3. Run the full compiler gate and document scope and concrete continuation work.
 
-1. Retained-item allowance before walk growth (`80feac6`).
-2. Independent HIR entry collection and checker integration (`eaa1c2c`).
-3. Compiler gate and documentation handoff: complete.
+Inspection: `validate_edge_ports` currently discards the producer-owner registry.
+Direct storage records already retain canonical emitted-slot storage separately
+from reference-cell identity. Runtime locals have moved into HIR before inspection;
+use captured metadata and the validated registry, without replaying checking or
+scanning all producers per port. Only encountered Operation ports receive effects.
+No effect claims runtime reachability, clears conservative marks or enables proof
+results. Other operations must remain explicitly unknown, not pure.
 
-`edges/forward/entries.rs` retains one validated index alongside reports keyed by
-owner, with exact program/function HIR BlockIds and resolvable edge positions.
-Root selection uses HIR after runtime vectors move out of the checker. Program
-owner 0 and function owner `id + 1` are checked against block metadata, with checked
-ID arithmetic and duplicate-owner rejection. Function vector order assigns no
-identity. Unused and recursive functions receive independent reports; calls never
-expand callee bodies. Routes, Backedges and missing boundaries remain uninterpreted.
-
-The root cap is 65,536. Aggregate report items (ports, forward/backedge positions,
-missing boundaries) are capped at 917,504 = 3 * MAX_EDGES + 2 * MAX_ENTRIES. Each
-walk receives only the remaining allowance and checks it before growth. Root
-selection, index construction and all walks share work. Failed collection returns
-no partial reports and preserves graph ledgers. Existing semantic/query/doc gates
-still precede graph inspection; proof outcomes and propagation remain gated.
-
-All nine walk groups and four collection groups pass. All 1869 library tests and
-all-target Clippy pass; `/tmp/meowy-entry-allowance.log`,
-`/tmp/meowy-entry-reports-lib.log`, `/tmp/meowy-entry-reports-clippy.log`.
-Tests cover reordered HIR functions, unused recursion, resolvable positions, empty
-programs, duplicate/wrong/missing/overflowing owners, exact root/item allowances
-and late aggregate work failure with successful exact-budget retry. No outstanding
-failures remain. All ten compiler checks pass: 1869 library/913 native tests,
-formatting, Clippy, build, tooling and conformance (10 passed/13 unsupported/0 failed
-in debug/release); `/tmp/meowy-entry-reports-gate.log`.
-The foundation guide documents collection guarantees and limits. All four default
-checks pass, including 1208 local links in 110 Markdown files;
-`/tmp/meowy-entry-reports-docs.log`.
-
-Next connect encountered Operation ports to a bounded read-only effect view, starting
-with direct Bind/Write producer metadata in `dependencies/operations.rs`. Preserve
-exact point, owner, canonical storage, RHS root and control metadata; classify other
-operations explicitly as unknown rather than pure. Reuse the producer registry and
-retained entry reports without rescanning all producers for each port. Separate
-representation/lookup from integration where useful. Test aliases/reference cells,
-duplicate paths, stopped RHS and work exhaustion, then run the compiler gate.
-Do not propagate facts, clear conservative marks or enable proof outcomes yet.
-Precise path/indirect writes, callee effects and restart headers remain separate.
+Prior compiler gate passed all ten checks (1869 library/913 native tests);
+`/tmp/meowy-entry-reports-gate.log`. The validated registry is now retained without another scan. All 74 graph groups
+pass, including mixed owners and preserved exact operation IDs;
+`/tmp/meowy-effect-registry.log`. Next add bounded encountered-operation effects.
 
 ### Proof dependency implementation slices
 

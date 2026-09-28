@@ -2,6 +2,25 @@ use super::*;
 use crate::check::dependencies::edges::tests::check;
 
 #[test]
+pub(crate) fn forward_index_retains_validated_operation_owners_without_changing_edges() {
+    let mut checker = check("x:=1;x=2;f<int32>:(n<int32>){y:n+1;->y};z:f(x)");
+    let expected = checker.operation_port_owners(Span::default()).unwrap();
+    let counts = checker.edge_counts();
+    let index = checker.forward_index(Span::default()).unwrap();
+    assert_eq!(index.operations, expected);
+    assert!(expected.values().any(|owner| *owner == 0));
+    assert!(expected.values().any(|owner| *owner != 0));
+    for (_, edge) in &index.edges {
+        for port in [edge.from, edge.to] {
+            if let Port::Operation(id) = port {
+                assert_eq!(index.operations[&id], checker.points[id].owner);
+            }
+        }
+    }
+    assert_eq!(checker.edge_counts(), counts);
+}
+
+#[test]
 pub(crate) fn forward_index_preserves_original_positions_duplicates_and_backedges() {
     let from = Port::Entry(7);
     let edge = Edge::new(from, Port::Normal(8), Route::Checked);
