@@ -349,10 +349,11 @@ Dependency-ordered commit plan:
    existing source validation and bounds. Keep stopped inputs without continuation,
    preserve initialization/export gates and include multi-module/order/error/budget
    regressions. Retain a test-only compatibility wrapper for existing helper tests.
-3. Add independently useful source conformance for initialization order and stopped
-   initialization, preserving previous assets/contracts and exact capability gaps.
-   Run compiler, strict-gap and byte-preservation checks.
-4. Update coverage evidence, the foundation guide and root/compiler handoffs,
+3. Add source conformance for initialization tail order, preserving prior fixtures.
+4. Add a separate stopped-initialization source case with partial emissions, keeping
+   each source slice below the eight-file threshold. Preserve contracts/capability
+   gaps and run compiler, strict-gap and byte-preservation checks.
+5. Update coverage evidence, the foundation guide and root/compiler handoffs,
    run final documentation checks and commit the handoff.
 
 Inspection: `module_value` calls `expr`, which discards the ID already returned by
@@ -363,7 +364,17 @@ storage metadata. The tree starts clean at `f1a7573`. Root capture passes all 19
 matching module groups, including the three new identity/expected-context/Never
 and restoration groups; `/tmp/meowy-module-points-checks.log`. Expression and late
 documentation failures restore the prior module/docs context and return no root.
-No outstanding test failures remain. Storage wiring is unchanged; integration is next.
+Root capture is committed as `514324d`. Synthetic storage now receives the exact
+returned root; the old two-value helper is test-only. All four new integration
+groups pass; `/tmp/meowy-module-initializers-focused.log`. Program-entry effects
+include ordered initializer stores, stopped/Never roots block stores and later
+modules, and expression/export/documentation errors and three-edge budget failures
+publish no partial operation. All 1950 library tests and all-target Clippy pass;
+`/tmp/meowy-module-initializers-lib.log`, `/tmp/meowy-module-initializers-clippy.log`.
+No outstanding compiler/test failures remain. Source conformance follows in separate
+order/stopped slices, then the final handoff.
+Concurrent unrelated workspace edits appeared in `.gitignore` and
+`docs/programs/hey.mwy`; they are outside this series and remain uncommitted.
 
 ## Documentation conventions and layout
 

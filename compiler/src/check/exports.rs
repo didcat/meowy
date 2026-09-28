@@ -94,6 +94,7 @@ impl Checker {
         Ok(true)
     }
 
+    #[cfg(test)]
     pub(crate) fn module_value(
         &mut self,
         value: &ast::Expr,

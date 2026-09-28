@@ -112,6 +112,9 @@ impl Checker {
 }
 
 #[cfg(test)]
+mod modules;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

@@ -126,8 +126,9 @@ impl Checker {
                 }
                 let expected = ty.as_ref().map(|ty| self.construct_type(ty)).transpose()?;
                 let (input, value, exports) = if name.starts_with('\0') {
-                    let (value, module) = self.module_value(value, expected.as_ref())?;
-                    (None, value, Some(module))
+                    let (input, value, module) =
+                        self.module_value_point(value, expected.as_ref())?;
+                    (Some(input), value, Some(module))
                 } else {
                     let (input, value) = self.expr_point(value, expected.as_ref())?;
                     (Some(input), value, None)

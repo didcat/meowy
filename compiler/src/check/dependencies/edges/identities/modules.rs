@@ -225,7 +225,7 @@ pub(crate) fn module_alias_endpoints_bound_registry_lookup_and_atomic_publicatio
 }
 
 #[test]
-pub(crate) fn module_alias_endpoints_do_not_bypass_synthetic_initialization_sources() {
+pub(crate) fn module_alias_endpoints_follow_captured_synthetic_initialization_sources() {
     let mut ast = crate::parser::parse("seed:{->n:7};m:@\"./value.mwy\";copy:m;x:1").unwrap();
     let ast::StmtKind::Bind { name, .. } = &mut ast.stmts[0].kind else {
         panic!("initializer")
@@ -241,7 +241,8 @@ pub(crate) fn module_alias_endpoints_do_not_bypass_synthetic_initialization_sour
         .items
         .clone();
     let init = items[0].unwrap();
-    assert!(checker.operations[&init].input.is_none());
+    let input = checker.operations[&init].input.unwrap();
+    assert_eq!(checker.points[input].parent, Some(init));
     assert!(!checker.endpoints.contains_key(&SequenceSource::Stmt(init)));
     assert!(
         checker
@@ -256,6 +257,6 @@ pub(crate) fn module_alias_endpoints_do_not_bypass_synthetic_initialization_sour
             Span::default(),
         )
         .unwrap();
-    assert!(walk.missing.contains(&Port::Entry(init)));
-    assert!(!walk.ports.contains(&Port::Operation(items[3].unwrap())));
+    assert!(!walk.missing.contains(&Port::Entry(init)));
+    assert!(walk.ports.contains(&Port::Operation(items[3].unwrap())));
 }
