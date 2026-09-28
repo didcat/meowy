@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::SequenceSource;
 
+mod type_aliases;
+
 impl Checker {
     pub(crate) fn function_declaration_endpoint(
         &mut self,

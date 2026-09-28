@@ -206,6 +206,7 @@ impl Checker {
             }
             StmtKind::TypeAlias { name, ty, exported } => {
                 self.declare_type(name, ty, *exported, stmt.span)?;
+                self.type_alias_endpoint(self.point.expect("type alias statement"), stmt.span)?;
                 Ok(Vec::new())
             }
             StmtKind::Assign { target, value } => {

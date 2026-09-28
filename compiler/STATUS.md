@@ -261,6 +261,37 @@ targets, errors and budgets, add source coverage, then run compiler/strict-gap g
 Forward groups, other erased forms, callee summaries and proof propagation/outcomes
 remain separate; never add a generic empty-HIR bypass.
 
+## Current explicit type-alias completion
+
+Dependency-ordered commit plan:
+
+1. Add bounded, statement-owner-validated completion only after the ordinary
+   `StmtKind::TypeAlias` branch finishes `declare_type`. Keep construction and
+   declaration helpers unchanged, including their required-only callers. Include
+   local/exported/computed aliases, owner/barrier/error checks, required accounting
+   and exact endpoint work/edge limit regressions in this implementation slice.
+2. Add source conformance for scoped/computed aliases, type exports, duplicate-name
+   errors and required-construction failures. Preserve fixtures/contracts and gaps;
+   run the compiler, strict-gap and byte-preservation checks.
+3. Refresh the coverage evidence, foundation guide and current root/compiler
+   handoffs, then run documentation checks and commit the final handoff.
+
+Inspection: ordinary TypeAlias statements erase their HIR only after the required
+construction root and duplicate/export checks succeed. Required type-block aliases
+call `declare_source_type` directly and must gain no runtime statement endpoints.
+No additional type payload or new type ID is needed: the successful ordinary
+statement is the completion identity. Reuse bounded declaration publication while
+keeping other Value::Type/meta bindings, pending forms and forward groups separate.
+The tree starts clean at `a4aafcf`. The helper and ordinary-branch integration are
+implemented. All six new focused groups pass;
+`/tmp/meowy-type-alias-endpoints.log`. Local/exported/computed and nested-owner
+aliases connect, while required inner aliases add no runtime statement endpoints.
+Existing E104/E211/E219/E220/E225 and duplicate/type/export errors are preserved;
+metadata identity, idempotence and atomic work/edge limits pass. All 1918 library
+tests and all-target Clippy pass; `/tmp/meowy-type-alias-lib.log` and
+`/tmp/meowy-type-alias-clippy.log`. No outstanding test failures remain. Source
+conformance and the final handoff are next.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;
