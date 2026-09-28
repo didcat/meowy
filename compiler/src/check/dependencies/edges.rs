@@ -151,6 +151,9 @@ mod blocks;
 
 mod declarations;
 
+mod identities;
+pub(crate) use identities::BindingIdentity;
+
 #[cfg(test)]
 mod composed;
 

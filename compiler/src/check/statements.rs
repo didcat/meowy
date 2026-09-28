@@ -105,7 +105,15 @@ impl Checker {
                             stmt.span,
                         ));
                     }
+                    let identity = super::dependencies::BindingIdentity::capture(&symbol);
                     self.declare(name, symbol, stmt.span)?;
+                    if let Some(identity) = identity {
+                        self.identity_binding_endpoint(
+                            self.point.expect("identity binding"),
+                            identity,
+                            stmt.span,
+                        )?;
+                    }
                     return Ok(Vec::new());
                 }
                 let expected = ty.as_ref().map(|ty| self.construct_type(ty)).transpose()?;

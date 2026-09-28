@@ -202,8 +202,13 @@ Baseline is clean: 1898 library/913 native tests and 90 conformance cases (71 pa
 19 pinned gaps, zero failures). The publication extraction passes all six existing
 declaration endpoint groups, including atomic edge/work exhaustion and conflicting
 metadata; `/tmp/meowy-identity-publication.log`. Validation/work charges and ordinary
-function diagnostics are unchanged. Next implement selected identity classification
-and alias-specific validation/wiring.
+function diagnostics are unchanged. The extraction is committed as `29db896`.
+Selected identity classification and wiring pass all 1904 library tests;
+`/tmp/meowy-identity-endpoints-lib.log`. Six new groups cover resolution, self/forward
+slots, excluded forms, original errors, identity validation and exact publication
+budgets. All-target Clippy passes after a condition-layout cleanup;
+`/tmp/meowy-identity-endpoints-clippy.log`. Next add source conformance and finish
+the full gate; no outstanding focused test failures remain.
 
 ## Documentation conventions and layout
 
