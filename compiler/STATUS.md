@@ -188,7 +188,7 @@ completed slots must retain the exact ID. Function bodies are never traversed by
 an alias endpoint. Work and aggregate edge limits precede publication; replay is
 idempotent and failures add no endpoint. Calls retain their effects and return gates.
 
-Record/file-module/pending forms remain excluded. Type-valued/static/control
+Record/pending forms remain excluded. Type-valued/static/control/file-module
 bindings and meta exports are covered below. Heap handles retain their runtime value path;
 forward groups keep explicit barriers. Required
 roots, ownership, ordinary errors and unsupported-call/proof gates remain unchanged.
@@ -279,95 +279,63 @@ Source coverage (`46d450e`) pins revision aliases, shadowing, required extents a
 rejections. The full gate below retains these checks; the foundation guide records
 the metadata/evaluation boundary.
 
-## Current scoped-control alias completion
+## Scoped-control alias completion
+
+Control aliases connect after bounded active-target/owner validation (`58fd3cf`)
+without performing leave/restart at declaration. Actual calls retain their separate
+argument/lifetime/control checks. Source coverage (`8d47955`) pins alias creation,
+real exits/restarts and rejections. The full gate below retains these checks; the
+foundation guide records the metadata/control-transfer boundary.
+
+## Current file-module alias completion
 
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Connect scoped-control aliases with bounded active-target validation | `58fd3cf` |
-| Pin declaration, execution, argument and scope behavior | `8d47955` |
+| Connect registered file-module aliases with bounded identity validation | `1143ce5` |
+| Pin initialization, function-local aliases, required reads and privacy | `43a4308` |
 
-`BindingIdentity::Control` captures exact target/owner IDs from the resolved value.
-The original Value, including its leave/restart flag, is declared unchanged.
-Publication follows successful declaration and checks for an active same-owner
-frame, charging frame traversal before lookup. Existing statement identity,
-idempotence and aggregate work/edge limits apply. Alias creation adds only
-Entry-to-Normal; it creates no scope exit, restart site/backedge or runtime storage
-and does not alter checker reachability. Actual calls retain all existing argument,
-function/lifetime and control checks and their separate exit/restart edges.
+`BindingIdentity::FileModule` captures the resolved backing LocalId, preserving the
+original Value and type payload. After successful immutable unannotated declaration,
+charged lookup validates both local presence and exports registration before
+publishing bounded Entry-to-Normal. Alias chains create no extra locals or links
+into module bodies. A global module identity may be aliased in a function while
+its statement retains the caller's owner. Required-only paths, privacy, annotated/
+mutable binding gates and runtime module-value capture restrictions are unchanged.
 
-Five focused groups cover flags/targets, nested scopes, call/non-call boundaries,
-ordinary errors, invalid/inactive/foreign identities and exact publication limits.
-Forward-group barriers remain explicit. Record/file-module/pending forms and
-proof propagation/outcomes remain separate; normal ports do not establish runtime
-reachability or permission to call an expired target.
+Six focused groups cover direct imports/aliases, storage IDs, function owners,
+required reads, privacy/gates, missing metadata and exact work/edge limits. Synthetic
+initializer operations still have input=None: program-entry walks stop there rather
+than treating alias completion as initialization. Record/pending values, forward
+groups and proof propagation/outcomes remain separate; normal ports do not prove
+runtime reachability.
 
-All ten compiler checks pass: 1937 library/913 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 1943 library/913 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, metadata/coverage and conformance;
-`/tmp/meowy-control-aliases-gate.log`. The 111 cases report 92 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. Four new cases cover unused aliases,
-actual aliased leave/restart execution, invalid arguments and expired labels.
-Strict mode exits 1 only for known gaps; `/tmp/meowy-control-aliases-strict.log`.
-All 107 prior case records, 129 source assets, 37 reference files and capability
-exceptions are preserved; `/tmp/meowy-control-aliases-preservation.log`.
+`/tmp/meowy-module-aliases-gate.log`. The 113 cases report 94 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. Two new cases cover repeated and
+function-local imports, alias chains, once-only startup, required extents and privacy.
+Strict mode exits 1 only for known gaps; `/tmp/meowy-module-aliases-strict.log`.
+All 111 prior case records, 133 source assets, 37 reference files and capability
+exceptions are preserved; `/tmp/meowy-module-aliases-preservation.log`.
 No outstanding compiler/test failures remain. All four final documentation checks
-pass; `/tmp/meowy-control-aliases-docs.log`.
+pass; `/tmp/meowy-module-aliases-docs.log`.
 AGENTS already covers the required conformance/evidence workflow; no rule change
 is needed.
 
-Next inspect Value::FileModule alias resolution in `src/check/names.rs`,
-`import_module`/registration in `src/check/exports.rs`, and ordinary binding in
-`src/check/statements.rs`. Preserve the exact registered local/module identity;
-`import_module` already validates hidden backing locals and the exports registry.
-Plan bounded alias completion without shape copies or replaying module bodies.
-Preserve eager initialization order, import-cycle/privacy errors, function-local
-imports, required-read eligibility and annotated/mutable binding gates. Test
-import/alias chains, missing registry/local metadata, owners and budgets, add source
-coverage, then run compiler/strict-gap gates. Synthetic initialization prefixes,
+Next inspect synthetic module-initializer bindings in `src/check/statements.rs`
+and `module_value` in `src/check/exports.rs`. The helper currently discards the
+checked expression point and the caller records storage input=None. Plan exact
+module-expression point capture as a prerequisite, then wire that returned root
+into the existing storage-operation validation after successful module checking,
+documentation and export gates. Do not infer roots from block IDs, spans or allocation
+order, recheck initializers, or add a generic entry-to-normal bypass. Preserve eager
+module order, once-only startup, stopped/Never inputs and ordinary errors. Test
+synthetic and multi-module ordering, failure boundaries, identities and budgets;
+extend source coverage and run compiler/strict-gap gates. Other synthetic prefixes,
 record/pending values, forward groups, callee summaries and proof outcomes remain
-separate; never add a generic empty-HIR bypass.
-
-## Current file-module alias completion
-
-Dependency-ordered commit plan:
-
-1. Capture the exact backing LocalId from resolved Value::FileModule and validate
-   local/exports registration with bounded lookup work before alias completion.
-   Preserve the original type payload, import lookup and all ordinary binding
-   gates. Include direct imports/alias chains, function owners, required reads,
-   privacy/errors and exact identity/work/edge budget regressions.
-2. Add source conformance for repeated and function-local imports, alias chains,
-   initialization order and privacy. Keep existing import-cycle/error fixtures and
-   capability exceptions unchanged; run compiler, strict-gap and preservation checks.
-3. Update coverage evidence, the foundation guide and root/compiler handoffs,
-   run final documentation checks and commit the handoff.
-
-Inspection: import_module returns FileModule only for a registered hidden Local,
-retaining its actual ID and type. Alias lookup copies that identity without
-initialization. Synthetic module-initializer bindings remain ordinary storage
-operations, while immutable unannotated module aliases erase their own HIR. The
-new marker must validate registry/local presence without cloning shapes or linking
-to module-body execution. Global module identity may be used inside a function;
-statement ownership still belongs to the caller. The tree starts clean at `2e2237c`.
-All six focused groups pass; `/tmp/meowy-module-aliases-focused.log`. Import/alias
-IDs, function owners, required-only reads, privacy and ordinary gates are preserved.
-Missing local/registry metadata and exact work/edge caps fail without publication.
-Synthetic initializer operations still have input=None and no invented entry link;
-alias completion does not bypass that separate graph boundary. All 1943 library
-tests and all-target Clippy pass; `/tmp/meowy-module-aliases-lib.log` and
-`/tmp/meowy-module-aliases-clippy.log`. No outstanding test failures remain.
-Implementation is committed as `1143ce5`. Two required source cases now cover
-repeated/function-local imports, chained
-aliases, once-only initialization, required extents and private-member rejection.
-All ten compiler checks pass: 1943 library/913 native tests, 32 tooling and 30
-harness groups, formatting, Clippy, build and conformance;
-`/tmp/meowy-module-aliases-gate.log`. The 113 cases report 94 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. All prior 111 case records,
-133 source assets, 37 reference files and capability exceptions are preserved;
-`/tmp/meowy-module-aliases-preservation.log`. Strict mode correctly exits 1 only
-for known gaps; `/tmp/meowy-module-aliases-strict.log`. The final coverage/guide
-handoff remains; no outstanding test failures remain.
+separate.
 
 ## Documentation conventions and layout
 
@@ -1829,13 +1797,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Scoped-control alias completion passes all ten compiler checks: 1937 library/
-  913 native tests, 32 tooling and 30 harness groups. Conformance: 92 passed,
+- File-module alias completion passes all ten compiler checks: 1943 library/
+  913 native tests, 32 tooling and 30 harness groups. Conformance: 94 passed,
   19 pinned gaps, zero failures in debug/release;
-  `/tmp/meowy-control-aliases-gate.log`. Strict mode rejects only those gaps;
-  `/tmp/meowy-control-aliases-strict.log`. Prior fixtures/expectations and reference
-  contracts are unchanged; `/tmp/meowy-control-aliases-preservation.log`.
-  All four final documentation checks pass; `/tmp/meowy-control-aliases-docs.log`.
+  `/tmp/meowy-module-aliases-gate.log`. Strict mode rejects only those gaps;
+  `/tmp/meowy-module-aliases-strict.log`. Prior fixtures/expectations and reference
+  contracts are unchanged; `/tmp/meowy-module-aliases-preservation.log`.
+  All four final documentation checks pass; `/tmp/meowy-module-aliases-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2407,13 +2375,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    Source conformance (`46d450e`) and the compiler gate pass. Scoped-control aliases
    now connect after bounded active-target/owner validation (`58fd3cf`), keeping
    declaration separate from real leave/restart calls. Source coverage (`8d47955`)
-   and the compiler gate pass. Next inspect resolved Value::FileModule aliases in
-   `names.rs`, `exports.rs` and `statements.rs`: retain exact registry/local identities,
-   preserve initialization/privacy/required-read checks and function-local imports,
-   and add no module-body execution edges at alias creation. Test identity/error/
-   budget boundaries, extend source coverage and run the compiler gate. Other erased
-   forms, synthetic initialization prefixes, forward groups, callee summaries,
-   propagation and proof outcomes remain separate; no generic empty-HIR bypass.
+   and the compiler gate pass. File-module aliases now retain exact backing IDs
+   and validate local/exports registration before completion (`1143ce5`), preserving
+   module order, privacy, required reads and caller ownership. Source conformance
+   (`43a4308`) and the compiler gate pass. Synthetic initializer storage still has
+   input=None. Next return exact module-expression roots from `module_value` in
+   `exports.rs`, then wire them into storage operations in `statements.rs`. Preserve
+   stopped inputs, successful-check boundaries, startup order and diagnostics; test
+   identities/budgets and multi-module cases before the compiler gate. Other erased
+   forms, synthetic prefixes, forward groups, callee summaries, propagation and proof
+   outcomes remain separate; no generic empty-HIR bypass.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

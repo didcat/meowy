@@ -427,8 +427,18 @@ no scope exit, restart site or backedge and does not change reachability. Actual
 calls retain their existing argument, function/lifetime and control checks and
 their separate exit/restart edges. Inactive or foreign metadata and exhausted
 budgets publish no endpoint; ordinary lookup/declaration errors remain first.
-Forward groups retain explicit barriers. Record/file-module values and pending
-descriptors retain their existing metadata.
+File-module aliases now retain the exact backing LocalId in their completion
+marker. Bounded lookup validates both local storage and exports registration after
+successful declaration, preserving the original type payload without another
+shape copy. Alias creation adds no module-body execution or extra storage; global
+module identity may be aliased within a function while the statement retains its
+own function owner. Privacy, required-read eligibility, annotated/mutable alias
+gates and runtime module-capture restrictions remain unchanged. Required-only
+evaluation keeps its existing path. Synthetic initializer operations still have
+no captured input point, and alias completion does not bypass that boundary or
+alter eager module initialization order.
+Forward groups retain explicit barriers. Record values and pending descriptors
+retain their existing metadata.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not
 evidence that a runtime path is reached.

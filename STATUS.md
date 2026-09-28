@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Scoped-control aliases now retain bounded statement completion after declaration
-and validation of the exact active target and owner. Their leave/restart flags
-remain unchanged; alias creation adds no control-transfer edges or runtime storage.
-Actual calls retain their separate argument, lifetime and exit/restart checks.
-Implementation: `58fd3cf`; source conformance: `8d47955`.
+File-module aliases now retain bounded completion after successful declaration
+and validation of their exact backing local and exports registration. Aliases
+preserve type payloads and caller ownership without replaying initialization or
+creating storage. Privacy, required reads and existing binding/capture gates remain.
+Implementation: `1143ce5`; source conformance: `43a4308`.
 
-The catalog has 111 cases: 92 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Four new fixtures pin unused aliases, actual aliased
-leave/restart execution, argument errors and expired targets. All prior cases/assets
+The catalog has 113 cases: 94 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Two new fixtures pin repeated/function-local imports,
+alias chains, once-only startup, required extents and privacy. All prior cases/assets
 and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1937 library/913 native and 62 Python test groups;
-`/tmp/meowy-control-aliases-gate.log`. Strict mode rejects only the known gaps.
+1943 library/913 native and 62 Python test groups;
+`/tmp/meowy-module-aliases-gate.log`. Strict mode rejects only the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect resolved file-module aliases in `compiler/src/check/names.rs`,
-`compiler/src/check/exports.rs` and `compiler/src/check/statements.rs`. Preserve
-registered module/local identities and initialization order without replaying module
-bodies at alias creation. The
-[compiler handoff](compiler/STATUS.md#current-scoped-control-alias-completion)
+Next capture exact expression input points for synthetic module-initializer
+bindings in `compiler/src/check/exports.rs` and `compiler/src/check/statements.rs`.
+Their storage operations still have input=None; alias completion does not bypass
+that graph boundary. The
+[compiler handoff](compiler/STATUS.md#current-file-module-alias-completion)
 records the scope, evidence and next validation requirements.
 
 ## Documentation conventions
@@ -1123,12 +1123,15 @@ execution was not part of this documentation edit.
    their evaluator paths. Scoped-control aliases now retain bounded completion
    after active-target/owner validation, without executing leave/restart during
    declaration. Actual calls keep their exit/lifetime checks. Focused/source coverage
-   and the compiler gate pass. Next inspect resolved file-module aliases in
-   `compiler/src/check/names.rs`, `compiler/src/check/exports.rs` and
-   `compiler/src/check/statements.rs`; preserve exact registered identities, privacy,
-   initialization order and required-read rules without re-entering module bodies.
-   Add focused/source coverage and run the compiler gate. Other erased forms and
-   forward groups stay separate; proof outcomes remain gated.
+   and the compiler gate pass. File-module aliases now connect after bounded
+   local/exports registration checks, preserving payloads, privacy and required reads
+   without re-entering module bodies. Focused/source coverage and the compiler gate
+   pass. Next capture exact module-initializer expression roots in
+   `compiler/src/check/exports.rs` and wire those inputs into synthetic storage
+   operations in `compiler/src/check/statements.rs`. Keep stopped initialization,
+   module order and ordinary errors intact; add focused/source coverage and run the
+   compiler gate. Other erased forms and forward groups stay separate; proof
+   outcomes remain gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
