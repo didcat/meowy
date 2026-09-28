@@ -248,8 +248,17 @@ nested/independent bodies, imported IDs, module sequences, Never calls, retained
 forward/type barriers, failed export publication and atomic identity/work/edge
 limits. All 1912 library tests and all-target Clippy pass;
 `/tmp/meowy-export-endpoints-lib.log`, `/tmp/meowy-export-endpoints-clippy.log`.
-No outstanding test failures remain. Next add source conformance and finish the
-coverage/guide updates and final compiler gate.
+No outstanding test failures remain; integration is committed as `447c0e4`.
+Three required conformance cases now cover module startup around definitions and
+chained re-exports (including an unused Never body), duplicate exports and missing
+public signatures. All ten compiler checks pass: 1912 library/913 native tests,
+32 tooling and 30 harness groups, formatting, Clippy, build and conformance;
+`/tmp/meowy-function-exports-gate.log`. The 97 cases report 78 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. All 94 previous case records,
+111 source assets, 37 reference files and capability exceptions are preserved;
+`/tmp/meowy-function-exports-preservation.log`. Strict mode correctly exits 1 only
+for those gaps; `/tmp/meowy-function-exports-strict.log`. The final coverage/guide
+handoff remains to finish.
 
 ## Documentation conventions and layout
 

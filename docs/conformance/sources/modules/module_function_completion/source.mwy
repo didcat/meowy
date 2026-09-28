@@ -1,0 +1,5 @@
+d:@"debug"
+d.print("source")
+->stop<never>:(){'again{'again.restart()}}
+->value<int32>:(){nested<int32>:(){->7};->nested()}
+d.print("source ready")

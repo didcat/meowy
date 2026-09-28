@@ -1,0 +1,7 @@
+source:@"./source.mwy"
+d:@"debug"
+d.print("facade")
+->alias<()->int32>:source.value
+->again<()->int32>:alias
+->unused<()->never>:source.stop
+d.print("facade ready")

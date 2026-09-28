@@ -1,0 +1,5 @@
+api:@"./api.mwy"
+d:@"debug"
+d.print("entry")
+d.print(api.again())
+d.print("done")

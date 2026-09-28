@@ -1000,6 +1000,40 @@
         "code": "E203"
       },
       "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "module_function_completion",
+      "phase": "run",
+      "source": "sources/modules/module_function_completion/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource ready\nfacade\nfacade ready\nentry\n7\ndone\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_function_completion/api.mwy",
+        "sources/modules/module_function_completion/source.mwy"
+      ]
+    },
+    {
+      "id": "function_export_duplicate",
+      "phase": "check",
+      "source": "sources/function_export_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports"
+    },
+    {
+      "id": "function_export_signature_required",
+      "phase": "check",
+      "source": "sources/function_export_signature_required.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E214"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports"
     }
   ]
 }
