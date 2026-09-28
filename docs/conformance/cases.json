@@ -1141,6 +1141,46 @@
         "code": "E211"
       },
       "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "control_alias_declaration",
+      "phase": "run",
+      "source": "sources/control_alias_declaration.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "inner\nouter\n7\n9\n"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "control_alias_execution",
+      "phase": "run",
+      "source": "sources/control_alias_execution.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\ndone\n"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "control_alias_arguments",
+      "phase": "check",
+      "source": "sources/control_alias_arguments.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "control_alias_outside_scope",
+      "phase": "check",
+      "source": "sources/control_alias_outside_scope.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
     }
   ]
 }

@@ -1,0 +1,4 @@
+'out{
+    finish:'out.leave
+    finish(1)
+}

@@ -346,7 +346,17 @@ restarts, real calls retain their separate edges, and inactive/foreign targets,
 ordinary errors and exact work/edge limits remain checked. All 1937 library tests
 and all-target Clippy pass; `/tmp/meowy-control-aliases-lib.log` and
 `/tmp/meowy-control-aliases-clippy.log`. No outstanding test failures remain.
-Source conformance and the final handoff are next.
+Implementation is committed as `58fd3cf`. Four required source cases now cover
+non-executing alias declarations, actual
+aliased leave/restart behavior, argument rejection and out-of-scope targets.
+All ten compiler checks pass: 1937 library/913 native tests, 32 tooling and 30
+harness groups, formatting, Clippy, build and conformance;
+`/tmp/meowy-control-aliases-gate.log`. The 111 cases report 92 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. All previous 107 case records,
+129 source assets, 37 reference files and capability exceptions are preserved;
+`/tmp/meowy-control-aliases-preservation.log`. Strict mode correctly exits 1 only
+for known gaps; `/tmp/meowy-control-aliases-strict.log`. The final coverage/guide
+handoff remains; no outstanding test failures remain.
 
 ## Documentation conventions and layout
 

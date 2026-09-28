@@ -1,0 +1,14 @@
+d:@"debug"
+'out{
+    finish:'out.leave
+    again:'out.restart
+    copy:(finish)
+    'inner{
+        nested:copy
+        d.print("inner")
+    }
+    d.print("outer")
+}
+row:{->leave:7;->restart:9}
+d.print(row.leave)
+d.print(row.restart)

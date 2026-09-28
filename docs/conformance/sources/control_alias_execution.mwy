@@ -1,0 +1,17 @@
+d:@"debug"
+n:=0
+'loop{
+    again:'loop.restart
+    copy:again
+    n=n+1
+    |n<3|copy()
+    finish:'loop.leave
+    'inner{
+        end:finish
+        d.print(n)
+        end()
+        d.print("skipped inner")
+    }
+    d.print("skipped outer")
+}
+d.print("done")
