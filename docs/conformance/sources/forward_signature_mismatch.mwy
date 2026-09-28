@@ -1,0 +1,2 @@
+f<(uint32)->uint32>
+f<uint32>:(n<int32>){->1}

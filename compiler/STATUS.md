@@ -398,6 +398,20 @@ all asserted the former None boundary. Split review separated reserved-ID captur
 and endpoint validation into prior commits. These expectations must change together
 with wiring to keep this commit buildable; moving tests solely to meet eight files
 would hide that dependency. Other None-prefix checks remain explicit.
+Sequence integration is committed as `4940924`. Four new required source cases
+cover reversed-definition mutual recursion, nested/dispatch groups with unused
+Never functions, signature mismatch and incomplete groups. Metadata passes for
+119 cases. All ten compiler checks pass: 1960 library/913 native tests, 32 tooling
+and 30 harness groups; `/tmp/meowy-forward-groups-gate.log`. Conformance reports
+100 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict
+mode exits 1 only for known gaps; `/tmp/meowy-forward-groups-strict.log`. The prior
+115 case records, 143 assets, 37 reference files and capability exceptions are
+preserved; `/tmp/meowy-forward-groups-preservation.log`. Final documentation remains.
+An independent next-slice probe confirms that documented exported group definitions
+still receive E221; `/tmp/meowy-forward-export-probe.log`. This is an existing
+implementation gap, not a conformance rejection pass or an added capability pin.
+Current unrelated work is under `docs/programs/build/` and
+`docs/programs/hey/`; the earlier `.gitignore`/`hey.mwy` state has changed externally.
 
 ## Documentation conventions and layout
 

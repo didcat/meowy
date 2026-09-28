@@ -1237,6 +1237,46 @@
         "sources/panics/panic_module_partial_result/first.mwy",
         "sources/panics/panic_module_partial_result/later.mwy"
       ]
+    },
+    {
+      "id": "forward_reordered_recursion",
+      "phase": "run",
+      "source": "sources/forward_reordered_recursion.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\nfalse\n"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_unused_never",
+      "phase": "run",
+      "source": "sources/forward_unused_never.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "ready\n7\n3\n"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_signature_mismatch",
+      "phase": "check",
+      "source": "sources/forward_signature_mismatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E221"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_partial_group",
+      "phase": "check",
+      "source": "sources/forward_partial_group.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E221"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
     }
   ]
 }

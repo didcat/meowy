@@ -1,0 +1,12 @@
+d:@"debug"
+stop<()->never>
+value<()->int32>
+value<int32>:(){inner<int32>:(){->7};->inner()}
+stop<never>:(){d.panic("unused")}
+d.print("ready")
+d.print(value())
+d.print(3.{
+    halt<()->never>
+    halt<never>:(){'loop{'loop.restart()}}
+    ->$
+})

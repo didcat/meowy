@@ -1,0 +1,14 @@
+d:@"debug"
+even<(uint32)->boolean>
+odd<(uint32)->boolean>
+odd<boolean>:(n<uint32>)'answer{
+    |n==0|{'answer->false;'answer.leave()}
+    ->even(n-1)
+}
+even<boolean>:(n<uint32>)'answer{
+    next:odd
+    |n==0|{'answer->true;'answer.leave()}
+    ->next(n-1)
+}
+d.print(even(4))
+d.print(odd(4))
