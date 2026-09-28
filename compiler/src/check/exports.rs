@@ -279,7 +279,7 @@ impl Checker {
         mutable: bool,
         value: &ast::Expr,
         span: Span,
-    ) -> Result<bool> {
+    ) -> Result<Option<hir::FunctionId>> {
         if label.is_some()
             || self.owner != 0
             || self
@@ -287,9 +287,9 @@ impl Checker {
                 .last()
                 .is_none_or(|frame| frame.id != self.module.block)
         {
-            return Ok(false);
+            return Ok(None);
         }
-        let Some(name) = name else { return Ok(false) };
+        let Some(name) = name else { return Ok(None) };
         if !self.flow.spend(name.len() + self.module.values.len() + 1) {
             return Err(Diagnostic::unsupported(
                 "module export budget exhausted",
@@ -300,8 +300,8 @@ impl Checker {
             None
         } else {
             match self.symbol(value)? {
-                Some(value @ Value::Function { .. }) => Some(value),
-                _ => return Ok(false),
+                Some(value @ Value::Function { id, .. }) => Some((id, value)),
+                _ => return Ok(None),
             }
         };
         if self.module.values.contains_key(name) {
@@ -340,7 +340,7 @@ impl Checker {
                 span,
             )
         })?;
-        if let Some(function) = function {
+        let id = if let Some((id, function)) = function {
             let signature = self.construction_root(annotation.span, |checker| {
                 checker.source_spec(annotation, true)
             })?;
@@ -355,16 +355,17 @@ impl Checker {
                 ));
             }
             self.declare(name, function, span)?;
+            id
         } else {
             let ExprKind::Function { params, body } = &value.kind else {
                 unreachable!()
             };
-            self.declare_function(name, Some(annotation), params, body, span)?;
-        }
+            self.declare_function(name, Some(annotation), params, body, span)?
+        };
         self.module
             .values
             .insert(name.into(), self.value(name, span)?);
-        Ok(true)
+        Ok(Some(id))
     }
 
     pub(crate) fn declare_type(
@@ -544,3 +545,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod functions;

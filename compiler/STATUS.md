@@ -216,6 +216,34 @@ errors, owners and budgets, extend source coverage, then run the compiler and
 strict-gap gates. Forward groups, type/required-only forms, callee summaries and
 proof propagation/outcomes remain separate; never add a generic empty-HIR bypass.
 
+## Current exported function completion
+
+Dependency-ordered commit plan:
+
+1. Return exact successful FunctionIds from `export_function` for definitions and
+   resolved re-exports, preserving its checks, mutations and handled/not-handled
+   distinction. Add identity/error regressions without changing graph publication.
+2. Connect successful export statements through the existing bounded completed
+   function endpoint validator. Test module/statement owners, nested definitions,
+   re-exports, Never boundaries, export errors and publication limits. Preserve
+   forward groups, type-only forms and all existing capability gates.
+3. Add independently useful source conformance for exported definitions/re-exports
+   and errors, refresh the coverage map and guide, and run compiler, strict-gap,
+   preservation and documentation checks before the final handoff.
+
+Inspection confirms `export_function` returns a boolean only after signature,
+scope, duplicate and declaration checks plus module-value insertion. Ordinary
+definitions already return exact IDs; re-export lookup retains the original ID.
+Both successful export forms have completed independent bodies and can reuse
+`function_declaration_endpoint`; self/forward alias allowances are unnecessary.
+Forward groups are checked separately and retain synthetic barriers. The tree
+starts clean at `993c991`. Exact-ID capture passes three new export groups and
+all 18 matching signature groups; `/tmp/meowy-export-identities.log` and
+`/tmp/meowy-export-signatures.log`. Nested definitions and chained re-exports
+retain actual IDs, unhandled forms stay undeclared, and ordinary export errors and
+budget exhaustion remain intact. No outstanding test failures remain. Graph
+publication is unchanged; next wire successful export completion and its tests.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;

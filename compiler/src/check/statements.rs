@@ -579,7 +579,10 @@ impl Checker {
         if self.export_type_value(label, name, annotation, mutable, value, span)? {
             return Ok(Vec::new());
         }
-        if self.export_function(label, name, annotation, mutable, value, span)? {
+        if self
+            .export_function(label, name, annotation, mutable, value, span)?
+            .is_some()
+        {
             return Ok(Vec::new());
         }
         if mutable && name.is_none() {
