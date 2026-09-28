@@ -2,6 +2,7 @@ use super::*;
 use crate::check::dependencies::SequenceSource;
 
 mod forward;
+mod pending;
 mod type_aliases;
 
 impl Checker {

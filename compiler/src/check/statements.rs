@@ -54,7 +54,12 @@ impl Checker {
     }
 
     pub(crate) fn stmt_body(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
-        if self.pending_statement(stmt)?.is_some() {
+        if let Some(prepared) = self.pending_statement(stmt)? {
+            self.pending_declaration_endpoint(
+                self.point.expect("pending statement"),
+                prepared,
+                stmt.span,
+            )?;
             return Ok(Vec::new());
         }
         match &stmt.kind {

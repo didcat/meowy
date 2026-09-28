@@ -363,13 +363,13 @@ workflow; no rule change is needed. Unrelated `docs/programs/hey/` is preserved.
 
 ## Pending proof-statement completion in progress
 
-`prepare_query` returns exact query IDs, while `pending_statement` currently reduces
-that result to a boolean. It checks new/discarded queries and descriptor aliases,
+`prepare_query` and `pending_statement` now return exact query IDs; the latter
+also distinguishes creation from copying. It checks new/discarded queries and descriptor aliases,
 annotations and names, then `stmt_body` emits empty HIR without completion metadata.
 Recognition is side-effect free; preparation owns query/root accounting. Copies
 preserve their original owner/site/root rather than requerying. `value` rejects
-capture across functions with E223; aliases must stay within the original owner. An enclosing construction root can still be
-open when the statement finishes. Proof results remain unavailable at final checking.
+capture across functions with E223; aliases must stay within the original owner.
+An enclosing construction root can still be open when the statement finishes. Proof results remain unavailable at final checking.
 
 Dependency-ordered commit plan:
 
@@ -394,7 +394,17 @@ succeed. The caller still retains its existing behavior. All 32 focused `pending
 tests pass (`/tmp/meowy-pending-ids.log`), including exact IDs through interleaved
 new queries/copies/discards, annotation/name errors, shared open roots and the E223
 cross-function capture rule. Formatting and all-target Clippy pass
-(`/tmp/meowy-pending-ids-clippy.log`). Preserve unrelated `docs/programs/hey/` work.
+(`/tmp/meowy-pending-ids-clippy.log`). Slice 2 now validates exact query/point/site
+identity, matching owner, creation versus copy parentage, and a closed or matching
+open budget root before atomic Entry-to-Normal publication. Statement checking
+uses it after existing annotations/names succeed. Source queries gain no runtime
+edges and copies keep their origins. All 1981 library tests pass
+(`/tmp/meowy-pending-library.log`), including twenty malformed metadata variants,
+exact work/edge limits, idempotence, nested blocks/functions, open roots, source
+errors and stopped prefixes. Formatting and all 37 focused `pending_` tests also
+pass after the readability cleanup (`/tmp/meowy-pending-endpoints.log`). Next add
+required source rejection coverage and run the complete compiler gate.
+Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 
