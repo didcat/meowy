@@ -7,64 +7,55 @@ records the plan. Keep this handoff current; Git holds history. Do not recreate 
 
 ## Documentation coverage and conformance audit
 
-The user has prioritized coverage before more graph implementation. Preserve the
-current compiler behavior and reference expectations; graph continuation is deferred.
-Dependency-ordered commit plan:
+The initial coverage strengthening series is complete. Compiler implementation,
+all 23 original cases/sources and the reference contracts are unchanged. Source
+coverage grew from 23 to 64 cases: 45 required passes, 19 pinned capability gaps,
+zero failures in debug/release. Six gaps are newly recorded coverage (five proof
+outcomes and direct-call list extents), not regressions introduced by compiler edits.
 
-1. Replace the ten-case required list with default-required execution and explicit,
-   diagnostic-specific unsupported exceptions. Test regressions, promotions,
-   malformed diagnostics, profile disagreement and exact runtime output.
-2. Add supported source fixtures in focused syntax, bits/required evaluation,
-   ownership/store and block/restart batches. Each accepted/rejected contract case
-   runs independently in debug/release; unsupported is never a successful rejection.
-3. Add proof qualification fixtures with reference outcomes and explicit current
-   capability exceptions. Record all remaining qualification obligations as gaps.
-4. Add a checked documentation coverage inventory linking every reference document
-   to catalog cases/internal evidence or an explicit gap. Validate references,
-   evidence, case IDs and proof-obligation drift; expose it in the existing gate.
-5. Run the full compiler gate, verify strict mode rejects known gaps, and document
-   actual coverage without equating file/row counts with complete conformance.
+The runner requires every case by default. Exceptions pin the exact B001 blocker;
+changed blockers, unexpected unsupported cases and newly passing exceptions fail.
+Promotion removes the exception after both profiles satisfy the reference outcome.
+Malformed/mixed diagnostics, crashes, profile disagreement and incorrect runtime
+bytes fail independently of capability status. `--strict` rejects all known gaps.
 
-Initial audit: 23 catalog cases, ten required and 13 unsupported; no catalog proof
-outcome fixtures. Existing metadata/unit/native tests remain valuable but do not
-establish end-to-end proof qualification. Working tree was clean. No test failures
-are being hidden by fixture changes. Default-required conformance and pinned capability exceptions are implemented.
-All 11 harness groups pass, including status regression/promotion, malformed/mixed
-diagnostics, profile disagreement and exact runtime results. The unchanged source
-catalog passes 10 cases with 13 explicitly pinned gaps and zero failures;
-`/tmp/meowy-conformance-baseline.log`. Harness policy is committed as `3fb74df`. Six new receiver/predicate/ascription
-cases pass in both profiles: 16 passed, 13 pinned gaps, zero failures;
-`/tmp/meowy-conformance-syntax.log`. Bits aliases/widths/order, arity/range errors, retired operators and required extents
-are covered. The direct call in a list extent exposed a capability gap: its accepted
-reference expectation is preserved, with an exact exception. Current bits baseline:
-21 required passes, 14 pinned gaps, zero failures;
-`/tmp/meowy-conformance-bits.log`. Six ownership/store fixtures pass: last-use acceptance, live-loan/escape rejections,
-pre-RHS pointer retargeting, nested index order and reservation conflicts. Current
-result: 27 required passes, 14 pinned gaps, zero failures;
-`/tmp/meowy-conformance-ownership.log`. Six block/control fixtures also pass, including emission continuation, restart and
-write invalidation, short-circuit effects and conditional slots: 33 required passes,
-14 pinned gaps, zero failures; `/tmp/meowy-conformance-blocks.log`.
-Six proof-staging cases pass: revision execution, argument/type diagnostics,
-descriptor escape and ordinary type/borrow error priority. Current result:
-39 required passes, 14 pinned gaps, zero failures;
-`/tmp/meowy-conformance-proof-staging.log`. Five proof-outcome fixtures retain their reference acceptance/E224/E225 outcomes;
-current early blockers are pinned explicitly. Full catalog: 39 required passes,
-19 pinned gaps, zero failures; `/tmp/meowy-conformance-proof-outcomes.log`.
-Required blocks, short-circuiting, division-zero and indexing boundaries now pass.
-The nonconstant direct extent uses the reference E104 (distinct from E211 type
-construction dependence). All 64 cases: 45 required passes, 19 pinned gaps, zero
-failures; `/tmp/meowy-conformance-required.log`. No compiler behavior was changed.
-All 37 reference documents now have checked evidence/gap records and reviewed
-content hashes. Catalog checks also reject stale coverage reports. All 21 tooling
-tests pass, including document/content/evidence/reference/report drift regressions;
-local link checks pass (`/tmp/meowy-coverage-links.log`). All 33 proof obligations are now mapped (31 acceptance rows plus runtime
-noninterference and release-matrix requirements). Validation checks exact required
-observations, omitted rows, case links and explicit remaining gaps. All 22 tooling
-tests and local links pass; `/tmp/meowy-proof-coverage-links.log`. All 28 tooling groups pass after adding adversarial catalog tests for duplicate IDs,
-versions/targets, expectation schemas, path escape, empty/unlisted nested sources
-and missing/fenced headings. The validator now reuses the existing Markdown anchor
-parser and finds nested orphan fixtures. Next update AGENTS.md as requested and
-run the full compiler and strict-gap checks.
+[Coverage inventory](../docs/conformance/COVERAGE.md) maps all 37 reference documents
+to catalog cases, classified internal test evidence and explicit remaining scope.
+Reviewed content hashes force reference-change review; missing evidence and stale
+reports fail the default gate. All 33 proof obligations are tracked (31 acceptance
+rows plus runtime-noninterference and release-matrix requirements), with required
+observations checked for drift. A mapped or blocked fixture does not qualify an
+entire obligation. Most proof outcomes and broad library/runtime areas remain gaps.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Default-required harness and pinned blockers | `3fb74df` |
+| Receiver/predicate/ascription contracts | `c29ce36` |
+| Bits widths/order and direct-extent gap | `991b356` |
+| Ownership and ordered stores | `a7b06c0` |
+| Blocks, restarts and guard invalidation | `871fb1b` |
+| Proof staging and diagnostic precedence | `e4e18af` |
+| Proof outcome obligations and blockers | `c4bbb13` |
+| Required evaluation and collection boundaries | `d3b4387` |
+| Reference inventory and drift checks | `7303a58` |
+| Complete proof-obligation map | `cf0cfaa` |
+| Adversarial catalog validation | `3976524` |
+
+All ten compiler checks pass: 1890 library/913 native tests, 28 tooling and 11
+compiler-harness groups, formatting, Clippy, build, metadata/coverage and conformance.
+Log: `/tmp/meowy-conformance-coverage-gate.log`. Strict execution correctly exits 1
+for the 19 known gaps, with no failed cases; `/tmp/meowy-conformance-strict.log`.
+The reference/original-fixture byte-preservation audit also passed. Final default
+checks pass in `/tmp/meowy-conformance-final-docs.log`. No outstanding
+test failures remain. Root/compiler AGENTS now require source coverage, reviewed
+traceability and promotion of passing exceptions. This is not release qualification.
+
+Next coverage slice: extend the isolated catalog format/runner with declared
+companion files, then promote supported relative-module behavior and rejection
+cases from native tests into source conformance. Preserve path isolation and test
+missing/escaping/duplicate assets before adding module fixtures. The inventory
+lists the remaining proof and runtime obligations for later slices. The graph
+completion repair below remains deferred while coverage is the user's priority.
 
 ## Documentation conventions and layout
 
@@ -1534,6 +1525,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
+- Coverage audit: all ten compiler checks pass, including 1890 library/913 native,
+  28 tooling and 11 harness test groups. Conformance: 45 passed, 19 pinned gaps,
+  zero failures in both profiles; `/tmp/meowy-conformance-coverage-gate.log`.
+  Strict mode correctly rejects those gaps; `/tmp/meowy-conformance-strict.log`.
+  All 37 reference documents and 33 proof obligations have checked evidence/gap
+  records. This measures traceability, not complete language or release coverage.
+
 - Indirect-store effects passed all ten checks in
   `python3 -B tools/verify.py --compiler`: 1890 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
@@ -1624,7 +1622,15 @@ Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. No outstanding failures remain.
 
-1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
+1. Continue coverage with declared companion-file fixtures for relative modules.
+   Extend catalog validation and isolated staging before adding source cases for
+   imports, exported identities and module error precedence. Reject missing,
+   escaping and duplicate assets; preserve default-required support policy and
+   update the checked coverage inventory. Run focused harness tests and the full
+   compiler gate. The compiler implementation sequence below remains deferred
+   while coverage is the active priority.
+
+2. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
    Emitted-slot aliases share marks through `Alias::root`; immutable scalar
    references retain known owners and indirect stores propagate marks or gate
@@ -2114,7 +2120,7 @@ subtraction retains its documented limits. No outstanding failures remain.
    payload yet. Required-block descriptor admission and text/helper execution stay
    gated until their execution/accounting foundations exist.
 
-2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
+3. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.
 

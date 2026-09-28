@@ -7,11 +7,24 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Coverage work is the current priority
 
-Strengthen documentation traceability, source conformance and harness failure checks
-before resuming graph implementation. The ordered plan is in
-[compiler/STATUS.md](compiler/STATUS.md#documentation-coverage-and-conformance-audit).
-Keep reference outcomes distinct from temporary compiler capability exceptions.
-The existing 23-case catalog is a baseline, not comprehensive language qualification.
+The initial strengthening series is complete: 64 source conformance cases now yield
+45 required passes, 19 explicitly pinned capability gaps and zero failures in both
+profiles. All original fixtures and reference contracts are unchanged. Unsupported
+exceptions now require exact diagnostics and explicit promotion when they pass.
+
+The [coverage inventory](docs/conformance/COVERAGE.md) tracks all 37 reference
+files and 33 proof obligations with internal evidence and explicit remaining gaps.
+Default checks reject document/evidence/obligation drift and stale reports.
+Root/compiler AGENTS require this maintenance alongside future behavior changes.
+The [compiler handoff](compiler/STATUS.md#documentation-coverage-and-conformance-audit)
+lists the reviewed commits and validation. All ten compiler checks pass, including
+1890 library/913 native tests, 28 tooling and 11 harness groups;
+`/tmp/meowy-conformance-coverage-gate.log`. Strict mode correctly rejects 19 known
+gaps. Full language qualification remains incomplete.
+
+Next coverage work is declared companion-file support and source conformance for
+relative modules, preserving fixture isolation. Graph implementation is deferred;
+its existing declaration-completion handoff is retained below.
 
 ## Documentation conventions
 
@@ -902,6 +915,12 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
+- Coverage audit passed all ten compiler checks: 1890 library/913 native tests,
+  28 tooling and 11 harness groups. Conformance: 45 passed, 19 pinned gaps, zero
+  failures in debug/release; `/tmp/meowy-conformance-coverage-gate.log`.
+  Strict mode correctly fails on known gaps. Documentation traceability covers
+  37 reference files and 33 proof obligations without claiming full qualification.
+
 - Indirect-store effects passed all ten checks in
   `python3 -B tools/verify.py --compiler`: 1890 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
@@ -962,7 +981,15 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Add transitive proof data/control dependency tracking before enabling outcomes
+1. Continue coverage with declared companion-file fixtures for relative modules.
+   Extend catalog validation and isolated staging before adding source cases for
+   imports, exported identities and module error precedence. Reject missing,
+   escaping and duplicate assets; preserve default-required support policy and
+   update the checked coverage inventory. Run focused harness tests and the full
+   compiler gate. The compiler implementation sequence below remains deferred
+   while coverage is the active priority.
+
+2. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
    Expression/read/query points and explicit runtime branch regions now distinguish
    uses within a statement. HIR branches and body facts now retain validated
@@ -1089,5 +1116,5 @@ execution was not part of this documentation edit.
    Required-block descriptors and text/helper execution remain gated. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the boundaries.
 
-2. Broaden subtraction only after its remaining syntax/representation prerequisites
+3. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

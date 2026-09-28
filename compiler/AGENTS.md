@@ -57,6 +57,16 @@ These instructions apply to this directory and all descendants.
 - Run conformance cases independently. Compare stdout bytes and primary diagnostic codes. Missing tools, crashes, and unsupported diagnostics never satisfy an expected language rejection.
 - Exercise debug and release when runtime behavior changes. Inspect actual ELF artifacts when claiming linkage properties.
 - Never edit reference fixtures to hide compiler failures.
+- Add source-level conformance cases for documented behavior changes alongside
+  focused internal tests. Link each case to its owning reference and preserve the
+  distinction between seeded metadata checks and end-to-end language behavior.
+- New cases are required unless their exact B001 blocker is recorded in
+  `tests/conformance_support.json`. A changed blocker or newly passing exception
+  fails the gate and requires review; promote passing cases by removing the exception.
+- Update the documentation/proof-obligation maps under `../docs/conformance/` when
+  their contracts or evidence change. Report required passes and capability gaps
+  separately. `--strict` rejects known gaps; a successful bootstrap gate does not
+  establish full reference coverage or release qualification.
 - Report precisely what ran and what remains unverified. Host execution does not qualify the minimum kernel/glibc baseline or a bundled distribution.
 - Do not broaden checks repeatedly after they pass unless a new change or unresolved concern warrants it.
 

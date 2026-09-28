@@ -31,6 +31,18 @@
   when practical, and retain the existing checks across each move.
 - Run checks appropriate to changed behavior. Never count unsupported features,
   missing tools or crashes as successful conformance rejections.
+- Changes to documented behavior need source conformance fixtures linked to the
+  owning reference, or an explicit coverage gap when execution is not implemented.
+  Keep structural/unit evidence distinct from observable language conformance.
+- Keep `docs/conformance/documents.json` and
+  `docs/conformance/proof-obligations.json` current when reference contracts change.
+  Review evidence and remaining gaps before updating content hashes; regenerate
+  the report with `python3 -B docs/conformance/coverage.py --write`. The default
+  verification gate checks this inventory and rejects stale reports.
+- Conformance cases are required by default. Temporary B001 exceptions belong in
+  `compiler/tests/conformance_support.json` with the exact observed blocker. Preserve
+  reference acceptance/output/diagnostic expectations. Remove an exception once
+  the reference outcome passes in both debug and release; do not leave it optional.
 - Commit each validated, reviewable work slice unless the user requests otherwise.
   Do not wait until the entire task is finished and then commit everything together.
 - Before implementing a multi-part change, record a short, dependency-ordered
