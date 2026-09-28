@@ -1,0 +1,5 @@
+types:@"./types.mwy"
+d:@"debug"
+<Local>:<types.Row>
+row<Local>:{->value:7}
+d.print(row.value)

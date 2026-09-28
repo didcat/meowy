@@ -289,8 +289,18 @@ aliases connect, while required inner aliases add no runtime statement endpoints
 Existing E104/E211/E219/E220/E225 and duplicate/type/export errors are preserved;
 metadata identity, idempotence and atomic work/edge limits pass. All 1918 library
 tests and all-target Clippy pass; `/tmp/meowy-type-alias-lib.log` and
-`/tmp/meowy-type-alias-clippy.log`. No outstanding test failures remain. Source
-conformance and the final handoff are next.
+`/tmp/meowy-type-alias-clippy.log`. No outstanding test failures remain;
+implementation is committed as `133ba70`. Four required source cases now cover
+computed/nested scopes and namespaces, exported aliases across modules, duplicate
+names and required failure after emission. Catalog/coverage metadata passes for
+101 cases. All ten compiler checks pass: 1918 library/913 native tests, 32 tooling
+and 30 harness groups, formatting, Clippy, build and conformance;
+`/tmp/meowy-type-alias-gate.log`. Source execution reports 82 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. All previous 97 records, 116 source
+assets, 37 reference files and capability exceptions are unchanged;
+`/tmp/meowy-type-alias-preservation.log`. Strict mode correctly exits 1 only for
+known gaps; `/tmp/meowy-type-alias-strict.log`. The final coverage/guide handoff
+remains; no outstanding test failures remain.
 
 ## Documentation conventions and layout
 

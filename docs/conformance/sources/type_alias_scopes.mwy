@@ -1,0 +1,12 @@
+d:@"debug"
+<T>:{n:2;<Element>:<uint8>;-><Element[n+1]>}
+items<T>:[7,9]
+d.print(items[1])
+{
+    <T>:<int32>
+    value<T>:11
+    d.print(value)
+}
+d.print(items[2])
+T:5
+d.print(T)

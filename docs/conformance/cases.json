@@ -1034,6 +1034,49 @@
         "code": "E214"
       },
       "reference": "../reference/modules-and-ffi.md#files-and-exports"
+    },
+    {
+      "id": "type_alias_scopes",
+      "phase": "run",
+      "source": "sources/type_alias_scopes.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n11\n9\n5\n"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "module_type_completion",
+      "phase": "run",
+      "source": "sources/modules/module_type_completion/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nafter\n7\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_type_completion/types.mwy"
+      ]
+    },
+    {
+      "id": "type_alias_duplicate",
+      "phase": "check",
+      "source": "sources/type_alias_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E203"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "type_alias_required_tail",
+      "phase": "check",
+      "source": "sources/type_alias_required_tail.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E107"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
     }
   ]
 }

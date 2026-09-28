@@ -1,0 +1,5 @@
+d:@"debug"
+d.print("before")
+<Item>:<uint8>
+-><Row>:{<Part>:<{value<Item>}>;-><Part>}
+d.print("after")
