@@ -241,8 +241,15 @@ starts clean at `993c991`. Exact-ID capture passes three new export groups and
 all 18 matching signature groups; `/tmp/meowy-export-identities.log` and
 `/tmp/meowy-export-signatures.log`. Nested definitions and chained re-exports
 retain actual IDs, unhandled forms stay undeclared, and ordinary export errors and
-budget exhaustion remain intact. No outstanding test failures remain. Graph
-publication is unchanged; next wire successful export completion and its tests.
+budget exhaustion remain intact; committed as `6fce856`.
+Successful export statements now reuse the bounded completed-function validator.
+All five new endpoint groups pass; `/tmp/meowy-export-endpoints.log`. They cover
+nested/independent bodies, imported IDs, module sequences, Never calls, retained
+forward/type barriers, failed export publication and atomic identity/work/edge
+limits. All 1912 library tests and all-target Clippy pass;
+`/tmp/meowy-export-endpoints-lib.log`, `/tmp/meowy-export-endpoints-clippy.log`.
+No outstanding test failures remain. Next add source conformance and finish the
+coverage/guide updates and final compiler gate.
 
 ## Documentation conventions and layout
 
