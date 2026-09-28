@@ -76,3 +76,6 @@ mod tests;
 
 #[cfg(test)]
 mod types;
+
+#[cfg(test)]
+mod exports;

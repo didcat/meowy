@@ -117,7 +117,7 @@ pub(crate) fn export_endpoints_keep_never_calls_and_forward_type_barriers() {
         assert_eq!(walk.ports.contains(&Port::Operation(last)), present);
     }
     for source in [
-        "c:@\"core\";->t<c.Type>:<int32>;x:1",
+        "p:@\"proof\";revision:p.revision;x:1",
         "f<()->int32>;f<int32>:(){->1};->alias<()->int32>:f;x:1",
     ] {
         crate::compile(source).unwrap();

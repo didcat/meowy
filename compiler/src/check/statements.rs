@@ -586,6 +586,11 @@ impl Checker {
             ));
         }
         if self.export_type_value(label, name, annotation, mutable, value, span)? {
+            self.identity_binding_endpoint(
+                self.point.expect("meta export"),
+                BindingIdentity::Type,
+                span,
+            )?;
             return Ok(Vec::new());
         }
         if let Some(function) =

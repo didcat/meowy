@@ -330,7 +330,13 @@ foundation, query, computed and annotated types connect without runtime storage 
 query execution. Required-only helpers, logical limits, errors and atomic endpoint
 budgets remain intact. All 1923 library tests and all-target Clippy pass;
 `/tmp/meowy-type-bindings-lib.log`, `/tmp/meowy-type-bindings-clippy.log`.
-No outstanding test failures remain. Meta export integration is next.
+Ordinary binding integration is committed as `3692a56`.
+Meta exports now publish only after `export_type_value` succeeds. All four focused
+export groups pass; `/tmp/meowy-meta-exports-focused.log`. Imported payloads and
+module owners are preserved, failed exports add no endpoints, and logical E220
+remains distinct from graph-capacity B001. All 1927 library tests and all-target
+Clippy pass; `/tmp/meowy-meta-exports-lib.log`, `/tmp/meowy-meta-exports-clippy.log`.
+No outstanding test failures remain. Source conformance and the final handoff follow.
 
 ## Documentation conventions and layout
 

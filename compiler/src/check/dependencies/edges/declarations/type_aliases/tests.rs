@@ -56,7 +56,7 @@ pub(crate) fn type_alias_endpoints_cross_local_exported_and_computed_declaration
 #[test]
 pub(crate) fn type_alias_endpoints_keep_other_erased_forms_and_stopped_paths() {
     for source in [
-        "c:@\"core\";->t<c.Type>:<int32>;x:1",
+        "p:@\"proof\";revision:p.revision;x:1",
         "f<()->int32>;f<int32>:(){->1};<T>:<int32>;x:1",
         "stop<never>:(){'again{'again.restart()}};stop();<T>:<int32>;x:1",
     ] {
