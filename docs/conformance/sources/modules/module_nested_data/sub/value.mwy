@@ -1,0 +1,6 @@
+s:@"../shared.mwy"
+d:@"debug"
+d.print("value {s.n}")
+->n:s.n+1
+->items:[1,2]
+->row:{->label:"ready"}

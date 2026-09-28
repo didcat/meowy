@@ -1,0 +1,5 @@
+d:@"debug"
+m:@"./sub/value.mwy"
+d.print(m.n)
+d.print(m.items[2])
+d.print(m.row.label)

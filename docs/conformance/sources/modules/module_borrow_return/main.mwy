@@ -1,0 +1,5 @@
+d:@"debug"
+ops:@"./ops.mwy"
+x:7
+p:ops.view(&x)
+d.print(*p)

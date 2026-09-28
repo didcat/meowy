@@ -84,7 +84,9 @@ all 64 existing cases remain 45 passed/19 pinned gaps/0 failed in both profiles;
 module bundle now proves diamond dependencies initialize once, before entry and in
 sibling import order. All 65 cases pass their gate: 46 required, 19 pinned gaps,
 zero failures in debug/release; `/tmp/meowy-modules-diamond.log`.
-Next add nested-resolution, export and rejection fixtures.
+Nested resolution/data exports and imported borrowed results also pass. Current
+catalog: 67 cases, 48 required passes, 19 pinned gaps, zero failures;
+`/tmp/meowy-modules-imports.log`. Next add typed exports and rejection fixtures.
 
 ## Documentation conventions and layout
 

@@ -650,6 +650,33 @@
         "sources/modules/module_diamond_init/b.mwy",
         "sources/modules/module_diamond_init/shared.mwy"
       ]
+    },
+    {
+      "id": "module_nested_data",
+      "phase": "run",
+      "source": "sources/modules/module_nested_data/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "value 7\n8\n2\nready\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_nested_data/sub/value.mwy",
+        "sources/modules/module_nested_data/shared.mwy"
+      ]
+    },
+    {
+      "id": "module_borrow_return",
+      "phase": "run",
+      "source": "sources/modules/module_borrow_return/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_borrow_return/ops.mwy"
+      ]
     }
   ]
 }
