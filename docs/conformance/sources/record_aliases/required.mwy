@@ -1,0 +1,19 @@
+m:@"./facade.mwy"
+same:@"./data.mwy"
+d:@"debug"
+<T>:{
+    copy:m.row
+    part:copy.part
+    alias:part
+    |true|alias:{->n<uint8>:1}
+    |copy.enabled|-><uint8[alias.n]>
+    |!copy.enabled|-><uint8[1]>
+}
+xs<T>:[7,8,9]
+read<uint8>:(){
+    <Local>:{copy:same.row;part:copy.part;-><uint8[part.n]>}
+    values<Local>:[6]
+    ->values[1]
+}
+d.print(xs[3])
+d.print(read())

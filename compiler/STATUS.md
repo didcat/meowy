@@ -372,9 +372,9 @@ Dependency-ordered commit plan:
    aliases, exact source reads, scope isolation, failure publication and work limits.
    Preserve current checking; change production code only if a regression exposes
    a missing boundary.
-2. Add required execution and rejection conformance cases for record copies and
-   required aliases; update evidence inventory and run compiler/strict gates plus
-   preservation checks against `fe40677`.
+2. Add required record-copy/imported-alias execution coverage and its evidence map;
+   commit independent rejection scenarios separately. Run compiler/strict gates
+   plus preservation checks against `fe40677`.
 3. Correct root/compiler/foundation handoffs to describe the verified boundary and
    identify the next actual unfinished dependency step; run documentation checks.
 
@@ -384,8 +384,12 @@ initializer roots, required source IDs and function owners, scratch scope isolat
 stopped paths, failed declarations, unchanged logical costs, exact E220 limits and
 E225 rejection before recording reads or completion. Initial test assumptions about
 an empty endpoint registry were corrected to preserve the already checked record
-initializer endpoints. No production behavior change was needed. Next add source
-conformance coverage and run the complete gate. Keep pending
+initializer endpoints. No production behavior change was needed. Two new required
+execution cases pass in debug/release (`/tmp/meowy-record-alias-cases.log`): inline
+record/subrecord storage independence and imported required aliases with scoped
+shadowing, function-local roots and once-only initialization. The 127-case catalog
+and 37-document evidence inventory validate. Next add independent rejection cases
+and run the complete gate. Keep pending
 proof descriptors, callee summaries and backedge propagation separate; retain
 B001 proof gates and preserve unrelated `docs/programs/hey/` work.
 

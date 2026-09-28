@@ -1,0 +1,10 @@
+d:@"debug"
+row:{->part:{->n:=3};->enabled:true}
+copy:row
+part:copy.part
+row.part.n=9
+copy.part.n=7
+d.print(row.part.n)
+d.print(copy.part.n)
+d.print(part.n)
+d.print(copy.enabled)

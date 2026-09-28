@@ -1344,6 +1344,30 @@
       "companions": [
         "sources/forward_exports/group.mwy"
       ]
+    },
+    {
+      "id": "record_alias_runtime_copy",
+      "phase": "run",
+      "source": "sources/record_aliases/runtime.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "9\n7\n3\ntrue\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "record_alias_required_scopes",
+      "phase": "run",
+      "source": "sources/record_aliases/required.mwy",
+      "companions": [
+        "sources/record_aliases/facade.mwy",
+        "sources/record_aliases/data.mwy"
+      ],
+      "expected": {
+        "accepted": true,
+        "stdout": "data\n9\n6\n"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
     }
   ]
 }
