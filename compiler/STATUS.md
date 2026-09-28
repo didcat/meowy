@@ -149,7 +149,8 @@ body owner before publication. Shared work/edge capacity is bounded, duplicate
 registration is idempotent, and invalid metadata or exhausted budgets adds no edge.
 Function bodies are never connected to declaration execution. An unused Never body
 does not block the enclosing sequence; an actual Never call still lacks continuation.
-Exported definitions, forward groups, aliases and other erased forms are unchanged.
+This slice covered ordinary definitions; alias/export extensions are recorded below.
+Forward groups remain explicit barriers.
 
 All 1898 library tests and all-target Clippy pass;
 `/tmp/meowy-function-endpoints-lib.log`, `/tmp/meowy-function-endpoints-clippy.log`.
@@ -165,8 +166,8 @@ the unchanged gaps; `/tmp/meowy-function-declarations-strict.log`. All previous 
 source cases/assets and reference contracts are preserved. Final default checks pass;
 `/tmp/meowy-function-declarations-docs.log`. No test failures remain.
 
-Selected immutable aliases now have their own completion metadata, described below.
-Exported definitions and forward-group barriers remain separate.
+Immutable aliases and exported functions now have form-specific completion metadata,
+described below. Forward-group barriers remain separate.
 
 ## Current immutable identity-binding completion
 
@@ -206,59 +207,59 @@ remain. All four final documentation checks pass;
 classified evidence and exact capability exceptions; no further rule changes are
 needed for this slice.
 
-Next inspect exported function definitions and re-exports in `check/exports.rs`
-and `check/statements.rs`. `export_function` currently returns only a handled flag
-and erases both forms after their export checks. Plan exact-ID capture separately
-from bounded completion publication; publish only after signature, duplicate export,
-scope and declaration validation. Preserve E205/E207/E214, conditional/mutable export
-gates, module initialization and independent bodies. Test definitions/re-exports,
-errors, owners and budgets, extend source coverage, then run the compiler and
-strict-gap gates. Forward groups, type/required-only forms, callee summaries and
-proof propagation/outcomes remain separate; never add a generic empty-HIR bypass.
+Exported definitions and re-exports are now covered by the completed slice below.
+Forward groups, type-only forms, callee summaries and proof outcomes remain separate.
 
 ## Current exported function completion
 
-Dependency-ordered commit plan:
+The dependency-ordered series is complete:
 
-1. Return exact successful FunctionIds from `export_function` for definitions and
-   resolved re-exports, preserving its checks, mutations and handled/not-handled
-   distinction. Add identity/error regressions without changing graph publication.
-2. Connect successful export statements through the existing bounded completed
-   function endpoint validator. Test module/statement owners, nested definitions,
-   re-exports, Never boundaries, export errors and publication limits. Preserve
-   forward groups, type-only forms and all existing capability gates.
-3. Add independently useful source conformance for exported definitions/re-exports
-   and errors, refresh the coverage map and guide, and run compiler, strict-gap,
-   preservation and documentation checks before the final handoff.
+| Reviewable slice | Commit |
+| --- | --- |
+| Return exact successful exported FunctionIds without graph changes | `6fce856` |
+| Connect successful export statements with focused graph regressions | `447c0e4` |
+| Pin module initialization, chained re-exports and export errors | `3506f03` |
 
-Inspection confirms `export_function` returns a boolean only after signature,
-scope, duplicate and declaration checks plus module-value insertion. Ordinary
-definitions already return exact IDs; re-export lookup retains the original ID.
-Both successful export forms have completed independent bodies and can reuse
-`function_declaration_endpoint`; self/forward alias allowances are unnecessary.
-Forward groups are checked separately and retain synthetic barriers. The tree
-starts clean at `993c991`. Exact-ID capture passes three new export groups and
-all 18 matching signature groups; `/tmp/meowy-export-identities.log` and
-`/tmp/meowy-export-signatures.log`. Nested definitions and chained re-exports
-retain actual IDs, unhandled forms stay undeclared, and ordinary export errors and
-budget exhaustion remain intact; committed as `6fce856`.
-Successful export statements now reuse the bounded completed-function validator.
-All five new endpoint groups pass; `/tmp/meowy-export-endpoints.log`. They cover
-nested/independent bodies, imported IDs, module sequences, Never calls, retained
-forward/type barriers, failed export publication and atomic identity/work/edge
-limits. All 1912 library tests and all-target Clippy pass;
-`/tmp/meowy-export-endpoints-lib.log`, `/tmp/meowy-export-endpoints-clippy.log`.
-No outstanding test failures remain; integration is committed as `447c0e4`.
-Three required conformance cases now cover module startup around definitions and
-chained re-exports (including an unused Never body), duplicate exports and missing
-public signatures. All ten compiler checks pass: 1912 library/913 native tests,
-32 tooling and 30 harness groups, formatting, Clippy, build and conformance;
-`/tmp/meowy-function-exports-gate.log`. The 97 cases report 78 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. All 94 previous case records,
-111 source assets, 37 reference files and capability exceptions are preserved;
-`/tmp/meowy-function-exports-preservation.log`. Strict mode correctly exits 1 only
-for those gaps; `/tmp/meowy-function-exports-strict.log`. The final coverage/guide
-handoff remains to finish.
+`export_function` returns the exact declared/resolved ID after signature, scope,
+duplicate-export, declaration and module registration checks. Nested function
+allocation cannot change the returned identity; re-exports preserve imported IDs.
+Unhandled forms return None without gaining completion. Successful function export
+statements reuse `function_declaration_endpoint`, validating statement/module owner,
+completed function/body identity and atomic work/edge budgets. Bodies remain
+independent; unused Never bodies do not block declaration completion and Never
+calls still lack continuation. Export errors publish no endpoint.
+
+Three identity groups and five graph groups cover definitions, nested allocation,
+chained/imported aliases, independent module sequences, errors, unhandled forms,
+Never calls and exact publication limits. Forward groups and type/meta exports
+retain their existing barriers. Required roots, export errors/capability gates,
+module initialization, callee effects and proof outcomes are unchanged.
+
+All ten compiler checks pass: 1912 library/913 native tests, 32 tooling and 30
+harness groups, formatting, Clippy, build, metadata/coverage and conformance;
+`/tmp/meowy-function-exports-gate.log`. The 97 source cases report 78 passes,
+19 unchanged pinned gaps and zero failures in debug/release. Three new cases pin
+startup around exported definitions/re-exports, an unused Never function, duplicate
+exports and missing public signatures; the existing signature-mismatch case stays
+required. Strict mode correctly exits 1 only for known gaps;
+`/tmp/meowy-function-exports-strict.log`. All 94 prior case records, 111 source assets,
+37 reference files and capability exceptions are preserved;
+`/tmp/meowy-function-exports-preservation.log`. All four final documentation checks
+pass; `/tmp/meowy-function-exports-docs.log`.
+No outstanding compiler/test failures remain. AGENTS already covers the source
+conformance/evidence requirements; no rule change is needed.
+
+Next inspect `StmtKind::TypeAlias` in `src/check/statements.rs` and
+`declare_type`/`declare_source_type` in `src/check/exports.rs`. This successful
+form still erases its statement without a completion endpoint. Restrict any new
+link to completed type-alias checking, after required construction, scope/export
+validation and duplicate-name checks. Preserve type-root accounting, diagnostics,
+unsupported forms and statement owners; do not classify all Value::Type/meta or
+required-only evaluation as runtime completion. Plan independently reviewable
+classification/publication slices as needed, test local/exported aliases, computed
+targets, errors and budgets, add source coverage, then run compiler/strict-gap gates.
+Forward groups, other erased forms, callee summaries and proof propagation/outcomes
+remain separate; never add a generic empty-HIR bypass.
 
 ## Documentation conventions and layout
 
@@ -1720,13 +1721,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Ordinary definitions and selected identity endpoints pass all ten compiler
-  checks: 1904 library/913 native tests, 32 tooling and 30 harness groups.
-  Conformance: 75 passed, 19 pinned gaps, zero failures in debug/release;
-  `/tmp/meowy-identity-bindings-gate.log`. Strict mode rejects those gaps;
-  `/tmp/meowy-identity-bindings-strict.log`. Prior fixtures/expectations and reference
-  contracts are unchanged; `/tmp/meowy-identity-preservation.log`. All four final
-  documentation checks pass; `/tmp/meowy-identity-bindings-docs.log`.
+- Function export completion passes all ten compiler checks: 1912 library/913
+  native tests, 32 tooling and 30 harness groups. Conformance: 78 passed, 19 pinned
+  gaps, zero failures in debug/release; `/tmp/meowy-function-exports-gate.log`.
+  Strict mode rejects those gaps; `/tmp/meowy-function-exports-strict.log`.
+  Prior fixtures/expectations and reference contracts are unchanged;
+  `/tmp/meowy-function-exports-preservation.log`. All four final documentation checks
+  pass; `/tmp/meowy-function-exports-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2284,11 +2285,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    endpoints (`b2dd92c`, `8509cc9`), without entering their bodies or treating a
    Never body as a non-completing declaration. Selected immutable function/foundation
    identities now have bounded completion (`29db896`, `6387133`), including self/forward
-   aliases; source conformance (`cabfb71`) and the compiler gate pass. Next inspect
-   exported definitions/re-exports in `exports.rs` and `statements.rs`: capture exact
-   IDs, then publish after all export checks, preserving module initialization,
-   diagnostics, owners and independent bodies. Test errors/budgets and extend source
-   coverage before the compiler gate. Forward/type-only forms, callee summaries,
+   aliases; source conformance (`cabfb71`) and the compiler gate pass. Exported
+   definitions/re-exports now return exact IDs (`6fce856`) and publish completion
+   after all export checks (`447c0e4`), preserving module startup and independent
+   bodies. Source conformance (`3506f03`) and the compiler gate pass. Next inspect
+   `StmtKind::TypeAlias` in `statements.rs` and its declaration helpers in `exports.rs`.
+   Keep required construction, duplicate/scope/export errors and budgets before any
+   completion link; test local/exported and computed targets, add source coverage,
+   then run the compiler gate. Other erased forms, forward groups, callee summaries,
    propagation and proof outcomes remain separate; no generic empty-HIR bypass.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability

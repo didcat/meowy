@@ -375,6 +375,15 @@ is idempotent, while conflicting identities or exhausted budgets publish no new
 endpoint. Definitions do not traverse or execute their bodies: an unused `never`
 body does not stop declaration completion, while a call returning `never` still
 lacks normal continuation. Program-entry store walks now cross these definitions.
+Module function definitions and typed re-exports retain the same completion edge
+after all signature, scope, duplicate-export and declaration checks succeed.
+The export helper returns the exact declared or resolved function ID after module
+registration, including definitions that allocate nested functions and aliases
+of imported functions. The existing completed-function validator preserves the
+statement/module owner and independent body identity, with the same atomic work
+and edge limits. Export completion does not enter the body, imply a call returns,
+or change module initialization order. Failed exports publish no completion edge;
+public-signature, type, duplicate and capability diagnostics remain unchanged.
 Immutable, unannotated bindings of resolved function items and the current
 foundation modules/callable items also retain bounded statement-completion edges.
 Classification uses the resolved value, which is declared unchanged; publication
@@ -384,8 +393,8 @@ including self/forward aliases. They never traverse the target body or imply tha
 a later call returns. Foundation classification includes module aliases,
 print/panic, string-copy, copy-query and bit-operation identities; it does not
 admit execution of unsupported calls or proof queries.
-Forward groups retain explicit barriers. Exported definitions, type/meta/static,
-record, file-module, scoped-control and pending-descriptor bindings retain their
+Forward groups retain explicit barriers. Type/meta/static, record, file-module,
+scoped-control and pending-descriptor bindings retain their
 existing metadata. Heap handles keep their separate runtime value path. There is
 no general bypass for empty HIR statements. Completion edges are structural
 connectivity, not evidence that a runtime path is reached.

@@ -7,28 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Ordinary function definitions and selected immutable function/foundation identity
-bindings now retain bounded statement-completion graph links. Exact function IDs,
-self/forward aliases and lexical resolution are preserved. Publication follows
-successful declaration; function bodies stay independent and calls retain their
-return/effect gates. Type/meta/static, file-module and forward-group boundaries
-remain explicit. Implementation slices: `29db896`, `6387133`; source coverage:
-`cabfb71`.
+Module function definitions and typed re-exports now retain bounded completion
+edges after successful export validation. Exact function IDs survive nested
+allocations and imported/chained aliases; module sequences continue independently
+of function bodies. Never-call, forward-group and type-only boundaries remain.
+Implementation slices: `6fce856`, `447c0e4`; source conformance: `3506f03`.
 
-The catalog has 94 cases: 75 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Four new fixtures pin self/forward execution, lexical
-shadowing and duplicate-name rejection. All previous cases/assets and reference
-contracts are unchanged. The [coverage inventory](docs/conformance/COVERAGE.md)
-tracks 37 reference files and 33 proof obligations with explicit remaining gaps.
-All ten compiler checks pass: 1904 library/913 native and 62 Python test groups;
-`/tmp/meowy-identity-bindings-gate.log`. Strict mode correctly rejects the known gaps.
+The catalog has 97 cases: 78 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Three new fixtures pin module initialization around
+exports, unused Never bodies, duplicate exports and required public signatures.
+All previous cases/assets and reference contracts are unchanged. The
+[coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
+33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
+1912 library/913 native and 62 Python test groups;
+`/tmp/meowy-function-exports-gate.log`. Strict mode correctly rejects the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect exported function definitions/re-exports in `check/exports.rs` and
-`check/statements.rs`, retaining exact identities and publishing completion only
-after all export checks succeed. Keep forward groups and type-only forms separate.
-The [compiler handoff](compiler/STATUS.md#current-immutable-identity-binding-completion)
-records the scope, evidence and required next validation.
+Next inspect explicit type-alias declarations in `compiler/src/check/statements.rs`
+and `compiler/src/check/exports.rs`. Add only form-specific completion after required
+construction and declaration/export checks; preserve required roots and diagnostics.
+The [compiler handoff](compiler/STATUS.md#current-exported-function-completion)
+records the scope, evidence and next validation requirements.
 
 ## Documentation conventions
 
@@ -1111,11 +1110,13 @@ execution was not part of this documentation edit.
    after successful checking, keeping function bodies independent and preserving
    Never-call/forward barriers. Selected immutable function/foundation identities
    now retain bounded completion after successful lexical declaration, including
-   self/forward aliases. Focused/source coverage and the compiler gate pass. Next
-   inspect exact exported function/re-export identities and post-validation completion
-   in `check/exports.rs` and `check/statements.rs`. Preserve export errors, module
-   initialization, independent bodies and forward/type-only boundaries; add focused
-   and source coverage before the full compiler gate. Proof outcomes stay gated.
+   self/forward aliases. Exported definitions and typed re-exports now retain exact
+   function identities and bounded completion after all export checks. Focused/source
+   coverage and the compiler gate pass. Next inspect explicit type-alias declarations
+   in `compiler/src/check/statements.rs` and `compiler/src/check/exports.rs`; preserve
+   required construction, scope/export errors and budgets before any completion link.
+   Add focused/source coverage and run the compiler gate. Other erased forms and
+   forward groups stay separate; proof outcomes remain gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
