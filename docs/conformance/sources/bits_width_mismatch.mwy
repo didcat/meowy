@@ -1,0 +1,4 @@
+b:@"bits"
+x<uint8>:1
+y<uint16>:2
+z:b.or(x,y)

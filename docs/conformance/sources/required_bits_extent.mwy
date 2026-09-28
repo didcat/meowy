@@ -1,0 +1,5 @@
+b:@"bits"
+d:@"debug"
+<T>:<int32[b.or(1,2)]>
+xs<T>:[1,2,3]
+d.print(xs.size())

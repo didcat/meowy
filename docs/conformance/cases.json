@@ -287,6 +287,66 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "bits_width_order",
+      "phase": "run",
+      "source": "sources/bits_width_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\n127\n1\n2\n3\n"
+      },
+      "reference": "../reference/stdlib/text-and-data.md#numeric-conversions-and-shifts"
+    },
+    {
+      "id": "bits_arity",
+      "phase": "check",
+      "source": "sources/bits_arity.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/stdlib/text-and-data.md#numeric-conversions-and-shifts"
+    },
+    {
+      "id": "bits_width_mismatch",
+      "phase": "check",
+      "source": "sources/bits_width_mismatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E213"
+      },
+      "reference": "../reference/stdlib/text-and-data.md#numeric-conversions-and-shifts"
+    },
+    {
+      "id": "bits_literal_range",
+      "phase": "check",
+      "source": "sources/bits_literal_range.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E216"
+      },
+      "reference": "../reference/stdlib/text-and-data.md#numeric-conversions-and-shifts"
+    },
+    {
+      "id": "retired_bitwise_operator",
+      "phase": "check",
+      "source": "sources/retired_bitwise_operator.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E004"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "required_bits_extent",
+      "phase": "run",
+      "source": "sources/required_bits_extent.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
     }
   ]
 }

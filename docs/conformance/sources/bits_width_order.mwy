@@ -1,0 +1,9 @@
+b:@"bits"
+d:@"debug"
+mark<int32>:(n<int32>){d.print(n);->n}
+flip:b.not
+x<uint8>:flip(0)
+y<int8>:flip(-128)
+d.print(x)
+d.print(y)
+d.print(mark(1).(b.or,mark(2)))

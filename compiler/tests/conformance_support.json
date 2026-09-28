@@ -9,6 +9,7 @@
     "ffi_void": "module import `@\"ffi\"` is not supported by this bootstrap compiler",
     "named_owner_borrow": "value arguments in generic calls is not supported by this bootstrap compiler",
     "pure_item": "generic type binders is not supported by this bootstrap compiler",
+    "required_bits_extent": "required evaluation of list extent expressions is not supported by this bootstrap compiler",
     "runtime_extent": "type-producing function signatures is not supported by this bootstrap compiler",
     "slice_equality": "indirect calls and callable fields is not supported by this bootstrap compiler",
     "temporary_borrow": "value arguments in generic calls is not supported by this bootstrap compiler",

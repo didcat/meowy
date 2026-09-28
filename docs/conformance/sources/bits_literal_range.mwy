@@ -1,0 +1,2 @@
+b:@"bits"
+x<uint8>:b.and(256,0)
