@@ -35,20 +35,32 @@ pub(crate) fn block_sequences_retain_erased_statements_and_exact_source_order() 
 }
 
 #[test]
-pub(crate) fn block_sequences_keep_forward_barriers_nested_targets_and_functions_explicit() {
+pub(crate) fn block_sequences_keep_forward_groups_nested_targets_and_functions_explicit() {
     let source = "a:1;f<()->int32>;f<int32>:(){->1};b:2;c:3";
     crate::compile(source).unwrap();
     let (checker, body) = check(source);
     let sequence = &checker.sequences[&Source::Block(body.id)];
     assert_eq!(sequence.items.len(), 4);
-    assert!(sequence.items[1].is_none());
+    assert!(sequence.items[1].is_some());
     assert_eq!(
         sequence.edges,
-        [Edge::new(
-            Port::Normal(sequence.items[2].unwrap()),
-            Port::Entry(sequence.items[3].unwrap()),
-            Route::Next
-        )]
+        [
+            Edge::new(
+                Port::Normal(sequence.items[0].unwrap()),
+                Port::Entry(sequence.items[1].unwrap()),
+                Route::Next
+            ),
+            Edge::new(
+                Port::Normal(sequence.items[1].unwrap()),
+                Port::Entry(sequence.items[2].unwrap()),
+                Route::Next
+            ),
+            Edge::new(
+                Port::Normal(sequence.items[2].unwrap()),
+                Port::Entry(sequence.items[3].unwrap()),
+                Route::Next
+            )
+        ]
     );
     let (checker, _) =
         check("flag:=false;'outer{before:1;|flag|'outer.restart();after:2};f:(){a:1;b:2}");

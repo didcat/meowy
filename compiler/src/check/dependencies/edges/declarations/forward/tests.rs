@@ -1,5 +1,88 @@
 use super::*;
 
+#[test]
+pub(crate) fn forward_group_sequences_cross_successful_groups_without_entering_bodies() {
+    for (tail, reached) in [("x:1", true), ("f();x:1", false)] {
+        let source = format!(
+            "f<()->never>;g<()->int32>;g<int32>:(){{inner<int32>:(){{->2}};->inner()}};f<never>:(){{'loop{{'loop.restart()}}}};{tail}"
+        );
+        crate::compile(&source).unwrap();
+        let (mut checker, body) = super::super::tests::checked(&source);
+        let items = checker.sequences[&SequenceSource::Block(body.id)]
+            .items
+            .clone();
+        let group = items[0].unwrap();
+        let graph = checker.forward_index(Span::default()).unwrap();
+        let walk = graph
+            .walk(
+                Port::BlockEntry(body.id),
+                &mut checker.flow,
+                Span::default(),
+            )
+            .unwrap();
+        assert!(walk.ports.contains(&Port::Normal(group)));
+        assert_eq!(
+            walk.ports
+                .contains(&Port::Operation(items.last().unwrap().unwrap())),
+            reached
+        );
+        for function in checker.functions.iter().flatten() {
+            assert!(!walk.ports.contains(&Port::BlockEntry(function.body.id)));
+        }
+    }
+}
+
+#[test]
+pub(crate) fn forward_group_sequences_keep_nested_function_owners_and_unknown_prefixes() {
+    let source = "outer<int32>:(){g<()->never>;g<never>:(){'loop{'loop.restart()}};->1;x:2};y:3";
+    crate::compile(source).unwrap();
+    let (mut checker, _) = super::super::tests::checked(source);
+    let body = checker.functions[0].as_ref().unwrap().body.id;
+    let items = checker.sequences[&SequenceSource::Block(body)]
+        .items
+        .clone();
+    let group = items[0].unwrap();
+    assert_eq!(checker.points[group].owner, checker.bodies[&body].owner);
+    let graph = checker.forward_index(Span::default()).unwrap();
+    let walk = graph
+        .walk(Port::BlockEntry(body), &mut checker.flow, Span::default())
+        .unwrap();
+    assert!(
+        walk.ports
+            .contains(&Port::Operation(items.last().unwrap().unwrap()))
+    );
+    let old = checker
+        .sequences
+        .remove(&SequenceSource::Block(body))
+        .unwrap();
+    checker.owner = checker.bodies[&body].owner;
+    checker.sequence_edges -= old.edges.len();
+    let old = checker
+        .endpoints
+        .remove(&SequenceSource::Block(body))
+        .unwrap();
+    checker.endpoint_edges -= old.len();
+    checker
+        .sequence(
+            SequenceSource::Block(body),
+            vec![None, Some(group)],
+            Span::default(),
+        )
+        .unwrap();
+    assert!(
+        checker.sequences[&SequenceSource::Block(body)]
+            .edges
+            .is_empty()
+    );
+    let block = checker.functions[0].as_ref().unwrap().body.clone();
+    checker.block_endpoints(&block, Span::default()).unwrap();
+    let graph = checker.forward_index(Span::default()).unwrap();
+    let walk = graph
+        .walk(Port::BlockEntry(body), &mut checker.flow, Span::default())
+        .unwrap();
+    assert!(!walk.ports.contains(&Port::Entry(group)));
+}
+
 pub(super) fn checked() -> (Checker, PointId, Vec<crate::hir::FunctionId>) {
     let ast = crate::parser::parse("f<()->never>;g<()->int32>;g<int32>:(){inner<int32>:(){->1};->inner()};f<never>:(){'loop{'loop.restart()}}").unwrap();
     let mut checker = Checker::new();
@@ -55,6 +138,8 @@ pub(crate) fn forward_group_endpoints_preserve_failed_group_checks() {
         let mut checker = Checker::new();
         let ast = crate::parser::parse(source).unwrap();
         assert_eq!(checker.block(&ast, None, None).unwrap_err().code, code);
+        assert!(checker.site.is_none());
+        assert!(checker.statement.is_empty());
         for (id, point) in checker.points.iter().enumerate() {
             if point.owner == 0 && point.kind == PointKind::Stmt && !point.complete {
                 assert!(!checker.endpoints.contains_key(&SequenceSource::Stmt(id)));

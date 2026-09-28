@@ -66,11 +66,14 @@ pub(crate) fn dispatch_stages_preserve_empty_forward_and_stopped_prefixes() {
     crate::compile(source).unwrap();
     let (checker, _) = check(source);
     let (&id, op) = checker.dispatch_ops.first_key_value().unwrap();
-    assert_eq!(
-        checker.sequences[&SequenceSource::Block(op.block)].items[1],
-        None
-    );
-    assert!(!op.edges.iter().any(|edge| edge.from == Port::Operation(id)));
+    let sequence = &checker.sequences[&SequenceSource::Block(op.block)];
+    assert_eq!(sequence.items[0], None);
+    let group = sequence.items[1].unwrap();
+    assert!(op.edges.contains(&Edge::new(
+        Port::Operation(id),
+        Port::Entry(group),
+        Route::Next
+    )));
     for (tail, stopped) in [("stop().{}", true), ("3.{stop()}", false)] {
         let source = format!("d:@\"debug\";stop<never>:(){{d.panic(\"stop\")}};v:{tail}");
         crate::compile(&source).unwrap();

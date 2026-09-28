@@ -94,7 +94,7 @@ pub(crate) fn export_endpoints_reuse_imported_ids_with_independent_module_sequen
 }
 
 #[test]
-pub(crate) fn export_endpoints_keep_never_calls_and_forward_barriers() {
+pub(crate) fn export_endpoints_keep_never_calls_and_cross_forward_groups() {
     for (tail, present) in [("x:1", true), ("alias();x:1", false)] {
         let source = format!(
             "->stop<never>:(){{'again{{'again.restart()}}}};->alias<()->never>:stop;{tail}"
@@ -120,7 +120,7 @@ pub(crate) fn export_endpoints_keep_never_calls_and_forward_barriers() {
         ("'out{finish:'out.leave};x:1", true),
         (
             "f<()->int32>;f<int32>:(){->1};->alias<()->int32>:f;x:1",
-            false,
+            true,
         ),
     ] {
         crate::compile(source).unwrap();

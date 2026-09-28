@@ -12,6 +12,7 @@ use std::collections::BTreeMap;
 pub(crate) struct Forward {
     pub(crate) end: usize,
     pub(crate) functions: Vec<hir::FunctionId>,
+    pub(crate) site: Option<hir::StatementId>,
 }
 
 impl Forward {
@@ -44,11 +45,30 @@ impl Checker {
             .ok_or_else(|| {
                 Diagnostic::unsupported("invalid forward group source", Span::default())
             })?;
-        self.with_point_id(
+        if self.statements >= 65_536 || !self.flow.spend(1) {
+            return Err(Diagnostic::unsupported(
+                "statement lifetime budget exhausted",
+                first.span,
+            ));
+        }
+        let id = self.statements;
+        self.statements += 1;
+        self.track_site(id, first.span)?;
+        let site = self.site.replace(id);
+        self.statement.push((id, false));
+        let result = self.with_point_id(
             super::dependencies::PointKind::Stmt,
             first.span,
             |checker| checker.forward(stmts, start),
-        )
+        );
+        let (_, used) = self.statement.pop().expect("forward statement lifetime");
+        self.site = site;
+        let (point, mut group) = result?;
+        let source = self.sites.get_mut(&id).expect("forward statement");
+        source.complete = true;
+        source.point = Some(point);
+        group.site = used.then_some(id);
+        Ok((point, group))
     }
 
     pub(crate) fn declare_function(
@@ -97,6 +117,7 @@ impl Checker {
         let mut group = Forward {
             end: start,
             functions: Vec::new(),
+            site: None,
         };
         while let Some(ast::Stmt {
             kind: StmtKind::Forward { name, ty },

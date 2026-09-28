@@ -71,14 +71,19 @@ pub(crate) fn composed_dispatch_preserves_call_order_empty_and_opaque_body_bound
         crate::compile(source).unwrap();
         let (checker, _) = check(source);
         let (&id, op) = checker.dispatch_ops.first_key_value().unwrap();
-        assert_eq!(
-            op.edges.iter().any(|edge| edge.from == Port::Operation(id)),
-            empty
-        );
+        assert!(op.edges.iter().any(|edge| edge.from == Port::Operation(id)));
         if empty {
             assert!(op.edges.contains(&Edge::new(
                 Port::Operation(id),
                 Port::BlockNormal(op.block),
+                Route::Next
+            )));
+        } else {
+            let sequence = &checker.sequences[&SequenceSource::Block(op.block)];
+            assert_eq!(sequence.items[0], None);
+            assert!(op.edges.contains(&Edge::new(
+                Port::Operation(id),
+                Port::Entry(sequence.items[1].unwrap()),
                 Route::Next
             )));
         }

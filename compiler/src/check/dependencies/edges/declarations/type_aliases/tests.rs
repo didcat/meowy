@@ -55,13 +55,16 @@ pub(crate) fn type_alias_endpoints_cross_local_exported_and_computed_declaration
 
 #[test]
 pub(crate) fn type_alias_endpoints_keep_other_erased_forms_and_stopped_paths() {
-    for source in [
-        "f<()->int32>;f<int32>:(){->1};<T>:<int32>;x:1",
-        "stop<never>:(){'again{'again.restart()}};stop();<T>:<int32>;x:1",
+    for (source, reached) in [
+        ("f<()->int32>;f<int32>:(){->1};<T>:<int32>;x:1", true),
+        (
+            "stop<never>:(){'again{'again.restart()}};stop();<T>:<int32>;x:1",
+            false,
+        ),
     ] {
         crate::compile(source).unwrap();
         let (mut checker, body) = checked(source);
-        assert!(!reaches_tail(&mut checker, &body), "{source}");
+        assert_eq!(reaches_tail(&mut checker, &body), reached, "{source}");
     }
 }
 

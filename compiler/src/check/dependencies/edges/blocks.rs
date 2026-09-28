@@ -167,8 +167,11 @@ mod tests {
     }
 
     #[test]
-    pub(crate) fn block_endpoints_do_not_skip_forward_or_receiver_prefixes() {
-        for source in ["f<()->int32>;f<int32>:(){->1};x:2", "x:3.{->$}"] {
+    pub(crate) fn block_endpoints_connect_forward_groups_and_keep_receiver_prefixes() {
+        for (source, opaque) in [
+            ("f<()->int32>;f<int32>:(){->1};x:2", false),
+            ("x:3.{->$}", true),
+        ] {
             crate::compile(source).unwrap();
             let (checker, _) = check(source);
             let mut found = false;
@@ -185,7 +188,7 @@ mod tests {
                     );
                 }
             }
-            assert!(found);
+            assert_eq!(found, opaque);
         }
     }
 

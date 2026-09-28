@@ -47,7 +47,13 @@ impl Checker {
                 let (point, group) = self.forward_point(&block.stmts, index)?;
                 self.forward_group_endpoint(point, &group.functions, block.stmts[index].span)?;
                 index = group.end;
-                points.push(None);
+                points.push(Some(point));
+                if let Some(id) = group.site {
+                    stmts.push(hir::Stmt::Statement {
+                        id,
+                        stmts: Vec::new(),
+                    });
+                }
             } else {
                 let (point, checked) = self.checked_stmt(&block.stmts[index])?;
                 points.push(Some(point));

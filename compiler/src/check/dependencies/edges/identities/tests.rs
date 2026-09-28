@@ -63,10 +63,10 @@ pub(crate) fn identity_endpoints_admit_self_and_reserved_forward_function_items(
 }
 
 #[test]
-pub(crate) fn identity_endpoints_cross_control_aliases_and_keep_forward_barriers() {
+pub(crate) fn identity_endpoints_cross_control_aliases_and_forward_groups() {
     for (source, reached) in [
         ("'out{finish:'out.leave;x:2}", true),
-        ("f<()->int32>;f<int32>:(){->1};x:2", false),
+        ("f<()->int32>;f<int32>:(){->1};x:2", true),
     ] {
         crate::compile(source).unwrap();
         let (mut checker, body) = checked(source);

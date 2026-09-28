@@ -174,9 +174,15 @@ pub(crate) fn static_binding_endpoints_preserve_errors_and_stopped_boundaries() 
         }
         assert!(checker.type_work.is_none());
     }
-    for source in [
-        "stop<never>:(){'loop{'loop.restart()}};stop();p:@\"proof\";revision:p.revision;x:1",
-        "f<()->int32>;f<int32>:(){->1};p:@\"proof\";revision:p.revision;x:1",
+    for (source, reached) in [
+        (
+            "stop<never>:(){'loop{'loop.restart()}};stop();p:@\"proof\";revision:p.revision;x:1",
+            false,
+        ),
+        (
+            "f<()->int32>;f<int32>:(){->1};p:@\"proof\";revision:p.revision;x:1",
+            true,
+        ),
     ] {
         crate::compile(source).unwrap();
         let (mut checker, body) = checked(source);
@@ -193,7 +199,11 @@ pub(crate) fn static_binding_endpoints_preserve_errors_and_stopped_boundaries() 
                 Span::default(),
             )
             .unwrap();
-        assert!(!walk.ports.contains(&Port::Operation(last)), "{source}");
+        assert_eq!(
+            walk.ports.contains(&Port::Operation(last)),
+            reached,
+            "{source}"
+        );
     }
     assert_eq!(
         crate::compile("p:@\"proof\";revision:p.revision;r:p.can_copy<uint32>()").unwrap_err()[0]

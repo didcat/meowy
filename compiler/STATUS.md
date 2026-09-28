@@ -384,7 +384,20 @@ endpoint groups; `/tmp/meowy-forward-endpoints.log`. Definitions are validated
 as a whole before one completion edge is published. Block sequences still use
 None. All 1957 library tests and all-target Clippy pass;
 `/tmp/meowy-forward-endpoints-lib.log`, `/tmp/meowy-forward-endpoints-clippy.log`.
-No outstanding test failures remain; sequence integration is next.
+Metadata validation is committed as `a687419`. Initial sequence integration found
+that block sequences require complete statement sites, not only complete points.
+Forward checking now owns a checked first-signature site and retains an empty HIR
+lifetime wrapper when required; sequence validation is not weakened. The remaining
+test-only failure was a nested-owner fixture mutating a sequence under the outer
+owner; it now uses the actual body owner. All 1960 library tests and all-target
+Clippy pass; `/tmp/meowy-forward-sequences-lib.log` and
+`/tmp/meowy-forward-sequences-clippy.log`. No outstanding test failures remain.
+The sequence integration needs 14 files: one shared block change updates forward,
+sequence, block, ordinary/composed dispatch and alias/declaration regressions that
+all asserted the former None boundary. Split review separated reserved-ID capture
+and endpoint validation into prior commits. These expectations must change together
+with wiring to keep this commit buildable; moving tests solely to meet eight files
+would hide that dependency. Other None-prefix checks remain explicit.
 
 ## Documentation conventions and layout
 
