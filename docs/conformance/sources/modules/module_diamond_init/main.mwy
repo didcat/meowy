@@ -1,0 +1,5 @@
+d:@"debug"
+d.print("entry")
+a:@"./a.mwy"
+b:@"./b.mwy"
+d.print(a.n+b.n)

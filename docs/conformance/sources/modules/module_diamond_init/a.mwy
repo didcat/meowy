@@ -1,0 +1,4 @@
+d:@"debug"
+s:@"./shared.mwy"
+d.print("a")
+->n:s.n+1

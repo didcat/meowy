@@ -635,6 +635,21 @@
         "code": "E101"
       },
       "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "module_diamond_init",
+      "phase": "run",
+      "source": "sources/modules/module_diamond_init/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "shared\na\nb\nentry\n17\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_diamond_init/a.mwy",
+        "sources/modules/module_diamond_init/b.mwy",
+        "sources/modules/module_diamond_init/shared.mwy"
+      ]
     }
   ]
 }

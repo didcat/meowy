@@ -80,7 +80,11 @@ passes 22 harness and 29 tooling groups, including byte/layout preservation,
 undeclared-file exclusion, fresh/cleaned case directories, occupied-target rejection,
 missing-asset failure reporting and version-1 compatibility. The catalog is version 2;
 all 64 existing cases remain 45 passed/19 pinned gaps/0 failed in both profiles;
-`/tmp/meowy-companion-baseline.log`. Link checks pass. Next add module fixtures.
+`/tmp/meowy-companion-baseline.log`. Link checks pass. Runner integration is committed as `a22e003`. The first declared
+module bundle now proves diamond dependencies initialize once, before entry and in
+sibling import order. All 65 cases pass their gate: 46 required, 19 pinned gaps,
+zero failures in debug/release; `/tmp/meowy-modules-diamond.log`.
+Next add nested-resolution, export and rejection fixtures.
 
 ## Documentation conventions and layout
 

@@ -1,0 +1,3 @@
+d:@"debug"
+d.print("shared")
+->n:7
