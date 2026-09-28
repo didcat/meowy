@@ -447,7 +447,7 @@ emission does not complete initialization: tail effects precede materialization,
 and stopped/Never inputs have no path to the store or later modules. No empty-HIR
 bypass or unconditional completion is added; errors publish no outer storage
 operation and original privacy/export/initialization checks remain authoritative.
-Ordinary forward-function groups now retain the actual reserved FunctionIds and a
+Forward-function groups retain the actual reserved FunctionIds and a
 checked point/site anchored at the first source signature. IDs are captured before
 nested body checking can allocate more functions. The group finishes only after
 every definition succeeds; completed body/owner identities, reservation order and
@@ -456,9 +456,14 @@ site context is restored after checking, retaining an empty lifetime wrapper whe
 needed. Function bodies are independent; unused `never` functions do not prevent
 group completion, while actual Never calls still lack continuation.
 Block and ordinary/composed dispatch sequences use the checked group point. Real
-None prefixes remain explicit and are never skipped. Exported definitions inside
-forward groups remain a bootstrap gap: they currently receive E221 despite being
-allowed by the reference. That rejection is not counted as successful conformance.
+None prefixes remain explicit and are never skipped. Named immutable exported
+forward definitions at module top level fulfill the same reservations. Their public
+signature comes from the explicit forward header; an omitted definition result uses
+that signature, while explicit annotations must match. Ordinary exports still require
+their existing annotation. Scope, collision and budget checks remain authoritative.
+Exports publish only after every definition and documentation check succeeds;
+non-top-level forward exports remain gated. Documentation links resolve to exact
+peer definition locations in either order, preserving public/private visibility.
 Record values and pending descriptors retain their existing metadata.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not

@@ -305,99 +305,64 @@ pins tail order and failed partial results. The full gate below retains these ch
 
 ## Current forward-group completion
 
+Ordinary groups retain exact reservation IDs, checked first-signature points/sites,
+and bounded completion only after every definition succeeds (`82595c3`, `a687419`).
+Block and ordinary/composed dispatch sequences connect those points (`4940924`);
+reordered recursion, unused Never functions and rejection coverage is in `6791859`.
+Bodies keep independent owners; completion grants no callee purity or reachability.
+Other None prefixes remain explicit. Export support below completes the documented
+module-level definition forms without changing those graph boundaries.
+
+## Exported forward definitions
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Retain actual bounded reservation IDs and next AST index | `82595c3` |
-| Capture first-signature points and validate whole-group completion | `a687419` |
-| Connect checked sites through block/dispatch sequences | `4940924` |
-| Pin reordered recursion, unused Never groups and rejections | `6791859` |
+| Extract existing export checks with preserved diagnostic order | `054c9b4` |
+| Fulfill reservations, validate exports and publish whole groups | `9ee8cb6` |
+| Resolve peer documentation links to exact definition locations | `1f995e4` |
+| Cover imported recursion, re-exports, docs and initialization | `a8f8988` |
+| Pin signature, repetition, duplicate, partial and privacy errors | `25aa9e0` |
 
-Ordinary forward groups capture actual FunctionIds during reservation, before nested
-body checking can allocate additional functions. A checked point/site is anchored
-at the first source signature and completes only after every definition succeeds.
-All body/owner identities, reservation order and work/edge limits are checked before
-one Entry-to-Normal edge is published. Site/statement context restores on failure;
-any required empty lifetime wrapper is retained. Definitions remain independently
-owned bodies; group completion grants no callee purity, return or runtime-reachability
-facts. Unused Never functions do not block declarations; actual Never calls still stop.
+Named immutable exported definitions at module top level reuse reserved FunctionIds,
+including reverse-order definitions and nested function allocations. The explicit
+forward header supplies the public signature, including a result omitted from the
+definition. Explicit definition annotations must match. Ordinary exports retain
+their existing annotation rule. Scope, duplicate, type, capture and budget checks
+remain in force; non-top-level forward exports still report B001. Exports are staged
+until every body and documentation check succeeds. Failed groups publish no exports
+or completed group point. Unused exported Never bodies do not stop declaration.
 
-Block and ordinary/composed dispatch sequences use that checked group point.
-Receiver initialization still precedes it, and real None prefixes are never skipped.
-Root/site, recursion/order/owner, error and exact budget regressions pass. The shared
-sequence integration required 14 files because previously independent block,
-dispatch, sequence and alias/declaration tests all asserted the same former None
-boundary. ID capture and endpoint validation were split first; the one wiring change
-and its dependent expectations had to move together to preserve a passing commit.
+Documentation links to peers resolve to their definition source locations in either
+order, including later public definitions; private targets still fail E802. The
+lookahead is bounded and grants no execution/initialization facts. The original
+public-peer rejection was reproduced before fixing it. Required source coverage
+checks imported mutual recursion, typed re-exports, initialization once through two
+paths, peer docs, mixed public/private groups and unused exported Never functions.
+Five rejection cases pin signature mismatch, repeated definitions, duplicate exports,
+partial groups and imported private functions.
 
-All ten compiler checks pass: 1960 library/913 native tests, 32 tooling and 30 harness
-groups, formatting, Clippy, build, metadata/coverage and conformance;
-`/tmp/meowy-forward-groups-gate.log`. The 119 cases report 100 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. Four new cases pin reversed-definition
-mutual recursion, nested/dispatch completion with unused Never functions, signature
-mismatch and partial groups. Strict mode exits 1 only for known gaps;
-`/tmp/meowy-forward-groups-strict.log`. All 115 prior case records, 143 source assets,
-37 reference files and capability exceptions are preserved;
-`/tmp/meowy-forward-groups-preservation.log`. No outstanding failures remain in the
-selected tests. All four final documentation checks pass;
-`/tmp/meowy-forward-groups-docs.log`. AGENTS already covers the required
-conformance/evidence workflow; no rule change is needed.
-Unrelated current work is under `docs/programs/build/` and `docs/programs/hey/`;
-the earlier `.gitignore`/`hey.mwy` edits changed externally and were not included.
+All ten compiler checks pass: 1967 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance;
+`/tmp/meowy-forward-export-gate.log`. The 125 cases report 106 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those known gaps (`/tmp/meowy-forward-export-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-forward-export-docs.log`); no selected check
+has an outstanding failure. Preservation against `2ad0c19` confirms all 119 prior
+case records, 147 source assets, 37 reference files and capability exceptions are
+unchanged (`/tmp/meowy-forward-export-preservation.log`). AGENTS already requires
+this source coverage, evidence mapping and capability distinction; no rule update
+is needed. Unrelated `docs/programs/hey/` work is preserved.
 
-## Exported forward definitions in progress
-
-The reference permits `f<()->int32>;->f<int32>:(){->1}`, but the current group
-matcher rejects the export with E221 (`/tmp/meowy-forward-export-probe.log`).
-This is an acceptance gap, separate from the 19 pinned B001 cases.
-
-Dependency-ordered commit plan:
-
-1. Extract existing function-export validation without changing ordinary export
-   behavior; retain its diagnostic order and budget checks.
-2. Admit named immutable export definitions in forward groups, reuse reserved IDs,
-   validate export scope/collisions and publish exports only after every definition
-   succeeds. Add focused signature, identity, failure and documentation regressions.
-3. Resolve documentation links to later group definitions using their source
-   identities, preserving public/private checks and bounded analysis.
-4. Add required multi-file execution coverage and its evidence inventory; separately
-   add rejection scenarios. Run compiler/strict gates and fixture preservation checks.
-5. Update the foundation guide and root/compiler handoffs with results and remaining
-   limits; run the final documentation checks.
-
-Slice 1 (`054c9b4`) preserves ordinary export validation order. Slice 2 now admits
-named immutable exported definitions, checks scope/collisions and stages exports
-until every definition succeeds. Exact reserved IDs and group completion remain
-unchanged. Five focused checker groups and cross-file native execution in both
-profiles pass (`/tmp/meowy-forward-export-focused.log`), including partial-group
-failure, exact work limit, inferred result, documentation and typed re-exporting.
-All 1965 library tests pass (`/tmp/meowy-forward-export-library.log`).
-Slice 3 resolves peer links through exact definition source locations before body
-checking, with bounded documentation work. The new regression first reproduced
-E802 on valid public peers (`/tmp/meowy-forward-export-docs-before.log`). Both
-orders now pass, private peer links still fail, and doc errors publish no exports.
-All 1967 library tests pass (`/tmp/meowy-forward-export-docs-library.log`).
-The required `forward_exports` case passes in debug/release using a fresh CLI
-(`/tmp/meowy-forward-export-cases.log`). It covers reverse-order recursion, mixed
-private/public definitions, an unused exported Never function, peer documentation,
-typed re-exports and once-only initialization through two import paths. Catalog and
-37-document coverage validation pass; the catalog is now 120 cases. The syntax
-inventory no longer claims exports are rejected. Five independent rejection cases
-now pin mismatched signatures, repeated definitions, duplicate exports, unfinished
-groups and imported private functions. All six new cases pass in both profiles;
-125 catalog entries and coverage metadata validate. The compiler gate is running
-(`/tmp/meowy-forward-export-gate.log`). Preservation against `2ad0c19` confirms
-all 119 prior case records, 147 source assets, 37 reference files and exact B001
-exceptions are unchanged (`/tmp/meowy-forward-export-preservation.log`). Next finish
-compiler/strict validation and update the handoffs; no case is being waived.
-
-The explicit forward header supplies the public signature, including the result
-when omitted from the definition. Explicit definition annotations must match it.
-Ordinary exported functions still require their existing explicit annotation.
-Generic/capturing groups, record/pending values, callee summaries, backedge
-propagation and proof outcomes remain separate. Preserve unrelated
-`docs/programs/hey/` work; the earlier `docs/programs/build/` changed externally.
+Next audit erased record-valued aliases in `src/check/statements.rs`,
+`src/check/dependencies/edges/identities.rs` and `src/check/inputs/`: trace their
+actual input identity and owner/check boundaries before adding bounded completion.
+Record a dependency-ordered plan and keep focused graph/required-read regressions
+with the implementation; add required source coverage and run the compiler gate.
+Pending descriptors, generic/capturing groups, other synthetic prefixes, callee
+summaries, backedge propagation and proof outcomes remain separate. Never bypass
+arbitrary None entries or treat normal ports as reachability evidence.
 
 ## Documentation conventions and layout
 
@@ -2448,12 +2413,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    groups now retain reservation IDs and checked first-signature sites, validate all
    definitions before completion, and connect block/dispatch sequences (`82595c3`,
    `a687419`, `4940924`). Source coverage (`6791859`) and the compiler gate pass.
-   Next implement exported forward definitions in `functions.rs`/`exports.rs`; they
-   currently reject with E221 despite reference acceptance. Fulfill existing IDs,
-   preserve signature/scope/export checks and group atomicity, add required accepted
-   source coverage and run the compiler gate. Other erased forms, synthetic prefixes,
-   callee summaries, backedge propagation and proof outcomes remain separate;
-   never bypass arbitrary None entries.
+   Exported forward definitions now fulfill existing IDs with validated module-level
+   scope/signatures, whole-group publication and peer documentation (`9ee8cb6`,
+   `1f995e4`). Required source coverage (`a8f8988`, `25aa9e0`) and the compiler gate
+   pass. Next audit erased record-valued aliases in `statements.rs`,
+   `dependencies/edges/identities.rs` and `inputs/`: retain actual input identities
+   and owner/check boundaries, add bounded completion with graph/required-read
+   regressions and source coverage, then run the compiler gate. Pending descriptors,
+   other synthetic prefixes, callee summaries, backedge propagation and proof
+   outcomes remain separate; never bypass arbitrary None entries.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

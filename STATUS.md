@@ -7,29 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Ordinary forward-function groups now retain exact reserved IDs, a checked
-first-signature point/site and bounded completion after every definition succeeds.
-Block and ordinary/composed dispatch sequences connect that point; unused Never
-bodies stay independent and actual Never calls still stop continuation. Other None
-prefixes remain explicit. Implementation: `82595c3`, `a687419`, `4940924`;
-source conformance: `6791859`.
+Forward-function groups now accept documented exported definitions at module top
+level. Definitions reuse reserved IDs, preserve exact signatures and export checks,
+and publish exports only after every body and documentation check succeeds.
+Peer documentation links resolve to definitions in either order while preserving
+privacy. The existing checked group points and completion boundaries remain intact.
+Implementation: `054c9b4`, `9ee8cb6`, `1f995e4`; source coverage: `a8f8988`, `25aa9e0`.
 
-The catalog has 119 cases: 100 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. New cases cover reordered recursion, nested/dispatch
-completion, unused Never functions, signature mismatch and incomplete groups.
-Prior assets and reference contracts are unchanged. The
-[coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
-33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1960 library/913 native and 62 Python test groups;
-`/tmp/meowy-forward-groups-gate.log`. Strict mode rejects only the known gaps.
+The catalog has 125 cases: 106 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Six new cases cover imported recursion, re-exports,
+initialization, peer docs, signature mismatch, repeated/duplicate definitions,
+partial groups and privacy. All prior case assets and reference contracts are
+unchanged. The [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference
+files and 33 proof obligations with explicit remaining gaps. All ten compiler checks
+pass: 1967 library/914 native and 62 Python test groups;
+`/tmp/meowy-forward-export-gate.log`. Strict mode rejects only the same 19 known
+gaps; all four final documentation checks pass (`/tmp/meowy-forward-export-docs.log`).
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next address exported forward definitions: the reference permits them, but the
-current group matcher accepts only ordinary Bind and rejects exports with E221.
-This verified gap is distinct from the 19 catalog capability exceptions. The
-[compiler handoff](compiler/STATUS.md#current-forward-group-completion) records the
-probe and next validation requirements. Unrelated work under `docs/programs/build/`
-and `docs/programs/hey/` remains outside this committed series.
+Next audit record-valued aliases for bounded completion while preserving input
+identity, required reads and owner/check boundaries. The
+[compiler handoff](compiler/STATUS.md#exported-forward-definitions) records the next
+files and validation requirements. Unrelated `docs/programs/hey/` work is preserved.
+AGENTS already covers the required conformance/evidence workflow; no update is needed.
 
 ## Documentation conventions
 
@@ -1133,11 +1133,13 @@ execution was not part of this documentation edit.
    gate pass. Ordinary forward groups now retain checked first-signature sites and
    exact reservation IDs, completing only after all definitions succeed. Block and
    dispatch sequences connect them without skipping other None prefixes. The compiler
-   gate and source coverage pass. Next handle documented exported forward definitions
-   in `compiler/src/check/functions.rs` and `compiler/src/check/exports.rs`: fulfill
-   existing reservations, preserve public-signature/export checks, add required source
-   coverage and run the compiler gate. Other erased forms and proof outcomes remain
-   separate.
+   gate and source coverage pass. Exported definitions now fulfill reserved IDs with
+   exact signature/export checks, atomic group publication and peer documentation.
+   Required source coverage and the compiler gate pass. Next audit record-valued
+   aliases in `compiler/src/check/statements.rs`, `dependencies/edges/identities.rs`
+   and `inputs/`: preserve actual input identity, required reads and owner/check
+   boundaries before adding bounded completion. Add focused/source coverage and
+   run the compiler gate. Pending descriptors and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
