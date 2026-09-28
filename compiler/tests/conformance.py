@@ -5,6 +5,7 @@ import pathlib
 import signal
 import subprocess
 import tempfile
+from conformance_fixtures import stage_case
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -95,15 +96,16 @@ def main():
     args = parser.parse_args()
     compiler = args.compiler.resolve()
     catalog = json.loads(CATALOG.read_text())
+    if catalog["version"] not in (1, 2) or (catalog["version"] == 1 and any("companions" in case for case in catalog["cases"])):
+        raise ValueError("unsupported conformance catalog format")
     gaps = load_support(catalog)
     passed = 0
     pending = 0
     failed = 0
-    with tempfile.TemporaryDirectory(prefix="meowy-conformance-") as temp:
-        for case in catalog["cases"]:
-            source = pathlib.Path(temp) / (case["id"] + ".mwy")
-            source.write_bytes((CATALOG.parent / case["source"]).read_bytes())
-            try:
+    for case in catalog["cases"]:
+        try:
+            with tempfile.TemporaryDirectory(prefix="meowy-conformance-") as temp:
+                source = stage_case(case, CATALOG.parent, pathlib.Path(temp))
                 gap = check_case(compiler, case, source, gaps.get(case["id"]))
                 if gap is not None:
                     pending += 1
@@ -111,9 +113,9 @@ def main():
                 else:
                     passed += 1
                     print(f"PASS {case['id']}")
-            except (AssertionError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
-                failed += 1
-                print(f"FAIL {case['id']}: {error}")
+        except (AssertionError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
+            failed += 1
+            print(f"FAIL {case['id']}: {error}")
     print(f"{passed} passed; {pending} unsupported; {failed} failed (debug and release).")
     if pending:
         print("This is a bootstrap result. The full language conformance gate has NOT passed.")

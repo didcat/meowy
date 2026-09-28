@@ -38,3 +38,16 @@ def case_files(case, base):
         files.append((source, source.relative_to(entry.parent)))
         seen.add(source)
     return files
+
+
+def stage_case(case, base, destination):
+    if destination.is_symlink() or not destination.is_dir() or any(destination.iterdir()):
+        raise ValueError("fixture destination must be an empty directory")
+    files = case_files(case, base)
+    copies = [(relative, source.read_bytes()) for source, relative in files]
+    for relative, content in copies:
+        path = destination / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("xb") as output:
+            output.write(content)
+    return destination / files[0][1]

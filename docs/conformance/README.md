@@ -2,7 +2,7 @@
 
 [Documentation index](../README.md)
 
-These cases pin observable rules to small source files. `cases.json` is version 1
+These cases pin observable rules to small source files. `cases.json` is version 2
 of the fixture catalog and targets language contract revision 1. Every case is
 independent: do not concatenate sources or let a failed declaration contaminate
 another case's name lookup. This is a core regression set, not a claim to cover
@@ -24,6 +24,17 @@ Each case has a unique ASCII `id`, `phase` (`check` or `run`), relative `source`
 additionally has `stdout`. No source, reference or command is fetched remotely.
 The files intentionally include invalid source; formatting or repairing them
 changes the test input and must be reviewed as a contract change.
+
+Version 2 optionally adds a nonempty `companions` list of catalog-relative `.mwy`
+paths under the entry source's directory. Version 1 remains readable for single-file
+cases. Declare every imported fixture file; empty companion modules are allowed.
+Paths must be canonical and cannot contain `..`, escape the entry directory, repeat
+another declaration or traverse symlinks. These are fixture-format limits, not
+language import rules. Nested importers may use `../` within the staged bundle.
+The runner preflights inputs and copies only declared files, byte for byte, into a
+fresh temporary directory for each case. Relative layout is preserved; one case
+cannot depend on another case's files. A missing declared file is a harness failure;
+an intentional missing-import test omits that file and expects a language diagnostic.
 
 Every case is required by default. The bootstrap's
 [support manifest](../../compiler/tests/conformance_support.json) lists only

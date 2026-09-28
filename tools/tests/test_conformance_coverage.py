@@ -24,6 +24,8 @@ class CoverageTests(unittest.TestCase):
         self.assertIn("not line/branch coverage", report)
         for case in self.catalog["cases"]:
             self.assertIn(f"[{case['id']}]", report)
+            for path in case.get("companions", []):
+                self.assertIn(f"]({path})", report)
         self.assertIn("Blocked:", report)
 
     def test_missing_document_changed_contract_and_missing_gap_fail(self):

@@ -75,7 +75,12 @@ No compiler implementation change is planned. Shared file validation and version
 catalog admission now pass 16 harness and 29 tooling groups. Cases reject escaping,
 noncanonical, missing, symlinked, duplicate and out-of-bundle files; empty companion
 modules remain valid. All 64 existing cases and 37 coverage records validate.
-Next wire preflighted per-case staging into execution before adding companion cases.
+Shared validation is committed as `2afe88b`. Preflighted per-case staging now
+passes 22 harness and 29 tooling groups, including byte/layout preservation,
+undeclared-file exclusion, fresh/cleaned case directories, occupied-target rejection,
+missing-asset failure reporting and version-1 compatibility. The catalog is version 2;
+all 64 existing cases remain 45 passed/19 pinned gaps/0 failed in both profiles;
+`/tmp/meowy-companion-baseline.log`. Link checks pass. Next add module fixtures.
 
 ## Documentation conventions and layout
 

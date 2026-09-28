@@ -86,7 +86,10 @@ def render(catalog, data, gaps, proof=None):
         expected = case["expected"]
         outcome = ("run " + json.dumps(expected["stdout"]) if case["phase"] == "run" else "accept") if expected["accepted"] else expected["code"]
         status = "Blocked: " + gaps[case["id"]] if case["id"] in gaps else "Required"
-        lines.append(f"| [{case['id']}]({case['source']}) | {cell(outcome)} | {cell(status)} | [contract]({case['reference']}) |")
+        source = f"[{case['id']}]({case['source']})"
+        if case.get("companions"):
+            source += "; files: " + ", ".join(f"[{Path(path).name}]({path})" for path in case["companions"])
+        lines.append(f"| {source} | {cell(outcome)} | {cell(status)} | [contract]({case['reference']}) |")
     if proof is not None:
         lines += ["", "## Proof qualification obligations", "",
                   "Every acceptance row and both additional qualification requirements are tracked. A mapped case can cover only part of a row; the remaining gap is authoritative.", "",
