@@ -472,8 +472,14 @@ identity and whole-ancestor eligibility/error evidence. Scratch aliases do not
 invent runtime reads, and neither kind of copy bypasses a stopped predecessor.
 Focused tests pin scope, budgets and proof-derived input rejection; source cases
 exercise inline storage independence, imported staging, errors and panic ordering.
-Pending proof descriptors still retain their existing metadata without declaration
-completion; proof evaluation remains gated.
+Pending query bindings, copies and discarded query forms now publish bounded
+statement completion after annotation and name checks. The checker retains exact
+query IDs and distinguishes creation from copying; point, owner, site and closed
+or currently active budget-root identities are validated before publication.
+Aliases retain their original query origin and root, and cross-function capture
+still fails E223. Completion introduces no runtime query edge or descriptor storage,
+does not bypass stopped predecessors and grants no proof outcome. Metadata identity,
+work or edge exhaustion publishes no endpoint; final proof evaluation remains gated.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not
 evidence that a runtime path is reached.

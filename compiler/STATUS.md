@@ -325,92 +325,61 @@ B001-gated; ordinary export annotation rules and independent body owners are int
 
 ## Record alias boundaries and coverage
 
-The dependency-ordered audit and coverage series is complete:
+Ordinary record/subrecord copies retain distinct storage and checked initializer
+operations. Required scratch records introduce no runtime identities and complete
+through their enclosing declaration. Graph/read/budget regressions (`f8d7aed`) and
+source coverage (`48298eb`, `e5a5f39`) preserve exact reads, scope, imported staging,
+failures and stopped paths. No production change was needed; the compiler gate
+below retains this coverage.
+
+## Pending proof-statement completion
+
+The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Pin storage, required-read, completion, scope and budget boundaries | `f8d7aed` |
-| Cover runtime copies and imported required aliases | `48298eb` |
-| Pin required failures and panic before later copies | `e5a5f39` |
+| Return exact query IDs and distinguish creation from copying | `4506888` |
+| Validate and connect checked pending statements atomically | `8a019dc` |
+| Pin fixed signatures, typed storage and capture rejections | `532c3a5` |
 
-The prior proposed record identity endpoint was unnecessary. Ordinary record and
-subrecord copies are `Value::Local` bindings with distinct storage and checked
-initializer operations. `Value::Record` belongs to required-evaluation scratch;
-its bindings have no runtime statement points or locals. The enclosing declaration
-already publishes completion after checking. Required copies retain whole-ancestor
-evidence and successful original local reads, while scratch aliases introduce no
-runtime identities. Source tracing and six new regression groups verify this
-boundary without changing production behavior.
+Pending bindings and discarded query/copy forms retain the ID returned by
+`prepare_query` after annotation/name checks succeed. Recognition remains
+side-effect free; preparation retains its statement-root accounting. New queries
+and aliases publish one bounded Entry-to-Normal edge after validating query/point,
+owner, site and budget-root identities. A root may be closed or still owned by the
+active construction context. Copies preserve the original origin and root without
+requerying. Cross-function capture retains E223; same-owner nested scopes work.
 
-Tests pin exact read/storage IDs, caller ownership, scratch scope isolation,
-stopped paths, declaration failures, unchanged logical costs, E220 limits and E225
-rejection before recording reads or completion. Budget/derived-input checks are
-internal seeded evidence. Seven required source cases separately cover inline copy
-independence, imported projections and function-local required roots, scoped
-shadowing, once-only initialization, effectful ancestors, sibling arithmetic
-failure, escaped/duplicate scratch names and P006 before later copies.
+Completion adds no query execution edge, runtime storage, proof answer or callee
+summary. Unmatched/failed source forms and failed metadata/work/edge checks publish
+no endpoint. Stopped predecessors remain stopped. Original annotation, lookup,
+mutability, duplicate and ownership errors still precede the final proof gate.
+Twenty malformed metadata variants, exact work/edge limits, idempotence, open roots,
+nested function/block owners, source failures and stopped paths have focused tests.
+Three required source cases pin fixed `proof.Result` annotations and storage/capture
+rejections; B001 is never accepted as their expected language rejection.
 
-All ten compiler checks pass: 1973 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 1981 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-record-alias-gate.log`. The 132 cases report 113 required passes,
+`/tmp/meowy-pending-gate.log`. The 135 cases report 116 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those known gaps (`/tmp/meowy-record-alias-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-record-alias-docs.log`); no selected check
-has an outstanding failure. Preservation against `fe40677` confirms all 125 prior cases,
-155 source assets, 37 reference files and exact capability exceptions are unchanged
-(`/tmp/meowy-record-alias-preservation.log`). AGENTS already covers this evidence
-workflow; no rule change is needed. Unrelated `docs/programs/hey/` is preserved.
+only for the same known gaps (`/tmp/meowy-pending-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-pending-docs.log`); no selected check has an
+outstanding failure. Preservation against `2d7e8c0` confirms all 132 prior cases,
+164 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-pending-preservation.log`). AGENTS already covers the required evidence
+workflow; no rule update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-## Pending proof-statement completion in progress
-
-`prepare_query` and `pending_statement` now return exact query IDs; the latter
-also distinguishes creation from copying. It checks new/discarded queries and descriptor aliases,
-annotations and names, then `stmt_body` emits empty HIR without completion metadata.
-Recognition is side-effect free; preparation owns query/root accounting. Copies
-preserve their original owner/site/root rather than requerying. `value` rejects
-capture across functions with E223; aliases must stay within the original owner.
-An enclosing construction root can still be open when the statement finishes. Proof results remain unavailable at final checking.
-
-Dependency-ordered commit plan:
-
-1. Return exact query IDs and distinguish creation from copying after successful
-   statement checks. Preserve caller behavior and add focused identity/error tests.
-2. Add bounded validation and atomic declaration endpoints for checked pending
-   statements, including source owner/site/root validation and open-root support.
-   Wire statement checking with graph, error, budget and stopped-prefix regressions.
-3. Add independently useful required source rejection coverage, preserving the
-   existing proof B001 exceptions; update the evidence inventory and run compiler,
-   strict-mode and preservation checks against `2d7e8c0`.
-4. Update root/compiler/foundation handoffs with the actual completion boundary,
-   validation and next step; run documentation checks.
-
-Existing reference rules require descriptor copies to preserve observation origins,
-fixed `proof.Result` signatures and ordinary diagnostics before outcomes. No runtime
-query evaluation, proof result, callee summary or backedge propagation is added.
-The source audit covered query preparation, statement admission, checked sites/points,
-construction-root closing and the declaration endpoint publisher. Next implement
-slice 2. Slice 1 now returns `Prepared { id, created }` only after statement checks
-succeed. The caller still retains its existing behavior. All 32 focused `pending_`
-tests pass (`/tmp/meowy-pending-ids.log`), including exact IDs through interleaved
-new queries/copies/discards, annotation/name errors, shared open roots and the E223
-cross-function capture rule. Formatting and all-target Clippy pass
-(`/tmp/meowy-pending-ids-clippy.log`). Slice 2 now validates exact query/point/site
-identity, matching owner, creation versus copy parentage, and a closed or matching
-open budget root before atomic Entry-to-Normal publication. Statement checking
-uses it after existing annotations/names succeed. Source queries gain no runtime
-edges and copies keep their origins. All 1981 library tests pass
-(`/tmp/meowy-pending-library.log`), including twenty malformed metadata variants,
-exact work/edge limits, idempotence, nested blocks/functions, open roots, source
-errors and stopped prefixes. Formatting and all 37 focused `pending_` tests also
-pass after the readability cleanup (`/tmp/meowy-pending-endpoints.log`). Three
-source checks are now required for fixed-result annotation mismatch, explicitly
-typed runtime storage and cross-function capture. All three pass in debug/release
-with a fresh CLI (`/tmp/meowy-pending-cases.log`). Catalog/coverage validation passes
-for 135 cases and 37 reference documents. The full compiler gate is running
-(`/tmp/meowy-pending-gate.log`). Preservation against `2d7e8c0` confirms all 132 prior
-case records, 164 source assets, 37 reference files and exact capability exceptions
-are unchanged (`/tmp/meowy-pending-preservation.log`). Next finish compiler/strict
-validation and the documentation handoff. Preserve unrelated `docs/programs/hey/` work.
+Next retain direct-call metadata in entry operation-effect reports before attempting
+callee summaries. `src/check/dependencies/invocations.rs` already has exact call,
+callee, argument-root, owner/control and return-boundary identities;
+`src/check/dependencies/edges/forward/effects.rs` currently reports these operations
+as undifferentiated Unknown. Plan bounded lookup/capture and report integration as
+separate reviewable slices, with call ordering, alias/recursion, stopped-argument,
+owner and budget regressions. Preserve opaque callee effects and conditional Returned
+edges; do not enter bodies or infer purity/termination. Add source coverage where
+useful and run compiler/strict gates. Backedge propagation, callee summaries and
+proof outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2467,12 +2436,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    pass. Record alias auditing confirms ordinary copies already retain storage
    operations and required scratch stays within checked construction roots;
    regressions and source coverage (`f8d7aed`, `48298eb`, `e5a5f39`) preserve those
-   boundaries. Next retain exact pending query IDs from `queries/statements.rs`
-   through `statements.rs`, then separately validate declaration completion after
-   annotation/name checks. Cover query versus alias forms, owner/root/site identity,
-   failed publication and budgets, preserving final B001 proof gates. Run the
-   compiler/strict gates; callee summaries, other synthetic prefixes, backedge
-   propagation and proof outcomes remain separate.
+   boundaries. Pending statement IDs and bounded completion now preserve original
+   query origins, owner/site/root checks and final proof gates (`4506888`, `8a019dc`).
+   Required rejection coverage (`532c3a5`) and the compiler gate pass. Next retain
+   direct-call metadata from `dependencies/invocations.rs` in forward operation-effect
+   reports, with bounded lookup/capture, owner/argument/return checks and focused
+   graph/source regressions. Keep callee effects opaque and Returned edges conditional;
+   do not enter bodies or infer purity. Run compiler/strict gates. Other synthetic
+   prefixes, callee summaries, backedge propagation and proof outcomes remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-The record alias audit is complete. Ordinary record copies already retain runtime
-storage/read operations; compile-time record aliases stay inside required-evaluation
-scopes and complete through the enclosing declaration. Six new internal regression
-groups and seven source cases pin storage independence, exact input reads, scope,
-budgets, imported staging, rejection rules and stopped execution. No production
-behavior change was needed. Commits: `f8d7aed`, `48298eb`, `e5a5f39`.
+Pending proof statements now retain exact query IDs and publish bounded completion
+after existing checks. Query creation and copying remain distinct; aliases preserve
+origins, same-owner scope rules and budget roots. Completion adds no query execution
+or proof answer, and stopped paths remain stopped. Eight new internal regression
+groups and three required source cases cover identities, budgets and rejection rules.
+Commits: `4506888`, `8a019dc`, `532c3a5`.
 
-The catalog has 132 cases: 113 required passes, 19 unchanged pinned gaps and zero
+The catalog has 135 cases: 116 required passes, 19 unchanged pinned gaps and zero
 failures in debug/release. All prior cases, source assets and reference contracts
 are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
 37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 1973 library/914 native and 62 Python test groups;
-`/tmp/meowy-record-alias-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-record-alias-docs.log`). Proof
-outcomes and full language/release qualification remain incomplete.
+compiler checks pass: 1981 library/914 native and 62 Python test groups;
+`/tmp/meowy-pending-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-pending-docs.log`). Proof
+evaluation and full language/release qualification remain incomplete.
 
-Next retain exact pending proof-query IDs through statement checking, then validate
-bounded declaration completion while preserving the final B001 evaluation gate.
-The [compiler handoff](compiler/STATUS.md#record-alias-boundaries-and-coverage) records
-the concrete files and checks. AGENTS already covers the conformance/evidence
-workflow; no update is needed. Unrelated `docs/programs/hey/` work is preserved.
+Next retain exact direct-call metadata in operation-effect reports while keeping
+callee effects opaque. The
+[compiler handoff](compiler/STATUS.md#pending-proof-statement-completion) records
+the files, scope boundaries and checks. AGENTS already covers this evidence workflow;
+no update is needed. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1135,11 +1135,14 @@ execution was not part of this documentation edit.
    exact signature/export checks, atomic group publication and peer documentation.
    Required source coverage and the compiler gate pass. Record alias auditing and
    regression/source coverage confirm ordinary copies retain storage operations
-   while required scratch completes through its enclosing declaration. Next retain
-   exact pending query IDs through `compiler/src/check/queries/statements.rs` and
-   `statements.rs`, then validate bounded completion with owner/root/site and error
-   regressions. Preserve final B001 proof gates; run compiler/strict validation.
-   Callee summaries, backedge propagation and proof outcomes remain separate.
+   while required scratch completes through its enclosing declaration. Pending
+   statements now retain exact query IDs and bounded completion with owner/site/root
+   validation while preserving final proof gates. Required rejection coverage and the
+   compiler gate pass. Next retain direct-call identities from
+   `compiler/src/check/dependencies/invocations.rs` in forward operation-effect reports;
+   validate bounded argument/owner/return metadata while keeping callee effects opaque.
+   Add focused/source coverage and run compiler/strict gates. Callee summaries,
+   backedge propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
