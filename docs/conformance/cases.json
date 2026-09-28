@@ -1291,6 +1291,59 @@
         "stdout": "group\nfacade\nentry\ntrue\nfalse\nfalse\n"
       },
       "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_export_mismatch",
+      "phase": "check",
+      "source": "sources/forward_exports/mismatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E221"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_export_repeated",
+      "phase": "check",
+      "source": "sources/forward_exports/repeated.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E221"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_export_duplicate",
+      "phase": "check",
+      "source": "sources/forward_exports/duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports"
+    },
+    {
+      "id": "forward_export_partial",
+      "phase": "check",
+      "source": "sources/forward_exports/partial.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E221"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "forward_export_private",
+      "phase": "check",
+      "source": "sources/forward_exports/private.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/forward_exports/group.mwy"
+      ]
     }
   ]
 }

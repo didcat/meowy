@@ -383,8 +383,14 @@ The required `forward_exports` case passes in debug/release using a fresh CLI
 private/public definitions, an unused exported Never function, peer documentation,
 typed re-exports and once-only initialization through two import paths. Catalog and
 37-document coverage validation pass; the catalog is now 120 cases. The syntax
-inventory no longer claims exports are rejected. Next add independent rejection
-cases, then run the full compiler/strict gates; no case is being waived.
+inventory no longer claims exports are rejected. Five independent rejection cases
+now pin mismatched signatures, repeated definitions, duplicate exports, unfinished
+groups and imported private functions. All six new cases pass in both profiles;
+125 catalog entries and coverage metadata validate. The compiler gate is running
+(`/tmp/meowy-forward-export-gate.log`). Preservation against `2ad0c19` confirms
+all 119 prior case records, 147 source assets, 37 reference files and exact B001
+exceptions are unchanged (`/tmp/meowy-forward-export-preservation.log`). Next finish
+compiler/strict validation and update the handoffs; no case is being waived.
 
 The explicit forward header supplies the public signature, including the result
 when omitted from the definition. Explicit definition annotations must match it.

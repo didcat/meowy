@@ -1,0 +1,2 @@
+f<(int32)->int32>
+->f<int32>:(n<boolean>){->1}
