@@ -731,9 +731,9 @@ counts under bounded work/edge limits (`95fba66`). All ten compiler checks pass:
 1837 library/913 native tests; `/tmp/meowy-edge-inventory-gate.log`. Full-family
 coverage is committed as `42b04e8`; the guide documents inventory limits. Bounded
 port anchors (`f543ec8`), edge owners (`cad2261`), selectors (`ec8677c`) and
-Operation producers now validate the inventory. All ten compiler checks pass:
-1849 library/913 native tests; `/tmp/meowy-port-validation-gate.log`. Guide
-documentation and the forward-index handoff are next.
+Operation producers (`53d54af`) now validate the inventory. All ten compiler
+checks pass: 1849 library/913 native tests; `/tmp/meowy-port-validation-gate.log`.
+The guide documents scope. Bounded forward lookup is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -1012,10 +1012,13 @@ execution was not part of this documentation edit.
    gates. Full family/route/duplicate/budget coverage and the compiler gate pass;
    the guide documents inventory limits. Bounded anchor/owner/selector validation
    and a producer registry now validate graph ports while preserving diagnostics,
-   duplicate routes and unknown flow. The compiler gate passes. Document this scope
-   next, then add bounded forward lookup over the validated inventory, retaining
-   exact ports and duplicate entries. Keep Backedge links explicit and missing
-   successors unknown; indexing does not establish execution or propagation.
+   duplicate routes and unknown flow. The compiler gate passes and the guide
+   documents scope. Next build bounded forward lookup over validated inventory,
+   retaining exact ports, original entry positions, duplicates and routes. Expose
+   Backedge links separately without losing them; preserve owners/diagnostics and
+   test missing ports, conditional/checked/returned routes, restarts and atomic
+   work/index bounds before the compiler gate. Missing successors prove neither
+   independence nor termination.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

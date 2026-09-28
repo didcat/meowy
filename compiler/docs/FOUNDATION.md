@@ -294,9 +294,16 @@ totals must match retained counters within the existing 262,144-edge limit. Shar
 work is charged for families, stored rows (including empty rows) and copied edges.
 Failed counts or budgets leave graph ledgers unchanged and return no inventory.
 Successful compilation audits these counts after ordinary checks, pending-query
-gates and documentation validation. Port existence/ownership validation, forward
-indexing and propagation remain separate; missing links and normal-result ports
-do not establish independence or reachability.
+gates and documentation validation. A separate bounded pass resolves completed
+point anchors, block identities, emission source/target links and restart sites.
+Edges must stay within one function owner. Indexed output/projection/conversion/
+address/reservation ports validate their selectors against retained producers;
+snapshot and panic-prefix ports require matching producer kinds. Operation ports
+must be declared by their owning producer, using one bounded registry that retains
+call point identities separately from call IDs. These checks leave ledgers and
+routes unchanged. Normal ports need no reachable incoming edge. Forward indexing
+and propagation remain separate; missing links and normal-result ports do not
+establish independence or reachability.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.
