@@ -1,0 +1,7 @@
+d:@"debug"
+d.print("entry")
+m:@"./facade.mwy"
+direct:@"./group.mwy"
+d.print(m.even(8))
+d.print(m.odd(8))
+d.print(direct.even(7))

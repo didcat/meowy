@@ -1,0 +1,20 @@
+even<(int32)->boolean>
+odd<(int32)->boolean>
+hidden<()->int32>
+halt<()->never>
+#| Odd numbers use [[even]]. |#
+->odd<boolean>:(n<int32>)'result{
+    |n==0|{'result->false;'result.leave()}
+    ->even(n-1)
+}
+hidden:(){->0}
+#| An unused nonreturning function. |#
+->halt<never>:(){'loop{'loop.restart()}}
+#| Even numbers use [[odd]]. |#
+->even:(n<int32>)'result{
+    zero<int32>:(){->hidden()}
+    |n==zero()|{'result->true;'result.leave()}
+    ->odd(n-1)
+}
+d:@"debug"
+d.print("group")

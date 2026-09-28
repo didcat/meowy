@@ -1,0 +1,5 @@
+m:@"./group.mwy"
+d:@"debug"
+d.print("facade")
+->even<(int32)->boolean>:m.even
+->odd<(int32)->boolean>:m.odd

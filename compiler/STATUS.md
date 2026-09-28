@@ -378,8 +378,13 @@ checking, with bounded documentation work. The new regression first reproduced
 E802 on valid public peers (`/tmp/meowy-forward-export-docs-before.log`). Both
 orders now pass, private peer links still fail, and doc errors publish no exports.
 All 1967 library tests pass (`/tmp/meowy-forward-export-docs-library.log`).
-Next add required multi-file execution and rejection catalog slices, then run the
-full compiler/strict gates. No conformance case is being waived.
+The required `forward_exports` case passes in debug/release using a fresh CLI
+(`/tmp/meowy-forward-export-cases.log`). It covers reverse-order recursion, mixed
+private/public definitions, an unused exported Never function, peer documentation,
+typed re-exports and once-only initialization through two import paths. Catalog and
+37-document coverage validation pass; the catalog is now 120 cases. The syntax
+inventory no longer claims exports are rejected. Next add independent rejection
+cases, then run the full compiler/strict gates; no case is being waived.
 
 The explicit forward header supplies the public signature, including the result
 when omitted from the definition. Explicit definition annotations must match it.
