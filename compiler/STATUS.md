@@ -101,37 +101,46 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current bounded structural-walk slices
 
-Dependency-ordered commit plan:
-1. Add a bounded read-only walk over validated forward buckets, with original edge
-   positions, visited ports and explicit Backedge/missing-source boundaries. Run it
-   from the exact program BlockEntry after existing gates; include core regressions.
-2. Cover conditional routes, converging paths, nested restart targets, independent
-   function owners, exact limits and late atomic exhaustion with focused regressions.
-3. Run the compiler gate and document guarantees, remaining gaps and the next step.
+The dependency-ordered implementation series is complete:
 
-Inspection: `forward_index` validates all inventory ports and then builds source
-buckets; the compiler currently drops the index. The walk will use a deduplicated
-port worklist, recording every encountered edge position, including duplicates.
-One seed plus at most one destination per edge bounds visited/pending ports by
-inventory length + 1. Each stored edge can be scanned at most once because each
-source is visited once; shared work charges precede growth. Backedges are reported
-without queuing their targets. A missing source bucket is an explicit boundary,
-not termination. Conditional/Checked/Returned routes stay uninterpreted.
+1. Bounded forward walk and exact program-entry integration (`1732485`).
+2. Conditional, restart, owner, capacity and exhaustion coverage (`f932bf5`).
+3. Compiler gate and documentation handoff: complete.
 
-The production entry is the exact HIR program block, after semantic/query/doc gates;
-this is a structural inspection, not whole-program execution or function expansion.
-No runtime reachability, proof/data propagation or proof outcome is enabled.
-Prior forward-index gate passed all ten checks (1856 library/913 native tests);
-`/tmp/meowy-forward-index-gate.log`. The walk and program-entry integration are committed as `1732485`. Three core groups cover
-repeated edges, forward cycles, uninterpreted Checked/Returned labels, Backedge-only
-sources and missing/unknown sources. All 1859 library tests and all-target Clippy
-pass; `/tmp/meowy-structural-walk-lib.log`, `/tmp/meowy-structural-walk-clippy.log`.
-All eight walk groups now pass; `/tmp/meowy-structural-walk-focused.log`.
-Coverage includes both conditional paths and exact output selectors, nested outer
-restart targets, independent function owners, full edge capacity, empty walks,
-edge-count + 1 visited ports, and first/mid/last-charge work failures. Exact remaining
-work succeeds; failed walks leave the index reusable and publish no partial report.
-Next: full compiler gate and documentation; no outstanding focused failures.
+`edges/forward/walk.rs` records visited ports and original inventory positions for
+forward edges and Backedges. The deduplicated worklist retains duplicate edges and
+stops unmarked cycles. Backedge targets are not queued. Missing source buckets are
+reported separately; backedge-only sources are not missing. Inventory length + 1
+bounds pending/visited ports, and each source bucket is scanned once. Shared work
+is charged before growth; failures return no partial report or index mutation.
+Conditional/Checked/Returned routes remain uninterpreted. Visit order and missing
+successors prove neither runtime reachability nor termination.
+
+The compiler inspects its exact program BlockEntry after semantic/query/doc gates.
+It does not expand calls or inspect every function automatically. Tests inspect
+independent function entries and verify owners remain separate. Proof outcomes,
+value propagation and restart-header analysis remain gated.
+
+All eight walk groups pass; `/tmp/meowy-structural-walk-focused.log`. They cover
+conditional paths, exact output selectors, nested outer restart targets, function
+owners, full edge capacity, empty walks and the edge-count + 1 port bound. First,
+mid and last-charge failures leave the index reusable, while exact remaining work
+succeeds; `/tmp/meowy-structural-walk-exhaustion.log`. All ten compiler checks pass:
+1864 library/913 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-structural-walk-gate.log`. No outstanding failures remain.
+The foundation guide documents walk scope and bounds. All four documentation/tooling
+checks pass, including 1208 local links in 110 Markdown files;
+`/tmp/meowy-structural-walk-docs.log`.
+
+Next extend structural inspection to independent program/function entry roots from
+HIR, reusing one validated ForwardIndex. Retain that index alongside per-entry walk
+reports so their positions remain resolvable. Bound roots, aggregate report storage
+and shared work; do not publish a partial collection on failure or infer call
+reachability. Keep existing diagnostic priority. Split representation/collection
+from checker integration as appropriate, test unused and recursive functions,
+owner separation and late aggregate exhaustion, then run the compiler gate.
+Precise writes/unknown effects, propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1459,11 +1468,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Bounded forward lookup passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1856 library/913 native tests, formatting,
+- Bounded structural walks passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1864 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-forward-index-gate.log`. Structural walks, precise write
-  locations and dependency propagation stay pending.
+  Log: `/tmp/meowy-structural-walk-gate.log`. Independent entry-report collection,
+  precise write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1973,12 +1982,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    guide documents scope. Bounded forward lookup (`9adb15c`) now retains exact
    source ports, original entry positions and separate forward/Backedge buckets.
    Full-family, duplicate, owner, route and boundary coverage (`b838be4`) passes the
-   compiler gate; the guide documents scope. Next add a bounded structural walk over
-   forward buckets, reporting missing-successor and Backedge boundaries. Retain
-   original edge positions and uninterpreted conditional/Checked/Returned routes.
-   Bound queues, visits and edge/work totals even with repeated edges or cycles;
-   test nested targets, missing sources and atomic exhaustion before the compiler
-   gate. Connectivity must not become runtime reachability or data/proof propagation.
+   compiler gate; the guide documents scope. Bounded structural walks (`1732485`)
+   now retain visited ports and original forward/Backedge positions, report missing
+   sources and stop repeated-port cycles. Boundary coverage (`f932bf5`) and all ten
+   compiler checks pass; the guide documents scope. The production seed is the exact
+   program BlockEntry after existing gates.
+   Next retain one validated index with reports for independent program/function
+   HIR entry roots. Bound roots, aggregate storage and shared work; preserve owner
+   separation, diagnostic priority and atomic failure. Test unused/recursive
+   functions and late aggregate exhaustion, then run the compiler gate. Calls must
+   not imply callee reachability, and routes must remain uninterpreted.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

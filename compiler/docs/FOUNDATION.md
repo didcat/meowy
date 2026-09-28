@@ -309,8 +309,22 @@ Port-key ordering is structural, not execution order. The existing edge limit
 also bounds source keys and index slots, with shared work charged before growth.
 Failed construction returns no partial index and leaves stored ledgers unchanged.
 Missing source keys, including ports seen only as destinations, mean no outgoing
-edge was indexed; they prove neither termination nor independence. Structural
-traversal and propagation remain separate, and no index proves runtime reachability.
+edge was indexed; they prove neither termination nor independence.
+A bounded structural walk follows only forward buckets from one exact seed port.
+It retains visited ports and original inventory positions for encountered forward
+edges and backedges. Duplicate edges remain distinct, while each port is queued
+once, so converging paths and cycles without a Backedge marker cannot loop the walk.
+Backedges are reported without following their targets; absent source buckets are
+reported separately. A source with only backedges is a backedge boundary, not a
+missing source. Both conditional paths are inspected, and Checked/Returned labels
+remain uninterpreted. Visit order is not execution order or runtime reachability.
+The edge limit bounds scanned positions, and inventory length + 1 bounds visited
+and pending ports. Shared work is charged before growth, including empty walks;
+failure returns no partial report and leaves the index reusable. Successful
+compilation inspects the exact program BlockEntry after existing gates. Function
+entries can be inspected independently; calls do not traverse callee bodies.
+The report is internal structural metadata, with no proof/data propagation,
+restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.

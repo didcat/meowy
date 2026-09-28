@@ -737,14 +737,14 @@ The guide documents scope. Bounded forward lookup (`9adb15c`) now preserves
 original inventory positions with separate forward/Backedge buckets. All ten
 compiler checks pass: 1856 library/913 native tests;
 `/tmp/meowy-forward-index-gate.log`. Full-family/boundary coverage is committed as
-`b838be4`; the guide documents scope. A bounded structural walk now inspects the
-exact program BlockEntry after existing gates, reporting original edge positions,
-Backedges and missing sources. It deduplicates ports without interpreting routes
-or inferring runtime reachability. All 1859 library tests and Clippy pass;
-`/tmp/meowy-structural-walk-lib.log`. The walk is committed as `1732485`.
-All eight walk groups pass, including nested restart/function boundaries and exact
-capacity/work failures; `/tmp/meowy-structural-walk-focused.log`. The full gate
-and documentation handoff are next.
+`b838be4`; the guide documents scope. Bounded structural walks (`1732485`) now
+inspect the exact program BlockEntry after existing gates, retaining visited ports,
+original edge positions, Backedges and missing sources. Conditional routes remain
+uninterpreted. Boundary coverage (`f932bf5`) includes nested restart targets,
+independent function entries, cycles and exact capacity/work failures. All ten
+compiler checks pass: 1864 library/913 native tests;
+`/tmp/meowy-structural-walk-gate.log`. The guide documents scope. Independent
+program/function entry-report collection is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -875,10 +875,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Bounded forward lookup passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1856 library/913 native tests.
+- Bounded structural walks passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1864 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-forward-index-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-structural-walk-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1027,11 +1027,14 @@ execution was not part of this documentation edit.
    documents scope. Bounded forward lookup now retains exact ports, original
    inventory positions and separate forward/Backedge buckets; full-family/owner/
    route/boundary coverage and the compiler gate pass; the guide documents scope.
-   Next add a bounded structural walk over forward buckets, retaining original
-   edge positions/routes and reporting missing-successor and Backedge boundaries.
-   Bound queues, visits and work even with duplicate paths/cycles; test conditional
-   routes, nested targets, missing sources and atomic exhaustion before the compiler
-   gate. No walk should infer runtime reachability or propagate proof/data facts.
+   Bounded structural walks now retain visited ports and original edge positions,
+   report Backedges/missing sources and stop repeated-port cycles. Core and boundary
+   tests and all ten compiler checks pass; the guide documents scope. The production
+   seed is the exact program BlockEntry after existing gates. Next retain one
+   validated index with reports for independent program/function HIR entries. Bound roots, aggregate
+   storage and work; test unused/recursive functions, owner separation and late
+   exhaustion before the compiler gate. Keep conditional routes uninterpreted and
+   proof outcomes gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
