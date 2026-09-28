@@ -419,8 +419,16 @@ operations, including their width checks. Shadowed record fields remain ordinary
 data. Required-only static producers and aliases keep their evaluator paths and
 logical costs without gaining runtime statement endpoints. This adds no constant
 evaluation, payload copy or proof outcome; failed declarations publish no endpoint.
-Forward groups retain explicit barriers. Record/file-module values,
-scoped-control aliases and pending descriptors retain their existing metadata.
+Scoped-control aliases now capture the resolved target and owner for bounded
+completion validation. The original value retains its leave/restart flag unchanged.
+After successful declaration, a charged active-frame lookup requires the target to
+belong to the current owner before publishing Entry-to-Normal. Alias creation adds
+no scope exit, restart site or backedge and does not change reachability. Actual
+calls retain their existing argument, function/lifetime and control checks and
+their separate exit/restart edges. Inactive or foreign metadata and exhausted
+budgets publish no endpoint; ordinary lookup/declaration errors remain first.
+Forward groups retain explicit barriers. Record/file-module values and pending
+descriptors retain their existing metadata.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not
 evidence that a runtime path is reached.

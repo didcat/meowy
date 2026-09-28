@@ -7,26 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Immutable, unannotated static aliases now retain bounded statement-completion
-edges after successful declaration. Resolved proof.revision aliases preserve their
-uint32 payload, required-read eligibility and lexical meaning. Annotated/mutable
-copies keep runtime storage checking; required-only aliases keep their evaluator
-paths and costs. Implementation: `c2f7d7b`; source conformance: `46d450e`.
+Scoped-control aliases now retain bounded statement completion after declaration
+and validation of the exact active target and owner. Their leave/restart flags
+remain unchanged; alias creation adds no control-transfer edges or runtime storage.
+Actual calls retain their separate argument, lifetime and exit/restart checks.
+Implementation: `58fd3cf`; source conformance: `8d47955`.
 
-The catalog has 107 cases: 88 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Three new fixtures pin alias width/shadowing, typed and
-mutable copies, required extents and relevant rejections. All prior cases/assets
+The catalog has 111 cases: 92 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Four new fixtures pin unused aliases, actual aliased
+leave/restart execution, argument errors and expired targets. All prior cases/assets
 and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1932 library/913 native and 62 Python test groups;
-`/tmp/meowy-static-bindings-gate.log`. Strict mode rejects only the known gaps.
+1937 library/913 native and 62 Python test groups;
+`/tmp/meowy-control-aliases-gate.log`. Strict mode rejects only the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect scoped-control aliases in `compiler/src/check/names.rs` and
-`compiler/src/check/statements.rs`. Retain resolved target/owner/restart identities
-and distinguish alias completion from actually calling leave or restart. The
-[compiler handoff](compiler/STATUS.md#current-immutable-static-binding-completion)
+Next inspect resolved file-module aliases in `compiler/src/check/names.rs`,
+`compiler/src/check/exports.rs` and `compiler/src/check/statements.rs`. Preserve
+registered module/local identities and initialization order without replaying module
+bodies at alias creation. The
+[compiler handoff](compiler/STATUS.md#current-scoped-control-alias-completion)
 records the scope, evidence and next validation requirements.
 
 ## Documentation conventions
@@ -1119,13 +1120,15 @@ execution was not part of this documentation edit.
    successful required/declaration/export checks, preserving payloads and query
    non-execution. Immutable static aliases now connect after declaration while
    typed/mutable copies retain runtime storage and required-only producers retain
-   their evaluator paths. Focused/source coverage and the compiler gate pass. Next
-   inspect scoped-control aliases in `compiler/src/check/names.rs` and
-   `compiler/src/check/statements.rs`; retain exact target/owner/restart identities
-   without executing a leave/restart at declaration. Preserve lifetime/call errors,
-   test aliases and control boundaries, add source coverage and run the compiler
-   gate. Other erased forms and forward groups stay separate; proof outcomes
-   remain gated.
+   their evaluator paths. Scoped-control aliases now retain bounded completion
+   after active-target/owner validation, without executing leave/restart during
+   declaration. Actual calls keep their exit/lifetime checks. Focused/source coverage
+   and the compiler gate pass. Next inspect resolved file-module aliases in
+   `compiler/src/check/names.rs`, `compiler/src/check/exports.rs` and
+   `compiler/src/check/statements.rs`; preserve exact registered identities, privacy,
+   initialization order and required-read rules without re-entering module bodies.
+   Add focused/source coverage and run the compiler gate. Other erased forms and
+   forward groups stay separate; proof outcomes remain gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
