@@ -231,8 +231,8 @@ calls still lack continuation. Export errors publish no endpoint.
 
 Three identity groups and five graph groups cover definitions, nested allocation,
 chained/imported aliases, independent module sequences, errors, unhandled forms,
-Never calls and exact publication limits. Forward groups and type/meta exports
-retain their existing barriers. Required roots, export errors/capability gates,
+Never calls and exact publication limits. Forward groups and meta value exports
+retain their existing barriers; explicit type aliases are covered below. Required roots, export errors/capability gates,
 module initialization, callee effects and proof outcomes are unchanged.
 
 All ten compiler checks pass: 1912 library/913 native tests, 32 tooling and 30
@@ -249,58 +249,57 @@ pass; `/tmp/meowy-function-exports-docs.log`.
 No outstanding compiler/test failures remain. AGENTS already covers the source
 conformance/evidence requirements; no rule change is needed.
 
-Next inspect `StmtKind::TypeAlias` in `src/check/statements.rs` and
-`declare_type`/`declare_source_type` in `src/check/exports.rs`. This successful
-form still erases its statement without a completion endpoint. Restrict any new
-link to completed type-alias checking, after required construction, scope/export
-validation and duplicate-name checks. Preserve type-root accounting, diagnostics,
-unsupported forms and statement owners; do not classify all Value::Type/meta or
-required-only evaluation as runtime completion. Plan independently reviewable
-classification/publication slices as needed, test local/exported aliases, computed
-targets, errors and budgets, add source coverage, then run compiler/strict-gap gates.
-Forward groups, other erased forms, callee summaries and proof propagation/outcomes
-remain separate; never add a generic empty-HIR bypass.
+Explicit type-alias completion is now covered below. Other erased forms, forward
+groups, callee summaries and proof propagation/outcomes remain separate.
 
 ## Current explicit type-alias completion
 
-Dependency-ordered commit plan:
+The dependency-ordered series is complete:
 
-1. Add bounded, statement-owner-validated completion only after the ordinary
-   `StmtKind::TypeAlias` branch finishes `declare_type`. Keep construction and
-   declaration helpers unchanged, including their required-only callers. Include
-   local/exported/computed aliases, owner/barrier/error checks, required accounting
-   and exact endpoint work/edge limit regressions in this implementation slice.
-2. Add source conformance for scoped/computed aliases, type exports, duplicate-name
-   errors and required-construction failures. Preserve fixtures/contracts and gaps;
-   run the compiler, strict-gap and byte-preservation checks.
-3. Refresh the coverage evidence, foundation guide and current root/compiler
-   handoffs, then run documentation checks and commit the final handoff.
+| Reviewable slice | Commit |
+| --- | --- |
+| Connect successful ordinary TypeAlias statements with focused regressions | `133ba70` |
+| Pin scoped/computed aliases, exports, duplicate names and required tail failures | `90d6263` |
 
-Inspection: ordinary TypeAlias statements erase their HIR only after the required
-construction root and duplicate/export checks succeed. Required type-block aliases
-call `declare_source_type` directly and must gain no runtime statement endpoints.
-No additional type payload or new type ID is needed: the successful ordinary
-statement is the completion identity. Reuse bounded declaration publication while
-keeping other Value::Type/meta bindings, pending forms and forward groups separate.
-The tree starts clean at `a4aafcf`. The helper and ordinary-branch integration are
-implemented. All six new focused groups pass;
-`/tmp/meowy-type-alias-endpoints.log`. Local/exported/computed and nested-owner
-aliases connect, while required inner aliases add no runtime statement endpoints.
-Existing E104/E211/E219/E220/E225 and duplicate/type/export errors are preserved;
-metadata identity, idempotence and atomic work/edge limits pass. All 1918 library
-tests and all-target Clippy pass; `/tmp/meowy-type-alias-lib.log` and
-`/tmp/meowy-type-alias-clippy.log`. No outstanding test failures remain;
-implementation is committed as `133ba70`. Four required source cases now cover
-computed/nested scopes and namespaces, exported aliases across modules, duplicate
-names and required failure after emission. Catalog/coverage metadata passes for
-101 cases. All ten compiler checks pass: 1918 library/913 native tests, 32 tooling
-and 30 harness groups, formatting, Clippy, build and conformance;
-`/tmp/meowy-type-alias-gate.log`. Source execution reports 82 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. All previous 97 records, 116 source
-assets, 37 reference files and capability exceptions are unchanged;
-`/tmp/meowy-type-alias-preservation.log`. Strict mode correctly exits 1 only for
-known gaps; `/tmp/meowy-type-alias-strict.log`. The final coverage/guide handoff
-remains; no outstanding test failures remain.
+Only the ordinary `StmtKind::TypeAlias` branch publishes completion after
+`declare_type` returns successfully. Required construction, scope/export checks
+and duplicate-name validation remain before publication. The helper validates the
+current/completed statement and owner, charges bounded work and reuses atomic
+aggregate edge publication. No type payload, runtime storage or new type ID is
+retained. Local/exported/computed aliases connect without bypassing earlier stops.
+
+Required type-block aliases still call `declare_source_type` directly, gaining no
+runtime statement endpoints. Required arithmetic/read metadata and exact logical
+charges remain intact. Six focused groups cover these distinctions, nested owners,
+construction/error precedence, E220/E225, excluded forms and identity/work/edge
+limits. Ordinary Value::Type/meta bindings, pending forms, static/record/file-module
+values, scoped-control aliases and forward groups retain their existing boundaries.
+
+All ten compiler checks pass: 1918 library/913 native tests, 32 tooling and 30
+harness groups, formatting, Clippy, build, metadata/coverage and conformance;
+`/tmp/meowy-type-alias-gate.log`. The 101 cases report 82 passes, 19 unchanged pinned
+gaps and zero failures in debug/release. Four new cases cover computed/nested scopes,
+separate type/value namespaces, cross-module type exports, duplicate names and
+required failure after emission. Strict mode exits 1 only for known gaps;
+`/tmp/meowy-type-alias-strict.log`. All 97 prior case records, 116 source assets,
+37 reference files and capability exceptions are preserved;
+`/tmp/meowy-type-alias-preservation.log`. No outstanding compiler/test failures
+remain. All four final documentation checks pass; `/tmp/meowy-type-alias-docs.log`.
+AGENTS already requires the conformance/evidence workflow; no additional rule is
+needed.
+
+Next inspect ordinary type-valued bindings in `src/check/statements.rs`, resolved
+`binding_symbol` classification in `src/check/names.rs`, and successful
+`export_type_value` returns in `src/check/exports.rs`. Unannotated Value::Type and
+foundation type identities, annotated meta bindings and named meta exports are
+separate successful branches; classify only the actual checked forms. Preserve
+`meta_binding`/required-only callers, all type-root accounting, scope/mutability/
+duplicate diagnostics, and payload identity without extra type copies. Split
+classification/integration and export completion when independently reviewable;
+test literal/query/computed/imported types, failures and budgets, extend source
+coverage, then run compiler/strict-gap gates. Forward groups, other erased values,
+callee summaries and proof propagation/outcomes remain separate. Never add a
+generic empty-HIR bypass or treat a checked type as a runtime-evaluated value.
 
 ## Documentation conventions and layout
 
@@ -1762,13 +1761,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Function export completion passes all ten compiler checks: 1912 library/913
-  native tests, 32 tooling and 30 harness groups. Conformance: 78 passed, 19 pinned
-  gaps, zero failures in debug/release; `/tmp/meowy-function-exports-gate.log`.
-  Strict mode rejects those gaps; `/tmp/meowy-function-exports-strict.log`.
+- Explicit type-alias completion passes all ten compiler checks: 1918 library/913
+  native tests, 32 tooling and 30 harness groups. Conformance: 82 passed, 19 pinned
+  gaps, zero failures in debug/release; `/tmp/meowy-type-alias-gate.log`.
+  Strict mode rejects those gaps; `/tmp/meowy-type-alias-strict.log`.
   Prior fixtures/expectations and reference contracts are unchanged;
-  `/tmp/meowy-function-exports-preservation.log`. All four final documentation checks
-  pass; `/tmp/meowy-function-exports-docs.log`.
+  `/tmp/meowy-type-alias-preservation.log`. All four final documentation checks pass;
+  `/tmp/meowy-type-alias-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2329,12 +2328,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    aliases; source conformance (`cabfb71`) and the compiler gate pass. Exported
    definitions/re-exports now return exact IDs (`6fce856`) and publish completion
    after all export checks (`447c0e4`), preserving module startup and independent
-   bodies. Source conformance (`3506f03`) and the compiler gate pass. Next inspect
-   `StmtKind::TypeAlias` in `statements.rs` and its declaration helpers in `exports.rs`.
-   Keep required construction, duplicate/scope/export errors and budgets before any
-   completion link; test local/exported and computed targets, add source coverage,
-   then run the compiler gate. Other erased forms, forward groups, callee summaries,
-   propagation and proof outcomes remain separate; no generic empty-HIR bypass.
+   bodies. Source conformance (`3506f03`) and the compiler gate pass. Explicit
+   TypeAlias statements now connect only after required construction and declaration
+   checks (`133ba70`); required-only helper aliases gain no runtime endpoints.
+   Source conformance (`90d6263`) and the compiler gate pass. Next inspect resolved
+   ordinary Value::Type/foundation-type bindings, annotated meta bindings and meta
+   value exports in `names.rs`, `statements.rs` and `exports.rs`. Preserve logical
+   charges, payloads, ordinary/export errors and required-only callers before any
+   completion link. Split independent integration/export slices, test supported
+   forms and errors/budgets, extend source coverage, then run the compiler gate.
+   Other erased forms, forward groups, callee summaries, propagation and proof
+   outcomes remain separate; no generic empty-HIR bypass.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

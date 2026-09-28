@@ -7,26 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Module function definitions and typed re-exports now retain bounded completion
-edges after successful export validation. Exact function IDs survive nested
-allocations and imported/chained aliases; module sequences continue independently
-of function bodies. Never-call, forward-group and type-only boundaries remain.
-Implementation slices: `6fce856`, `447c0e4`; source conformance: `3506f03`.
+Explicit type-alias declarations now retain bounded statement-completion edges
+only after required construction and declaration/export checks succeed. Local,
+exported and computed aliases preserve owners, logical budgets and diagnostics.
+Aliases inside required type blocks add no runtime statement endpoints. Ordinary
+type-valued bindings, meta value exports and forward groups remain separate.
+Implementation: `133ba70`; source conformance: `90d6263`.
 
-The catalog has 97 cases: 78 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Three new fixtures pin module initialization around
-exports, unused Never bodies, duplicate exports and required public signatures.
-All previous cases/assets and reference contracts are unchanged. The
+The catalog has 101 cases: 82 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Four new fixtures pin scoped/computed aliases, separate
+namespaces, type exports, duplicate names and required failure after emission.
+All prior cases/assets and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1912 library/913 native and 62 Python test groups;
-`/tmp/meowy-function-exports-gate.log`. Strict mode correctly rejects the known gaps.
+1918 library/913 native and 62 Python test groups;
+`/tmp/meowy-type-alias-gate.log`. Strict mode correctly rejects the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect explicit type-alias declarations in `compiler/src/check/statements.rs`
-and `compiler/src/check/exports.rs`. Add only form-specific completion after required
-construction and declaration/export checks; preserve required roots and diagnostics.
-The [compiler handoff](compiler/STATUS.md#current-exported-function-completion)
+Next inspect ordinary type-valued bindings and meta value exports in
+`compiler/src/check/statements.rs` and `compiler/src/check/exports.rs`. Classify
+resolved forms only after required checks; keep required-only evaluation separate.
+The [compiler handoff](compiler/STATUS.md#current-explicit-type-alias-completion)
 records the scope, evidence and next validation requirements.
 
 ## Documentation conventions
@@ -1112,11 +1113,14 @@ execution was not part of this documentation edit.
    now retain bounded completion after successful lexical declaration, including
    self/forward aliases. Exported definitions and typed re-exports now retain exact
    function identities and bounded completion after all export checks. Focused/source
-   coverage and the compiler gate pass. Next inspect explicit type-alias declarations
-   in `compiler/src/check/statements.rs` and `compiler/src/check/exports.rs`; preserve
-   required construction, scope/export errors and budgets before any completion link.
-   Add focused/source coverage and run the compiler gate. Other erased forms and
-   forward groups stay separate; proof outcomes remain gated.
+   coverage and the compiler gate pass. Explicit type-alias declarations now connect
+   after required construction and declaration/export checks, preserving logical
+   accounting and required-only helpers. Focused/source coverage and the compiler
+   gate pass. Next inspect ordinary type-valued bindings and meta value exports in
+   `compiler/src/check/statements.rs` and `compiler/src/check/exports.rs`, preserving
+   resolved identities, required checks and errors before completion. Add focused/
+   source coverage and run the compiler gate. Other erased forms and forward groups
+   stay separate; proof outcomes remain gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

@@ -384,6 +384,15 @@ statement/module owner and independent body identity, with the same atomic work
 and edge limits. Export completion does not enter the body, imply a call returns,
 or change module initialization order. Failed exports publish no completion edge;
 public-signature, type, duplicate and capability diagnostics remain unchanged.
+Explicit `<Name> : ...` type-alias declarations, including exported aliases,
+retain bounded statement-completion edges after required construction and all
+declaration/export checks succeed. The checked statement identity is sufficient;
+no type payload, runtime type storage or new type ID is retained for the edge.
+Computed aliases keep their original logical charges, input restrictions, error
+order and root restoration. Aliases inside required type blocks still use the
+required evaluator directly and add no runtime statement endpoints; existing
+required expression/read metadata is preserved. Failed construction or declaration
+publishes no alias endpoint. Completion never bypasses an earlier stopped path.
 Immutable, unannotated bindings of resolved function items and the current
 foundation modules/callable items also retain bounded statement-completion edges.
 Classification uses the resolved value, which is declared unchanged; publication
@@ -393,10 +402,10 @@ including self/forward aliases. They never traverse the target body or imply tha
 a later call returns. Foundation classification includes module aliases,
 print/panic, string-copy, copy-query and bit-operation identities; it does not
 admit execution of unsupported calls or proof queries.
-Forward groups retain explicit barriers. Type/meta/static, record, file-module,
-scoped-control and pending-descriptor bindings retain their
-existing metadata. Heap handles keep their separate runtime value path. There is
-no general bypass for empty HIR statements. Completion edges are structural
+Forward groups retain explicit barriers. Type-valued ordinary bindings and meta
+value exports, static/record/file-module values, scoped-control aliases and pending
+descriptors retain their existing metadata. Heap handles keep their separate
+runtime value path. There is no general bypass for empty HIR statements. Completion edges are structural
 connectivity, not evidence that a runtime path is reached.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
