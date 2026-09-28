@@ -1,0 +1,5 @@
+c:@"core"
+d:@"debug"
+d.print("types")
+-><Kind>:<c.Type>
+->element<Kind>:<uint8>

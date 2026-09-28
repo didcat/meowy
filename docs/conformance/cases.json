@@ -1077,6 +1077,40 @@
         "code": "E107"
       },
       "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "module_meta_completion",
+      "phase": "run",
+      "source": "sources/modules/module_meta_completion/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "types\napi\nentry\n7\n2\n3\n"
+      },
+      "reference": "../reference/compile-time.md#type-values-and-user-helpers",
+      "companions": [
+        "sources/modules/module_meta_completion/api.mwy",
+        "sources/modules/module_meta_completion/types.mwy"
+      ]
+    },
+    {
+      "id": "type_value_export_duplicate",
+      "phase": "check",
+      "source": "sources/type_value_export_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports"
+    },
+    {
+      "id": "type_value_result_mismatch",
+      "phase": "check",
+      "source": "sources/type_value_result_mismatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/compile-time.md#type-values-and-user-helpers"
     }
   ]
 }

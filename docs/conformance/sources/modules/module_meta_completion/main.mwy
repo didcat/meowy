@@ -1,0 +1,15 @@
+api:@"./api.mwy"
+d:@"debug"
+side<int32>:(){d.print("called");->9}
+kind:side()<>
+copy<Type>:kind
+value<(copy)>:7
+items<(api.items)>:[1,2]
+d.print("entry")
+d.print(value)
+d.print(items[2])
+{
+    <Type>:<uint8>
+    kind<Type>:3
+    d.print(kind)
+}

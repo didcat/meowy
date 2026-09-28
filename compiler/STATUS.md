@@ -336,7 +336,17 @@ export groups pass; `/tmp/meowy-meta-exports-focused.log`. Imported payloads and
 module owners are preserved, failed exports add no endpoints, and logical E220
 remains distinct from graph-capacity B001. All 1927 library tests and all-target
 Clippy pass; `/tmp/meowy-meta-exports-lib.log`, `/tmp/meowy-meta-exports-clippy.log`.
-No outstanding test failures remain. Source conformance and the final handoff follow.
+No outstanding test failures remain; meta exports are committed as `1c4d254`.
+Three required source cases now cover imported/chained meta values, query
+non-execution and Type-name shadowing, duplicate meta exports and invalid meta
+results. All ten compiler checks pass: 1927 library/913 native tests, 32 tooling
+and 30 harness groups, formatting, Clippy, build, metadata/coverage and conformance;
+`/tmp/meowy-type-values-gate.log`. The 104 cases report 85 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. All previous 101 case records,
+121 source assets, 37 reference files and capability exceptions are preserved;
+`/tmp/meowy-type-values-preservation.log`. Strict mode correctly exits 1 only for
+known gaps; `/tmp/meowy-type-values-strict.log`. The final coverage/guide handoff
+remains; no outstanding test failures remain.
 
 ## Documentation conventions and layout
 

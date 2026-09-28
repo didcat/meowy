@@ -1,0 +1,6 @@
+types:@"./types.mwy"
+d:@"debug"
+d.print("api")
+kind:types.element
+->element<Type>:kind
+->items<types.Kind>:{n:2;-><(element)[n]>}
