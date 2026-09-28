@@ -1,0 +1,6 @@
+d:@"debug"
+r:={->rows:=[{->xs:=[1,2]}]}
+i:=1
+r.rows[{i=1;->i}].xs[{i=2;->i}]={i=1;->3}
+d.print(i)
+d.print(r.rows[1].xs[2])

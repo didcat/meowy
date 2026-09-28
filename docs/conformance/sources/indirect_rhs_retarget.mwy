@@ -1,0 +1,8 @@
+d:@"debug"
+x:=1
+y:=2
+p:=&!x
+*p={p=&!y;->3}
+*p=4
+d.print(x)
+d.print(y)

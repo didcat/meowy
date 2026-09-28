@@ -34,7 +34,14 @@ diagnostics, profile disagreement and exact runtime results. The unchanged sourc
 catalog passes 10 cases with 13 explicitly pinned gaps and zero failures;
 `/tmp/meowy-conformance-baseline.log`. Harness policy is committed as `3fb74df`. Six new receiver/predicate/ascription
 cases pass in both profiles: 16 passed, 13 pinned gaps, zero failures;
-`/tmp/meowy-conformance-syntax.log`. Next add bits, ownership, blocks and proof cases.
+`/tmp/meowy-conformance-syntax.log`. Bits aliases/widths/order, arity/range errors, retired operators and required extents
+are covered. The direct call in a list extent exposed a capability gap: its accepted
+reference expectation is preserved, with an exact exception. Current bits baseline:
+21 required passes, 14 pinned gaps, zero failures;
+`/tmp/meowy-conformance-bits.log`. Six ownership/store fixtures pass: last-use acceptance, live-loan/escape rejections,
+pre-RHS pointer retargeting, nested index order and reservation conflicts. Current
+result: 27 required passes, 14 pinned gaps, zero failures;
+`/tmp/meowy-conformance-ownership.log`. Next add blocks and proof cases.
 
 ## Documentation conventions and layout
 

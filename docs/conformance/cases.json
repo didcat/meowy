@@ -347,6 +347,66 @@
         "stdout": "3\n"
       },
       "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "borrow_last_use",
+      "phase": "run",
+      "source": "sources/borrow_last_use.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n2\n"
+      },
+      "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "borrow_live_write",
+      "phase": "check",
+      "source": "sources/borrow_live_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "borrow_local_escape",
+      "phase": "check",
+      "source": "sources/borrow_local_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "indirect_rhs_retarget",
+      "phase": "run",
+      "source": "sources/indirect_rhs_retarget.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "nested_index_write_order",
+      "phase": "run",
+      "source": "sources/nested_index_write_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n3\n"
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "index_reservation_conflict",
+      "phase": "check",
+      "source": "sources/index_reservation_conflict.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
     }
   ]
 }

@@ -1,0 +1,6 @@
+d:@"debug"
+x:=1
+p:&x
+d.print(*p)
+x=2
+d.print(x)
