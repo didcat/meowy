@@ -54,7 +54,11 @@ Required blocks, short-circuiting, division-zero and indexing boundaries now pas
 The nonconstant direct extent uses the reference E104 (distinct from E211 type
 construction dependence). All 64 cases: 45 required passes, 19 pinned gaps, zero
 failures; `/tmp/meowy-conformance-required.log`. No compiler behavior was changed.
-The documentation/proof-obligation inventory is being implemented next.
+All 37 reference documents now have checked evidence/gap records and reviewed
+content hashes. Catalog checks also reject stale coverage reports. All 21 tooling
+tests pass, including document/content/evidence/reference/report drift regressions;
+local link checks pass (`/tmp/meowy-coverage-links.log`). Proof-obligation mapping
+and catalog-validator adversarial tests remain next, followed by the full gate.
 
 ## Documentation conventions and layout
 

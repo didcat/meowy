@@ -35,6 +35,15 @@ acceptance/output/error expectations never change to match a bootstrap limitatio
 `python3 compiler/tests/conformance.py --strict` rejects every unsupported case.
 Passing this small catalog alone does not qualify the complete language.
 
+[Coverage inventory](COVERAGE.md) separates required source cases, pinned capability
+gaps and internal test evidence across every file in `docs/reference/`. The
+[document map](documents.json) records the reviewed content hash, evidence kind
+and remaining scope. Reference edits require reviewing the affected evidence/gap
+and updating its SHA-256; new documents require a new entry. Then regenerate with
+`python3 -B docs/conformance/coverage.py --write`. Catalog validation checks the
+inventory and rejects stale generated reports. Counts measure traceability only;
+linked internal tests and seeded graph metadata do not qualify entire documents.
+
 ```sh
 python3 docs/conformance/check.py
 ```

@@ -53,6 +53,8 @@ def main():
             assert anchor in anchors, (case["id"], anchor)
     assert sources == set((base / "sources").glob("*.mwy")), "Unlisted source fixture"
     print(f"Validated {len(seen)} fixture records; no meowy source was executed.")
+    from coverage import check
+    check(base.parents[1])
 
 
 if __name__ == "__main__":
