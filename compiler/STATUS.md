@@ -120,7 +120,11 @@ Schema support is committed as `e927e30`. Version-3 runner integration now passe
 UTF-8 panic record, rejecting wrong codes, malformed sites, mixed diagnostics,
 signals, timeouts and capability errors. All 74 existing cases remain 55 passed,
 19 pinned gaps, zero failures; `/tmp/meowy-panic-runner-baseline.log`.
-Source panic fixtures are next; graph work remains deferred.
+Runner support is committed as `4ba13f4`. The first four source panic fixtures
+pass in both profiles: ordered addition, unsigned subtraction, signed multiplication
+and unary-negation overflow. Current result: 59 required passes, 19 pinned gaps,
+zero failures; `/tmp/meowy-panic-overflow.log`. Division/remainder, collection and
+startup fixtures remain before the final gate; graph work stays deferred.
 
 ## Documentation conventions and layout
 

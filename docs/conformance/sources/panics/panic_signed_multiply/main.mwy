@@ -1,0 +1,5 @@
+d:@"debug"
+f<int16>:(x<int16>){->x * -1}
+d.print("before")
+d.print(f(-32768))
+d.print("after")

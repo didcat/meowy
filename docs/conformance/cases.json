@@ -768,6 +768,54 @@
         "sources/modules/module_reexport_signature/api.mwy",
         "sources/modules/module_reexport_signature/ops.mwy"
       ]
+    },
+    {
+      "id": "panic_add_order",
+      "phase": "run",
+      "source": "sources/panics/panic_add_order/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nleft\nright\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_unsigned_subtract",
+      "phase": "run",
+      "source": "sources/panics/panic_unsigned_subtract/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_signed_multiply",
+      "phase": "run",
+      "source": "sources/panics/panic_signed_multiply/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_signed_negate",
+      "phase": "run",
+      "source": "sources/panics/panic_signed_negate/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
     }
   ]
 }

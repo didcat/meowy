@@ -1,0 +1,5 @@
+d:@"debug"
+f<uint8>:(x<uint8>){->x-1}
+d.print("before")
+d.print(f(0))
+d.print("after")

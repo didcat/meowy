@@ -1,0 +1,6 @@
+d:@"debug"
+left<int8>:(){d.print("left");->127}
+right<int8>:(){d.print("right");->1}
+d.print("before")
+d.print(left()+right())
+d.print("after")
