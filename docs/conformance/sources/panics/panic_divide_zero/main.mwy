@@ -1,0 +1,5 @@
+d:@"debug"
+f<int32>:(x<int32>){->10/x}
+d.print("before")
+d.print(f(0))
+d.print("after")

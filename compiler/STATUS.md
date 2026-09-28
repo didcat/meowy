@@ -123,8 +123,10 @@ signals, timeouts and capability errors. All 74 existing cases remain 55 passed,
 Runner support is committed as `4ba13f4`. The first four source panic fixtures
 pass in both profiles: ordered addition, unsigned subtraction, signed multiplication
 and unary-negation overflow. Current result: 59 required passes, 19 pinned gaps,
-zero failures; `/tmp/meowy-panic-overflow.log`. Division/remainder, collection and
-startup fixtures remain before the final gate; graph work stays deferred.
+zero failures; `/tmp/meowy-panic-overflow.log`. Division by zero, signed-minimum division and remainder by zero also pass in
+both profiles. Current result: 62 required passes, 19 pinned gaps, zero failures;
+`/tmp/meowy-panic-division.log`. Collection and startup fixtures remain before the
+final gate; graph work stays deferred.
 
 ## Documentation conventions and layout
 

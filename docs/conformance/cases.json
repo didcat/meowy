@@ -816,6 +816,42 @@
         "exit": 1
       },
       "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_divide_zero",
+      "phase": "run",
+      "source": "sources/panics/panic_divide_zero/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_divide_minimum",
+      "phase": "run",
+      "source": "sources/panics/panic_divide_minimum/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_remainder_zero",
+      "phase": "run",
+      "source": "sources/panics/panic_remainder_zero/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
     }
   ]
 }

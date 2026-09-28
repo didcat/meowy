@@ -1,0 +1,5 @@
+d:@"debug"
+f<int32>:(left<int32>,right<int32>){->left%right}
+d.print("before")
+d.print(f(7,0))
+d.print("after")

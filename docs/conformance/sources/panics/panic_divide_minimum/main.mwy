@@ -1,0 +1,5 @@
+d:@"debug"
+f<int32>:(x<int32>){->x / -1}
+d.print("before")
+d.print(f(-2147483648))
+d.print("after")
