@@ -447,8 +447,19 @@ emission does not complete initialization: tail effects precede materialization,
 and stopped/Never inputs have no path to the store or later modules. No empty-HIR
 bypass or unconditional completion is added; errors publish no outer storage
 operation and original privacy/export/initialization checks remain authoritative.
-Forward groups retain explicit barriers. Record values and pending descriptors
-retain their existing metadata.
+Ordinary forward-function groups now retain the actual reserved FunctionIds and a
+checked point/site anchored at the first source signature. IDs are captured before
+nested body checking can allocate more functions. The group finishes only after
+every definition succeeds; completed body/owner identities, reservation order and
+bounded work are validated before one Entry-to-Normal edge is published. Statement
+site context is restored after checking, retaining an empty lifetime wrapper when
+needed. Function bodies are independent; unused `never` functions do not prevent
+group completion, while actual Never calls still lack continuation.
+Block and ordinary/composed dispatch sequences use the checked group point. Real
+None prefixes remain explicit and are never skipped. Exported definitions inside
+forward groups remain a bootstrap gap: they currently receive E221 despite being
+allowed by the reference. That rejection is not counted as successful conformance.
+Record values and pending descriptors retain their existing metadata.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not
 evidence that a runtime path is reached.
@@ -467,9 +478,10 @@ Ordinary dispatch blocks retain exact receiver roots and the existing `$` local
 and body identities. Entry reaches receiver evaluation through the block prefix;
 receiver completion precedes initialization of that local and the immediate
 checked body successor. An empty body completes after initialization. Synthetic
-prefix markers remain explicit, and later opaque entries such as forward
-declarations are not skipped. Stopped receivers have no initialization/result
-link, and stopped bodies have no result link. These bounded stages preserve
+prefix markers remain explicit. A successfully checked forward group is the next
+source point; unknown entries are not skipped. Stopped receivers have no
+initialization/result link, and stopped bodies have no result link. These bounded
+stages preserve
 expected typing, nested receiver scope, permission/lifetime checks and call-return
 conditions without inventing source statements.
 Grouped composition links exact checked child roots, and plain partial blocks

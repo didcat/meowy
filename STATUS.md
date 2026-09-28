@@ -7,29 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Synthetic module initializers now retain exact checked expression roots and feed
-them into bounded storage-operation metadata. Program-entry reports follow module
-body evaluation before materialization and continuation; stopped/Never inputs
-cannot reach the store or later modules. Root capture preserves module/docs checks
-and state restoration without re-evaluation. Implementation: `514324d`, `97209a5`;
-source conformance: `6ea543a`, `90791b1`.
+Ordinary forward-function groups now retain exact reserved IDs, a checked
+first-signature point/site and bounded completion after every definition succeeds.
+Block and ordinary/composed dispatch sequences connect that point; unused Never
+bodies stay independent and actual Never calls still stop continuation. Other None
+prefixes remain explicit. Implementation: `82595c3`, `a687419`, `4940924`;
+source conformance: `6791859`.
 
-The catalog has 115 cases: 96 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. New cases pin tail effects after primary emission,
-dependency/once-only startup and failure after a partial result. Prior cases/assets
-and reference contracts are unchanged. The
+The catalog has 119 cases: 100 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. New cases cover reordered recursion, nested/dispatch
+completion, unused Never functions, signature mismatch and incomplete groups.
+Prior assets and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1950 library/913 native and 62 Python test groups;
-`/tmp/meowy-module-initializers-gate.log`. Strict mode rejects only the known gaps.
+1960 library/913 native and 62 Python test groups;
+`/tmp/meowy-forward-groups-gate.log`. Strict mode rejects only the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect forward-function group sequencing in `compiler/src/check/blocks.rs`
-and `compiler/src/check/functions.rs`. Its explicit None barrier remains; capture
-checked group/source identities before planning any completion links. The
-[compiler handoff](compiler/STATUS.md#current-synthetic-module-initializer-inputs)
-records scope, evidence and next validation requirements. Unrelated workspace edits
-in `.gitignore` and `docs/programs/hey.mwy` remain outside this committed series.
+Next address exported forward definitions: the reference permits them, but the
+current group matcher accepts only ordinary Bind and rejects exports with E221.
+This verified gap is distinct from the 19 catalog capability exceptions. The
+[compiler handoff](compiler/STATUS.md#current-forward-group-completion) records the
+probe and next validation requirements. Unrelated work under `docs/programs/build/`
+and `docs/programs/hey/` remains outside this committed series.
 
 ## Documentation conventions
 
@@ -1130,11 +1130,14 @@ execution was not part of this documentation edit.
    pass. Synthetic module-initializer operations now retain their exact checked
    expression roots, connecting body completion to storage without bypassing stopped
    inputs or successful-check boundaries. Focused/source coverage and the compiler
-   gate pass. Next inspect forward-group sequencing in `compiler/src/check/blocks.rs`
-   and `compiler/src/check/functions.rs`; capture checked source/group identities
-   before any completion publication. Preserve adjacency/signature errors and
-   independent bodies, add focused/source coverage and run the compiler gate.
-   Other erased forms remain separate; proof outcomes remain gated.
+   gate pass. Ordinary forward groups now retain checked first-signature sites and
+   exact reservation IDs, completing only after all definitions succeed. Block and
+   dispatch sequences connect them without skipping other None prefixes. The compiler
+   gate and source coverage pass. Next handle documented exported forward definitions
+   in `compiler/src/check/functions.rs` and `compiler/src/check/exports.rs`: fulfill
+   existing reservations, preserve public-signature/export checks, add required source
+   coverage and run the compiler gate. Other erased forms and proof outcomes remain
+   separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

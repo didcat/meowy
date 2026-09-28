@@ -150,7 +150,7 @@ registration is idempotent, and invalid metadata or exhausted budgets adds no ed
 Function bodies are never connected to declaration execution. An unused Never body
 does not block the enclosing sequence; an actual Never call still lacks continuation.
 This slice covered ordinary definitions; alias/export extensions are recorded below.
-Forward groups remain explicit barriers.
+Forward-group completion is covered by the current slice below.
 
 All 1898 library tests and all-target Clippy pass;
 `/tmp/meowy-function-endpoints-lib.log`, `/tmp/meowy-function-endpoints-clippy.log`.
@@ -167,7 +167,7 @@ source cases/assets and reference contracts are preserved. Final default checks 
 `/tmp/meowy-function-declarations-docs.log`. No test failures remain.
 
 Immutable aliases and exported functions now have form-specific completion metadata,
-described below. Forward-group barriers remain separate.
+described below. Forward groups now have their own completion path below.
 
 ## Current immutable identity-binding completion
 
@@ -190,7 +190,7 @@ idempotent and failures add no endpoint. Calls retain their effects and return g
 
 Record/pending forms remain excluded. Type-valued/static/control/file-module
 bindings and meta exports are covered below. Heap handles retain their runtime value path;
-forward groups keep explicit barriers. Required
+forward groups have their own completion path below. Required
 roots, ownership, ordinary errors and unsupported-call/proof gates remain unchanged.
 Six structural groups cover resolution, self/forward slots, exclusions, errors,
 identity validation and exact publication budgets. The four source cases exercise
@@ -209,7 +209,7 @@ classified evidence and exact capability exceptions; no further rule changes are
 needed for this slice.
 
 Exported definitions and re-exports are now covered by the completed slice below.
-Forward groups, type-only forms, callee summaries and proof outcomes remain separate.
+Required-only evaluation, callee summaries and proof outcomes remain separate.
 
 ## Current exported function completion
 
@@ -232,8 +232,8 @@ calls still lack continuation. Export errors publish no endpoint.
 
 Three identity groups and five graph groups cover definitions, nested allocation,
 chained/imported aliases, independent module sequences, errors, unhandled forms,
-Never calls and exact publication limits. Forward groups retain their existing
-barriers; explicit type aliases and meta value exports are covered below. Required
+Never calls and exact publication limits. Forward groups, explicit type aliases
+and meta value exports have subsequent completion slices below. Required
 roots, export errors/capability gates,
 module initialization, callee effects and proof outcomes are unchanged.
 
@@ -295,123 +295,69 @@ without replaying module bodies. Source coverage (`43a4308`) pins initialization
 function-local aliases and privacy. The initializer-input extension below replaces
 the prior input=None boundary; other synthetic prefixes remain separate.
 
-## Current synthetic module-initializer inputs
+## Synthetic module-initializer inputs
+
+Exact module-expression roots (`514324d`) feed bounded synthetic storage operations
+(`97209a5`), preserving parent/owner/completion checks and module/docs restoration.
+Program-entry reports follow initializer bodies before stores; stopped/Never inputs
+cannot reach materialization or later modules. Source coverage (`6ea543a`, `90791b1`)
+pins tail order and failed partial results. The full gate below retains these checks.
+
+## Current forward-group completion
 
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Return exact checked module-expression roots | `514324d` |
-| Wire synthetic initializer storage to the checked input | `97209a5` |
-| Pin tail effects and dependency/once-only initialization | `6ea543a` |
-| Pin failed initialization after a partial primary result | `90791b1` |
+| Retain actual bounded reservation IDs and next AST index | `82595c3` |
+| Capture first-signature points and validate whole-group completion | `a687419` |
+| Connect checked sites through block/dispatch sequences | `4940924` |
+| Pin reordered recursion, unused Never groups and rejections | `6791859` |
 
-`module_value_point` returns the existing expression PointId with its checked value
-and exports, only after module/documentation checks succeed. It does not add points,
-re-evaluate initializers or infer identities from spans/block IDs/allocation order.
-Prior module/docs state is restored before failure propagation. The old two-value
-helper remains test-only for existing helper tests.
+Ordinary forward groups capture actual FunctionIds during reservation, before nested
+body checking can allocate additional functions. A checked point/site is anchored
+at the first source signature and completes only after every definition succeeds.
+All body/owner identities, reservation order and work/edge limits are checked before
+one Entry-to-Normal edge is published. Site/statement context restores on failure;
+any required empty lifetime wrapper is retained. Definitions remain independently
+owned bodies; group completion grants no callee purity, return or runtime-reachability
+facts. Unused Never functions do not block declarations; actual Never calls still stop.
 
-Synthetic Bind passes that root to the existing storage-operation validator.
-Parent/owner/block/completion checks and atomic three-edge/work limits precede
-publication. Program-entry reports now include initializer storage in module order,
-without entering unused function bodies. Primary emission is not completion:
-module tail effects run before materialization. Stopped/Never roots have no path
-to the store or later modules, and expression/export/documentation failures publish
-no outer storage operation. Three root-helper groups and four integration groups
-cover these identities, boundaries, restoration, effects and exact budgets.
+Block and ordinary/composed dispatch sequences use that checked group point.
+Receiver initialization still precedes it, and real None prefixes are never skipped.
+Root/site, recursion/order/owner, error and exact budget regressions pass. The shared
+sequence integration required 14 files because previously independent block,
+dispatch, sequence and alias/declaration tests all asserted the same former None
+boundary. ID capture and endpoint validation were split first; the one wiring change
+and its dependent expectations had to move together to preserve a passing commit.
 
-All ten compiler checks pass: 1950 library/913 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 1960 library/913 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, metadata/coverage and conformance;
-`/tmp/meowy-module-initializers-gate.log`. The 115 cases report 96 passes,
-19 unchanged pinned gaps and zero failures in debug/release. Two new multi-file
-cases pin post-emission tail order and panic after a partial primary result, with
-no later-module/entry output. Strict mode exits 1 only for known gaps;
-`/tmp/meowy-module-initializers-strict.log`. All 113 prior case records, 137 source
-assets, 37 reference files and capability exceptions are preserved;
-`/tmp/meowy-module-initializers-preservation.log`. No outstanding compiler/test
-failures remain. All four final documentation checks pass;
-`/tmp/meowy-module-initializers-docs.log`. AGENTS already covers the required
+`/tmp/meowy-forward-groups-gate.log`. The 119 cases report 100 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. Four new cases pin reversed-definition
+mutual recursion, nested/dispatch completion with unused Never functions, signature
+mismatch and partial groups. Strict mode exits 1 only for known gaps;
+`/tmp/meowy-forward-groups-strict.log`. All 115 prior case records, 143 source assets,
+37 reference files and capability exceptions are preserved;
+`/tmp/meowy-forward-groups-preservation.log`. No outstanding failures remain in the
+selected tests. All four final documentation checks pass;
+`/tmp/meowy-forward-groups-docs.log`. AGENTS already covers the required
 conformance/evidence workflow; no rule change is needed.
-Concurrent unrelated `.gitignore` and `docs/programs/hey.mwy` changes remain outside
-this committed series; they were not modified or included here.
+Unrelated current work is under `docs/programs/build/` and `docs/programs/hey/`;
+the earlier `.gitignore`/`hey.mwy` edits changed externally and were not included.
 
-Next inspect forward-function groups in `src/check/blocks.rs` and
-`src/check/functions.rs`. `forward` consumes signatures/definitions and returns only
-the next AST index; the enclosing sequence still inserts an explicit None barrier.
-Plan source/group identity capture separately from completion publication. Retain
-actual reserved FunctionIds and source checking boundaries; publish completion only
-after every group definition succeeds, without entering function bodies or granting
-callee effect/return facts. Preserve adjacency/signature/capture diagnostics, nested
-owners and bounded work. Test mutual/self recursion, interrupted/rejected groups,
-unused Never bodies and budgets; add source coverage and run compiler/strict-gap
-gates. Other synthetic prefixes, record/pending values, callee summaries, backedge
-propagation and proof outcomes remain separate. Never bypass arbitrary None entries.
-
-## Current forward-group completion
-
-Dependency-ordered commit plan:
-
-1. Return the actual reserved FunctionIds with the next AST index from successful
-   forward-group checking. Bound retained IDs and preserve signature/body/documentation
-   order and all diagnostics. Keep the existing None sequence barrier for this slice.
-2. Capture a checked statement point at the first source signature while checking
-   the whole group. Validate all completed function/body identities and bounded work
-   before atomically publishing isolated group completion, retaining the enclosing
-   sequence barrier until its separate integration slice.
-3. Connect that group point in block sequences and update the existing cross-family
-   forward-barrier regressions together. Include recursion, nesting and Never walks;
-   preserve all other None prefixes and bounded lookup/dispatch behavior.
-4. Add independently useful source conformance for group completion/recursion and
-   rejections, preserving all prior fixtures/contracts and exact capability pins.
-   Run compiler, strict-gap and byte-preservation checks.
-5. Refresh coverage evidence, the foundation guide and root/compiler handoffs,
-   run final documentation checks and commit the handoff.
-
-Inspection: the current group checker reserves every signature before checking
-definitions and may allocate nested functions later, so IDs must be captured during
-reservation. The group's source anchor is its first signature, not a fabricated
-statement or a span inferred after checking. Completion may be published only after
-the entire group succeeds; definitions remain independently owned bodies. Existing
-forward export/generic/capture gates stay unchanged. Starting HEAD is `11f22f5`;
-unrelated `.gitignore` and `docs/programs/hey.mwy` edits remain outside this series.
-Reserved-ID capture passes all 22 matching forward groups, including three new
-identity/error/capacity groups; `/tmp/meowy-forward-identities.log`. Nested function
-allocations and reversed definition order preserve the actual reservation IDs.
-Identity capture is committed as `82595c3`. Checked group points and bounded
-completion validation pass all nine matching group checks, including four new
-endpoint groups; `/tmp/meowy-forward-endpoints.log`. Definitions are validated
-as a whole before one completion edge is published. Block sequences still use
-None. All 1957 library tests and all-target Clippy pass;
-`/tmp/meowy-forward-endpoints-lib.log`, `/tmp/meowy-forward-endpoints-clippy.log`.
-Metadata validation is committed as `a687419`. Initial sequence integration found
-that block sequences require complete statement sites, not only complete points.
-Forward checking now owns a checked first-signature site and retains an empty HIR
-lifetime wrapper when required; sequence validation is not weakened. The remaining
-test-only failure was a nested-owner fixture mutating a sequence under the outer
-owner; it now uses the actual body owner. All 1960 library tests and all-target
-Clippy pass; `/tmp/meowy-forward-sequences-lib.log` and
-`/tmp/meowy-forward-sequences-clippy.log`. No outstanding test failures remain.
-The sequence integration needs 14 files: one shared block change updates forward,
-sequence, block, ordinary/composed dispatch and alias/declaration regressions that
-all asserted the former None boundary. Split review separated reserved-ID capture
-and endpoint validation into prior commits. These expectations must change together
-with wiring to keep this commit buildable; moving tests solely to meet eight files
-would hide that dependency. Other None-prefix checks remain explicit.
-Sequence integration is committed as `4940924`. Four new required source cases
-cover reversed-definition mutual recursion, nested/dispatch groups with unused
-Never functions, signature mismatch and incomplete groups. Metadata passes for
-119 cases. All ten compiler checks pass: 1960 library/913 native tests, 32 tooling
-and 30 harness groups; `/tmp/meowy-forward-groups-gate.log`. Conformance reports
-100 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict
-mode exits 1 only for known gaps; `/tmp/meowy-forward-groups-strict.log`. The prior
-115 case records, 143 assets, 37 reference files and capability exceptions are
-preserved; `/tmp/meowy-forward-groups-preservation.log`. Final documentation remains.
-An independent next-slice probe confirms that documented exported group definitions
-still receive E221; `/tmp/meowy-forward-export-probe.log`. This is an existing
-implementation gap, not a conformance rejection pass or an added capability pin.
-Current unrelated work is under `docs/programs/build/` and
-`docs/programs/hey/`; the earlier `.gitignore`/`hey.mwy` state has changed externally.
+Next implement documented exported definitions inside forward groups. The source
+`f<()->int32>;->f<int32>:(){->1}` currently returns E221 because `forward` matches only
+ordinary Bind; probe: `/tmp/meowy-forward-export-probe.log`. This is a pre-existing
+acceptance gap, not a language-rejection pass or one of the 19 B001 exceptions.
+Inspect `src/check/functions.rs` and `src/check/exports.rs`, then plan separate
+reservation-aware definition admission, export registration/checks and integration
+slices. Reuse existing IDs rather than redeclaring functions; preserve exact/public
+signatures, export scope/duplicates, doc checks and whole-group completion. Add a
+required accepted source fixture plus mismatch/duplicate/scope regressions, then run
+compiler/strict-gap gates and update the coverage gap. Generic/capturing groups,
+record/pending values, callee summaries, backedge propagation and proof outcomes
+remain separate.
 
 ## Documentation conventions and layout
 
@@ -542,10 +488,10 @@ The foundation guide documents snapshot scope and the remaining graph boundary.
 All four default checks pass, including 1208 local links in 110 Markdown files;
 `/tmp/meowy-indirect-effects-docs.log`.
 
-Ordinary function-definition completion is now implemented; the current repair
-section above records identity/bounds checks and validation. Resolved immutable
-identity aliases remain the next structural statement gap. Preserve independent
-bodies, forward-group barriers, unknown effects and proof gates.
+Declaration/identity aliases, module-initializer inputs and ordinary forward-group
+completion are implemented; the current handoff above records validation and the
+remaining export gap. Preserve independent bodies, explicit None prefixes, unknown
+effects and proof gates.
 
 ### Proof dependency implementation slices
 
@@ -1873,13 +1819,14 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Synthetic module-initializer inputs pass all ten compiler checks: 1950 library/
-  913 native tests, 32 tooling and 30 harness groups. Conformance: 96 passed,
-  19 pinned gaps, zero failures in debug/release;
-  `/tmp/meowy-module-initializers-gate.log`. Strict mode rejects only those gaps;
-  `/tmp/meowy-module-initializers-strict.log`. Prior fixtures/expectations and
-  reference contracts are unchanged; `/tmp/meowy-module-initializers-preservation.log`.
-  All four final documentation checks pass; `/tmp/meowy-module-initializers-docs.log`.
+- Forward-group completion passes all ten compiler checks: 1960 library/913
+  native tests, 32 tooling and 30 harness groups. Conformance: 100 passed,
+  19 pinned gaps, zero failures in debug/release; `/tmp/meowy-forward-groups-gate.log`.
+  Strict mode rejects only those gaps; `/tmp/meowy-forward-groups-strict.log`.
+  Prior fixtures/expectations and reference contracts are unchanged;
+  `/tmp/meowy-forward-groups-preservation.log`. Exported forward definitions remain
+  a separately verified acceptance gap. All four final documentation checks pass;
+  `/tmp/meowy-forward-groups-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2457,13 +2404,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`43a4308`) and the compiler gate pass. Synthetic initializer storage now keeps
    exact module-expression roots (`514324d`, `97209a5`), exposing ordered initializer
    effects while preserving stopped inputs and successful-check boundaries. Source
-   conformance (`6ea543a`, `90791b1`) and the compiler gate pass. Next inspect forward
-   groups in `blocks.rs`/`functions.rs`: capture checked group/source identities and
-   reserved function IDs before completion publication. Preserve signature/adjacency/
-   capture errors, independent bodies and work limits; test groups/errors/budgets,
-   extend source coverage and run the compiler gate. Other erased forms, synthetic
-   prefixes, callee summaries, backedge propagation and proof outcomes remain
-   separate; never bypass arbitrary None entries.
+   conformance (`6ea543a`, `90791b1`) and the compiler gate pass. Ordinary forward
+   groups now retain reservation IDs and checked first-signature sites, validate all
+   definitions before completion, and connect block/dispatch sequences (`82595c3`,
+   `a687419`, `4940924`). Source coverage (`6791859`) and the compiler gate pass.
+   Next implement exported forward definitions in `functions.rs`/`exports.rs`; they
+   currently reject with E221 despite reference acceptance. Fulfill existing IDs,
+   preserve signature/scope/export checks and group atomicity, add required accepted
+   source coverage and run the compiler gate. Other erased forms, synthetic prefixes,
+   callee summaries, backedge propagation and proof outcomes remain separate;
+   never bypass arbitrary None entries.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
