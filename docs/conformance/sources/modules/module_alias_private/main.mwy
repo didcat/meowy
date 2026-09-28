@@ -1,0 +1,4 @@
+m:@"./value.mwy"
+alias:m
+copy:(alias)
+value:copy.private

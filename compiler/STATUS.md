@@ -357,7 +357,17 @@ Synthetic initializer operations still have input=None and no invented entry lin
 alias completion does not bypass that separate graph boundary. All 1943 library
 tests and all-target Clippy pass; `/tmp/meowy-module-aliases-lib.log` and
 `/tmp/meowy-module-aliases-clippy.log`. No outstanding test failures remain.
-Source conformance and the final handoff are next.
+Implementation is committed as `1143ce5`. Two required source cases now cover
+repeated/function-local imports, chained
+aliases, once-only initialization, required extents and private-member rejection.
+All ten compiler checks pass: 1943 library/913 native tests, 32 tooling and 30
+harness groups, formatting, Clippy, build and conformance;
+`/tmp/meowy-module-aliases-gate.log`. The 113 cases report 94 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. All prior 111 case records,
+133 source assets, 37 reference files and capability exceptions are preserved;
+`/tmp/meowy-module-aliases-preservation.log`. Strict mode correctly exits 1 only
+for known gaps; `/tmp/meowy-module-aliases-strict.log`. The final coverage/guide
+handoff remains; no outstanding test failures remain.
 
 ## Documentation conventions and layout
 

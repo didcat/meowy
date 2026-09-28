@@ -1,0 +1,16 @@
+d:@"debug"
+d.print("entry")
+m:@"./value.mwy"
+alias:m
+again:(alias)
+twice:@"./value.mwy"
+get<int32>:(){
+    local:@"./value.mwy"
+    copy:local
+    <Items>:{-><int32[copy]>}
+    xs<Items>:[9]
+    ->copy.add(xs[1])
+}
+d.print(again+1)
+d.print(twice+2)
+d.print(get())

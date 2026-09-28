@@ -1181,6 +1181,32 @@
         "code": "E201"
       },
       "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "module_alias_completion",
+      "phase": "run",
+      "source": "sources/modules/module_alias_completion/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "init\nentry\n3\n4\n10\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_alias_completion/value.mwy"
+      ]
+    },
+    {
+      "id": "module_alias_private",
+      "phase": "check",
+      "source": "sources/modules/module_alias_private/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_alias_private/value.mwy"
+      ]
     }
   ]
 }
