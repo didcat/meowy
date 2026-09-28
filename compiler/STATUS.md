@@ -60,8 +60,11 @@ tests pass, including document/content/evidence/reference/report drift regressio
 local link checks pass (`/tmp/meowy-coverage-links.log`). All 33 proof obligations are now mapped (31 acceptance rows plus runtime
 noninterference and release-matrix requirements). Validation checks exact required
 observations, omitted rows, case links and explicit remaining gaps. All 22 tooling
-tests and local links pass; `/tmp/meowy-proof-coverage-links.log`. Next add adversarial
-catalog checks, update AGENTS.md as requested, then run the complete gate.
+tests and local links pass; `/tmp/meowy-proof-coverage-links.log`. All 28 tooling groups pass after adding adversarial catalog tests for duplicate IDs,
+versions/targets, expectation schemas, path escape, empty/unlisted nested sources
+and missing/fenced headings. The validator now reuses the existing Markdown anchor
+parser and finds nested orphan fixtures. Next update AGENTS.md as requested and
+run the full compiler and strict-gap checks.
 
 ## Documentation conventions and layout
 

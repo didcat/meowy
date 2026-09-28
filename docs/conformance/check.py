@@ -2,12 +2,16 @@
 
 import json
 import re
+import sys
 from pathlib import Path
 
 
-def main():
-    base = Path(__file__).resolve().parent
-    catalog = json.loads((base / "cases.json").read_text())
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
+from check_links import anchors
+
+
+def validate(catalog, base):
     assert set(catalog) == {"version", "language_contract", "target", "cases"}
     assert catalog["version"] == catalog["language_contract"] == 1
     assert catalog["target"] == "x86_64-unknown-linux-gnu"
@@ -45,16 +49,17 @@ def main():
         reference = (base / path).resolve()
         assert reference.is_relative_to(base.parent) and reference.is_file(), case
         if separator:
-            headings = re.findall(r"^#{1,6} (.+)$", reference.read_text(), re.MULTILINE)
-            anchors = {
-                re.sub(r"[^\w\- ]", "", title.lower()).replace(" ", "-")
-                for title in headings
-            }
-            assert anchor in anchors, (case["id"], anchor)
-    assert sources == set((base / "sources").glob("*.mwy")), "Unlisted source fixture"
-    print(f"Validated {len(seen)} fixture records; no meowy source was executed.")
+            assert anchor in anchors(reference.read_text()), (case["id"], anchor)
+    assert sources == set((base / "sources").rglob("*.mwy")), "Unlisted source fixture"
+    return len(seen)
+
+
+def main():
+    base = Path(__file__).resolve().parent
+    count = validate(json.loads((base / "cases.json").read_text()), base)
+    print(f"Validated {count} fixture records; no meowy source was executed.")
     from coverage import check
-    check(base.parents[1])
+    check(ROOT)
 
 
 if __name__ == "__main__":
