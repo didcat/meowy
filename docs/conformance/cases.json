@@ -940,6 +940,26 @@
         "sources/panics/panic_module_initialization/first.mwy",
         "sources/panics/panic_module_initialization/later.mwy"
       ]
+    },
+    {
+      "id": "function_definition_completion",
+      "phase": "run",
+      "source": "sources/function_definition_completion.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "unused_function_type_error",
+      "phase": "check",
+      "source": "sources/unused_function_type_error.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
     }
   ]
 }

@@ -136,38 +136,45 @@ with these conformance/traceability gates required for further changes.
 
 ## Current ordinary function-definition completion repair
 
-Dependency-ordered commit plan:
+The dependency-ordered implementation slices are complete:
 
-1. Return the exact registered FunctionId from `declare_function`; preserve exported
-   definition behavior and verify nested declarations do not substitute the last ID.
-2. Add a bounded declaration-specific statement endpoint and wire only successful
-   ordinary function Bind checking. Validate current owner/point/function/body
-   identities; preserve separate function bodies, real forward-group barriers and
-   unsupported erased forms. Update structural regressions and atomic-bound tests.
-3. Add source conformance for unused non-returning definitions/interleaved calls and
-   ordinary errors in unused bodies; update documentation/evidence and run the full
-   compiler gate plus strict-gap verification.
+1. Return exact successful FunctionIds, including nested declarations (`b2dd92c`).
+2. Add bounded ordinary-definition endpoints and structural regressions (`8509cc9`).
+3. Source conformance, documentation and final compiler validation: complete.
 
-Inspection: the ordinary `ExprKind::Function` Bind branch returns empty HIR after
-`declare_function`; block sequences retain the actual statement point but no outgoing
-entry endpoint. `forward()` uses its own checked group with an explicit None barrier.
-Exported definitions share declaration checking and must not gain ordinary endpoints
-incidentally. Function checking restores the outer owner/reach and stores body facts
-under the callee owner. The new endpoint will be structural metadata only, without
-callee expansion, reachability claims, propagation or proof results.
-The identity-return prerequisite passes both focused groups, all 1892 library
-tests and all-target Clippy; `/tmp/meowy-declaration-identities.log`,
-`/tmp/meowy-declaration-id-lib.log`, `/tmp/meowy-declaration-id-clippy.log`.
-Nested definitions preserve their caller's exact ID and failed bodies return no ID.
-The identity prerequisite is committed as `b2dd92c`. Declaration-specific endpoints
-and ordinary-Bind wiring now pass all 1898 library tests and all-target Clippy;
+`edges/declarations.rs` captures one Entry(statement) -> Normal(statement) edge only
+from the successful ordinary function Bind branch in `statements.rs`. It validates
+the current statement owner/completion, exact registered FunctionId and independent
+body owner before publication. Shared work/edge capacity is bounded, duplicate
+registration is idempotent, and invalid metadata or exhausted budgets adds no edge.
+Function bodies are never connected to declaration execution. An unused Never body
+does not block the enclosing sequence; an actual Never call still lacks continuation.
+Exported definitions, forward groups, aliases and other erased forms are unchanged.
+
+All 1898 library tests and all-target Clippy pass;
 `/tmp/meowy-function-endpoints-lib.log`, `/tmp/meowy-function-endpoints-clippy.log`.
-Six endpoint groups cover leading/interleaved and nested definitions, unused Never
-bodies versus Never calls, failed-definition diagnostics, owner/identity rejection,
-opaque/forward barriers and exact edge/work bounds. The original indirect-store
-regressions now use real program-entry reports after definitions; calls stay Unknown.
-No outstanding failures remain. Next add source conformance and update coverage/docs,
-then run the full compiler gate and strict-gap verification.
+Six endpoint groups cover leading/interleaved/nested owners, Never boundaries,
+ordinary errors, invalid identities, preserved opaque forms and exact work/edge caps.
+The indirect-store regressions now inspect real program-entry reports after ordinary
+definitions, keeping calls Unknown. New source fixtures pin non-execution of unused
+Never definitions and error checking in unused bodies. All ten compiler checks pass:
+1898 library/913 native tests, 32 tooling and 30 harness groups, formatting, Clippy,
+build, metadata/coverage and conformance (71 passed/19 pinned gaps/0 failed in both
+profiles); `/tmp/meowy-function-declarations-gate.log`. Strict mode correctly rejects
+the unchanged gaps; `/tmp/meowy-function-declarations-strict.log`. All previous 88
+source cases/assets and reference contracts are preserved. Final default checks pass;
+`/tmp/meowy-function-declarations-docs.log`. No test failures remain.
+
+Next inspect the resolved immutable identity-binding branch in `statements.rs`.
+Function aliases and foundational module aliases still stop structural walks at
+missing statement endpoints. Add only declaration-specific completion for exactly
+classified successful identity forms, accounting for aliases of a function whose
+body is still being checked. Do not reuse the completed-definition body requirement
+for those aliases, infer runtime effects from absence, or bypass every empty HIR
+statement. Preserve forward-group barriers, type/required-evaluation boundaries,
+owners and ordinary diagnostics. Add focused scope/error/budget tests and source
+fixtures, then run compiler and strict-gap gates. Proof propagation/outcomes remain
+gated; call effects and broader contextual graph coverage remain separate.
 
 ## Documentation conventions and layout
 
@@ -298,18 +305,10 @@ The foundation guide documents snapshot scope and the remaining graph boundary.
 All four default checks pass, including 1208 local links in 110 Markdown files;
 `/tmp/meowy-indirect-effects-docs.log`.
 
-Next repair the observed ordinary function-definition statement boundary in
-`check/statements.rs` and dependency endpoint/sequence metadata. Both leading and
-interleaved definitions currently stop program walks at their Entry ports; tests
-in `effects/stores.rs` preserve that absence and explicitly seed a store walk to
-check call-target snapshots. Investigate the exact successful definition branch,
-then record its own completion without traversing the function body or inheriting
-its non-returning behavior. Keep forward-group/unsupported erased forms as explicit
-barriers; never add a generic bypass for every empty HIR statement. Split endpoint
-representation from checker wiring if useful. Test leading/interleaved definitions,
-unused never-returning bodies, owner separation, existing diagnostics and atomic
-budgets; update the boundary regressions and run the full gate. Callee effect
-summaries, restart headers, propagation and proof outcomes remain separate.
+Ordinary function-definition completion is now implemented; the current repair
+section above records identity/bounds checks and validation. Resolved immutable
+identity aliases remain the next structural statement gap. Preserve independent
+bodies, forward-group barriers, unknown effects and proof gates.
 
 ### Proof dependency implementation slices
 
@@ -1637,6 +1636,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
+- Ordinary definition endpoints passed all ten compiler checks: 1898 library/913
+  native tests, 32 tooling and 30 harness groups. Conformance: 71 passed, 19 pinned
+  gaps, zero failures in debug/release; `/tmp/meowy-function-declarations-gate.log`.
+  Strict mode rejects those gaps; `/tmp/meowy-function-declarations-strict.log`.
+  Prior conformance assets/expectations and reference contracts are unchanged.
+
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
   failures in debug/release; `/tmp/meowy-runtime-panic-conformance-gate.log`.
@@ -1659,8 +1664,8 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 - Indirect-store effects passed all ten checks in
   `python3 -B tools/verify.py --compiler`: 1890 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-indirect-effects-gate.log`. Ordinary function-definition
-  connectivity, callee effects, precise write locations and propagation stay pending.
+  Log: `/tmp/meowy-indirect-effects-gate.log`. Other erased-statement connectivity,
+  callee effects, precise write locations and propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -2189,12 +2194,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    now retain pre-RHS origins/completeness and target/RHS/control with bounded copies.
    Boundary coverage (`8983112`) and all ten compiler checks pass; the guide
    documents snapshot scope and the remaining declaration boundary.
-   Next repair ordinary function-definition completion in `check/statements.rs` and
-   endpoint/sequence metadata. Leading/interleaved definitions currently stop root
-   walks; explicit store-seeded tests cover call targets without hiding that gap.
-   Preserve independent function ownership, non-returning-body isolation and real
-   forward-group/unsupported barriers. Test exact definition branches, diagnostics
-   and budgets before the compiler gate; do not bypass all empty HIR statements.
+   Ordinary function Bind definitions now retain exact-ID bounded completion
+   endpoints (`b2dd92c`, `8509cc9`), without entering their bodies or treating a
+   Never body as a non-completing declaration. Forward groups and other erasures
+   stay unchanged. Next classify resolved immutable function/foundation identity
+   aliases in `statements.rs` and add only their specific completion metadata.
+   Preserve incomplete/self-function identity cases, owner boundaries, diagnostics,
+   required/type-only checks and unknown effects. Test scopes/errors/budgets and
+   update source conformance before the compiler gate; no generic empty-HIR bypass.
    Callee summaries, propagation and proof outcomes remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability

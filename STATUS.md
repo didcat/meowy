@@ -5,29 +5,28 @@ Updated: 2026-09-28. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
-## Completed coverage strengthening
+## Current compiler and coverage handoff
 
-The requested coverage work and runtime-panic series are complete. The catalog now
-has 88 source cases: 69 required passes, 19 unchanged pinned capability gaps and
-zero failures in debug/release. Version 3 distinguishes accepted checking followed
-by a defined panic from static rejections and infrastructure failures. Fourteen new
-panic cases pin arithmetic, bounds/capacity, output order and failed module startup.
-Version-1/2 cases remain readable; prior fixture bytes and contracts are unchanged.
+Ordinary function Bind definitions now retain bounded statement-completion graph
+links after successful checking, using exact returned FunctionIds. Leading,
+interleaved and nested definitions preserve independent body owners. Unused Never
+bodies do not block declaration completion; Never calls and existing opaque/forward
+barriers retain their boundaries. Implementation slices: `b2dd92c`, `8509cc9`.
 
-The [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference documents
-and 33 proof obligations with explicit remaining gaps. Default checks reject drift;
-AGENTS require maintaining source conformance and traceability. The
-[compiler handoff](compiler/STATUS.md#completed-runtime-panic-conformance-series)
-lists the reviewable commits. All ten compiler checks pass: 1890 library/913 native
-and 62 Python test groups; `/tmp/meowy-runtime-panic-conformance-gate.log`.
-Strict mode correctly rejects the 19 known gaps. This is not full language or
-release qualification; unimplemented areas remain visible in the inventory.
+The catalog now has 90 cases: 71 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Two new source fixtures pin unused-body behavior/errors;
+all previous fixtures and reference contracts are unchanged. The
+[coverage inventory](docs/conformance/COVERAGE.md) still tracks 37 reference files
+and 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
+1898 library/913 native and 62 Python test groups;
+`/tmp/meowy-function-declarations-gate.log`. Strict mode correctly rejects known gaps.
+This is not full language or release qualification, and proof outcomes stay gated.
 
-The testing detour is finished. Ordinary function definitions now have bounded
-statement-completion graph links after successful checking. Independent function
-bodies and existing opaque/forward barriers are preserved. All 1898 library tests
-and Clippy pass; source conformance and the complete compiler gate are next.
-The compiler handoff records the reviewable implementation slices.
+Next inspect resolved immutable function/foundation identity bindings, which still
+stop structural walks. Add only form-specific completion metadata while preserving
+required/type-only checks, incomplete/self-function identities and ordinary errors.
+The [compiler handoff](compiler/STATUS.md#current-ordinary-function-definition-completion-repair)
+records the exact scope and validation requirements.
 
 ## Documentation conventions
 
@@ -918,6 +917,11 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
+- Ordinary definition endpoints passed all ten compiler checks: 1898 library/913
+  native tests, 32 tooling and 30 harness groups. Conformance: 71 passed, 19 pinned
+  gaps, zero failures in debug/release; `/tmp/meowy-function-declarations-gate.log`.
+  Strict mode rejects the unchanged gaps; previous source fixtures/contracts remain intact.
+
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
   failures in debug/release; `/tmp/meowy-runtime-panic-conformance-gate.log`.
@@ -1101,11 +1105,12 @@ execution was not part of this documentation edit.
    Indirect effects now preserve pre-RHS origins/completeness and target/RHS/control
    with independent copy limits. Boundary coverage and all ten compiler checks pass;
    the guide documents scope and the remaining declaration boundary.
-   Next repair ordinary function-definition completion links: leading/interleaved
-   declarations currently stop program-entry walks. Keep function bodies independent
-   and retain real forward-group/unsupported barriers. Test leading/interleaved and
-   unused never-returning definitions, owners, diagnostics and atomic budgets before
-   the compiler gate. Calls remain Unknown; propagation and proof outcomes stay gated.
+   Ordinary function Bind definitions now retain bounded completion endpoints
+   after successful checking, keeping function bodies independent and preserving
+   Never-call/forward barriers. Next classify resolved immutable function/foundation
+   identity aliases and add only their explicit completion metadata. Preserve owners,
+   incomplete/self-function identities, ordinary errors and other erased boundaries;
+   add focused/source coverage and run the compiler gate. Proof outcomes stay gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

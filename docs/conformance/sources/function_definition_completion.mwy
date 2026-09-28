@@ -1,0 +1,6 @@
+unused<never>:(){d:@"debug";d.panic("unused")}
+value:=1
+inc<int32>:(x<int32>){->x+1}
+value=inc(value)
+d:@"debug"
+d.print(value)

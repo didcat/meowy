@@ -367,10 +367,18 @@ are rejected, and lookup never rescans every producer for each port. At most
 Shared work charges cover entry/port visits and lookups before map growth; failure
 returns no partial effect map or report collection. Existing graph metadata and
 conservative dependency marks remain unchanged.
-Ordinary function-definition statement entries currently have no forward completion
-link, so program-entry walks can stop there. Function bodies are still inspected
-independently. Call-target store coverage also uses explicit statement-seeded walks;
-it does not establish whole-program connectivity across those declarations.
+Successful ordinary function Bind definitions now retain one entry-to-normal
+statement edge after signature/body checking, using the exact registered function
+ID. Statement identity and the independent function-body owner are validated;
+shared work and edge limits precede publication. Repeated identical registration
+is idempotent, while conflicting identities or exhausted budgets publish no new
+endpoint. Definitions do not traverse or execute their bodies: an unused `never`
+body does not stop declaration completion, while a call returning `never` still
+lacks normal continuation. Program-entry store walks now cross these definitions.
+Forward groups retain explicit barriers. Function aliases, exported definitions,
+type/meta declarations and other erased forms retain their existing metadata;
+there is no general bypass for empty HIR statements. Completion edges are structural
+connectivity, not evidence that a runtime path is reached.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
