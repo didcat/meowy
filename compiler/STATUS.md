@@ -122,7 +122,10 @@ endpoint-validation pass after count auditing. Point stages currently validate
 their base point only; selector validation and edge-owner agreement remain the
 planned later slices. Three anchor groups, formatting and all 1840 library tests
 pass; `/tmp/meowy-port-anchors-lib.log`. No outstanding failures remain.
-Edge-owner agreement is next. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
+Anchors are committed as `f543ec8`. Edge validation now compares resolved endpoint
+owners, rejecting cross-function links while preserving all stored routes and
+duplicates. Three owner/work-boundary groups, formatting and all 1843 library
+tests pass; `/tmp/meowy-edge-owners-lib.log`. Stage selector validation is next. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
 `5734e91`) passed 1837 library/913 native tests and conformance
 10 passed/13 unsupported/0 failed in debug/release;
 `/tmp/meowy-edge-inventory-gate.log`.

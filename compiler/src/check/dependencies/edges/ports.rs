@@ -103,8 +103,14 @@ impl Checker {
             ));
         }
         for (_, edge) in edges {
-            self.port_owner(edge.from, span)?;
-            self.port_owner(edge.to, span)?;
+            let from = self.port_owner(edge.from, span)?;
+            let to = self.port_owner(edge.to, span)?;
+            if from != to {
+                return Err(Diagnostic::unsupported(
+                    "proof graph-edge owner mismatch",
+                    span,
+                ));
+            }
         }
         Ok(())
     }
@@ -112,3 +118,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod owners;
