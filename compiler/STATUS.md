@@ -99,48 +99,31 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current bounded structural-walk slices
+### Current independent-entry report slices
 
-The dependency-ordered implementation series is complete:
+Dependency-ordered commit plan:
+1. Add a retained-item allowance to the existing structural walker, with focused
+   boundary tests. Keep single-walk behavior and diagnostics unchanged by default.
+2. Retain one validated index with independently owned program/function reports.
+   Select exact HIR entries after existing gates, validate expected owners and bound
+   roots, total retained items and shared work. Test unused/recursive functions,
+   duplicate/invalid owners and late collection exhaustion.
+3. Run the compiler gate, document scope and replace the continuation handoff.
 
-1. Bounded forward walk and exact program-entry integration (`1732485`).
-2. Conditional, restart, owner, capacity and exhaustion coverage (`f932bf5`).
-3. Compiler gate and documentation handoff: complete.
+Inspection: the current compiler walks only `program.body.id` and drops the index.
+Functions use owner `function.id + 1`; program owner is 0. Runtime function/local
+vectors have already moved into HIR at the metadata gate, so roots must come from
+that HIR, not emptied checker fields. Edge validation already enforces owner-local
+links. A per-walk remaining-item allowance will prevent allocating beyond the
+collection's aggregate storage budget before a report is retained. Calls and
+Backedges remain uninterpreted; function inspection does not prove reachability.
 
-`edges/forward/walk.rs` records visited ports and original inventory positions for
-forward edges and Backedges. The deduplicated worklist retains duplicate edges and
-stops unmarked cycles. Backedge targets are not queued. Missing source buckets are
-reported separately; backedge-only sources are not missing. Inventory length + 1
-bounds pending/visited ports, and each source bucket is scanned once. Shared work
-is charged before growth; failures return no partial report or index mutation.
-Conditional/Checked/Returned routes remain uninterpreted. Visit order and missing
-successors prove neither runtime reachability nor termination.
-
-The compiler inspects its exact program BlockEntry after semantic/query/doc gates.
-It does not expand calls or inspect every function automatically. Tests inspect
-independent function entries and verify owners remain separate. Proof outcomes,
-value propagation and restart-header analysis remain gated.
-
-All eight walk groups pass; `/tmp/meowy-structural-walk-focused.log`. They cover
-conditional paths, exact output selectors, nested outer restart targets, function
-owners, full edge capacity, empty walks and the edge-count + 1 port bound. First,
-mid and last-charge failures leave the index reusable, while exact remaining work
-succeeds; `/tmp/meowy-structural-walk-exhaustion.log`. All ten compiler checks pass:
-1864 library/913 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-structural-walk-gate.log`. No outstanding failures remain.
-The foundation guide documents walk scope and bounds. All four documentation/tooling
-checks pass, including 1208 local links in 110 Markdown files;
-`/tmp/meowy-structural-walk-docs.log`.
-
-Next extend structural inspection to independent program/function entry roots from
-HIR, reusing one validated ForwardIndex. Retain that index alongside per-entry walk
-reports so their positions remain resolvable. Bound roots, aggregate report storage
-and shared work; do not publish a partial collection on failure or infer call
-reachability. Keep existing diagnostic priority. Split representation/collection
-from checker integration as appropriate, test unused and recursive functions,
-owner separation and late aggregate exhaustion, then run the compiler gate.
-Precise writes/unknown effects, propagation and proof outcomes remain separate.
+Previous compiler gate: all ten checks passed, 1864 library/913 native tests;
+`/tmp/meowy-structural-walk-gate.log`. The retained-item allowance is implemented and all nine structural-walk groups pass;
+`/tmp/meowy-entry-allowance.log`. Zero, partial and exact allowances cover seeds,
+edges, newly discovered ports and missing boundaries. Next implement collection
+and HIR entry integration, then run the full gate.
+Proof outcomes, precise writes/unknown effects and propagation remain separate.
 
 ### Proof dependency implementation slices
 

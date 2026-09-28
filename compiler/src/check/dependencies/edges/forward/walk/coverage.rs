@@ -1,6 +1,49 @@
 use super::{tests::index, *};
 
 #[test]
+pub(crate) fn structural_walk_obeys_retained_item_allowance_before_each_growth() {
+    let start = Port::Entry(0);
+    let graph = index(&[
+        Edge::new(start, Port::Normal(0), Route::Next),
+        Edge::new(start, start, Route::Backedge),
+    ]);
+    let expected = graph
+        .walk(start, &mut crate::flow::Flow::new(), Span::default())
+        .unwrap();
+    assert_eq!(expected.len(), 5);
+    for items in 0..expected.len() {
+        let error = graph
+            .walk_limited(start, &mut crate::flow::Flow::new(), Span::default(), items)
+            .unwrap_err();
+        assert!(error.message.contains("structural-walk budget"));
+    }
+    assert_eq!(
+        graph
+            .walk_limited(
+                start,
+                &mut crate::flow::Flow::new(),
+                Span::default(),
+                expected.len()
+            )
+            .unwrap(),
+        expected
+    );
+    let empty = index(&[]);
+    assert!(
+        empty
+            .walk_limited(start, &mut crate::flow::Flow::new(), Span::default(), 1)
+            .is_err()
+    );
+    assert_eq!(
+        empty
+            .walk_limited(start, &mut crate::flow::Flow::new(), Span::default(), 2)
+            .unwrap()
+            .len(),
+        2
+    );
+}
+
+#[test]
 pub(crate) fn structural_walk_retains_both_conditional_paths_and_exact_join_ports() {
     let start = Port::Entry(0);
     let left = Port::Output { point: 1, part: 0 };

@@ -9,6 +9,12 @@ pub(crate) struct Walk {
     pub(crate) missing: Vec<Port>,
 }
 
+impl Walk {
+    pub(super) fn len(&self) -> usize {
+        self.ports.len() + self.forward.len() + self.backedges.len() + self.missing.len()
+    }
+}
+
 impl ForwardIndex {
     pub(crate) fn walk(
         &self,
@@ -16,8 +22,18 @@ impl ForwardIndex {
         flow: &mut crate::flow::Flow,
         span: Span,
     ) -> Result<Walk> {
+        self.walk_limited(start, flow, span, MAX_EDGES * 3 + 2)
+    }
+
+    pub(super) fn walk_limited(
+        &self,
+        start: Port,
+        flow: &mut crate::flow::Flow,
+        span: Span,
+        items: usize,
+    ) -> Result<Walk> {
         let budget = || Diagnostic::unsupported("proof structural-walk budget exhausted", span);
-        if self.edges.len() > MAX_EDGES || !flow.spend(1) {
+        if self.edges.len() > MAX_EDGES || items == 0 || !flow.spend(1) {
             return Err(budget());
         }
         let limit = self.edges.len() + 1;
@@ -34,11 +50,15 @@ impl ForwardIndex {
             }
             cursor += 1;
             let Some(links) = self.outgoing.get(&port) else {
+                if walk.len() >= items {
+                    return Err(budget());
+                }
                 walk.missing.push(port);
                 continue;
             };
             for &position in links.forward.iter().chain(&links.backedges) {
                 if walk.forward.len() + walk.backedges.len() >= self.edges.len()
+                    || walk.len() >= items
                     || !flow.spend(seen.len().checked_ilog2().unwrap_or(0) as usize * 2 + 3)
                 {
                     return Err(budget());
@@ -50,7 +70,7 @@ impl ForwardIndex {
                 }
                 walk.forward.push(position);
                 if !seen.contains(&edge.to) {
-                    if walk.ports.len() >= limit {
+                    if walk.ports.len() >= limit || walk.len() >= items {
                         return Err(budget());
                     }
                     seen.insert(edge.to);
