@@ -1,0 +1,4 @@
+first:@"./first.mwy"
+d:@"debug"
+->first+1
+d.print("second tail")

@@ -373,6 +373,11 @@ publish no partial operation. All 1950 library tests and all-target Clippy pass;
 `/tmp/meowy-module-initializers-lib.log`, `/tmp/meowy-module-initializers-clippy.log`.
 No outstanding compiler/test failures remain. Source conformance follows in separate
 order/stopped slices, then the final handoff.
+Integration is committed as `97209a5`. The first new source case pins initializer
+tail effects after primary emission, dependency-before-importer order, repeated
+imports and an unused Never function. Metadata passes for 114 cases. A fresh CLI
+build and isolated debug/release execution pass; `/tmp/meowy-module-initializers-build.log`
+and `/tmp/meowy-module-order-case.log`. The stopped-initialization case is next.
 Concurrent unrelated workspace edits appeared in `.gitignore` and
 `docs/programs/hey.mwy`; they are outside this series and remain uncommitted.
 

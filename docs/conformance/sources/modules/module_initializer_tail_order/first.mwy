@@ -1,0 +1,4 @@
+d:@"debug"
+->unused<never>:(){'loop{'loop.restart()}}
+->7
+d.print("first tail")

@@ -1207,6 +1207,20 @@
       "companions": [
         "sources/modules/module_alias_private/value.mwy"
       ]
+    },
+    {
+      "id": "module_initializer_tail_order",
+      "phase": "run",
+      "source": "sources/modules/module_initializer_tail_order/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first tail\nsecond tail\nentry\n8\n7\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_initializer_tail_order/first.mwy",
+        "sources/modules/module_initializer_tail_order/second.mwy"
+      ]
     }
   ]
 }

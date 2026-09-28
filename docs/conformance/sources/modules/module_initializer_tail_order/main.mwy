@@ -1,0 +1,6 @@
+second:@"./second.mwy"
+first:@"./first.mwy"
+d:@"debug"
+d.print("entry")
+d.print(second)
+d.print(first)
