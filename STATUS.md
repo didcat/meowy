@@ -728,8 +728,9 @@ stages (`c5e248b`). All ten compiler checks pass: 1827 library/913 native tests;
 `/tmp/meowy-heap-leaf-gate.log`. The guide documents this scope. A bounded
 read-only inventory now names all 31 edge families (`2eec4bd`) and checks stored
 counts under bounded work/edge limits (`95fba66`). All ten compiler checks pass:
-1837 library/913 native tests; `/tmp/meowy-edge-inventory-gate.log`. Guide
-documentation and the owner/port-validation handoff are next.
+1837 library/913 native tests; `/tmp/meowy-edge-inventory-gate.log`. Full-family
+coverage is committed as `42b04e8`; the guide documents inventory limits. Bounded
+port resolution and owner validation are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -1005,11 +1006,13 @@ execution was not part of this documentation edit.
    identity and bounded handle/result stages without allocation effects. The compiler
    gate passes, and the guide documents scope. Bounded inventory now enumerates all
    31 edge families and validates actual counts after existing semantic/query/doc
-   gates. Full family/route/duplicate/budget coverage and the compiler gate pass.
-   Document this scope next, then add separate port existence/owner validation from
-   retained points, bodies, emissions and restart identities. Preserve duplicates,
-   routes, Backedge markers and unknown flow; forward indexing and propagation
-   remain separate. Inventory order is not execution order.
+   gates. Full family/route/duplicate/budget coverage and the compiler gate pass;
+   the guide documents inventory limits. Next add separate bounded port resolution
+   and edge-owner validation from retained points, bodies, emissions and restart
+   identities. Preserve diagnostics, duplicates, routes, Backedge markers and unknown
+   flow; test malformed/cross-owner ports, nested targets and atomic work limits
+   before the compiler gate. Forward indexing and propagation remain separate.
+   Inventory order is not execution order.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

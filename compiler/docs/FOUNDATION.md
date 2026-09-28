@@ -287,6 +287,16 @@ remain local reads. Required evaluation and hints gain no runtime handle stages.
 The operation represents availability of the static handle, not resource allocation.
 Nominal-type validation and shared-budget failures publish no partial operation;
 existing borrow lifetimes, conflicts and unsupported member/equality rules remain.
+An internal bounded inventory now enumerates stored edges from all 31 families.
+It preserves duplicates, exact ports, conditional routes and explicit backedges;
+it neither fills gaps nor treats inventory order as execution order. Actual family
+totals must match retained counters within the existing 262,144-edge limit. Shared
+work is charged for families, stored rows (including empty rows) and copied edges.
+Failed counts or budgets leave graph ledgers unchanged and return no inventory.
+Successful compilation audits these counts after ordinary checks, pending-query
+gates and documentation validation. Port existence/ownership validation, forward
+indexing and propagation remain separate; missing links and normal-result ports
+do not establish independence or reachability.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.

@@ -101,47 +101,49 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current bounded edge-inventory slices
 
-Investigation finds 31 independently stored edge families. `edge_room` currently
-sums fixed-size map lengths and retained vector counters; there is no common
-enumeration. Scope exits and restarts hold single edges. Enumeration must retain
-duplicates/routes and tolerate unknown graph boundaries without interpreting them.
-The working tree was clean before this continuation.
-
-Dependency-ordered commit plan:
-1. Name edge families and centralize retained family counts, preserving admission
-   arithmetic; count/boundary and library checks pass (`2eec4bd`).
-2. Add bounded read-only inventory with actual-versus-retained count validation.
-   Audit once after ordinary typing/ownership checks, retaining diagnostic priority;
-   duplicate/route/count/boundary checks and the library suite pass (`95fba66`).
-3. Add independently useful coverage across every family and mixed owners/loops;
-   the complete compiler gate passes.
+The dependency-ordered series is complete:
+1. Name all 31 edge families and centralize retained counts while preserving
+   admission arithmetic (`2eec4bd`).
+2. Enumerate stored edges with bounded work/count validation and audit after
+   existing semantic/query/documentation diagnostics (`95fba66`).
+3. Cover every family, mixed owners, routes, duplicates and exact bounds (`42b04e8`).
 4. Document inventory guarantees and the next owner/port-validation prerequisite.
 
-Owner/port validation, forward indexing and dependency propagation remain separate.
-No inventory ordering establishes runtime order or reachability. The audit confirms
-31 families. Named family counts now drive `edge_room` using checked addition,
-preserving exact capacity and overflow rejection. Three focused groups, formatting
-and all 1830 library tests pass; `/tmp/meowy-edge-counts-lib.log`. No outstanding
-failures remain. Counts are committed as `2eec4bd`. Enumeration now copies only
-stored edges with family labels, checks actual counts and charges bounded work.
-Compilation retains the checker through moves so a final inventory audit runs
-after ownership, pending-query gates and documentation diagnostics. Three core
-inventory groups, formatting and all 1833 library tests pass;
-`/tmp/meowy-edge-inventory-lib.log`. No owner/port or reachability analysis is
-added (`95fba66`). Source fixtures now exercise every edge family, mixed function
-owners, exact/over-limit actual edge counts, charged empty rows and prior ordinary/
-query diagnostics. All seven inventory groups and formatting pass, including
-source-backed coverage of all 31 families; `/tmp/meowy-edge-inventory-focused.log`.
-All ten compiler checks pass: 1837 library/913 native tests, formatting, Clippy,
-build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-edge-inventory-gate.log`. No outstanding failures remain. Guide/handoff
-documentation is next, followed by separate bounded port existence/owner validation.
-Resolve ports through retained points, bodies, emission sources and restart
-identities. Runtime locals/functions have moved to Program at the final audit; do
-not use the emptied Checker vectors as bounds. Keep missing flow and reachability
-unknown; forward indexing and propagation remain separate. The prior Heap series (`46ea8f3`, `c5e248b`, `436f014`) passed 1827 library/
-913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
-`/tmp/meowy-heap-leaf-gate.log`. Proof outcomes remain gated.
+`edges/inventory.rs` supplies named counts used by `edge_room`. Its collector
+returns family-labeled copies of stored edges, retaining duplicates, exact ports,
+conditional routes and Backedge markers without inserting links. Actual family
+counts must match their retained counters. Retained and enumerated totals are
+bounded by MAX_EDGES; shared work charges families, rows (including empty rows)
+and edges. Count/work/edge failures return no inventory and leave ledgers unchanged.
+The checker remains available through moves into Program/proofs; successful
+compilation performs a final count audit after ownership, pending-query gates and
+documentation validation. The audit does not expose a public artifact or enable
+proof results. Inventory-wide port/owner validation and forward indexing remain
+pending; missing links stay unknown and inventory order is not runtime order.
+
+Count validation passed three groups and all 1830 then-current library tests;
+`/tmp/meowy-edge-counts-lib.log`. Enumeration passed three core groups and all
+1833 library tests; `/tmp/meowy-edge-inventory-lib.log`. All seven inventory groups
+pass, including source fixtures exercising all 31 families, exact actual capacity,
+empty-row work charging, mixed owners and diagnostic priority;
+`/tmp/meowy-edge-inventory-focused.log`. All ten compiler checks pass: 1837 library/
+913 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-edge-inventory-gate.log`. No outstanding failures remain.
+The foundation guide documents the inventory. Documentation validation passed
+1208 local links in 110 Markdown files; `/tmp/meowy-edge-inventory-docs.log`.
+
+Next add separate bounded port existence and owner validation to the inventory.
+Resolve point ports from `points`, block ports from `bodies`, emission ports from
+`emission_sources`/targets, and restart ports from retained site/target metadata.
+Use retained identities rather than spans or enumeration order. Runtime locals and
+functions have moved to Program at the final audit; use Program context if their
+bounds are needed. Do not require a normal port to have reachable incoming flow or
+invent missing edges. Preserve duplicate/conditional/Backedge routes and diagnostic
+priority. Split port resolution, edge-owner validation and forward indexing into
+reviewable prerequisites; verify malformed ports, cross-owner edges, nested targets,
+unknown boundaries and atomic work limits, then run the compiler gate. Propagation,
+restart-header analysis and proof evaluation remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1469,11 +1471,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Static Heap leaf stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1827 library/913 native tests, formatting,
+- Bounded edge inventory passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1837 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-heap-leaf-gate.log`. A common bounded edge inventory, precise
-  write locations and dependency propagation stay pending.
+  Log: `/tmp/meowy-edge-inventory-gate.log`. Port/owner validation, precise write
+  locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1973,14 +1975,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    and resolved constants. Bounded construction/result stages (`7a42833`) and the
    compiler gate pass; the guide documents the scope. Static Heap leaf identities
    are captured at resolved branches (`46ea8f3`) and bounded handle/result stages
-   (`c5e248b`) pass the compiler gate; the guide documents scope. Next add bounded
-   read-only edge inventory is now implemented (`2eec4bd`, `95fba66`), preserving
-   duplicate stored edges, routes and Backedge markers while auditing all 31 counts.
-   Source coverage and the compiler gate pass. Document this scope next, then add
-   bounded port existence/owner validation using points, bodies, emission sources
-   and restart identities; runtime vectors have moved to Program at final audit.
-   Keep enumeration separate from port validity, forward indexing and propagation.
-   Missing flow remains unknown and normal ports do not prove reachability.
+   (`c5e248b`) pass the compiler gate; the guide documents scope. Bounded read-only
+   inventory (`2eec4bd`, `95fba66`) preserves duplicate stored edges, routes and
+   Backedge markers while auditing all 31 counts. Full-family coverage (`42b04e8`)
+   and the compiler gate pass; the guide documents inventory limits. Next add
+   separate bounded port resolution and edge-owner validation using points, bodies,
+   emission sources/targets and restart identities. Use Program context for moved
+   runtime vectors if needed. Preserve unknown boundaries, duplicates, routes and
+   diagnostic priority; test malformed/cross-owner ports and atomic work limits.
+   Forward indexing and propagation remain separate; normal ports prove no reachability.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
