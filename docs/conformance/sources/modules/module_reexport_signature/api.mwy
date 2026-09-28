@@ -1,0 +1,2 @@
+ops:@"./ops.mwy"
+->inc<(int8)->int32>:ops.inc

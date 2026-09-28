@@ -92,7 +92,10 @@ through a facade: 49 required passes, 19 pinned gaps, zero failures;
 51 required passes, 19 pinned gaps, zero failures; `/tmp/meowy-modules-privacy.log`.
 Dependency semantic errors and re-export cycles now reject with E201/E502.
 Current catalog: 72 cases, 53 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-modules-diagnostics.log`. Missing-import/signature fixtures remain next.
+`/tmp/meowy-modules-diagnostics.log`. Missing imports and mismatched re-export signatures reject with E501/E207.
+All 74 catalog cases now give 55 required passes, 19 unchanged pinned gaps and
+zero failures; `/tmp/meowy-modules-rejections.log`. Next run the full compiler gate,
+strict-gap and preservation checks, then refresh the coverage handoff.
 
 ## Documentation conventions and layout
 

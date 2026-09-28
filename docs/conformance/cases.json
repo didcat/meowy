@@ -744,6 +744,30 @@
         "sources/modules/module_reexport_cycle/a.mwy",
         "sources/modules/module_reexport_cycle/b.mwy"
       ]
+    },
+    {
+      "id": "module_missing_import",
+      "phase": "check",
+      "source": "sources/modules/module_missing_import/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E501"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports"
+    },
+    {
+      "id": "module_reexport_signature",
+      "phase": "check",
+      "source": "sources/modules/module_reexport_signature/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_reexport_signature/api.mwy",
+        "sources/modules/module_reexport_signature/ops.mwy"
+      ]
     }
   ]
 }
