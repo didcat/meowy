@@ -328,6 +328,37 @@ coverage, then run compiler/strict-gap gates. Synthetic initialization prefixes,
 record/pending values, forward groups, callee summaries and proof outcomes remain
 separate; never add a generic empty-HIR bypass.
 
+## Current file-module alias completion
+
+Dependency-ordered commit plan:
+
+1. Capture the exact backing LocalId from resolved Value::FileModule and validate
+   local/exports registration with bounded lookup work before alias completion.
+   Preserve the original type payload, import lookup and all ordinary binding
+   gates. Include direct imports/alias chains, function owners, required reads,
+   privacy/errors and exact identity/work/edge budget regressions.
+2. Add source conformance for repeated and function-local imports, alias chains,
+   initialization order and privacy. Keep existing import-cycle/error fixtures and
+   capability exceptions unchanged; run compiler, strict-gap and preservation checks.
+3. Update coverage evidence, the foundation guide and root/compiler handoffs,
+   run final documentation checks and commit the handoff.
+
+Inspection: import_module returns FileModule only for a registered hidden Local,
+retaining its actual ID and type. Alias lookup copies that identity without
+initialization. Synthetic module-initializer bindings remain ordinary storage
+operations, while immutable unannotated module aliases erase their own HIR. The
+new marker must validate registry/local presence without cloning shapes or linking
+to module-body execution. Global module identity may be used inside a function;
+statement ownership still belongs to the caller. The tree starts clean at `2e2237c`.
+All six focused groups pass; `/tmp/meowy-module-aliases-focused.log`. Import/alias
+IDs, function owners, required-only reads, privacy and ordinary gates are preserved.
+Missing local/registry metadata and exact work/edge caps fail without publication.
+Synthetic initializer operations still have input=None and no invented entry link;
+alias completion does not bypass that separate graph boundary. All 1943 library
+tests and all-target Clippy pass; `/tmp/meowy-module-aliases-lib.log` and
+`/tmp/meowy-module-aliases-clippy.log`. No outstanding test failures remain.
+Source conformance and the final handoff are next.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;

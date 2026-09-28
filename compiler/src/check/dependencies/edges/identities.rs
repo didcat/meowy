@@ -10,6 +10,7 @@ pub(crate) enum BindingIdentity {
     Foundation,
     Type,
     Static,
+    FileModule(crate::hir::LocalId),
     Control {
         target: crate::hir::BlockId,
         owner: usize,
@@ -22,6 +23,7 @@ impl BindingIdentity {
             Value::Function { id, .. } => Some(Self::Function(*id)),
             Value::Type(_) | Value::Foundation(Item::Type(_)) => Some(Self::Type),
             Value::Static { .. } => Some(Self::Static),
+            Value::FileModule { id, .. } => Some(Self::FileModule(*id)),
             Value::Control { target, owner, .. } => Some(Self::Control {
                 target: *target,
                 owner: *owner,
@@ -76,6 +78,17 @@ impl Checker {
         {
             return Err(invalid());
         }
+        if let BindingIdentity::FileModule(module) = identity {
+            if !self
+                .flow
+                .spend(self.exports.len().checked_ilog2().unwrap_or(0) as usize + 2)
+            {
+                return Err(budget());
+            }
+            if self.locals.get(module).is_none() || !self.exports.contains_key(&module) {
+                return Err(invalid());
+            }
+        }
         if let BindingIdentity::Control { target, owner } = identity {
             if !self.flow.spend(self.frames.len()) {
                 return Err(budget());
@@ -107,3 +120,6 @@ mod statics;
 
 #[cfg(test)]
 mod controls;
+
+#[cfg(test)]
+mod modules;

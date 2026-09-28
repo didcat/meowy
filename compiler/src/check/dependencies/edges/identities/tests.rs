@@ -120,14 +120,7 @@ pub(crate) fn identity_endpoints_keep_resolution_errors_before_publication() {
             }
         }
     }
-    for value in [
-        Value::Pending(0),
-        Value::FileModule {
-            id: 0,
-            ty: crate::hir::Type::Null,
-        },
-        Value::Foundation(Item::Heap),
-    ] {
+    for value in [Value::Pending(0), Value::Foundation(Item::Heap)] {
         assert_eq!(BindingIdentity::capture(&value), None);
     }
 }
