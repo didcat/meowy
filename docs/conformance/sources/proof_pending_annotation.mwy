@@ -1,0 +1,5 @@
+p:@"proof"
+r:p.can_copy<uint8>()
+copy<p.Result>:r
+(copy)
+wrong<p.Always>:copy

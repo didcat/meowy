@@ -1,0 +1,5 @@
+p:@"proof"
+r:p.can_copy<uint8>()
+copy:r
+p.can_copy<uint16>()
+value<uint32>:copy

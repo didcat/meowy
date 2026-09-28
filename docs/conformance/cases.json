@@ -1420,6 +1420,36 @@
         "exit": 1
       },
       "reference": "../reference/diagnostic-codes.md#runtime-panics-and-compiler-faults"
+    },
+    {
+      "id": "proof_pending_annotation",
+      "phase": "check",
+      "source": "sources/proof_pending_annotation.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/proof.md#result-types-and-meaning"
+    },
+    {
+      "id": "proof_pending_storage",
+      "phase": "check",
+      "source": "sources/proof_pending_storage.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E223"
+      },
+      "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
+    },
+    {
+      "id": "proof_pending_capture",
+      "phase": "check",
+      "source": "sources/proof_pending_capture.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E223"
+      },
+      "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
     }
   ]
 }

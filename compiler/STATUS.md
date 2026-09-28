@@ -402,9 +402,15 @@ edges and copies keep their origins. All 1981 library tests pass
 (`/tmp/meowy-pending-library.log`), including twenty malformed metadata variants,
 exact work/edge limits, idempotence, nested blocks/functions, open roots, source
 errors and stopped prefixes. Formatting and all 37 focused `pending_` tests also
-pass after the readability cleanup (`/tmp/meowy-pending-endpoints.log`). Next add
-required source rejection coverage and run the complete compiler gate.
-Preserve unrelated `docs/programs/hey/` work.
+pass after the readability cleanup (`/tmp/meowy-pending-endpoints.log`). Three
+source checks are now required for fixed-result annotation mismatch, explicitly
+typed runtime storage and cross-function capture. All three pass in debug/release
+with a fresh CLI (`/tmp/meowy-pending-cases.log`). Catalog/coverage validation passes
+for 135 cases and 37 reference documents. The full compiler gate is running
+(`/tmp/meowy-pending-gate.log`). Preservation against `2d7e8c0` confirms all 132 prior
+case records, 164 source assets, 37 reference files and exact capability exceptions
+are unchanged (`/tmp/meowy-pending-preservation.log`). Next finish compiler/strict
+validation and the documentation handoff. Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

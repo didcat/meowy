@@ -182,9 +182,10 @@
       "rule": "Result descriptor passed to runtime formatting, storage, FFI, or erasure",
       "required": "E223; scalar projections remain ordinary constants.",
       "cases": [
-        "proof_descriptor_escape"
+        "proof_descriptor_escape",
+        "proof_pending_storage"
       ],
-      "gap": "Mutable storage rejection is required; formatting, FFI, erasure and materialized flag variants remain incomplete."
+      "gap": "Mutable storage and explicitly typed alias storage rejections are required; formatting, FFI, erasure and materialized flag variants remain incomplete."
     },
     {
       "rule": "One step below / at / above a logical limit",
