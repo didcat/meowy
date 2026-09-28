@@ -377,7 +377,16 @@ Integration is committed as `97209a5`. The first new source case pins initialize
 tail effects after primary emission, dependency-before-importer order, repeated
 imports and an unused Never function. Metadata passes for 114 cases. A fresh CLI
 build and isolated debug/release execution pass; `/tmp/meowy-module-initializers-build.log`
-and `/tmp/meowy-module-order-case.log`. The stopped-initialization case is next.
+and `/tmp/meowy-module-order-case.log`; committed as `6ea543a`. The separate panic
+case now pins a partial primary emission followed by initialization failure,
+excluding later modules and entry output. All ten compiler checks pass: 1950 library/
+913 native tests, 32 tooling and 30 harness groups, formatting, Clippy, build and
+conformance; `/tmp/meowy-module-initializers-gate.log`. The 115 cases report
+96 passes, 19 unchanged pinned gaps and zero failures in debug/release. All prior
+113 case records, 137 source assets, 37 reference files and capability exceptions
+are preserved; `/tmp/meowy-module-initializers-preservation.log`. Strict mode
+correctly exits 1 only for known gaps; `/tmp/meowy-module-initializers-strict.log`.
+The final coverage/guide handoff remains; no outstanding test failures remain.
 Concurrent unrelated workspace edits appeared in `.gitignore` and
 `docs/programs/hey.mwy`; they are outside this series and remain uncommitted.
 

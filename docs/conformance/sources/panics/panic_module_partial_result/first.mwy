@@ -1,0 +1,5 @@
+d:@"debug"
+->7
+d.print("first tail")
+d.panic("initialization failed")
+d.print("after panic")

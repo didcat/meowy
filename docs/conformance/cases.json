@@ -1221,6 +1221,22 @@
         "sources/modules/module_initializer_tail_order/first.mwy",
         "sources/modules/module_initializer_tail_order/second.mwy"
       ]
+    },
+    {
+      "id": "panic_module_partial_result",
+      "phase": "run",
+      "source": "sources/panics/panic_module_partial_result/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first tail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/panics/panic_module_partial_result/first.mwy",
+        "sources/panics/panic_module_partial_result/later.mwy"
+      ]
     }
   ]
 }
