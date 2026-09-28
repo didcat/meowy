@@ -753,13 +753,12 @@ encountered Operation ports now receive bounded direct Bind/Write metadata or
 explicit Unknown effects (`9f83e01`). All ten compiler checks pass: 1874 library/913
 native tests; `/tmp/meowy-operation-effects-gate.log`. Focused coverage includes
 identity, stopped RHS, aliases/control and atomic capacity/work limits. The guide
-documents scope. Owned field/index write effects now retain ordered path metadata
-with per-path and aggregate copy budgets. Core path tests, 59 effect-related tests
-and Clippy pass; `/tmp/meowy-path-effects-focused.log`. The implementation is
-committed as `dd532e3`. All seven path-effect groups pass, including aliases,
-stopped inputs, duplicate-copy accounting and atomic storage/work failures;
-`/tmp/meowy-path-effects-boundaries.log`. The full compiler gate and documentation
-handoff are next.
+documents scope. Owned field/index write effects (`dd532e3`) retain ordered path
+metadata with per-path and aggregate copy budgets. Boundary coverage (`f705732`)
+includes aliases, stopped operands, exact identities and atomic storage/work
+failures. All ten compiler checks pass: 1881 library/913 native tests;
+`/tmp/meowy-path-effects-gate.log`. The guide documents scope. Bounded indirect-store
+effect snapshots are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -890,10 +889,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Direct storage effects passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1874 library/913 native tests.
+- Owned path effects passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1881 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-operation-effects-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-path-effects-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1051,11 +1050,13 @@ execution was not part of this documentation edit.
    ports now carry bounded direct Bind/Write or explicit Unknown effects, preserving
    exact storage/RHS/control. The validated operation registry is retained for lookup.
    Focused tests and all ten compiler checks pass; the guide documents scope.
-   Next add owned field/index
-   write effects from captured path metadata, with bounded copied steps and explicit
-   unknown dynamic index values/bounds success. Test nested fields, aliases,
-   stopped address/RHS and atomic exhaustion before the compiler gate.
-   Indirect/callee effects and fact propagation remain separate; proof outcomes stay gated.
+   Owned Path effects now preserve ordered field/index metadata with per-path and
+   aggregate copy bounds. Boundary coverage and all ten compiler checks pass;
+   the guide documents scope.
+   Next retain indirect-store target/RHS/control and captured pre-RHS origin snapshots,
+   including completeness, with bounded copies. Test RHS retargeting, indexed
+   pointees, incomplete origins, stopped operands, duplicates and atomic exhaustion
+   before the compiler gate. Keep callee effects Unknown and proof outcomes gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

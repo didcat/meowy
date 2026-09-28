@@ -339,8 +339,18 @@ point and paired with its owner. Direct Bind/Write effects preserve the local ID
 canonical storage ID, optional RHS root and captured control mark. Reference-cell
 writes remain distinct from pointee writes, and emitted-slot aliases retain their
 canonical storage. Missing RHS metadata remains unknown; it is not synthesized.
-Every other encountered producer has an explicit Unknown effect, including path
-and indirect writes and calls. Unknown does not mean pure or independent. Stored
+Owned field/index writes now retain a Path effect with local/canonical storage,
+ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
+Paths reuse captured metadata without evaluating indices or replaying address/RHS
+effects. Each copied path is bounded by 256 steps, and the collection admits at
+most 262,144 copied steps. Lookup and copy work are charged before allocation;
+duplicate operation ports copy a path once. Empty paths and owner mismatches are
+rejected. Aliases retain their shared canonical storage and distinct local IDs.
+Stopped address or RHS evaluation leaves the write outside the effect map when
+its Operation port is not encountered. Index values and bounds success remain
+unknown; the metadata does not establish precise overwrite or alias independence.
+Other encountered producers have an explicit Unknown effect, including indirect
+writes and calls. Unknown does not mean pure or independent. Stored
 operations beyond a stopped RHS are not added unless their port is encountered.
 Duplicate ports produce one effect entry. Registry and producer owner mismatches
 are rejected, and lookup never rescans every producer for each port. At most

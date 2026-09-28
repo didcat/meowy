@@ -101,37 +101,49 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current owned path-effect slices
 
-Dependency-ordered commit plan:
-1. Add owned Path effects using captured PathOperation/PathStep metadata. Bound
-   each copied path and aggregate steps before allocation; retain owner checks,
-   duplicate handling and explicit Unknown for indirect stores/calls. Include core
-   ordered-metadata and aggregate-capacity regressions.
-2. Cover aliases, seeded control, independent owners, stopped address/RHS, duplicate
-   charging, invalid metadata and atomic work/storage exhaustion.
-3. Run the full compiler gate and document scope and continuation work.
+The dependency-ordered implementation series is complete:
 
-Inspection: PathOperation already owns validated local/canonical storage IDs,
-ordered Field/Index steps, exact index point/capacity/span, RHS and control. Reuse
-PathStep directly; copying it needs a separate aggregate budget because Effect is
-currently fixed-size. The per-path cap is MAX_WRITE_PATH (256), and MAX_EDGES will
-bound total copied steps; each captured step already contributes at least one edge.
-The effect pass will charge the path lookup and step copies before allocation,
-without evaluating dynamic indices or interpreting Checked routes. Only encountered
-Operation ports receive effects, preserving stopped address/RHS boundaries.
+1. Owned Path effects with bounded copies and core tests (`dd532e3`).
+2. Identity/control/stopped-input and budget boundary coverage (`f705732`).
+3. Compiler gate and documentation handoff: complete.
 
-Prior compiler gate: all ten checks passed, 1874 library/913 native tests;
-`/tmp/meowy-operation-effects-gate.log`. Owned Path effects and copy bounds are committed as `dd532e3`. All 59 selected effect-related
-tests pass; `/tmp/meowy-path-effects-focused.log`. Both core path groups and
-all-target Clippy pass; `/tmp/meowy-path-effects-core.log`,
-`/tmp/meowy-path-effects-clippy.log`. Existing direct effects and explicit Unknown
-indirect/call effects remain intact. All seven path-effect groups now pass;
-`/tmp/meowy-path-effects-boundaries.log`. They cover aliases, seeded control,
-independent owners, stopped index/RHS inputs, duplicate-copy accounting, empty or
-foreign metadata, seeded per-path capacity and aggregate/early/mid/late budget
-failure. Prior reports, graph counts and nonempty conservative marks are preserved;
-exact budgets succeed. No outstanding focused failures remain. Next run the full
-compiler gate and finish documentation.
-Indirect stores/callee effects, propagation and proof outcomes remain separate.
+`edges/forward/effects.rs` now retains Path effects for encountered owned field/index
+writes. The snapshot preserves local/canonical storage IDs, ordered PathStep values,
+index point/capacity/span, RHS and control. It reuses captured PathOperation metadata;
+no index evaluation or address/RHS replay occurs. Registry and producer owners stay
+checked. Empty paths reject, duplicates copy once, and non-encountered writes after
+stopped address/RHS remain absent. Indirect stores and calls remain Unknown.
+
+Each path is limited to MAX_WRITE_PATH (256) and total copied steps to MAX_EDGES
+(262,144), separately from effect-entry and walk-item caps. Lookup/step work and
+remaining storage are checked before allocation. Failure returns no partial map or
+collection and preserves prior reports, graph ledgers and conservative marks.
+Dynamic index values, bounds success and precise overwrite/alias independence are
+not inferred. Existing semantic/query/doc gates still precede collection.
+
+All 59 initially selected effect-related tests, all-target Clippy and seven path
+regression groups pass; `/tmp/meowy-path-effects-focused.log`,
+`/tmp/meowy-path-effects-clippy.log`, `/tmp/meowy-path-effects-boundaries.log`.
+Coverage includes nested/dynamic paths, exact source spans, canonical aliases,
+seeded control, independent owners, stopped first/later index or RHS, duplicate
+copy accounting, empty/foreign metadata, seeded per-path storage limits and atomic
+aggregate/early/mid/late failures with exact-budget success. All ten compiler checks
+pass: 1881 library/913 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-path-effects-gate.log`. No outstanding failures remain.
+The foundation guide documents Path effect scope and limits. All four default
+checks pass, including 1208 local links in 110 Markdown files;
+`/tmp/meowy-path-effects-docs.log`.
+
+Next add bounded indirect-store effects using `dependencies/store_operations.rs`:
+retain the target/RHS point IDs, captured pre-RHS Origins roots/completeness and
+control under the existing owner registry. Never recompute targets from later
+reference state or turn incomplete origins into precise writes. Bound per-snapshot
+and aggregate copied origins before allocation. Keep calls/other producers Unknown.
+Split representation/bounds and integration where useful; test RHS retargeting,
+indexed pointees, incomplete origins, stopped operands, duplicate visits and atomic
+exhaustion before the full compiler gate. Propagation, callee summaries, restart
+headers and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1459,11 +1471,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Direct storage effects passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1874 library/913 native tests, formatting,
+- Owned path effects passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1881 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-operation-effects-gate.log`. Path/indirect/callee effects,
-  precise write locations and dependency propagation stay pending.
+  Log: `/tmp/meowy-path-effects-gate.log`. Indirect/callee effects, precise
+  dynamic-index write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1986,12 +1998,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`9f83e01`), preserving exact storage/RHS/control and conservative marks.
    Identity/alias/stopped/budget coverage and all ten compiler checks pass; the
    guide documents scope.
-   Next extend the effect view with owned field/index writes from captured
-   `dependencies/path_operations.rs` metadata. Preserve ordered path steps and
-   dynamic index identities without inferring their values or bounds success.
-   Bound per-path and aggregate copied steps before growth; test nested fields,
-   aliases, stopped address/RHS and atomic exhaustion before the compiler gate.
-   Indirect/callee effects, propagation and proof outcomes remain separate.
+   Owned Path effects (`dd532e3`) now preserve exact ordered field/index metadata
+   with per-path and aggregate copy bounds. Boundary coverage (`f705732`) and all ten
+   compiler checks pass; the guide documents scope. Next retain bounded indirect-store
+   effects from captured pre-RHS target/origin/RHS/control metadata in
+   `dependencies/store_operations.rs`. Preserve origin completeness; do not recompute
+   pointees from later reference state. Test RHS retargeting, indexed pointees,
+   incomplete origins, stopped operands, duplicates and atomic exhaustion before
+   the compiler gate. Callee effects, propagation and proof outcomes remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
