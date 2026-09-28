@@ -758,13 +758,12 @@ metadata with per-path and aggregate copy budgets. Boundary coverage (`f705732`)
 includes aliases, stopped operands, exact identities and atomic storage/work
 failures. All ten compiler checks pass: 1881 library/913 native tests;
 `/tmp/meowy-path-effects-gate.log`. The guide documents scope. Bounded indirect-store
-effect snapshots now retain pre-RHS target origins/completeness with separate copy
-limits. Core retargeting/incomplete-origin/aggregate-capacity tests and Clippy pass;
-`/tmp/meowy-indirect-effects-core.log`. Implementation is committed as `7110adb`.
-All ten selected indirect-effect tests pass, including nine snapshot groups;
-`/tmp/meowy-indirect-effects-boundaries.log`. Ordinary callable declarations still
-stop root walks; call-target coverage uses an explicit store-statement seed. The
-full compiler gate and documentation handoff are next.
+effect snapshots (`7110adb`) retain pre-RHS origins/completeness with separate copy
+limits. Boundary coverage (`8983112`) includes retargeting, indexed/aliased pointees,
+empty/incomplete origins and atomic capacity/work failure. All ten compiler checks
+pass: 1890 library/913 native tests; `/tmp/meowy-indirect-effects-gate.log`.
+Ordinary callable declarations still stop root walks; call-target coverage uses an
+explicit store-statement seed. Declaration completion links are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -895,10 +894,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Owned path effects passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1881 library/913 native tests.
+- Indirect-store effects passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1890 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-path-effects-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-indirect-effects-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1059,10 +1058,14 @@ execution was not part of this documentation edit.
    Owned Path effects now preserve ordered field/index metadata with per-path and
    aggregate copy bounds. Boundary coverage and all ten compiler checks pass;
    the guide documents scope.
-   Next retain indirect-store target/RHS/control and captured pre-RHS origin snapshots,
-   including completeness, with bounded copies. Test RHS retargeting, indexed
-   pointees, incomplete origins, stopped operands, duplicates and atomic exhaustion
-   before the compiler gate. Keep callee effects Unknown and proof outcomes gated.
+   Indirect effects now preserve pre-RHS origins/completeness and target/RHS/control
+   with independent copy limits. Boundary coverage and all ten compiler checks pass;
+   the guide documents scope and the remaining declaration boundary.
+   Next repair ordinary function-definition completion links: leading/interleaved
+   declarations currently stop program-entry walks. Keep function bodies independent
+   and retain real forward-group/unsupported barriers. Test leading/interleaved and
+   unused never-returning definitions, owners, diagnostics and atomic budgets before
+   the compiler gate. Calls remain Unknown; propagation and proof outcomes stay gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

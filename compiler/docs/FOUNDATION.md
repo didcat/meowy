@@ -349,8 +349,17 @@ rejected. Aliases retain their shared canonical storage and distinct local IDs.
 Stopped address or RHS evaluation leaves the write outside the effect map when
 its Operation port is not encountered. Index values and bounds success remain
 unknown; the metadata does not establish precise overwrite or alias independence.
-Other encountered producers have an explicit Unknown effect, including indirect
-writes and calls. Unknown does not mean pure or independent. Stored
+Indirect effects now preserve captured target/RHS point IDs, control and pre-RHS
+origin snapshots. Roots remain canonical pointee owners rather than reference-cell
+IDs or precise field/index locations. Later RHS retargeting does not change an
+earlier snapshot. Incomplete and empty origin sets retain their completeness flag;
+they do not establish precise writes or independence. Each snapshot is capped at
+256 roots and the collection at 262,144 copied roots, separately from path-step
+limits. Copy work is charged before allocation, including empty snapshots, and
+duplicate operation ports copy origins once. Owner mismatches and exhausted budgets
+return no partial collection and preserve reports and conservative marks.
+Other encountered producers have an explicit Unknown effect, including calls.
+Unknown does not mean pure or independent. Stored
 operations beyond a stopped RHS are not added unless their port is encountered.
 Duplicate ports produce one effect entry. Registry and producer owner mismatches
 are rejected, and lookup never rescans every producer for each port. At most
@@ -358,6 +367,10 @@ are rejected, and lookup never rescans every producer for each port. At most
 Shared work charges cover entry/port visits and lookups before map growth; failure
 returns no partial effect map or report collection. Existing graph metadata and
 conservative dependency marks remain unchanged.
+Ordinary function-definition statement entries currently have no forward completion
+link, so program-entry walks can stop there. Function bodies are still inspected
+independently. Call-target store coverage also uses explicit statement-seeded walks;
+it does not establish whole-program connectivity across those declarations.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct

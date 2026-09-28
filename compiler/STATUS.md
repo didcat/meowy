@@ -101,44 +101,51 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current indirect-store effect slices
 
-Dependency-ordered commit plan:
-1. Add Indirect effects from captured StoreOperation metadata, with independent
-   per-snapshot/aggregate origin-copy bounds. Keep exact target/RHS/control and
-   completeness, with core pre-RHS retargeting and incomplete-origin regressions.
-2. Cover indexed/aliased pointees, owners/control, stopped operands, duplicate-copy
-   accounting and atomic origin/work exhaustion, including empty snapshots.
-3. Run the compiler gate and document scope and continuation work.
+The dependency-ordered implementation series is complete:
 
-Inspection: StoreOperation already retains Origins captured before RHS evaluation;
-those roots name canonical pointee owners, not the reference cell or precise paths.
-Copy the stored snapshot instead of querying current pointee state. MAX_ROOTS (256)
-bounds each snapshot, and MAX_EDGES (262,144) will separately bound aggregate copied
-roots. Preserve complete=false and empty root sets without inventing precise writes.
-The existing registry validates encountered operation owners. Charge store lookup
-and clone work before allocation, including empty snapshots; keep calls Unknown.
+1. Bounded pre-RHS indirect-store snapshots and core tests (`7110adb`).
+2. Origin/owner/stopped-input and atomic exhaustion coverage (`8983112`).
+3. Compiler gate and documentation handoff: complete.
 
-Prior compiler gate: all ten checks passed, 1881 library/913 native tests;
-`/tmp/meowy-path-effects-gate.log`. Indirect effect snapshots and copy limits are committed as `7110adb`. All 66 initially
-selected effect-related tests and all four selected indirect-effect tests (three
-new core groups) pass; `/tmp/meowy-indirect-effects-focused.log`,
-`/tmp/meowy-indirect-effects-core.log`. All-target Clippy passes;
-`/tmp/meowy-indirect-effects-clippy.log`. Pre-RHS retargeting, incomplete origins
-and exact aggregate-copy capacity are covered. Next add boundary coverage and run
-the full compiler gate.
-All ten selected indirect-effect tests pass (nine snapshot groups and one existing
-borrow regression); `/tmp/meowy-indirect-effects-boundaries.log`. Coverage includes
-indexed/aliased pointees, owners/control, empty completeness, duplicate-copy
-accounting, per-snapshot/aggregate caps and early/mid/late work failure.
-Unconditional target exit preserves ordinary E305; stopped RHS remains absent.
-Prior reports, counts and conservative marks survive failures; exact budgets pass.
+`edges/forward/effects.rs` retains Indirect effects for encountered stores, preserving
+target/RHS IDs, control and captured pre-RHS Origins. Copying never consults later
+pointee state. Roots remain canonical pointee owners, not reference cells or precise
+paths; completeness stays explicit, including empty snapshots. Registry/producer
+owners are checked, and duplicate ports copy once. Calls remain Unknown.
 
-Known graph gap: ordinary function definitions stop program-entry walks at their
-statement Entry ports, whether leading or interleaved. The call-target store case
-is therefore tested with an explicit walk seeded at the captured store statement;
-the ordinary root report correctly omits it. Calls remain Unknown. This slice does
-not repair declaration connectivity or claim runtime reachability. No test failures
-remain; next run the full compiler gate and update the handoff.
-Propagation, callee summaries, restart headers and proof outcomes remain separate.
+MAX_ROOTS (256) bounds each snapshot and MAX_EDGES (262,144) bounds total copied
+roots, separately from path steps and report items. Lookup and clone work, including
+empty clones, are charged before allocation. Failed collection publishes no partial
+effects and preserves reports, graph counts and conservative marks. No precise
+write, independence, reachability, propagation or proof outcome is inferred.
+
+All 66 initially selected effect-related tests and ten selected indirect-effect
+tests pass (nine snapshot groups plus one existing borrow regression);
+`/tmp/meowy-indirect-effects-focused.log`, `/tmp/meowy-indirect-effects-boundaries.log`.
+All-target Clippy passed for implementation; `/tmp/meowy-indirect-effects-clippy.log`.
+Coverage includes RHS retargeting, indexed/reborrow/aliased pointees, owners/control,
+incomplete/empty snapshots, duplicate copying, per-snapshot/aggregate storage caps
+and early/mid/late work failure with exact-budget success. Ordinary E305 for an
+unconditionally exiting pointer expression remains intact. All ten compiler checks
+pass: 1890 library/913 native tests, formatting, Clippy, build, tooling and conformance
+(10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-indirect-effects-gate.log`. No outstanding test failures remain.
+The foundation guide documents snapshot scope and the remaining graph boundary.
+All four default checks pass, including 1208 local links in 110 Markdown files;
+`/tmp/meowy-indirect-effects-docs.log`.
+
+Next repair the observed ordinary function-definition statement boundary in
+`check/statements.rs` and dependency endpoint/sequence metadata. Both leading and
+interleaved definitions currently stop program walks at their Entry ports; tests
+in `effects/stores.rs` preserve that absence and explicitly seed a store walk to
+check call-target snapshots. Investigate the exact successful definition branch,
+then record its own completion without traversing the function body or inheriting
+its non-returning behavior. Keep forward-group/unsupported erased forms as explicit
+barriers; never add a generic bypass for every empty HIR statement. Split endpoint
+representation from checker wiring if useful. Test leading/interleaved definitions,
+unused never-returning bodies, owner separation, existing diagnostics and atomic
+budgets; update the boundary regressions and run the full gate. Callee effect
+summaries, restart headers, propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1466,11 +1473,11 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Owned path effects passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1881 library/913 native tests, formatting,
+- Indirect-store effects passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1890 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-path-effects-gate.log`. Indirect/callee effects, precise
-  dynamic-index write locations and dependency propagation stay pending.
+  Log: `/tmp/meowy-indirect-effects-gate.log`. Ordinary function-definition
+  connectivity, callee effects, precise write locations and propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
   compiler harness tests, Vim/Neovim, fmt, Clippy, build, links and catalog/schema
@@ -1995,12 +2002,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    guide documents scope.
    Owned Path effects (`dd532e3`) now preserve exact ordered field/index metadata
    with per-path and aggregate copy bounds. Boundary coverage (`f705732`) and all ten
-   compiler checks pass; the guide documents scope. Next retain bounded indirect-store
-   effects from captured pre-RHS target/origin/RHS/control metadata in
-   `dependencies/store_operations.rs`. Preserve origin completeness; do not recompute
-   pointees from later reference state. Test RHS retargeting, indexed pointees,
-   incomplete origins, stopped operands, duplicates and atomic exhaustion before
-   the compiler gate. Callee effects, propagation and proof outcomes remain separate.
+   compiler checks pass; the guide documents scope. Indirect snapshots (`7110adb`)
+   now retain pre-RHS origins/completeness and target/RHS/control with bounded copies.
+   Boundary coverage (`8983112`) and all ten compiler checks pass; the guide
+   documents snapshot scope and the remaining declaration boundary.
+   Next repair ordinary function-definition completion in `check/statements.rs` and
+   endpoint/sequence metadata. Leading/interleaved definitions currently stop root
+   walks; explicit store-seeded tests cover call targets without hiding that gap.
+   Preserve independent function ownership, non-returning-body isolation and real
+   forward-group/unsupported barriers. Test exact definition branches, diagnostics
+   and budgets before the compiler gate; do not bypass all empty HIR statements.
+   Callee summaries, propagation and proof outcomes remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
