@@ -37,6 +37,8 @@ pub(crate) enum Family {
 
 pub(crate) const FAMILIES: usize = Family::Emission as usize + 1;
 
+mod collect;
+
 impl Checker {
     pub(crate) fn edge_counts(&self) -> [(Family, usize); FAMILIES] {
         [

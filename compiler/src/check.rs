@@ -287,11 +287,14 @@ pub(crate) fn check_imports(
         Ok(body) => {
             let program = hir::Program {
                 body,
-                functions: checker.functions.into_iter().flatten().collect(),
-                locals: checker.locals,
+                functions: std::mem::take(&mut checker.functions)
+                    .into_iter()
+                    .flatten()
+                    .collect(),
+                locals: std::mem::take(&mut checker.locals),
             };
-            checker.proofs.conditions = checker.guards;
-            checker.proofs.tags = checker.tags;
+            checker.proofs.conditions = std::mem::take(&mut checker.guards);
+            checker.proofs.tags = std::mem::take(&mut checker.tags);
             for function in &program.functions {
                 if (function.result.has_exclusive()
                     || function
@@ -318,10 +321,13 @@ pub(crate) fn check_imports(
             crate::loans::check(&program, &facts, &checker.proofs, &mut checker.flow)?;
             queries::finish(&checker.queries, &checker.query_budgets)
                 .map_err(|error| vec![error])?;
-            let mut docs = checker.documentation;
+            let mut docs = checker.documentation.take();
             if let Some(model) = &mut docs {
                 model.finish().map_err(|error| vec![error])?;
             }
+            checker
+                .edge_inventory(block.span)
+                .map_err(|error| vec![error])?;
             Ok((program, docs))
         }
         Err(error) => Err(vec![if checker.flow.exceeded() {

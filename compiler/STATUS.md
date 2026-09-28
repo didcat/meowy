@@ -122,7 +122,13 @@ No inventory ordering establishes runtime order or reachability. The audit confi
 31 families. Named family counts now drive `edge_room` using checked addition,
 preserving exact capacity and overflow rejection. Three focused groups, formatting
 and all 1830 library tests pass; `/tmp/meowy-edge-counts-lib.log`. No outstanding
-failures remain. Bounded enumeration and the final count audit are next. The prior Heap series (`46ea8f3`, `c5e248b`, `436f014`) passed 1827 library/
+failures remain. Counts are committed as `2eec4bd`. Enumeration now copies only
+stored edges with family labels, checks actual counts and charges bounded work.
+Compilation retains the checker through moves so a final inventory audit runs
+after ownership, pending-query gates and documentation diagnostics. Three core
+inventory groups, formatting and all 1833 library tests pass;
+`/tmp/meowy-edge-inventory-lib.log`. No owner/port or reachability analysis is
+added. Full family coverage and exact work/edge-boundary cases are next. The prior Heap series (`46ea8f3`, `c5e248b`, `436f014`) passed 1827 library/
 913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
 `/tmp/meowy-heap-leaf-gate.log`. Proof outcomes remain gated.
 
