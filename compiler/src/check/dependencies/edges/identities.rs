@@ -123,3 +123,6 @@ mod controls;
 
 #[cfg(test)]
 mod modules;
+
+#[cfg(test)]
+mod records;

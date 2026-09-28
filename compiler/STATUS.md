@@ -355,14 +355,39 @@ unchanged (`/tmp/meowy-forward-export-preservation.log`). AGENTS already require
 this source coverage, evidence mapping and capability distinction; no rule update
 is needed. Unrelated `docs/programs/hey/` work is preserved.
 
-Next audit erased record-valued aliases in `src/check/statements.rs`,
-`src/check/dependencies/edges/identities.rs` and `src/check/inputs/`: trace their
-actual input identity and owner/check boundaries before adding bounded completion.
-Record a dependency-ordered plan and keep focused graph/required-read regressions
-with the implementation; add required source coverage and run the compiler gate.
-Pending descriptors, generic/capturing groups, other synthetic prefixes, callee
-summaries, backedge propagation and proof outcomes remain separate. Never bypass
-arbitrary None entries or treat normal ports as reachability evidence.
+## Record alias audit in progress
+
+Source tracing corrects the proposed next step: ordinary record copies are
+`Value::Local` storage operations, including projected subrecords. `Value::Record`
+is constructed by required-evaluation helpers and confined to their temporary
+scopes; `type_statement` handles these bindings without runtime statement points.
+The enclosing type declaration already publishes completion after required checking.
+`required_record` validates whole-ancestor evidence and records successful original
+local reads; scratch copies add no runtime identities. A new unconditional record
+identity endpoint would not model a missing source-level operation.
+
+Dependency-ordered commit plan:
+
+1. Add focused graph/provenance regressions for ordinary copy storage, required
+   aliases, exact source reads, scope isolation, failure publication and work limits.
+   Preserve current checking; change production code only if a regression exposes
+   a missing boundary.
+2. Add required execution and rejection conformance cases for record copies and
+   required aliases; update evidence inventory and run compiler/strict gates plus
+   preservation checks against `fe40677`.
+3. Correct root/compiler/foundation handoffs to describe the verified boundary and
+   identify the next actual unfinished dependency step; run documentation checks.
+
+Six new graph/provenance regression groups pass, plus the existing matching input
+test (`/tmp/meowy-record-alias-audit.log`). They cover distinct runtime storage,
+initializer roots, required source IDs and function owners, scratch scope isolation,
+stopped paths, failed declarations, unchanged logical costs, exact E220 limits and
+E225 rejection before recording reads or completion. Initial test assumptions about
+an empty endpoint registry were corrected to preserve the already checked record
+initializer endpoints. No production behavior change was needed. Next add source
+conformance coverage and run the complete gate. Keep pending
+proof descriptors, callee summaries and backedge propagation separate; retain
+B001 proof gates and preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 
