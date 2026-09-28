@@ -1,5 +1,5 @@
 use super::{entries::Reports, *};
-use crate::check::dependencies::{OperationKind, PathStep};
+use crate::check::dependencies::{OperationKind, Origins, PathStep, references::MAX_ROOTS};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Effect {
@@ -17,6 +17,12 @@ pub(crate) enum Effect {
         input: PointId,
         control: bool,
     },
+    Indirect {
+        target: PointId,
+        input: PointId,
+        origins: Origins,
+        control: bool,
+    },
     Unknown,
 }
 
@@ -24,7 +30,7 @@ pub(crate) type Effects = BTreeMap<PointId, (usize, Effect)>;
 
 impl Checker {
     pub(super) fn operation_effects(&mut self, reports: &Reports, span: Span) -> Result<Effects> {
-        self.operation_effects_limited(reports, span, MAX_EDGES, MAX_EDGES)
+        self.operation_effects_limited(reports, span, MAX_EDGES, MAX_EDGES, MAX_EDGES)
     }
 
     pub(self) fn operation_effects_limited(
@@ -33,6 +39,7 @@ impl Checker {
         span: Span,
         limit: usize,
         mut steps: usize,
+        mut roots: usize,
     ) -> Result<Effects> {
         let budget = || Diagnostic::unsupported("proof operation-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof operation-effect owner mismatch", span);
@@ -52,8 +59,9 @@ impl Checker {
                     reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.paths.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.stores.len().checked_ilog2().unwrap_or(0) as usize
                         + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
-                        + 6,
+                        + 7,
                 ) {
                     return Err(budget());
                 }
@@ -101,6 +109,23 @@ impl Checker {
                         input: op.input,
                         control: op.control,
                     }
+                } else if let Some(op) = self.stores.get(&id) {
+                    if op.owner != owner {
+                        return Err(invalid());
+                    }
+                    if op.origins.roots.len() > MAX_ROOTS
+                        || op.origins.roots.len() > roots
+                        || !self.flow.spend(op.origins.roots.len() + 1)
+                    {
+                        return Err(budget());
+                    }
+                    roots -= op.origins.roots.len();
+                    Effect::Indirect {
+                        target: op.target,
+                        input: op.input,
+                        origins: op.origins.clone(),
+                        control: op.control,
+                    }
                 } else {
                     Effect::Unknown
                 };
@@ -116,3 +141,6 @@ mod tests;
 
 #[cfg(test)]
 mod paths;
+
+#[cfg(test)]
+mod stores;

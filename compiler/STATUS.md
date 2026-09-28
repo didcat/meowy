@@ -99,51 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current owned path-effect slices
+### Current indirect-store effect slices
 
-The dependency-ordered implementation series is complete:
+Dependency-ordered commit plan:
+1. Add Indirect effects from captured StoreOperation metadata, with independent
+   per-snapshot/aggregate origin-copy bounds. Keep exact target/RHS/control and
+   completeness, with core pre-RHS retargeting and incomplete-origin regressions.
+2. Cover indexed/aliased pointees, owners/control, stopped operands, duplicate-copy
+   accounting and atomic origin/work exhaustion, including empty snapshots.
+3. Run the compiler gate and document scope and continuation work.
 
-1. Owned Path effects with bounded copies and core tests (`dd532e3`).
-2. Identity/control/stopped-input and budget boundary coverage (`f705732`).
-3. Compiler gate and documentation handoff: complete.
+Inspection: StoreOperation already retains Origins captured before RHS evaluation;
+those roots name canonical pointee owners, not the reference cell or precise paths.
+Copy the stored snapshot instead of querying current pointee state. MAX_ROOTS (256)
+bounds each snapshot, and MAX_EDGES (262,144) will separately bound aggregate copied
+roots. Preserve complete=false and empty root sets without inventing precise writes.
+The existing registry validates encountered operation owners. Charge store lookup
+and clone work before allocation, including empty snapshots; keep calls Unknown.
 
-`edges/forward/effects.rs` now retains Path effects for encountered owned field/index
-writes. The snapshot preserves local/canonical storage IDs, ordered PathStep values,
-index point/capacity/span, RHS and control. It reuses captured PathOperation metadata;
-no index evaluation or address/RHS replay occurs. Registry and producer owners stay
-checked. Empty paths reject, duplicates copy once, and non-encountered writes after
-stopped address/RHS remain absent. Indirect stores and calls remain Unknown.
-
-Each path is limited to MAX_WRITE_PATH (256) and total copied steps to MAX_EDGES
-(262,144), separately from effect-entry and walk-item caps. Lookup/step work and
-remaining storage are checked before allocation. Failure returns no partial map or
-collection and preserves prior reports, graph ledgers and conservative marks.
-Dynamic index values, bounds success and precise overwrite/alias independence are
-not inferred. Existing semantic/query/doc gates still precede collection.
-
-All 59 initially selected effect-related tests, all-target Clippy and seven path
-regression groups pass; `/tmp/meowy-path-effects-focused.log`,
-`/tmp/meowy-path-effects-clippy.log`, `/tmp/meowy-path-effects-boundaries.log`.
-Coverage includes nested/dynamic paths, exact source spans, canonical aliases,
-seeded control, independent owners, stopped first/later index or RHS, duplicate
-copy accounting, empty/foreign metadata, seeded per-path storage limits and atomic
-aggregate/early/mid/late failures with exact-budget success. All ten compiler checks
-pass: 1881 library/913 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-path-effects-gate.log`. No outstanding failures remain.
-The foundation guide documents Path effect scope and limits. All four default
-checks pass, including 1208 local links in 110 Markdown files;
-`/tmp/meowy-path-effects-docs.log`.
-
-Next add bounded indirect-store effects using `dependencies/store_operations.rs`:
-retain the target/RHS point IDs, captured pre-RHS Origins roots/completeness and
-control under the existing owner registry. Never recompute targets from later
-reference state or turn incomplete origins into precise writes. Bound per-snapshot
-and aggregate copied origins before allocation. Keep calls/other producers Unknown.
-Split representation/bounds and integration where useful; test RHS retargeting,
-indexed pointees, incomplete origins, stopped operands, duplicate visits and atomic
-exhaustion before the full compiler gate. Propagation, callee summaries, restart
-headers and proof outcomes remain separate.
+Prior compiler gate: all ten checks passed, 1881 library/913 native tests;
+`/tmp/meowy-path-effects-gate.log`. Indirect effect snapshots and copy limits are implemented. All 66 initially
+selected effect-related tests and all four selected indirect-effect tests (three
+new core groups) pass; `/tmp/meowy-indirect-effects-focused.log`,
+`/tmp/meowy-indirect-effects-core.log`. All-target Clippy passes;
+`/tmp/meowy-indirect-effects-clippy.log`. Pre-RHS retargeting, incomplete origins
+and exact aggregate-copy capacity are covered. Next add boundary coverage and run
+the full compiler gate.
+Propagation, callee summaries, restart headers and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 

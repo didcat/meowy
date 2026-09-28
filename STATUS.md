@@ -758,7 +758,9 @@ metadata with per-path and aggregate copy budgets. Boundary coverage (`f705732`)
 includes aliases, stopped operands, exact identities and atomic storage/work
 failures. All ten compiler checks pass: 1881 library/913 native tests;
 `/tmp/meowy-path-effects-gate.log`. The guide documents scope. Bounded indirect-store
-effect snapshots are next.
+effect snapshots now retain pre-RHS target origins/completeness with separate copy
+limits. Core retargeting/incomplete-origin/aggregate-capacity tests and Clippy pass;
+`/tmp/meowy-indirect-effects-core.log`. Boundary coverage and the full gate are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
