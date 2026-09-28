@@ -63,10 +63,8 @@ pub(crate) fn identity_endpoints_admit_self_and_reserved_forward_function_items(
 }
 
 #[test]
-pub(crate) fn identity_endpoints_preserve_type_control_static_and_forward_barriers() {
+pub(crate) fn identity_endpoints_preserve_control_static_and_forward_barriers() {
     for source in [
-        "t:<int32>;x:2",
-        "m:@\"memory\";t:m.Allocator;x:2",
         "p:@\"proof\";revision:p.revision;x:2",
         "'out{finish:'out.leave;x:2}",
         "f<()->int32>;f<int32>:(){->1};x:2",
@@ -129,7 +127,6 @@ pub(crate) fn identity_endpoints_keep_resolution_errors_before_publication() {
             ty: crate::hir::Type::Null,
         },
         Value::Foundation(Item::Heap),
-        Value::Type(crate::hir::Type::Null),
     ] {
         assert_eq!(BindingIdentity::capture(&value), None);
     }

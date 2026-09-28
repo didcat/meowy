@@ -1,4 +1,7 @@
-use super::{Checker, Result, Scope, Slot, Value, dependencies::PointKind};
+use super::{
+    Checker, Result, Scope, Slot, Value,
+    dependencies::{BindingIdentity, PointKind},
+};
 use crate::ast::{self, ExprKind, Span, StmtKind};
 use crate::diagnostic::Diagnostic;
 use crate::flow::FALSE;
@@ -88,6 +91,11 @@ impl Checker {
                     }
                     let value = self.meta_binding(value, annotation)?;
                     self.declare(name, value, stmt.span)?;
+                    self.identity_binding_endpoint(
+                        self.point.expect("meta binding"),
+                        BindingIdentity::Type,
+                        stmt.span,
+                    )?;
                     return Ok(Vec::new());
                 }
                 if let Some(symbol) = self.binding_symbol(value)?
@@ -105,7 +113,7 @@ impl Checker {
                             stmt.span,
                         ));
                     }
-                    let identity = super::dependencies::BindingIdentity::capture(&symbol);
+                    let identity = BindingIdentity::capture(&symbol);
                     self.declare(name, symbol, stmt.span)?;
                     if let Some(identity) = identity {
                         self.identity_binding_endpoint(

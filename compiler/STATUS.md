@@ -301,6 +301,37 @@ coverage, then run compiler/strict-gap gates. Forward groups, other erased value
 callee summaries and proof propagation/outcomes remain separate. Never add a
 generic empty-HIR bypass or treat a checked type as a runtime-evaluated value.
 
+## Current type-valued binding completion
+
+Dependency-ordered commit plan:
+
+1. Classify resolved Value::Type and foundation type identities in the existing
+   binding classifier. Connect successful annotated meta bindings after declaration
+   using the same bounded identity endpoint validator. Preserve payloads and
+   required-only helpers; include literal/query/computed/owner/error/accounting tests.
+2. Connect successful named meta value exports only after `export_type_value`
+   completes all checks and module registration. Add imported payload, export
+   ordering/error and bounded-publication regressions as an independent slice.
+3. Add source conformance for type-value aliases/queries, exported meta values and
+   relevant errors. Preserve existing source/reference bytes and capability pins;
+   run compiler, strict-gap and preservation checks.
+4. Update coverage evidence, the foundation guide and root/compiler handoffs, then
+   run final documentation checks and commit the handoff.
+
+Inspection: `binding_symbol` already charges literal/alias/query type work before
+returning the actual Value. `meta_binding` accepts only Value::Type and is also used
+inside required evaluation, so publication belongs only in ordinary statement
+branches. `export_type_value` returns true after validation and module insertion;
+its caller can publish without retaining another type payload. No type cloning,
+lookup replay, required-only endpoint or broader erased-form bypass is needed.
+The tree starts clean at `f41adad`. Ordinary binding classification/integration
+passes five new focused groups; `/tmp/meowy-type-bindings-focused.log`. Literal,
+foundation, query, computed and annotated types connect without runtime storage or
+query execution. Required-only helpers, logical limits, errors and atomic endpoint
+budgets remain intact. All 1923 library tests and all-target Clippy pass;
+`/tmp/meowy-type-bindings-lib.log`, `/tmp/meowy-type-bindings-clippy.log`.
+No outstanding test failures remain. Meta export integration is next.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;

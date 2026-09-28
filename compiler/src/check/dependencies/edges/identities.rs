@@ -8,12 +8,14 @@ use crate::{
 pub(crate) enum BindingIdentity {
     Function(crate::hir::FunctionId),
     Foundation,
+    Type,
 }
 
 impl BindingIdentity {
     pub(crate) fn capture(value: &Value) -> Option<Self> {
         match value {
             Value::Function { id, .. } => Some(Self::Function(*id)),
+            Value::Type(_) | Value::Foundation(Item::Type(_)) => Some(Self::Type),
             Value::Module(
                 Module::Core
                 | Module::Debug
@@ -71,3 +73,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod types;
