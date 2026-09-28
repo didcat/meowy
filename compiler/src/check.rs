@@ -325,11 +325,8 @@ pub(crate) fn check_imports(
             if let Some(model) = &mut docs {
                 model.finish().map_err(|error| vec![error])?;
             }
-            let inventory = checker
-                .edge_inventory(block.span)
-                .map_err(|error| vec![error])?;
             checker
-                .validate_edge_ports(&inventory, block.span)
+                .forward_index(block.span)
                 .map_err(|error| vec![error])?;
             Ok((program, docs))
         }

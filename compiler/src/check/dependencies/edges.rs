@@ -3,7 +3,7 @@ use crate::{ast::Span, check::Checker, check::Result, diagnostic::Diagnostic, hi
 
 pub(crate) const MAX_EDGES: usize = 262_144;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Port {
     Entry(PointId),
     Normal(PointId),
@@ -163,3 +163,5 @@ mod logic;
 mod inventory;
 
 mod ports;
+
+mod forward;

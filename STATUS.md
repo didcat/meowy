@@ -733,7 +733,8 @@ coverage is committed as `42b04e8`; the guide documents inventory limits. Bounde
 port anchors (`f543ec8`), edge owners (`cad2261`), selectors (`ec8677c`) and
 Operation producers (`53d54af`) now validate the inventory. All ten compiler
 checks pass: 1849 library/913 native tests; `/tmp/meowy-port-validation-gate.log`.
-The guide documents scope. Bounded forward lookup is next.
+The guide documents scope. Bounded forward-index work is in progress; the compiler
+handoff records representation/integration, lookup coverage and documentation.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

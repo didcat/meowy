@@ -99,52 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current graph-port validation slices
+### Current bounded forward-index slices
 
-The dependency-ordered series is complete:
-1. Resolve bounded point/block/emission/restart anchors after count auditing
-   (`f543ec8`).
-2. Reject cross-owner edges, preserving routes and unknown normal flow (`cad2261`).
-3. Validate specialized selectors against retained producers (`ec8677c`).
-4. Register Operation ports once per audit, avoiding repeated call scans
-   (`53d54af`).
-5. Verify the complete compiler gate and document the forward-index prerequisite.
+Validated inventory currently has no source-port lookup. A source-port map can
+retain original inventory positions, with separate forward and Backedge buckets,
+without copying edges again or interpreting absence as termination. Port ordering
+is structural key ordering only. The working tree was clean at entry.
 
-`edges/ports.rs` resolves completed points and retained bodies, checks emission
-source/target identity and validates restart source/site/target consistency. Both
-edge endpoints must resolve to one owner. Indexed stage selectors and snapshot/
-prefix kinds validate against producer metadata under bounded lookup work.
-Operation ports require a matching producer-owned declaration; the registry scans
-producer edges once, charges rows (including non-expression endpoint rows) and
-uses Invocation.point rather than CallId. No runtime vector bounds are inferred
-from Checker fields moved into Program. Validation follows existing semantic,
-ownership, query and documentation diagnostics. It changes no graph ledger and
-adds no edges. A normal port may have no reachable incoming flow; existence and
-ownership checks do not prove reachability or complete value provenance.
+Dependency-ordered commit plan:
+1. Add ordered port keys and a bounded index over count/port/owner-validated inventory.
+   Retain each edge position exactly once in forward or Backedge buckets; integrate
+   construction after existing diagnostic gates and validate core/library cases.
+2. Add independent lookup coverage across all families, duplicate/mixed-owner and
+   conditional routes, missing/destination-only ports and work/storage boundaries;
+   run the complete compiler gate.
+3. Document lookup guarantees and the next concrete analysis prerequisite.
 
-Anchor checks passed three groups and 1840 then-current library tests;
-`/tmp/meowy-port-anchors-lib.log`. Owner checks passed three groups and 1843 tests;
-`/tmp/meowy-edge-owners-lib.log`. Selector checks passed three groups and 1846 tests;
-`/tmp/meowy-port-selectors-lib.log`. Operation registry checks passed three groups
-and 1849 tests; `/tmp/meowy-operation-ports-lib.log`. The final gate also covers
-zero-edge endpoint work. All ten compiler checks pass: 1849 library/913 native
-tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-port-validation-gate.log`. No outstanding failures remain.
-The foundation guide documents the validation boundary. Documentation validation
-passed 1208 local links in 110 Markdown files; `/tmp/meowy-port-validation-docs.log`.
-
-Next build bounded forward lookup over the validated inventory in
-`check/dependencies/edges/`. Index exact source ports and retain original inventory
-positions, duplicates and conditional routes. Keep Backedge links explicit and
-separate when exposing forward successors, without losing them from the inventory.
-Do not infer execution order from keys, or independence/termination from missing
-successors. Preserve owner boundaries and diagnostic priority; charge work and
-edge/index storage before returning a completed index. Split index representation
-from query/consumer integration where useful. Verify duplicate/mixed-owner edges,
-checked/returned/conditional routes, restarts, missing ports and atomic bounds,
-then run the compiler gate. Propagation, restart-header analysis and proof outcomes
-remain separate.
+Index construction will charge shared work and cap edges/source keys/index slots.
+No lookup creates edges, proves reachability or enables dependency propagation.
+The index now owns the validated inventory and maps exact source ports to separate
+forward/Backedge position vectors. Each inventory entry creates exactly one index
+slot, so the existing edge cap also bounds source keys and slots. Construction
+is integrated after existing diagnostic gates. All four core groups and all 1853
+library tests pass; `/tmp/meowy-forward-index-lib.log`. The tightened mid-build
+work-boundary case also passes; `/tmp/meowy-forward-index-budget.log`. Formatting
+passes and no outstanding failures remain. Full-family lookup coverage is next. The prior port series passed 1849 library/
+913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
+`/tmp/meowy-port-validation-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 
