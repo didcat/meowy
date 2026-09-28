@@ -41,7 +41,10 @@ reference expectation is preserved, with an exact exception. Current bits baseli
 `/tmp/meowy-conformance-bits.log`. Six ownership/store fixtures pass: last-use acceptance, live-loan/escape rejections,
 pre-RHS pointer retargeting, nested index order and reservation conflicts. Current
 result: 27 required passes, 14 pinned gaps, zero failures;
-`/tmp/meowy-conformance-ownership.log`. Next add blocks and proof cases.
+`/tmp/meowy-conformance-ownership.log`. Six block/control fixtures also pass, including emission continuation, restart and
+write invalidation, short-circuit effects and conditional slots: 33 required passes,
+14 pinned gaps, zero failures; `/tmp/meowy-conformance-blocks.log`.
+Next add proof staging and qualification cases, then the documentation inventory.
 
 ## Documentation conventions and layout
 

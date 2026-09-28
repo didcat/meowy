@@ -1,0 +1,4 @@
+d:@"debug"
+f<boolean>:(){d.print(99);->true}
+d.print(false&&f())
+d.print(true||f())

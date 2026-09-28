@@ -407,6 +407,66 @@
         "code": "E302"
       },
       "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "emission_continues",
+      "phase": "run",
+      "source": "sources/emission_continues.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "restart_mutation",
+      "phase": "run",
+      "source": "sources/restart_mutation.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "restart_invalidates_guard",
+      "phase": "check",
+      "source": "sources/restart_invalidates_guard.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/values-and-blocks.md#matchers-and-flow-analysis"
+    },
+    {
+      "id": "write_invalidates_guard",
+      "phase": "check",
+      "source": "sources/write_invalidates_guard.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "short_circuit_effects",
+      "phase": "run",
+      "source": "sources/short_circuit_effects.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "false\ntrue\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "conditional_missing_slot",
+      "phase": "run",
+      "source": "sources/conditional_missing_slot.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

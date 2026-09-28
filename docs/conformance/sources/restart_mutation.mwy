@@ -1,0 +1,4 @@
+d:@"debug"
+n:=0
+'loop{n=n+1;|n<3|'loop.restart()}
+d.print(n)

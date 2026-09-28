@@ -1,0 +1,2 @@
+v<string><null>:="x"
+|v<string>|'loop{x:v~<string>;v=null;'loop.restart()}

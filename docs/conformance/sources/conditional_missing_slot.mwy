@@ -1,0 +1,4 @@
+d:@"debug"
+make:(flag<boolean>){|flag|->name:"hello"}
+v:make(false)
+d.print(v.name<null>)

@@ -1,0 +1,3 @@
+d:@"debug"
+x:{->7;d.print(1)}
+d.print(x)
