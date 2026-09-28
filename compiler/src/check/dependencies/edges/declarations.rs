@@ -43,17 +43,32 @@ impl Checker {
         {
             return Err(invalid());
         }
+        self.publish_declaration_endpoint(id, span, "function declaration")
+    }
+
+    pub(super) fn publish_declaration_endpoint(
+        &mut self,
+        id: PointId,
+        span: Span,
+        kind: &'static str,
+    ) -> Result<()> {
         let key = SequenceSource::Stmt(id);
         let edges = [Edge::new(Port::Entry(id), Port::Normal(id), Route::Next)];
         if let Some(prior) = self.endpoints.get(&key) {
             return if *prior == edges {
                 Ok(())
             } else {
-                Err(invalid())
+                Err(Diagnostic::unsupported(
+                    format!("proof {kind} endpoint identity mismatch"),
+                    span,
+                ))
             };
         }
         if !self.edge_room(edges.len()) {
-            return Err(budget());
+            return Err(Diagnostic::unsupported(
+                format!("proof {kind} endpoint budget exhausted"),
+                span,
+            ));
         }
         self.endpoint_edges += edges.len();
         self.endpoints.insert(key, edges.to_vec());

@@ -176,6 +176,35 @@ owners and ordinary diagnostics. Add focused scope/error/budget tests and source
 fixtures, then run compiler and strict-gap gates. Proof propagation/outcomes remain
 gated; call effects and broader contextual graph coverage remain separate.
 
+## Current immutable identity-binding completion
+
+Dependency-ordered commit plan:
+
+1. Reuse bounded endpoint publication without changing ordinary definition identity
+   validation, diagnostics or work charges; retain existing declaration regressions.
+2. Classify resolved Function items and the current foundation modules/callable items.
+   Publish completion only after successful immutable, unannotated declaration.
+   Accept registered None function slots for self/forward aliases; never enter bodies.
+   Exclude type/meta/static/record/file-module/control/pending/Heap forms and preserve
+   ordinary diagnostics. Include structural, shadowing, identity and budget tests.
+3. Add source conformance for recursive aliases and lexical foundation aliases,
+   update the checked coverage map/guide and run compiler, strict-gap and preservation
+   checks before committing the final handoff.
+
+Inspection: `binding_symbol` resolves actual Values and performs type-root accounting.
+The successful binding branch currently erases Function, Module, callable and other
+identity forms together. Classification must happen after resolution, with the Value
+still passed unchanged to `declare`; publication follows it so E203 remains first.
+Function slots exist before their bodies are checked, so the completed-definition
+body/foreign-owner checks cannot be reused for aliases. The selected classes add
+structural Entry-to-Normal edges only; calls retain their own effects/return gates.
+Baseline is clean: 1898 library/913 native tests and 90 conformance cases (71 passed,
+19 pinned gaps, zero failures). The publication extraction passes all six existing
+declaration endpoint groups, including atomic edge/work exhaustion and conflicting
+metadata; `/tmp/meowy-identity-publication.log`. Validation/work charges and ordinary
+function diagnostics are unchanged. Next implement selected identity classification
+and alias-specific validation/wiring.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;
