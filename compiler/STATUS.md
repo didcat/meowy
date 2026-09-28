@@ -187,7 +187,8 @@ Dependency-ordered commit plan:
    Accept registered None function slots for self/forward aliases; never enter bodies.
    Exclude type/meta/static/record/file-module/control/pending/Heap forms and preserve
    ordinary diagnostics. Include structural, shadowing, identity and budget tests.
-3. Add source conformance for recursive aliases and lexical foundation aliases,
+3. Add source conformance for self/forward aliases, lexical foundation aliases
+   with shadowing and duplicate-name rejection,
    update the checked coverage map/guide and run compiler, strict-gap and preservation
    checks before committing the final handoff.
 
@@ -208,7 +209,15 @@ Selected identity classification and wiring pass all 1904 library tests;
 slots, excluded forms, original errors, identity validation and exact publication
 budgets. All-target Clippy passes after a condition-layout cleanup;
 `/tmp/meowy-identity-endpoints-clippy.log`. Next add source conformance and finish
-the full gate; no outstanding focused test failures remain.
+the full gate; no outstanding focused test failures remain. The implementation is
+committed as `6387133`. Four required source fixtures cover self/forward alias
+execution, lexical shadowing and E203. All ten compiler checks pass: 1904 library,
+913 native, 32 tooling and 30 harness groups; `/tmp/meowy-identity-bindings-gate.log`.
+Conformance has 94 cases: 75 passes, 19 unchanged pinned gaps and zero failures in
+debug/release. All previous 90 case records, 107 source assets, 37 reference files
+and capability exceptions are unchanged; `/tmp/meowy-identity-preservation.log`.
+Strict mode correctly exits 1 for only those gaps;
+`/tmp/meowy-identity-bindings-strict.log`. The guide and final handoff remain.
 
 ## Documentation conventions and layout
 

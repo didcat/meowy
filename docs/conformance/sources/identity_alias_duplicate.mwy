@@ -1,0 +1,3 @@
+d:@"debug"
+alias:d.print
+alias:d.panic

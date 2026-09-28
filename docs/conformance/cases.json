@@ -960,6 +960,46 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "function_self_alias",
+      "phase": "run",
+      "source": "sources/function_self_alias.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "function_forward_alias",
+      "phase": "run",
+      "source": "sources/function_forward_alias.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "identity_alias_shadowing",
+      "phase": "run",
+      "source": "sources/identity_alias_shadowing.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\n5\n9\n7\n"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "identity_alias_duplicate",
+      "phase": "check",
+      "source": "sources/identity_alias_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E203"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
     }
   ]
 }

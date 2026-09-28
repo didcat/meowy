@@ -1,0 +1,8 @@
+count<int32>:(n<int32>)'out{
+    again:count
+    |n==0|{'out->0;'out.leave()}
+    ->1+again(n-1)
+}
+d:@"debug"
+alias:count
+d.print(alias(3))

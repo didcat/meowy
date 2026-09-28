@@ -1,0 +1,16 @@
+d:@"debug"
+console:d
+say:console.print
+b:@"bits"
+flip:b.not
+f<int32>:(value<int32>){->value+1}
+apply:f
+{
+    b:{->not:9}
+    d:7
+    n<uint8>:flip(0)
+    say(n)
+    say(apply(4))
+    say(b.not)
+    say(d)
+}

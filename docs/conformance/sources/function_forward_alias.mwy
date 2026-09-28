@@ -1,0 +1,6 @@
+first<()->int32>
+second<()->int32>
+first<int32>:(){alias:second;->alias()}
+second<int32>:(){->7}
+d:@"debug"
+d.print(first())
