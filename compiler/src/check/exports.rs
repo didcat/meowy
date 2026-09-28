@@ -281,6 +281,44 @@ impl Checker {
         Ok(())
     }
 
+    pub(crate) fn check_function_export(
+        &self,
+        name: &str,
+        mutable: bool,
+        span: Span,
+    ) -> Result<()> {
+        if self.module.values.contains_key(name) {
+            return Err(Self::error(
+                "E205",
+                format!("module export `{name}` is already emitted"),
+                span,
+            ));
+        }
+        if self.scopes.len() != self.module.depth {
+            return Err(Diagnostic::unsupported(
+                "conditional function exports",
+                span,
+            ));
+        }
+        if self
+            .frames
+            .last()
+            .unwrap()
+            .slots
+            .contains_key(&Some(name.into()))
+        {
+            return Err(Self::error(
+                "E205",
+                format!("module export `{name}` is already emitted"),
+                span,
+            ));
+        }
+        if mutable {
+            return Err(Diagnostic::unsupported("mutable function exports", span));
+        }
+        Ok(())
+    }
+
     pub(crate) fn export_function(
         &mut self,
         label: Option<&str>,
@@ -314,35 +352,7 @@ impl Checker {
                 _ => return Ok(None),
             }
         };
-        if self.module.values.contains_key(name) {
-            return Err(Self::error(
-                "E205",
-                format!("module export `{name}` is already emitted"),
-                span,
-            ));
-        }
-        if self.scopes.len() != self.module.depth {
-            return Err(Diagnostic::unsupported(
-                "conditional function exports",
-                span,
-            ));
-        }
-        if self
-            .frames
-            .last()
-            .unwrap()
-            .slots
-            .contains_key(&Some(name.into()))
-        {
-            return Err(Self::error(
-                "E205",
-                format!("module export `{name}` is already emitted"),
-                span,
-            ));
-        }
-        if mutable {
-            return Err(Diagnostic::unsupported("mutable function exports", span));
-        }
+        self.check_function_export(name, mutable, span)?;
         let annotation = annotation.ok_or_else(|| {
             Self::error(
                 "E214",

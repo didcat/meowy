@@ -346,18 +346,34 @@ conformance/evidence workflow; no rule change is needed.
 Unrelated current work is under `docs/programs/build/` and `docs/programs/hey/`;
 the earlier `.gitignore`/`hey.mwy` edits changed externally and were not included.
 
-Next implement documented exported definitions inside forward groups. The source
-`f<()->int32>;->f<int32>:(){->1}` currently returns E221 because `forward` matches only
-ordinary Bind; probe: `/tmp/meowy-forward-export-probe.log`. This is a pre-existing
-acceptance gap, not a language-rejection pass or one of the 19 B001 exceptions.
-Inspect `src/check/functions.rs` and `src/check/exports.rs`, then plan separate
-reservation-aware definition admission, export registration/checks and integration
-slices. Reuse existing IDs rather than redeclaring functions; preserve exact/public
-signatures, export scope/duplicates, doc checks and whole-group completion. Add a
-required accepted source fixture plus mismatch/duplicate/scope regressions, then run
-compiler/strict-gap gates and update the coverage gap. Generic/capturing groups,
-record/pending values, callee summaries, backedge propagation and proof outcomes
-remain separate.
+## Exported forward definitions in progress
+
+The reference permits `f<()->int32>;->f<int32>:(){->1}`, but the current group
+matcher rejects the export with E221 (`/tmp/meowy-forward-export-probe.log`).
+This is an acceptance gap, separate from the 19 pinned B001 cases.
+
+Dependency-ordered commit plan:
+
+1. Extract existing function-export validation without changing ordinary export
+   behavior; retain its diagnostic order and budget checks.
+2. Admit named immutable export definitions in forward groups, reuse reserved IDs,
+   validate export scope/collisions and publish exports only after every definition
+   succeeds. Add focused signature, identity, failure and documentation regressions.
+3. Add required multi-file execution and rejection conformance cases, update the
+   coverage inventory and run compiler/strict gates plus fixture preservation checks.
+4. Update the foundation guide and root/compiler handoffs with results and remaining
+   limits; run the final documentation checks.
+
+Slice 1 extracts `check_function_export` while preserving ordinary export ordering.
+All three `function_exports` regression groups and formatting pass;
+`/tmp/meowy-forward-export-refactor.log`. Next implement slice 2.
+
+The explicit forward header supplies the public signature, including the result
+when omitted from the definition. Explicit definition annotations must match it.
+Ordinary exported functions still require their existing explicit annotation.
+Generic/capturing groups, record/pending values, callee summaries, backedge
+propagation and proof outcomes remain separate. Preserve unrelated
+`docs/programs/hey/` work; the earlier `docs/programs/build/` changed externally.
 
 ## Documentation conventions and layout
 
