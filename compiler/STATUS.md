@@ -50,12 +50,32 @@ checks pass in `/tmp/meowy-conformance-final-docs.log`. No outstanding
 test failures remain. Root/compiler AGENTS now require source coverage, reviewed
 traceability and promotion of passing exceptions. This is not release qualification.
 
-Next coverage slice: extend the isolated catalog format/runner with declared
-companion files, then promote supported relative-module behavior and rejection
-cases from native tests into source conformance. Preserve path isolation and test
-missing/escaping/duplicate assets before adding module fixtures. The inventory
-lists the remaining proof and runtime obligations for later slices. The graph
-completion repair below remains deferred while coverage is the user's priority.
+### Current companion-file conformance slices
+
+Dependency-ordered commit plan:
+
+1. Add shared validation for canonical source paths and declared companion files.
+   Introduce catalog version 2 while preserving version-1 single-file compatibility.
+   Reject missing, escaping, symlinked, duplicate and out-of-bundle declarations;
+   count declared companions in the orphan-source audit. Include focused tests.
+2. Stage only declared files into a fresh per-case directory, preserving relative
+   layout and bytes. Preflight inputs before writing; test isolation, rejected
+   assets, collisions and runner failure reporting. Document and render companions.
+3. Add independently reviewable relative-module fixtures for initialization order,
+   nested resolution, exported data/functions/types and language rejections.
+4. Run compiler/default gates, strict-gap execution and fixture-preservation checks;
+   update documentation evidence and the continuation handoff.
+
+Inspection: the runner currently puts every case source in one shared temporary
+folder and stages no imports. A companion list will name catalog-relative .mwy files
+under the entry file's directory; staging preserves that directory's relative layout.
+The catalog and runner will share path checks, with fresh directories preventing
+cross-case visibility. Original outcomes, source bytes and capability pins stay fixed.
+No compiler implementation change is planned. Shared file validation and version-2
+catalog admission now pass 16 harness and 29 tooling groups. Cases reject escaping,
+noncanonical, missing, symlinked, duplicate and out-of-bundle files; empty companion
+modules remain valid. All 64 existing cases and 37 coverage records validate.
+Next wire preflighted per-case staging into execution before adding companion cases.
 
 ## Documentation conventions and layout
 

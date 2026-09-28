@@ -31,7 +31,7 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(catalog.validate(data, self.base), 1)
 
     def test_catalog_shape_version_target_and_duplicate_ids_fail(self):
-        for change in [lambda data: data.update(version=2), lambda data: data.update(target="other"),
+        for change in [lambda data: data.update(version=3), lambda data: data.update(target="other"),
                        lambda data: data.update(extra=True), lambda data: data["cases"].append(copy.deepcopy(data["cases"][0]))]:
             data = copy.deepcopy(self.data)
             change(data)
@@ -63,6 +63,17 @@ class CatalogTests(unittest.TestCase):
         (self.base / "sources/nested").mkdir()
         (self.base / "sources/nested/orphan.mwy").write_text("x:2\n")
         with self.assertRaisesRegex(AssertionError, "Unlisted"):
+            catalog.validate(self.data, self.base)
+
+    def test_version_two_requires_declared_companions_and_keeps_version_one_closed(self):
+        (self.base / "sources/helper.mwy").write_text("->n:2\n")
+        self.data["cases"][0]["companions"] = ["sources/helper.mwy"]
+        with self.assertRaises(AssertionError):
+            catalog.validate(self.data, self.base)
+        self.data["version"] = 2
+        self.assertEqual(catalog.validate(self.data, self.base), 1)
+        self.data["cases"][0]["companions"].append("sources/helper.mwy")
+        with self.assertRaisesRegex(AssertionError, "duplicate"):
             catalog.validate(self.data, self.base)
 
     def test_missing_and_fenced_heading_references_fail(self):

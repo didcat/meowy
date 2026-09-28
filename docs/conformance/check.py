@@ -7,13 +7,14 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "tools"))
+sys.path[:0] = [str(ROOT / "tools"), str(ROOT / "compiler/tests")]
 from check_links import anchors
+from conformance_fixtures import case_files
 
 
 def validate(catalog, base):
     assert set(catalog) == {"version", "language_contract", "target", "cases"}
-    assert catalog["version"] == catalog["language_contract"] == 1
+    assert catalog["version"] in (1, 2) and catalog["language_contract"] == 1
     assert catalog["target"] == "x86_64-unknown-linux-gnu"
     codes = set(
         re.findall(
@@ -23,15 +24,16 @@ def validate(catalog, base):
     seen = set()
     sources = set()
     for case in catalog["cases"]:
-        assert set(case) == {"id", "phase", "source", "expected", "reference"}, case
+        fields = {"id", "phase", "source", "expected", "reference"}
+        assert set(case) == fields or (catalog["version"] == 2 and set(case) == fields | {"companions"}), case
         assert re.fullmatch(r"[a-z][a-z0-9_]*", case["id"]), case
         assert case["id"] not in seen, case["id"]
         seen.add(case["id"])
         assert case["phase"] in {"check", "run"}, case
-        source = (base / case["source"]).resolve()
-        assert source.is_relative_to(base / "sources") and source.suffix == ".mwy", case
-        assert source.read_text(encoding="utf-8").strip(), case
-        sources.add(source)
+        try:
+            sources.update(source for source, _ in case_files(case, base))
+        except ValueError as error:
+            raise AssertionError(f"{case['id']}: {error}") from error
         expected = case["expected"]
         assert type(expected["accepted"]) is bool, case
         if not expected["accepted"]:

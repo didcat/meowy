@@ -22,8 +22,8 @@ lists the reviewed commits and validation. All ten compiler checks pass, includi
 `/tmp/meowy-conformance-coverage-gate.log`. Strict mode correctly rejects 19 known
 gaps. Full language qualification remains incomplete.
 
-Next coverage work is declared companion-file support and source conformance for
-relative modules, preserving fixture isolation. Graph implementation is deferred;
+Companion-file coverage is in progress: shared path/schema validation passes 16
+harness and 29 tooling groups. Runner isolation and module cases are next. Graph implementation is deferred;
 its existing declaration-completion handoff is retained below.
 
 ## Documentation conventions
