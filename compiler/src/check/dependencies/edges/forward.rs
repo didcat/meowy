@@ -1,6 +1,7 @@
 use super::{inventory::Family, *};
 use std::collections::BTreeMap;
 
+mod entries;
 mod walk;
 
 #[derive(Debug, Default, PartialEq, Eq)]

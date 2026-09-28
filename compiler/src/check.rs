@@ -326,7 +326,7 @@ pub(crate) fn check_imports(
                 model.finish().map_err(|error| vec![error])?;
             }
             checker
-                .structural_walk(program.body.id, block.span)
+                .entry_reports(&program, block.span)
                 .map_err(|error| vec![error])?;
             Ok((program, docs))
         }

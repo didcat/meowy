@@ -744,7 +744,10 @@ uninterpreted. Boundary coverage (`f932bf5`) includes nested restart targets,
 independent function entries, cycles and exact capacity/work failures. All ten
 compiler checks pass: 1864 library/913 native tests;
 `/tmp/meowy-structural-walk-gate.log`. The guide documents scope. Independent
-program/function entry-report collection is next.
+program/function entry reports now retain one validated index with exact HIR roots
+and expected owners, including unused functions. Root/item/work limits and owner
+failures pass all 1869 library tests and Clippy; `/tmp/meowy-entry-reports-lib.log`.
+The full compiler gate and documentation handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

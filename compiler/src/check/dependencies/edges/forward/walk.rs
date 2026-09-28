@@ -16,6 +16,7 @@ impl Walk {
 }
 
 impl ForwardIndex {
+    #[cfg(test)]
     pub(crate) fn walk(
         &self,
         start: Port,
@@ -79,17 +80,6 @@ impl ForwardIndex {
             }
         }
         Ok(walk)
-    }
-}
-
-impl Checker {
-    pub(crate) fn structural_walk(
-        &mut self,
-        block: crate::hir::BlockId,
-        span: Span,
-    ) -> Result<Walk> {
-        self.forward_index(span)?
-            .walk(Port::BlockEntry(block), &mut self.flow, span)
     }
 }
 

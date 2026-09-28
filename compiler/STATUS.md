@@ -119,10 +119,15 @@ collection's aggregate storage budget before a report is retained. Calls and
 Backedges remain uninterpreted; function inspection does not prove reachability.
 
 Previous compiler gate: all ten checks passed, 1864 library/913 native tests;
-`/tmp/meowy-structural-walk-gate.log`. The retained-item allowance is implemented and all nine structural-walk groups pass;
+`/tmp/meowy-structural-walk-gate.log`. The retained-item allowance is committed as `80feac6`; all nine walk groups pass;
 `/tmp/meowy-entry-allowance.log`. Zero, partial and exact allowances cover seeds,
-edges, newly discovered ports and missing boundaries. Next implement collection
-and HIR entry integration, then run the full gate.
+edges, newly discovered ports and missing boundaries. Collection and HIR entry integration now pass all 1869 library tests and all-target
+Clippy; `/tmp/meowy-entry-reports-lib.log`, `/tmp/meowy-entry-reports-clippy.log`.
+Four collection groups cover unused recursive functions, reversed HIR function
+order, resolvable positions, empty programs, duplicate/wrong/missing/overflowing
+owners and aggregate root/item/work limits. Late failures preserve graph counts;
+exact remaining work and storage succeed. No outstanding failures remain.
+Next run the full compiler gate and finish documentation.
 Proof outcomes, precise writes/unknown effects and propagation remain separate.
 
 ### Proof dependency implementation slices
