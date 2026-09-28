@@ -404,3 +404,14 @@ pub(crate) fn discovered_imports_initialize_nested_and_inline_dependencies_once(
         ("value.mwy","d:@\"debug\";d.print(\"init\");->n:7"),
     ]).runs(b"init\nentry\n7\ninline 7\n");
 }
+
+#[test]
+pub(crate) fn forward_exports_run_reserved_groups_through_imports_and_reexports() {
+    case(
+        "m:@\"./facade.mwy\";d:@\"debug\";d.print(m.run(8));d.print(m.run(7))",
+        &[
+            ("facade.mwy", "m:@\"./group.mwy\";->run<(int32)->boolean>:m.even"),
+            ("group.mwy", "even<(int32)->boolean>;odd<(int32)->boolean>;odd<boolean>:(n<int32>)'result{|n==0|{'result->false;'result.leave()};->even(n-1)};->even:(n<int32>)'result{zero<int32>:(){->0};|n==zero()|{'result->true;'result.leave()};->odd(n-1)};d:@\"debug\";d.print(\"group ready\")"),
+        ],
+    ).runs(b"group ready\ntrue\nfalse\n");
+}

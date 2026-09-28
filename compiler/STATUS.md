@@ -359,14 +359,22 @@ Dependency-ordered commit plan:
 2. Admit named immutable export definitions in forward groups, reuse reserved IDs,
    validate export scope/collisions and publish exports only after every definition
    succeeds. Add focused signature, identity, failure and documentation regressions.
-3. Add required multi-file execution and rejection conformance cases, update the
+3. Resolve documentation links to later group definitions using their source
+   identities, preserving public/private checks and bounded analysis.
+4. Add required multi-file execution and rejection conformance cases, update the
    coverage inventory and run compiler/strict gates plus fixture preservation checks.
-4. Update the foundation guide and root/compiler handoffs with results and remaining
+5. Update the foundation guide and root/compiler handoffs with results and remaining
    limits; run the final documentation checks.
 
-Slice 1 extracts `check_function_export` while preserving ordinary export ordering.
-All three `function_exports` regression groups and formatting pass;
-`/tmp/meowy-forward-export-refactor.log`. Next implement slice 2.
+Slice 1 (`054c9b4`) preserves ordinary export validation order. Slice 2 now admits
+named immutable exported definitions, checks scope/collisions and stages exports
+until every definition succeeds. Exact reserved IDs and group completion remain
+unchanged. Five focused checker groups and cross-file native execution in both
+profiles pass (`/tmp/meowy-forward-export-focused.log`), including partial-group
+failure, exact work limit, inferred result, documentation and typed re-exporting.
+All 1965 library tests pass (`/tmp/meowy-forward-export-library.log`).
+Next resolve forward peer links in documentation: later definitions currently retain their private header anchor
+until their own bodies are checked. No conformance case is being waived for this.
 
 The explicit forward header supplies the public signature, including the result
 when omitted from the definition. Explicit definition annotations must match it.

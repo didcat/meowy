@@ -154,6 +154,7 @@ impl Checker {
                 self.doc_stage(stmt.span.start)?;
             }
         }
+        let mut exports = Vec::new();
         for _ in 0..count {
             let stmt = stmts.get(index).ok_or_else(|| {
                 Self::error(
@@ -162,7 +163,7 @@ impl Checker {
                     stmts[start].span,
                 )
             })?;
-            let (name, ty, params, body) = match &stmt.kind {
+            let (name, ty, params, body, exported) = match &stmt.kind {
                 StmtKind::Bind {
                     name,
                     ty,
@@ -172,7 +173,18 @@ impl Checker {
                             kind: ExprKind::Function { params, body },
                             ..
                         },
-                } => (name, ty, params, body),
+                } => (name, ty, params, body, false),
+                StmtKind::Emit {
+                    label: None,
+                    name: Some(name),
+                    ty,
+                    mutable: false,
+                    value:
+                        ast::Expr {
+                            kind: ExprKind::Function { params, body },
+                            ..
+                        },
+                } => (name, ty, params, body, true),
                 _ => {
                     return Err(Self::error(
                         "E221",
@@ -188,6 +200,29 @@ impl Checker {
                     stmt.span,
                 )
             })?;
+            if exported {
+                if self.owner != 0
+                    || self
+                        .frames
+                        .last()
+                        .is_none_or(|frame| frame.id != self.module.block)
+                {
+                    return Err(Diagnostic::unsupported(
+                        "non-top-level forward exports",
+                        stmt.span,
+                    ));
+                }
+                if !self
+                    .flow
+                    .spend(name.len() + self.module.values.len() + exports.len() + 1)
+                {
+                    return Err(Diagnostic::unsupported(
+                        "module export budget exhausted",
+                        stmt.span,
+                    ));
+                }
+                self.check_function_export(name, false, stmt.span)?;
+            }
             let (actual_params, actual_result) =
                 self.construction_root(Span::new(stmt.span.start, body.span.start), |checker| {
                     let result = ty
@@ -221,8 +256,12 @@ impl Checker {
                         error
                     }
                 })?;
+            if exported {
+                exports.push((name.clone(), self.value(name, stmt.span)?));
+            }
             index += 1;
         }
+        self.module.values.extend(exports);
         group.end = index;
         Ok(group)
     }
@@ -411,3 +450,6 @@ mod declarations;
 
 #[cfg(test)]
 mod forward;
+
+#[cfg(test)]
+mod forward_exports;
