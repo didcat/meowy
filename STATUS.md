@@ -736,8 +736,8 @@ checks pass: 1849 library/913 native tests; `/tmp/meowy-port-validation-gate.log
 The guide documents scope. Bounded forward lookup (`9adb15c`) now preserves
 original inventory positions with separate forward/Backedge buckets. All ten
 compiler checks pass: 1856 library/913 native tests;
-`/tmp/meowy-forward-index-gate.log`. Guide documentation and the structural-walk
-handoff are next.
+`/tmp/meowy-forward-index-gate.log`. Full-family/boundary coverage is committed as
+`b838be4`; the guide documents scope. A bounded structural forward walk is next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -1019,10 +1019,12 @@ execution was not part of this documentation edit.
    duplicate routes and unknown flow. The compiler gate passes and the guide
    documents scope. Bounded forward lookup now retains exact ports, original
    inventory positions and separate forward/Backedge buckets; full-family/owner/
-   route/boundary coverage and the compiler gate pass. Document scope next, then
-   add a bounded structural walk that reports missing-successor and Backedge
-   boundaries, preserves conditions without evaluating them, and bounds cycles.
-   No walk should infer runtime reachability or propagate proof/data facts.
+   route/boundary coverage and the compiler gate pass; the guide documents scope.
+   Next add a bounded structural walk over forward buckets, retaining original
+   edge positions/routes and reporting missing-successor and Backedge boundaries.
+   Bound queues, visits and work even with duplicate paths/cycles; test conditional
+   routes, nested targets, missing sources and atomic exhaustion before the compiler
+   gate. No walk should infer runtime reachability or propagate proof/data facts.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

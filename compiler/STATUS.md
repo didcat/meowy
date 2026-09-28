@@ -101,42 +101,45 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current bounded forward-index slices
 
-Validated inventory currently has no source-port lookup. A source-port map can
-retain original inventory positions, with separate forward and Backedge buckets,
-without copying edges again or interpreting absence as termination. Port ordering
-is structural key ordering only. The working tree was clean at entry.
+The dependency-ordered series is complete:
+1. Build a bounded source-port index over validated inventory, preserving original
+   entry positions and separate forward/Backedge buckets (`9adb15c`).
+2. Cover all families, duplicates, owners, routes, missing ports and work/storage
+   bounds using shared source fixtures (`b838be4`).
+3. Document lookup guarantees and the next structural-walk prerequisite.
 
-Dependency-ordered commit plan:
-1. Add ordered port keys and a bounded index over count/port/owner-validated inventory.
-   Retain each edge position exactly once in forward or Backedge buckets; integrate
-   construction after existing gates; core/library checks pass (`9adb15c`).
-2. Add independent lookup coverage across all families, duplicate/mixed-owner and
-   conditional routes, missing/destination-only ports and work/storage boundaries;
-   the complete compiler gate passes.
-3. Document lookup guarantees and the next concrete analysis prerequisite.
+`edges/forward.rs` owns the inventory and maps structurally ordered Port keys to
+forward and Backedge position vectors. It creates one index slot per stored edge,
+so MAX_EDGES bounds entries, slots and source keys; no edge payload is copied again.
+Construction charges shared work before map/vector growth and returns no partial
+index on failure. Count auditing and port/owner validation precede construction
+after existing semantic/query/documentation gates. Exact ports, duplicates, family
+labels and conditional routes are preserved. Missing keys include destination-only
+ports; they indicate only that no outgoing edge is indexed. Neither missing keys
+nor key order establish execution order, independence or termination. No traversal,
+value propagation, restart-header analysis or proof outcome is enabled.
 
-Index construction will charge shared work and cap edges/source keys/index slots.
-No lookup creates edges, proves reachability or enables dependency propagation.
-The index now owns the validated inventory and maps exact source ports to separate
-forward/Backedge position vectors. Each inventory entry creates exactly one index
-slot, so the existing edge cap also bounds source keys and slots. Construction
-is integrated after existing diagnostic gates. All four core groups and all 1853
-library tests pass; `/tmp/meowy-forward-index-lib.log`. The tightened mid-build
-work-boundary case also passes; `/tmp/meowy-forward-index-budget.log`. Formatting
-passes and no outstanding failures remain (`9adb15c`). Lookup tests now reuse
-the existing all-family source fixtures and verify one index slot per original
-entry, exact source/route buckets, mixed owners, missing ports, full capacity and
-late construction failures. All 14 selected forward-related groups pass, including
-all seven new index/lookup groups; `/tmp/meowy-forward-lookup-focused.log`.
+Four core groups and 1853 then-current library tests pass;
+`/tmp/meowy-forward-index-lib.log`. The tightened mid-build work case passes;
+`/tmp/meowy-forward-index-budget.log`. All 14 selected forward-related groups pass,
+including seven index/lookup groups with all 31 families, mixed owners, exact
+capacity, empty construction and late failures; `/tmp/meowy-forward-lookup-focused.log`.
 All ten compiler checks pass: 1856 library/913 native tests, formatting, Clippy,
 build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-forward-index-gate.log`. Clippy assertions are corrected and no failures
-remain. Guide/handoff documentation is next. Then add a bounded structural walk
-over forward buckets, retaining route labels and reporting missing-successor and
-Backedge boundaries. Do not evaluate conditions, propagate facts or infer runtime
-reachability; repeated visits/cycles must remain bounded. The prior port series passed 1849 library/
-913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
-`/tmp/meowy-port-validation-gate.log`. Proof outcomes remain gated.
+`/tmp/meowy-forward-index-gate.log`. No outstanding failures remain.
+The foundation guide documents the lookup boundary. Documentation validation
+passed 1208 local links in 110 Markdown files; `/tmp/meowy-forward-index-docs.log`.
+
+Next add a bounded structural walk over `ForwardIndex` in `dependencies/edges/`.
+Traverse only forward buckets, retain original edge positions/routes, and report
+Backedge and missing-successor boundaries explicitly. Keep conditional, Checked
+and Returned routes uninterpreted; encountered connectivity is not proof of runtime
+reachability. Bound queued ports, visited ports and edge/work totals, including
+repeated edges and any cycles remaining without declared Backedges. Do not infer
+termination from missing successors or propagate data/proof facts. Split walk
+representation/bounds from consumer integration where useful; test duplicate paths,
+conditional routes, nested restart boundaries, missing sources, cycles and atomic
+exhaustion, then run the compiler gate. Proof evaluation remains gated.
 
 ### Proof dependency implementation slices
 
@@ -1464,10 +1467,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Graph-port and owner validation passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1849 library/913 native tests, formatting,
+- Bounded forward lookup passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1856 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-port-validation-gate.log`. Forward indexing, precise write
+  Log: `/tmp/meowy-forward-index-gate.log`. Structural walks, precise write
   locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1977,11 +1980,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    Operation ports without repeated invocation scans. The compiler gate passes; the
    guide documents scope. Bounded forward lookup (`9adb15c`) now retains exact
    source ports, original entry positions and separate forward/Backedge buckets.
-   Full-family, duplicate, owner, route and boundary coverage passes the compiler
-   gate. Document scope next, then add a bounded structural forward walk with
-   explicit missing-successor and Backedge boundaries. Preserve routes without
-   evaluating their conditions; bound repeated visits/cycles and keep data facts,
-   runtime reachability and propagation out of this prerequisite.
+   Full-family, duplicate, owner, route and boundary coverage (`b838be4`) passes the
+   compiler gate; the guide documents scope. Next add a bounded structural walk over
+   forward buckets, reporting missing-successor and Backedge boundaries. Retain
+   original edge positions and uninterpreted conditional/Checked/Returned routes.
+   Bound queues, visits and edge/work totals even with repeated edges or cycles;
+   test nested targets, missing sources and atomic exhaustion before the compiler
+   gate. Connectivity must not become runtime reachability or data/proof propagation.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

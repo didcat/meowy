@@ -301,9 +301,16 @@ address/reservation ports validate their selectors against retained producers;
 snapshot and panic-prefix ports require matching producer kinds. Operation ports
 must be declared by their owning producer, using one bounded registry that retains
 call point identities separately from call IDs. These checks leave ledgers and
-routes unchanged. Normal ports need no reachable incoming edge. Forward indexing
-and propagation remain separate; missing links and normal-result ports do not
-establish independence or reachability.
+routes unchanged. Normal ports need no reachable incoming edge.
+A bounded forward index now owns the validated inventory and maps exact source
+ports to original entry positions. Each entry appears once in either a forward
+list or a separate backedge list; duplicates and conditional routes remain intact.
+Port-key ordering is structural, not execution order. The existing edge limit
+also bounds source keys and index slots, with shared work charged before growth.
+Failed construction returns no partial index and leaves stored ledgers unchanged.
+Missing source keys, including ports seen only as destinations, mean no outgoing
+edge was indexed; they prove neither termination nor independence. Structural
+traversal and propagation remain separate, and no index proves runtime reachability.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
 operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.
