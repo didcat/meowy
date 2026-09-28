@@ -23,8 +23,11 @@ and 62 Python test groups; `/tmp/meowy-runtime-panic-conformance-gate.log`.
 Strict mode correctly rejects the 19 known gaps. This is not full language or
 release qualification; unimplemented areas remain visible in the inventory.
 
-The testing detour is finished. The existing declaration-completion graph repair
-remains the next compiler item, under the stronger coverage gates.
+The testing detour is finished. Ordinary function definitions now have bounded
+statement-completion graph links after successful checking. Independent function
+bodies and existing opaque/forward barriers are preserved. All 1898 library tests
+and Clippy pass; source conformance and the complete compiler gate are next.
+The compiler handoff records the reviewable implementation slices.
 
 ## Documentation conventions
 

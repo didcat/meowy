@@ -141,7 +141,7 @@ pub(crate) fn indirect_effects_preserve_target_errors_stopped_rhs_and_conditiona
         "E305"
     );
     for (source, present) in [
-        ("x:=1;id<&!int32>:(p<&!int32>){->p};*(id(&!x))=2", false),
+        ("x:=1;id<&!int32>:(p<&!int32>){->p};*(id(&!x))=2", true),
         ("x:=1;p:&!x;'out{*p={'out.leave();->2}}", false),
         (
             "flag:=false;x:=1;'out{*({|flag|'out.leave();->&!x})=2}",
@@ -157,27 +157,18 @@ pub(crate) fn indirect_effects_preserve_target_errors_stopped_rhs_and_conditiona
 }
 
 #[test]
-pub(crate) fn indirect_effects_keep_calls_opaque_in_a_seeded_store_walk() {
+pub(crate) fn indirect_effects_keep_calls_opaque_after_function_declarations() {
     let source = "id<&!int32>:(p<&!int32>){->p};x:=1;*(id(&!x))=2";
     crate::compile(source).unwrap();
-    let (mut checker, mut reports) = checked(source, false);
+    let (checker, reports) = checked(source, false);
     let id = *checker.stores.first_key_value().unwrap().0;
-    assert!(!reports.effects.contains_key(&id));
-    assert!(!reports.entries[&0].1.missing.is_empty());
-    reports.entries.get_mut(&0).unwrap().1 = reports
-        .index
-        .walk(Port::Entry(id), &mut checker.flow, Span::default())
-        .unwrap();
-    let effects = checker
-        .operation_effects(&reports, Span::default())
-        .unwrap();
-    let Effect::Indirect { origins, .. } = &effects[&id].1 else {
+    let Effect::Indirect { origins, .. } = &reports.effects[&id].1 else {
         panic!()
     };
     assert_eq!(origins, &checker.stores[&id].origins);
     assert_eq!(checker.invocations.len(), 1);
     let call = checker.invocations.first_key_value().unwrap().1;
-    assert_eq!(effects[&call.point].1, Effect::Unknown);
+    assert_eq!(reports.effects[&call.point].1, Effect::Unknown);
 }
 
 #[test]

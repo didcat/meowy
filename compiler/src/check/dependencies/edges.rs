@@ -149,6 +149,8 @@ mod regions;
 
 mod blocks;
 
+mod declarations;
+
 #[cfg(test)]
 mod composed;
 

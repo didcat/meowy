@@ -159,8 +159,15 @@ The identity-return prerequisite passes both focused groups, all 1892 library
 tests and all-target Clippy; `/tmp/meowy-declaration-identities.log`,
 `/tmp/meowy-declaration-id-lib.log`, `/tmp/meowy-declaration-id-clippy.log`.
 Nested definitions preserve their caller's exact ID and failed bodies return no ID.
-No behavior or conformance fixtures changed. Next add the bounded endpoint and
-ordinary-Bind wiring, with structural/diagnostic/budget regressions.
+The identity prerequisite is committed as `b2dd92c`. Declaration-specific endpoints
+and ordinary-Bind wiring now pass all 1898 library tests and all-target Clippy;
+`/tmp/meowy-function-endpoints-lib.log`, `/tmp/meowy-function-endpoints-clippy.log`.
+Six endpoint groups cover leading/interleaved and nested definitions, unused Never
+bodies versus Never calls, failed-definition diagnostics, owner/identity rejection,
+opaque/forward barriers and exact edge/work bounds. The original indirect-store
+regressions now use real program-entry reports after definitions; calls stay Unknown.
+No outstanding failures remain. Next add source conformance and update coverage/docs,
+then run the full compiler gate and strict-gap verification.
 
 ## Documentation conventions and layout
 

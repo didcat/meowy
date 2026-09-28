@@ -68,7 +68,13 @@ impl Checker {
                             stmt.span,
                         ));
                     }
-                    self.declare_function(name, ty.as_ref(), params, body, stmt.span)?;
+                    let function =
+                        self.declare_function(name, ty.as_ref(), params, body, stmt.span)?;
+                    self.function_declaration_endpoint(
+                        self.point.expect("function declaration"),
+                        function,
+                        stmt.span,
+                    )?;
                     return Ok(Vec::new());
                 }
                 if let Some(annotation) = ty
