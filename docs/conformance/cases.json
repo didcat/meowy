@@ -227,6 +227,66 @@
         "code": "E210"
       },
       "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "dispatch_receiver",
+      "phase": "run",
+      "source": "sources/dispatch_receiver.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "5\n5\n9\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_outside_dispatch",
+      "phase": "check",
+      "source": "sources/receiver_outside_dispatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_immutable",
+      "phase": "check",
+      "source": "sources/receiver_immutable.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "predicate_value",
+      "phase": "run",
+      "source": "sources/predicate_value.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\nfalse\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "ascription_guarded",
+      "phase": "run",
+      "source": "sources/ascription_guarded.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "ascription_unproven",
+      "phase": "check",
+      "source": "sources/ascription_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

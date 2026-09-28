@@ -32,7 +32,9 @@ are being hidden by fixture changes. Default-required conformance and pinned cap
 All 11 harness groups pass, including status regression/promotion, malformed/mixed
 diagnostics, profile disagreement and exact runtime results. The unchanged source
 catalog passes 10 cases with 13 explicitly pinned gaps and zero failures;
-`/tmp/meowy-conformance-baseline.log`. Next expand source cases and traceability.
+`/tmp/meowy-conformance-baseline.log`. Harness policy is committed as `3fb74df`. Six new receiver/predicate/ascription
+cases pass in both profiles: 16 passed, 13 pinned gaps, zero failures;
+`/tmp/meowy-conformance-syntax.log`. Next add bits, ownership, blocks and proof cases.
 
 ## Documentation conventions and layout
 

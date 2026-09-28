@@ -1,0 +1,5 @@
+d:@"debug"
+d.print(3.{->$+2})
+d.print(3.{->2.{->$}+$})
+self:9
+d.print(3.{->self})

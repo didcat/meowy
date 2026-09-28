@@ -1,0 +1,3 @@
+d:@"debug"
+x<int32><null>:=7
+|x<int32>|d.print(x~<int32>)

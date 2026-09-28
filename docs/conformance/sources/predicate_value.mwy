@@ -1,0 +1,6 @@
+d:@"debug"
+x<int32><null>:=7
+y<boolean>:x<int32>
+d.print(y)
+x=null
+d.print(x<int32>)
