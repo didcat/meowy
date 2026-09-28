@@ -5,6 +5,35 @@ Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
+## Documentation coverage and conformance audit
+
+The user has prioritized coverage before more graph implementation. Preserve the
+current compiler behavior and reference expectations; graph continuation is deferred.
+Dependency-ordered commit plan:
+
+1. Replace the ten-case required list with default-required execution and explicit,
+   diagnostic-specific unsupported exceptions. Test regressions, promotions,
+   malformed diagnostics, profile disagreement and exact runtime output.
+2. Add supported source fixtures in focused syntax, bits/required evaluation,
+   ownership/store and block/restart batches. Each accepted/rejected contract case
+   runs independently in debug/release; unsupported is never a successful rejection.
+3. Add proof qualification fixtures with reference outcomes and explicit current
+   capability exceptions. Record all remaining qualification obligations as gaps.
+4. Add a checked documentation coverage inventory linking every reference document
+   to catalog cases/internal evidence or an explicit gap. Validate references,
+   evidence, case IDs and proof-obligation drift; expose it in the existing gate.
+5. Run the full compiler gate, verify strict mode rejects known gaps, and document
+   actual coverage without equating file/row counts with complete conformance.
+
+Initial audit: 23 catalog cases, ten required and 13 unsupported; no catalog proof
+outcome fixtures. Existing metadata/unit/native tests remain valuable but do not
+establish end-to-end proof qualification. Working tree was clean. No test failures
+are being hidden by fixture changes. Default-required conformance and pinned capability exceptions are implemented.
+All 11 harness groups pass, including status regression/promotion, malformed/mixed
+diagnostics, profile disagreement and exact runtime results. The unchanged source
+catalog passes 10 cases with 13 explicitly pinned gaps and zero failures;
+`/tmp/meowy-conformance-baseline.log`. Next expand source cases and traceability.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;

@@ -24,7 +24,8 @@ class HarnessTests(unittest.TestCase):
             with mock.patch.object(conformance, "check_case", return_value=""):
                 with contextlib.redirect_stdout(io.StringIO()) as output:
                     self.assertEqual(conformance.main(), 1)
-        self.assertIn("0 passed; 23 unsupported; 0 failed", output.getvalue())
+        count = len(json.loads(conformance.CATALOG.read_text())["cases"])
+        self.assertIn(f"0 passed; {count} unsupported; 0 failed", output.getvalue())
 
     def test_profile_support_disagreement_is_rejected(self):
         case = {"id": "future", "phase": "check", "expected": {"accepted": True}}

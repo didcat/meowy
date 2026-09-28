@@ -25,6 +25,16 @@ additionally has `stdout`. No source, reference or command is fetched remotely.
 The files intentionally include invalid source; formatting or repairing them
 changes the test input and must be reviewed as a contract change.
 
+Every case is required by default. The bootstrap's
+[support manifest](../../compiler/tests/conformance_support.json) lists only
+temporary unsupported exceptions with their exact B001 diagnostic. A different
+capability failure, a new unsupported case, or mixed error diagnostics fails the
+gate. When an exception begins satisfying its reference outcome in both profiles,
+the runner requires removing that exception; it then remains required. Reference
+acceptance/output/error expectations never change to match a bootstrap limitation.
+`python3 compiler/tests/conformance.py --strict` rejects every unsupported case.
+Passing this small catalog alone does not qualify the complete language.
+
 ```sh
 python3 docs/conformance/check.py
 ```

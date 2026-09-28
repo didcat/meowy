@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "unsupported": {
+    "capturing_callable": "generic type binders is not supported by this bootstrap compiler",
+    "compile_budget": "type-producing function signatures is not supported by this bootstrap compiler",
+    "compile_effect": "type-producing function signatures is not supported by this bootstrap compiler",
+    "erased_purity": "generic type binders is not supported by this bootstrap compiler",
+    "ffi_string": "module import `@\"ffi\"` is not supported by this bootstrap compiler",
+    "ffi_void": "module import `@\"ffi\"` is not supported by this bootstrap compiler",
+    "named_owner_borrow": "value arguments in generic calls is not supported by this bootstrap compiler",
+    "pure_item": "generic type binders is not supported by this bootstrap compiler",
+    "runtime_extent": "type-producing function signatures is not supported by this bootstrap compiler",
+    "slice_equality": "indirect calls and callable fields is not supported by this bootstrap compiler",
+    "temporary_borrow": "value arguments in generic calls is not supported by this bootstrap compiler",
+    "type_helper": "type-producing function signatures is not supported by this bootstrap compiler",
+    "unconstrained_callable": "generic type binders is not supported by this bootstrap compiler"
+  }
+}

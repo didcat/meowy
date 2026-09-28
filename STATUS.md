@@ -5,6 +5,14 @@ Updated: 2026-09-28. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
+## Coverage work is the current priority
+
+Strengthen documentation traceability, source conformance and harness failure checks
+before resuming graph implementation. The ordered plan is in
+[compiler/STATUS.md](compiler/STATUS.md#documentation-coverage-and-conformance-audit).
+Keep reference outcomes distinct from temporary compiler capability exceptions.
+The existing 23-case catalog is a baseline, not comprehensive language qualification.
+
 ## Documentation conventions
 
 Agent responses default to English unless the user requests another language,
