@@ -154,6 +154,35 @@ impl Checker {
                 self.doc_stage(stmt.span.start)?;
             }
         }
+        if let Some(model) = self.documentation.as_mut() {
+            for stmt in stmts.iter().skip(index).take(count) {
+                model.spend(1)?;
+                let (StmtKind::Bind {
+                    name,
+                    mutable: false,
+                    value,
+                    ..
+                }
+                | StmtKind::Emit {
+                    name: Some(name),
+                    label: None,
+                    mutable: false,
+                    value,
+                    ..
+                }) = &stmt.kind
+                else {
+                    continue;
+                };
+                model.spend(name.len() + count.checked_ilog2().unwrap_or(0) as usize + 1)?;
+                if names.contains_key(name) && matches!(value.kind, ExprKind::Function { .. }) {
+                    self.scopes
+                        .last_mut()
+                        .expect("scope")
+                        .doc_values
+                        .insert(name.clone(), stmt.span.start);
+                }
+            }
+        }
         let mut exports = Vec::new();
         for _ in 0..count {
             let stmt = stmts.get(index).ok_or_else(|| {

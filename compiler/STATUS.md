@@ -361,8 +361,8 @@ Dependency-ordered commit plan:
    succeeds. Add focused signature, identity, failure and documentation regressions.
 3. Resolve documentation links to later group definitions using their source
    identities, preserving public/private checks and bounded analysis.
-4. Add required multi-file execution and rejection conformance cases, update the
-   coverage inventory and run compiler/strict gates plus fixture preservation checks.
+4. Add required multi-file execution coverage and its evidence inventory; separately
+   add rejection scenarios. Run compiler/strict gates and fixture preservation checks.
 5. Update the foundation guide and root/compiler handoffs with results and remaining
    limits; run the final documentation checks.
 
@@ -373,8 +373,13 @@ unchanged. Five focused checker groups and cross-file native execution in both
 profiles pass (`/tmp/meowy-forward-export-focused.log`), including partial-group
 failure, exact work limit, inferred result, documentation and typed re-exporting.
 All 1965 library tests pass (`/tmp/meowy-forward-export-library.log`).
-Next resolve forward peer links in documentation: later definitions currently retain their private header anchor
-until their own bodies are checked. No conformance case is being waived for this.
+Slice 3 resolves peer links through exact definition source locations before body
+checking, with bounded documentation work. The new regression first reproduced
+E802 on valid public peers (`/tmp/meowy-forward-export-docs-before.log`). Both
+orders now pass, private peer links still fail, and doc errors publish no exports.
+All 1967 library tests pass (`/tmp/meowy-forward-export-docs-library.log`).
+Next add required multi-file execution and rejection catalog slices, then run the
+full compiler/strict gates. No conformance case is being waived.
 
 The explicit forward header supplies the public signature, including the result
 when omitted from the definition. Explicit definition annotations must match it.

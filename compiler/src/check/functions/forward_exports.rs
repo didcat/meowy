@@ -144,3 +144,51 @@ pub(crate) fn forward_exports_keep_publication_atomic_at_the_work_limit() {
         }
     }
 }
+
+#[test]
+pub(crate) fn forward_exports_link_to_peer_definitions_in_either_order() {
+    for definitions in [
+        "#| Call [[g]]. |#->f:(){->g()};#| Call [[f]]. |#->g:(){->1}",
+        "#| Call [[f]]. |#->g:(){->1};#| Call [[g]]. |#->f:(){->g()}",
+    ] {
+        let source = format!("f<()->int32>;g<()->int32>;{definitions}");
+        let parsed = crate::parser::parse_documented(&source).unwrap();
+        let model = crate::documentation::Model::at(&source, &parsed, 0, false).unwrap();
+        let (_, model) = crate::check::check_documented(&parsed.block, Some(model)).unwrap();
+        let model = model.unwrap();
+        model.require_public().unwrap();
+        for entry in model.entries.iter().filter(|entry| entry.public) {
+            assert_eq!(entry.signature, "()->int32");
+            let target = &model.entries[entry.links[0].resolved.unwrap()];
+            assert_eq!(target.kind, crate::documentation::Kind::Function);
+            assert_eq!(target.name, entry.links[0].target);
+            assert!(target.public);
+        }
+        assert!(model.entries.iter().all(|entry| entry.checked));
+    }
+}
+
+#[test]
+pub(crate) fn forward_exports_do_not_publish_after_peer_documentation_errors() {
+    for definitions in [
+        "#| Call [[g]]. |#->f:(){->g()};g:(){->1}",
+        "->f:(){->g()};#| [[missing]] |#->g:(){->1}",
+    ] {
+        let source = format!("f<()->int32>;g<()->int32>;{definitions}");
+        let parsed = crate::parser::parse_documented(&source).unwrap();
+        let model = crate::documentation::Model::at(&source, &parsed, 0, false).unwrap();
+        let mut checker = Checker::new();
+        checker.documentation = Some(model);
+        checker
+            .block_start(&parsed.block, None, None, false)
+            .unwrap();
+        assert_eq!(
+            checker
+                .forward_point(&parsed.block.stmts, 0)
+                .unwrap_err()
+                .code,
+            "E802"
+        );
+        assert!(checker.module.values.is_empty());
+    }
+}
