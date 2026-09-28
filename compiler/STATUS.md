@@ -101,35 +101,50 @@ outcome is constructed. The reference remains authoritative.
 
 ### Current direct storage-effect slices
 
-Dependency-ordered commit plan:
-1. Retain the validated operation-owner registry in ForwardIndex without another
-   producer scan; preserve validation order and cover registry identity/ownership.
-2. Attach a bounded effect map for Operation ports encountered by entry reports.
-   Copy direct Bind/Write kind, local/storage IDs, RHS root and control; preserve
-   owner/point identity and explicitly classify other producers as unknown. Include
-   focused alias/reference-cell, duplicate, stopped-RHS and exhaustion regressions.
-3. Run the full compiler gate and document scope and concrete continuation work.
+The dependency-ordered implementation series is complete:
 
-Inspection: `validate_edge_ports` currently discards the producer-owner registry.
-Direct storage records already retain canonical emitted-slot storage separately
-from reference-cell identity. Runtime locals have moved into HIR before inspection;
-use captured metadata and the validated registry, without replaying checking or
-scanning all producers per port. Only encountered Operation ports receive effects.
-No effect claims runtime reachability, clears conservative marks or enables proof
-results. Other operations must remain explicitly unknown, not pure.
+1. Retain the validated operation-owner registry in ForwardIndex (`bbed8d8`).
+2. Attach bounded direct storage effects to entry reports (`9f83e01`).
+3. Compiler gate and documentation handoff: complete.
 
-Prior compiler gate passed all ten checks (1869 library/913 native tests);
-`/tmp/meowy-entry-reports-gate.log`. The validated registry is now retained without another scan. All 74 graph groups
-pass, including mixed owners and preserved exact operation IDs;
-`/tmp/meowy-effect-registry.log`. Registry retention is committed as `bbed8d8`. Encountered-operation mapping passes
-all 1874 library tests and Clippy; `/tmp/meowy-operation-effects-lib.log`,
-`/tmp/meowy-operation-effects-clippy.log`. All four tightened effect groups pass;
-`/tmp/meowy-operation-effects-focused.log`. Coverage preserves alias/storage/RHS/
-control fields, excludes stopped writes, explicitly checks path/indirect Unknown
-entries, rejects missing/foreign owners, deduplicates ports and retains absent RHS
-metadata. Capacity/late work failures preserve reports, graph counts and nonempty
-conservative marks; exact budgets succeed. No outstanding failures remain.
-Next run the full compiler gate and finish documentation.
+`edges/forward/effects.rs` maps encountered Operation point IDs to owner/effect pairs.
+Direct Bind/Write effects copy kind, local/canonical storage IDs, optional RHS root
+and control metadata. Reference cells remain distinct from pointees, aliases keep
+canonical emitted-slot storage and absent RHS roots stay absent. Other producers
+are explicitly Unknown, including paths, indirect stores and calls; unknown is
+not pure. Non-encountered operations, including writes after stopped RHS evaluation,
+are excluded. Neither encounter nor effect metadata establishes runtime reachability.
+
+ForwardIndex retains the validated producer-owner registry without another scan.
+Effect lookup uses that registry and the direct-operation map, charging shared work
+for entry/port visits and bounded lookups before growth. Duplicate ports retain one
+entry; foreign/missing owners reject. Effects have their own MAX_EDGES capacity
+(262,144), separate from walk-item limits. No partial effect map or report collection
+is returned on failure. Existing graph ledgers and conservative marks remain intact.
+Semantic/query/doc gates still precede collection; proof results remain gated.
+
+All 74 then-current graph groups and four focused effect groups pass;
+`/tmp/meowy-effect-registry.log`, `/tmp/meowy-operation-effects-focused.log`.
+All 1874 library tests and all-target Clippy pass;
+`/tmp/meowy-operation-effects-lib.log`, `/tmp/meowy-operation-effects-clippy.log`.
+Coverage includes aliases/reference cells, seeded control, absent RHS, stopped
+writes, explicit unknown path/indirect stores, duplicates, owner rejection and
+atomic capacity/late work exhaustion with exact-budget success. All ten compiler
+checks pass: 1874 library/913 native tests, formatting, Clippy, build, tooling and
+conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-operation-effects-gate.log`. No outstanding failures remain.
+The foundation guide documents direct-effect scope and limits. All four default
+checks pass, including 1208 local links in 110 Markdown files;
+`/tmp/meowy-operation-effects-docs.log`.
+
+Next extend this bounded effect view to owned field/index writes using captured
+`dependencies/path_operations.rs` metadata. Preserve local/canonical storage, ordered
+Field/Index steps, index point/capacity/span, RHS and control. Charge copied steps
+and aggregate path storage before allocation; keep runtime index values and bounds
+success unknown. Reuse operation-owner validation and do not scan all paths per
+port. Split representation/bounds from integration where useful; test nested fields,
+dynamic indices, aliases, stopped address/RHS and atomic exhaustion before the full
+gate. Indirect stores/callee effects, propagation and proof results remain separate.
 
 ### Proof dependency implementation slices
 
@@ -1457,10 +1472,10 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Independent entry reports passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1869 library/913 native tests, formatting,
+- Direct storage effects passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1874 library/913 native tests, formatting,
   Clippy, build and conformance (10 passed, 13 unsupported, 0 failed in debug/release).
-  Log: `/tmp/meowy-entry-reports-gate.log`. Operation-effect integration,
+  Log: `/tmp/meowy-operation-effects-gate.log`. Path/indirect/callee effects,
   precise write locations and dependency propagation stay pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1979,12 +1994,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    index with exact roots and owner checks. The allowance prerequisite (`80feac6`)
    bounds report growth; unused/recursive, identity and aggregate-budget tests and
    all ten compiler checks pass. The guide documents collection scope.
-   Next connect encountered Operation ports to bounded direct Bind/Write effect
-   metadata from `dependencies/operations.rs`, retaining exact storage, RHS roots
-   and control while classifying other operations as unknown. Reuse the producer
-   registry without per-port full scans; test aliases/reference cells, duplicates,
-   stopped RHS and atomic exhaustion before the compiler gate. No propagation or
-   proof outcomes are enabled; precise path/indirect and callee effects remain open.
+   Validated operation owners now stay with the index (`bbed8d8`). Encountered
+   Operation ports receive bounded direct Bind/Write or explicit Unknown effects
+   (`9f83e01`), preserving exact storage/RHS/control and conservative marks.
+   Identity/alias/stopped/budget coverage and all ten compiler checks pass; the
+   guide documents scope.
+   Next extend the effect view with owned field/index writes from captured
+   `dependencies/path_operations.rs` metadata. Preserve ordered path steps and
+   dynamic index identities without inferring their values or bounds success.
+   Bound per-path and aggregate copied steps before growth; test nested fields,
+   aliases, stopped address/RHS and atomic exhaustion before the compiler gate.
+   Indirect/callee effects, propagation and proof outcomes remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

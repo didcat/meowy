@@ -750,9 +750,10 @@ roots and expected owners, including unused functions. The retained-item allowan
 1869 library/913 native tests; `/tmp/meowy-entry-reports-gate.log`. The guide
 documents scope. The validated operation registry is retained (`bbed8d8`), and
 encountered Operation ports now receive bounded direct Bind/Write metadata or
-explicit Unknown effects. All 1874 library tests and Clippy pass; the four focused
-groups cover identity, stopped RHS, aliases/control and atomic capacity/work limits.
-Full compiler validation and the documentation handoff are next.
+explicit Unknown effects (`9f83e01`). All ten compiler checks pass: 1874 library/913
+native tests; `/tmp/meowy-operation-effects-gate.log`. Focused coverage includes
+identity, stopped RHS, aliases/control and atomic capacity/work limits. The guide
+documents scope; owned field/index write effects are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -883,10 +884,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Independent entry reports passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1869 library/913 native tests.
+- Direct storage effects passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1874 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-entry-reports-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-operation-effects-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1040,12 +1041,15 @@ execution was not part of this documentation edit.
    tests and all ten compiler checks pass; the guide documents scope. The production
    seeds now include independent HIR program/function entries with exact roots and
    owner checks. One validated index stays with the reports; root/item/work limits
-   cover unused/recursive functions and atomic exhaustion. Next connect encountered
-   Operation ports to bounded direct Bind/Write metadata, preserving canonical
-   storage, RHS and control. Keep other effects explicitly unknown. Reuse producer
-   lookup; test aliases/reference cells, duplicate paths, stopped RHS and exhaustion
-   before the compiler gate. Precise path/indirect writes and callee effects remain
-   separate; do not propagate facts or enable proof outcomes yet.
+   cover unused/recursive functions and atomic exhaustion. Encountered Operation
+   ports now carry bounded direct Bind/Write or explicit Unknown effects, preserving
+   exact storage/RHS/control. The validated operation registry is retained for lookup.
+   Focused tests and all ten compiler checks pass; the guide documents scope.
+   Next add owned field/index
+   write effects from captured path metadata, with bounded copied steps and explicit
+   unknown dynamic index values/bounds success. Test nested fields, aliases,
+   stopped address/RHS and atomic exhaustion before the compiler gate.
+   Indirect/callee effects and fact propagation remain separate; proof outcomes stay gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

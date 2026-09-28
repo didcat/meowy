@@ -333,6 +333,21 @@ The collection admits at most 65,536 entries and 917,504 retained report items
 walk checks the remaining item allowance before growth. Entry selection, index
 construction and walks share the work ledger, including empty programs. Failure
 returns no partial collection and preserves stored graph metadata.
+The validated operation-owner registry now stays with the index. A separate effect
+map describes only Operation ports encountered by the entry walks, keyed by exact
+point and paired with its owner. Direct Bind/Write effects preserve the local ID,
+canonical storage ID, optional RHS root and captured control mark. Reference-cell
+writes remain distinct from pointee writes, and emitted-slot aliases retain their
+canonical storage. Missing RHS metadata remains unknown; it is not synthesized.
+Every other encountered producer has an explicit Unknown effect, including path
+and indirect writes and calls. Unknown does not mean pure or independent. Stored
+operations beyond a stopped RHS are not added unless their port is encountered.
+Duplicate ports produce one effect entry. Registry and producer owner mismatches
+are rejected, and lookup never rescans every producer for each port. At most
+262,144 effect entries are retained in addition to the bounded walk reports.
+Shared work charges cover entry/port visits and lookups before map growth; failure
+returns no partial effect map or report collection. Existing graph metadata and
+conservative dependency marks remain unchanged.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
