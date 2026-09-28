@@ -1,18 +1,20 @@
 use super::*;
 use crate::check::{SequenceSource, dependencies::edges::tests::check};
 
+pub(crate) const SOURCES: &[&str] = &[
+    "m:@\"memory\";d:@\"debug\";x:1;p:&x;q:&*p;y:*q;z:-y;h:m.heap;r:{->n:2};v:r.n~<int32>;d.print(z)",
+    "xs<int32[2]>:=[1];xs[1]=2;v:xs[1];ys:xs.add(2);count:ys.size();p:&(xs[1]);copy:*p",
+    "x:=1;p:&!x;*p=2",
+    "xs:=[1];p:&!(xs[1]);*p=2",
+    "r:{->n:1};h:{->p:&r};q:&(h.p.n);copy:*q",
+    "x:*(&1);y:1.{->$+1}",
+    "n:=0;'loop{|n==1|'loop.leave();n=n+1;|n<2|'loop.restart()};f<int32>:(n<int32>){->n+1};x:f(2)",
+];
+
 #[test]
 pub(crate) fn edge_inventory_covers_every_stored_family_from_checked_source() {
     let mut covered = [false; FAMILIES];
-    for source in [
-        "m:@\"memory\";d:@\"debug\";x:1;p:&x;q:&*p;y:*q;z:-y;h:m.heap;r:{->n:2};v:r.n~<int32>;d.print(z)",
-        "xs<int32[2]>:=[1];xs[1]=2;v:xs[1];ys:xs.add(2);count:ys.size();p:&(xs[1]);copy:*p",
-        "x:=1;p:&!x;*p=2",
-        "xs:=[1];p:&!(xs[1]);*p=2",
-        "r:{->n:1};h:{->p:&r};q:&(h.p.n);copy:*q",
-        "x:*(&1);y:1.{->$+1}",
-        "n:=0;'loop{|n==1|'loop.leave();n=n+1;|n<2|'loop.restart()};f<int32>:(n<int32>){->n+1};x:f(2)",
-    ] {
+    for source in SOURCES {
         crate::compile(source).unwrap();
         let mut checker = check(source);
         let counts = checker.edge_counts();

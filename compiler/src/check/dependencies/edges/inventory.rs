@@ -81,4 +81,4 @@ impl Checker {
 mod counts;
 
 #[cfg(test)]
-mod coverage;
+pub(crate) mod coverage;

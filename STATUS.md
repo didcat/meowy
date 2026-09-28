@@ -733,8 +733,11 @@ coverage is committed as `42b04e8`; the guide documents inventory limits. Bounde
 port anchors (`f543ec8`), edge owners (`cad2261`), selectors (`ec8677c`) and
 Operation producers (`53d54af`) now validate the inventory. All ten compiler
 checks pass: 1849 library/913 native tests; `/tmp/meowy-port-validation-gate.log`.
-The guide documents scope. Bounded forward-index work is in progress; the compiler
-handoff records representation/integration, lookup coverage and documentation.
+The guide documents scope. Bounded forward lookup (`9adb15c`) now preserves
+original inventory positions with separate forward/Backedge buckets. All ten
+compiler checks pass: 1856 library/913 native tests;
+`/tmp/meowy-forward-index-gate.log`. Guide documentation and the structural-walk
+handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -865,10 +868,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Graph-port and owner validation passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1849 library/913 native tests.
+- Bounded forward lookup passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1856 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-port-validation-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-forward-index-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1014,12 +1017,12 @@ execution was not part of this documentation edit.
    the guide documents inventory limits. Bounded anchor/owner/selector validation
    and a producer registry now validate graph ports while preserving diagnostics,
    duplicate routes and unknown flow. The compiler gate passes and the guide
-   documents scope. Next build bounded forward lookup over validated inventory,
-   retaining exact ports, original entry positions, duplicates and routes. Expose
-   Backedge links separately without losing them; preserve owners/diagnostics and
-   test missing ports, conditional/checked/returned routes, restarts and atomic
-   work/index bounds before the compiler gate. Missing successors prove neither
-   independence nor termination.
+   documents scope. Bounded forward lookup now retains exact ports, original
+   inventory positions and separate forward/Backedge buckets; full-family/owner/
+   route/boundary coverage and the compiler gate pass. Document scope next, then
+   add a bounded structural walk that reports missing-successor and Backedge
+   boundaries, preserves conditions without evaluating them, and bounds cycles.
+   No walk should infer runtime reachability or propagate proof/data facts.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

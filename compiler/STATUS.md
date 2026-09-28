@@ -109,10 +109,10 @@ is structural key ordering only. The working tree was clean at entry.
 Dependency-ordered commit plan:
 1. Add ordered port keys and a bounded index over count/port/owner-validated inventory.
    Retain each edge position exactly once in forward or Backedge buckets; integrate
-   construction after existing diagnostic gates and validate core/library cases.
+   construction after existing gates; core/library checks pass (`9adb15c`).
 2. Add independent lookup coverage across all families, duplicate/mixed-owner and
    conditional routes, missing/destination-only ports and work/storage boundaries;
-   run the complete compiler gate.
+   the complete compiler gate passes.
 3. Document lookup guarantees and the next concrete analysis prerequisite.
 
 Index construction will charge shared work and cap edges/source keys/index slots.
@@ -123,7 +123,18 @@ slot, so the existing edge cap also bounds source keys and slots. Construction
 is integrated after existing diagnostic gates. All four core groups and all 1853
 library tests pass; `/tmp/meowy-forward-index-lib.log`. The tightened mid-build
 work-boundary case also passes; `/tmp/meowy-forward-index-budget.log`. Formatting
-passes and no outstanding failures remain. Full-family lookup coverage is next. The prior port series passed 1849 library/
+passes and no outstanding failures remain (`9adb15c`). Lookup tests now reuse
+the existing all-family source fixtures and verify one index slot per original
+entry, exact source/route buckets, mixed owners, missing ports, full capacity and
+late construction failures. All 14 selected forward-related groups pass, including
+all seven new index/lookup groups; `/tmp/meowy-forward-lookup-focused.log`.
+All ten compiler checks pass: 1856 library/913 native tests, formatting, Clippy,
+build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-forward-index-gate.log`. Clippy assertions are corrected and no failures
+remain. Guide/handoff documentation is next. Then add a bounded structural walk
+over forward buckets, retaining route labels and reporting missing-successor and
+Backedge boundaries. Do not evaluate conditions, propagate facts or infer runtime
+reachability; repeated visits/cycles must remain bounded. The prior port series passed 1849 library/
 913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
 `/tmp/meowy-port-validation-gate.log`. Proof outcomes remain gated.
 
@@ -1964,12 +1975,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`f543ec8`), endpoint owner agreement (`cad2261`) and stage selectors (`ec8677c`)
    now validate retained identities. The producer registry (`53d54af`) validates
    Operation ports without repeated invocation scans. The compiler gate passes; the
-   guide documents scope. Next build bounded forward lookup over validated inventory
-   in `dependencies/edges/`, retaining exact ports, original entry positions,
-   duplicates and routes. Expose Backedge links separately without dropping them.
-   Preserve diagnostics and owner boundaries; test mixed owners, conditional/checked/
-   returned routes, missing ports, restarts and atomic index/work limits, then run
-   the compiler gate. Missing successors do not prove independence or termination.
+   guide documents scope. Bounded forward lookup (`9adb15c`) now retains exact
+   source ports, original entry positions and separate forward/Backedge buckets.
+   Full-family, duplicate, owner, route and boundary coverage passes the compiler
+   gate. Document scope next, then add a bounded structural forward walk with
+   explicit missing-successor and Backedge boundaries. Preserve routes without
+   evaluating their conditions; bound repeated visits/cycles and keep data facts,
+   runtime reachability and propagation out of this prerequisite.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
