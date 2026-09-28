@@ -1,0 +1,6 @@
+d:@"debug"
+m:@"./api.mwy"
+alias:m.increment
+value<m.Count>:4
+d.print(alias(value))
+d.print(m.count_value)

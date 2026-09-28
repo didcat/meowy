@@ -1,0 +1,4 @@
+ops:@"./ops.mwy"
+-><Count>:<ops.Count>
+->increment<(int32)->int32>:ops.inc
+->count_value:ops.Count

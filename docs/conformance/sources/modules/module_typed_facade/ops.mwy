@@ -1,0 +1,4 @@
+-><Count>:<int32>
+->Count:9
+helper<int32>:(x<int32>){->x+1}
+->inc<int32>:(x<int32>){->helper(x)}

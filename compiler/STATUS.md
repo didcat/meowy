@@ -86,7 +86,9 @@ sibling import order. All 65 cases pass their gate: 46 required, 19 pinned gaps,
 zero failures in debug/release; `/tmp/meowy-modules-diamond.log`.
 Nested resolution/data exports and imported borrowed results also pass. Current
 catalog: 67 cases, 48 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-modules-imports.log`. Next add typed exports and rejection fixtures.
+`/tmp/meowy-modules-imports.log`. Typed function/type re-exports, aliases and separate type/value namespaces pass
+through a facade: 49 required passes, 19 pinned gaps, zero failures;
+`/tmp/meowy-modules-exports.log`. Next add privacy and module rejection fixtures.
 
 ## Documentation conventions and layout
 

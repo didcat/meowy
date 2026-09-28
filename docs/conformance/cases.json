@@ -677,6 +677,20 @@
       "companions": [
         "sources/modules/module_borrow_return/ops.mwy"
       ]
+    },
+    {
+      "id": "module_typed_facade",
+      "phase": "run",
+      "source": "sources/modules/module_typed_facade/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "5\n9\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_typed_facade/api.mwy",
+        "sources/modules/module_typed_facade/ops.mwy"
+      ]
     }
   ]
 }
