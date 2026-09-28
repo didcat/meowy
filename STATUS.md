@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Explicit type-alias declarations now retain bounded statement-completion edges
-only after required construction and declaration/export checks succeed. Local,
-exported and computed aliases preserve owners, logical budgets and diagnostics.
-Aliases inside required type blocks add no runtime statement endpoints. Ordinary
-type-valued bindings, meta value exports and forward groups remain separate.
-Implementation: `133ba70`; source conformance: `90d6263`.
+Ordinary type-valued bindings and named meta exports now retain bounded completion
+edges after required checking and successful declaration/export validation.
+Literal, query, computed, foundation and imported types retain their payloads and
+logical costs without new runtime storage or query execution. Required-only helpers
+stay separate. Implementation: `3692a56`, `1c4d254`; source conformance: `d43aab9`.
 
-The catalog has 101 cases: 82 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Four new fixtures pin scoped/computed aliases, separate
-namespaces, type exports, duplicate names and required failure after emission.
+The catalog has 104 cases: 85 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Three new fixtures pin imported/chained meta values,
+query non-execution, shadowing of Type, duplicate exports and invalid meta results.
 All prior cases/assets and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1918 library/913 native and 62 Python test groups;
-`/tmp/meowy-type-alias-gate.log`. Strict mode correctly rejects the known gaps.
+1927 library/913 native and 62 Python test groups;
+`/tmp/meowy-type-values-gate.log`. Strict mode correctly rejects the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect ordinary type-valued bindings and meta value exports in
-`compiler/src/check/statements.rs` and `compiler/src/check/exports.rs`. Classify
-resolved forms only after required checks; keep required-only evaluation separate.
-The [compiler handoff](compiler/STATUS.md#current-explicit-type-alias-completion)
+Next inspect immutable static identity bindings, beginning with resolved
+`proof.revision` aliases in `compiler/src/check/names.rs` and
+`compiler/src/check/statements.rs`. Keep annotated/mutable runtime storage paths,
+required input rules and proof gates intact. The
+[compiler handoff](compiler/STATUS.md#current-type-valued-binding-completion)
 records the scope, evidence and next validation requirements.
 
 ## Documentation conventions
@@ -1116,9 +1116,12 @@ execution was not part of this documentation edit.
    coverage and the compiler gate pass. Explicit type-alias declarations now connect
    after required construction and declaration/export checks, preserving logical
    accounting and required-only helpers. Focused/source coverage and the compiler
-   gate pass. Next inspect ordinary type-valued bindings and meta value exports in
-   `compiler/src/check/statements.rs` and `compiler/src/check/exports.rs`, preserving
-   resolved identities, required checks and errors before completion. Add focused/
+   gate pass. Ordinary type-valued bindings and meta exports now connect only after
+   successful required/declaration/export checks, preserving payloads and query
+   non-execution. Focused/source coverage and the compiler gate pass. Next inspect
+   immutable static identity bindings such as resolved proof.revision aliases in
+   `compiler/src/check/names.rs` and `compiler/src/check/statements.rs`; preserve
+   typed/mutable runtime paths, required eligibility and proof gates. Add focused/
    source coverage and run the compiler gate. Other erased forms and forward groups
    stay separate; proof outcomes remain gated.
    Other contextual builders remain separate.

@@ -402,11 +402,20 @@ including self/forward aliases. They never traverse the target body or imply tha
 a later call returns. Foundation classification includes module aliases,
 print/panic, string-copy, copy-query and bit-operation identities; it does not
 admit execution of unsupported calls or proof queries.
-Forward groups retain explicit barriers. Type-valued ordinary bindings and meta
-value exports, static/record/file-module values, scoped-control aliases and pending
-descriptors retain their existing metadata. Heap handles keep their separate
-runtime value path. There is no general bypass for empty HIR statements. Completion edges are structural
-connectivity, not evidence that a runtime path is reached.
+Resolved type values and foundation type identities now share that bounded
+classification. Ordinary annotated meta bindings publish only after `meta_binding`
+and declaration succeed. Named meta exports publish only after export validation
+and module registration. The original payload is preserved without additional type
+copies, runtime fields or storage. Type-query operands remain unevaluated, and
+shadowed `Type` names retain ordinary lexical meaning. Required-only helpers and
+their logical costs remain separate from statement completion; E220 and ordinary
+errors precede publication. Graph exhaustion still reports B001, and proof outcome
+gates are unchanged.
+Forward groups retain explicit barriers. Static/record/file-module values,
+scoped-control aliases and pending descriptors retain their existing metadata.
+Heap handles keep their separate runtime value path. There is no general bypass
+for empty HIR statements. Completion edges are structural connectivity, not
+evidence that a runtime path is reached.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
