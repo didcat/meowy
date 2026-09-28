@@ -575,6 +575,66 @@
         "code": "E225"
       },
       "reference": "../reference/stdlib/proof.md#qualification-obligations"
+    },
+    {
+      "id": "required_bits_block",
+      "phase": "run",
+      "source": "sources/required_bits_block.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "required_integer_block",
+      "phase": "run",
+      "source": "sources/required_integer_block.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "required_short_circuit",
+      "phase": "run",
+      "source": "sources/required_short_circuit.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "required_runtime_input",
+      "phase": "check",
+      "source": "sources/required_runtime_input.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E104"
+      },
+      "reference": "../reference/diagnostic-codes.md#collection-and-numeric-constraints"
+    },
+    {
+      "id": "required_division_zero",
+      "phase": "check",
+      "source": "sources/required_division_zero.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E107"
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "index_zero",
+      "phase": "check",
+      "source": "sources/index_zero.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E101"
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
     }
   ]
 }

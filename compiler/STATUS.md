@@ -50,7 +50,11 @@ descriptor escape and ordinary type/borrow error priority. Current result:
 `/tmp/meowy-conformance-proof-staging.log`. Five proof-outcome fixtures retain their reference acceptance/E224/E225 outcomes;
 current early blockers are pinned explicitly. Full catalog: 39 required passes,
 19 pinned gaps, zero failures; `/tmp/meowy-conformance-proof-outcomes.log`.
-Next add required-evaluation boundaries and the documentation/proof-obligation map.
+Required blocks, short-circuiting, division-zero and indexing boundaries now pass.
+The nonconstant direct extent uses the reference E104 (distinct from E211 type
+construction dependence). All 64 cases: 45 required passes, 19 pinned gaps, zero
+failures; `/tmp/meowy-conformance-required.log`. No compiler behavior was changed.
+The documentation/proof-obligation inventory is being implemented next.
 
 ## Documentation conventions and layout
 

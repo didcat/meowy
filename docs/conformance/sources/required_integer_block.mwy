@@ -1,0 +1,4 @@
+d:@"debug"
+<T>:{n:1+2;-><int32[n]>}
+xs<T>:[1,2,3]
+d.print(xs.size())

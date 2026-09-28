@@ -1,0 +1,5 @@
+b:@"bits"
+d:@"debug"
+<T>:{flag:false&&(b.and(1/0,3)==0);-><int32>}
+v<T>:3
+d.print(v)
