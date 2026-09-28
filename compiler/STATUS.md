@@ -99,47 +99,34 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current bounded forward-index slices
+### Current bounded structural-walk slices
 
-The dependency-ordered series is complete:
-1. Build a bounded source-port index over validated inventory, preserving original
-   entry positions and separate forward/Backedge buckets (`9adb15c`).
-2. Cover all families, duplicates, owners, routes, missing ports and work/storage
-   bounds using shared source fixtures (`b838be4`).
-3. Document lookup guarantees and the next structural-walk prerequisite.
+Dependency-ordered commit plan:
+1. Add a bounded read-only walk over validated forward buckets, with original edge
+   positions, visited ports and explicit Backedge/missing-source boundaries. Run it
+   from the exact program BlockEntry after existing gates; include core regressions.
+2. Cover conditional routes, converging paths, nested restart targets, independent
+   function owners, exact limits and late atomic exhaustion with focused regressions.
+3. Run the compiler gate and document guarantees, remaining gaps and the next step.
 
-`edges/forward.rs` owns the inventory and maps structurally ordered Port keys to
-forward and Backedge position vectors. It creates one index slot per stored edge,
-so MAX_EDGES bounds entries, slots and source keys; no edge payload is copied again.
-Construction charges shared work before map/vector growth and returns no partial
-index on failure. Count auditing and port/owner validation precede construction
-after existing semantic/query/documentation gates. Exact ports, duplicates, family
-labels and conditional routes are preserved. Missing keys include destination-only
-ports; they indicate only that no outgoing edge is indexed. Neither missing keys
-nor key order establish execution order, independence or termination. No traversal,
-value propagation, restart-header analysis or proof outcome is enabled.
+Inspection: `forward_index` validates all inventory ports and then builds source
+buckets; the compiler currently drops the index. The walk will use a deduplicated
+port worklist, recording every encountered edge position, including duplicates.
+One seed plus at most one destination per edge bounds visited/pending ports by
+inventory length + 1. Each stored edge can be scanned at most once because each
+source is visited once; shared work charges precede growth. Backedges are reported
+without queuing their targets. A missing source bucket is an explicit boundary,
+not termination. Conditional/Checked/Returned routes stay uninterpreted.
 
-Four core groups and 1853 then-current library tests pass;
-`/tmp/meowy-forward-index-lib.log`. The tightened mid-build work case passes;
-`/tmp/meowy-forward-index-budget.log`. All 14 selected forward-related groups pass,
-including seven index/lookup groups with all 31 families, mixed owners, exact
-capacity, empty construction and late failures; `/tmp/meowy-forward-lookup-focused.log`.
-All ten compiler checks pass: 1856 library/913 native tests, formatting, Clippy,
-build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-forward-index-gate.log`. No outstanding failures remain.
-The foundation guide documents the lookup boundary. Documentation validation
-passed 1208 local links in 110 Markdown files; `/tmp/meowy-forward-index-docs.log`.
-
-Next add a bounded structural walk over `ForwardIndex` in `dependencies/edges/`.
-Traverse only forward buckets, retain original edge positions/routes, and report
-Backedge and missing-successor boundaries explicitly. Keep conditional, Checked
-and Returned routes uninterpreted; encountered connectivity is not proof of runtime
-reachability. Bound queued ports, visited ports and edge/work totals, including
-repeated edges and any cycles remaining without declared Backedges. Do not infer
-termination from missing successors or propagate data/proof facts. Split walk
-representation/bounds from consumer integration where useful; test duplicate paths,
-conditional routes, nested restart boundaries, missing sources, cycles and atomic
-exhaustion, then run the compiler gate. Proof evaluation remains gated.
+The production entry is the exact HIR program block, after semantic/query/doc gates;
+this is a structural inspection, not whole-program execution or function expansion.
+No runtime reachability, proof/data propagation or proof outcome is enabled.
+Prior forward-index gate passed all ten checks (1856 library/913 native tests);
+`/tmp/meowy-forward-index-gate.log`. The walk and program-entry integration are implemented. Three core groups cover
+repeated edges, forward cycles, uninterpreted Checked/Returned labels, Backedge-only
+sources and missing/unknown sources. All 1859 library tests and all-target Clippy
+pass; `/tmp/meowy-structural-walk-lib.log`, `/tmp/meowy-structural-walk-clippy.log`.
+Next: slice 2 coverage, then the full compiler gate and documentation.
 
 ### Proof dependency implementation slices
 

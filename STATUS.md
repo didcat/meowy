@@ -737,7 +737,11 @@ The guide documents scope. Bounded forward lookup (`9adb15c`) now preserves
 original inventory positions with separate forward/Backedge buckets. All ten
 compiler checks pass: 1856 library/913 native tests;
 `/tmp/meowy-forward-index-gate.log`. Full-family/boundary coverage is committed as
-`b838be4`; the guide documents scope. A bounded structural forward walk is next.
+`b838be4`; the guide documents scope. A bounded structural walk now inspects the
+exact program BlockEntry after existing gates, reporting original edge positions,
+Backedges and missing sources. It deduplicates ports without interpreting routes
+or inferring runtime reachability. All 1859 library tests and Clippy pass;
+`/tmp/meowy-structural-walk-lib.log`. Boundary coverage and the full gate are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

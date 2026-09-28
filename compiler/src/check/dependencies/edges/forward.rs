@@ -1,6 +1,8 @@
 use super::{inventory::Family, *};
 use std::collections::BTreeMap;
 
+mod walk;
+
 #[derive(Debug, Default, PartialEq, Eq)]
 pub(crate) struct Links {
     pub(crate) forward: Vec<usize>,
