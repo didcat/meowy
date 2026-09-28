@@ -717,6 +717,33 @@
       "companions": [
         "sources/modules/module_private_type/types.mwy"
       ]
+    },
+    {
+      "id": "module_dependency_error",
+      "phase": "check",
+      "source": "sources/modules/module_dependency_error/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_dependency_error/value.mwy"
+      ]
+    },
+    {
+      "id": "module_reexport_cycle",
+      "phase": "check",
+      "source": "sources/modules/module_reexport_cycle/main.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E502"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/modules/module_reexport_cycle/a.mwy",
+        "sources/modules/module_reexport_cycle/b.mwy"
+      ]
     }
   ]
 }

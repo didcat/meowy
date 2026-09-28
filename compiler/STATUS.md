@@ -90,7 +90,9 @@ catalog: 67 cases, 48 required passes, 19 pinned gaps, zero failures;
 through a facade: 49 required passes, 19 pinned gaps, zero failures;
 `/tmp/meowy-modules-exports.log`. Private value/type access rejects with E201/E202. Current catalog: 70 cases,
 51 required passes, 19 pinned gaps, zero failures; `/tmp/meowy-modules-privacy.log`.
-Next add dependency diagnostics, cycles, missing imports and signature rejections.
+Dependency semantic errors and re-export cycles now reject with E201/E502.
+Current catalog: 72 cases, 53 required passes, 19 pinned gaps, zero failures;
+`/tmp/meowy-modules-diagnostics.log`. Missing-import/signature fixtures remain next.
 
 ## Documentation conventions and layout
 
