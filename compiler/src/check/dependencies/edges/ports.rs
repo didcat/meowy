@@ -36,12 +36,18 @@ impl Checker {
             | Port::Projection { point: id, .. }
             | Port::Conversion { point: id, .. }
             | Port::Address { point: id, .. }
-            | Port::Reserve { point: id, .. } => self
-                .points
-                .get(id)
-                .filter(|point| point.complete)
-                .map(|point| point.owner)
-                .ok_or_else(invalid),
+            | Port::Reserve { point: id, .. } => {
+                let owner = self
+                    .points
+                    .get(id)
+                    .filter(|point| point.complete)
+                    .map(|point| point.owner)
+                    .ok_or_else(invalid)?;
+                if !self.stage_port_valid(port, owner, span)? {
+                    return Err(invalid());
+                }
+                Ok(owner)
+            }
             Port::BlockEntry(id)
             | Port::BlockNormal(id)
             | Port::BlockResult(id)
@@ -121,3 +127,5 @@ mod tests;
 
 #[cfg(test)]
 mod owners;
+
+mod selectors;

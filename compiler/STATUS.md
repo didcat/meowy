@@ -114,7 +114,9 @@ Dependency-ordered commit plan:
    entries and unknown normal flow; validate source coverage and atomic work bounds.
 3. Validate specialized stage selectors against their producing metadata where
    required for port existence; keep selector work separate from reachability.
-4. Run the complete compiler gate and document the next forward-index prerequisite.
+4. Register Operation ports from their owning producers once per audit, avoiding
+   repeated scans of CallId-keyed calls; reject undeclared operation stages.
+5. Run the complete compiler gate and document the next forward-index prerequisite.
 
 No step infers execution order, proves reachability or enables proof outcomes.
 Anchor resolution is implemented with bounded metadata lookups and a separate
@@ -125,7 +127,13 @@ pass; `/tmp/meowy-port-anchors-lib.log`. No outstanding failures remain.
 Anchors are committed as `f543ec8`. Edge validation now compares resolved endpoint
 owners, rejecting cross-function links while preserving all stored routes and
 duplicates. Three owner/work-boundary groups, formatting and all 1843 library
-tests pass; `/tmp/meowy-edge-owners-lib.log`. Stage selector validation is next. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
+tests pass; `/tmp/meowy-edge-owners-lib.log` (`cad2261`). Indexed stage selectors
+and snapshot/prefix producers now resolve against retained operation metadata,
+with bounded lookup work. Normal ports still need no reachable incoming flow.
+Three selector groups, formatting and all 1846 library tests pass;
+`/tmp/meowy-port-selectors-lib.log`. Operation ports currently validate Expr/Stmt
+anchors only. A separate bounded producer registry is next so their existence
+can be checked without quadratic invocation scans. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
 `5734e91`) passed 1837 library/913 native tests and conformance
 10 passed/13 unsupported/0 failed in debug/release;
 `/tmp/meowy-edge-inventory-gate.log`.
