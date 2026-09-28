@@ -361,17 +361,40 @@ has an outstanding failure. Preservation against `fe40677` confirms all 125 prio
 (`/tmp/meowy-record-alias-preservation.log`). AGENTS already covers this evidence
 workflow; no rule change is needed. Unrelated `docs/programs/hey/` is preserved.
 
-Next handle checked pending proof-statement completion in `src/check/queries.rs`,
-`src/check/queries/statements.rs`, `src/check/statements.rs` and dependency edges.
-`prepare_query` returns the exact pending ID, but `pending_statement` returns only
-a boolean and its caller emits empty HIR without declaration completion. First
-retain exact IDs for new queries, aliases and discarded query forms; separately
-validate bounded completion after annotation/name checks with owner/root/site
-regressions. Preserve query creation versus aliasing, source error order and the
-final `queries::finish` B001 gate. Use existing proof source cases and exact blocker
-pins, add meaningful coverage where needed, and run compiler/strict gates.
-Callee summaries, backedge propagation and proof outcomes remain separate; normal
-ports do not establish runtime reachability.
+## Pending proof-statement completion in progress
+
+`prepare_query` returns exact query IDs, while `pending_statement` currently reduces
+that result to a boolean. It checks new/discarded queries and descriptor aliases,
+annotations and names, then `stmt_body` emits empty HIR without completion metadata.
+Recognition is side-effect free; preparation owns query/root accounting. Copies
+preserve their original owner/site/root rather than requerying. `value` rejects
+capture across functions with E223; aliases must stay within the original owner. An enclosing construction root can still be
+open when the statement finishes. Proof results remain unavailable at final checking.
+
+Dependency-ordered commit plan:
+
+1. Return exact query IDs and distinguish creation from copying after successful
+   statement checks. Preserve caller behavior and add focused identity/error tests.
+2. Add bounded validation and atomic declaration endpoints for checked pending
+   statements, including source owner/site/root validation and open-root support.
+   Wire statement checking with graph, error, budget and stopped-prefix regressions.
+3. Add independently useful required source rejection coverage, preserving the
+   existing proof B001 exceptions; update the evidence inventory and run compiler,
+   strict-mode and preservation checks against `2d7e8c0`.
+4. Update root/compiler/foundation handoffs with the actual completion boundary,
+   validation and next step; run documentation checks.
+
+Existing reference rules require descriptor copies to preserve observation origins,
+fixed `proof.Result` signatures and ordinary diagnostics before outcomes. No runtime
+query evaluation, proof result, callee summary or backedge propagation is added.
+The source audit covered query preparation, statement admission, checked sites/points,
+construction-root closing and the declaration endpoint publisher. Next implement
+slice 2. Slice 1 now returns `Prepared { id, created }` only after statement checks
+succeed. The caller still retains its existing behavior. All 32 focused `pending_`
+tests pass (`/tmp/meowy-pending-ids.log`), including exact IDs through interleaved
+new queries/copies/discards, annotation/name errors, shared open roots and the E223
+cross-function capture rule. Formatting and all-target Clippy pass
+(`/tmp/meowy-pending-ids-clippy.log`). Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

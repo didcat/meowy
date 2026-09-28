@@ -1,17 +1,18 @@
-use super::Pending;
+use super::{Pending, Prepared};
 use crate::ast::{Stmt, StmtKind};
 use crate::check::{Checker, Result, Spec, Value};
 use crate::foundation::Descriptor;
 
 impl Checker {
-    pub(crate) fn pending_statement(&mut self, stmt: &Stmt) -> Result<bool> {
+    pub(crate) fn pending_statement(&mut self, stmt: &Stmt) -> Result<Option<Prepared>> {
         let value = match &stmt.kind {
             StmtKind::Bind { value, .. } | StmtKind::Expr(value) => value,
-            _ => return Ok(false),
+            _ => return Ok(None),
         };
         let Some(form) = self.pending_form(value)? else {
-            return Ok(false);
+            return Ok(None);
         };
+        let created = matches!(form, Pending::Call { .. });
         self.construction_root(stmt.span, |checker| {
             checker.type_work.as_mut().unwrap().logical.charge(1, 0)?;
             if matches!(form, Pending::Copy(_)) {
@@ -50,7 +51,7 @@ impl Checker {
                 }
                 checker.declare(name, Value::Pending(id), stmt.span)?;
             }
-            Ok(true)
+            Ok(Some(Prepared { id, created }))
         })
     }
 }
@@ -120,7 +121,7 @@ mod tests {
             if source.contains("Missing") {
                 assert_eq!(result.unwrap_err().code, "E212");
             } else {
-                assert!(!result.unwrap());
+                assert_eq!(result.unwrap(), None);
             }
             assert!(checker.type_work.is_none());
             assert!(checker.queries.is_empty());
@@ -142,3 +143,6 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod identities;

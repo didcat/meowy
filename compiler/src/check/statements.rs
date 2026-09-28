@@ -54,7 +54,7 @@ impl Checker {
     }
 
     pub(crate) fn stmt_body(&mut self, stmt: &ast::Stmt) -> Result<Vec<hir::Stmt>> {
-        if self.pending_statement(stmt)? {
+        if self.pending_statement(stmt)?.is_some() {
             return Ok(Vec::new());
         }
         match &stmt.kind {

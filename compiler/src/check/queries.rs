@@ -11,6 +11,12 @@ pub(crate) enum Pending<'a> {
     Call { ty: &'a TypeExpr, span: Span },
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct Prepared {
+    pub(crate) id: usize,
+    pub(crate) created: bool,
+}
+
 pub(crate) struct Query {
     pub(crate) point: usize,
     pub(crate) site: Option<crate::hir::StatementId>,
