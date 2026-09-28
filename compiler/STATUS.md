@@ -109,12 +109,12 @@ The working tree was clean before this continuation.
 
 Dependency-ordered commit plan:
 1. Name edge families and centralize retained family counts, preserving admission
-   arithmetic; validate count/boundary behavior and the library suite.
+   arithmetic; count/boundary and library checks pass (`2eec4bd`).
 2. Add bounded read-only inventory with actual-versus-retained count validation.
    Audit once after ordinary typing/ownership checks, retaining diagnostic priority;
-   verify duplicates, routes, count mismatches and work/edge bounds atomically.
+   duplicate/route/count/boundary checks and the library suite pass (`95fba66`).
 3. Add independently useful coverage across every family and mixed owners/loops;
-   run the complete compiler gate.
+   the complete compiler gate passes.
 4. Document inventory guarantees and the next owner/port-validation prerequisite.
 
 Owner/port validation, forward indexing and dependency propagation remain separate.
@@ -128,7 +128,18 @@ Compilation retains the checker through moves so a final inventory audit runs
 after ownership, pending-query gates and documentation diagnostics. Three core
 inventory groups, formatting and all 1833 library tests pass;
 `/tmp/meowy-edge-inventory-lib.log`. No owner/port or reachability analysis is
-added. Full family coverage and exact work/edge-boundary cases are next. The prior Heap series (`46ea8f3`, `c5e248b`, `436f014`) passed 1827 library/
+added (`95fba66`). Source fixtures now exercise every edge family, mixed function
+owners, exact/over-limit actual edge counts, charged empty rows and prior ordinary/
+query diagnostics. All seven inventory groups and formatting pass, including
+source-backed coverage of all 31 families; `/tmp/meowy-edge-inventory-focused.log`.
+All ten compiler checks pass: 1837 library/913 native tests, formatting, Clippy,
+build, tooling and conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-edge-inventory-gate.log`. No outstanding failures remain. Guide/handoff
+documentation is next, followed by separate bounded port existence/owner validation.
+Resolve ports through retained points, bodies, emission sources and restart
+identities. Runtime locals/functions have moved to Program at the final audit; do
+not use the emptied Checker vectors as bounds. Keep missing flow and reachability
+unknown; forward indexing and propagation remain separate. The prior Heap series (`46ea8f3`, `c5e248b`, `436f014`) passed 1827 library/
 913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
 `/tmp/meowy-heap-leaf-gate.log`. Proof outcomes remain gated.
 
@@ -1963,12 +1974,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    compiler gate pass; the guide documents the scope. Static Heap leaf identities
    are captured at resolved branches (`46ea8f3`) and bounded handle/result stages
    (`c5e248b`) pass the compiler gate; the guide documents scope. Next add bounded
-   read-only edge enumeration across existing ledgers in `dependencies/edges.rs`
-   and Checker. Check actual family totals against counters, preserving duplicate
-   stored edges, exact ports/routes and Backedge markers. Split enumeration/count
-   validation from owner/port validation and forward lookup where independently
-   useful. Verify mixed owners, conditional routes, restarts and atomic bounds with
-   the compiler gate; missing links remain unknown and ordering proves no execution.
+   read-only edge inventory is now implemented (`2eec4bd`, `95fba66`), preserving
+   duplicate stored edges, routes and Backedge markers while auditing all 31 counts.
+   Source coverage and the compiler gate pass. Document this scope next, then add
+   bounded port existence/owner validation using points, bodies, emission sources
+   and restart identities; runtime vectors have moved to Program at final audit.
+   Keep enumeration separate from port validity, forward indexing and propagation.
+   Missing flow remains unknown and normal ports do not prove reachability.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

@@ -726,8 +726,10 @@ feed bounded construction/result stages (`7a42833`). All ten compiler checks pas
 this scope. Static Heap identities (`46ea8f3`) now feed bounded handle/result
 stages (`c5e248b`). All ten compiler checks pass: 1827 library/913 native tests;
 `/tmp/meowy-heap-leaf-gate.log`. The guide documents this scope. A bounded
-read-only edge-inventory series is in progress; the compiler handoff records
-family counts, bounded enumeration/audit, coverage and documentation slices.
+read-only inventory now names all 31 edge families (`2eec4bd`) and checks stored
+counts under bounded work/edge limits (`95fba66`). All ten compiler checks pass:
+1837 library/913 native tests; `/tmp/meowy-edge-inventory-gate.log`. Guide
+documentation and the owner/port-validation handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -858,10 +860,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Static Heap leaf stages passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1827 library/913 native tests.
+- Bounded edge inventory passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1837 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-heap-leaf-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-edge-inventory-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1001,13 +1003,13 @@ execution was not part of this documentation edit.
    checked kind/type metadata and construction/result stages; the compiler gate
    passes, and the guide documents scope. Static Heap leaves now retain nominal
    identity and bounded handle/result stages without allocation effects. The compiler
-   gate passes, and the guide documents scope. Next add bounded read-only edge
-   enumeration across existing ledgers in `compiler/src/check/dependencies/edges.rs`
-   and Checker. Verify actual family counts against counters before separate owner/
-   port validation and forward lookup. Preserve duplicates, exact ports/routes,
-   Backedge markers and unknown boundaries; test mixed owners, conditional routes,
-   restarts and atomic bounds with the compiler gate. Inventory order is not
-   execution order, and missing links do not prove independence.
+   gate passes, and the guide documents scope. Bounded inventory now enumerates all
+   31 edge families and validates actual counts after existing semantic/query/doc
+   gates. Full family/route/duplicate/budget coverage and the compiler gate pass.
+   Document this scope next, then add separate port existence/owner validation from
+   retained points, bodies, emissions and restart identities. Preserve duplicates,
+   routes, Backedge markers and unknown flow; forward indexing and propagation
+   remain separate. Inventory order is not execution order.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

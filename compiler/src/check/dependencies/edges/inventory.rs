@@ -79,3 +79,6 @@ impl Checker {
 
 #[cfg(test)]
 mod counts;
+
+#[cfg(test)]
+mod coverage;
