@@ -726,7 +726,8 @@ feed bounded construction/result stages (`7a42833`). All ten compiler checks pas
 this scope. Static Heap identities (`46ea8f3`) now feed bounded handle/result
 stages (`c5e248b`). All ten compiler checks pass: 1827 library/913 native tests;
 `/tmp/meowy-heap-leaf-gate.log`. The guide documents this scope. A bounded
-read-only inventory of stored graph edges is next.
+read-only edge-inventory series is in progress; the compiler handoff records
+family counts, bounded enumeration/audit, coverage and documentation slices.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

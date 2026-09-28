@@ -99,46 +99,32 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current static foundation-handle slices
+### Current bounded edge-inventory slices
 
-The dependency-ordered series is complete:
-1. Capture exact resolved Heap roots and nominal Allocator identity, preserving
-   HIR, required paths, aliases and ordinary handle reads (`46ea8f3`).
-2. Sequence bounded handle/result stages with atomic shared-budget publication,
-   preserving consumers and ownership rules (`c5e248b`).
-3. Document verified coverage and the next concrete prerequisite.
+Investigation finds 31 independently stored edge families. `edge_room` currently
+sums fixed-size map lengths and retained vector counters; there is no common
+enumeration. Scope exits and restarts hold single edges. Enumeration must retain
+duplicates/routes and tolerate unknown graph boundaries without interpreting them.
+The working tree was clean before this continuation.
 
-Both resolved Heap branches in `raw_expression` record source/owner/control and
-nominal identity. Entry reaches static handle availability and then the result;
-expected conversions, call arguments and temporary materialization keep their
-existing source boundaries. Groups do not duplicate capture. Module aliases
-retain lexical resolution, ordinary bindings remain local reads, and required
-checking/hints emit no runtime handle stages. This is not resource allocation.
-Malformed nominal shapes, foreign owners and exhausted shared budgets publish no
-handle operation. Supported temporary value blocks preserve statement lifetime;
-direct module-member borrows keep B001, local expiry/conflicts keep E303/E302 and
-allocator equality keeps E222. No new ownership authority or proof outcome exists.
+Dependency-ordered commit plan:
+1. Name edge families and centralize retained family counts, preserving admission
+   arithmetic; validate count/boundary behavior and the library suite.
+2. Add bounded read-only inventory with actual-versus-retained count validation.
+   Audit once after ordinary typing/ownership checks, retaining diagnostic priority;
+   verify duplicates, routes, count mismatches and work/edge bounds atomically.
+3. Add independently useful coverage across every family and mixed owners/loops;
+   run the complete compiler gate.
+4. Document inventory guarantees and the next owner/port-validation prerequisite.
 
-All three capture groups and all 1823 then-current library tests pass;
-`/tmp/meowy-heap-leaf-capture-lib.log`. All seven heap capture/stage groups pass in
-the final gate. All ten compiler checks pass: 1827 library/913 native tests,
-formatting, Clippy, build, tooling and conformance (10 passed/13 unsupported/0 failed
-in debug/release); `/tmp/meowy-heap-leaf-gate.log`. No outstanding failures remain.
-The foundation guide documents this scope. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-heap-leaf-docs.log`.
-
-Next add bounded read-only enumeration across existing edge ledgers. Inspect
-`dependencies/edges.rs::edge_room` and the corresponding Checker maps/counters;
-there is currently no common edge inventory for auditing coverage and forward
-lookup. Enumerate stored edges without creating new links, retaining exact ports,
-routes and explicit Backedge markers. Check actual family totals against retained
-counters and enforce work/edge bounds before publication. Separate enumeration/
-count validation from owner/port validation and forward lookup where independently
-reviewable. Verify every ledger family, mixed source/function owners, duplicate
-stored edges, conditional routes, restarts and atomic budget failures, then run the
-compiler gate. Missing edges remain unknown; inventory order is not runtime order,
-and an inventory neither proves reachability nor enables dependency propagation.
-Broader provenance, restart-header analysis and proof evaluation remain separate.
+Owner/port validation, forward indexing and dependency propagation remain separate.
+No inventory ordering establishes runtime order or reachability. The audit confirms
+31 families. Named family counts now drive `edge_room` using checked addition,
+preserving exact capacity and overflow rejection. Three focused groups, formatting
+and all 1830 library tests pass; `/tmp/meowy-edge-counts-lib.log`. No outstanding
+failures remain. Bounded enumeration and the final count audit are next. The prior Heap series (`46ea8f3`, `c5e248b`, `436f014`) passed 1827 library/
+913 native tests and conformance 10 passed/13 unsupported/0 failed in debug/release;
+`/tmp/meowy-heap-leaf-gate.log`. Proof outcomes remain gated.
 
 ### Proof dependency implementation slices
 

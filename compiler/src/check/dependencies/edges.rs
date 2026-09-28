@@ -69,40 +69,9 @@ impl Edge {
 
 impl Checker {
     pub(crate) fn edge_room(&self, count: usize) -> bool {
-        self.branch_edges
-            .len()
-            .saturating_mul(6)
-            .saturating_add(self.region_edges.len().saturating_mul(2))
-            .saturating_add(self.sequence_edges)
-            .saturating_add(self.scope_exits.len())
-            .saturating_add(self.endpoint_edges)
-            .saturating_add(self.restart_edges.len())
-            .saturating_add(self.operation_edges)
-            .saturating_add(self.local_read_edges)
-            .saturating_add(self.scalar_leaf_edges)
-            .saturating_add(self.heap_leaf_edges)
-            .saturating_add(self.path_edges)
-            .saturating_add(self.store_edges)
-            .saturating_add(self.invocation_edges)
-            .saturating_add(self.index_edges)
-            .saturating_add(self.method_edges)
-            .saturating_add(self.element_edges)
-            .saturating_add(self.exclusive_edges)
-            .saturating_add(self.output_edges)
-            .saturating_add(self.unary_edges)
-            .saturating_add(self.deref_edges)
-            .saturating_add(self.field_edges)
-            .saturating_add(self.typed_edges)
-            .saturating_add(self.coercion_edges)
-            .saturating_add(self.narrowing_edges)
-            .saturating_add(self.binary_edges)
-            .saturating_add(self.dispatch_edges)
-            .saturating_add(self.reborrow_edges)
-            .saturating_add(self.projection_edges)
-            .saturating_add(self.place_borrow_edges)
-            .saturating_add(self.temporary_borrow_edges)
-            .saturating_add(self.emission_edges)
-            .checked_add(count)
+        self.edge_counts()
+            .iter()
+            .try_fold(count, |total, (_, size)| total.checked_add(*size))
             .is_some_and(|total| total <= MAX_EDGES)
     }
 
@@ -190,3 +159,5 @@ mod tests;
 
 #[cfg(test)]
 mod logic;
+
+mod inventory;
