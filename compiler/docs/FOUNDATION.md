@@ -464,7 +464,16 @@ their existing annotation. Scope, collision and budget checks remain authoritati
 Exports publish only after every definition and documentation check succeeds;
 non-top-level forward exports remain gated. Documentation links resolve to exact
 peer definition locations in either order, preserving public/private visibility.
-Record values and pending descriptors retain their existing metadata.
+Ordinary record and subrecord copies retain runtime storage operations and checked
+initializer inputs. Required-evaluation record aliases use temporary scratch values
+with no runtime locals or statement points; their enclosing declaration completes
+only after checking succeeds. Successful reads retain the original input/storage
+identity and whole-ancestor eligibility/error evidence. Scratch aliases do not
+invent runtime reads, and neither kind of copy bypasses a stopped predecessor.
+Focused tests pin scope, budgets and proof-derived input rejection; source cases
+exercise inline storage independence, imported staging, errors and panic ordering.
+Pending proof descriptors still retain their existing metadata without declaration
+completion; proof evaluation remains gated.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not
 evidence that a runtime path is reached.

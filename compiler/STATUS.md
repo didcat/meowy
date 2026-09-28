@@ -315,90 +315,63 @@ module-level definition forms without changing those graph boundaries.
 
 ## Exported forward definitions
 
-The dependency-ordered series is complete:
+Module-level exported definitions reuse reserved IDs and publish only after the
+whole group succeeds (`054c9b4`, `9ee8cb6`). Public signatures come from the forward
+header; explicit definition annotations must match. Peer documentation links use
+exact definition locations and preserve privacy (`1f995e4`). Required source
+coverage (`a8f8988`, `25aa9e0`) pins recursion, re-exports, initialization and failures.
+The compiler gate below retains those checks. Non-top-level forward exports remain
+B001-gated; ordinary export annotation rules and independent body owners are intact.
+
+## Record alias boundaries and coverage
+
+The dependency-ordered audit and coverage series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Extract existing export checks with preserved diagnostic order | `054c9b4` |
-| Fulfill reservations, validate exports and publish whole groups | `9ee8cb6` |
-| Resolve peer documentation links to exact definition locations | `1f995e4` |
-| Cover imported recursion, re-exports, docs and initialization | `a8f8988` |
-| Pin signature, repetition, duplicate, partial and privacy errors | `25aa9e0` |
+| Pin storage, required-read, completion, scope and budget boundaries | `f8d7aed` |
+| Cover runtime copies and imported required aliases | `48298eb` |
+| Pin required failures and panic before later copies | `e5a5f39` |
 
-Named immutable exported definitions at module top level reuse reserved FunctionIds,
-including reverse-order definitions and nested function allocations. The explicit
-forward header supplies the public signature, including a result omitted from the
-definition. Explicit definition annotations must match. Ordinary exports retain
-their existing annotation rule. Scope, duplicate, type, capture and budget checks
-remain in force; non-top-level forward exports still report B001. Exports are staged
-until every body and documentation check succeeds. Failed groups publish no exports
-or completed group point. Unused exported Never bodies do not stop declaration.
+The prior proposed record identity endpoint was unnecessary. Ordinary record and
+subrecord copies are `Value::Local` bindings with distinct storage and checked
+initializer operations. `Value::Record` belongs to required-evaluation scratch;
+its bindings have no runtime statement points or locals. The enclosing declaration
+already publishes completion after checking. Required copies retain whole-ancestor
+evidence and successful original local reads, while scratch aliases introduce no
+runtime identities. Source tracing and six new regression groups verify this
+boundary without changing production behavior.
 
-Documentation links to peers resolve to their definition source locations in either
-order, including later public definitions; private targets still fail E802. The
-lookahead is bounded and grants no execution/initialization facts. The original
-public-peer rejection was reproduced before fixing it. Required source coverage
-checks imported mutual recursion, typed re-exports, initialization once through two
-paths, peer docs, mixed public/private groups and unused exported Never functions.
-Five rejection cases pin signature mismatch, repeated definitions, duplicate exports,
-partial groups and imported private functions.
+Tests pin exact read/storage IDs, caller ownership, scratch scope isolation,
+stopped paths, declaration failures, unchanged logical costs, E220 limits and E225
+rejection before recording reads or completion. Budget/derived-input checks are
+internal seeded evidence. Seven required source cases separately cover inline copy
+independence, imported projections and function-local required roots, scoped
+shadowing, once-only initialization, effectful ancestors, sibling arithmetic
+failure, escaped/duplicate scratch names and P006 before later copies.
 
-All ten compiler checks pass: 1967 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 1973 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-forward-export-gate.log`. The 125 cases report 106 required passes,
+`/tmp/meowy-record-alias-gate.log`. The 132 cases report 113 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those known gaps (`/tmp/meowy-forward-export-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-forward-export-docs.log`); no selected check
-has an outstanding failure. Preservation against `2ad0c19` confirms all 119 prior
-case records, 147 source assets, 37 reference files and capability exceptions are
-unchanged (`/tmp/meowy-forward-export-preservation.log`). AGENTS already requires
-this source coverage, evidence mapping and capability distinction; no rule update
-is needed. Unrelated `docs/programs/hey/` work is preserved.
+only for those known gaps (`/tmp/meowy-record-alias-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-record-alias-docs.log`); no selected check
+has an outstanding failure. Preservation against `fe40677` confirms all 125 prior cases,
+155 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-record-alias-preservation.log`). AGENTS already covers this evidence
+workflow; no rule change is needed. Unrelated `docs/programs/hey/` is preserved.
 
-## Record alias audit in progress
-
-Source tracing corrects the proposed next step: ordinary record copies are
-`Value::Local` storage operations, including projected subrecords. `Value::Record`
-is constructed by required-evaluation helpers and confined to their temporary
-scopes; `type_statement` handles these bindings without runtime statement points.
-The enclosing type declaration already publishes completion after required checking.
-`required_record` validates whole-ancestor evidence and records successful original
-local reads; scratch copies add no runtime identities. A new unconditional record
-identity endpoint would not model a missing source-level operation.
-
-Dependency-ordered commit plan:
-
-1. Add focused graph/provenance regressions for ordinary copy storage, required
-   aliases, exact source reads, scope isolation, failure publication and work limits.
-   Preserve current checking; change production code only if a regression exposes
-   a missing boundary.
-2. Add required record-copy/imported-alias execution coverage and its evidence map;
-   commit independent rejection scenarios separately. Run compiler/strict gates
-   plus preservation checks against `fe40677`.
-3. Correct root/compiler/foundation handoffs to describe the verified boundary and
-   identify the next actual unfinished dependency step; run documentation checks.
-
-Six new graph/provenance regression groups pass, plus the existing matching input
-test (`/tmp/meowy-record-alias-audit.log`). They cover distinct runtime storage,
-initializer roots, required source IDs and function owners, scratch scope isolation,
-stopped paths, failed declarations, unchanged logical costs, exact E220 limits and
-E225 rejection before recording reads or completion. Initial test assumptions about
-an empty endpoint registry were corrected to preserve the already checked record
-initializer endpoints. No production behavior change was needed. Two new required
-execution cases pass in debug/release (`/tmp/meowy-record-alias-cases.log`): inline
-record/subrecord storage independence and imported required aliases with scoped
-shadowing, function-local roots and once-only initialization. The 127-case catalog
-and 37-document evidence inventory validate. Four rejection cases now pin effectful
-ancestor inputs, sibling arithmetic failures, escaped scratch names and duplicate
-scratch declarations; a P006 case pins panic before later record copies. All seven
-new cases pass in debug/release, and the 132-case catalog/coverage checks pass.
-The complete compiler gate is running (`/tmp/meowy-record-alias-gate.log`). The
-preservation audit confirms all 125 prior cases, 155 source assets, 37 reference
-files and exact capability exceptions are unchanged against `fe40677`
-(`/tmp/meowy-record-alias-preservation.log`). Next finish compiler/strict validation
-and the documentation handoff. Keep pending
-proof descriptors, callee summaries and backedge propagation separate; retain
-B001 proof gates and preserve unrelated `docs/programs/hey/` work.
+Next handle checked pending proof-statement completion in `src/check/queries.rs`,
+`src/check/queries/statements.rs`, `src/check/statements.rs` and dependency edges.
+`prepare_query` returns the exact pending ID, but `pending_statement` returns only
+a boolean and its caller emits empty HIR without declaration completion. First
+retain exact IDs for new queries, aliases and discarded query forms; separately
+validate bounded completion after annotation/name checks with owner/root/site
+regressions. Preserve query creation versus aliasing, source error order and the
+final `queries::finish` B001 gate. Use existing proof source cases and exact blocker
+pins, add meaningful coverage where needed, and run compiler/strict gates.
+Callee summaries, backedge propagation and proof outcomes remain separate; normal
+ports do not establish runtime reachability.
 
 ## Documentation conventions and layout
 
@@ -2452,12 +2425,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    Exported forward definitions now fulfill existing IDs with validated module-level
    scope/signatures, whole-group publication and peer documentation (`9ee8cb6`,
    `1f995e4`). Required source coverage (`a8f8988`, `25aa9e0`) and the compiler gate
-   pass. Next audit erased record-valued aliases in `statements.rs`,
-   `dependencies/edges/identities.rs` and `inputs/`: retain actual input identities
-   and owner/check boundaries, add bounded completion with graph/required-read
-   regressions and source coverage, then run the compiler gate. Pending descriptors,
-   other synthetic prefixes, callee summaries, backedge propagation and proof
-   outcomes remain separate; never bypass arbitrary None entries.
+   pass. Record alias auditing confirms ordinary copies already retain storage
+   operations and required scratch stays within checked construction roots;
+   regressions and source coverage (`f8d7aed`, `48298eb`, `e5a5f39`) preserve those
+   boundaries. Next retain exact pending query IDs from `queries/statements.rs`
+   through `statements.rs`, then separately validate declaration completion after
+   annotation/name checks. Cover query versus alias forms, owner/root/site identity,
+   failed publication and budgets, preserving final B001 proof gates. Run the
+   compiler/strict gates; callee summaries, other synthetic prefixes, backedge
+   propagation and proof outcomes remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

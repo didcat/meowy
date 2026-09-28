@@ -7,29 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Forward-function groups now accept documented exported definitions at module top
-level. Definitions reuse reserved IDs, preserve exact signatures and export checks,
-and publish exports only after every body and documentation check succeeds.
-Peer documentation links resolve to definitions in either order while preserving
-privacy. The existing checked group points and completion boundaries remain intact.
-Implementation: `054c9b4`, `9ee8cb6`, `1f995e4`; source coverage: `a8f8988`, `25aa9e0`.
+The record alias audit is complete. Ordinary record copies already retain runtime
+storage/read operations; compile-time record aliases stay inside required-evaluation
+scopes and complete through the enclosing declaration. Six new internal regression
+groups and seven source cases pin storage independence, exact input reads, scope,
+budgets, imported staging, rejection rules and stopped execution. No production
+behavior change was needed. Commits: `f8d7aed`, `48298eb`, `e5a5f39`.
 
-The catalog has 125 cases: 106 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Six new cases cover imported recursion, re-exports,
-initialization, peer docs, signature mismatch, repeated/duplicate definitions,
-partial groups and privacy. All prior case assets and reference contracts are
-unchanged. The [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference
-files and 33 proof obligations with explicit remaining gaps. All ten compiler checks
-pass: 1967 library/914 native and 62 Python test groups;
-`/tmp/meowy-forward-export-gate.log`. Strict mode rejects only the same 19 known
-gaps; all four final documentation checks pass (`/tmp/meowy-forward-export-docs.log`).
-Proof outcomes and full language/release qualification remain incomplete.
+The catalog has 132 cases: 113 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. All prior cases, source assets and reference contracts
+are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
+37 reference files and 33 proof obligations with explicit remaining gaps. All ten
+compiler checks pass: 1973 library/914 native and 62 Python test groups;
+`/tmp/meowy-record-alias-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-record-alias-docs.log`). Proof
+outcomes and full language/release qualification remain incomplete.
 
-Next audit record-valued aliases for bounded completion while preserving input
-identity, required reads and owner/check boundaries. The
-[compiler handoff](compiler/STATUS.md#exported-forward-definitions) records the next
-files and validation requirements. Unrelated `docs/programs/hey/` work is preserved.
-AGENTS already covers the required conformance/evidence workflow; no update is needed.
+Next retain exact pending proof-query IDs through statement checking, then validate
+bounded declaration completion while preserving the final B001 evaluation gate.
+The [compiler handoff](compiler/STATUS.md#record-alias-boundaries-and-coverage) records
+the concrete files and checks. AGENTS already covers the conformance/evidence
+workflow; no update is needed. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1135,11 +1133,13 @@ execution was not part of this documentation edit.
    dispatch sequences connect them without skipping other None prefixes. The compiler
    gate and source coverage pass. Exported definitions now fulfill reserved IDs with
    exact signature/export checks, atomic group publication and peer documentation.
-   Required source coverage and the compiler gate pass. Next audit record-valued
-   aliases in `compiler/src/check/statements.rs`, `dependencies/edges/identities.rs`
-   and `inputs/`: preserve actual input identity, required reads and owner/check
-   boundaries before adding bounded completion. Add focused/source coverage and
-   run the compiler gate. Pending descriptors and proof outcomes remain separate.
+   Required source coverage and the compiler gate pass. Record alias auditing and
+   regression/source coverage confirm ordinary copies retain storage operations
+   while required scratch completes through its enclosing declaration. Next retain
+   exact pending query IDs through `compiler/src/check/queries/statements.rs` and
+   `statements.rs`, then validate bounded completion with owner/root/site and error
+   regressions. Preserve final B001 proof gates; run compiler/strict validation.
+   Callee summaries, backedge propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
