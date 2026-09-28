@@ -188,8 +188,8 @@ completed slots must retain the exact ID. Function bodies are never traversed by
 an alias endpoint. Work and aggregate edge limits precede publication; replay is
 idempotent and failures add no endpoint. Calls retain their effects and return gates.
 
-Static/record/file-module/control/pending forms remain excluded. Type-valued bindings
-and meta exports are covered below. Heap handles retain their runtime value path;
+Record/file-module/control/pending forms remain excluded. Type-valued/static
+bindings and meta exports are covered below. Heap handles retain their runtime value path;
 forward groups keep explicit barriers. Required
 roots, ownership, ordinary errors and unsupported-call/proof gates remain unchanged.
 Six structural groups cover resolution, self/forward slots, exclusions, errors,
@@ -263,91 +263,61 @@ aliases, separate namespaces, module type exports, duplicate names and required
 tail failures. These checks remain in the full gate below; the
 [foundation guide](docs/FOUNDATION.md) records completion and accounting boundaries.
 
-## Current type-valued binding completion
+## Type-valued binding completion
+
+Resolved type/foundation-type bindings (`3692a56`) and meta exports (`1c4d254`)
+connect only after required checking and successful declaration/export validation.
+Payloads, query non-execution and required-only helpers remain unchanged. Source
+coverage (`d43aab9`) pins imported meta values, Type shadowing and relevant errors.
+The full gate below retains these checks; the foundation guide records the bounds.
+
+## Current immutable static-binding completion
 
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Classify and connect resolved ordinary type-valued bindings | `3692a56` |
-| Connect successful named meta value exports | `1c4d254` |
-| Pin type queries, imported meta values and relevant errors | `d43aab9` |
+| Connect resolved immutable static aliases with focused regressions | `c2f7d7b` |
+| Pin revision aliases, runtime copies and required-input conformance | `46d450e` |
 
-`BindingIdentity::Type` classifies actual Value::Type and foundation type identities
-without copying or retaining their shapes. Unannotated bindings keep their existing
-resolution/type-root work; annotated meta bindings publish only after `meta_binding`
-and declaration succeed. Meta exports publish after `export_type_value` succeeds,
-including module registration. All use the existing bounded statement-owner and
-completion validation, idempotence and atomic work/edge limits. Payloads, runtime
-storage/fields, type-query non-execution and lexical Type-name shadowing are unchanged.
+`BindingIdentity::Static` classifies actual Value::Static values and reuses bounded
+completion after successful immutable, unannotated declaration. No constant/type
+payload is copied or retained in the identity marker. proof.revision and its aliases
+keep their uint32 value; lexical shadowing still resolves ordinary record fields.
+The existing branch guard sends annotated/mutable Static bindings through runtime
+storage/scalar checking, with their original width and eligibility diagnostics.
 
-Five ordinary-binding groups and four export groups cover literals, queries,
-computed/foundation/imported types, owners, required-helper isolation, E220/E225,
-export/ordinary errors and budgets. Required-only callers gain no statement
-endpoints. Static/record/file-module values, scoped-control aliases, pending
-forms and forward groups retain their existing boundaries; proof outcomes stay gated.
+Required scalar/record evaluation also produces Static values; its statement
+helpers remain unchanged and add no runtime alias endpoints. Five focused groups
+cover payloads/widths, local owners, typed/mutable/shadowed storage, required cost
+and endpoint isolation, errors, stopped paths and exact work/edge caps. Graph
+exhaustion publishes no partial endpoint. Unsupported required imports and proof
+evaluation remain B001. Record/file-module/control/pending values and forward
+groups retain their existing boundaries.
 
-All ten compiler checks pass: 1927 library/913 native tests, 32 tooling and 30
-harness groups, formatting, Clippy, build, metadata/coverage and conformance;
-`/tmp/meowy-type-values-gate.log`. The 104 cases report 85 passes, 19 unchanged
-pinned gaps and zero failures in debug/release. Three new source cases pin imported
-meta values, query non-execution, shadowing of Type, duplicate exports and invalid
-meta results. Strict mode exits 1 only for known gaps;
-`/tmp/meowy-type-values-strict.log`. All 101 prior case records, 121 source assets,
+All ten compiler checks pass: 1932 library/913 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, metadata/coverage and conformance;
+`/tmp/meowy-static-bindings-gate.log`. The 107 cases report 88 passes, 19 unchanged
+pinned gaps and zero failures in debug/release. Three new source cases pin static
+alias/shadowing behavior, fixed widths, typed/mutable copies, required extents and
+rejections. Strict mode exits 1 only for known gaps;
+`/tmp/meowy-static-bindings-strict.log`. All 104 prior case records, 126 source assets,
 37 reference files and capability exceptions are preserved;
-`/tmp/meowy-type-values-preservation.log`. No outstanding compiler/test failures
-remain. All four final documentation checks pass; `/tmp/meowy-type-values-docs.log`.
-AGENTS already covers the required source conformance/evidence workflow; no rule
-change is needed.
+`/tmp/meowy-static-bindings-preservation.log`. No outstanding compiler/test failures
+remain. All four final documentation checks pass;
+`/tmp/meowy-static-bindings-docs.log`. AGENTS already covers the required
+conformance/evidence workflow; no rule change is needed.
 
-Next inspect immutable static identity bindings in `src/check/names.rs` and
-`src/check/statements.rs`, beginning with resolved proof.revision aliases. Audit
-Value::Static producers and ordinary lookup before extending classification;
-required evaluation also constructs Static values and must retain its own path.
-Preserve fixed widths, constant payloads, required eligibility/errors, lexical
-lookup and E225/proof gates. Annotated/mutable static bindings already follow runtime
-storage checking and must not be erased. Plan a narrow classified completion slice
-with scope/error/budget tests and source conformance, then run compiler/strict-gap
-gates. Records, file-module/control aliases, forward groups, callee summaries and
-proof propagation/outcomes remain separate; never add a generic empty-HIR bypass.
-
-## Current immutable static-binding completion
-
-Dependency-ordered commit plan:
-
-1. Classify resolved Value::Static in the existing identity-binding path and reuse
-   bounded statement completion after successful declaration. Include alias/width/
-   scope, required-only isolation, typed/mutable runtime storage, error and budget
-   regressions; preserve remaining control/file-module/forward barriers.
-2. Add source conformance for revision aliases, lexical shadowing, runtime copies,
-   required extents and relevant rejections. Preserve all prior fixtures/reference
-   contracts and exact capability pins; run compiler, strict-gap and preservation
-   checks before committing the source slice.
-3. Refresh coverage evidence, the foundation guide and current root/compiler
-   handoffs, then run documentation checks and commit the final handoff.
-
-Inspection: ordinary member lookup produces proof.revision as Static(Int(1),
-uint32). Other Static producers belong to required scalar/record evaluation;
-required statements use their own declaration path. Ordinary annotated or mutable
-Static bindings already fall through to runtime storage checking before identity
-classification. Classify the resolved variant, not its spelling, without changing
-payloads, copying types or re-evaluating inputs. Proof descriptors remain separate.
-The tree starts clean at `f3e1085`. Static classification passes all five focused
-groups; `/tmp/meowy-static-bindings-focused.log`. Alias payloads/widths, nested owners,
-typed/mutable and shadowed storage, required costs/isolation, errors, stopped paths
-and exact publication limits are preserved. Unsupported required imports and proof
-evaluation remain B001. All 1932 library tests and all-target Clippy pass;
-`/tmp/meowy-static-bindings-lib.log`, `/tmp/meowy-static-bindings-clippy.log`.
-Implementation is committed as `c2f7d7b`. Three required source cases now cover revision
-alias width/shadowing, typed/mutable copies and required extents, plus width mismatch
-and mutable required-input rejection. All ten compiler checks pass: 1932 library/913
-native tests, 32 tooling and 30 harness groups, formatting, Clippy, build and
-conformance; `/tmp/meowy-static-bindings-gate.log`. The 107 cases report 88 passes,
-19 unchanged pinned gaps and zero failures in debug/release. All previous 104 case
-records, 126 source assets, 37 reference files and capability exceptions are
-preserved; `/tmp/meowy-static-bindings-preservation.log`. Strict mode correctly
-exits 1 only for known gaps; `/tmp/meowy-static-bindings-strict.log`. The final
-coverage/guide handoff remains; no outstanding test failures remain.
+Next inspect resolved Value::Control aliases in `src/check/names.rs` and
+`src/check/statements.rs`. Preserve exact target/restart/owner identities and active
+scope/function boundaries before extending completion classification. Alias
+creation must not perform leave/restart or add a scope-exit/backedge: actual calls
+keep their separate argument, owner, lifetime and control checks. Plan independently
+reviewable identity capture and bounded-publication slices where useful. Test
+nested scopes, alias chains, shadowed ordinary fields, real exits/restarts, rejected
+captures/lifetimes and budgets, then add source coverage and run compiler/strict-gap
+gates. File-module/record/pending values, forward groups, callee summaries and proof
+propagation/outcomes remain separate; never add a generic empty-HIR bypass.
 
 ## Documentation conventions and layout
 
@@ -1809,13 +1779,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Type-valued binding/meta export completion passes all ten compiler checks:
-  1927 library/913 native tests, 32 tooling and 30 harness groups. Conformance:
-  85 passed, 19 pinned gaps, zero failures in debug/release;
-  `/tmp/meowy-type-values-gate.log`. Strict mode rejects those gaps;
-  `/tmp/meowy-type-values-strict.log`. Prior fixtures/expectations and reference
-  contracts are unchanged; `/tmp/meowy-type-values-preservation.log`.
-  All four final documentation checks pass; `/tmp/meowy-type-values-docs.log`.
+- Immutable static alias completion passes all ten compiler checks: 1932 library/
+  913 native tests, 32 tooling and 30 harness groups. Conformance: 88 passed,
+  19 pinned gaps, zero failures in debug/release;
+  `/tmp/meowy-static-bindings-gate.log`. Strict mode rejects only those gaps;
+  `/tmp/meowy-static-bindings-strict.log`. Prior fixtures/expectations and reference
+  contracts are unchanged; `/tmp/meowy-static-bindings-preservation.log`.
+  All four final documentation checks pass; `/tmp/meowy-static-bindings-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2382,12 +2352,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    Source conformance (`90d6263`) and the compiler gate pass. Ordinary type-valued
    bindings (`3692a56`) and meta exports (`1c4d254`) now connect after all required/
    declaration/export checks. Source coverage (`d43aab9`) and the compiler gate pass.
-   Next audit immutable Value::Static bindings, beginning with proof.revision aliases
-   in `names.rs` and `statements.rs`. Preserve required-only producers, fixed widths,
-   payloads and typed/mutable runtime storage paths; test eligibility/errors/budgets,
-   extend source coverage and run the compiler gate. Other erased forms, forward
-   groups, callee summaries, propagation and proof outcomes remain separate;
-   no generic empty-HIR bypass.
+   Immutable static aliases now connect after declaration (`c2f7d7b`), preserving
+   required-only producers, payload widths and typed/mutable runtime storage paths.
+   Source conformance (`46d450e`) and the compiler gate pass. Next inspect resolved
+   Value::Control aliases in `names.rs` and `statements.rs`; preserve exact active
+   targets, restart flags and owners without performing control transfer at alias
+   declaration. Keep call argument/lifetime/function gates separate, test scopes/
+   exits/errors/budgets, extend source coverage and run the compiler gate. Other
+   erased forms, forward groups, callee summaries, propagation and proof outcomes
+   remain separate; no generic empty-HIR bypass.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

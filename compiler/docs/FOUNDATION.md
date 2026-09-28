@@ -411,7 +411,15 @@ shadowed `Type` names retain ordinary lexical meaning. Required-only helpers and
 their logical costs remain separate from statement completion; E220 and ordinary
 errors precede publication. Graph exhaustion still reports B001, and proof outcome
 gates are unchanged.
-Forward groups retain explicit barriers. Static/record/file-module values,
+Immutable, unannotated aliases of resolved static constants also publish bounded
+completion after declaration. `proof.revision` and its aliases retain the existing
+`uint32` payload; classification follows the resolved value, never the name.
+Annotated and mutable copies still use ordinary runtime storage and scalar-read
+operations, including their width checks. Shadowed record fields remain ordinary
+data. Required-only static producers and aliases keep their evaluator paths and
+logical costs without gaining runtime statement endpoints. This adds no constant
+evaluation, payload copy or proof outcome; failed declarations publish no endpoint.
+Forward groups retain explicit barriers. Record/file-module values,
 scoped-control aliases and pending descriptors retain their existing metadata.
 Heap handles keep their separate runtime value path. There is no general bypass
 for empty HIR statements. Completion edges are structural connectivity, not

@@ -7,27 +7,26 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Ordinary type-valued bindings and named meta exports now retain bounded completion
-edges after required checking and successful declaration/export validation.
-Literal, query, computed, foundation and imported types retain their payloads and
-logical costs without new runtime storage or query execution. Required-only helpers
-stay separate. Implementation: `3692a56`, `1c4d254`; source conformance: `d43aab9`.
+Immutable, unannotated static aliases now retain bounded statement-completion
+edges after successful declaration. Resolved proof.revision aliases preserve their
+uint32 payload, required-read eligibility and lexical meaning. Annotated/mutable
+copies keep runtime storage checking; required-only aliases keep their evaluator
+paths and costs. Implementation: `c2f7d7b`; source conformance: `46d450e`.
 
-The catalog has 104 cases: 85 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Three new fixtures pin imported/chained meta values,
-query non-execution, shadowing of Type, duplicate exports and invalid meta results.
-All prior cases/assets and reference contracts are unchanged. The
+The catalog has 107 cases: 88 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Three new fixtures pin alias width/shadowing, typed and
+mutable copies, required extents and relevant rejections. All prior cases/assets
+and reference contracts are unchanged. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1927 library/913 native and 62 Python test groups;
-`/tmp/meowy-type-values-gate.log`. Strict mode correctly rejects the known gaps.
+1932 library/913 native and 62 Python test groups;
+`/tmp/meowy-static-bindings-gate.log`. Strict mode rejects only the known gaps.
 Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect immutable static identity bindings, beginning with resolved
-`proof.revision` aliases in `compiler/src/check/names.rs` and
-`compiler/src/check/statements.rs`. Keep annotated/mutable runtime storage paths,
-required input rules and proof gates intact. The
-[compiler handoff](compiler/STATUS.md#current-type-valued-binding-completion)
+Next inspect scoped-control aliases in `compiler/src/check/names.rs` and
+`compiler/src/check/statements.rs`. Retain resolved target/owner/restart identities
+and distinguish alias completion from actually calling leave or restart. The
+[compiler handoff](compiler/STATUS.md#current-immutable-static-binding-completion)
 records the scope, evidence and next validation requirements.
 
 ## Documentation conventions
@@ -1118,12 +1117,15 @@ execution was not part of this documentation edit.
    accounting and required-only helpers. Focused/source coverage and the compiler
    gate pass. Ordinary type-valued bindings and meta exports now connect only after
    successful required/declaration/export checks, preserving payloads and query
-   non-execution. Focused/source coverage and the compiler gate pass. Next inspect
-   immutable static identity bindings such as resolved proof.revision aliases in
-   `compiler/src/check/names.rs` and `compiler/src/check/statements.rs`; preserve
-   typed/mutable runtime paths, required eligibility and proof gates. Add focused/
-   source coverage and run the compiler gate. Other erased forms and forward groups
-   stay separate; proof outcomes remain gated.
+   non-execution. Immutable static aliases now connect after declaration while
+   typed/mutable copies retain runtime storage and required-only producers retain
+   their evaluator paths. Focused/source coverage and the compiler gate pass. Next
+   inspect scoped-control aliases in `compiler/src/check/names.rs` and
+   `compiler/src/check/statements.rs`; retain exact target/owner/restart identities
+   without executing a leave/restart at declaration. Preserve lifetime/call errors,
+   test aliases and control boundaries, add source coverage and run the compiler
+   gate. Other erased forms and forward groups stay separate; proof outcomes
+   remain gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
