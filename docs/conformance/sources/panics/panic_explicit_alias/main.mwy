@@ -1,0 +1,5 @@
+d:@"debug"
+die:d.panic
+d.print("before")
+die("stop")
+d.print("after")

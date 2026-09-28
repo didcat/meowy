@@ -1,0 +1,4 @@
+d:@"debug"
+d.print("init")
+d.panic("module stop")
+d.print("after init")

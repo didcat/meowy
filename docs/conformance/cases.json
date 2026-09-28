@@ -912,6 +912,34 @@
         "exit": 1
       },
       "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "panic_explicit_alias",
+      "phase": "run",
+      "source": "sources/panics/panic_explicit_alias/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/diagnostic-codes.md#runtime-panics-and-compiler-faults"
+    },
+    {
+      "id": "panic_module_initialization",
+      "phase": "run",
+      "source": "sources/panics/panic_module_initialization/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "init\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports",
+      "companions": [
+        "sources/panics/panic_module_initialization/first.mwy",
+        "sources/panics/panic_module_initialization/later.mwy"
+      ]
     }
   ]
 }

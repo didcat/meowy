@@ -128,8 +128,11 @@ both profiles. Current result: 62 required passes, 19 pinned gaps, zero failures
 `/tmp/meowy-panic-division.log`. Five collection cases now pass: initialized-length bounds, negative/wide indices,
 early write-path failure and append-capacity failure after item effects. Current
 result: 67 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-panic-collections.log`. Explicit and module-startup panics are next,
-then final validation; graph work stays deferred.
+`/tmp/meowy-panic-collections.log`. Explicit panic aliases and module-initialization failure also pass, including the
+absence of later module/entry output. All 88 cases now give 69 required passes,
+19 unchanged pinned gaps and zero failures; `/tmp/meowy-panic-startup.log`.
+All planned source fixtures are complete. Full compiler, strict-gap, preservation
+and documentation checks remain before the final handoff.
 
 ## Documentation conventions and layout
 
