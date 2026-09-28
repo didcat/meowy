@@ -122,11 +122,16 @@ The production entry is the exact HIR program block, after semantic/query/doc ga
 this is a structural inspection, not whole-program execution or function expansion.
 No runtime reachability, proof/data propagation or proof outcome is enabled.
 Prior forward-index gate passed all ten checks (1856 library/913 native tests);
-`/tmp/meowy-forward-index-gate.log`. The walk and program-entry integration are implemented. Three core groups cover
+`/tmp/meowy-forward-index-gate.log`. The walk and program-entry integration are committed as `1732485`. Three core groups cover
 repeated edges, forward cycles, uninterpreted Checked/Returned labels, Backedge-only
 sources and missing/unknown sources. All 1859 library tests and all-target Clippy
 pass; `/tmp/meowy-structural-walk-lib.log`, `/tmp/meowy-structural-walk-clippy.log`.
-Next: slice 2 coverage, then the full compiler gate and documentation.
+All eight walk groups now pass; `/tmp/meowy-structural-walk-focused.log`.
+Coverage includes both conditional paths and exact output selectors, nested outer
+restart targets, independent function owners, full edge capacity, empty walks,
+edge-count + 1 visited ports, and first/mid/last-charge work failures. Exact remaining
+work succeeds; failed walks leave the index reusable and publish no partial report.
+Next: full compiler gate and documentation; no outstanding focused failures.
 
 ### Proof dependency implementation slices
 

@@ -741,7 +741,10 @@ compiler checks pass: 1856 library/913 native tests;
 exact program BlockEntry after existing gates, reporting original edge positions,
 Backedges and missing sources. It deduplicates ports without interpreting routes
 or inferring runtime reachability. All 1859 library tests and Clippy pass;
-`/tmp/meowy-structural-walk-lib.log`. Boundary coverage and the full gate are next.
+`/tmp/meowy-structural-walk-lib.log`. The walk is committed as `1732485`.
+All eight walk groups pass, including nested restart/function boundaries and exact
+capacity/work failures; `/tmp/meowy-structural-walk-focused.log`. The full gate
+and documentation handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
