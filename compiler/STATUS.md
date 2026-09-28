@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-27. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-28. Pending queries retain charged argument/outer-root budgets.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -99,51 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current bounded edge-inventory slices
+### Current graph-port validation slices
 
-The dependency-ordered series is complete:
-1. Name all 31 edge families and centralize retained counts while preserving
-   admission arithmetic (`2eec4bd`).
-2. Enumerate stored edges with bounded work/count validation and audit after
-   existing semantic/query/documentation diagnostics (`95fba66`).
-3. Cover every family, mixed owners, routes, duplicates and exact bounds (`42b04e8`).
-4. Document inventory guarantees and the next owner/port-validation prerequisite.
+The count-audited inventory retains exact ports but does not resolve their anchors.
+Point ports can resolve through completed points; block ports through bodies;
+emissions require their retained source/target index; restarts require matching
+site, source and target identities. Runtime vectors have already moved to Program
+at final audit, so these checks use retained graph metadata. The tree is clean.
 
-`edges/inventory.rs` supplies named counts used by `edge_room`. Its collector
-returns family-labeled copies of stored edges, retaining duplicates, exact ports,
-conditional routes and Backedge markers without inserting links. Actual family
-counts must match their retained counters. Retained and enumerated totals are
-bounded by MAX_EDGES; shared work charges families, rows (including empty rows)
-and edges. Count/work/edge failures return no inventory and leave ledgers unchanged.
-The checker remains available through moves into Program/proofs; successful
-compilation performs a final count audit after ownership, pending-query gates and
-documentation validation. The audit does not expose a public artifact or enable
-proof results. Inventory-wide port/owner validation and forward indexing remain
-pending; missing links stay unknown and inventory order is not runtime order.
+Dependency-ordered commit plan:
+1. Add bounded port-anchor resolution and endpoint validation after the existing
+   count audit. Test malformed point/block/emission/restart anchors and library checks.
+2. Reject cross-owner edges while preserving conditional/Backedge routes, duplicate
+   entries and unknown normal flow; validate source coverage and atomic work bounds.
+3. Validate specialized stage selectors against their producing metadata where
+   required for port existence; keep selector work separate from reachability.
+4. Run the complete compiler gate and document the next forward-index prerequisite.
 
-Count validation passed three groups and all 1830 then-current library tests;
-`/tmp/meowy-edge-counts-lib.log`. Enumeration passed three core groups and all
-1833 library tests; `/tmp/meowy-edge-inventory-lib.log`. All seven inventory groups
-pass, including source fixtures exercising all 31 families, exact actual capacity,
-empty-row work charging, mixed owners and diagnostic priority;
-`/tmp/meowy-edge-inventory-focused.log`. All ten compiler checks pass: 1837 library/
-913 native tests, formatting, Clippy, build, tooling and conformance
-(10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-edge-inventory-gate.log`. No outstanding failures remain.
-The foundation guide documents the inventory. Documentation validation passed
-1208 local links in 110 Markdown files; `/tmp/meowy-edge-inventory-docs.log`.
-
-Next add separate bounded port existence and owner validation to the inventory.
-Resolve point ports from `points`, block ports from `bodies`, emission ports from
-`emission_sources`/targets, and restart ports from retained site/target metadata.
-Use retained identities rather than spans or enumeration order. Runtime locals and
-functions have moved to Program at the final audit; use Program context if their
-bounds are needed. Do not require a normal port to have reachable incoming flow or
-invent missing edges. Preserve duplicate/conditional/Backedge routes and diagnostic
-priority. Split port resolution, edge-owner validation and forward indexing into
-reviewable prerequisites; verify malformed ports, cross-owner edges, nested targets,
-unknown boundaries and atomic work limits, then run the compiler gate. Propagation,
-restart-header analysis and proof evaluation remain separate.
+No step infers execution order, proves reachability or enables proof outcomes.
+Anchor resolution is implemented with bounded metadata lookups and a separate
+endpoint-validation pass after count auditing. Point stages currently validate
+their base point only; selector validation and edge-owner agreement remain the
+planned later slices. Three anchor groups, formatting and all 1840 library tests
+pass; `/tmp/meowy-port-anchors-lib.log`. No outstanding failures remain.
+Edge-owner agreement is next. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
+`5734e91`) passed 1837 library/913 native tests and conformance
+10 passed/13 unsupported/0 failed in debug/release;
+`/tmp/meowy-edge-inventory-gate.log`.
 
 ### Proof dependency implementation slices
 

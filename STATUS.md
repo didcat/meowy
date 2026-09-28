@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-27. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-28. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -730,7 +730,8 @@ read-only inventory now names all 31 edge families (`2eec4bd`) and checks stored
 counts under bounded work/edge limits (`95fba66`). All ten compiler checks pass:
 1837 library/913 native tests; `/tmp/meowy-edge-inventory-gate.log`. Full-family
 coverage is committed as `42b04e8`; the guide documents inventory limits. Bounded
-port resolution and owner validation are next.
+port validation is in progress; the compiler handoff records anchor resolution,
+edge-owner checks, stage selectors and final verification.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
