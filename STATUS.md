@@ -760,7 +760,11 @@ failures. All ten compiler checks pass: 1881 library/913 native tests;
 `/tmp/meowy-path-effects-gate.log`. The guide documents scope. Bounded indirect-store
 effect snapshots now retain pre-RHS target origins/completeness with separate copy
 limits. Core retargeting/incomplete-origin/aggregate-capacity tests and Clippy pass;
-`/tmp/meowy-indirect-effects-core.log`. Boundary coverage and the full gate are next.
+`/tmp/meowy-indirect-effects-core.log`. Implementation is committed as `7110adb`.
+All ten selected indirect-effect tests pass, including nine snapshot groups;
+`/tmp/meowy-indirect-effects-boundaries.log`. Ordinary callable declarations still
+stop root walks; call-target coverage uses an explicit store-statement seed. The
+full compiler gate and documentation handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

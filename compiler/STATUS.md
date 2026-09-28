@@ -118,13 +118,26 @@ The existing registry validates encountered operation owners. Charge store looku
 and clone work before allocation, including empty snapshots; keep calls Unknown.
 
 Prior compiler gate: all ten checks passed, 1881 library/913 native tests;
-`/tmp/meowy-path-effects-gate.log`. Indirect effect snapshots and copy limits are implemented. All 66 initially
+`/tmp/meowy-path-effects-gate.log`. Indirect effect snapshots and copy limits are committed as `7110adb`. All 66 initially
 selected effect-related tests and all four selected indirect-effect tests (three
 new core groups) pass; `/tmp/meowy-indirect-effects-focused.log`,
 `/tmp/meowy-indirect-effects-core.log`. All-target Clippy passes;
 `/tmp/meowy-indirect-effects-clippy.log`. Pre-RHS retargeting, incomplete origins
 and exact aggregate-copy capacity are covered. Next add boundary coverage and run
 the full compiler gate.
+All ten selected indirect-effect tests pass (nine snapshot groups and one existing
+borrow regression); `/tmp/meowy-indirect-effects-boundaries.log`. Coverage includes
+indexed/aliased pointees, owners/control, empty completeness, duplicate-copy
+accounting, per-snapshot/aggregate caps and early/mid/late work failure.
+Unconditional target exit preserves ordinary E305; stopped RHS remains absent.
+Prior reports, counts and conservative marks survive failures; exact budgets pass.
+
+Known graph gap: ordinary function definitions stop program-entry walks at their
+statement Entry ports, whether leading or interleaved. The call-target store case
+is therefore tested with an explicit walk seeded at the captured store statement;
+the ordinary root report correctly omits it. Calls remain Unknown. This slice does
+not repair declaration connectivity or claim runtime reachability. No test failures
+remain; next run the full compiler gate and update the handoff.
 Propagation, callee summaries, restart headers and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
