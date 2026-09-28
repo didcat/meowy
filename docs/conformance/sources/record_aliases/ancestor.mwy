@@ -1,0 +1,3 @@
+seed:{->n<uint8>:255}
+row:{->part:{->n:3};->bad:seed.n+1}
+<T>:{copy:row.part;-><uint8[copy.n]>}

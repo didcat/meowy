@@ -1,0 +1,2 @@
+row:{->n:3}
+<T>:{copy:row;copy:row;-><uint8[copy.n]>}

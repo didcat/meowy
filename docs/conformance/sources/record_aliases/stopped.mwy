@@ -1,0 +1,8 @@
+d:@"debug"
+row:{->part:{->n:3}}
+d.print("before")
+d.panic("stop")
+copy:row
+<T>:{scratch:copy;part:scratch.part;-><uint8[part.n]>}
+xs<T>:[7]
+d.print("after")

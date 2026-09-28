@@ -1368,6 +1368,58 @@
         "stdout": "data\n9\n6\n"
       },
       "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "record_alias_effectful",
+      "phase": "check",
+      "source": "sources/record_aliases/effectful.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E211"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "record_alias_ancestor",
+      "phase": "check",
+      "source": "sources/record_aliases/ancestor.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E107"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "record_alias_scope",
+      "phase": "check",
+      "source": "sources/record_aliases/scope.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "record_alias_duplicate",
+      "phase": "check",
+      "source": "sources/record_aliases/duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E203"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "record_alias_stopped",
+      "phase": "run",
+      "source": "sources/record_aliases/stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/diagnostic-codes.md#runtime-panics-and-compiler-faults"
     }
   ]
 }

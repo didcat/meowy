@@ -388,8 +388,15 @@ initializer endpoints. No production behavior change was needed. Two new require
 execution cases pass in debug/release (`/tmp/meowy-record-alias-cases.log`): inline
 record/subrecord storage independence and imported required aliases with scoped
 shadowing, function-local roots and once-only initialization. The 127-case catalog
-and 37-document evidence inventory validate. Next add independent rejection cases
-and run the complete gate. Keep pending
+and 37-document evidence inventory validate. Four rejection cases now pin effectful
+ancestor inputs, sibling arithmetic failures, escaped scratch names and duplicate
+scratch declarations; a P006 case pins panic before later record copies. All seven
+new cases pass in debug/release, and the 132-case catalog/coverage checks pass.
+The complete compiler gate is running (`/tmp/meowy-record-alias-gate.log`). The
+preservation audit confirms all 125 prior cases, 155 source assets, 37 reference
+files and exact capability exceptions are unchanged against `fe40677`
+(`/tmp/meowy-record-alias-preservation.log`). Next finish compiler/strict validation
+and the documentation handoff. Keep pending
 proof descriptors, callee summaries and backedge propagation separate; retain
 B001 proof gates and preserve unrelated `docs/programs/hey/` work.
 
