@@ -16,7 +16,7 @@ impl Checker {
         params: &[ast::Param],
         body: &ast::Block,
         span: Span,
-    ) -> Result<()> {
+    ) -> Result<hir::FunctionId> {
         let (args, result) =
             self.construction_root(Span::new(span.start, body.span.start), |checker| {
                 let result = annotation
@@ -46,7 +46,7 @@ impl Checker {
         {
             *target = Some(result);
         }
-        Ok(())
+        Ok(id)
     }
 
     pub(crate) fn forward(&mut self, stmts: &[ast::Stmt], start: usize) -> Result<usize> {
@@ -336,3 +336,6 @@ impl Checker {
         Ok(hir::Expr { kind, ty, span })
     }
 }
+
+#[cfg(test)]
+mod declarations;

@@ -134,6 +134,34 @@ coverage inventory; they are not claimed as finished implementation. The existin
 ordinary function-definition completion repair is the next compiler item below,
 with these conformance/traceability gates required for further changes.
 
+## Current ordinary function-definition completion repair
+
+Dependency-ordered commit plan:
+
+1. Return the exact registered FunctionId from `declare_function`; preserve exported
+   definition behavior and verify nested declarations do not substitute the last ID.
+2. Add a bounded declaration-specific statement endpoint and wire only successful
+   ordinary function Bind checking. Validate current owner/point/function/body
+   identities; preserve separate function bodies, real forward-group barriers and
+   unsupported erased forms. Update structural regressions and atomic-bound tests.
+3. Add source conformance for unused non-returning definitions/interleaved calls and
+   ordinary errors in unused bodies; update documentation/evidence and run the full
+   compiler gate plus strict-gap verification.
+
+Inspection: the ordinary `ExprKind::Function` Bind branch returns empty HIR after
+`declare_function`; block sequences retain the actual statement point but no outgoing
+entry endpoint. `forward()` uses its own checked group with an explicit None barrier.
+Exported definitions share declaration checking and must not gain ordinary endpoints
+incidentally. Function checking restores the outer owner/reach and stores body facts
+under the callee owner. The new endpoint will be structural metadata only, without
+callee expansion, reachability claims, propagation or proof results.
+The identity-return prerequisite passes both focused groups, all 1892 library
+tests and all-target Clippy; `/tmp/meowy-declaration-identities.log`,
+`/tmp/meowy-declaration-id-lib.log`, `/tmp/meowy-declaration-id-clippy.log`.
+Nested definitions preserve their caller's exact ID and failed bodies return no ID.
+No behavior or conformance fixtures changed. Next add the bounded endpoint and
+ordinary-Bind wiring, with structural/diagnostic/budget regressions.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;
