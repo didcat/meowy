@@ -11,9 +11,9 @@ every library operation or every possible program.
 For each case, run checking on its `source` using the catalog's target and the
 bundled foundational library, outside any ancestor application's manifest policy.
 For accepted `run` cases, additionally build and execute the source with default
-runtime settings and compare stdout bytes exactly. Successful checking/execution
-must exit zero. Rejected cases must fail during checking with the indicated
-primary diagnostic code; diagnostic wording, extra explanatory notes and display
+runtime settings and compare stdout bytes exactly. Accepted checking and runs without
+a panic expectation must exit zero. Rejected cases must fail during checking with
+the indicated primary diagnostic code; diagnostic wording, extra explanatory notes and display
 columns are not golden strings. A missing toolchain/target or host failure is an
 infrastructure failure, never a passing rejection test.
 

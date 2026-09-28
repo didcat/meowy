@@ -5,28 +5,26 @@ Updated: 2026-09-28. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
-## Coverage work is the current priority
+## Completed coverage strengthening
 
-The catalog now has 74 source conformance cases: 55 required passes, 19 explicitly
-pinned capability gaps and zero failures in debug/release. Version 2 supports
-validated companion files, staged byte for byte in fresh per-case directories;
-version-1 single-file catalogs remain readable. Ten module cases now pin imports,
-initialization, data/function/type exports and selected rejection diagnostics.
-The prior 64 fixtures, capability exceptions and reference contracts are unchanged.
+The requested coverage work and runtime-panic series are complete. The catalog now
+has 88 source cases: 69 required passes, 19 unchanged pinned capability gaps and
+zero failures in debug/release. Version 3 distinguishes accepted checking followed
+by a defined panic from static rejections and infrastructure failures. Fourteen new
+panic cases pin arithmetic, bounds/capacity, output order and failed module startup.
+Version-1/2 cases remain readable; prior fixture bytes and contracts are unchanged.
 
-The [coverage inventory](docs/conformance/COVERAGE.md) tracks all 37 reference
-files and 33 proof obligations, with explicit remaining gaps. Default checks reject
-reference/evidence drift and stale reports. Root/compiler AGENTS require maintenance;
-compiler instructions also cover companion declarations and isolated staging.
-The [compiler handoff](compiler/STATUS.md#current-companion-file-conformance-slices)
+The [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference documents
+and 33 proof obligations with explicit remaining gaps. Default checks reject drift;
+AGENTS require maintaining source conformance and traceability. The
+[compiler handoff](compiler/STATUS.md#completed-runtime-panic-conformance-series)
 lists the reviewable commits. All ten compiler checks pass: 1890 library/913 native
-and 51 Python test groups; `/tmp/meowy-companion-conformance-gate.log`. Strict mode
-correctly rejects the 19 known gaps. This is not full language qualification.
+and 62 Python test groups; `/tmp/meowy-runtime-panic-conformance-gate.log`.
+Strict mode correctly rejects the 19 known gaps. This is not full language or
+release qualification; unimplemented areas remain visible in the inventory.
 
-Runtime-panic coverage is in progress: version-3 expectations and runner validation
-pass 32 tooling and 30 harness groups, with all 74 prior cases unchanged. Dynamic
-arithmetic, collection and module-initialization panic fixtures are next. Graph implementation remains
-deferred; its declaration-completion handoff is retained below.
+The testing detour is finished. The existing declaration-completion graph repair
+remains the next compiler item, under the stronger coverage gates.
 
 ## Documentation conventions
 
@@ -917,6 +915,11 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
+- Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
+  32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
+  failures in debug/release; `/tmp/meowy-runtime-panic-conformance-gate.log`.
+  Strict mode correctly rejects those gaps; original fixtures/contracts are preserved.
+
 - Companion conformance passed all ten compiler checks: 1890 library/913 native
   tests, 29 tooling and 22 harness groups. Conformance: 55 passed, 19 pinned gaps,
   zero failures in debug/release; `/tmp/meowy-companion-conformance-gate.log`.
@@ -988,15 +991,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-1. Continue coverage with defined runtime-panic expectations in the versioned
-   catalog/runner. Require successful checking, exact stdout prefixes, documented
-   panic codes and expected exits; crashes, timeouts and capability gates must fail.
-   Add harness regressions before source cases for dynamic bounds/arithmetic and
-   module-initialization panics. Update the coverage inventory and run the compiler
-   and strict-gap checks. Compiler implementation below remains deferred while
-   coverage is the active priority.
-
-2. Add transitive proof data/control dependency tracking before enabling outcomes
+1. Add transitive proof data/control dependency tracking before enabling outcomes
    or flags, preserving E225 separation and ordinary typing/ownership checks.
    Expression/read/query points and explicit runtime branch regions now distinguish
    uses within a statement. HIR branches and body facts now retain validated
@@ -1123,5 +1118,5 @@ execution was not part of this documentation edit.
    Required-block descriptors and text/helper execution remain gated. The
    [compiler handoff](compiler/STATUS.md#executable-proof-plan) records the boundaries.
 
-3. Broaden subtraction only after its remaining syntax/representation prerequisites
+2. Broaden subtraction only after its remaining syntax/representation prerequisites
    are established. Do not push, bump versions or claim full release qualification.

@@ -89,50 +89,50 @@ No outstanding test failures remain. Compiler AGENTS now documents
 companion staging and the distinction between missing assets and missing imports.
 Package policy, symlink fixtures, public FFI and full release qualification remain open.
 
-### Current runtime-panic conformance slices
+### Completed runtime-panic conformance series
 
-The user requested finishing the runtime-panic coverage work. Dependency-ordered
-commit plan:
+All planned runtime-panic work is complete: schema, runner, adversarial tests,
+source fixtures, coverage maintenance and final gates. Catalog version 3 preserves
+v1/v2 compatibility and adds accepted run expectations with exact stdout, a
+documented panic code and exit 1. Checking must succeed without diagnostics first.
+Ordinary successful runs still require exit zero and empty stderr.
 
-1. Admit version-3 run expectations with accepted checking, exact stdout, a
-   documented panic code and exit 1. Preserve older catalog forms; test invalid
-   phases, versions, codes and exits, and render panic expectations distinctly.
-2. Require successful checking before execution and recognize one complete
-   bootstrap panic record. Reject wrong output/code/exit, mixed diagnostics,
-   malformed records, signals, crashes and timeouts. Include runner regressions.
-3. Add source conformance for dynamic arithmetic, collection bounds/capacity,
-   ordered side effects, explicit panic and failed module initialization.
-4. Run the full compiler/default gates, strict-gap and preservation checks; update
-   AGENTS, coverage evidence and final handoff. Finish this series without changing
-   compiler semantics or claiming the remaining capability gaps are qualified.
+The runner recognizes one complete UTF-8 bootstrap panic record with a byte-site
+suffix and optional source path. Wrong code/profile/output/exit, malformed ranges,
+mixed diagnostics, compiler faults, signals, timeouts and runtime capability errors
+fail. Human wording and source-location values are not golden strings. Multiline
+panic/cleanup records and unsupported panic families remain explicit qualification
+gaps, not silently accepted results.
 
-Inspection: `run --json` still emits the program's textual panic record on stderr,
-with exit 1 and stdout produced before failure. Current ordinary panic records are
-single-line `panic[P...]: ... at [file] bytes start..end`; fault/signal exits differ.
-The conformance runner currently requires zero exit and empty stderr for every run.
-New expectations will preserve that success contract and add an explicit panic form.
-Initial catalog remains 74 cases: 55 passes, 19 pinned gaps, zero failures.
-Version-3 schema admission and distinct report rendering now pass 32 tooling groups.
-The tests reject pre-v3 panic forms, invalid codes/exits, ambiguous expectation
-shapes and noninteger versions. Existing metadata/coverage validation passes.
-Schema support is committed as `e927e30`. Version-3 runner integration now passes
-30 harness groups. It requires clean checking, exact stdout/exit and one complete
-UTF-8 panic record, rejecting wrong codes, malformed sites, mixed diagnostics,
-signals, timeouts and capability errors. All 74 existing cases remain 55 passed,
-19 pinned gaps, zero failures; `/tmp/meowy-panic-runner-baseline.log`.
-Runner support is committed as `4ba13f4`. The first four source panic fixtures
-pass in both profiles: ordered addition, unsigned subtraction, signed multiplication
-and unary-negation overflow. Current result: 59 required passes, 19 pinned gaps,
-zero failures; `/tmp/meowy-panic-overflow.log`. Division by zero, signed-minimum division and remainder by zero also pass in
-both profiles. Current result: 62 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-panic-division.log`. Five collection cases now pass: initialized-length bounds, negative/wide indices,
-early write-path failure and append-capacity failure after item effects. Current
-result: 67 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-panic-collections.log`. Explicit panic aliases and module-initialization failure also pass, including the
-absence of later module/entry output. All 88 cases now give 69 required passes,
-19 unchanged pinned gaps and zero failures; `/tmp/meowy-panic-startup.log`.
-All planned source fixtures are complete. Full compiler, strict-gap, preservation
-and documentation checks remain before the final handoff.
+Fourteen new required cases cover ordered addition, unsigned subtraction, signed
+multiplication/negation, zero divisors, signed-minimum division, initialized-length
+bounds, negative/wide indices, stopped nested writes, capacity checks after item
+effects, explicit panic aliases and module initialization stopping later modules
+and entry code. All 74 prior case records, entry/companion bytes, reference contracts,
+compiler implementation files and capability exceptions are unchanged.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Version-3 panic expectation schema | `e927e30` |
+| Strict runtime result recognition | `4ba13f4` |
+| Overflow and operand effect order | `360fbea` |
+| Division/remainder boundaries | `cac274c` |
+| Collection bounds/capacity and stopped effects | `8760c69` |
+| Explicit and module-initialization panics | `6f9d3cd` |
+
+All ten compiler checks pass: 1890 library/913 native tests, 32 tooling and 30
+harness groups, formatting, Clippy, build, metadata/coverage and execution.
+Conformance: 88 cases, 69 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release; `/tmp/meowy-runtime-panic-conformance-gate.log`.
+Strict mode correctly exits 1 for those gaps; `/tmp/meowy-runtime-panic-strict.log`.
+Preservation audit: `/tmp/meowy-panic-preservation.log`. Final default checks also
+pass; `/tmp/meowy-runtime-panic-final-docs.log`. No outstanding test failures remain. Compiler AGENTS and the coverage inventory describe the new requirements.
+
+The requested testing-strengthening work is complete. Remaining language/library,
+multiline panic, task/cleanup and proof qualification gaps stay visible in the
+coverage inventory; they are not claimed as finished implementation. The existing
+ordinary function-definition completion repair is the next compiler item below,
+with these conformance/traceability gates required for further changes.
 
 ## Documentation conventions and layout
 
@@ -1602,6 +1602,12 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
+- Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
+  32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
+  failures in debug/release; `/tmp/meowy-runtime-panic-conformance-gate.log`.
+  Strict mode correctly rejects known gaps; `/tmp/meowy-runtime-panic-strict.log`.
+  Prior fixtures, compiler source and reference contracts are unchanged.
+
 - Companion conformance: all ten compiler checks pass, including 1890 library/913
   native tests, 29 tooling and 22 harness groups. Conformance: 55 passed, 19 pinned
   gaps, zero failures in both profiles; `/tmp/meowy-companion-conformance-gate.log`.
@@ -1705,15 +1711,7 @@ Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. No outstanding failures remain.
 
-1. Continue coverage with defined runtime-panic expectations in the versioned
-   catalog/runner. Require successful checking, exact stdout prefixes, documented
-   panic codes and expected exits; crashes, timeouts and capability gates must fail.
-   Add harness regressions before source cases for dynamic bounds/arithmetic and
-   module-initialization panics. Update the coverage inventory and run the compiler
-   and strict-gap checks. Compiler implementation below remains deferred while
-   coverage is the active priority.
-
-2. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
+1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
    Emitted-slot aliases share marks through `Alias::root`; immutable scalar
    references retain known owners and indirect stores propagate marks or gate
@@ -2203,7 +2201,7 @@ subtraction retains its documented limits. No outstanding failures remain.
    payload yet. Required-block descriptor admission and text/helper execution stay
    gated until their execution/accounting foundations exist.
 
-3. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
+2. Keep mixed union/subtraction precedence and unsupported literal/base subtraction
    parked until their language/representation prerequisites are established. Keep
    first-class metatypes, runtime type containers and type-producing helpers separate.
 
