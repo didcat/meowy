@@ -44,7 +44,10 @@ result: 27 required passes, 14 pinned gaps, zero failures;
 `/tmp/meowy-conformance-ownership.log`. Six block/control fixtures also pass, including emission continuation, restart and
 write invalidation, short-circuit effects and conditional slots: 33 required passes,
 14 pinned gaps, zero failures; `/tmp/meowy-conformance-blocks.log`.
-Next add proof staging and qualification cases, then the documentation inventory.
+Six proof-staging cases pass: revision execution, argument/type diagnostics,
+descriptor escape and ordinary type/borrow error priority. Current result:
+39 required passes, 14 pinned gaps, zero failures;
+`/tmp/meowy-conformance-proof-staging.log`. Next add outcome obligations and traceability.
 
 ## Documentation conventions and layout
 

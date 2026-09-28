@@ -1,0 +1,6 @@
+p:@"proof"
+r:p.can_copy<uint32>()
+x:=7
+pointer:&x
+x=8
+value:*pointer

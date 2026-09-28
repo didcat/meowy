@@ -1,0 +1,3 @@
+d:@"debug"
+p:@"proof"
+d.print(p.revision)

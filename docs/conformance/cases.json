@@ -467,6 +467,66 @@
         "stdout": "true\n"
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "proof_revision",
+      "phase": "run",
+      "source": "sources/proof_revision.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n"
+      },
+      "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
+    },
+    {
+      "id": "proof_query_arity",
+      "phase": "check",
+      "source": "sources/proof_query_arity.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/stdlib/proof.md#type-capabilities-and-ownership-probes"
+    },
+    {
+      "id": "proof_query_unknown_type",
+      "phase": "check",
+      "source": "sources/proof_query_unknown_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E202"
+      },
+      "reference": "../reference/stdlib/proof.md#type-capabilities-and-ownership-probes"
+    },
+    {
+      "id": "proof_descriptor_escape",
+      "phase": "check",
+      "source": "sources/proof_descriptor_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E223"
+      },
+      "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
+    },
+    {
+      "id": "proof_ordinary_type_error",
+      "phase": "check",
+      "source": "sources/proof_ordinary_type_error.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/proof.md#phase-ordering-and-circularity"
+    },
+    {
+      "id": "proof_ordinary_borrow_error",
+      "phase": "check",
+      "source": "sources/proof_ordinary_borrow_error.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/stdlib/proof.md#phase-ordering-and-circularity"
     }
   ]
 }
