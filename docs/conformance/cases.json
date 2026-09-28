@@ -527,6 +527,54 @@
         "code": "E302"
       },
       "reference": "../reference/stdlib/proof.md#phase-ordering-and-circularity"
+    },
+    {
+      "id": "proof_copy_scalar",
+      "phase": "check",
+      "source": "sources/proof_copy_scalar.mwy",
+      "expected": {
+        "accepted": true
+      },
+      "reference": "../reference/stdlib/proof.md#qualification-obligations"
+    },
+    {
+      "id": "proof_copy_exclusive",
+      "phase": "check",
+      "source": "sources/proof_copy_exclusive.mwy",
+      "expected": {
+        "accepted": true
+      },
+      "reference": "../reference/stdlib/proof.md#qualification-obligations"
+    },
+    {
+      "id": "proof_assert_never",
+      "phase": "check",
+      "source": "sources/proof_assert_never.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E224"
+      },
+      "reference": "../reference/stdlib/proof.md#qualification-obligations"
+    },
+    {
+      "id": "proof_skipped_assert",
+      "phase": "check",
+      "source": "sources/proof_skipped_assert.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E224"
+      },
+      "reference": "../reference/stdlib/proof.md#qualification-obligations"
+    },
+    {
+      "id": "proof_dependent_type",
+      "phase": "check",
+      "source": "sources/proof_dependent_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E225"
+      },
+      "reference": "../reference/stdlib/proof.md#qualification-obligations"
     }
   ]
 }

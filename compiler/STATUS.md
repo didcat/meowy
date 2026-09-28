@@ -47,7 +47,10 @@ write invalidation, short-circuit effects and conditional slots: 33 required pas
 Six proof-staging cases pass: revision execution, argument/type diagnostics,
 descriptor escape and ordinary type/borrow error priority. Current result:
 39 required passes, 14 pinned gaps, zero failures;
-`/tmp/meowy-conformance-proof-staging.log`. Next add outcome obligations and traceability.
+`/tmp/meowy-conformance-proof-staging.log`. Five proof-outcome fixtures retain their reference acceptance/E224/E225 outcomes;
+current early blockers are pinned explicitly. Full catalog: 39 required passes,
+19 pinned gaps, zero failures; `/tmp/meowy-conformance-proof-outcomes.log`.
+Next add required-evaluation boundaries and the documentation/proof-obligation map.
 
 ## Documentation conventions and layout
 

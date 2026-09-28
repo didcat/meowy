@@ -1,0 +1,3 @@
+p:@"proof"
+r:p.can_copy<uint32>()
+p.expect<p.Always>(r)

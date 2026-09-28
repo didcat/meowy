@@ -1,0 +1,2 @@
+p:@"proof"
+f:(){r:p.can_copy<&!int32>();p.assert(r)}
