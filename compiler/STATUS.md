@@ -120,11 +120,17 @@ without evaluating dynamic indices or interpreting Checked routes. Only encounte
 Operation ports receive effects, preserving stopped address/RHS boundaries.
 
 Prior compiler gate: all ten checks passed, 1874 library/913 native tests;
-`/tmp/meowy-operation-effects-gate.log`. Owned Path effects and copy bounds are implemented. All 59 selected effect-related
+`/tmp/meowy-operation-effects-gate.log`. Owned Path effects and copy bounds are committed as `dd532e3`. All 59 selected effect-related
 tests pass; `/tmp/meowy-path-effects-focused.log`. Both core path groups and
 all-target Clippy pass; `/tmp/meowy-path-effects-core.log`,
 `/tmp/meowy-path-effects-clippy.log`. Existing direct effects and explicit Unknown
-indirect/call effects remain intact. Next add boundary coverage and run the gate.
+indirect/call effects remain intact. All seven path-effect groups now pass;
+`/tmp/meowy-path-effects-boundaries.log`. They cover aliases, seeded control,
+independent owners, stopped index/RHS inputs, duplicate-copy accounting, empty or
+foreign metadata, seeded per-path capacity and aggregate/early/mid/late budget
+failure. Prior reports, graph counts and nonempty conservative marks are preserved;
+exact budgets succeed. No outstanding focused failures remain. Next run the full
+compiler gate and finish documentation.
 Indirect stores/callee effects, propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices

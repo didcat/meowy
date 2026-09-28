@@ -755,8 +755,11 @@ native tests; `/tmp/meowy-operation-effects-gate.log`. Focused coverage includes
 identity, stopped RHS, aliases/control and atomic capacity/work limits. The guide
 documents scope. Owned field/index write effects now retain ordered path metadata
 with per-path and aggregate copy budgets. Core path tests, 59 effect-related tests
-and Clippy pass; `/tmp/meowy-path-effects-focused.log`. Boundary coverage and the
-full compiler gate are next.
+and Clippy pass; `/tmp/meowy-path-effects-focused.log`. The implementation is
+committed as `dd532e3`. All seven path-effect groups pass, including aliases,
+stopped inputs, duplicate-copy accounting and atomic storage/work failures;
+`/tmp/meowy-path-effects-boundaries.log`. The full compiler gate and documentation
+handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
