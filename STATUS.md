@@ -748,7 +748,11 @@ program/function entry reports (`eaa1c2c`) retain one validated index with exact
 roots and expected owners, including unused functions. The retained-item allowance
 (`80feac6`) bounds growth across all reports. All ten compiler checks pass:
 1869 library/913 native tests; `/tmp/meowy-entry-reports-gate.log`. The guide
-documents scope. Direct storage-operation effect integration is next.
+documents scope. The validated operation registry is retained (`bbed8d8`), and
+encountered Operation ports now receive bounded direct Bind/Write metadata or
+explicit Unknown effects. All 1874 library tests and Clippy pass; the four focused
+groups cover identity, stopped RHS, aliases/control and atomic capacity/work limits.
+Full compiler validation and the documentation handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

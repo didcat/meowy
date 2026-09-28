@@ -7,6 +7,7 @@ pub(crate) const MAX_REPORT_ITEMS: usize = MAX_EDGES * 3 + MAX_ENTRIES * 2;
 pub(crate) struct Reports {
     pub(crate) index: ForwardIndex,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
+    pub(crate) effects: super::effects::Effects,
     pub(self) items: usize,
 }
 
@@ -34,6 +35,7 @@ impl Checker {
         let mut reports = Reports {
             index: self.forward_index(span)?,
             entries: BTreeMap::new(),
+            effects: BTreeMap::new(),
             items: 0,
         };
         let entries = std::iter::once((None, program.body.id)).chain(
@@ -64,6 +66,7 @@ impl Checker {
             reports.items += walk.len();
             reports.entries.insert(owner, (block, walk));
         }
+        reports.effects = self.operation_effects(&reports, span)?;
         Ok(reports)
     }
 }

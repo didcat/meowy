@@ -121,7 +121,15 @@ results. Other operations must remain explicitly unknown, not pure.
 Prior compiler gate passed all ten checks (1869 library/913 native tests);
 `/tmp/meowy-entry-reports-gate.log`. The validated registry is now retained without another scan. All 74 graph groups
 pass, including mixed owners and preserved exact operation IDs;
-`/tmp/meowy-effect-registry.log`. Next add bounded encountered-operation effects.
+`/tmp/meowy-effect-registry.log`. Registry retention is committed as `bbed8d8`. Encountered-operation mapping passes
+all 1874 library tests and Clippy; `/tmp/meowy-operation-effects-lib.log`,
+`/tmp/meowy-operation-effects-clippy.log`. All four tightened effect groups pass;
+`/tmp/meowy-operation-effects-focused.log`. Coverage preserves alias/storage/RHS/
+control fields, excludes stopped writes, explicitly checks path/indirect Unknown
+entries, rejects missing/foreign owners, deduplicates ports and retains absent RHS
+metadata. Capacity/late work failures preserve reports, graph counts and nonempty
+conservative marks; exact budgets succeed. No outstanding failures remain.
+Next run the full compiler gate and finish documentation.
 
 ### Proof dependency implementation slices
 
