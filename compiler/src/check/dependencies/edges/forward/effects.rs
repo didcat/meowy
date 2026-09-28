@@ -1,3 +1,5 @@
+mod calls;
+
 use super::{entries::Reports, *};
 use crate::check::dependencies::{OperationKind, Origins, PathStep, references::MAX_ROOTS};
 
@@ -46,6 +48,7 @@ impl Checker {
         if !self.flow.spend(reports.entries.len() + 1) {
             return Err(budget());
         }
+        let calls = self.call_effect_index(span)?;
         let mut effects = BTreeMap::new();
         for (&owner, (_, walk)) in &reports.entries {
             for &port in &walk.ports {
@@ -60,6 +63,8 @@ impl Checker {
                         + self.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.paths.len().checked_ilog2().unwrap_or(0) as usize
                         + self.stores.len().checked_ilog2().unwrap_or(0) as usize
+                        + calls.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                         + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
                         + 7,
                 ) {
@@ -126,6 +131,11 @@ impl Checker {
                         origins: op.origins.clone(),
                         control: op.control,
                     }
+                } else if let Some(site) = calls.get(&id) {
+                    if self.invocations[site].owner != owner {
+                        return Err(invalid());
+                    }
+                    Effect::Unknown
                 } else {
                     Effect::Unknown
                 };

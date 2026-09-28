@@ -370,16 +370,38 @@ outstanding failure. Preservation against `2d7e8c0` confirms all 132 prior cases
 (`/tmp/meowy-pending-preservation.log`). AGENTS already covers the required evidence
 workflow; no rule update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-Next retain direct-call metadata in entry operation-effect reports before attempting
-callee summaries. `src/check/dependencies/invocations.rs` already has exact call,
-callee, argument-root, owner/control and return-boundary identities;
-`src/check/dependencies/edges/forward/effects.rs` currently reports these operations
-as undifferentiated Unknown. Plan bounded lookup/capture and report integration as
-separate reviewable slices, with call ordering, alias/recursion, stopped-argument,
-owner and budget regressions. Preserve opaque callee effects and conditional Returned
-edges; do not enter bodies or infer purity/termination. Add source coverage where
-useful and run compiler/strict gates. Backedge propagation, callee summaries and
-proof outcomes remain separate; `queries::finish` stays B001-gated.
+## Direct-call effect metadata in progress
+
+Invocations retain exact point, CallId, FunctionId, ordered argument roots, owner,
+control and conditional-return metadata. Effect reports currently reduce calls to
+Unknown. Reports are built after function/local HIR moves into the program, so
+callee validation must use the independently registered report entries and bodies,
+not the emptied checker function vector. Calls must not traverse those entries.
+
+Dependency-ordered commit plan:
+
+1. Add a bounded point-to-CallId lookup with registry/point/owner validation, use it
+   during report collection while retaining Unknown effects, and test identities,
+   duplicate/malformed entries and capacity/work limits.
+2. Retain typed direct-call records for operations reached by the structural walk.
+   Validate callee/body and argument identities, bound copied arguments and preserve
+   caller/control/conditional-return facts. Keep callee effects opaque; add focused
+   order, recursion/alias, stopped-input, owner and budget regressions.
+3. Add independently useful source execution/rejection coverage, update evidence
+   inventory, and run compiler/strict gates plus preservation against `f9848fd`.
+4. Update root/compiler/foundation handoffs and run documentation checks.
+
+The source audit covered invocation registration, effect/entry reports, operation
+port ownership and HIR transfer. Existing edges and their conditional Returned
+labels remain authoritative; no purity, termination, callee summary, backedge
+propagation or proof result is added. Slice 1 now builds a bounded lookup from
+actual operation points to CallIds and validates registry keys, checked points,
+owners and spans before use. Reports still classify calls as Unknown. Three index
+regressions and four existing effect regression groups pass
+(`/tmp/meowy-call-index.log`, `/tmp/meowy-call-index-effects.log`); formatting and
+all-target Clippy pass (`/tmp/meowy-call-index-clippy.log`). Next implement typed
+call capture and report integration. Preserve unrelated
+`docs/programs/hey/` work and the exact existing capability exceptions.
 
 ## Documentation conventions and layout
 
