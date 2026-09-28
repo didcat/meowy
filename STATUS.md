@@ -753,7 +753,10 @@ encountered Operation ports now receive bounded direct Bind/Write metadata or
 explicit Unknown effects (`9f83e01`). All ten compiler checks pass: 1874 library/913
 native tests; `/tmp/meowy-operation-effects-gate.log`. Focused coverage includes
 identity, stopped RHS, aliases/control and atomic capacity/work limits. The guide
-documents scope; owned field/index write effects are next.
+documents scope. Owned field/index write effects now retain ordered path metadata
+with per-path and aggregate copy budgets. Core path tests, 59 effect-related tests
+and Clippy pass; `/tmp/meowy-path-effects-focused.log`. Boundary coverage and the
+full compiler gate are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting

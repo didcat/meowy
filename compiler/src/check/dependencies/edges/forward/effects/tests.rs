@@ -65,7 +65,7 @@ pub(crate) fn operation_effects_preserve_alias_storage_reference_cells_and_contr
 }
 
 #[test]
-pub(crate) fn operation_effects_exclude_stopped_writes_and_keep_other_stores_unknown() {
+pub(crate) fn operation_effects_exclude_stopped_writes_and_keep_indirect_stores_unknown() {
     let source = "d:@\"debug\";stop<never>:(){d.panic(\"stop\")};x:=1;x=stop()";
     crate::compile(source).unwrap();
     let (checker, reports) = checked(source, false);
@@ -81,7 +81,10 @@ pub(crate) fn operation_effects_exclude_stopped_writes_and_keep_other_stores_unk
         false,
     );
     assert!(!checker.paths.is_empty() && !checker.stores.is_empty());
-    for id in checker.paths.keys().chain(checker.stores.keys()) {
+    for id in checker.paths.keys() {
+        assert!(matches!(reports.effects[id].1, Effect::Path { .. }));
+    }
+    for id in checker.stores.keys() {
         assert_eq!(reports.effects[id].1, Effect::Unknown);
     }
     assert!(!reports.effects.values().any(|(_, effect)| matches!(
@@ -165,7 +168,7 @@ pub(crate) fn operation_effects_fail_atomically_at_capacity_and_late_work_limits
     for limit in [0, expected.len() - 1] {
         assert!(
             checker
-                .operation_effects_limited(&reports, Span::default(), limit)
+                .operation_effects_limited(&reports, Span::default(), limit, MAX_EDGES)
                 .unwrap_err()
                 .message
                 .contains("budget")
@@ -173,7 +176,7 @@ pub(crate) fn operation_effects_fail_atomically_at_capacity_and_late_work_limits
     }
     assert_eq!(
         checker
-            .operation_effects_limited(&reports, Span::default(), expected.len())
+            .operation_effects_limited(&reports, Span::default(), expected.len(), MAX_EDGES)
             .unwrap(),
         expected
     );

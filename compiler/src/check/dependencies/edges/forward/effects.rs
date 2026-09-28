@@ -1,13 +1,20 @@
 use super::{entries::Reports, *};
-use crate::check::dependencies::OperationKind;
+use crate::check::dependencies::{OperationKind, PathStep};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Effect {
     Storage {
         kind: OperationKind,
         local: crate::hir::LocalId,
         storage: crate::hir::LocalId,
         input: Option<PointId>,
+        control: bool,
+    },
+    Path {
+        local: crate::hir::LocalId,
+        storage: crate::hir::LocalId,
+        steps: Vec<PathStep>,
+        input: PointId,
         control: bool,
     },
     Unknown,
@@ -17,7 +24,7 @@ pub(crate) type Effects = BTreeMap<PointId, (usize, Effect)>;
 
 impl Checker {
     pub(super) fn operation_effects(&mut self, reports: &Reports, span: Span) -> Result<Effects> {
-        self.operation_effects_limited(reports, span, MAX_EDGES)
+        self.operation_effects_limited(reports, span, MAX_EDGES, MAX_EDGES)
     }
 
     pub(self) fn operation_effects_limited(
@@ -25,6 +32,7 @@ impl Checker {
         reports: &Reports,
         span: Span,
         limit: usize,
+        mut steps: usize,
     ) -> Result<Effects> {
         let budget = || Diagnostic::unsupported("proof operation-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof operation-effect owner mismatch", span);
@@ -43,8 +51,9 @@ impl Checker {
                 if !self.flow.spend(
                     reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.operations.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.paths.len().checked_ilog2().unwrap_or(0) as usize
                         + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
-                        + 5,
+                        + 6,
                 ) {
                     return Err(budget());
                 }
@@ -68,6 +77,30 @@ impl Checker {
                         input: op.input,
                         control: op.control,
                     }
+                } else if let Some(op) = self.paths.get(&id) {
+                    if op.owner != owner {
+                        return Err(invalid());
+                    }
+                    if op.steps.is_empty() {
+                        return Err(Diagnostic::unsupported(
+                            "proof path-effect identity mismatch",
+                            span,
+                        ));
+                    }
+                    if op.steps.len() > crate::list::MAX_WRITE_PATH
+                        || op.steps.len() > steps
+                        || !self.flow.spend(op.steps.len() + 1)
+                    {
+                        return Err(budget());
+                    }
+                    steps -= op.steps.len();
+                    Effect::Path {
+                        local: op.local,
+                        storage: op.storage,
+                        steps: op.steps.clone(),
+                        input: op.input,
+                        control: op.control,
+                    }
                 } else {
                     Effect::Unknown
                 };
@@ -80,3 +113,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod paths;

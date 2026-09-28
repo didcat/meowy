@@ -99,52 +99,33 @@ partial package milestone, not revision 1 qualification. Only module/revision
 metadata and descriptor type aliases are implemented so far. Pending copy-query metadata is retained, but no evaluated result or observation
 outcome is constructed. The reference remains authoritative.
 
-### Current direct storage-effect slices
+### Current owned path-effect slices
 
-The dependency-ordered implementation series is complete:
+Dependency-ordered commit plan:
+1. Add owned Path effects using captured PathOperation/PathStep metadata. Bound
+   each copied path and aggregate steps before allocation; retain owner checks,
+   duplicate handling and explicit Unknown for indirect stores/calls. Include core
+   ordered-metadata and aggregate-capacity regressions.
+2. Cover aliases, seeded control, independent owners, stopped address/RHS, duplicate
+   charging, invalid metadata and atomic work/storage exhaustion.
+3. Run the full compiler gate and document scope and continuation work.
 
-1. Retain the validated operation-owner registry in ForwardIndex (`bbed8d8`).
-2. Attach bounded direct storage effects to entry reports (`9f83e01`).
-3. Compiler gate and documentation handoff: complete.
+Inspection: PathOperation already owns validated local/canonical storage IDs,
+ordered Field/Index steps, exact index point/capacity/span, RHS and control. Reuse
+PathStep directly; copying it needs a separate aggregate budget because Effect is
+currently fixed-size. The per-path cap is MAX_WRITE_PATH (256), and MAX_EDGES will
+bound total copied steps; each captured step already contributes at least one edge.
+The effect pass will charge the path lookup and step copies before allocation,
+without evaluating dynamic indices or interpreting Checked routes. Only encountered
+Operation ports receive effects, preserving stopped address/RHS boundaries.
 
-`edges/forward/effects.rs` maps encountered Operation point IDs to owner/effect pairs.
-Direct Bind/Write effects copy kind, local/canonical storage IDs, optional RHS root
-and control metadata. Reference cells remain distinct from pointees, aliases keep
-canonical emitted-slot storage and absent RHS roots stay absent. Other producers
-are explicitly Unknown, including paths, indirect stores and calls; unknown is
-not pure. Non-encountered operations, including writes after stopped RHS evaluation,
-are excluded. Neither encounter nor effect metadata establishes runtime reachability.
-
-ForwardIndex retains the validated producer-owner registry without another scan.
-Effect lookup uses that registry and the direct-operation map, charging shared work
-for entry/port visits and bounded lookups before growth. Duplicate ports retain one
-entry; foreign/missing owners reject. Effects have their own MAX_EDGES capacity
-(262,144), separate from walk-item limits. No partial effect map or report collection
-is returned on failure. Existing graph ledgers and conservative marks remain intact.
-Semantic/query/doc gates still precede collection; proof results remain gated.
-
-All 74 then-current graph groups and four focused effect groups pass;
-`/tmp/meowy-effect-registry.log`, `/tmp/meowy-operation-effects-focused.log`.
-All 1874 library tests and all-target Clippy pass;
-`/tmp/meowy-operation-effects-lib.log`, `/tmp/meowy-operation-effects-clippy.log`.
-Coverage includes aliases/reference cells, seeded control, absent RHS, stopped
-writes, explicit unknown path/indirect stores, duplicates, owner rejection and
-atomic capacity/late work exhaustion with exact-budget success. All ten compiler
-checks pass: 1874 library/913 native tests, formatting, Clippy, build, tooling and
-conformance (10 passed/13 unsupported/0 failed in debug/release);
-`/tmp/meowy-operation-effects-gate.log`. No outstanding failures remain.
-The foundation guide documents direct-effect scope and limits. All four default
-checks pass, including 1208 local links in 110 Markdown files;
-`/tmp/meowy-operation-effects-docs.log`.
-
-Next extend this bounded effect view to owned field/index writes using captured
-`dependencies/path_operations.rs` metadata. Preserve local/canonical storage, ordered
-Field/Index steps, index point/capacity/span, RHS and control. Charge copied steps
-and aggregate path storage before allocation; keep runtime index values and bounds
-success unknown. Reuse operation-owner validation and do not scan all paths per
-port. Split representation/bounds from integration where useful; test nested fields,
-dynamic indices, aliases, stopped address/RHS and atomic exhaustion before the full
-gate. Indirect stores/callee effects, propagation and proof results remain separate.
+Prior compiler gate: all ten checks passed, 1874 library/913 native tests;
+`/tmp/meowy-operation-effects-gate.log`. Owned Path effects and copy bounds are implemented. All 59 selected effect-related
+tests pass; `/tmp/meowy-path-effects-focused.log`. Both core path groups and
+all-target Clippy pass; `/tmp/meowy-path-effects-core.log`,
+`/tmp/meowy-path-effects-clippy.log`. Existing direct effects and explicit Unknown
+indirect/call effects remain intact. Next add boundary coverage and run the gate.
+Indirect stores/callee effects, propagation and proof outcomes remain separate.
 
 ### Proof dependency implementation slices
 
