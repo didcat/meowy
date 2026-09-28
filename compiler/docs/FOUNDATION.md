@@ -375,9 +375,19 @@ is idempotent, while conflicting identities or exhausted budgets publish no new
 endpoint. Definitions do not traverse or execute their bodies: an unused `never`
 body does not stop declaration completion, while a call returning `never` still
 lacks normal continuation. Program-entry store walks now cross these definitions.
-Forward groups retain explicit barriers. Function aliases, exported definitions,
-type/meta declarations and other erased forms retain their existing metadata;
-there is no general bypass for empty HIR statements. Completion edges are structural
+Immutable, unannotated bindings of resolved function items and the current
+foundation modules/callable items also retain bounded statement-completion edges.
+Classification uses the resolved value, which is declared unchanged; publication
+follows successful declaration, preserving duplicate-name and lookup errors.
+Function aliases accept registered slots whose bodies are still being checked,
+including self/forward aliases. They never traverse the target body or imply that
+a later call returns. Foundation classification includes module aliases,
+print/panic, string-copy, copy-query and bit-operation identities; it does not
+admit execution of unsupported calls or proof queries.
+Forward groups retain explicit barriers. Exported definitions, type/meta/static,
+record, file-module, scoped-control and pending-descriptor bindings retain their
+existing metadata. Heap handles keep their separate runtime value path. There is
+no general bypass for empty HIR statements. Completion edges are structural
 connectivity, not evidence that a runtime path is reached.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.

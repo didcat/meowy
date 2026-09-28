@@ -165,59 +165,56 @@ the unchanged gaps; `/tmp/meowy-function-declarations-strict.log`. All previous 
 source cases/assets and reference contracts are preserved. Final default checks pass;
 `/tmp/meowy-function-declarations-docs.log`. No test failures remain.
 
-Next inspect the resolved immutable identity-binding branch in `statements.rs`.
-Function aliases and foundational module aliases still stop structural walks at
-missing statement endpoints. Add only declaration-specific completion for exactly
-classified successful identity forms, accounting for aliases of a function whose
-body is still being checked. Do not reuse the completed-definition body requirement
-for those aliases, infer runtime effects from absence, or bypass every empty HIR
-statement. Preserve forward-group barriers, type/required-evaluation boundaries,
-owners and ordinary diagnostics. Add focused scope/error/budget tests and source
-fixtures, then run compiler and strict-gap gates. Proof propagation/outcomes remain
-gated; call effects and broader contextual graph coverage remain separate.
+Selected immutable aliases now have their own completion metadata, described below.
+Exported definitions and forward-group barriers remain separate.
 
 ## Current immutable identity-binding completion
 
-Dependency-ordered commit plan:
+The dependency-ordered series is complete:
 
-1. Reuse bounded endpoint publication without changing ordinary definition identity
-   validation, diagnostics or work charges; retain existing declaration regressions.
-2. Classify resolved Function items and the current foundation modules/callable items.
-   Publish completion only after successful immutable, unannotated declaration.
-   Accept registered None function slots for self/forward aliases; never enter bodies.
-   Exclude type/meta/static/record/file-module/control/pending/Heap forms and preserve
-   ordinary diagnostics. Include structural, shadowing, identity and budget tests.
-3. Add source conformance for self/forward aliases, lexical foundation aliases
-   with shadowing and duplicate-name rejection,
-   update the checked coverage map/guide and run compiler, strict-gap and preservation
-   checks before committing the final handoff.
+| Reviewable slice | Commit |
+| --- | --- |
+| Share bounded endpoint publication without changing definition validation | `29db896` |
+| Classify and connect selected immutable identities with focused regressions | `6387133` |
+| Pin self/forward aliases, lexical shadowing and duplicate-name conformance | `cabfb71` |
 
-Inspection: `binding_symbol` resolves actual Values and performs type-root accounting.
-The successful binding branch currently erases Function, Module, callable and other
-identity forms together. Classification must happen after resolution, with the Value
-still passed unchanged to `declare`; publication follows it so E203 remains first.
-Function slots exist before their bodies are checked, so the completed-definition
-body/foreign-owner checks cannot be reused for aliases. The selected classes add
-structural Entry-to-Normal edges only; calls retain their own effects/return gates.
-Baseline is clean: 1898 library/913 native tests and 90 conformance cases (71 passed,
-19 pinned gaps, zero failures). The publication extraction passes all six existing
-declaration endpoint groups, including atomic edge/work exhaustion and conflicting
-metadata; `/tmp/meowy-identity-publication.log`. Validation/work charges and ordinary
-function diagnostics are unchanged. The extraction is committed as `29db896`.
-Selected identity classification and wiring pass all 1904 library tests;
-`/tmp/meowy-identity-endpoints-lib.log`. Six new groups cover resolution, self/forward
-slots, excluded forms, original errors, identity validation and exact publication
-budgets. All-target Clippy passes after a condition-layout cleanup;
-`/tmp/meowy-identity-endpoints-clippy.log`. Next add source conformance and finish
-the full gate; no outstanding focused test failures remain. The implementation is
-committed as `6387133`. Four required source fixtures cover self/forward alias
-execution, lexical shadowing and E203. All ten compiler checks pass: 1904 library,
-913 native, 32 tooling and 30 harness groups; `/tmp/meowy-identity-bindings-gate.log`.
-Conformance has 94 cases: 75 passes, 19 unchanged pinned gaps and zero failures in
-debug/release. All previous 90 case records, 107 source assets, 37 reference files
-and capability exceptions are unchanged; `/tmp/meowy-identity-preservation.log`.
-Strict mode correctly exits 1 for only those gaps;
-`/tmp/meowy-identity-bindings-strict.log`. The guide and final handoff remain.
+`edges/identities.rs` classifies resolved Function items, the current foundation
+modules and print/panic/string-copy/copy-query/bit-operation identities. The original
+Value is declared unchanged. Statement Entry-to-Normal publication follows successful
+immutable, unannotated declaration, so lookup/duplicate-name errors stay first.
+Function slots may be registered but incomplete during self/forward checking;
+completed slots must retain the exact ID. Function bodies are never traversed by
+an alias endpoint. Work and aggregate edge limits precede publication; replay is
+idempotent and failures add no endpoint. Calls retain their effects and return gates.
+
+Type/meta/static/record/file-module/control/pending forms are excluded. Heap handles
+retain their runtime value path; forward groups keep explicit barriers. Required
+roots, ownership, ordinary errors and unsupported-call/proof gates remain unchanged.
+Six structural groups cover resolution, self/forward slots, exclusions, errors,
+identity validation and exact publication budgets. The four source cases exercise
+observable language behavior independently of those structural tests.
+
+All ten compiler checks pass: 1904 library, 913 native, 32 tooling and 30 harness
+groups, formatting, Clippy, build, metadata/coverage and conformance;
+`/tmp/meowy-identity-bindings-gate.log`. Conformance has 94 cases: 75 passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps; `/tmp/meowy-identity-bindings-strict.log`. All previous 90 case
+records, 107 source assets, 37 reference files and capability exceptions are
+unchanged; `/tmp/meowy-identity-preservation.log`. No outstanding test failures
+remain. All four final documentation checks pass;
+`/tmp/meowy-identity-bindings-docs.log`. AGENTS already requires source coverage,
+classified evidence and exact capability exceptions; no further rule changes are
+needed for this slice.
+
+Next inspect exported function definitions and re-exports in `check/exports.rs`
+and `check/statements.rs`. `export_function` currently returns only a handled flag
+and erases both forms after their export checks. Plan exact-ID capture separately
+from bounded completion publication; publish only after signature, duplicate export,
+scope and declaration validation. Preserve E205/E207/E214, conditional/mutable export
+gates, module initialization and independent bodies. Test definitions/re-exports,
+errors, owners and budgets, extend source coverage, then run the compiler and
+strict-gap gates. Forward groups, type/required-only forms, callee summaries and
+proof propagation/outcomes remain separate; never add a generic empty-HIR bypass.
 
 ## Documentation conventions and layout
 
@@ -1679,11 +1676,13 @@ comparisons and conditional module exports remain separate. See [COMPUTED_TYPES.
 
 ## Actual validation
 
-- Ordinary definition endpoints passed all ten compiler checks: 1898 library/913
-  native tests, 32 tooling and 30 harness groups. Conformance: 71 passed, 19 pinned
-  gaps, zero failures in debug/release; `/tmp/meowy-function-declarations-gate.log`.
-  Strict mode rejects those gaps; `/tmp/meowy-function-declarations-strict.log`.
-  Prior conformance assets/expectations and reference contracts are unchanged.
+- Ordinary definitions and selected identity endpoints pass all ten compiler
+  checks: 1904 library/913 native tests, 32 tooling and 30 harness groups.
+  Conformance: 75 passed, 19 pinned gaps, zero failures in debug/release;
+  `/tmp/meowy-identity-bindings-gate.log`. Strict mode rejects those gaps;
+  `/tmp/meowy-identity-bindings-strict.log`. Prior fixtures/expectations and reference
+  contracts are unchanged; `/tmp/meowy-identity-preservation.log`. All four final
+  documentation checks pass; `/tmp/meowy-identity-bindings-docs.log`.
 
 - Runtime-panic conformance passed all ten compiler checks: 1890 library/913 native,
   32 tooling and 30 harness groups. Conformance: 69 passed, 19 pinned gaps, zero
@@ -2239,13 +2238,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    documents snapshot scope and the remaining declaration boundary.
    Ordinary function Bind definitions now retain exact-ID bounded completion
    endpoints (`b2dd92c`, `8509cc9`), without entering their bodies or treating a
-   Never body as a non-completing declaration. Forward groups and other erasures
-   stay unchanged. Next classify resolved immutable function/foundation identity
-   aliases in `statements.rs` and add only their specific completion metadata.
-   Preserve incomplete/self-function identity cases, owner boundaries, diagnostics,
-   required/type-only checks and unknown effects. Test scopes/errors/budgets and
-   update source conformance before the compiler gate; no generic empty-HIR bypass.
-   Callee summaries, propagation and proof outcomes remain separate.
+   Never body as a non-completing declaration. Selected immutable function/foundation
+   identities now have bounded completion (`29db896`, `6387133`), including self/forward
+   aliases; source conformance (`cabfb71`) and the compiler gate pass. Next inspect
+   exported definitions/re-exports in `exports.rs` and `statements.rs`: capture exact
+   IDs, then publish after all export checks, preserving module initialization,
+   diagnostics, owners and independent bodies. Test errors/budgets and extend source
+   coverage before the compiler gate. Forward/type-only forms, callee summaries,
+   propagation and proof outcomes remain separate; no generic empty-HIR bypass.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

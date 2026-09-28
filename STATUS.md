@@ -7,26 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Ordinary function Bind definitions now retain bounded statement-completion graph
-links after successful checking, using exact returned FunctionIds. Leading,
-interleaved and nested definitions preserve independent body owners. Unused Never
-bodies do not block declaration completion; Never calls and existing opaque/forward
-barriers retain their boundaries. Implementation slices: `b2dd92c`, `8509cc9`.
+Ordinary function definitions and selected immutable function/foundation identity
+bindings now retain bounded statement-completion graph links. Exact function IDs,
+self/forward aliases and lexical resolution are preserved. Publication follows
+successful declaration; function bodies stay independent and calls retain their
+return/effect gates. Type/meta/static, file-module and forward-group boundaries
+remain explicit. Implementation slices: `29db896`, `6387133`; source coverage:
+`cabfb71`.
 
-The catalog now has 90 cases: 71 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. Two new source fixtures pin unused-body behavior/errors;
-all previous fixtures and reference contracts are unchanged. The
-[coverage inventory](docs/conformance/COVERAGE.md) still tracks 37 reference files
-and 33 proof obligations with explicit remaining gaps. All ten compiler checks pass:
-1898 library/913 native and 62 Python test groups;
-`/tmp/meowy-function-declarations-gate.log`. Strict mode correctly rejects known gaps.
-This is not full language or release qualification, and proof outcomes stay gated.
+The catalog has 94 cases: 75 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Four new fixtures pin self/forward execution, lexical
+shadowing and duplicate-name rejection. All previous cases/assets and reference
+contracts are unchanged. The [coverage inventory](docs/conformance/COVERAGE.md)
+tracks 37 reference files and 33 proof obligations with explicit remaining gaps.
+All ten compiler checks pass: 1904 library/913 native and 62 Python test groups;
+`/tmp/meowy-identity-bindings-gate.log`. Strict mode correctly rejects the known gaps.
+Proof outcomes and full language/release qualification remain incomplete.
 
-Next inspect resolved immutable function/foundation identity bindings, which still
-stop structural walks. Add only form-specific completion metadata while preserving
-required/type-only checks, incomplete/self-function identities and ordinary errors.
-The [compiler handoff](compiler/STATUS.md#current-ordinary-function-definition-completion-repair)
-records the exact scope and validation requirements.
+Next inspect exported function definitions/re-exports in `check/exports.rs` and
+`check/statements.rs`, retaining exact identities and publishing completion only
+after all export checks succeed. Keep forward groups and type-only forms separate.
+The [compiler handoff](compiler/STATUS.md#current-immutable-identity-binding-completion)
+records the scope, evidence and required next validation.
 
 ## Documentation conventions
 
@@ -1107,10 +1109,13 @@ execution was not part of this documentation edit.
    the guide documents scope and the remaining declaration boundary.
    Ordinary function Bind definitions now retain bounded completion endpoints
    after successful checking, keeping function bodies independent and preserving
-   Never-call/forward barriers. Next classify resolved immutable function/foundation
-   identity aliases and add only their explicit completion metadata. Preserve owners,
-   incomplete/self-function identities, ordinary errors and other erased boundaries;
-   add focused/source coverage and run the compiler gate. Proof outcomes stay gated.
+   Never-call/forward barriers. Selected immutable function/foundation identities
+   now retain bounded completion after successful lexical declaration, including
+   self/forward aliases. Focused/source coverage and the compiler gate pass. Next
+   inspect exact exported function/re-export identities and post-validation completion
+   in `check/exports.rs` and `check/statements.rs`. Preserve export errors, module
+   initialization, independent bodies and forward/type-only boundaries; add focused
+   and source coverage before the full compiler gate. Proof outcomes stay gated.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
