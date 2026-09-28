@@ -111,9 +111,9 @@ Dependency-ordered commit plan:
 1. Add bounded port-anchor resolution and endpoint validation after the existing
    count audit. Test malformed point/block/emission/restart anchors and library checks.
 2. Reject cross-owner edges while preserving conditional/Backedge routes, duplicate
-   entries and unknown normal flow; validate source coverage and atomic work bounds.
+   entries and unknown normal flow; source/work-boundary checks pass (`cad2261`).
 3. Validate specialized stage selectors against their producing metadata where
-   required for port existence; keep selector work separate from reachability.
+   required for port existence; selector/library checks pass (`ec8677c`).
 4. Register Operation ports from their owning producers once per audit, avoiding
    repeated scans of CallId-keyed calls; reject undeclared operation stages.
 5. Run the complete compiler gate and document the next forward-index prerequisite.
@@ -133,7 +133,17 @@ with bounded lookup work. Normal ports still need no reachable incoming flow.
 Three selector groups, formatting and all 1846 library tests pass;
 `/tmp/meowy-port-selectors-lib.log`. Operation ports currently validate Expr/Stmt
 anchors only. A separate bounded producer registry is next so their existence
-can be checked without quadratic invocation scans. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
+can be checked without quadratic invocation scans (`ec8677c`). That registry now
+resolves producer-owned Operation ports once per validation and is used by the
+edge validator. All three registry groups and 1849 library tests pass;
+`/tmp/meowy-operation-ports-lib.log`. Registry scanning now also explicitly charges
+non-expression endpoint rows, with a zero-edge work regression. All ten compiler
+checks pass: 1849 library/913 native tests, formatting, Clippy, build, tooling and
+conformance (10 passed/13 unsupported/0 failed in debug/release);
+`/tmp/meowy-port-validation-gate.log`. No outstanding failures remain. Guide/handoff
+documentation is next, then bounded forward lookup over the validated inventory.
+Index exact ports and retain duplicate inventory entries/routes; distinguish
+Backedge links explicitly and do not treat missing successors as independence. The inventory series (`2eec4bd`, `95fba66`, `42b04e8`,
 `5734e91`) passed 1837 library/913 native tests and conformance
 10 passed/13 unsupported/0 failed in debug/release;
 `/tmp/meowy-edge-inventory-gate.log`.
@@ -1971,12 +1981,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`c5e248b`) pass the compiler gate; the guide documents scope. Bounded read-only
    inventory (`2eec4bd`, `95fba66`) preserves duplicate stored edges, routes and
    Backedge markers while auditing all 31 counts. Full-family coverage (`42b04e8`)
-   and the compiler gate pass; the guide documents inventory limits. Next add
-   separate bounded port resolution and edge-owner validation using points, bodies,
-   emission sources/targets and restart identities. Use Program context for moved
-   runtime vectors if needed. Preserve unknown boundaries, duplicates, routes and
-   diagnostic priority; test malformed/cross-owner ports and atomic work limits.
-   Forward indexing and propagation remain separate; normal ports prove no reachability.
+   and the compiler gate pass; the guide documents inventory limits. Port anchors
+   (`f543ec8`), endpoint owner agreement (`cad2261`) and stage selectors (`ec8677c`)
+   now validate retained identities. A bounded producer registry validates Operation
+   ports without repeated invocation scans. The full compiler gate passes. Document
+   this scope next, then add bounded forward lookup retaining exact ports, duplicate
+   inventory entries and routes. Keep Backedge links explicit and missing successors
+   unknown; indexing must not add edges, prove reachability or enable propagation.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

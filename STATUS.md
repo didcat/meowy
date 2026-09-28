@@ -730,8 +730,10 @@ read-only inventory now names all 31 edge families (`2eec4bd`) and checks stored
 counts under bounded work/edge limits (`95fba66`). All ten compiler checks pass:
 1837 library/913 native tests; `/tmp/meowy-edge-inventory-gate.log`. Full-family
 coverage is committed as `42b04e8`; the guide documents inventory limits. Bounded
-port validation is in progress; the compiler handoff records anchor resolution,
-edge-owner checks, stage selectors and final verification.
+port anchors (`f543ec8`), edge owners (`cad2261`), selectors (`ec8677c`) and
+Operation producers now validate the inventory. All ten compiler checks pass:
+1849 library/913 native tests; `/tmp/meowy-port-validation-gate.log`. Guide
+documentation and the forward-index handoff are next.
 Broader propagation and proof outcomes remain incomplete.
 
 ## Pending descriptor statement accounting
@@ -862,10 +864,10 @@ Union-interior writes and proof outcomes stay gated.
 
 ## Actual validation
 
-- Bounded edge inventory passed all ten checks in
-  `python3 -B tools/verify.py --compiler`: 1837 library/913 native tests.
+- Graph-port and owner validation passed all ten checks in
+  `python3 -B tools/verify.py --compiler`: 1849 library/913 native tests.
   Conformance: 10 passed, 13 unsupported, 0 failed in debug/release.
-  Log: `/tmp/meowy-edge-inventory-gate.log`. The graph remains partial;
+  Log: `/tmp/meowy-port-validation-gate.log`. The graph remains partial;
   bounded dependency propagation and proof outcomes remain pending.
 - `python3 -B tools/verify.py --compiler --editor both`: all 12 checks passed,
   including 1447 library/910 native tests (2357 total), 16 Python tooling and four
@@ -1008,12 +1010,12 @@ execution was not part of this documentation edit.
    gate passes, and the guide documents scope. Bounded inventory now enumerates all
    31 edge families and validates actual counts after existing semantic/query/doc
    gates. Full family/route/duplicate/budget coverage and the compiler gate pass;
-   the guide documents inventory limits. Next add separate bounded port resolution
-   and edge-owner validation from retained points, bodies, emissions and restart
-   identities. Preserve diagnostics, duplicates, routes, Backedge markers and unknown
-   flow; test malformed/cross-owner ports, nested targets and atomic work limits
-   before the compiler gate. Forward indexing and propagation remain separate.
-   Inventory order is not execution order.
+   the guide documents inventory limits. Bounded anchor/owner/selector validation
+   and a producer registry now validate graph ports while preserving diagnostics,
+   duplicate routes and unknown flow. The compiler gate passes. Document this scope
+   next, then add bounded forward lookup over the validated inventory, retaining
+   exact ports and duplicate entries. Keep Backedge links explicit and missing
+   successors unknown; indexing does not establish execution or propagation.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

@@ -108,6 +108,7 @@ impl Checker {
                 span,
             ));
         }
+        let operations = self.operation_port_owners(span)?;
         for (_, edge) in edges {
             let from = self.port_owner(edge.from, span)?;
             let to = self.port_owner(edge.to, span)?;
@@ -116,6 +117,25 @@ impl Checker {
                     "proof graph-edge owner mismatch",
                     span,
                 ));
+            }
+            for (port, owner) in [(edge.from, from), (edge.to, to)] {
+                if let Port::Operation(id) = port {
+                    if !self
+                        .flow
+                        .spend(operations.len().checked_ilog2().unwrap_or(0) as usize + 1)
+                    {
+                        return Err(Diagnostic::unsupported(
+                            "proof operation-port budget exhausted",
+                            span,
+                        ));
+                    }
+                    if operations.get(&id) != Some(&owner) {
+                        return Err(Diagnostic::unsupported(
+                            "proof operation-port identity mismatch",
+                            span,
+                        ));
+                    }
+                }
             }
         }
         Ok(())
@@ -129,3 +149,5 @@ mod tests;
 mod owners;
 
 mod selectors;
+
+mod operations;
