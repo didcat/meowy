@@ -121,3 +121,43 @@ Unsupported exceptions retain their reference outcomes; B001 never satisfies a l
 | [required_runtime_input](sources/required_runtime_input.mwy) | E104 | Required | [contract](../reference/diagnostic-codes.md#collection-and-numeric-constraints) |
 | [required_division_zero](sources/required_division_zero.mwy) | E107 | Required | [contract](../reference/types.md#numeric-behavior) |
 | [index_zero](sources/index_zero.mwy) | E101 | Required | [contract](../reference/collections.md#indexing-mutation-and-removal) |
+
+## Proof qualification obligations
+
+Every acceptance row and both additional qualification requirements are tracked. A mapped case can cover only part of a row; the remaining gap is authoritative.
+
+| Obligation | Required result | Source evidence | Remaining scope |
+| --- | --- | --- | --- |
+| Scalar literal 5 compared with 5 / 6 | A / N. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Unrestricted `uint8` parameter compared with 5 | I, even at a call site that passes 5. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Stable guard narrows an integer to 0 through 9 | `between(x, 0, 9)` A; `is(x, -1)` N. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Direct copy of an unknown scalar / independently computed `x + 0` | Same-value identity A / lost-correlation I when nonsingleton. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Join of 16 distinct scalar constants / 17 constants | Exact set / canonical interval hull. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Integer interval intersected with `!=` at an interior point | Preserve the interval unless already in finite-set form. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Full `uint8` domain tested against all 256 values | Membership A despite the subject's interval representation. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Empty or duplicate membership metadata | Empty gives N/A for `in`/`notin`; duplicates preserve the answer but are charged. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Nullable integer admitted as 5 or null, compared with 5 | I; known null compared with 5 is N; null compared with null is A. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Two incompatible integer widths / out-of-range metadata literal | E213 / E216, without widening. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Reversed interval / runtime membership collection | E223 / E211. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Unknown non-null integer bounds | Full declared range; `singleton` false. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Known integer singleton bounds | Equal lower/upper; `singleton` true. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Value observation at a bottom point | I; bounds use the full declared integer range. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Concrete copyable scalar / exclusive-reference type | `can_copy<T>()` A / N. | [proof_copy_scalar](sources/proof_copy_scalar.mwy) (blocked); [proof_copy_exclusive](sources/proof_copy_exclusive.mwy) (blocked) | Both outcome fixtures are blocked; no evaluated copyability answer is qualified. |
+| Unconstrained generic / generic constrained by `memory.Copy` | Copyability I / A, independent of specialization. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Copyable type but a definitely live exclusive loan blocks reading the place | Type query A; place copy probe N. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Definitely live shared view, used after an exclusive-borrow probe | Probe N without performing the conflicting borrow. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Probe after that view's last source use | A if all other location conditions hold; optimization cannot erase the earlier use for analysis. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Potential alias overlap without a definite conflict | I; no permission or denial is invented. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Immutable location probed for exclusive borrowing | N even when `<&!T>` is a valid reference type. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Probe result retained across mutation or scope exit | Historical result only; no loan, permission, or value refinement survives. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Query through an import alias / shadowed same-spelling user function | Preserve intrinsic identity / ordinary user-function behavior. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Observation contains an effectful call / arbitrary pure call | E219 / E223; neither executes as an observation. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Query or queried value depends on a proof flag | E225, including control dependence. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Proof flag used as a type extent or to waive a generic/borrow requirement | E225; invalid ordinary code remains invalid. | [proof_dependent_type](sources/proof_dependent_type.mwy) (blocked) | Type-choice fixture is blocked; extent, generic and borrow-authority variants remain to be added. |
+| `assert` on N or I / `expect<Indeterminable>` on I | E224 / successful null result. | [proof_assert_never](sources/proof_assert_never.mwy) (blocked) | Never assertion fixture is blocked; uncertain assertions and successful expect<Indeterminable> remain to be added. |
+| Runtime-skipped or uncalled checked body contains a failing proof assertion | E224 during checking. | [proof_skipped_assert](sources/proof_skipped_assert.mwy) (blocked) | Uncalled-body fixture is blocked; runtime-skipped assertion coverage remains to be added. |
+| Result descriptor passed to runtime formatting, storage, FFI, or erasure | E223; scalar projections remain ordinary constants. | [proof_descriptor_escape](sources/proof_descriptor_escape.mwy) (required) | Mutable storage rejection is required; formatting, FFI, erasure and materialized flag variants remain incomplete. |
+| One step below / at / above a logical limit | Required accounting boundary; exhaustion is E220, not I. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Cold/warm caches, different worker schedules, debug/release, optimized/unoptimized | Identical answers, logical charges, and acceptance for the same target/revision. | No dedicated fixture | No dedicated source fixture; this obligation remains unqualified. |
+| Runtime noninterference | Qualification must also compare generated runtime behavior with and without unused proof queries: no added loads, borrows, moves, cleanup, allocations, or module startup effects. Explicitly materialized flags may affect application behavior as written; removing those uses is not a semantics-preserving comparison. | No dedicated fixture | Requires generated-runtime comparisons with and without evaluated unused queries; rejection/no-startup regressions are insufficient. |
+| Release evidence matrix | Release support requires these cases, deterministic diagnostic origins, target-specific integer-range tests, generic declaration-context tests, alias/lifetime invalidation tests, and budget boundaries. The presence of this reference, link validation, or a compiler's unsupported rejection does not satisfy that gate. | No dedicated fixture | Diagnostic origins, target ranges, declaration-context generics, invalidation and complete logical-budget boundaries remain unqualified. |

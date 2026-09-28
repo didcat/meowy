@@ -44,6 +44,11 @@ and updating its SHA-256; new documents require a new entry. Then regenerate wit
 inventory and rejects stale generated reports. Counts measure traceability only;
 linked internal tests and seeded graph metadata do not qualify entire documents.
 
+The [proof obligation map](proof-obligations.json) mirrors every acceptance row and
+the runtime-noninterference/release requirements in the proof reference. Validation
+rejects changed or omitted obligations, missing case IDs and absent gap statements.
+A linked fixture is partial evidence, and blocked fixtures remain unqualified.
+
 ```sh
 python3 docs/conformance/check.py
 ```

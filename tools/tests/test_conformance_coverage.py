@@ -49,6 +49,18 @@ class CoverageTests(unittest.TestCase):
                 catalog["cases"][0]["reference"] = reference
                 coverage.validate_documents(ROOT, catalog, self.data)
 
+    def test_proof_matrix_rejects_missing_changed_and_unlinked_obligations(self):
+        proof = json.loads((ROOT / "docs/conformance/proof-obligations.json").read_text())
+        coverage.validate_proof(ROOT, self.catalog, proof)
+        for change in [lambda data: data["obligations"].pop(),
+                       lambda data: data["obligations"][0].update(required="weaker result"),
+                       lambda data: data["obligations"][0].update(cases=["missing_case"]),
+                       lambda data: data["obligations"][0].update(gap="")]:
+            data = copy.deepcopy(proof)
+            change(data)
+            with self.assertRaises(AssertionError):
+                coverage.validate_proof(ROOT, self.catalog, data)
+
     def test_report_must_be_regenerated_after_reviewed_inputs_change(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -57,9 +69,15 @@ class CoverageTests(unittest.TestCase):
             refs = root / "docs/reference"
             refs.mkdir()
             (refs / "rule.md").write_text("# Rule\n")
+            (refs / "stdlib").mkdir()
+            text = "## Qualification obligations\n\nQualification must also preserve runtime behavior.\n\nRelease support requires more evidence.\n"
+            (refs / "stdlib/proof.md").write_text(text)
             data = {"version": 1, "documents": {"rule.md": {
                 "sha256": coverage.hashlib.sha256((refs / "rule.md").read_bytes()).hexdigest(),
                 "evidence": [], "gap": "Unqualified"}}}
+            data["documents"]["stdlib/proof.md"] = {"sha256": coverage.hashlib.sha256(text.encode()).hexdigest(), "evidence": [], "gap": "Unqualified"}
+            proof = {"version": 1, "obligations": [{"rule": rule, "required": required, "cases": [], "gap": "Unqualified"} for rule, required in coverage.proof_rules(text)]}
+            (base / "proof-obligations.json").write_text(json.dumps(proof))
             (base / "documents.json").write_text(json.dumps(data))
             (base / "cases.json").write_text(json.dumps({"cases": []}))
             support = root / "compiler/tests"

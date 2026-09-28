@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "obligations": [
+    {
+      "rule": "Scalar literal 5 compared with 5 / 6",
+      "required": "A / N.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Unrestricted `uint8` parameter compared with 5",
+      "required": "I, even at a call site that passes 5.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Stable guard narrows an integer to 0 through 9",
+      "required": "`between(x, 0, 9)` A; `is(x, -1)` N.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Direct copy of an unknown scalar / independently computed `x + 0`",
+      "required": "Same-value identity A / lost-correlation I when nonsingleton.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Join of 16 distinct scalar constants / 17 constants",
+      "required": "Exact set / canonical interval hull.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Integer interval intersected with `!=` at an interior point",
+      "required": "Preserve the interval unless already in finite-set form.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Full `uint8` domain tested against all 256 values",
+      "required": "Membership A despite the subject's interval representation.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Empty or duplicate membership metadata",
+      "required": "Empty gives N/A for `in`/`notin`; duplicates preserve the answer but are charged.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Nullable integer admitted as 5 or null, compared with 5",
+      "required": "I; known null compared with 5 is N; null compared with null is A.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Two incompatible integer widths / out-of-range metadata literal",
+      "required": "E213 / E216, without widening.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Reversed interval / runtime membership collection",
+      "required": "E223 / E211.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Unknown non-null integer bounds",
+      "required": "Full declared range; `singleton` false.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Known integer singleton bounds",
+      "required": "Equal lower/upper; `singleton` true.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Value observation at a bottom point",
+      "required": "I; bounds use the full declared integer range.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Concrete copyable scalar / exclusive-reference type",
+      "required": "`can_copy<T>()` A / N.",
+      "cases": [
+        "proof_copy_scalar",
+        "proof_copy_exclusive"
+      ],
+      "gap": "Both outcome fixtures are blocked; no evaluated copyability answer is qualified."
+    },
+    {
+      "rule": "Unconstrained generic / generic constrained by `memory.Copy`",
+      "required": "Copyability I / A, independent of specialization.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Copyable type but a definitely live exclusive loan blocks reading the place",
+      "required": "Type query A; place copy probe N.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Definitely live shared view, used after an exclusive-borrow probe",
+      "required": "Probe N without performing the conflicting borrow.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Probe after that view's last source use",
+      "required": "A if all other location conditions hold; optimization cannot erase the earlier use for analysis.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Potential alias overlap without a definite conflict",
+      "required": "I; no permission or denial is invented.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Immutable location probed for exclusive borrowing",
+      "required": "N even when `<&!T>` is a valid reference type.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Probe result retained across mutation or scope exit",
+      "required": "Historical result only; no loan, permission, or value refinement survives.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Query through an import alias / shadowed same-spelling user function",
+      "required": "Preserve intrinsic identity / ordinary user-function behavior.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Observation contains an effectful call / arbitrary pure call",
+      "required": "E219 / E223; neither executes as an observation.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Query or queried value depends on a proof flag",
+      "required": "E225, including control dependence.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Proof flag used as a type extent or to waive a generic/borrow requirement",
+      "required": "E225; invalid ordinary code remains invalid.",
+      "cases": [
+        "proof_dependent_type"
+      ],
+      "gap": "Type-choice fixture is blocked; extent, generic and borrow-authority variants remain to be added."
+    },
+    {
+      "rule": "`assert` on N or I / `expect<Indeterminable>` on I",
+      "required": "E224 / successful null result.",
+      "cases": [
+        "proof_assert_never"
+      ],
+      "gap": "Never assertion fixture is blocked; uncertain assertions and successful expect<Indeterminable> remain to be added."
+    },
+    {
+      "rule": "Runtime-skipped or uncalled checked body contains a failing proof assertion",
+      "required": "E224 during checking.",
+      "cases": [
+        "proof_skipped_assert"
+      ],
+      "gap": "Uncalled-body fixture is blocked; runtime-skipped assertion coverage remains to be added."
+    },
+    {
+      "rule": "Result descriptor passed to runtime formatting, storage, FFI, or erasure",
+      "required": "E223; scalar projections remain ordinary constants.",
+      "cases": [
+        "proof_descriptor_escape"
+      ],
+      "gap": "Mutable storage rejection is required; formatting, FFI, erasure and materialized flag variants remain incomplete."
+    },
+    {
+      "rule": "One step below / at / above a logical limit",
+      "required": "Required accounting boundary; exhaustion is E220, not I.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Cold/warm caches, different worker schedules, debug/release, optimized/unoptimized",
+      "required": "Identical answers, logical charges, and acceptance for the same target/revision.",
+      "cases": [],
+      "gap": "No dedicated source fixture; this obligation remains unqualified."
+    },
+    {
+      "rule": "Runtime noninterference",
+      "required": "Qualification must also compare generated runtime behavior with and without unused proof queries: no added loads, borrows, moves, cleanup, allocations, or module startup effects. Explicitly materialized flags may affect application behavior as written; removing those uses is not a semantics-preserving comparison.",
+      "cases": [],
+      "gap": "Requires generated-runtime comparisons with and without evaluated unused queries; rejection/no-startup regressions are insufficient."
+    },
+    {
+      "rule": "Release evidence matrix",
+      "required": "Release support requires these cases, deterministic diagnostic origins, target-specific integer-range tests, generic declaration-context tests, alias/lifetime invalidation tests, and budget boundaries. The presence of this reference, link validation, or a compiler's unsupported rejection does not satisfy that gate.",
+      "cases": [],
+      "gap": "Diagnostic origins, target ranges, declaration-context generics, invalidation and complete logical-budget boundaries remain unqualified."
+    }
+  ]
+}

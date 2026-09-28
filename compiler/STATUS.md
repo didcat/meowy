@@ -57,8 +57,11 @@ failures; `/tmp/meowy-conformance-required.log`. No compiler behavior was change
 All 37 reference documents now have checked evidence/gap records and reviewed
 content hashes. Catalog checks also reject stale coverage reports. All 21 tooling
 tests pass, including document/content/evidence/reference/report drift regressions;
-local link checks pass (`/tmp/meowy-coverage-links.log`). Proof-obligation mapping
-and catalog-validator adversarial tests remain next, followed by the full gate.
+local link checks pass (`/tmp/meowy-coverage-links.log`). All 33 proof obligations are now mapped (31 acceptance rows plus runtime
+noninterference and release-matrix requirements). Validation checks exact required
+observations, omitted rows, case links and explicit remaining gaps. All 22 tooling
+tests and local links pass; `/tmp/meowy-proof-coverage-links.log`. Next add adversarial
+catalog checks, update AGENTS.md as requested, then run the complete gate.
 
 ## Documentation conventions and layout
 
