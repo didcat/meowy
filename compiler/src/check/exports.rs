@@ -99,6 +99,15 @@ impl Checker {
         value: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<(hir::Expr, Module)> {
+        self.module_value_point(value, expected)
+            .map(|(_, value, module)| (value, module))
+    }
+
+    pub(crate) fn module_value_point(
+        &mut self,
+        value: &ast::Expr,
+        expected: Option<&Type>,
+    ) -> Result<(hir::PointId, hir::Expr, Module)> {
         if !matches!(value.kind, ExprKind::Block(_)) {
             return Err(Diagnostic::unsupported(
                 "missing file-module initializer",
@@ -118,14 +127,14 @@ impl Checker {
         );
         let docs = self.file_docs.remove(&value.span.start);
         let saved_docs = std::mem::replace(&mut self.documentation, docs);
-        let result = self.expr(value, expected);
+        let result = self.expr_point(value, expected);
         let module = std::mem::replace(&mut self.module, saved);
         let docs = std::mem::replace(&mut self.documentation, saved_docs);
-        let result = result?;
+        let (point, result) = result?;
         if let Some(mut model) = docs {
             model.finish()?;
         }
-        Ok((result, module))
+        Ok((point, result, module))
     }
 
     pub(crate) fn input_export(&self, target: usize) -> bool {
@@ -548,3 +557,6 @@ mod tests;
 
 #[cfg(test)]
 mod functions;
+
+#[cfg(test)]
+mod points;

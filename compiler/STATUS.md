@@ -337,6 +337,34 @@ extend source coverage and run compiler/strict-gap gates. Other synthetic prefix
 record/pending values, forward groups, callee summaries and proof outcomes remain
 separate.
 
+## Current synthetic module-initializer inputs
+
+Dependency-ordered commit plan:
+
+1. Add a module-value helper returning the actual checked expression PointId with
+   its value/exports. Preserve the current wrapper and statement behavior while
+   testing parent/owner/expected-context identity, single checking and restoration
+   after failures. Return the root only after module/documentation checks succeed.
+2. Wire that exact root into synthetic initializer storage operations, reusing
+   existing source validation and bounds. Keep stopped inputs without continuation,
+   preserve initialization/export gates and include multi-module/order/error/budget
+   regressions. Retain a test-only compatibility wrapper for existing helper tests.
+3. Add independently useful source conformance for initialization order and stopped
+   initialization, preserving previous assets/contracts and exact capability gaps.
+   Run compiler, strict-gap and byte-preservation checks.
+4. Update coverage evidence, the foundation guide and root/compiler handoffs,
+   run final documentation checks and commit the handoff.
+
+Inspection: `module_value` calls `expr`, which discards the ID already returned by
+`expr_point`; no new point or second evaluation is needed. Module/docs state is
+restored before propagating expression failure, and documentation finish precedes
+success. Synthetic Bind currently feeds input=None into otherwise reusable bounded
+storage metadata. The tree starts clean at `f1a7573`. Root capture passes all 19
+matching module groups, including the three new identity/expected-context/Never
+and restoration groups; `/tmp/meowy-module-points-checks.log`. Expression and late
+documentation failures restore the prior module/docs context and return no root.
+No outstanding test failures remain. Storage wiring is unchanged; integration is next.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;
