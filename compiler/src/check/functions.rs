@@ -8,6 +8,30 @@ use crate::flow::TRUE;
 use crate::hir::{self, Type};
 use std::collections::BTreeMap;
 
+#[derive(Debug)]
+pub(crate) struct Forward {
+    pub(crate) end: usize,
+    pub(crate) functions: Vec<hir::FunctionId>,
+}
+
+impl Forward {
+    pub(self) fn record(
+        &mut self,
+        id: hir::FunctionId,
+        flow: &mut crate::flow::Flow,
+        span: Span,
+    ) -> Result<()> {
+        if self.functions.len() >= crate::flow::MAX_NODES || !flow.spend(1) {
+            return Err(Diagnostic::unsupported(
+                "forward group identity budget exhausted",
+                span,
+            ));
+        }
+        self.functions.push(id);
+        Ok(())
+    }
+}
+
 impl Checker {
     pub(crate) fn declare_function(
         &mut self,
@@ -49,9 +73,13 @@ impl Checker {
         Ok(id)
     }
 
-    pub(crate) fn forward(&mut self, stmts: &[ast::Stmt], start: usize) -> Result<usize> {
+    pub(crate) fn forward(&mut self, stmts: &[ast::Stmt], start: usize) -> Result<Forward> {
         let mut index = start;
         let mut names = BTreeMap::new();
+        let mut group = Forward {
+            end: start,
+            functions: Vec::new(),
+        };
         while let Some(ast::Stmt {
             kind: StmtKind::Forward { name, ty },
             span,
@@ -78,6 +106,7 @@ impl Checker {
                 *span,
             )?;
             names.insert(name.clone(), (id, params, result));
+            group.record(id, &mut self.flow, *span)?;
             index += 1;
         }
         let count = names.len();
@@ -155,7 +184,8 @@ impl Checker {
                 })?;
             index += 1;
         }
-        Ok(index)
+        group.end = index;
+        Ok(group)
     }
 
     pub(crate) fn function(
@@ -339,3 +369,6 @@ impl Checker {
 
 #[cfg(test)]
 mod declarations;
+
+#[cfg(test)]
+mod forward;

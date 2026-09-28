@@ -348,6 +348,38 @@ unused Never bodies and budgets; add source coverage and run compiler/strict-gap
 gates. Other synthetic prefixes, record/pending values, callee summaries, backedge
 propagation and proof outcomes remain separate. Never bypass arbitrary None entries.
 
+## Current forward-group completion
+
+Dependency-ordered commit plan:
+
+1. Return the actual reserved FunctionIds with the next AST index from successful
+   forward-group checking. Bound retained IDs and preserve signature/body/documentation
+   order and all diagnostics. Keep the existing None sequence barrier for this slice.
+2. Capture a checked statement point at the first source signature while checking
+   the whole group. Validate all completed function/body identities and bounded work
+   before atomically publishing isolated group completion, retaining the enclosing
+   sequence barrier until its separate integration slice.
+3. Connect that group point in block sequences and update the existing cross-family
+   forward-barrier regressions together. Include recursion, nesting and Never walks;
+   preserve all other None prefixes and bounded lookup/dispatch behavior.
+4. Add independently useful source conformance for group completion/recursion and
+   rejections, preserving all prior fixtures/contracts and exact capability pins.
+   Run compiler, strict-gap and byte-preservation checks.
+5. Refresh coverage evidence, the foundation guide and root/compiler handoffs,
+   run final documentation checks and commit the handoff.
+
+Inspection: the current group checker reserves every signature before checking
+definitions and may allocate nested functions later, so IDs must be captured during
+reservation. The group's source anchor is its first signature, not a fabricated
+statement or a span inferred after checking. Completion may be published only after
+the entire group succeeds; definitions remain independently owned bodies. Existing
+forward export/generic/capture gates stay unchanged. Starting HEAD is `11f22f5`;
+unrelated `.gitignore` and `docs/programs/hey.mwy` edits remain outside this series.
+Reserved-ID capture passes all 22 matching forward groups, including three new
+identity/error/capacity groups; `/tmp/meowy-forward-identities.log`. Nested function
+allocations and reversed definition order preserve the actual reservation IDs.
+Existing block sequences still use None. No outstanding test failures remain.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;
