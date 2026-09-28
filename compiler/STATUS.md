@@ -338,7 +338,16 @@ typed/mutable and shadowed storage, required costs/isolation, errors, stopped pa
 and exact publication limits are preserved. Unsupported required imports and proof
 evaluation remain B001. All 1932 library tests and all-target Clippy pass;
 `/tmp/meowy-static-bindings-lib.log`, `/tmp/meowy-static-bindings-clippy.log`.
-No outstanding test failures remain. Source conformance and the final handoff follow.
+Implementation is committed as `c2f7d7b`. Three required source cases now cover revision
+alias width/shadowing, typed/mutable copies and required extents, plus width mismatch
+and mutable required-input rejection. All ten compiler checks pass: 1932 library/913
+native tests, 32 tooling and 30 harness groups, formatting, Clippy, build and
+conformance; `/tmp/meowy-static-bindings-gate.log`. The 107 cases report 88 passes,
+19 unchanged pinned gaps and zero failures in debug/release. All previous 104 case
+records, 126 source assets, 37 reference files and capability exceptions are
+preserved; `/tmp/meowy-static-bindings-preservation.log`. Strict mode correctly
+exits 1 only for known gaps; `/tmp/meowy-static-bindings-strict.log`. The final
+coverage/guide handoff remains; no outstanding test failures remain.
 
 ## Documentation conventions and layout
 

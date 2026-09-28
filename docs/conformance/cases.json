@@ -1111,6 +1111,36 @@
         "code": "E207"
       },
       "reference": "../reference/compile-time.md#type-values-and-user-helpers"
+    },
+    {
+      "id": "static_alias_storage",
+      "phase": "run",
+      "source": "sources/static_alias_storage.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\ntrue\nfalse\n1\n2\n7\n1\n8\n"
+      },
+      "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
+    },
+    {
+      "id": "static_alias_width_mismatch",
+      "phase": "check",
+      "source": "sources/static_alias_width_mismatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
+    },
+    {
+      "id": "static_alias_runtime_extent",
+      "phase": "check",
+      "source": "sources/static_alias_runtime_extent.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E211"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
     }
   ]
 }

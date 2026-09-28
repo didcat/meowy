@@ -1,0 +1,3 @@
+p:@"proof"
+changed:=p.revision
+<Items>:{n:changed;-><uint8[n]>}

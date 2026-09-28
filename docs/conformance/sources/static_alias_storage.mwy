@@ -1,0 +1,22 @@
+p:@"proof"
+module:p
+revision:(module.revision)
+copy:revision
+d:@"debug"
+d.print(copy)
+d.print(copy<uint32>)
+d.print(copy<int32>)
+typed<uint32>:copy
+changed:=copy
+changed=2
+d.print(typed)
+d.print(changed)
+{
+    p:{->revision<uint32>:7}
+    value:p.revision
+    d.print(value)
+}
+d.print(copy)
+<Items>:{n:copy+1;-><uint8[n]>}
+items<Items>:[7,8]
+d.print(items[2])
