@@ -94,7 +94,7 @@ pub(crate) fn export_endpoints_reuse_imported_ids_with_independent_module_sequen
 }
 
 #[test]
-pub(crate) fn export_endpoints_keep_never_calls_and_forward_control_barriers() {
+pub(crate) fn export_endpoints_keep_never_calls_and_forward_barriers() {
     for (tail, present) in [("x:1", true), ("alias();x:1", false)] {
         let source = format!(
             "->stop<never>:(){{'again{{'again.restart()}}}};->alias<()->never>:stop;{tail}"
@@ -116,9 +116,12 @@ pub(crate) fn export_endpoints_keep_never_calls_and_forward_control_barriers() {
             .unwrap();
         assert_eq!(walk.ports.contains(&Port::Operation(last)), present);
     }
-    for source in [
-        "'out{finish:'out.leave};x:1",
-        "f<()->int32>;f<int32>:(){->1};->alias<()->int32>:f;x:1",
+    for (source, reached) in [
+        ("'out{finish:'out.leave};x:1", true),
+        (
+            "f<()->int32>;f<int32>:(){->1};->alias<()->int32>:f;x:1",
+            false,
+        ),
     ] {
         crate::compile(source).unwrap();
         let (mut checker, body) = checked(source);
@@ -135,8 +138,14 @@ pub(crate) fn export_endpoints_keep_never_calls_and_forward_control_barriers() {
                 Span::default(),
             )
             .unwrap();
-        assert!(!walk.ports.contains(&Port::Operation(last)), "{source}");
-        assert!(!walk.missing.is_empty());
+        assert_eq!(
+            walk.ports.contains(&Port::Operation(last)),
+            reached,
+            "{source}"
+        );
+        if !reached {
+            assert!(!walk.missing.is_empty());
+        }
     }
 }
 

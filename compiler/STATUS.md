@@ -319,6 +319,35 @@ captures/lifetimes and budgets, then add source coverage and run compiler/strict
 gates. File-module/record/pending values, forward groups, callee summaries and proof
 propagation/outcomes remain separate; never add a generic empty-HIR bypass.
 
+## Current scoped-control alias completion
+
+Dependency-ordered commit plan:
+
+1. Capture exact target/owner identity from resolved Value::Control while passing
+   the original value, including its restart flag, unchanged to declaration.
+   Validate same-owner active target frames with charged lookup work before bounded
+   completion publication. Include alias-chain/nested-scope, real exit/restart,
+   error, invalid-identity and exact budget tests. Preserve all call checks.
+2. Add source conformance for unused aliases, aliased leave/restart execution and
+   scope/argument failures. Preserve all prior fixtures/contracts and capability
+   pins; run compiler, strict-gap and byte-preservation checks.
+3. Refresh coverage evidence, the foundation guide and root/compiler handoffs,
+   run final documentation checks and commit the handoff.
+
+Inspection: label lookup validates active target frames and owner; copying a
+control value preserves target/restart/owner and rejects cross-function capture.
+Actual calls separately check arguments, owner and target lifetime before changing
+reachability or recording exits/restarts. Completion belongs after successful
+declaration and must add only Entry-to-Normal, with no scope-exit or restart edge.
+The original Value retains the operation flag; the completion marker needs only
+target/owner validation. The tree starts clean at `4de57fc`. All five focused groups
+pass; `/tmp/meowy-control-aliases-focused.log`. Alias creation adds no exits or
+restarts, real calls retain their separate edges, and inactive/foreign targets,
+ordinary errors and exact work/edge limits remain checked. All 1937 library tests
+and all-target Clippy pass; `/tmp/meowy-control-aliases-lib.log` and
+`/tmp/meowy-control-aliases-clippy.log`. No outstanding test failures remain.
+Source conformance and the final handoff are next.
+
 ## Documentation conventions and layout
 
 [README.md](README.md), `AGENTS.md` and this handoff stay at the compiler root;

@@ -177,7 +177,6 @@ pub(crate) fn static_binding_endpoints_preserve_errors_and_stopped_boundaries() 
     for source in [
         "stop<never>:(){'loop{'loop.restart()}};stop();p:@\"proof\";revision:p.revision;x:1",
         "f<()->int32>;f<int32>:(){->1};p:@\"proof\";revision:p.revision;x:1",
-        "'out{finish:'out.leave};p:@\"proof\";revision:p.revision;x:1",
     ] {
         crate::compile(source).unwrap();
         let (mut checker, body) = checked(source);

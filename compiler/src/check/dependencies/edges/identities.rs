@@ -10,6 +10,10 @@ pub(crate) enum BindingIdentity {
     Foundation,
     Type,
     Static,
+    Control {
+        target: crate::hir::BlockId,
+        owner: usize,
+    },
 }
 
 impl BindingIdentity {
@@ -18,6 +22,10 @@ impl BindingIdentity {
             Value::Function { id, .. } => Some(Self::Function(*id)),
             Value::Type(_) | Value::Foundation(Item::Type(_)) => Some(Self::Type),
             Value::Static { .. } => Some(Self::Static),
+            Value::Control { target, owner, .. } => Some(Self::Control {
+                target: *target,
+                owner: *owner,
+            }),
             Value::Module(
                 Module::Core
                 | Module::Debug
@@ -45,14 +53,13 @@ impl Checker {
     ) -> Result<()> {
         let invalid =
             || Diagnostic::unsupported("proof identity binding endpoint identity mismatch", span);
+        let budget =
+            || Diagnostic::unsupported("proof identity binding endpoint budget exhausted", span);
         if !self
             .flow
             .spend(self.endpoints.len().checked_ilog2().unwrap_or(0) as usize * 2 + 4)
         {
-            return Err(Diagnostic::unsupported(
-                "proof identity binding endpoint budget exhausted",
-                span,
-            ));
+            return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
         if point.kind != PointKind::Stmt
@@ -69,6 +76,19 @@ impl Checker {
         {
             return Err(invalid());
         }
+        if let BindingIdentity::Control { target, owner } = identity {
+            if !self.flow.spend(self.frames.len()) {
+                return Err(budget());
+            }
+            if owner != self.owner
+                || !self
+                    .frames
+                    .iter()
+                    .any(|frame| frame.id == target && frame.owner == owner)
+            {
+                return Err(invalid());
+            }
+        }
         self.publish_declaration_endpoint(id, span, "identity binding")
     }
 }
@@ -84,3 +104,6 @@ mod exports;
 
 #[cfg(test)]
 mod statics;
+
+#[cfg(test)]
+mod controls;

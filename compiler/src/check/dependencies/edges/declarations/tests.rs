@@ -150,9 +150,9 @@ pub(crate) fn function_endpoints_preserve_nested_owners_and_opaque_statement_bar
         })
         .collect();
     assert_eq!(owners, [0, 1]);
-    for source in [
-        "'out{finish:'out.leave};x:2",
-        "f<()->int32>;f<int32>:(){->1};x:2",
+    for (source, reached) in [
+        ("'out{finish:'out.leave};x:2", true),
+        ("f<()->int32>;f<int32>:(){->1};x:2", false),
     ] {
         crate::compile(source).unwrap();
         let (mut checker, body) = checked(source);
@@ -169,8 +169,14 @@ pub(crate) fn function_endpoints_preserve_nested_owners_and_opaque_statement_bar
                 Span::default(),
             )
             .unwrap();
-        assert!(!walk.ports.contains(&Port::Operation(last)), "{source}");
-        assert!(!walk.missing.is_empty());
+        assert_eq!(
+            walk.ports.contains(&Port::Operation(last)),
+            reached,
+            "{source}"
+        );
+        if !reached {
+            assert!(!walk.missing.is_empty());
+        }
     }
 }
 
