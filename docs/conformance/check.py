@@ -14,18 +14,20 @@ from conformance_fixtures import case_files
 
 def validate(catalog, base):
     assert set(catalog) == {"version", "language_contract", "target", "cases"}
-    assert catalog["version"] in (1, 2) and catalog["language_contract"] == 1
+    assert type(catalog["version"]) is int and catalog["version"] in (1, 2, 3)
+    assert type(catalog["language_contract"]) is int and catalog["language_contract"] == 1
     assert catalog["target"] == "x86_64-unknown-linux-gnu"
     codes = set(
         re.findall(
             r"`(E\d{3})`", (base.parent / "reference/diagnostic-codes.md").read_text()
         )
     )
+    panics = set(re.findall(r"`(P\d{3})`", (base.parent / "reference/diagnostic-codes.md").read_text()))
     seen = set()
     sources = set()
     for case in catalog["cases"]:
         fields = {"id", "phase", "source", "expected", "reference"}
-        assert set(case) == fields or (catalog["version"] == 2 and set(case) == fields | {"companions"}), case
+        assert set(case) == fields or (catalog["version"] >= 2 and set(case) == fields | {"companions"}), case
         assert re.fullmatch(r"[a-z][a-z0-9_]*", case["id"]), case
         assert case["id"] not in seen, case["id"]
         seen.add(case["id"])
@@ -43,7 +45,12 @@ def validate(catalog, base):
             }, case
             assert expected["code"] in codes, case
         elif case["phase"] == "run":
-            assert set(expected) == {"accepted", "stdout"}, case
+            if "panic" in expected:
+                assert catalog["version"] == 3 and set(expected) == {"accepted", "stdout", "panic", "exit"}, case
+                assert isinstance(expected["panic"], str) and expected["panic"] in panics, case
+                assert type(expected["exit"]) is int and expected["exit"] == 1, case
+            else:
+                assert set(expected) == {"accepted", "stdout"}, case
             assert isinstance(expected["stdout"], str), case
         else:
             assert set(expected) == {"accepted"}, case

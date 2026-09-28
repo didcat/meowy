@@ -51,6 +51,12 @@ class CoverageTests(unittest.TestCase):
                 catalog["cases"][0]["reference"] = reference
                 coverage.validate_documents(ROOT, catalog, self.data)
 
+    def test_report_distinguishes_runtime_panics_from_successful_runs(self):
+        catalog = copy.deepcopy(self.catalog)
+        catalog["cases"][0]["expected"].update(panic="P002", exit=1, stdout="before\n")
+        report = coverage.render(catalog, self.data, coverage.load_support(self.catalog))
+        self.assertIn('panic P002, exit 1; stdout "before\\n"', report)
+
     def test_proof_matrix_rejects_missing_changed_and_unlinked_obligations(self):
         proof = json.loads((ROOT / "docs/conformance/proof-obligations.json").read_text())
         coverage.validate_proof(ROOT, self.catalog, proof)

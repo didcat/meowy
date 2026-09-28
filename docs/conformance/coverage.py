@@ -85,6 +85,8 @@ def render(catalog, data, gaps, proof=None):
     for case in cases:
         expected = case["expected"]
         outcome = ("run " + json.dumps(expected["stdout"]) if case["phase"] == "run" else "accept") if expected["accepted"] else expected["code"]
+        if "panic" in expected:
+            outcome = f"panic {expected['panic']}, exit {expected['exit']}; stdout " + json.dumps(expected["stdout"])
         status = "Blocked: " + gaps[case["id"]] if case["id"] in gaps else "Required"
         source = f"[{case['id']}]({case['source']})"
         if case.get("companions"):

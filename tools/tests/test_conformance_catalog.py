@@ -18,7 +18,7 @@ class CatalogTests(unittest.TestCase):
         (self.base / "sources").mkdir(parents=True)
         refs = self.base.parent / "reference"
         refs.mkdir()
-        (refs / "diagnostic-codes.md").write_text("# Diagnostics\n`E207`\n")
+        (refs / "diagnostic-codes.md").write_text("# Diagnostics\n`E207`\n`P001`\n`P002`\n")
         (refs / "syntax.md").write_text("# Syntax\n## Rule\n## Rule\n```\n## Fake\n```\n")
         (self.base / "sources/example.mwy").write_text("x:1\n")
         self.data = {"version": 1, "language_contract": 1, "target": "x86_64-unknown-linux-gnu", "cases": [
@@ -31,7 +31,8 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(catalog.validate(data, self.base), 1)
 
     def test_catalog_shape_version_target_and_duplicate_ids_fail(self):
-        for change in [lambda data: data.update(version=3), lambda data: data.update(target="other"),
+        for change in [lambda data: data.update(version=4), lambda data: data.update(version=True),
+                       lambda data: data.update(version=2.0), lambda data: data.update(target="other"),
                        lambda data: data.update(extra=True), lambda data: data["cases"].append(copy.deepcopy(data["cases"][0]))]:
             data = copy.deepcopy(self.data)
             change(data)
@@ -76,6 +77,29 @@ class CatalogTests(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, "duplicate"):
             catalog.validate(self.data, self.base)
 
+    def test_runtime_panic_form_requires_version_three_and_accepted_checking(self):
+        self.data["cases"][0].update(phase="run", expected={"accepted": True, "stdout": "before\n", "panic": "P002", "exit": 1})
+        for version in [1, 2]:
+            self.data["version"] = version
+            with self.assertRaises(AssertionError):
+                catalog.validate(self.data, self.base)
+        self.data["version"] = 3
+        self.assertEqual(catalog.validate(self.data, self.base), 1)
+        self.data["cases"][0]["phase"] = "check"
+        with self.assertRaises(AssertionError):
+            catalog.validate(self.data, self.base)
+
+    def test_runtime_panic_rejects_fault_codes_abnormal_exits_and_ambiguous_shapes(self):
+        self.data["version"] = 3
+        good = {"accepted": True, "stdout": "", "panic": "P001", "exit": 1}
+        bad = [{**good, "panic": code} for code in ["E207", "F001", "B001", "P999"]]
+        bad += [{**good, "exit": code} for code in [0, 2, -11, 139, True, 1.0]]
+        bad += [{key: value for key, value in good.items() if key != field} for field in ["stdout", "exit", "panic"]]
+        bad += [{**good, "accepted": False}, {**good, "stdout": 1}, {**good, "stderr": "anything"}]
+        for expected in bad:
+            with self.subTest(expected=expected), self.assertRaises(AssertionError):
+                self.data["cases"][0].update(phase="run", expected=expected)
+                catalog.validate(self.data, self.base)
     def test_missing_and_fenced_heading_references_fail(self):
         for reference in ["../reference/missing.md", "../reference/syntax.md#fake", "../../outside.md"]:
             data = copy.deepcopy(self.data)

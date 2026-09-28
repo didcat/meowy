@@ -89,14 +89,33 @@ No outstanding test failures remain. Compiler AGENTS now documents
 companion staging and the distinction between missing assets and missing imports.
 Package policy, symlink fixtures, public FFI and full release qualification remain open.
 
-Next coverage slice: represent defined runtime panics separately from successful
-checking and infrastructure failures in the versioned catalog/runner. Preserve
-exact stdout prefixes, require the documented panic code/exit and reject crashes,
-timeouts or capability failures as runtime success. Add focused harness regressions
-before promoting dynamic bounds/arithmetic and module-initialization panic cases
-from native tests. Keep expected checking errors separate, refresh the coverage
-inventory, then run the full compiler and strict-gap checks. Graph implementation
-remains deferred while coverage is the user's priority.
+### Current runtime-panic conformance slices
+
+The user requested finishing the runtime-panic coverage work. Dependency-ordered
+commit plan:
+
+1. Admit version-3 run expectations with accepted checking, exact stdout, a
+   documented panic code and exit 1. Preserve older catalog forms; test invalid
+   phases, versions, codes and exits, and render panic expectations distinctly.
+2. Require successful checking before execution and recognize one complete
+   bootstrap panic record. Reject wrong output/code/exit, mixed diagnostics,
+   malformed records, signals, crashes and timeouts. Include runner regressions.
+3. Add source conformance for dynamic arithmetic, collection bounds/capacity,
+   ordered side effects, explicit panic and failed module initialization.
+4. Run the full compiler/default gates, strict-gap and preservation checks; update
+   AGENTS, coverage evidence and final handoff. Finish this series without changing
+   compiler semantics or claiming the remaining capability gaps are qualified.
+
+Inspection: `run --json` still emits the program's textual panic record on stderr,
+with exit 1 and stdout produced before failure. Current ordinary panic records are
+single-line `panic[P...]: ... at [file] bytes start..end`; fault/signal exits differ.
+The conformance runner currently requires zero exit and empty stderr for every run.
+New expectations will preserve that success contract and add an explicit panic form.
+Initial catalog remains 74 cases: 55 passes, 19 pinned gaps, zero failures.
+Version-3 schema admission and distinct report rendering now pass 32 tooling groups.
+The tests reject pre-v3 panic forms, invalid codes/exits, ambiguous expectation
+shapes and noninteger versions. Existing metadata/coverage validation passes.
+Runner integration and source panic fixtures are next; graph work remains deferred.
 
 ## Documentation conventions and layout
 
