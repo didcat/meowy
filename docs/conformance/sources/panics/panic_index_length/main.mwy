@@ -1,0 +1,5 @@
+d:@"debug"
+read<int32>:(values<int32[3]>,position<usize>){->values[{d.print("index");->position}]}
+d.print("before")
+d.print(read([1],2))
+d.print("after")

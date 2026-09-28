@@ -1,0 +1,5 @@
+d:@"debug"
+write:(position<usize>){a:=[[1]];a[{d.print("first");->position}][{d.print("second");->1}]={d.print("rhs");->2}}
+d.print("before")
+write(2)
+d.print("after")

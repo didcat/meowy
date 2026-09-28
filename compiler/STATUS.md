@@ -125,8 +125,11 @@ pass in both profiles: ordered addition, unsigned subtraction, signed multiplica
 and unary-negation overflow. Current result: 59 required passes, 19 pinned gaps,
 zero failures; `/tmp/meowy-panic-overflow.log`. Division by zero, signed-minimum division and remainder by zero also pass in
 both profiles. Current result: 62 required passes, 19 pinned gaps, zero failures;
-`/tmp/meowy-panic-division.log`. Collection and startup fixtures remain before the
-final gate; graph work stays deferred.
+`/tmp/meowy-panic-division.log`. Five collection cases now pass: initialized-length bounds, negative/wide indices,
+early write-path failure and append-capacity failure after item effects. Current
+result: 67 required passes, 19 pinned gaps, zero failures;
+`/tmp/meowy-panic-collections.log`. Explicit and module-startup panics are next,
+then final validation; graph work stays deferred.
 
 ## Documentation conventions and layout
 

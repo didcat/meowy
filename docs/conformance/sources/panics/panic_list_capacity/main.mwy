@@ -1,0 +1,5 @@
+d:@"debug"
+append<int32[1]>:(values<int32[1]>){->values.add({d.print("item");->2})}
+d.print("before")
+append([1])
+d.print("after")

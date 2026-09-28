@@ -852,6 +852,66 @@
         "exit": 1
       },
       "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "panic_index_length",
+      "phase": "run",
+      "source": "sources/panics/panic_index_length/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nindex\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "panic_index_negative",
+      "phase": "run",
+      "source": "sources/panics/panic_index_negative/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nindex\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "panic_index_wide",
+      "phase": "run",
+      "source": "sources/panics/panic_index_wide/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nindex\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "panic_write_prefix",
+      "phase": "run",
+      "source": "sources/panics/panic_write_prefix/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nfirst\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "panic_list_capacity",
+      "phase": "run",
+      "source": "sources/panics/panic_list_capacity/main.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nitem\n",
+        "panic": "P003",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#bounded-lists"
     }
   ]
 }
