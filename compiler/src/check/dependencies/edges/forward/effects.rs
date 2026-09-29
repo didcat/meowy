@@ -1,4 +1,5 @@
 mod calls;
+mod outputs;
 
 use super::{entries::Reports, *};
 use crate::check::dependencies::{OperationKind, Origins, PathStep, references::MAX_ROOTS};
@@ -62,6 +63,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.output_effect_stage(owner, port, span)?;
                 let Port::Operation(id) = port else {
                     continue;
                 };

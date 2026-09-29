@@ -401,17 +401,39 @@ has an outstanding failure. Preservation against `14df111` confirms all 142 prio
 (`/tmp/meowy-condensation-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-Next retain print/panic stage metadata in effect reports before deriving callee
-summaries. `src/check/dependencies/outputs.rs` already records exact dynamic parts,
-primary projections, panic prefixes, stopped parts and control. The collector in
-`src/check/dependencies/edges/forward/effects.rs` only visits Operation ports and
-otherwise uses Unknown; prefixes/parts reached before stopped formatting need
-explicit coverage rather than being treated as no effect. Plan bounded stage
-capture and report integration separately. Preserve existing edges, owners, partial
-output/panic distinctions and no-replay behavior; test literal/dynamic parts,
-stopped prefixes, aliases, ownership and capacity/work limits, add source cases and
-run compiler/strict gates. Callee summaries, backedge data propagation and proof
-outcomes remain separate; `queries::finish` stays B001-gated.
+## Output and panic effect stages in progress
+
+Output producers already retain checked dynamic roots, literal markers, primary
+projections, panic prefixes, stopped indices and control. Current effect collection
+only records Operation ports, so streamed parts/prefixes before a stopped operand
+are absent. A Never primary can still reach its projection without producing output;
+that distinction must survive. Returned edges remain conditional, not successful I/O.
+
+Dependency-ordered commit plan:
+
+1. Add bounded capture/validation for observed output prefix, projection, part and
+   terminal ports. Keep unrelated producer stages unhandled, preserve exact roots
+   and stopped boundaries, and test identities, scope and work limits. Use capture
+   as validation in the existing collector before changing its effect shape.
+2. Aggregate typed output effects by producer, retaining separately observed prefix,
+   projection, streamed-part and terminal stages. Bound copied part records and
+   deduplicate visits; integrate partial producers without inventing Operation ports.
+   Add focused source-derived report and atomic failure/budget tests.
+3. Add useful source output/ordering/panic conformance and evidence mapping, then run
+   compiler/strict gates and preservation against `4c881ee`.
+4. Update root/compiler/foundation handoffs and run documentation checks.
+
+The audit read producer registration, selector validation, primary/stop regressions,
+entry/effect reports and the debug output contract. Capture will not replay operands,
+change graph edges, assert runtime reachability, summarize callees or enable proof
+results. Slice 1 now captures exact stage/root/owner/control data and rejects
+invalid literal/dynamic markers, primary projections and stopped boundaries.
+Unrelated projection/operation producers remain unhandled. Four focused capture
+groups, all 2008 library tests, formatting and all-target Clippy pass
+(`/tmp/meowy-output-capture.log`, `/tmp/meowy-output-capture-library.log`,
+`/tmp/meowy-output-capture-clippy.log`). Existing collection only uses this as
+validation so far. Next aggregate typed partial-output effects in slice 2; preserve
+unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 
