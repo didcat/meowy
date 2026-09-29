@@ -24,10 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-heap-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next add bounded narrowing observations using existing raw-source roots and changed/
-normal flags. The [compiler handoff](compiler/STATUS.md#bounded-heap-handle-effects)
-records the ordered next work. No allocation, additional borrow authority or proof
-outcome is implied by these reports. Unrelated `docs/programs/hey/` work is preserved.
+Narrowing observations are implemented with validated raw-source roots, forwarding
+and independent conversion/result flags. All 126 effect-report groups pass; Never
+conversion boundaries, malformed metadata/budget tests, source cases and final gates
+remain next. The [compiler handoff](compiler/STATUS.md#bounded-narrowing-observations)
+records the plan. No value or proof outcome is inferred. Unrelated `docs/programs/hey/`
+work is preserved.
 
 ## Documentation conventions
 

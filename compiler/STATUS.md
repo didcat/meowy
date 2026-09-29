@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Heap handle effects pass the compiler gate; narrowing observations are next.
+Updated: 2026-09-29. Bounded narrowing observations are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -544,6 +544,33 @@ and `edges/forward/effects/`. Record a dependency-ordered commit plan before cod
 No narrowed type/value, same-value identity or proof outcome may be inferred from
 these stage flags. Projected borrows and generic coercions remain separate;
 `queries::finish` stays B001-gated and no borrow authority is granted.
+
+## Bounded narrowing observations
+
+`narrowing.rs` retains exact raw-source roots and changed/normal/control flags.
+Unchanged values forward without an Operation; conversion to Never retains an
+Operation but no Normal result. Reports currently leave conversions Unknown and
+do not retain forwarding observations. Reuse these checked decisions without
+copying types, evaluating values or granting narrowing/proof authority.
+
+Dependency-ordered commit plan:
+
+1. Validate source/parent/block/owner/span identities and exact edges; retain bounded
+   independent conversion/result observations, including forwarding, with focused tests.
+2. Cover direct/conversion-to-Never boundaries, corrupt metadata, conflicts and exact
+   shared budgets; preserve required paths and ordinary type/ascription/borrow errors.
+3. Add required source cases for guarded locals/fields, effectful receivers, mutable
+   invalidation and stopped consumers; update classified conformance coverage.
+4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
+
+Narrowing stage capture and aggregation pass all 126 effect-report groups
+(`/tmp/meowy-narrowing-effects-reports.log`). Four new groups cover guarded local/
+field roots, receiver effects, outer conversions, control, forwarding, independent
+observations, required reads and direct Never exclusions. Raw-source span, complete
+parent/block/owner identity and exact edges are validated; actual conversions require
+operation registration. Formatting and whitespace checks pass. Step 1 is ready to
+commit; conversion-to-Never and malformed metadata/budget coverage are next.
+Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
 

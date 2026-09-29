@@ -5,6 +5,7 @@ mod fields;
 mod heaps;
 mod indices;
 mod methods;
+mod narrowing;
 mod outputs;
 mod reads;
 mod scalars;
@@ -68,6 +69,7 @@ pub(crate) enum Effect {
     Binary(binaries::Observed),
     Scalar(scalars::Observed),
     Heap(heaps::Observed),
+    Narrowing(narrowing::Observed),
     Unknown,
 }
 
@@ -97,6 +99,10 @@ impl Checker {
             for &port in &walk.ports {
                 if !self.flow.spend(1) {
                     return Err(budget());
+                }
+                if let Some(stage) = self.narrowing_effect_stage(reports, owner, port, span)? {
+                    self.record_narrowing_effect(stage, &mut effects, limit, span)?;
+                    continue;
                 }
                 if let Some(stage) = self.heap_effect_stage(reports, owner, port, span)? {
                     self.record_heap_effect(stage, &mut effects, limit, span)?;
