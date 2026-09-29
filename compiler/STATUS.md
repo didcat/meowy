@@ -413,8 +413,15 @@ exact call-site/point membership, missing ports and backedge positions. Entry, c
 point and boundary identities are checked before returning the graph; node/site/
 boundary/work limits are atomic. Four focused graph tests and all 1992 library
 tests pass (`/tmp/meowy-call-graph.log`, `/tmp/meowy-call-graph-library.log`). Next
-commit slice 1, then implement bounded iterative recursion detection. Preserve
-unrelated `docs/programs/hey/` work.
+add source coverage. Slice 2 computes components with iterative forward finishing
+and reverse traversal, validates adjacency/site membership, and sorts groups by
+actual owner IDs. Self-loops mark singleton recursion; restart backedges remain
+separate. All 1996 library tests passed before adding the independent oracle;
+all five focused component groups now pass, including all 512 three-owner graphs
+in both insertion orders and a 2048-node chain (`/tmp/meowy-call-components.log`).
+Formatting and all-target Clippy pass (`/tmp/meowy-call-components-clippy.log`).
+Next commit slice 2 and add required source cases before the final compiler gate.
+Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

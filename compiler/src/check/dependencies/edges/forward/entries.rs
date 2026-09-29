@@ -9,6 +9,7 @@ pub(crate) struct Reports {
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
     pub(crate) calls: super::calls::CallGraph,
+    pub(crate) groups: super::calls::Components,
     pub(self) items: usize,
 }
 
@@ -38,6 +39,7 @@ impl Checker {
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
+            groups: super::calls::Components::default(),
             items: 0,
         };
         let entries = std::iter::once((None, program.body.id)).chain(
@@ -70,6 +72,7 @@ impl Checker {
         }
         reports.effects = self.operation_effects(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
+        reports.groups = reports.calls.components(&mut self.flow, span)?;
         Ok(reports)
     }
 }

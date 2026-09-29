@@ -1,3 +1,6 @@
+mod components;
+pub(super) use components::Components;
+
 use super::{
     effects::Effect,
     entries::{MAX_ENTRIES, MAX_REPORT_ITEMS, Reports},
