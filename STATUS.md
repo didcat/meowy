@@ -7,28 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Indexed-read effects now retain exact receiver/position roots, length/capacity and
-separate position/result decisions. Observed load/snapshot/read stages remain
-independent, preserving partial paths before stopped positions and conditional
-bounds success. Fourteen new internal groups and three source cases cover snapshots,
-identity, budgets, stopped inputs and existing capability boundaries.
-Commits: `b29e9a0`, `03f4681`, `fcb6b88`, `b04783a`, `776f00a`.
+List/string `size` and list `add` now retain typed effect reports with exact roots,
+method kinds, optional lengths/capacities and independent load/snapshot/terminal
+observations. Partial stages survive stopped add items; receiver checking, errors
+and add's new-list result are preserved. Twelve new internal groups and four source
+cases cover identity, budgets, size results, snapshots, stopped inputs and capacity.
+Commits: `0412249`, `c9d4361`, `d83f647`, `a1f0875`.
 
-All ten compiler checks pass: 2051 library/914 native and 62 Python test groups;
-`/tmp/meowy-index-effects-gate.log`. The catalog has 160 cases: 141 required passes,
+All ten compiler checks pass: 2063 library/914 native and 62 Python test groups;
+`/tmp/meowy-method-effects-gate.log`. The catalog has 164 cases: 145 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-index-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-index-effects-docs.log`).
+(`/tmp/meowy-method-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-method-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Collection method reporting is in progress. Stage validation is committed (`0412249`),
-and typed reports retain size/add kinds and independent load/snapshot/terminal flags.
-All 77 focused effect-report groups pass. Boundary/source coverage and the full gate
-remain next; the [compiler handoff](compiler/STATUS.md#collection-method-effects)
-records the plan. Unrelated `docs/programs/hey/` work is preserved.
+Next retain bounded unary-operation effects, including scalar types and checked
+negation result boundaries. The
+[compiler handoff](compiler/STATUS.md#collection-method-effects) records the files
+and verification plan. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

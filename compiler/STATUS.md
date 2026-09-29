@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Collection method effect reporting is in progress.
+Updated: 2026-09-29. Reports retain typed size/add effects and partial method stages.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -439,103 +439,67 @@ borrow authority, call termination or proof outcomes are inferred.
 
 ## Bounded indexed-read effects
 
+Separate result decisions (`b29e9a0`), stage validation (`03f4681`) and typed partial
+reports (`fcb6b88`) retain exact roots, optional lengths/capacities and independent
+load/snapshot/read observations. Stopped positions retain only earlier stages;
+terminal reads require registered owners and preserve conditional bounds edges.
+Boundary tests (`b04783a`) and source cases (`776f00a`) remain covered by the current
+gates below. No types/values, bounds proof, storage or borrow authority are inferred.
+
+## Collection method effects
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Retain separate indexed-read result decisions | `b29e9a0` |
-| Validate load, snapshot and read stages | `03f4681` |
-| Aggregate partial index effects | `fcb6b88` |
-| Cover identity, work and merge limits | `b04783a` |
-| Pin snapshots, stopped inputs and bounds | `776f00a` |
+| Validate collection method stages | `0412249` |
+| Retain typed partial method effects | `c9d4361` |
+| Cover identity, budgets, conflicts and errors | `d83f647` |
+| Pin size/add results, snapshots, stops and capacity | `a1f0875` |
 
-Index reports retain exact receiver/position roots, capacity, optional initialized
-length, implicit-load/control flags and separate position/result completion decisions.
-Observed load/snapshot/read flags remain independent. Stopped positions can retain
-earlier loads/snapshots without a terminal operation; stopped receivers have no index
-effect. Terminal reads require a registered Operation owner. Completed points,
-parent/block/owner agreement, span, bounds metadata, selectors and original edges
-are validated, including the conditional Checked route before a read.
+Method reports retain checked list/string size and list-add kinds, exact receiver/
+item roots, optional length/capacity, implicit-load/control flags and independent
+observed load/snapshot/terminal flags. Complete points, parent/block/owner agreement,
+source span, kind-specific metadata and original edges are validated. Terminal
+operations require registered owners; partial add stages do not require a terminal.
+Size has no add snapshot and string size has no implicit list load.
 
-Duplicate stages set existing flags; the fixed-size payload copies no aggregate
-types or runtime values. Shared work/effect limits and metadata conflicts return
-no partial collection. Explicit dereferences, element borrows and list methods stay
-separate. Uninhabited list elements retain B001; the seeded read-without-result case
-is internal metadata evidence. No bounds proof, runtime reachability, precise storage,
-borrow authority, call termination or proof outcome is inferred.
+Stopped add items preserve earlier loads/snapshots; stopped receivers produce no
+method effect. Duplicate observations update existing flags, and metadata conflicts
+or shared work/effect limits return no partial collection. The payload has fixed
+size and copies no types or values. Existing receiver-first checking, argument/
+capacity error precedence and add's new-list result are preserved. No capacity
+proof, storage, borrow authority, call termination or proof outcome is inferred.
 
-Fourteen new internal groups cover result decisions, partial stages, independent
-owners/control, nested calls, explicit loads, 34 corrupted metadata cases on both
-direct/shared paths, ten merge conflicts, duplicates and exact work/effect limits.
-Three required source cases pass in debug/release: owned/shared snapshot values,
-nested indices, stopped receivers/positions and P001 against the snapshotted length
-when position effects grow the original list (`/tmp/meowy-index-effects-sources.log`).
+Twelve new internal groups cover method kinds, explicit/shared loads, known/unknown
+lengths, independent owners/control, nested calls, stopped paths and isolated stages.
+Boundary tests exercise 34 add faults on direct/shared paths, six faults across three
+size forms, ten merge conflicts, exact budgets and E201/E207/E212/E103/E302 precedence.
+Four required source cases pass in debug/release: list/UTF-8 byte sizes, add snapshots
+and receiver preservation, stopped receivers/items, and P003 against the original full
+snapshot after the item clears the list (`/tmp/meowy-method-effects-sources.log`).
 
-All ten compiler checks pass: 2051 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2063 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-index-effects-gate.log`. The 160 cases report 141 required passes,
+`/tmp/meowy-method-effects-gate.log`. The 164 cases report 145 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-index-effects-strict.log`); final documentation
-checks all pass (`/tmp/meowy-index-effects-docs.log`). No selected check has an
-outstanding failure. Preservation against `c98fbb8` confirms all 157 prior cases,
-189 source assets, 37 reference files, proof obligations,
+only for those gaps (`/tmp/meowy-method-effects-strict.log`); final documentation
+checks all pass (`/tmp/meowy-method-effects-docs.log`). No selected check has an
+outstanding failure. Preservation against `3d2f92b` confirms all 160 prior cases,
+192 source assets, 37 reference files, proof obligations,
 reference hashes and capability exceptions are unchanged
-(`/tmp/meowy-index-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+(`/tmp/meowy-method-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-## Collection method effects
-
-Investigation confirms `dependencies/methods.rs` already captures checked method
-kinds, receiver/item roots, implicit loads, length/capacity, control and exact edges.
-`list_method` preserves receiver-first checking, stopped arguments and existing
-capacity/error precedence. No producer change is needed. Reports still classify
-terminal method operations as Unknown and omit partial load/snapshot stages.
-Bounded stage capture is now active. All four new stage groups and all 73 effect-report
-groups pass (`/tmp/meowy-method-effects-stages.log`), covering size kinds, implicit/
-explicit loads, known/unknown lengths, stopped items/receivers and registered terminal
-owners. Formatting and whitespace checks pass. Stage capture is committed (`0412249`).
-Typed aggregation now retains method kinds, receiver/item metadata and independent
-observed-stage flags. All 77 effect-report groups pass
-(`/tmp/meowy-method-effects-reports.log`), including owners/control, nested calls,
-explicit loads, index/borrow separation, stopped paths and isolated observed stages.
-Typed reports are committed (`c9d4361`). Add/size metadata corruption, original
-diagnostic precedence, duplicate-stage budgets and atomic merge-limit regressions
-pass. All twelve method-effect groups pass (`/tmp/meowy-method-effects-limits.log`),
-covering 34 add faults on direct/shared paths, six faults across three size forms,
-ten merge conflicts, exact work/effect limits and E201/E207/E212/E103/E302 preservation.
-Formatting and whitespace checks pass; no selected test has an outstanding failure.
-
-All four new source cases pass in debug/release with the rebuilt compiler and
-isolated conformance harness (`/tmp/meowy-method-effects-sources.log`): list sizes,
-UTF-8 byte counts, owned/shared add snapshots, unchanged receiver storage without
-explicit writes, stopped receivers/items and P003 against the original full snapshot
-after the item clears the list. Catalog/coverage checks pass for 164 cases. All 160
-prior cases, 192 source assets, 37 reference files, proof obligations, reference hashes
-and capability exceptions are preserved against `3d2f92b`
-(`/tmp/meowy-method-effects-preservation.log`). Full compiler/strict gates remain next.
-
-Dependency-ordered commit plan:
-
-1. Add bounded method-stage capture under `edges/forward/effects/`, validating
-   kinds, exact roots, load/snapshot/operation/result edges and terminal owners;
-   include focused size/add/stopped-stage regressions: complete (`0412249`).
-2. Aggregate typed method effects with independent observed load/snapshot/terminal
-   flags, fixed-size payloads and focused owner/control/order/partial-report tests:
-   complete (`c9d4361`).
-3. Add malformed-metadata, duplicate-stage, merge-conflict and exact work/effect
-   limit regressions, preserving atomic failures and ordinary diagnostics: complete
-   (`d83f647`).
-4. Add required source cases for size results, add snapshots, stopped items and
-   capacity behavior; update classified evidence without changing prior contracts:
-   complete, ready to commit.
-5. Update the guide, run compiler/strict gates, and record actual validation and the
-   next bounded effect family in both trackers.
-
-Validate and commit each slice with focused tests and staged diff checks. Size has
-no add snapshot; add returns a new list without mutating its receiver. Preserve
-stopped receivers/items, explicit dereferences, indexed/borrow operations and error
-precedence. Do not infer values, capacity proof, storage, borrow authority, call
-termination or proof outcomes; `queries::finish` stays B001-gated.
-Unrelated `docs/programs/hey/` remains preserved.
+Next retain bounded scalar unary effects using `dependencies/unary.rs` and
+`edges/forward/effects/`. Preserve boolean not, resolved bits-not and numeric negation
+kinds, exact operand roots, scalar type/width, primary/control flags and existing
+edges. Reject non-scalar descriptors before copying metadata. Keep optional primary
+projection and operation observations distinct; integer negation reaches its result
+only through Checked success. Stopped operands and signed-literal scalar leaves keep
+their separate paths, as do required-only checking and expected-value projections.
+Add focused identity/type/stage/budget regressions and required source cases, then
+run compiler/strict gates. Callee summaries, backedge propagation and proof outcomes
+remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2617,13 +2581,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    compiler gate pass. Separate index result decisions (`b29e9a0`), stage capture
    (`03f4681`) and typed aggregation (`fcb6b88`) now retain partial receiver loads/
    snapshots before stopped positions and conditional read/result boundaries. Identity/
-   budget tests (`b04783a`), source cases (`776f00a`) and the compiler gate pass. Next
-   capture bounded list/string size and list-add stages using `dependencies/methods.rs`
-   and `edges/forward/effects/`, then aggregate typed effects. Preserve stopped items,
-   receiver snapshots, exact roots and capacity-success edges without mutating the
-   receiver. Add focused/source coverage and run compiler/strict gates. No pointee-
-   storage inference, value read, borrow authority, callee summary or proof outcome
-   is implied.
+   budget tests (`b04783a`), source cases (`776f00a`) and the compiler gate pass.
+   Method-stage validation (`0412249`) and typed reports (`c9d4361`) now retain
+   list/string size and list-add observations, including partial receiver stages.
+   Boundary tests (`d83f647`), source cases (`a1f0875`) and the compiler gate pass.
+   Next retain bounded unary effects using `dependencies/unary.rs` and
+   `edges/forward/effects/`, preserving operand roots, scalar kinds/types, primary/
+   control flags and checked negation results. Keep stopped operands, signed literals
+   and required/expected paths separate; add focused/source coverage and run compiler/
+   strict gates. No storage/value inference, borrow authority, callee summary or proof
+   outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

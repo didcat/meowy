@@ -388,6 +388,20 @@ The payload has fixed size and copies no type shapes or runtime values. Element
 borrows, explicit dereferences and list-method stages remain separate. Encountered
 read ports retain conditional bounds success; they do not prove bounds, runtime
 reachability, precise storage, borrow authority or a proof result.
+List/string size and list add now retain typed Method reports with exact receiver
+roots, checked kinds, implicit-load/control flags and add item/length/capacity
+metadata. Observed loads, snapshots and terminal operations remain independent:
+stopped add items can retain earlier loads/snapshots, while stopped receivers produce
+no method effect. Size operations have no add snapshot and string size has no
+implicit list load. Capture validates complete roots, parent/block/owner agreement,
+source span, kind-specific metadata and exact edges, including add's Checked capacity
+route. Only terminal stages require registered Operation owners. Duplicate stages
+set existing flags; conflicting metadata and shared work/effect limits publish no
+partial collection. These fixed-size reports copy no types or values and do not
+infer capacity success, storage, borrow authority, call termination or proof outcomes.
+Existing receiver-first checking, argument/error precedence and add's new-list result
+are preserved; add does not implicitly mutate its receiver. Explicit dereferences,
+indexed reads and element borrows retain their separate operations.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
