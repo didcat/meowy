@@ -548,7 +548,11 @@ owner identity and operation registration are validated. Independent constructio
 result flags preserve contextual raw types, signed roots, required/stopped exclusions,
 function owners and control. Static alias declarations retain their own completion;
 runtime uses capture the scalar constant. Formatting and whitespace checks pass.
-Plan step 1 is ready to commit; adversarial identity/budget coverage is next.
+Plan step 1 is committed (`3be764d`). All nine scalar-effect groups now pass
+(`/tmp/meowy-scalar-effects-limits.log`), including 18 faults for both construction/
+result ports, five merge conflicts, duplicate work, exact shared limits and constant
+work across 1/65536-byte strings. Ordinary literal and stopped-tail errors remain
+unchanged. Step 2 is ready to commit; required source coverage is next.
 No source behavior or capability gate changed. Preserve `docs/programs/hey/`.
 
 ## Documentation conventions and layout
