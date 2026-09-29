@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded indexed-read effect reporting is in progress.
+Updated: 2026-09-29. Reports retain partial indexed-read effects and result boundaries.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -430,106 +430,68 @@ pointee storage or values and grant no borrow authority or proof outcome.
 
 ## Bounded field-read effects
 
+Checked field counts (`f834ed9`) and typed Field records (`e0b6732`) preserve exact
+receiver/index/load/result boundaries before narrowing. Explicit dereferences,
+reference-valued fields, projected borrows and required/static reads retain their
+separate identities. Boundary tests (`deb2b53`) and source cases (`e984699`) remain
+covered by the current gates below. No type shapes, storage/value provenance,
+borrow authority, call termination or proof outcomes are inferred.
+
+## Bounded indexed-read effects
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Retain checked receiver field counts | `f834ed9` |
-| Capture validated field-read effects | `e0b6732` |
-| Cover identity, work and capability boundaries | `deb2b53` |
-| Pin receiver order, stopped calls and borrow rejection | `e984699` |
+| Retain separate indexed-read result decisions | `b29e9a0` |
+| Validate load, snapshot and read stages | `03f4681` |
+| Aggregate partial index effects | `fcb6b88` |
+| Cover identity, work and merge limits | `b04783a` |
+| Pin snapshots, stopped inputs and bounds | `776f00a` |
 
-Field effects retain exact receiver roots, resolved indices, implicit shared-load
-choices and normal/control flags before narrowing. The producer's retained field
-count bounds the selected index without aggregate type copies. Capture validates
-completed producer/receiver points, parent/block/owner agreement, source span,
-operation registry and exact receiver/load/field/result edges. Duplicate visits
-produce one record; failed metadata/work/effect limits return no partial collection.
+Index reports retain exact receiver/position roots, capacity, optional initialized
+length, implicit-load/control flags and separate position/result completion decisions.
+Observed load/snapshot/read flags remain independent. Stopped positions can retain
+earlier loads/snapshots without a terminal operation; stopped receivers have no index
+effect. Terminal reads require a registered Operation owner. Completed points,
+parent/block/owner agreement, span, bounds metadata, selectors and original edges
+are validated, including the conditional Checked route before a read.
 
-Explicit dereferences, reference-valued fields and projected borrows retain separate
-identities. Never fields have no normal result; stopped predecessors exclude later
-field operations. Required/static reads retain their existing paths. Original
-lookup, borrow and lifetime errors remain; no value/storage provenance, borrow
-permission, callee termination or proof result is inferred.
+Duplicate stages set existing flags; the fixed-size payload copies no aggregate
+types or runtime values. Shared work/effect limits and metadata conflicts return
+no partial collection. Explicit dereferences, element borrows and list methods stay
+separate. Uninhabited list elements retain B001; the seeded read-without-result case
+is internal metadata evidence. No bounds proof, runtime reachability, precise storage,
+borrow authority, call termination or proof outcome is inferred.
 
-Eight new effect groups cover 26 malformed cases on both direct and shared-load
-paths, duplicate visits, exact work/effect limits, independent owners/control,
-narrowing, Never/stopped/required-only boundaries and E201/E302/E303 preservation.
-Three required source cases pass in debug/release: owned/shared receiver order,
-explicit/nested/reference field reads and narrowing, panic-stopped receiver calls,
-and writes rejected while a shared view remains live
-(`/tmp/meowy-field-effects-sources.log`). Structural records remain separate evidence.
+Fourteen new internal groups cover result decisions, partial stages, independent
+owners/control, nested calls, explicit loads, 34 corrupted metadata cases on both
+direct/shared paths, ten merge conflicts, duplicates and exact work/effect limits.
+Three required source cases pass in debug/release: owned/shared snapshot values,
+nested indices, stopped receivers/positions and P001 against the snapshotted length
+when position effects grow the original list (`/tmp/meowy-index-effects-sources.log`).
 
-All ten compiler checks pass: 2037 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2051 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-field-effects-gate.log`. The 157 cases report 138 required passes,
+`/tmp/meowy-index-effects-gate.log`. The 160 cases report 141 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-field-effects-strict.log`); all four final documentation
-checks pass (`/tmp/meowy-field-effects-docs.log`). No selected check has an outstanding
-failure. Preservation against `9254aac` confirms
-all 154 prior cases, 186 source assets, 37 reference files, proof obligations,
+only for those gaps (`/tmp/meowy-index-effects-strict.log`); final documentation
+checks all pass (`/tmp/meowy-index-effects-docs.log`). No selected check has an
+outstanding failure. Preservation against `c98fbb8` confirms all 157 prior cases,
+189 source assets, 37 reference files, proof obligations,
 reference hashes and capability exceptions are unchanged
-(`/tmp/meowy-field-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+(`/tmp/meowy-index-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-## Bounded indexed-read effects
-
-Investigation confirms `Access.may_return` describes position completion;
-`list_type` already rejects uninhabited elements with B001. `list_index` can retain
-its actual result decision without widening that gate. Existing receiver loads and
-snapshots precede position evaluation, so stopped positions need partial reports
-without terminal reads. Operation-only collection currently loses those stages.
-`IndexAccess.normal` now retains the result decision independently, while invalid
-normal results after stopped positions are rejected before publication. Ten focused
-index groups pass, including seeded read-without-result metadata and preserved
-uninhabited-element B001 diagnostics. Formatting and whitespace checks pass.
-Result capture is committed (`b29e9a0`). Stage classification now validates encountered
-index loads/snapshots/reads, including registered owners only for terminal reads;
-all four new stage groups and all 61 effect-report groups pass
-(`/tmp/meowy-index-effects-stages.log`). Formatting and whitespace checks pass.
-Stage validation is committed (`03f4681`). Typed aggregation now retains separate
-observed load/snapshot/read flags with the captured access metadata. Focused report
-tests cover pre-position snapshots, control/owners, nested calls, explicit loads,
-element-borrow separation, stopped operands and isolated observed stages. All 65
-effect-report groups pass; no values or type shapes are copied.
-Aggregation is committed (`fcb6b88`). Malformed metadata, duplicate partial stages,
-shared work/effect caps and atomic merge-conflict tests pass. All twelve index-effect
-groups pass, including 34 corrupted metadata cases on both direct/shared paths and
-ten merge conflicts. Formatting and whitespace checks pass; no selected test fails.
-
-All three new source cases pass in debug/release using the rebuilt compiler and
-isolated conformance harness (`/tmp/meowy-index-effects-sources.log`): owned/shared
-snapshot values, nested indices, stopped positions/receivers, and P001 bounds against
-the snapshotted initialized length after the position changes the list. The 160-case
-catalog and classified coverage checks pass. All 157 prior cases, 189 source assets,
-37 reference files, proof obligations, reference hashes and capability exceptions
-are preserved against `c98fbb8` (`/tmp/meowy-index-effects-preservation.log`).
-Full compiler/strict validation remains next.
-
-Dependency-ordered commit plan:
-
-1. Retain result completion separately in `IndexAccess`/`list_index` and preserve
-   conditional load/result edges; test ordinary/stopped inputs and existing B001 gates:
-   complete (`b29e9a0`).
-2. Add bounded index-stage capture under `edges/forward/effects/`, validating exact
-   receiver/position roots, length/capacity, flags, stages and original edges:
-   complete (`03f4681`).
-3. Aggregate typed partial index effects with fixed-size payloads, operation-owner
-   validation for terminal reads, deduplication and focused report regressions:
-   complete (`fcb6b88`).
-4. Cover malformed metadata, mixed families and exact stage/work/effect limits;
-   keep failed reports atomic and existing diagnostics authoritative: complete
-   (`b04783a`).
-5. Add required source cases for snapshots, stopped positions and bounds behavior;
-   update classified evidence while preserving prior sources/contracts/exceptions:
-   complete, ready to commit.
-6. Update the guide, run compiler/strict gates and record actual results plus the
-   next bounded effect family in both trackers.
-
-Validate and commit each slice with focused tests and staged diff checks. Preserve
-explicit dereferences, element borrows, known/unknown lengths and conditional bounds
-success. Do not infer stored values, pointee storage, borrow authority, bounds proof,
-call termination or proof outcomes; `queries::finish` stays B001-gated.
-Unrelated `docs/programs/hey/` remains preserved.
+Next retain effects for list/string `size` and list `add` using
+`dependencies/methods.rs`, `list.rs::list_method` and `edges/forward/effects/`.
+First validate kind-specific receiver/item roots, implicit loads, length/capacity,
+stopped states and exact edges. Then aggregate bounded method stages, preserving
+loads/snapshots before stopped add items and conditional capacity success. Size
+operations have no add snapshot; `add` produces a new list without mutating its
+receiver. Keep argument/error precedence, explicit dereferences and indexed/borrow
+operations separate. Add focused identity/budget tests and required source coverage,
+then run compiler/strict gates. Callee summaries, backedge propagation and proof
+outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2608,13 +2570,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    coverage (`cfc7d62`) and the compiler gate pass. Checked field counts (`f834ed9`)
    and typed field effects (`e0b6732`) now retain validated receiver/index/load/result
    boundaries. Identity/budget coverage (`deb2b53`), source cases (`e984699`) and the
-   compiler gate pass. Next audit selected-result completion in `list.rs::list_index`
-   separately from position completion, then capture bounded indexed-read effects
-   using `dependencies/indices.rs` and `edges/forward/effects/`. Preserve partial
-   receiver loads/snapshots before stopped positions, exact roots/length/capacity and
-   Checked bounds edges. Add focused/source coverage and run compiler/strict gates.
-   No pointee-storage inference, value read, borrow authority, callee summary or proof
-   outcome is implied.
+   compiler gate pass. Separate index result decisions (`b29e9a0`), stage capture
+   (`03f4681`) and typed aggregation (`fcb6b88`) now retain partial receiver loads/
+   snapshots before stopped positions and conditional read/result boundaries. Identity/
+   budget tests (`b04783a`), source cases (`776f00a`) and the compiler gate pass. Next
+   capture bounded list/string size and list-add stages using `dependencies/methods.rs`
+   and `edges/forward/effects/`, then aggregate typed effects. Preserve stopped items,
+   receiver snapshots, exact roots and capacity-success edges without mutating the
+   receiver. Add focused/source coverage and run compiler/strict gates. No pointee-
+   storage inference, value read, borrow authority, callee summary or proof outcome
+   is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

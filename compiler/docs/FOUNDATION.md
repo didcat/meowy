@@ -172,6 +172,9 @@ and stopped index/item expressions have no bounds/capacity-success result. These
 stages share the existing edge budget and preserve known/unknown lengths, source
 owners, call-return conditions and diagnostics. They do not infer pointee storage,
 grant loan authority or establish complete value provenance.
+Indexed access retains its normal-result decision separately from position
+completion. Uninhabited list elements keep their existing bootstrap rejection;
+the separate result boundary is structural metadata, not new list-type support.
 Shared element borrows retain parent/index roots and reborrow IDs. Parent metadata
 distinguishes checked places, existing views and direct statement-owned temporaries.
 Address and length capture precede index evaluation; bounds success precedes the
@@ -372,6 +375,19 @@ keep later field operations outside the report. Required/static fields and proje
 borrows keep their existing paths. These records describe the raw field read before
 narrowing, without copying aggregate types or inferring storage/value provenance,
 borrow authority, call termination or proof outcomes.
+Indexed-read reports retain exact receiver/position roots, capacity, optional
+initialized length, implicit-load/control flags and separate position/result
+completion decisions. Load, snapshot and read observations are aggregated separately
+at the producer point, so a stopped position can retain earlier loads/snapshots
+without a terminal read. Stopped receivers retain no index effect. Capture validates
+both completed roots, parent/block/owner agreement, source span, capacity/length,
+stage selectors and exact load/snapshot/Checked/read/result edges. Only terminal
+reads require a registered Operation owner. Repeated stages set their existing flags;
+shared work/effect limits and conflicting metadata fail without partial publication.
+The payload has fixed size and copies no type shapes or runtime values. Element
+borrows, explicit dereferences and list-method stages remain separate. Encountered
+read ports retain conditional bounds success; they do not prove bounds, runtime
+reachability, precise storage, borrow authority or a proof result.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
