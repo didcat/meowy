@@ -25,6 +25,13 @@ pub(crate) enum Effect {
         origins: Origins,
         control: bool,
     },
+    Call {
+        site: crate::hir::CallId,
+        function: crate::hir::FunctionId,
+        args: Vec<PointId>,
+        may_return: bool,
+        control: bool,
+    },
     Unknown,
 }
 
@@ -40,7 +47,7 @@ impl Checker {
         reports: &Reports,
         span: Span,
         limit: usize,
-        mut steps: usize,
+        mut parts: usize,
         mut roots: usize,
     ) -> Result<Effects> {
         let budget = || Diagnostic::unsupported("proof operation-effect budget exhausted", span);
@@ -101,12 +108,12 @@ impl Checker {
                         ));
                     }
                     if op.steps.len() > crate::list::MAX_WRITE_PATH
-                        || op.steps.len() > steps
+                        || op.steps.len() > parts
                         || !self.flow.spend(op.steps.len() + 1)
                     {
                         return Err(budget());
                     }
-                    steps -= op.steps.len();
+                    parts -= op.steps.len();
                     Effect::Path {
                         local: op.local,
                         storage: op.storage,
@@ -135,7 +142,7 @@ impl Checker {
                     if self.invocations[site].owner != owner {
                         return Err(invalid());
                     }
-                    Effect::Unknown
+                    self.call_effect(reports, *site, &mut parts, span)?
                 } else {
                     Effect::Unknown
                 };

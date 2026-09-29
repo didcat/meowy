@@ -399,8 +399,17 @@ actual operation points to CallIds and validates registry keys, checked points,
 owners and spans before use. Reports still classify calls as Unknown. Three index
 regressions and four existing effect regression groups pass
 (`/tmp/meowy-call-index.log`, `/tmp/meowy-call-index-effects.log`); formatting and
-all-target Clippy pass (`/tmp/meowy-call-index-clippy.log`). Next implement typed
-call capture and report integration. Preserve unrelated
+all-target Clippy pass (`/tmp/meowy-call-index-clippy.log`). Slice 2 now retains
+CallId, FunctionId, argument roots, control and conditional return metadata as
+`Effect::Call`, with callee/body and argument/edge validation. Callee effects remain
+opaque; collection never enters a callee or creates graph edges. Path steps and
+call argument copies share the existing bounded payload allowance, charged once
+per distinct operation. All 1988 library tests pass
+(`/tmp/meowy-call-effects-library.log`); all seven focused call-effect groups also
+pass after the per-call capacity test (`/tmp/meowy-call-effects.log`). Coverage
+includes receiver order, aliases/recursion, controls, Never/stopped arguments,
+malformed metadata, copied-payload/work limits and unchanged reports after failure.
+Next commit slice 2, add source coverage and run the complete compiler gate. Preserve unrelated
 `docs/programs/hey/` work and the exact existing capability exceptions.
 
 ## Documentation conventions and layout

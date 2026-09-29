@@ -10,7 +10,10 @@ pub(crate) fn call_effect_index_retains_exact_points_across_nested_calls_and_ali
     assert!(checker.invocations.values().any(|call| call.owner != 0));
     for (site, call) in &checker.invocations {
         assert_eq!(index[&call.point], *site);
-        assert_eq!(reports.effects[&call.point], (call.owner, Effect::Unknown));
+        assert_eq!(reports.effects[&call.point].0, call.owner);
+        assert!(
+            matches!(&reports.effects[&call.point].1, Effect::Call { site: found, .. } if found == site)
+        );
     }
 }
 
@@ -42,7 +45,7 @@ pub(crate) fn call_effect_index_rejects_duplicate_and_invalid_call_metadata() {
         assert_eq!(error.code, "B001", "fault {fault}");
         assert!(error.message.contains("identity mismatch"), "fault {fault}");
         assert_eq!(checker.edge_counts(), counts);
-        assert_eq!(reports.effects[&point].1, Effect::Unknown);
+        assert!(matches!(reports.effects[&point].1, Effect::Call { .. }));
     }
 }
 

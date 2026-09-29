@@ -168,7 +168,9 @@ pub(crate) fn indirect_effects_keep_calls_opaque_after_function_declarations() {
     assert_eq!(origins, &checker.stores[&id].origins);
     assert_eq!(checker.invocations.len(), 1);
     let call = checker.invocations.first_key_value().unwrap().1;
-    assert_eq!(reports.effects[&call.point].1, Effect::Unknown);
+    assert!(
+        matches!(reports.effects[&call.point].1, Effect::Call { function, .. } if function == call.function)
+    );
 }
 
 #[test]
