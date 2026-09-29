@@ -427,8 +427,11 @@ references retain their existing B001 ordinary-scalar-storage gate. All six focu
 `cargo test --locked --manifest-path compiler/Cargo.toml --lib deref_` groups pass,
 as do formatting and whitespace checks. The collector now has typed Deref records
 with bounded point/owner/mode/edge validation. All 45 effect-report test groups pass,
-including four new dereference groups and the updated reference-cell regression.
-No implementation capability is widened.
+including four new dereference groups and the updated reference-cell regression
+(`f3f4e4c`). All eight dereference-effect groups now pass, covering 22 malformed
+metadata cases, duplicate visits, exact work/effect caps, implicit-load/reborrow
+separation and E222/E302/E303 preservation. Formatting and whitespace checks pass;
+no selected test has an outstanding failure. No capability is widened.
 
 Dependency-ordered commit plan:
 
@@ -437,9 +440,10 @@ Dependency-ordered commit plan:
    complete (`e9aa13a`).
 2. Add bounded typed dereference effects under `edges/forward/effects/`, validating
    exact pointer/owner/point/edge identities and preserving reference-cell reads:
-   complete, ready to commit.
+   complete (`f3f4e4c`).
 3. Add malformed-metadata, duplicate-visit and exact-work/limit regressions for the
-   collector, keeping failed reports atomic and stopped loads absent.
+   collector, keeping failed reports atomic and stopped loads absent: complete,
+   ready to commit.
 4. Add required source cases for pointer evaluation order, stopped loads and borrow
    rejection; update classified coverage without changing reference contracts.
 5. Document the completed scope and run the compiler/strict gates; record actual
