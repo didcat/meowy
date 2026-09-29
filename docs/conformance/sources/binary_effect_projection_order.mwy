@@ -1,0 +1,9 @@
+d : @"debug"
+<Row> : <{
+    -> <int32>
+    tag <boolean>
+}>
+left <Row> : () { d.print("left"); -> { -> 7; -> tag : true } }
+right <Row> : () { d.print("right"); -> { -> 2; -> tag : false } }
+sum : left() + right()
+d.print(sum)

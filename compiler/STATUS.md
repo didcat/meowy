@@ -529,6 +529,14 @@ groups pass (`/tmp/meowy-binary-effects-limits.log`), including 40 root/ledger f
 on direct/primary paths, eleven bad signatures, ten conflicts, invalid selectors and
 E107/E222/E213 preservation. Formatting and whitespace checks pass; no test fails.
 
+All four required source cases pass in debug/release using the rebuilt compiler and
+isolated harness (`/tmp/meowy-binary-effects-sources.log`): scalar and opaque comparison
+results, projection/call order, stopped inputs and checked overflow. Catalog/coverage
+checks pass for 172 cases. All 168 prior cases, 200 source assets, 37 reference files,
+proof obligations, reference hashes and capability exceptions are preserved against
+`f380605` (`/tmp/meowy-binary-effects-preservation.log`). Full compiler/strict gates
+remain next. No compiler capability or reference expectation was changed for fixtures.
+
 Dependency-ordered commit plan:
 
 1. Capture compact Never/scalar/other operand/result classifications in binary
@@ -542,9 +550,11 @@ Dependency-ordered commit plan:
    complete (`98babec`).
 4. Cover malformed signatures/roots/ledgers, merge conflicts, duplicates and exact
    work/effect limits while preserving atomic failure and ordinary diagnostics:
-   complete, ready to commit.
+   complete (`cb5a88d`).
 5. Add required source cases for operator domains/order, projections, stopped inputs,
-   opaque comparisons and checked arithmetic; update classified coverage.
+   opaque comparisons and checked arithmetic; update classified coverage:
+   complete, ready to commit. Explicit record-return signatures preserve contextual
+   typing; stopped control calls remain block statements, retaining their B001 gate.
 6. Update the guide, run compiler/strict gates and leave the next bounded handoff.
 
 Validate and commit each slice with focused tests and staged diff checks. Do not

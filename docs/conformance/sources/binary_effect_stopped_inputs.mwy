@@ -1,0 +1,11 @@
+d : @"debug"
+left <int32> : () { d.print("left"); -> 1 }
+skipped <int32> : () { d.print("unexpected right"); -> 1 }
+stop <never> : () { d.print("right stop"); d.panic("stop") }
+'out {
+    ({ d.print("left stop"); 'out.leave() }) + skipped()
+    d.print("unexpected result")
+}
+d.print("after leave")
+left() + stop()
+d.print("unexpected tail")

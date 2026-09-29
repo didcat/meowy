@@ -1,0 +1,10 @@
+d : @"debug"
+<Row> : <{
+    -> <int8>
+    tag <boolean>
+}>
+left <Row> : (n <int8>) { d.print("left"); -> { -> n; -> tag : true } }
+right <Row> : () { d.print("right"); -> { -> 1; -> tag : false } }
+a <int8> := 127
+value : left(a) + right()
+d.print("unexpected result")

@@ -1,0 +1,33 @@
+d : @"debug"
+bits : @"bits"
+a <int16> := 7
+b <int16> := 2
+d.print(a + b)
+d.print(a - b)
+d.print(a * b)
+d.print(a / b)
+d.print(a % b)
+u <uint8> : 7
+v <uint8> : 2
+d.print(bits.and(u, v))
+d.print(bits.or(u, v))
+d.print(bits.xor(u, v))
+d.print("a" < "b")
+d.print(false != true)
+d.print(null == null)
+f <float32> : 7.0
+g <float32> : 2.0
+d.print(f / g == 3.5)
+left : { -> n : 1 }
+right : { -> n : 1 }
+d.print(left == right)
+xs : [1, 2]
+ys : [1, 2]
+d.print(xs == ys)
+n : 1
+p : &n
+q : &n
+d.print(p == q)
+x <int32><null> : 1
+y <int32><null> : null
+d.print(x == y)

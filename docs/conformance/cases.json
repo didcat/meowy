@@ -1806,6 +1806,50 @@
         "exit": 1
       },
       "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "binary_effect_domains",
+      "phase": "run",
+      "source": "sources/binary_effect_domains.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "9\n5\n14\n3\n1\n2\n7\n5\ntrue\ntrue\ntrue\ntrue\ntrue\ntrue\ntrue\nfalse\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "binary_effect_projection_order",
+      "phase": "run",
+      "source": "sources/binary_effect_projection_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nright\n9\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "binary_effect_stopped_inputs",
+      "phase": "run",
+      "source": "sources/binary_effect_stopped_inputs.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left stop\nafter leave\nleft\nright stop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "binary_effect_checked_result",
+      "phase": "run",
+      "source": "sources/binary_effect_checked_result.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nright\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
     }
   ]
 }
