@@ -424,8 +424,15 @@ and boundary records stay in the report. Group/site/work bounds precede growth;
 parallel memberships use one target lookup per source adjacency. Three focused
 condensation groups and all 2000 library tests pass
 (`/tmp/meowy-call-condensation.log`, `/tmp/meowy-condensation-library.log`).
-Next commit slice 1 and implement ordering. Preserve unrelated `docs/programs/hey/`
-work.
+Slice 2 now validates condensed targets and unique site membership, then uses
+an iterative ready set to emit callees before callers with deterministic ties.
+Internal recursive calls are not DAG dependencies; cycles return no partial order.
+Four new ordering groups cover diamonds/parallel sites, invalid cycles/targets,
+all 64 three-group graphs without self-edges and a 2048-group chain with exact
+node/site/work boundaries (`/tmp/meowy-call-order.log`). All 2004 library tests,
+formatting and all-target Clippy pass (`/tmp/meowy-call-order-library.log`,
+`/tmp/meowy-call-order-clippy.log`). Next commit slice 2 and add source coverage.
+Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

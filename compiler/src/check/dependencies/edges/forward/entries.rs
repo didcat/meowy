@@ -11,6 +11,7 @@ pub(crate) struct Reports {
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
     pub(crate) condensed: super::calls::Condensed,
+    pub(crate) order: Vec<usize>,
     pub(self) items: usize,
 }
 
@@ -42,6 +43,7 @@ impl Checker {
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
             condensed: super::calls::Condensed::default(),
+            order: Vec::new(),
             items: 0,
         };
         let entries = std::iter::once((None, program.body.id)).chain(
@@ -78,6 +80,7 @@ impl Checker {
         reports.condensed = reports
             .calls
             .condense(&reports.groups, &mut self.flow, span)?;
+        reports.order = reports.condensed.analysis_order(&mut self.flow, span)?;
         Ok(reports)
     }
 }
