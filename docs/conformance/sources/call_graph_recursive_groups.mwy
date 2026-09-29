@@ -1,0 +1,24 @@
+d:@"debug"
+even<(int32)->boolean>
+odd<(int32)->boolean>
+odd<boolean>:(n<int32>)'out{
+    |n==0|{'out->false;'out.leave()}
+    ->even(n-1)
+}
+even<boolean>:(n<int32>)'out{
+    alias:odd
+    |n==0|{'out->true;'out.leave()}
+    ->alias(n-1)
+}
+sum<int32>:(n<int32>)'out{
+    |n==0|{'out->0;'out.leave()}
+    ->n+sum(n-1)
+}
+spin<never>:(){spin()}
+leaf<int32>:(){->7}
+unused<int32>:(){->9}
+run:even
+d.print(run(4))
+d.print(run(3))
+d.print(sum(3))
+d.print(leaf())

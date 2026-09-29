@@ -1,0 +1,9 @@
+d:@"debug"
+stop<never>:(){d.panic("stop")}
+again<int32>:(n<int32>)'out{
+    |n==0|{'out->0;'out.leave()}
+    ->again(n-1)
+}
+d.print("before")
+again(stop())
+d.print("after")

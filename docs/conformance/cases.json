@@ -1492,6 +1492,38 @@
         "code": "E302"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "call_graph_recursive_groups",
+      "phase": "run",
+      "source": "sources/call_graph_recursive_groups.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\nfalse\n6\n7\n"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "call_graph_stopped_recursion",
+      "phase": "run",
+      "source": "sources/call_graph_stopped_recursion.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_graph_unused_type_error",
+      "phase": "check",
+      "source": "sources/call_graph_unused_type_error.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
     }
   ]
 }

@@ -420,8 +420,14 @@ separate. All 1996 library tests passed before adding the independent oracle;
 all five focused component groups now pass, including all 512 three-owner graphs
 in both insertion orders and a 2048-node chain (`/tmp/meowy-call-components.log`).
 Formatting and all-target Clippy pass (`/tmp/meowy-call-components-clippy.log`).
-Next commit slice 2 and add required source cases before the final compiler gate.
-Preserve unrelated `docs/programs/hey/` work.
+Three required source cases now pass in debug/release with a fresh CLI
+(`/tmp/meowy-call-graph-cases.log`): independent mutual/self/unused Never groups,
+stopped recursive-call arguments and an unused recursive body type error. Catalog
+and coverage checks validate 142 cases and 37 references. The compiler gate is
+running (`/tmp/meowy-call-graph-gate.log`). Preservation against `74383fc` confirms
+all 139 prior cases, 171 source assets, 37 reference files and exact capability
+exceptions are unchanged (`/tmp/meowy-call-graph-preservation.log`). Next finish
+compiler/strict validation and the documentation handoff. Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 
