@@ -1,0 +1,6 @@
+d:@"debug"
+mark<int32>:(){d.print("message operand");->2}
+row:{->7;->tag:true}
+fail:d.panic
+fail("outer {row}/{mark()}")
+d.print("after")

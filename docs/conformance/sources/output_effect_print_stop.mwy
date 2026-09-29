@@ -1,0 +1,3 @@
+d:@"debug"
+stop<never>:(){d.panic("stopped")}
+d.print("before {stop()}after")

@@ -445,9 +445,15 @@ retain the operation-owner registry guard, while partial stages can exist withou
 Operation ports. The guard and focused regression now pass for missing/foreign
 terminal owners and fabricated completion after a stopped part. All nine focused
 output-effect groups, formatting and Clippy pass (`/tmp/meowy-output-effects.log`,
-`/tmp/meowy-output-effects-clippy.log`). Four new source cases already
-pass in both profiles (`/tmp/meowy-output-effects-cases.log`); catalog coverage is
-148 cases. Preserve unrelated `docs/programs/hey/` work.
+`/tmp/meowy-output-effects-clippy.log`). Four new source cases pass in both profiles (`/tmp/meowy-output-effects-cases.log`),
+covering streamed primary/dynamic parts, partial print before panic, completed
+formatted panic and checking an unexecuted tail. All ten compiler checks pass:
+2013 library/914 native tests and 129 required conformance passes with 19 unchanged
+gaps (`/tmp/meowy-output-effects-gate.log`). Preservation against `4c881ee` confirms
+all 144 prior cases, 176 source assets, 37 reference files and exact exceptions are
+unchanged (`/tmp/meowy-output-effects-preservation.log`). Next finish strict-mode
+validation and the documentation handoff. Preserve unrelated `docs/programs/hey/`
+work.
 
 ## Documentation conventions and layout
 

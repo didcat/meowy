@@ -1546,6 +1546,50 @@
         "exit": 1
       },
       "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "output_effect_parts",
+      "phase": "run",
+      "source": "sources/output_effect_parts.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "begin 7/value 2\n2 end\n"
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_effect_print_stop",
+      "phase": "run",
+      "source": "sources/output_effect_print_stop.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before ",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_effect_panic_parts",
+      "phase": "run",
+      "source": "sources/output_effect_panic_parts.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "message operand\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_effect_checked_tail",
+      "phase": "check",
+      "source": "sources/output_effect_checked_tail.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
     }
   ]
 }
