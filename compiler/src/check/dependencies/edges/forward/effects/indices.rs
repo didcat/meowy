@@ -205,3 +205,6 @@ mod tests;
 
 #[cfg(test)]
 mod reports;
+
+#[cfg(test)]
+mod limits;

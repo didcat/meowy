@@ -491,6 +491,10 @@ observed load/snapshot/read flags with the captured access metadata. Focused rep
 tests cover pre-position snapshots, control/owners, nested calls, explicit loads,
 element-borrow separation, stopped operands and isolated observed stages. All 65
 effect-report groups pass; no values or type shapes are copied.
+Aggregation is committed (`fcb6b88`). Malformed metadata, duplicate partial stages,
+shared work/effect caps and atomic merge-conflict tests pass. All twelve index-effect
+groups pass, including 34 corrupted metadata cases on both direct/shared paths and
+ten merge conflicts. Formatting and whitespace checks pass; no selected test fails.
 
 Dependency-ordered commit plan:
 
@@ -502,9 +506,10 @@ Dependency-ordered commit plan:
    complete (`03f4681`).
 3. Aggregate typed partial index effects with fixed-size payloads, operation-owner
    validation for terminal reads, deduplication and focused report regressions:
-   complete, ready to commit.
+   complete (`fcb6b88`).
 4. Cover malformed metadata, mixed families and exact stage/work/effect limits;
-   keep failed reports atomic and existing diagnostics authoritative.
+   keep failed reports atomic and existing diagnostics authoritative: complete,
+   ready to commit.
 5. Add required source cases for snapshots, stopped positions and bounds behavior;
    update classified evidence while preserving prior sources/contracts/exceptions.
 6. Update the guide, run compiler/strict gates and record actual results plus the
