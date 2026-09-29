@@ -22,6 +22,7 @@ pub(crate) fn deref_stages_keep_modes_and_pointer_before_load_result_order() {
         let (checker, _) = check(source);
         let (&id, deref) = checker.derefs.first_key_value().unwrap();
         assert_eq!(deref.mode, Some(mode));
+        assert!(deref.normal);
         assert_eq!(deref.span, checker.points[id].span);
         assert_eq!(
             deref.edges,
@@ -51,6 +52,7 @@ pub(crate) fn deref_stages_preserve_stopped_inputs_owners_control_and_bottom_ref
     let (checker, _) = check(source);
     for (&id, deref) in &checker.derefs {
         assert_eq!(deref.mode, None);
+        assert!(!deref.normal);
         assert_eq!(
             deref.edges,
             [Edge::new(
@@ -65,6 +67,7 @@ pub(crate) fn deref_stages_preserve_stopped_inputs_owners_control_and_bottom_ref
     let (checker, _) = check("f<never>:(p<&never>){->*p}");
     let (&id, deref) = checker.derefs.first_key_value().unwrap();
     assert_eq!(deref.mode, Some(hir::ReferenceMode::Shared));
+    assert!(!deref.normal);
     assert!(
         deref
             .edges
@@ -72,6 +75,9 @@ pub(crate) fn deref_stages_preserve_stopped_inputs_owners_control_and_bottom_ref
             .any(|edge| edge.to == Port::Operation(id))
     );
     assert!(!deref.edges.iter().any(|edge| edge.to == Port::Normal(id)));
+    let errors = crate::compile("f<never>:(p<&!never>){->*p}").unwrap_err();
+    assert_eq!(errors[0].code, "B001");
+    assert!(errors[0].message.contains("ordinary scalar storage"));
     let mut checker = Checker::new();
     checker.derived.insert(0);
     checker
@@ -99,6 +105,15 @@ pub(crate) fn deref_stages_publish_atomically_with_valid_identity_and_shared_bud
     checker
         .deref_operation(id, deref.input, pointer, deref.span)
         .unwrap();
+    assert_eq!(checker.deref_edges, count);
+    checker.derefs.get_mut(&id).unwrap().normal = false;
+    assert!(
+        checker
+            .deref_operation(id, deref.input, pointer, deref.span)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
     assert_eq!(checker.deref_edges, count);
     checker.derefs.clear();
     checker.deref_edges = 0;

@@ -14,6 +14,7 @@ pub(crate) struct Deref {
     pub(crate) owner: usize,
     pub(crate) input: hir::PointId,
     pub(crate) mode: Option<hir::ReferenceMode>,
+    pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
@@ -57,6 +58,7 @@ impl Checker {
             hir::Type::Never => None,
             _ => return Err(invalid()),
         };
+        let normal = value.ty.pointee().is_some_and(|ty| *ty != hir::Type::Never);
         let mut edges = vec![Edge::new(Port::Entry(id), Port::Entry(input), Route::Next)];
         if mode.is_some() {
             edges.push(Edge::new(
@@ -64,7 +66,7 @@ impl Checker {
                 Port::Operation(id),
                 Route::Next,
             ));
-            if value.ty.pointee() != Some(&hir::Type::Never) {
+            if normal {
                 edges.push(Edge::new(
                     Port::Operation(id),
                     Port::Normal(id),
@@ -76,6 +78,7 @@ impl Checker {
             owner: self.owner,
             input,
             mode,
+            normal,
             control: self.control,
             span,
             edges,

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Effect reports retain canonical local-read metadata.
+Updated: 2026-09-29. Explicit dereference-load effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -418,15 +418,36 @@ has an outstanding failure. Preservation against `a067729` confirms all 148 prio
 (`/tmp/meowy-read-effects-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-Next retain explicit dereference-load effects. The producer in
-`src/check/dependencies/dereferences.rs` has exact pointer roots, shared/exclusive
-mode, owner/control and load/result edges; the effect collector still uses Unknown.
-First retain the producer's explicit normal-result decision, then integrate bounded
-typed records under `edges/forward/effects/`. Preserve pointer-cell versus referent
-identity, stopped pointer inputs and Never referents; do not infer pointee storage
-or read values. Add identity/mode/edge/work tests and useful source coverage, then
-run compiler/strict gates. Other load families, callee summaries, backedge data
-propagation and proof outcomes remain separate; `queries::finish` stays B001-gated.
+## Explicit dereference-load effects
+
+Investigation confirms `dependencies/dereferences.rs` already captures exact pointer
+roots, mode, owner/control and load/result edges. The collector still reports Unknown;
+the producer's normal-result decision must be retained before adding typed effects.
+The producer now retains `normal` without changing edge construction or typing.
+Shared Never referents and stopped pointers retain `normal=false`; exclusive Never
+references retain their existing B001 ordinary-scalar-storage gate. All six focused
+`cargo test --locked --manifest-path compiler/Cargo.toml --lib deref_` groups pass,
+as do formatting and whitespace checks. No implementation capability is widened.
+
+Dependency-ordered commit plan:
+
+1. Retain the explicit normal-result decision in `dependencies/dereferences.rs`,
+   with focused producer regressions for shared/exclusive, stopped and Never inputs:
+   complete, ready to commit.
+2. Add bounded typed dereference effects under `edges/forward/effects/`, validating
+   exact pointer/owner/point/edge identities and preserving reference-cell reads.
+3. Add malformed-metadata, duplicate-visit and exact-work/limit regressions for the
+   collector, keeping failed reports atomic and stopped loads absent.
+4. Add required source cases for pointer evaluation order, stopped loads and borrow
+   rejection; update classified coverage without changing reference contracts.
+5. Document the completed scope and run the compiler/strict gates; record actual
+   results and the next bounded load family in both trackers.
+
+Validate each implementation slice with focused Rust tests and staged diff checks.
+Preserve pointer-cell versus referent identity; do not infer pointee storage or read
+values. Other load families, callee summaries, backedge propagation and proof outcomes
+remain separate; `queries::finish` stays B001-gated. Unrelated `docs/programs/hey/`
+remains untouched.
 
 ## Documentation conventions and layout
 
