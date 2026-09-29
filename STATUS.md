@@ -24,10 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-deref-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next retain bounded field-read effects, including resolved field indices and
-implicit shared-load boundaries. The
-[compiler handoff](compiler/STATUS.md#explicit-dereference-load-effects) records the
-files and verification plan. Unrelated `docs/programs/hey/` work is preserved.
+Bounded field-read reporting is in progress. Receiver field counts are retained
+(`f834ed9`), and typed effects validate indices and implicit shared-load boundaries.
+All 53 focused effect-report groups pass. Metadata/budget tests, source coverage and
+the full gate remain next; the
+[compiler handoff](compiler/STATUS.md#bounded-field-read-effects) records the plan.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

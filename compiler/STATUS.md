@@ -460,19 +460,23 @@ reference hashes and capability exceptions are unchanged
 
 Investigation confirms `dependencies/fields.rs` captures exact receiver roots, field
 indices, implicit shared loads and normal/control flags before narrowing. Reports
-still classify field operations as Unknown. The producer now also retains the
-checked receiver field count without type copies or edge changes. All four focused
+now have typed Field records with index/identity/edge validation. All 53 effect-report
+groups pass, including four new field groups for load modes, narrowing, independent
+owners/control, Never/stopped/required-only boundaries and index rejection.
+The producer retains the checked receiver field count without
+type copies or edge changes (`f834ed9`). All four focused
 `field_stages` groups pass, including field-count identity and replay rejection;
-formatting and whitespace checks pass. Typed reporting is next.
+formatting and whitespace checks pass.
 
 Dependency-ordered commit plan:
 
 1. Retain the checked receiver field count beside the resolved index, without type
    copies; extend producer tests for owned/shared/explicit loads and stable replay:
-   complete, ready to commit.
+   complete (`f834ed9`).
 2. Add typed field effects under `edges/forward/effects/`, validating index bounds,
    exact producer/receiver identities and receiver/load/field/result edges; include
-   focused tests for owners, narrowing, Never fields and required/static boundaries.
+   focused tests for owners, narrowing, Never fields and required/static boundaries:
+   complete, ready to commit.
 3. Add malformed-metadata, duplicate-visit and exact work/effect-limit regressions,
    preserving atomic report failure and separate borrow/load families.
 4. Add required source cases for receiver order, stopped calls and borrow rejection;
