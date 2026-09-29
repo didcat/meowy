@@ -1,0 +1,7 @@
+d:@"debug"
+first<int32>:(){d.print("first");->1}
+stop<never>:(){d.print("stop");d.panic("stop")}
+last<int32>:(){d.print("last");->3}
+sum<int32>:(a<int32>,b<int32>,c<int32>){d.print("body");->a+b+c}
+sum(first(),stop(),last())
+d.print("after")

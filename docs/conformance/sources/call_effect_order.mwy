@@ -1,0 +1,10 @@
+d:@"debug"
+mark<int32>:(n<int32>){d.print(n);->n}
+sum<int32>:(a<int32>,b<int32>){d.print("body");->a+b}
+alias:sum
+d.print(mark(1).(alias,mark(2)))
+count<int32>:(n<int32>)'result{
+    |n==0|{'result->0;'result.leave()}
+    ->1+count(n-1)
+}
+d.print(count(3))

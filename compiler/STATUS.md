@@ -409,7 +409,14 @@ per distinct operation. All 1988 library tests pass
 pass after the per-call capacity test (`/tmp/meowy-call-effects.log`). Coverage
 includes receiver order, aliases/recursion, controls, Never/stopped arguments,
 malformed metadata, copied-payload/work limits and unchanged reports after failure.
-Next commit slice 2, add source coverage and run the complete compiler gate. Preserve unrelated
+Four new required source cases pass in debug/release with a fresh CLI
+(`/tmp/meowy-call-effects-cases.log`): dispatch/recursion order, panic during an
+argument, arity and live-borrow rejection. Catalog and coverage validation pass for
+139 cases and 37 reference documents. The complete compiler gate is running
+(`/tmp/meowy-call-effects-gate.log`). Preservation against `f9848fd` confirms all
+135 prior cases, 167 source assets, 37 reference files and exact exceptions are
+unchanged (`/tmp/meowy-call-effects-preservation.log`). Next finish compiler/strict
+validation and update the final handoff. Preserve unrelated
 `docs/programs/hey/` work and the exact existing capability exceptions.
 
 ## Documentation conventions and layout

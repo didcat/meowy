@@ -1,0 +1,5 @@
+write:(value<&!int32>){*value=2}
+x:=1
+view:&x
+write(&!x)
+copy:*view

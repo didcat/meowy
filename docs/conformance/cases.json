@@ -1450,6 +1450,48 @@
         "code": "E223"
       },
       "reference": "../reference/stdlib/proof.md#module-identity-and-staging"
+    },
+    {
+      "id": "call_effect_order",
+      "phase": "run",
+      "source": "sources/call_effect_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n2\nbody\n3\n3\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_effect_stopped_argument",
+      "phase": "run",
+      "source": "sources/call_effect_stopped_argument.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_effect_arity",
+      "phase": "check",
+      "source": "sources/call_effect_arity.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "call_effect_borrow",
+      "phase": "check",
+      "source": "sources/call_effect_borrow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

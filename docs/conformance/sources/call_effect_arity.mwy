@@ -1,0 +1,3 @@
+sum<int32>:(a<int32>,b<int32>){->a+b}
+alias:sum
+1.(alias)
