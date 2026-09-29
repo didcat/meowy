@@ -482,14 +482,20 @@ without terminal reads. Operation-only collection currently loses those stages.
 normal results after stopped positions are rejected before publication. Ten focused
 index groups pass, including seeded read-without-result metadata and preserved
 uninhabited-element B001 diagnostics. Formatting and whitespace checks pass.
+Result capture is committed (`b29e9a0`). Stage classification now validates encountered
+index loads/snapshots/reads, including registered owners only for terminal reads;
+all four new stage groups and all 61 effect-report groups pass
+(`/tmp/meowy-index-effects-stages.log`). Formatting and whitespace checks pass.
+Typed aggregation remains the following slice.
 
 Dependency-ordered commit plan:
 
 1. Retain result completion separately in `IndexAccess`/`list_index` and preserve
    conditional load/result edges; test ordinary/stopped inputs and existing B001 gates:
-   complete, ready to commit.
+   complete (`b29e9a0`).
 2. Add bounded index-stage capture under `edges/forward/effects/`, validating exact
-   receiver/position roots, length/capacity, flags, stages and original edges.
+   receiver/position roots, length/capacity, flags, stages and original edges:
+   complete, ready to commit.
 3. Aggregate typed partial index effects with fixed-size payloads, operation-owner
    validation for terminal reads, deduplication and focused report regressions.
 4. Cover malformed metadata, mixed families and exact stage/work/effect limits;

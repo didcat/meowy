@@ -1,6 +1,7 @@
 mod calls;
 mod derefs;
 mod fields;
+mod indices;
 mod outputs;
 mod reads;
 
@@ -86,6 +87,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.index_effect_stage(reports, owner, port, span)?;
                 if let Some(stage) = self.output_effect_stage(owner, port, span)? {
                     if matches!(stage.kind, outputs::Kind::Finish) {
                         if !self.flow.spend(

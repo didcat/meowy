@@ -24,10 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-field-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next retain bounded indexed-read effects, including partial receiver loads/snapshots
-before stopped positions and separate position/result completion. The
-[compiler handoff](compiler/STATUS.md#bounded-field-read-effects) records the files
-and verification plan. Unrelated `docs/programs/hey/` work is preserved.
+Indexed-read reporting is in progress. Separate result decisions are retained
+(`b29e9a0`), and bounded stage validation preserves partial receiver loads/snapshots
+before stopped positions. All 61 focused effect-report groups pass. Typed aggregation,
+boundary/source coverage and the full gate remain next; the
+[compiler handoff](compiler/STATUS.md#bounded-indexed-read-effects) records the plan.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
