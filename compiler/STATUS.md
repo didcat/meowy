@@ -523,6 +523,11 @@ independent left/right projections, operation and result observations with fixed
 metadata. All 101 effect-report groups pass (`/tmp/meowy-binary-effects-reports.log`),
 covering supported integer widths, raw comparison results, independent owners/control,
 partial projections, required/short-circuit exclusions and isolated observations.
+Typed aggregation is committed (`98babec`). Signature, root, sequence-ledger,
+merge-selector and exact work/effect-limit regressions pass. All twelve binary-effect
+groups pass (`/tmp/meowy-binary-effects-limits.log`), including 40 root/ledger faults
+on direct/primary paths, eleven bad signatures, ten conflicts, invalid selectors and
+E107/E222/E213 preservation. Formatting and whitespace checks pass; no test fails.
 
 Dependency-ordered commit plan:
 
@@ -534,9 +539,10 @@ Dependency-ordered commit plan:
    (`3ae26e3`).
 3. Aggregate typed scalar binary observations with independent projection/operation/
    result flags; retain opaque nonscalar operations and focused report regressions:
-   complete, ready to commit.
+   complete (`98babec`).
 4. Cover malformed signatures/roots/ledgers, merge conflicts, duplicates and exact
-   work/effect limits while preserving atomic failure and ordinary diagnostics.
+   work/effect limits while preserving atomic failure and ordinary diagnostics:
+   complete, ready to commit.
 5. Add required source cases for operator domains/order, projections, stopped inputs,
    opaque comparisons and checked arithmetic; update classified coverage.
 6. Update the guide, run compiler/strict gates and leave the next bounded handoff.
