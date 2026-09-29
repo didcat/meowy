@@ -334,90 +334,64 @@ below retains this coverage.
 
 ## Pending proof-statement completion
 
+Checked pending statements retain exact query IDs (`4506888`) and publish bounded
+completion after query/point/site/owner/root validation (`8a019dc`). Copies retain
+origins without querying again; same-owner nested scopes and open construction roots
+work, while E223 capture restrictions and final B001 proof gates remain. Source
+rejections (`532c3a5`) pin fixed signatures and storage/capture boundaries. The gate
+below retains these checks; completion adds no runtime query execution or outcome.
+
+## Direct-call effect metadata
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Return exact query IDs and distinguish creation from copying | `4506888` |
-| Validate and connect checked pending statements atomically | `8a019dc` |
-| Pin fixed signatures, typed storage and capture rejections | `532c3a5` |
+| Build a bounded operation-point to CallId index | `16c700a` |
+| Retain and validate typed direct-call effect records | `ab9a03a` |
+| Pin source call order, stopped arguments, arity and borrow rules | `8c2cf12` |
 
-Pending bindings and discarded query/copy forms retain the ID returned by
-`prepare_query` after annotation/name checks succeed. Recognition remains
-side-effect free; preparation retains its statement-root accounting. New queries
-and aliases publish one bounded Entry-to-Normal edge after validating query/point,
-owner, site and budget-root identities. A root may be closed or still owned by the
-active construction context. Copies preserve the original origin and root without
-requerying. Cross-function capture retains E223; same-owner nested scopes work.
+Effect reports retain CallId, FunctionId, ordered argument roots, control and
+conditional-return metadata for call Operation ports encountered by independent
+entry walks. The bounded index validates invocation registry keys, points, owners
+and spans. Capture validates the callee's registered entry/body, argument identity,
+completion/owner/parent and exact ordered invocation edges. Callee validation uses
+report entries after HIR moves into the program, not the emptied checker vector.
 
-Completion adds no query execution edge, runtime storage, proof answer or callee
-summary. Unmatched/failed source forms and failed metadata/work/edge checks publish
-no endpoint. Stopped predecessors remain stopped. Original annotation, lookup,
-mutability, duplicate and ownership errors still precede the final proof gate.
-Twenty malformed metadata variants, exact work/edge limits, idempotence, open roots,
-nested function/block owners, source failures and stopped paths have focused tests.
-Three required source cases pin fixed `proof.Result` annotations and storage/capture
-rejections; B001 is never accepted as their expected language rejection.
+`Effect::Call` records the invocation; callee effects remain opaque. Calls never
+traverse a callee entry, add graph edges or infer purity/termination. Declared Never
+calls retain no return edge, and Returned remains conditional. Stopped arguments
+keep the call and later arguments outside the caller's report. Unused/recursive
+functions retain their own independent reports. Path steps and copied call argument
+roots share a 262,144-entry payload allowance; repeated ports copy once. Index,
+per-call, payload and work bounds fail before returning a partial report.
 
-All ten compiler checks pass: 1981 library/914 native tests, 32 tooling and 30 harness
+Seven new regression groups cover exact identities, aliases/recursion, receiver
+order, controls, Never/stopped inputs, malformed metadata, copied-payload/work limits
+and preservation after failures. Four source cases independently pin execution
+order, argument panic, wrong arity and borrow conflicts. Prior language checks and
+proof gates remain authoritative; this is structural metadata, not callee analysis.
+
+All ten compiler checks pass: 1988 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-pending-gate.log`. The 135 cases report 116 required passes,
+`/tmp/meowy-call-effects-gate.log`. The 139 cases report 120 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for the same known gaps (`/tmp/meowy-pending-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-pending-docs.log`); no selected check has an
-outstanding failure. Preservation against `2d7e8c0` confirms all 132 prior cases,
-164 source assets, 37 reference files and exact capability exceptions are unchanged
-(`/tmp/meowy-pending-preservation.log`). AGENTS already covers the required evidence
-workflow; no rule update is needed. Unrelated `docs/programs/hey/` remains untouched.
+only for the same known gaps (`/tmp/meowy-call-effects-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-call-effects-docs.log`); no selected check
+has an outstanding failure. Preservation against `f9848fd` confirms all 135 prior cases,
+167 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-call-effects-preservation.log`). AGENTS already covers this evidence
+workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-## Direct-call effect metadata in progress
-
-Invocations retain exact point, CallId, FunctionId, ordered argument roots, owner,
-control and conditional-return metadata. Effect reports currently reduce calls to
-Unknown. Reports are built after function/local HIR moves into the program, so
-callee validation must use the independently registered report entries and bodies,
-not the emptied checker function vector. Calls must not traverse those entries.
-
-Dependency-ordered commit plan:
-
-1. Add a bounded point-to-CallId lookup with registry/point/owner validation, use it
-   during report collection while retaining Unknown effects, and test identities,
-   duplicate/malformed entries and capacity/work limits.
-2. Retain typed direct-call records for operations reached by the structural walk.
-   Validate callee/body and argument identities, bound copied arguments and preserve
-   caller/control/conditional-return facts. Keep callee effects opaque; add focused
-   order, recursion/alias, stopped-input, owner and budget regressions.
-3. Add independently useful source execution/rejection coverage, update evidence
-   inventory, and run compiler/strict gates plus preservation against `f9848fd`.
-4. Update root/compiler/foundation handoffs and run documentation checks.
-
-The source audit covered invocation registration, effect/entry reports, operation
-port ownership and HIR transfer. Existing edges and their conditional Returned
-labels remain authoritative; no purity, termination, callee summary, backedge
-propagation or proof result is added. Slice 1 now builds a bounded lookup from
-actual operation points to CallIds and validates registry keys, checked points,
-owners and spans before use. Reports still classify calls as Unknown. Three index
-regressions and four existing effect regression groups pass
-(`/tmp/meowy-call-index.log`, `/tmp/meowy-call-index-effects.log`); formatting and
-all-target Clippy pass (`/tmp/meowy-call-index-clippy.log`). Slice 2 now retains
-CallId, FunctionId, argument roots, control and conditional return metadata as
-`Effect::Call`, with callee/body and argument/edge validation. Callee effects remain
-opaque; collection never enters a callee or creates graph edges. Path steps and
-call argument copies share the existing bounded payload allowance, charged once
-per distinct operation. All 1988 library tests pass
-(`/tmp/meowy-call-effects-library.log`); all seven focused call-effect groups also
-pass after the per-call capacity test (`/tmp/meowy-call-effects.log`). Coverage
-includes receiver order, aliases/recursion, controls, Never/stopped arguments,
-malformed metadata, copied-payload/work limits and unchanged reports after failure.
-Four new required source cases pass in debug/release with a fresh CLI
-(`/tmp/meowy-call-effects-cases.log`): dispatch/recursion order, panic during an
-argument, arity and live-borrow rejection. Catalog and coverage validation pass for
-139 cases and 37 reference documents. The complete compiler gate is running
-(`/tmp/meowy-call-effects-gate.log`). Preservation against `f9848fd` confirms all
-135 prior cases, 167 source assets, 37 reference files and exact exceptions are
-unchanged (`/tmp/meowy-call-effects-preservation.log`). Next finish compiler/strict
-validation and update the final handoff. Preserve unrelated
-`docs/programs/hey/` work and the exact existing capability exceptions.
+Next build bounded caller/callee adjacency from the typed call records under
+`src/check/dependencies/edges/forward/`, then identify recursive components as a
+separate reviewable slice. Retain exact call-site membership and independent entry
+owners; preserve missing-source and backedge boundaries rather than treating an
+absent edge as proof of no effects. Add alias/self/mutual-recursion, stopped-input,
+owner and capacity/work regressions, update source coverage where useful, and run
+compiler/strict gates. This prepares callee summaries; it must not traverse bodies
+at call sites or infer purity, termination or runtime reachability. Backedge data
+propagation and proof outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2476,12 +2450,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    regressions and source coverage (`f8d7aed`, `48298eb`, `e5a5f39`) preserve those
    boundaries. Pending statement IDs and bounded completion now preserve original
    query origins, owner/site/root checks and final proof gates (`4506888`, `8a019dc`).
-   Required rejection coverage (`532c3a5`) and the compiler gate pass. Next retain
-   direct-call metadata from `dependencies/invocations.rs` in forward operation-effect
-   reports, with bounded lookup/capture, owner/argument/return checks and focused
-   graph/source regressions. Keep callee effects opaque and Returned edges conditional;
-   do not enter bodies or infer purity. Run compiler/strict gates. Other synthetic
-   prefixes, callee summaries, backedge propagation and proof outcomes remain separate.
+   Required rejection coverage (`532c3a5`) and the compiler gate pass. Direct-call
+   effect records now retain exact CallId/FunctionId, argument/control and return
+   metadata with bounded validation (`16c700a`, `ab9a03a`); source coverage (`8c2cf12`)
+   and the compiler gate pass. Next build bounded caller/callee adjacency from these
+   records in `dependencies/edges/forward/`, then identify recursive components in
+   a separate slice. Keep exact call-site membership and incomplete/backedge boundaries;
+   test aliases, self/mutual recursion, stopped inputs, owners and budgets. Run the
+   compiler/strict gates. Calls remain opaque: no purity, termination, callee summary,
+   backedge data propagation or proof outcome is implied by the graph.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

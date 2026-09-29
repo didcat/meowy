@@ -342,8 +342,8 @@ canonical storage. Missing RHS metadata remains unknown; it is not synthesized.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
-effects. Each copied path is bounded by 256 steps, and the collection admits at
-most 262,144 copied steps. Lookup and copy work are charged before allocation;
+effects. Each copied path is bounded by 256 steps. Path steps and direct-call
+argument roots share a collection limit of 262,144 copied entries. Lookup and copy work are charged before allocation;
 duplicate operation ports copy a path once. Empty paths and owner mismatches are
 rejected. Aliases retain their shared canonical storage and distinct local IDs.
 Stopped address or RHS evaluation leaves the write outside the effect map when
@@ -354,12 +354,22 @@ origin snapshots. Roots remain canonical pointee owners rather than reference-ce
 IDs or precise field/index locations. Later RHS retargeting does not change an
 earlier snapshot. Incomplete and empty origin sets retain their completeness flag;
 they do not establish precise writes or independence. Each snapshot is capped at
-256 roots and the collection at 262,144 copied roots, separately from path-step
-limits. Copy work is charged before allocation, including empty snapshots, and
+256 roots and the collection at 262,144 copied roots, separately from the shared
+path/argument allowance. Copy work is charged before allocation, including empty snapshots, and
 duplicate operation ports copy origins once. Owner mismatches and exhausted budgets
 return no partial collection and preserve reports and conservative marks.
-Other encountered producers have an explicit Unknown effect, including calls.
-Unknown does not mean pure or independent. Stored
+Direct calls retain a Call effect with exact call/callee IDs, ordered argument
+roots, captured control and the declared return boundary. A bounded lookup maps
+operation points to registered CallIds. Capture validates the independently
+registered callee entry/body and checked argument owners/parents, plus the original
+argument-order and conditional Returned edges. Function HIR need not remain in the
+checker. Callee effects stay opaque; capture never traverses bodies or changes edges.
+Argument copies obey per-call and shared payload bounds and are charged once for
+repeated operation ports. Stopped argument evaluation excludes the call and later
+arguments from the caller's report; unused/recursive bodies retain independent
+entry reports. Return metadata does not prove that a call returns or terminates.
+Other encountered producers retain Unknown effects. Neither Unknown nor Call
+establishes purity or independence. Stored
 operations beyond a stopped RHS are not added unless their port is encountered.
 Duplicate ports produce one effect entry. Registry and producer owner mismatches
 are rejected, and lookup never rescans every producer for each port. At most

@@ -7,27 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Pending proof statements now retain exact query IDs and publish bounded completion
-after existing checks. Query creation and copying remain distinct; aliases preserve
-origins, same-owner scope rules and budget roots. Completion adds no query execution
-or proof answer, and stopped paths remain stopped. Eight new internal regression
-groups and three required source cases cover identities, budgets and rejection rules.
-Commits: `4506888`, `8a019dc`, `532c3a5`.
+Direct-call effect reports now retain exact call/callee IDs, ordered argument roots,
+control and conditional-return metadata. Bounded validation preserves caller/callee
+identities after HIR transfer, and stopped arguments exclude the call from the
+caller's report. Callee effects remain opaque; no call traverses a callee body or
+implies purity, termination or runtime reachability. Seven new internal regression
+groups and four source cases cover identities, order, budgets and rejection rules.
+Commits: `16c700a`, `ab9a03a`, `8c2cf12`.
 
-The catalog has 135 cases: 116 required passes, 19 unchanged pinned gaps and zero
+The catalog has 139 cases: 120 required passes, 19 unchanged pinned gaps and zero
 failures in debug/release. All prior cases, source assets and reference contracts
 are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
 37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 1981 library/914 native and 62 Python test groups;
-`/tmp/meowy-pending-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-pending-docs.log`). Proof
+compiler checks pass: 1988 library/914 native and 62 Python test groups;
+`/tmp/meowy-call-effects-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-call-effects-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next retain exact direct-call metadata in operation-effect reports while keeping
-callee effects opaque. The
-[compiler handoff](compiler/STATUS.md#pending-proof-statement-completion) records
-the files, scope boundaries and checks. AGENTS already covers this evidence workflow;
-no update is needed. Unrelated `docs/programs/hey/` work is preserved.
+Next build bounded caller/callee adjacency and explicit recursion groups while
+preserving incomplete and backedge boundaries. The
+[compiler handoff](compiler/STATUS.md#direct-call-effect-metadata) records the files
+and checks. AGENTS already covers this evidence workflow; no update is needed.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1138,11 +1139,14 @@ execution was not part of this documentation edit.
    while required scratch completes through its enclosing declaration. Pending
    statements now retain exact query IDs and bounded completion with owner/site/root
    validation while preserving final proof gates. Required rejection coverage and the
-   compiler gate pass. Next retain direct-call identities from
-   `compiler/src/check/dependencies/invocations.rs` in forward operation-effect reports;
-   validate bounded argument/owner/return metadata while keeping callee effects opaque.
-   Add focused/source coverage and run compiler/strict gates. Callee summaries,
-   backedge propagation and proof outcomes remain separate.
+   compiler gate pass. Direct-call effect records now preserve exact call/callee,
+   argument, control and return metadata under bounded validation; the compiler
+   gate and source coverage pass. Next build bounded caller/callee adjacency under
+   `compiler/src/check/dependencies/edges/forward/`, then identify recursive
+   components in a separate slice. Retain exact call-site membership, owners and
+   missing-source/backedge boundaries. Add focused/source coverage and run
+   compiler/strict gates. Callee summaries, backedge data propagation and proof
+   outcomes remain separate; absence of a call edge does not establish purity.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
