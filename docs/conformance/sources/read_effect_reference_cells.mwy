@@ -1,0 +1,12 @@
+d:@"debug"
+a:=3
+b:=7
+cell:=&a
+saved:cell
+cell=&b
+d.print(*saved)
+d.print(*cell)
+n:3
+<T>:{size:n;-><uint8[size]>}
+values<T>:[1,2,9]
+d.print(values[3])

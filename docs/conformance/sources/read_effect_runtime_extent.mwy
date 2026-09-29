@@ -1,0 +1,3 @@
+size:=3
+copy:size
+<T>:{n:copy;-><uint8[n]>}

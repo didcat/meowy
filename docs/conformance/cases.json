@@ -1590,6 +1590,36 @@
         "code": "E201"
       },
       "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "read_effect_slot_aliases",
+      "phase": "run",
+      "source": "sources/read_effect_slot_aliases.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "5\n6\n6\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "read_effect_reference_cells",
+      "phase": "run",
+      "source": "sources/read_effect_reference_cells.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n7\n9\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "read_effect_runtime_extent",
+      "phase": "check",
+      "source": "sources/read_effect_runtime_extent.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E211"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
     }
   ]
 }

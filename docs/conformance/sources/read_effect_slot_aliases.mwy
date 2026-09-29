@@ -1,0 +1,21 @@
+d:@"debug"
+flag:=false
+row:'out{
+    |flag|{
+        'out->n:=3
+        before:n
+        n=4
+        after:n
+        d.print(before)
+        d.print(after)
+    }
+    |!flag|{
+        'out->n:=5
+        before:n
+        n=6
+        after:n
+        d.print(before)
+        d.print(after)
+    }
+}
+d.print(row.n)

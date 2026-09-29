@@ -451,8 +451,15 @@ boundaries, fourteen malformed variants, deduplication and exact work limits.
 The control fixture was separated from complementary emissions to preserve their
 existing E205 check under proof-derived guards. All 2021 library tests, formatting
 and all-target Clippy pass (`/tmp/meowy-read-effects-library.log`,
-`/tmp/meowy-read-effects-clippy.log`). Next add source coverage and run the complete
-gate. Preserve unrelated `docs/programs/hey/` work.
+`/tmp/meowy-read-effects-clippy.log`). Three required source cases pass in both
+profiles with a fresh CLI (`/tmp/meowy-read-effects-cases.log`): slot-alias reads
+across writes, copied/retargeted reference cells with required-only extents, and
+runtime-dependent extent rejection. Catalog/coverage checks validate 151 cases
+and 37 references. The full compiler gate is running (`/tmp/meowy-read-effects-gate.log`).
+Preservation against `a067729` confirms all 148 prior cases, 180 source assets,
+37 reference files and exact exceptions are unchanged
+(`/tmp/meowy-read-effects-preservation.log`). Next finish compiler/strict validation
+and the documentation handoff. Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 
