@@ -1,0 +1,15 @@
+d : @"debug"
+show <null> : (v <int32><null>, r <{ n <int32><null> }>) {
+    | v<int32> | { x <int32> : v; d.print(x) }
+    | v<null> | d.print("empty")
+    | r.n<int32> | { x <int32> : r.n; d.print(x) }
+    | r.n<null> | d.print("empty field")
+}
+show(7, { -> n : 9 })
+show(null, { -> n : null })
+make <{ n <int32> }> : () {
+    d.print("receiver")
+    -> { -> n : 5 }
+}
+optional <int32><null> : make().n
+| optional<int32> | d.print(optional)

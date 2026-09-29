@@ -1,0 +1,7 @@
+d : @"debug"
+make <{ n <int32> }> : () {
+    d.print("receiver")
+    d.panic("stop")
+}
+x <int32><null> : make().n
+d.print("unexpected tail")

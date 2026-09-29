@@ -1,0 +1,5 @@
+r : { -> n <int32><null> := 1 }
+| r.n<int32> | {
+    r.n = null
+    x <int32> : r.n
+}

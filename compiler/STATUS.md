@@ -573,7 +573,13 @@ operation registration. Formatting and whitespace checks pass. Step 1 is committ
 (`/tmp/meowy-narrowing-effects-limits.log`): 52 corrupt source/edge cases, six merge
 conflicts, duplicate work, exact shared limits and a seeded conversion-to-Never
 operation without a result. E207/E208/E302 and invalid stopped-tail checks remain
-unchanged. Step 2 is ready to commit; required source coverage is next.
+unchanged. Step 2 is committed (`a86b02f`). All four required source cases pass in
+debug/release for guarded reads, receiver order, field mutation invalidation and
+unproven field ascription (`/tmp/meowy-narrowing-effects-sources.log`). Catalog/
+coverage checks pass for 184 cases. Preservation against `eba755e` confirms all
+180 prior cases, 212 source assets, 37 references, proof obligations, hashes and
+capability exceptions unchanged (`/tmp/meowy-narrowing-effects-preservation.log`).
+Step 3 is ready to commit; guide updates and compiler/strict gates remain next.
 Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout

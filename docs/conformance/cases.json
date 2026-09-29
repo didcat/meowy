@@ -1934,6 +1934,48 @@
         "code": "E302"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "narrowing_effect_guarded_reads",
+      "phase": "run",
+      "source": "sources/narrowing_effect_guarded_reads.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n9\nempty\nempty field\nreceiver\n5\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "narrowing_effect_stopped_receiver",
+      "phase": "run",
+      "source": "sources/narrowing_effect_stopped_receiver.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "narrowing_effect_field_invalidation",
+      "phase": "check",
+      "source": "sources/narrowing_effect_field_invalidation.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "narrowing_effect_unproven_field",
+      "phase": "check",
+      "source": "sources/narrowing_effect_unproven_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }
