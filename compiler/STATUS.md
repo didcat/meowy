@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Reports retain partial indexed-read effects and result boundaries.
+Updated: 2026-09-29. Collection method effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -482,16 +482,38 @@ outstanding failure. Preservation against `c98fbb8` confirms all 157 prior cases
 reference hashes and capability exceptions are unchanged
 (`/tmp/meowy-index-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-Next retain effects for list/string `size` and list `add` using
-`dependencies/methods.rs`, `list.rs::list_method` and `edges/forward/effects/`.
-First validate kind-specific receiver/item roots, implicit loads, length/capacity,
-stopped states and exact edges. Then aggregate bounded method stages, preserving
-loads/snapshots before stopped add items and conditional capacity success. Size
-operations have no add snapshot; `add` produces a new list without mutating its
-receiver. Keep argument/error precedence, explicit dereferences and indexed/borrow
-operations separate. Add focused identity/budget tests and required source coverage,
-then run compiler/strict gates. Callee summaries, backedge propagation and proof
-outcomes remain separate; `queries::finish` stays B001-gated.
+## Collection method effects
+
+Investigation confirms `dependencies/methods.rs` already captures checked method
+kinds, receiver/item roots, implicit loads, length/capacity, control and exact edges.
+`list_method` preserves receiver-first checking, stopped arguments and existing
+capacity/error precedence. No producer change is needed. Reports still classify
+terminal method operations as Unknown and omit partial load/snapshot stages.
+Bounded stage capture is now active. All four new stage groups and all 73 effect-report
+groups pass (`/tmp/meowy-method-effects-stages.log`), covering size kinds, implicit/
+explicit loads, known/unknown lengths, stopped items/receivers and registered terminal
+owners. Formatting and whitespace checks pass. Typed aggregation is next.
+
+Dependency-ordered commit plan:
+
+1. Add bounded method-stage capture under `edges/forward/effects/`, validating
+   kinds, exact roots, load/snapshot/operation/result edges and terminal owners;
+   include focused size/add/stopped-stage regressions: complete, ready to commit.
+2. Aggregate typed method effects with independent observed load/snapshot/terminal
+   flags, fixed-size payloads and focused owner/control/order/partial-report tests.
+3. Add malformed-metadata, duplicate-stage, merge-conflict and exact work/effect
+   limit regressions, preserving atomic failures and ordinary diagnostics.
+4. Add required source cases for size results, add snapshots, stopped items and
+   capacity behavior; update classified evidence without changing prior contracts.
+5. Update the guide, run compiler/strict gates, and record actual validation and the
+   next bounded effect family in both trackers.
+
+Validate and commit each slice with focused tests and staged diff checks. Size has
+no add snapshot; add returns a new list without mutating its receiver. Preserve
+stopped receivers/items, explicit dereferences, indexed/borrow operations and error
+precedence. Do not infer values, capacity proof, storage, borrow authority, call
+termination or proof outcomes; `queries::finish` stays B001-gated.
+Unrelated `docs/programs/hey/` remains preserved.
 
 ## Documentation conventions and layout
 
