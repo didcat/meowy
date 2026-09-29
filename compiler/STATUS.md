@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-28. Pending queries retain charged argument/outer-root budgets.
+Updated: 2026-09-29. Effect reports retain partial print/panic stages.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -360,100 +360,71 @@ termination, runtime reachability or proof claims.
 
 ## Component condensation and analysis order
 
+Condensed adjacency preserves exact internal/cross-group sites (`37be1e7`), and
+bounded iterative ordering places callees before callers (`d28ce65`, `37ef903`).
+Partition/site validation, deterministic ties, cycle rejection, exhaustive small
+graphs and deep-chain limits are covered. Source checks (`a0635f6`) preserve runtime
+order. Original body/missing/backedge records and unknown effects remain explicit;
+analysis order does not schedule runtime calls or provide complete summaries.
+
+## Print and panic effect stages
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Condense canonical components and exact call-site membership | `37be1e7` |
-| Order analysis with callees before callers | `d28ce65` |
-| Preserve explicit helper visibility while satisfying Clippy | `37ef903` |
-| Verify analysis ordering preserves runtime call behavior | `a0635f6` |
+| Capture bounded prefix/projection/part/terminal stages | `0ad7f11` |
+| Aggregate typed partial print/panic effects | `c018728` |
+| Preserve terminal operation-owner validation | `cae9858` |
+| Pin streaming, formatting, panic and checked-tail behavior | `44e3073` |
 
-Condensed records use the existing component IDs and retain each internal and
-cross-group call site exactly once. Partition, owner/site membership and recursion
-flags are validated; groups, sites and shared work are bounded before growth.
-Original owner/body, missing-source and backedge records stay in the same report.
-Parallel call sites remain separate even though each distinct target contributes
-only one dependency to ordering.
+Effect collection now retains output stages seen by the structural walk, including
+prefixes and parts without a terminal Operation port. Typed records preserve the
+producer owner, panic/control flags, total/stopped metadata and distinct observed
+prefix/terminal flags. Each observed part retains its exact dynamic root and primary
+flag or literal None marker, with separate projection/output flags. A Never primary
+can therefore retain projection without output. Checked suffixes stay unobserved;
+no operand, projection or body is replayed.
 
-An iterative ready set emits callees before callers, choosing the smallest ready
-component ID for deterministic ties. Internal recursive sites stay inside their
-group. Invalid targets, repeated sites and cross-group cycles return no partial
-order. This is analysis metadata, not runtime scheduling, a callee effect summary,
-termination/purity evidence or a proof result.
+Capture validates source points, owners, dynamic parents, selectors and stop limits.
+Terminal stages still require the operation-owner registry; partial stages need no
+fabricated terminal port. Aggregate headers and input identities must agree, and
+repeated visits copy each part once. Part records share the existing 262,144-entry
+payload allowance with path steps and call arguments. Budget/identity failure
+returns no partial effect collection and leaves prior reports/edges unchanged.
+Observed stages and conditional Returned edges do not establish successful I/O,
+termination, runtime reachability, callee summaries or proof outcomes.
 
-Seven new regression groups cover partition/site preservation, diamonds, ties,
-malformed metadata, exact node/site/work limits and a 2048-group chain. Ordering
-matches independent cycle detection and edge constraints for all 64 directed
-three-group graphs without self-edges, including cyclic inputs. Two required source
-cases pin repeated calls through shared recursive callees, reversed declaration
-order and panic before later callees. The explicit helper-visibility lint issue
-was fixed; all selected checks below pass.
+Nine new regression groups cover literal/dynamic formatting, aliases, primary and
+Never-primary stages, partial panic/print prefixes, controls/owners, malformed
+metadata, terminal registry checks, deduplication and exact payload/work limits.
+Four required source cases pin interleaved output, partial stdout before panic,
+formatted panic and errors in unexecuted formatting tails. Existing native tests
+retain exact nested/partial stderr coverage; the source catalog does not claim that
+full formatting or panic qualification is complete.
 
-All ten compiler checks pass: 2004 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2013 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-condensation-gate.log`. The 144 cases report 125 required passes,
+`/tmp/meowy-output-effects-gate.log`. The 148 cases report 129 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for the same known gaps (`/tmp/meowy-condensation-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-condensation-docs.log`); no selected check
-has an outstanding failure. Preservation against `14df111` confirms all 142 prior cases,
-174 source assets, 37 reference files and exact capability exceptions are unchanged
-(`/tmp/meowy-condensation-preservation.log`). AGENTS already covers this evidence
+only for the same known gaps (`/tmp/meowy-output-effects-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-output-effects-docs.log`); no selected check
+has an outstanding failure. Preservation against `4c881ee` confirms all 144 prior cases,
+176 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-output-effects-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-## Output and panic effect stages in progress
-
-Output producers already retain checked dynamic roots, literal markers, primary
-projections, panic prefixes, stopped indices and control. Current effect collection
-only records Operation ports, so streamed parts/prefixes before a stopped operand
-are absent. A Never primary can still reach its projection without producing output;
-that distinction must survive. Returned edges remain conditional, not successful I/O.
-
-Dependency-ordered commit plan:
-
-1. Add bounded capture/validation for observed output prefix, projection, part and
-   terminal ports. Keep unrelated producer stages unhandled, preserve exact roots
-   and stopped boundaries, and test identities, scope and work limits. Use capture
-   as validation in the existing collector before changing its effect shape.
-2. Aggregate typed output effects by producer, retaining separately observed prefix,
-   projection, streamed-part and terminal stages. Bound copied part records and
-   deduplicate visits; integrate partial producers without inventing Operation ports.
-   Add focused source-derived report and atomic failure/budget tests.
-3. Add useful source output/ordering/panic conformance and evidence mapping, then run
-   compiler/strict gates and preservation against `4c881ee`.
-4. Update root/compiler/foundation handoffs and run documentation checks.
-
-The audit read producer registration, selector validation, primary/stop regressions,
-entry/effect reports and the debug output contract. Capture will not replay operands,
-change graph edges, assert runtime reachability, summarize callees or enable proof
-results. Slice 1 now captures exact stage/root/owner/control data and rejects
-invalid literal/dynamic markers, primary projections and stopped boundaries.
-Unrelated projection/operation producers remain unhandled. Four focused capture
-groups, all 2008 library tests, formatting and all-target Clippy pass
-(`/tmp/meowy-output-capture.log`, `/tmp/meowy-output-capture-library.log`,
-`/tmp/meowy-output-capture-clippy.log`). Existing collection only uses this as
-validation in slice 1. Slice 2 now aggregates typed output records by producer,
-keeping separately observed prefix/projection/output/terminal stages and checked
-literal/dynamic input metadata. Partial producers do not require or invent Operation
-ports. Part records share the existing bounded payload allowance with path/call
-metadata and are copied once across repeated visits. All 2012 library tests and
-all-target Clippy pass (`/tmp/meowy-output-effects-library.log`,
-`/tmp/meowy-output-effects-clippy.log`); all eight focused groups also pass after
-expanding header/input conflict checks (`/tmp/meowy-output-effects.log`). Next
-finish terminal-owner hardening before the final gate: terminal Output stages must
-retain the operation-owner registry guard, while partial stages can exist without
-Operation ports. The guard and focused regression now pass for missing/foreign
-terminal owners and fabricated completion after a stopped part. All nine focused
-output-effect groups, formatting and Clippy pass (`/tmp/meowy-output-effects.log`,
-`/tmp/meowy-output-effects-clippy.log`). Four new source cases pass in both profiles (`/tmp/meowy-output-effects-cases.log`),
-covering streamed primary/dynamic parts, partial print before panic, completed
-formatted panic and checking an unexecuted tail. All ten compiler checks pass:
-2013 library/914 native tests and 129 required conformance passes with 19 unchanged
-gaps (`/tmp/meowy-output-effects-gate.log`). Preservation against `4c881ee` confirms
-all 144 prior cases, 176 source assets, 37 reference files and exact exceptions are
-unchanged (`/tmp/meowy-output-effects-preservation.log`). Next finish strict-mode
-validation and the documentation handoff. Preserve unrelated `docs/programs/hey/`
-work.
+Next retain local-read effects before deriving callee summaries.
+`src/check/dependencies/local_reads.rs` already captures exact local/canonical
+storage IDs, owner, normal/control flags and edges, but
+`src/check/dependencies/edges/forward/effects.rs` still classifies them as Unknown.
+Plan any validation context needed after HIR locals move into the program separately
+from typed report integration. Preserve alias storage, reference-cell versus pointee
+reads, Never/stopped boundaries and required-only input uses; do not reread values
+or grant borrow/copy authority. Add owner/storage/edge and work-limit regressions,
+source coverage where useful, then run compiler/strict gates. Callee summaries,
+backedge data propagation and proof outcomes remain separate; `queries::finish`
+stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2521,12 +2492,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    source coverage (`2983acc`) and the compiler gate pass. Condensation (`37be1e7`)
    preserves internal/cross-group sites, and bounded analysis ordering (`d28ce65`,
    `37ef903`) places callees before callers with deterministic ties. Source coverage
-   (`a0635f6`) and the compiler gate pass. Next retain print/panic stages from
-   `dependencies/outputs.rs` in `edges/forward/effects.rs`, including prefixes and
-   parts reached before stopped formatting. Keep exact owners/parts/projections,
-   partial-output distinctions and no replay; add bounded identity/work tests and
-   source coverage, then run compiler/strict gates. No runtime scheduling, purity,
-   termination, callee summary, backedge data propagation or proof outcome is implied.
+   (`a0635f6`) and the compiler gate pass. Bounded output-stage capture (`0ad7f11`)
+   and typed aggregation (`c018728`, `cae9858`) now retain partial print/panic effects
+   without inventing terminal operations. Source coverage (`44e3073`) and the compiler
+   gate pass. Next retain local-read metadata from `dependencies/local_reads.rs` in
+   `edges/forward/effects.rs`, validating the context after HIR transfer. Preserve
+   canonical alias storage, reference cells, Never/stopped boundaries and required
+   reads; add focused/source coverage and run compiler/strict gates. No purity,
+   termination, borrow authority, callee summary or proof outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

@@ -334,16 +334,17 @@ walk checks the remaining item allowance before growth. Entry selection, index
 construction and walks share the work ledger, including empty programs. Failure
 returns no partial collection and preserves stored graph metadata.
 The validated operation-owner registry now stays with the index. A separate effect
-map describes only Operation ports encountered by the entry walks, keyed by exact
-point and paired with its owner. Direct Bind/Write effects preserve the local ID,
+map describes Operation ports and observed output stages from the entry walks,
+keyed by exact producer point and paired with its owner. Direct Bind/Write effects preserve the local ID,
 canonical storage ID, optional RHS root and captured control mark. Reference-cell
 writes remain distinct from pointee writes, and emitted-slot aliases retain their
 canonical storage. Missing RHS metadata remains unknown; it is not synthesized.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
-effects. Each copied path is bounded by 256 steps. Path steps and direct-call
-argument roots share a collection limit of 262,144 copied entries. Lookup and copy work are charged before allocation;
+effects. Each copied path is bounded by 256 steps. Path steps, direct-call argument
+roots and observed output-part records share a limit of 262,144 copied entries.
+Lookup and copy work are charged before allocation;
 duplicate operation ports copy a path once. Empty paths and owner mismatches are
 rejected. Aliases retain their shared canonical storage and distinct local IDs.
 Stopped address or RHS evaluation leaves the write outside the effect map when
@@ -355,7 +356,8 @@ IDs or precise field/index locations. Later RHS retargeting does not change an
 earlier snapshot. Incomplete and empty origin sets retain their completeness flag;
 they do not establish precise writes or independence. Each snapshot is capped at
 256 roots and the collection at 262,144 copied roots, separately from the shared
-path/argument allowance. Copy work is charged before allocation, including empty snapshots, and
+path/argument/output allowance. Copy work is charged before allocation, including
+empty snapshots, and
 duplicate operation ports copy origins once. Owner mismatches and exhausted budgets
 return no partial collection and preserve reports and conservative marks.
 Direct calls retain a Call effect with exact call/callee IDs, ordered argument
@@ -368,6 +370,18 @@ Argument copies obey per-call and shared payload bounds and are charged once for
 repeated operation ports. Stopped argument evaluation excludes the call and later
 arguments from the caller's report; unused/recursive bodies retain independent
 entry reports. Return metadata does not prove that a call returns or terminates.
+Print/panic effects now aggregate the prefix, projection, streamed-part and terminal
+ports actually encountered by each structural walk. Records retain panic/control
+flags, checked total/stopped metadata and exact input roots or literal None markers.
+Projection and output flags are separate: a Never primary can reach projection
+without producing output. Prefixes and earlier parts survive a stopped operand even
+when no terminal Operation port exists. A terminal print newline or panic publication
+still requires the matching operation-owner registry.
+Source owner/point, dynamic-parent, selector and stop checks precede aggregation.
+Conflicting headers or part inputs fail closed, and repeated visits copy each part
+once under the shared payload/work bounds. No operand is replayed and no edge is
+added. These records describe observed structural stages, not successful I/O or
+runtime reachability; Returned edges remain conditional.
 Other encountered producers retain Unknown effects. Neither Unknown nor Call
 establishes purity or independence. Stored
 operations beyond a stopped RHS are not added unless their port is encountered.

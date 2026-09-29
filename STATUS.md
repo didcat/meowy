@@ -1,34 +1,33 @@
 # meowy project status
 
-Updated: 2026-09-28. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-29. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
 ## Current compiler and coverage handoff
 
-Recursion groups now have bounded condensed adjacency and a deterministic analysis
-order that places callees before callers. Every internal and cross-group call site
-is preserved; invalid membership, cycles and exhausted limits fail without partial
-results. Seven new internal regression groups include exhaustive checks of 64
-three-group layouts and a 2048-group chain. Two source cases confirm that analysis
-ordering preserves runtime execution and panic boundaries.
-Commits: `37be1e7`, `d28ce65`, `37ef903`, `a0635f6`.
+Print and panic effect reports now retain prefixes, primary projections, streamed
+parts and terminal stages separately, including partial formatting that stops early.
+Exact roots, owners, literal markers and stop boundaries are preserved; terminal
+stages keep their operation-owner check. Nine new internal regression groups and
+four source cases cover streaming, panic, identity/budget failures and checked tails.
+Commits: `0ad7f11`, `c018728`, `cae9858`, `44e3073`.
 
-The catalog has 144 cases: 125 required passes, 19 unchanged pinned gaps and zero
+The catalog has 148 cases: 129 required passes, 19 unchanged pinned gaps and zero
 failures in debug/release. All prior cases, source assets and reference contracts
 are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
 37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 2004 library/914 native and 62 Python test groups;
-`/tmp/meowy-condensation-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-condensation-docs.log`). Proof
+compiler checks pass: 2013 library/914 native and 62 Python test groups;
+`/tmp/meowy-output-effects-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-output-effects-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next retain print/panic stage metadata in effect reports, including partial stages
-before stopped formatting. The
-[compiler handoff](compiler/STATUS.md#component-condensation-and-analysis-order)
-records the files and checks. AGENTS already covers this evidence workflow; no
-update is needed. Unrelated `docs/programs/hey/` work is preserved.
+Next retain exact local-read effects, preserving canonical storage and the
+reference-cell/pointee distinction. The
+[compiler handoff](compiler/STATUS.md#print-and-panic-effect-stages) records the
+files and checks. AGENTS already covers this evidence workflow; no update is needed.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1146,11 +1145,13 @@ execution was not part of this documentation edit.
    regression/source coverage and the compiler gate pass. Condensed adjacency now
    retains internal/cross-group call sites and a bounded deterministic analysis
    order places callees before callers. Source coverage preserves runtime ordering.
-   Next retain print/panic metadata from `compiler/src/check/dependencies/outputs.rs`
-   in forward effect reports, including prefixes/parts before stopped formatting.
-   Preserve exact owners, partial stages and no replay; add focused/source coverage
-   and run compiler/strict gates. Callee summaries, backedge data propagation and
-   proof outcomes remain separate; analysis ordering is not runtime scheduling.
+   Print/panic stages now retain exact partial prefixes, projections, streamed parts
+   and terminal metadata; focused/source coverage and the compiler gate pass.
+   Next retain local-read effects from `compiler/src/check/dependencies/local_reads.rs`
+   in forward reports, validating identities after HIR transfer. Preserve canonical
+   storage, reference-cell/pointee distinctions, Never/stopped paths and required-only
+   uses; add focused/source coverage and run compiler/strict gates. Callee summaries,
+   backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
