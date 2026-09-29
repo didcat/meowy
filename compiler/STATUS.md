@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded coercion observations are in progress.
+Updated: 2026-09-29. Coercion observations pass the compiler gate; predicates/ascriptions are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -497,103 +497,75 @@ borrow authority or proof outcome.
 
 ## Bounded narrowing observations
 
+Validated reports (`c6e092c`) retain exact raw sources, changed/normal/control flags
+and independent conversion/result observations. Unchanged forwarding, direct Never
+and conversion-to-Never remain distinct. Boundary tests (`a86b02f`) and source cases
+(`ef17f36`) remain covered by the current gates below. Duplicate/conflict handling
+and shared limits publish no partial collection. No receiver work is replayed or
+narrowed values, same-value identities, borrow authority or proof outcomes inferred.
+
+## Bounded coercion observations
+
 The dependency-ordered implementation series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Validate and retain narrowing/forwarding observations | `c6e092c` |
-| Cover stopped conversions, identities and exact budgets | `a86b02f` |
-| Pin guarded reads, receiver order and field invalidation | `ef17f36` |
+| Validate and retain independent coercion stages | `912e62d` |
+| Cover stops, reborrow separation and exact budgets | `16d183f` |
+| Pin contextual projection, order, stops and shared paths | `00fb650` |
 
-Reports retain exact raw-source roots, changed/normal/control flags and independent
-conversion/result observations. Capture validates complete expression points,
-matching spans, parent/block/owner agreement and exact original edges. Unchanged
-values forward without inventing an operation or requiring operation registration.
-Actual conversions require registered owners for operation and result observations.
-Direct Never sources retain neither observation; conversion to Never can retain
-an operation without a result. Duplicate visits merge flags; conflicts and shared
+Reports retain exact raw sources, Forward/Convert/Stopped decisions, primary/control
+flags and independent projection/conversion/result observations. Capture validates
+complete roots, matching spans, parent/block/owner agreement, expression/short-circuit
+source kinds, selectors and exact original edges. Forwarding creates no operation;
+direct stops produce no observations, while projected Never can retain its projection
+without a conversion or result. Only conversion operation/result visits require
+registered operation owners. Duplicate visits merge flags; conflicts and shared
 work/effect limits publish no partial collection or metadata changes.
 
-Local/field reads, effectful receivers, mutable observations and outer expected
-conversions retain their original order and checking boundaries. Required reads and
-projected-borrow builders remain separate. No type shapes are copied, effects replayed
-or narrowed values, same-value identities, successful execution or proof outcomes
-inferred. Existing type, ascription, mutation-invalidation and borrow rules remain.
+Composed fallback and expected-value paths retain their original inner call/branch
+identities and evaluation order. Shared reborrows, unchanged shared forwarding,
+required evaluation and source-free helpers remain separate. No target types or
+values are copied, and stage flags infer no transfer, borrow authority or proof
+outcome. Ordinary E207/E208/E302 diagnostics and capability gates remain unchanged.
 
-Nine new internal groups cover guarded sources, forwarding, independent stages,
-control, direct Never exclusions and a seeded conversion-to-Never operation without
-result. Fifty-two corrupt source/edge cases, six merge conflicts and exact shared
-limits preserve atomic failure and ordinary E207/E208/E302 diagnostics, including
-invalid stopped tails (`/tmp/meowy-narrowing-effects-limits.log`). Four required
-source cases pass in debug/release: guarded local/field reads, effectful/stopped
-receivers, field invalidation and unproven field ascription
-(`/tmp/meowy-narrowing-effects-sources.log`). Structural reports remain separate evidence.
+Nine new internal groups cover direct/primary forwarding and conversion, owners/
+control, calls/branches, independent visits, direct/projected Never, required paths
+and shared-reference separation. One hundred sixteen corrupt identity/edge/selector
+cases, six merge conflicts and exact shared limits preserve atomic failure
+(`/tmp/meowy-coercion-effects-limits.log`). Four required source cases pass in
+both profiles: primary/union contexts, argument order, stopped input and shared
+reference paths (`/tmp/meowy-coercion-effects-sources.log`). Projected Never evidence
+is structural; these reports do not establish runtime reachability or proof results.
 
-All ten compiler checks pass: 2116 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2125 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-narrowing-effects-gate.log`. The 184 cases report 165 required passes,
+`/tmp/meowy-coercion-effects-gate.log`. The 188 cases report 169 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-narrowing-effects-strict.log`); all four final documentation
-checks pass (`/tmp/meowy-narrowing-effects-docs.log`). No selected check has an outstanding failure.
-Preservation against `eba755e` confirms all 180 prior cases, 212 source assets,
+only for those gaps (`/tmp/meowy-coercion-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-coercion-effects-docs.log`). No selected check has an outstanding failure.
+Preservation against `5e37849` confirms all 184 prior cases, 216 source assets,
 37 reference files, proof obligations, reference hashes and capability exceptions
-unchanged (`/tmp/meowy-narrowing-effects-preservation.log`). Unrelated `docs/programs/hey/`
+unchanged (`/tmp/meowy-coercion-effects-preservation.log`). Unrelated `docs/programs/hey/`
 is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded coercion observations using `dependencies/coercions.rs`
+Next implement bounded predicate and ascription observations using `dependencies/typed.rs`
 and `edges/forward/effects/`. Record a dependency-ordered commit plan before coding:
 
-1. Validate exact source/parent/block/owner/span identities, Forward/Convert/Stopped
-   decisions, optional primary projections and original stage edges.
-2. Retain independent projection/conversion/result observations. Forwarding creates
-   no operation; direct stops create no result, while projected Never can retain its
-   projection. Require operation registration only for actual conversion stages.
-3. Cover contextual scalar/record/union inputs, receiver/call order, short-circuit
-   sources, required exclusions and shared reborrow separation. Check malformed
-   metadata, selectors, duplicates, conflicts and exact shared budgets.
+1. Validate exact operand/parent/block/owner identities, spans, Predicate/Ascription
+   kinds, normal/control flags, original edges and registered operation owners.
+2. Retain independent operation/result observations, including no-op ascriptions;
+   stopped operands produce neither observation. Preserve inner call/branch order
+   and keep compile-time target work separate from runtime operand links.
+3. Cover immutable/mutable guards, nested predicates/ascriptions, computed targets,
+   owners/control, stopped operands and required/type-query/pending-query exclusions.
+   Check corrupt metadata, duplicate/conflicting stages and exact shared budgets.
 4. Add required source cases and classified coverage; update the guide and handoff,
    then run focused checks and compiler/strict gates.
 
-No target type/value, ownership transfer or proof outcome may be inferred from
-these stage flags. Uncaptured generic coercions and borrow builders remain separate;
-`queries::finish` stays B001-gated and no borrow authority is granted.
-
-## Bounded coercion observations
-
-`coercions.rs` retains exact source roots, Forward/Convert/Stopped decisions and
-primary/control flags. Expected-value and composed fallback paths share these
-stages; shared reborrows use their own producer. Reports currently leave conversion
-operations Unknown and omit forwarding/primary observations. Reuse checked metadata
-without copying target types, replaying inputs or changing any coercion permissions.
-
-Dependency-ordered commit plan:
-
-1. Validate roots, owners, spans, decisions, selectors and original edges; retain
-   independent projection/conversion/result observations with focused regressions.
-2. Cover direct/projected Never, shared reborrows, required paths, malformed metadata,
-   duplicate/conflicting stages and exact shared budgets with ordinary diagnostics.
-3. Add required source cases for contextual projection, union conversion, evaluation
-   order and stopped/reborrow boundaries; update classified conformance coverage.
-4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
-
-Coercion capture and aggregation pass all 134 effect-report groups
-(`/tmp/meowy-coercion-effects-reports.log`). Three new groups cover direct/primary
-forwarding and conversion, owners/control, inner calls/branches, composed fallback
-and isolated stage observations. Complete source/parent/block/owner/span identity,
-selectors and exact edges are validated; only conversion operation/result visits
-require operation registration. Formatting and whitespace checks pass. Step 1 is
-committed (`912e62d`). All nine coercion-effect groups pass
-(`/tmp/meowy-coercion-effects-limits.log`): direct/projected Never, stopped successors,
-required/shared-reference exclusions, 116 corrupt identity/edge/selector cases, six
-merge conflicts and exact shared limits. Ordinary E207/E208/E302 remain unchanged.
-Step 2 is committed (`16d183f`). All four required source cases pass in debug/release
-for primary/union contexts, argument order, stopped inputs and shared-reference paths
-(`/tmp/meowy-coercion-effects-sources.log`). Catalog/coverage checks pass for 188 cases.
-Preservation against `5e37849` confirms all 184 prior cases, 216 source assets,
-37 references, proof obligations, hashes and capability exceptions unchanged
-(`/tmp/meowy-coercion-effects-preservation.log`). Step 3 is ready to commit;
-guide updates and compiler/strict gates remain next.
-Preserve `docs/programs/hey/` and all existing capability gates.
+Infer no target type, predicate truth, refined value, ownership permission or proof
+outcome from these stage flags. Preserve E208, operand/target diagnostic precedence
+and the `queries::finish` B001 boundary; no borrow authority is granted.
 
 ## Documentation conventions and layout
 
@@ -2694,13 +2666,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`89d7d1f`) and the compiler gate pass. Narrowing observations (`c6e092c`) now retain
    exact raw sources and separate forwarding/conversion/result boundaries. Boundary
    regressions (`a86b02f`), source cases (`ef17f36`) and the compiler gate pass.
-   Next validate Forward/Convert/Stopped decisions, primary projections,
-   exact source identities and stage edges in `dependencies/coercions.rs`, then retain
-   bounded observations under `edges/forward/effects/`. Preserve projected Never,
-   call/receiver order, required exclusions and shared reborrow separation. Add
-   identity/selector/budget/source coverage and run compiler/strict gates. Infer no
-   target types/values, ownership transfer, borrow authority or proof outcomes from
-   these stage flags; uncaptured coercions remain separate.
+   Coercion reports (`912e62d`) now retain Forward/Convert/Stopped decisions and
+   independent projection/conversion/result visits. Boundary regressions (`16d183f`),
+   source cases (`00fb650`) and the compiler gate pass. Next validate
+   operand identities, Predicate/Ascription kinds, normal/control flags and original
+   stage edges in `dependencies/typed.rs`, then retain bounded observations under
+   `edges/forward/effects/`. Preserve no-op ascriptions, stopped operands, inner calls/
+   branches, compile-time targets and required/type-query/pending-query exclusions.
+   Add identity/budget/source coverage and run compiler/strict gates. Infer no target
+   types, predicate truth, refined values, borrow authority or proof outcomes from
+   these stage flags.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

@@ -461,6 +461,18 @@ projected borrows and outer expected conversions remain separate. These records
 replay no receiver effects, copy no types and infer no narrowed value, same-value
 identity, successful execution or proof outcome. Mutable guards, invalidation,
 ascription and borrow diagnostics retain their ordinary checking rules.
+Coercion reports retain exact raw sources, Forward/Convert/Stopped decisions,
+primary/control flags and independent projection/conversion/result observations.
+Capture validates completed roots, matching spans, parent/block/owner agreement,
+supported expression/short-circuit source kinds, selectors and exact original edges.
+Forwarding adds no operation; direct stops add no observations, while a projected
+Never can retain its projection without a conversion or result. Only conversion
+operation/result visits require registered operation owners; projections remain
+independent. Duplicate visits merge flags, and conflicts or shared work/effect limits
+publish no partial collection. Composed fallbacks and expected contexts preserve
+inner call/branch identities. Shared reborrows, unchanged shared forwarding,
+required evaluation and uncaptured helpers remain separate. No target types or
+values are copied, and these flags infer no transfer, borrow authority or proof outcome.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
