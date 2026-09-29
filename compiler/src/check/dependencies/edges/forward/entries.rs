@@ -10,6 +10,7 @@ pub(crate) struct Reports {
     pub(crate) effects: super::effects::Effects,
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
+    pub(crate) condensed: super::calls::Condensed,
     pub(self) items: usize,
 }
 
@@ -40,6 +41,7 @@ impl Checker {
             effects: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
+            condensed: super::calls::Condensed::default(),
             items: 0,
         };
         let entries = std::iter::once((None, program.body.id)).chain(
@@ -73,6 +75,9 @@ impl Checker {
         reports.effects = self.operation_effects(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
+        reports.condensed = reports
+            .calls
+            .condense(&reports.groups, &mut self.flow, span)?;
         Ok(reports)
     }
 }

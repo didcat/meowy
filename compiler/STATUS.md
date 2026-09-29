@@ -393,15 +393,39 @@ outstanding failure. Preservation against `74383fc` confirms all 139 prior cases
 (`/tmp/meowy-call-graph-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-Next condense components into a bounded acyclic graph under
-`src/check/dependencies/edges/forward/calls/`, retaining exact internal and cross-group
-call-site membership. Then compute a deterministic analysis order that places
-callees before callers as a separate slice. Preserve original owner/body and
-missing-source/backedge boundaries; ordering must not imply runtime scheduling or
-complete effects. Test diamonds, independent groups, self/mutual recursion,
-malformed membership and capacity/work limits; add source coverage where useful
-and run compiler/strict gates. Callee summaries, backedge data propagation and
-proof outcomes remain separate; `queries::finish` stays B001-gated.
+## Component condensation and ordering in progress
+
+Validated call graphs and recursive components provide exact owner membership and
+call sites. The next layer must retain each internal and cross-group site exactly
+once, while original body/missing-port/backedge evidence remains in the same report.
+Component IDs index the existing canonical component table; they are not function
+IDs or runtime order. No effect summary or proof answer is introduced.
+
+Dependency-ordered commit plan:
+
+1. Condense adjacency into bounded component records with internal sites and grouped
+   outgoing sites. Validate partition, owner/site membership and recursion flags;
+   integrate after component construction and add focused preservation/error/budget
+   tests. Acyclicity follows the producer until explicit ordering in slice 2.
+2. Compute a deterministic iterative order that places callees before callers.
+   Validate target/site identities and reject cyclic/inconsistent condensed graphs;
+   test diamonds, ties, deep graphs, ordering properties and exact limits.
+3. Add useful source cases that distinguish analysis order from runtime execution;
+   update evidence mapping and run compiler/strict gates plus preservation against
+   `14df111`.
+4. Update root/compiler/foundation handoffs and run documentation checks.
+
+The audit covered call/component construction and report integration alongside the
+forward-group and evaluation-order contracts. Original unknown effects, missing
+paths, backedges, conditional Returned edges and final B001 proof gates remain.
+Slice 1 now validates canonical partition/owner membership, recursion flags and
+call-site coverage before retaining internal/cross-group site lists. Original graph
+and boundary records stay in the report. Group/site/work bounds precede growth;
+parallel memberships use one target lookup per source adjacency. Three focused
+condensation groups and all 2000 library tests pass
+(`/tmp/meowy-call-condensation.log`, `/tmp/meowy-condensation-library.log`).
+Next commit slice 1 and implement ordering. Preserve unrelated `docs/programs/hey/`
+work.
 
 ## Documentation conventions and layout
 

@@ -1,5 +1,7 @@
 mod components;
+mod condensation;
 pub(super) use components::Components;
+pub(super) use condensation::Condensed;
 
 use super::{
     effects::Effect,
