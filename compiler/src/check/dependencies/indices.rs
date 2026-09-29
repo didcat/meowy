@@ -15,6 +15,7 @@ pub(crate) struct Access {
     pub(crate) capacity: usize,
     pub(crate) length: Option<usize>,
     pub(crate) may_return: bool,
+    pub(crate) normal: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -41,7 +42,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof list-index identity mismatch", span);
         if !self
             .flow
-            .spend(self.indices.len().checked_ilog2().unwrap_or(0) as usize * 2 + 5)
+            .spend(self.indices.len().checked_ilog2().unwrap_or(0) as usize * 2 + 6)
         {
             return Err(budget());
         }
@@ -75,6 +76,7 @@ impl Checker {
         if let Some(access) = access {
             if access.position == receiver
                 || access.length.is_some_and(|length| length > access.capacity)
+                || (access.normal && !access.may_return)
             {
                 return Err(invalid());
             }
@@ -93,14 +95,18 @@ impl Checker {
                 ),
             ]);
             if access.may_return {
-                edges.extend([
-                    Edge::new(
-                        Port::Normal(access.position),
+                edges.push(Edge::new(
+                    Port::Normal(access.position),
+                    Port::Operation(id),
+                    Route::Checked,
+                ));
+                if access.normal {
+                    edges.push(Edge::new(
                         Port::Operation(id),
-                        Route::Checked,
-                    ),
-                    Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
-                ]);
+                        Port::Normal(id),
+                        Route::Next,
+                    ));
+                }
             }
         }
         let index = Index {
@@ -130,6 +136,9 @@ impl Checker {
 
 #[cfg(test)]
 mod loads;
+
+#[cfg(test)]
+mod results;
 
 #[cfg(test)]
 mod tests {

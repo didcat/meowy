@@ -455,6 +455,7 @@ impl Checker {
                 capacity,
                 length,
                 may_return: index.ty != Type::Never,
+                normal: ty != Type::Never,
             }),
             span,
         )?;

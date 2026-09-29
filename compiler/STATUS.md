@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Effect reports retain validated field reads and load boundaries.
+Updated: 2026-09-29. Bounded indexed-read effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -471,16 +471,39 @@ all 154 prior cases, 186 source assets, 37 reference files, proof obligations,
 reference hashes and capability exceptions are unchanged
 (`/tmp/meowy-field-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-Next add bounded indexed-read effect reports using `dependencies/indices.rs`,
-`list.rs::list_index` and `edges/forward/effects/`. First audit and retain whether the
-selected element can produce a normal result separately from `Access.may_return`,
-which currently describes position completion. Then validate receiver/position roots,
-capacity/optional length, load/control and exact load/snapshot/Checked/read/result
-stages. Preserve observed loads/snapshots when a position stops, without inventing
-a terminal read or proving bounds. Keep element borrows and explicit dereferences
-separate. Add focused identity, stage/budget and required source cases, then run
-compiler/strict gates. Other effect families, callee summaries, backedge propagation
-and proof outcomes remain separate; `queries::finish` stays B001-gated.
+## Bounded indexed-read effects
+
+Investigation confirms `Access.may_return` describes position completion;
+`list_type` already rejects uninhabited elements with B001. `list_index` can retain
+its actual result decision without widening that gate. Existing receiver loads and
+snapshots precede position evaluation, so stopped positions need partial reports
+without terminal reads. Operation-only collection currently loses those stages.
+`IndexAccess.normal` now retains the result decision independently, while invalid
+normal results after stopped positions are rejected before publication. Ten focused
+index groups pass, including seeded read-without-result metadata and preserved
+uninhabited-element B001 diagnostics. Formatting and whitespace checks pass.
+
+Dependency-ordered commit plan:
+
+1. Retain result completion separately in `IndexAccess`/`list_index` and preserve
+   conditional load/result edges; test ordinary/stopped inputs and existing B001 gates:
+   complete, ready to commit.
+2. Add bounded index-stage capture under `edges/forward/effects/`, validating exact
+   receiver/position roots, length/capacity, flags, stages and original edges.
+3. Aggregate typed partial index effects with fixed-size payloads, operation-owner
+   validation for terminal reads, deduplication and focused report regressions.
+4. Cover malformed metadata, mixed families and exact stage/work/effect limits;
+   keep failed reports atomic and existing diagnostics authoritative.
+5. Add required source cases for snapshots, stopped positions and bounds behavior;
+   update classified evidence while preserving prior sources/contracts/exceptions.
+6. Update the guide, run compiler/strict gates and record actual results plus the
+   next bounded effect family in both trackers.
+
+Validate and commit each slice with focused tests and staged diff checks. Preserve
+explicit dereferences, element borrows, known/unknown lengths and conditional bounds
+success. Do not infer stored values, pointee storage, borrow authority, bounds proof,
+call termination or proof outcomes; `queries::finish` stays B001-gated.
+Unrelated `docs/programs/hey/` remains preserved.
 
 ## Documentation conventions and layout
 
