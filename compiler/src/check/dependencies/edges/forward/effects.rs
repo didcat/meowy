@@ -57,6 +57,7 @@ pub(crate) enum Effect {
         control: bool,
     },
     Output(outputs::Observed),
+    Index(indices::Observed),
     Unknown,
 }
 
@@ -87,7 +88,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.index_effect_stage(reports, owner, port, span)?;
+                if let Some(stage) = self.index_effect_stage(reports, owner, port, span)? {
+                    self.record_index_effect(stage, &mut effects, limit, span)?;
+                    continue;
+                }
                 if let Some(stage) = self.output_effect_stage(owner, port, span)? {
                     if matches!(stage.kind, outputs::Kind::Finish) {
                         if !self.flow.spend(

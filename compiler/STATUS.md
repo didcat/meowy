@@ -486,7 +486,11 @@ Result capture is committed (`b29e9a0`). Stage classification now validates enco
 index loads/snapshots/reads, including registered owners only for terminal reads;
 all four new stage groups and all 61 effect-report groups pass
 (`/tmp/meowy-index-effects-stages.log`). Formatting and whitespace checks pass.
-Typed aggregation remains the following slice.
+Stage validation is committed (`03f4681`). Typed aggregation now retains separate
+observed load/snapshot/read flags with the captured access metadata. Focused report
+tests cover pre-position snapshots, control/owners, nested calls, explicit loads,
+element-borrow separation, stopped operands and isolated observed stages. All 65
+effect-report groups pass; no values or type shapes are copied.
 
 Dependency-ordered commit plan:
 
@@ -495,9 +499,10 @@ Dependency-ordered commit plan:
    complete (`b29e9a0`).
 2. Add bounded index-stage capture under `edges/forward/effects/`, validating exact
    receiver/position roots, length/capacity, flags, stages and original edges:
-   complete, ready to commit.
+   complete (`03f4681`).
 3. Aggregate typed partial index effects with fixed-size payloads, operation-owner
-   validation for terminal reads, deduplication and focused report regressions.
+   validation for terminal reads, deduplication and focused report regressions:
+   complete, ready to commit.
 4. Cover malformed metadata, mixed families and exact stage/work/effect limits;
    keep failed reports atomic and existing diagnostics authoritative.
 5. Add required source cases for snapshots, stopped positions and bounds behavior;
