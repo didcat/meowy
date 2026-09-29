@@ -568,8 +568,12 @@ Narrowing stage capture and aggregation pass all 126 effect-report groups
 field roots, receiver effects, outer conversions, control, forwarding, independent
 observations, required reads and direct Never exclusions. Raw-source span, complete
 parent/block/owner identity and exact edges are validated; actual conversions require
-operation registration. Formatting and whitespace checks pass. Step 1 is ready to
-commit; conversion-to-Never and malformed metadata/budget coverage are next.
+operation registration. Formatting and whitespace checks pass. Step 1 is committed
+(`c6e092c`). All nine narrowing-effect groups pass
+(`/tmp/meowy-narrowing-effects-limits.log`): 52 corrupt source/edge cases, six merge
+conflicts, duplicate work, exact shared limits and a seeded conversion-to-Never
+operation without a result. E207/E208/E302 and invalid stopped-tail checks remain
+unchanged. Step 2 is ready to commit; required source coverage is next.
 Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
