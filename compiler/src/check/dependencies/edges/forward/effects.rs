@@ -85,6 +85,7 @@ impl Checker {
                 if !self.flow.spend(
                     reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.operations.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.local_reads.len().checked_ilog2().unwrap_or(0) as usize
                         + self.paths.len().checked_ilog2().unwrap_or(0) as usize
                         + self.stores.len().checked_ilog2().unwrap_or(0) as usize
                         + calls.len().checked_ilog2().unwrap_or(0) as usize
@@ -114,6 +115,17 @@ impl Checker {
                         input: op.input,
                         control: op.control,
                     }
+                } else if let Some(read) = self.local_reads.get(&id) {
+                    if read.owner != owner {
+                        return Err(invalid());
+                    }
+                    if read.local >= reports.locals || read.storage >= reports.locals {
+                        return Err(Diagnostic::unsupported(
+                            "proof read-effect identity mismatch",
+                            span,
+                        ));
+                    }
+                    Effect::Unknown
                 } else if let Some(op) = self.paths.get(&id) {
                     if op.owner != owner {
                         return Err(invalid());

@@ -414,17 +414,37 @@ has an outstanding failure. Preservation against `4c881ee` confirms all 144 prio
 (`/tmp/meowy-output-effects-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-Next retain local-read effects before deriving callee summaries.
-`src/check/dependencies/local_reads.rs` already captures exact local/canonical
-storage IDs, owner, normal/control flags and edges, but
-`src/check/dependencies/edges/forward/effects.rs` still classifies them as Unknown.
-Plan any validation context needed after HIR locals move into the program separately
-from typed report integration. Preserve alias storage, reference-cell versus pointee
-reads, Never/stopped boundaries and required-only input uses; do not reread values
-or grant borrow/copy authority. Add owner/storage/edge and work-limit regressions,
-source coverage where useful, then run compiler/strict gates. Callee summaries,
-backedge data propagation and proof outcomes remain separate; `queries::finish`
-stays B001-gated.
+## Local-read effect reporting in progress
+
+LocalRead already retains the checked local ID, canonical alias root, owner,
+normal/control flags and exact read edges. Reports run after local HIR transfers
+into the program, so a retained local-count bound is needed to validate those IDs.
+Alias roots are stable registration metadata; reference-cell storage must not be
+replaced with pointee origins. Required-only reads keep their separate InputUse path.
+
+Dependency-ordered commit plan:
+
+1. Validate local-read local/storage bounds and canonical alias roots against the
+   program, retaining only its local count in reports. Add HIR-transfer, alias,
+   malformed-storage and capacity/work tests; leave read effect classification intact.
+2. Capture typed read effects for encountered operations after point/owner/storage/
+   edge validation. Preserve normal/control flags, narrowing order, reference cells
+   and stopped/required-only boundaries; add focused report and failure tests.
+3. Add useful source alias/reference/required-read conformance, update evidence maps,
+   and run compiler/strict gates plus preservation against `a067729`.
+4. Update root/compiler/foundation handoffs and run documentation checks.
+
+The audit covered local-read registration/use sites, alias root registration,
+reference borrowing, HIR transfer, report collection and the memory contract.
+No values are reread, no edges are changed, and no borrow/copy authority, complete
+callee summary or proof result is introduced. Slice 1 validates read local/storage
+bounds and stable alias roots against the transferred program, retains its local
+count, and consumes the bound in collector validation while preserving Unknown
+classification. Three focused context groups pass (`/tmp/meowy-read-context.log`),
+including an invalid retained bound; all 2016 library tests passed before the
+collector guard, and formatting/all-target Clippy pass after that guard
+(`/tmp/meowy-read-context-library.log`, `/tmp/meowy-read-context-clippy.log`).
+Next implement typed read records. Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

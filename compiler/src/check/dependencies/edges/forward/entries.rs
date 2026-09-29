@@ -1,11 +1,14 @@
 use super::{walk::Walk, *};
 
+mod locals;
+
 pub(crate) const MAX_ENTRIES: usize = crate::flow::MAX_NODES;
 pub(crate) const MAX_REPORT_ITEMS: usize = MAX_EDGES * 3 + MAX_ENTRIES * 2;
 
 #[derive(Debug)]
 pub(crate) struct Reports {
     pub(crate) index: ForwardIndex,
+    pub(crate) locals: usize,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
     pub(crate) calls: super::calls::CallGraph,
@@ -36,8 +39,10 @@ impl Checker {
         if program.functions.len() >= roots || !self.flow.spend(1) {
             return Err(budget());
         }
+        let locals = self.report_local_count(program, span)?;
         let mut reports = Reports {
             index: self.forward_index(span)?,
+            locals,
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
