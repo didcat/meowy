@@ -1,0 +1,8 @@
+d:@"debug"
+shared<int32>:(){d.print("shared");->1}
+right<int32>:(){d.print("right");->shared()}
+left<never>:(){d.print("left");d.panic("stop")}
+combine<int32>:(a<int32>,b<int32>){d.print("combine");->a+b}
+d.print("entry")
+combine(left(),right())
+d.print("after")

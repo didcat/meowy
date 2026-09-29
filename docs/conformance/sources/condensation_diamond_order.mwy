@@ -1,0 +1,19 @@
+d:@"debug"
+even<(int32)->boolean>
+odd<(int32)->boolean>
+odd<boolean>:(n<int32>)'out{
+    |n==0|{'out->false;'out.leave()}
+    ->even(n-1)
+}
+even<boolean>:(n<int32>)'out{
+    |n==0|{'out->true;'out.leave()}
+    ->odd(n-1)
+}
+report<boolean>:(tag<string>,n<int32>){d.print(tag);->even(n)}
+right<boolean>:(){->report("right",2)}
+left<boolean>:(){->report("left",3)}
+pair<boolean>:(a<boolean>,b<boolean>){->a&&b}
+d.print("entry")
+d.print(left().(pair,right()))
+run:left
+d.print(run())

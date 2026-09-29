@@ -1524,6 +1524,28 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "condensation_diamond_order",
+      "phase": "run",
+      "source": "sources/condensation_diamond_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry\nleft\nright\nfalse\nleft\nfalse\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "condensation_stopped_order",
+      "phase": "run",
+      "source": "sources/condensation_stopped_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry\nleft\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
     }
   ]
 }

@@ -435,7 +435,14 @@ was premature: Clippy rejected `pub(self)` on the free site-validation helper.
 Its visibility is now `pub(super)`, preserving explicit visibility and behavior.
 Formatting, all five selected `call_order` groups and all-target Clippy now pass
 (`/tmp/meowy-call-order.log`, `/tmp/meowy-call-order-clippy.log`). No check remains
-failed; next add source coverage and run the final compiler gate.
+failed. Two required source cases now pass in debug/release with a fresh CLI
+(`/tmp/meowy-condensation-cases.log`): a diamond with shared recursive callees,
+repeated calls and reversed declaration order, and panic before later callees.
+Catalog/coverage checks validate 144 cases and 37 references. The compiler gate
+is running (`/tmp/meowy-condensation-gate.log`). Preservation against `14df111`
+confirms all 142 prior cases, 174 source assets, 37 reference files and exact
+exceptions are unchanged (`/tmp/meowy-condensation-preservation.log`). Next finish
+compiler/strict validation and the final documentation handoff.
 Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
