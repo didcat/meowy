@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Effect reports retain validated explicit dereference loads.
+Updated: 2026-09-29. Bounded field-read effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -456,15 +456,35 @@ outstanding failure. Preservation against `1e7f927` confirms all 151 prior cases
 reference hashes and capability exceptions are unchanged
 (`/tmp/meowy-deref-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-Next add bounded field-read effects using `dependencies/fields.rs` and
-`edges/forward/effects/`. First retain the checked receiver field-count bound beside
-its resolved index, without copying type shapes. Then validate exact roots, index,
-implicit shared-load choice, normal/control flags and receiver/load/field/result
-edges before reporting typed effects. Preserve explicit dereferences, stopped
-receivers, Never fields, required/static exits and original narrowing boundaries.
-Add focused identity/budget tests and required source coverage, then run the compiler
-and strict gates. Other load families, callee summaries, backedge propagation and
-proof outcomes remain separate; `queries::finish` stays B001-gated.
+## Bounded field-read effects
+
+Investigation confirms `dependencies/fields.rs` captures exact receiver roots, field
+indices, implicit shared loads and normal/control flags before narrowing. Reports
+still classify field operations as Unknown. The producer now also retains the
+checked receiver field count without type copies or edge changes. All four focused
+`field_stages` groups pass, including field-count identity and replay rejection;
+formatting and whitespace checks pass. Typed reporting is next.
+
+Dependency-ordered commit plan:
+
+1. Retain the checked receiver field count beside the resolved index, without type
+   copies; extend producer tests for owned/shared/explicit loads and stable replay:
+   complete, ready to commit.
+2. Add typed field effects under `edges/forward/effects/`, validating index bounds,
+   exact producer/receiver identities and receiver/load/field/result edges; include
+   focused tests for owners, narrowing, Never fields and required/static boundaries.
+3. Add malformed-metadata, duplicate-visit and exact work/effect-limit regressions,
+   preserving atomic report failure and separate borrow/load families.
+4. Add required source cases for receiver order, stopped calls and borrow rejection;
+   update classified evidence without changing reference contracts or existing cases.
+5. Update the guide and run compiler/strict gates; record actual results and the next
+   bounded effect family in both trackers.
+
+Validate each implementation slice with focused Rust tests and staged diff checks.
+Preserve existing field-lookup errors, required/static exits, explicit dereferences,
+Never fields and narrowing boundaries. No storage/value provenance, borrow authority,
+callee summary or proof result is inferred; `queries::finish` stays B001-gated.
+Unrelated `docs/programs/hey/` remains preserved.
 
 ## Documentation conventions and layout
 

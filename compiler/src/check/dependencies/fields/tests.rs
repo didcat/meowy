@@ -24,10 +24,15 @@ pub(crate) fn field_stages_keep_owned_and_shared_receivers_without_duplicate_loa
         let hir::Stmt::Bind { value, .. } = block.stmts.last().unwrap() else {
             panic!()
         };
-        let hir::ExprKind::Field { index, .. } = value.kind else {
+        let hir::ExprKind::Field { index, value } = &value.kind else {
             panic!()
         };
-        assert_eq!(field.index, index);
+        let hir::Type::Record { fields, .. } = &value.ty else {
+            panic!()
+        };
+        assert_eq!(field.index, *index);
+        assert_eq!(field.count, fields.len());
+        assert!(field.index < field.count);
         assert_eq!(checker.points[field.input].parent, Some(id));
         assert_eq!(
             field.edges[0],
@@ -142,6 +147,15 @@ pub(crate) fn field_stages_bound_type_validation_and_atomic_publication() {
     checker
         .field_operation(id, field.input, field.load, value, field.span)
         .unwrap();
+    assert_eq!(checker.field_edges, count);
+    checker.fields.get_mut(&id).unwrap().count += 1;
+    assert!(
+        checker
+            .field_operation(id, field.input, field.load, value, field.span)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
     assert_eq!(checker.field_edges, count);
     checker.fields.clear();
     checker.field_edges = 0;
