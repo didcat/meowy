@@ -245,11 +245,12 @@ Ordinary runtime fields retain exact receiver roots, resolved field indices and
 the decision to insert a shared-reference load. Receiver completion precedes that
 load, when present, then field selection and result availability. Explicit receiver
 dereferences keep their own stages, and call-return conditions are not bypassed.
-The selected field is recorded before narrowing, with bounded type validation and
-no retained aggregate type copies. A `never` field has no result edge; a `never`
-receiver keeps its existing field-lookup error. Required fields and resolved
-static/intrinsic symbols retain their separate paths. These links use the shared
-edge budget without proving full field provenance or changing loan authority.
+The selected field and receiver field count are recorded before narrowing, with
+bounded type validation and no retained aggregate type copies. A `never` field has
+no result edge; a `never` receiver keeps its existing field-lookup error. Required
+fields and resolved static/intrinsic symbols retain their separate paths. These
+links use the shared edge budget without proving full field provenance or changing
+loan authority.
 Ordinary local and runtime-field reads now retain distinct raw-source roots for
 narrowing. The checker records whether that invocation inserted a conversion;
 unchanged values forward from source completion, while changed values pass through
@@ -359,6 +360,18 @@ Repeated visits produce one record, and shared work/effect limits are checked be
 returning the collection. No aggregate type shape, pointee storage or value is copied
 or inferred. Implicit field/list loads and reborrows retain their separate boundaries;
 existing ownership/lifetime diagnostics and proof gates are unchanged.
+Runtime field reads now retain a Field effect with the exact receiver root, resolved
+field index, implicit shared-load choice and captured normal/control flags. The
+producer's field count bounds the selected index after HIR transfer. Capture validates
+completed producer/receiver points, parent/block/owner agreement, source span,
+operation registration and exact receiver/load/field/result edges. Repeated visits
+produce one record; failed identity or work/effect limits return no partial collection.
+Explicit dereferences remain separate effects, and reference-valued fields do not
+imply another pointee load. Never fields omit normal completion; stopped predecessors
+keep later field operations outside the report. Required/static fields and projected
+borrows keep their existing paths. These records describe the raw field read before
+narrowing, without copying aggregate types or inferring storage/value provenance,
+borrow authority, call termination or proof outcomes.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

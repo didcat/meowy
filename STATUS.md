@@ -7,29 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Explicit dereference effects now retain exact pointer roots, shared/exclusive mode
-and normal/control flags after bounded identity/edge validation. Reference-cell reads
-remain separate; stopped pointers have no load effect and shared Never referents
-have no normal result. Eight new internal groups and three source cases cover order,
-identity, work limits, modes, stops and existing borrow/lifetime errors.
-Commits: `e9aa13a`, `f3f4e4c`, `f6044ab`, `cfc7d62`.
+Field-read effects now retain exact receiver roots, validated field indices, implicit
+shared loads and normal/control flags before narrowing. Explicit dereferences,
+reference-valued fields and projected borrows retain separate identities; Never,
+stopped and required/static boundaries are preserved. Eight new internal groups and
+three source cases cover identity, budgets, receiver order and existing diagnostics.
+Commits: `f834ed9`, `e0b6732`, `deb2b53`, `e984699`.
 
-All ten compiler checks pass: 2029 library/914 native and 62 Python test groups;
-`/tmp/meowy-deref-effects-gate.log`. The catalog has 154 cases: 135 required passes,
+All ten compiler checks pass: 2037 library/914 native and 62 Python test groups;
+`/tmp/meowy-field-effects-gate.log`. The catalog has 157 cases: 138 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-deref-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-deref-effects-docs.log`).
+(`/tmp/meowy-field-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-field-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Bounded field-read reporting is in progress. Receiver field counts are retained
-(`f834ed9`), and typed effects validate indices and implicit shared-load boundaries.
-All 53 focused effect-report groups pass. Metadata/budget tests, source coverage and
-the full gate remain next; the
-[compiler handoff](compiler/STATUS.md#bounded-field-read-effects) records the plan.
-Unrelated `docs/programs/hey/` work is preserved.
+Next retain bounded indexed-read effects, including partial receiver loads/snapshots
+before stopped positions and separate position/result completion. The
+[compiler handoff](compiler/STATUS.md#bounded-field-read-effects) records the files
+and verification plan. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded field-read effect reporting is in progress.
+Updated: 2026-09-29. Effect reports retain validated field reads and load boundaries.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -420,90 +420,67 @@ workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
 ## Explicit dereference-load effects
 
+Retained result decisions (`e9aa13a`) and typed Deref records (`f3f4e4c`) preserve
+exact pointer roots, shared/exclusive mode and normal/control flags after bounded
+point/owner/edge validation. Reference-cell reads stay separate; stopped pointers
+have no load effect and shared Never referents have no normal result. Exclusive
+Never references retain B001. Boundary tests (`f6044ab`) and source cases (`cfc7d62`)
+remain covered by the current gates below. These records copy no aggregate types,
+pointee storage or values and grant no borrow authority or proof outcome.
+
+## Bounded field-read effects
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Retain the producer's normal-result decision | `e9aa13a` |
-| Capture bounded typed dereference effects | `f3f4e4c` |
-| Validate identity, work and capability boundaries | `f6044ab` |
-| Pin pointer order, stopped loads and live-borrow rejection | `cfc7d62` |
+| Retain checked receiver field counts | `f834ed9` |
+| Capture validated field-read effects | `e0b6732` |
+| Cover identity, work and capability boundaries | `deb2b53` |
+| Pin receiver order, stopped calls and borrow rejection | `e984699` |
 
-Deref effects retain exact pointer roots, shared/exclusive mode and normal/control
-flags. Capture validates completed producer/pointer points, parent/block/owner
-agreement, source span, operation registry and original pointer/load/result edges.
-Repeated visits produce one record; failed metadata/work/effect limits return no
-partial collection. No aggregate types, pointee storage or values are copied.
-Reference-cell reads remain separate. Stopped pointers have no load effect; shared
-Never referents have no normal completion. Exclusive Never references retain their
-existing B001 gate. Implicit field/list loads and reborrows remain separate.
+Field effects retain exact receiver roots, resolved indices, implicit shared-load
+choices and normal/control flags before narrowing. The producer's retained field
+count bounds the selected index without aggregate type copies. Capture validates
+completed producer/receiver points, parent/block/owner agreement, source span,
+operation registry and exact receiver/load/field/result edges. Duplicate visits
+produce one record; failed metadata/work/effect limits return no partial collection.
 
-Eight new effect groups cover 22 malformed metadata cases, missing mode, exact
-work/effect limits, duplicate visits, nested calls, owners/control, reference cells,
-Never/stopped inputs and E222/E302/E303 preservation. Three required source cases
-pass in debug/release: pointer effects/calls before scalar/aggregate/reference loads,
-panic-stopped pointers and live-exclusive-borrow rejection
-(`/tmp/meowy-deref-effects-sources.log`). Structural records are not proof outcomes.
+Explicit dereferences, reference-valued fields and projected borrows retain separate
+identities. Never fields have no normal result; stopped predecessors exclude later
+field operations. Required/static reads retain their existing paths. Original
+lookup, borrow and lifetime errors remain; no value/storage provenance, borrow
+permission, callee termination or proof result is inferred.
 
-All ten compiler checks pass: 2029 library/914 native tests, 32 tooling and 30 harness
+Eight new effect groups cover 26 malformed cases on both direct and shared-load
+paths, duplicate visits, exact work/effect limits, independent owners/control,
+narrowing, Never/stopped/required-only boundaries and E201/E302/E303 preservation.
+Three required source cases pass in debug/release: owned/shared receiver order,
+explicit/nested/reference field reads and narrowing, panic-stopped receiver calls,
+and writes rejected while a shared view remains live
+(`/tmp/meowy-field-effects-sources.log`). Structural records remain separate evidence.
+
+All ten compiler checks pass: 2037 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-deref-effects-gate.log`. The 154 cases report 135 required passes,
+`/tmp/meowy-field-effects-gate.log`. The 157 cases report 138 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-deref-effects-strict.log`); final documentation
-checks all pass (`/tmp/meowy-deref-effects-docs.log`). No selected check has an
-outstanding failure. Preservation against `1e7f927` confirms all 151 prior cases,
-183 source assets, 37 reference files, proof obligations,
+only for those gaps (`/tmp/meowy-field-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-field-effects-docs.log`). No selected check has an outstanding
+failure. Preservation against `9254aac` confirms
+all 154 prior cases, 186 source assets, 37 reference files, proof obligations,
 reference hashes and capability exceptions are unchanged
-(`/tmp/meowy-deref-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+(`/tmp/meowy-field-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-## Bounded field-read effects
-
-Investigation confirms `dependencies/fields.rs` captures exact receiver roots, field
-indices, implicit shared loads and normal/control flags before narrowing. Reports
-now have typed Field records with index/identity/edge validation. All 53 effect-report
-groups pass, including four new field groups for load modes, narrowing, independent
-owners/control, Never/stopped/required-only boundaries and index rejection.
-The producer retains the checked receiver field count without
-type copies or edge changes (`f834ed9`). All four focused
-`field_stages` groups pass, including field-count identity and replay rejection;
-formatting and whitespace checks pass. Typed reporting is committed (`e0b6732`).
-All eight field-effect groups now pass. Boundary coverage exercises 26 malformed
-metadata cases for both direct and shared-load paths, duplicate visits, exact work/
-effect caps, separate borrow/list operations and E201/E302/E303 preservation.
-No selected test has an outstanding failure.
-
-All three new source cases pass in debug/release through the rebuilt compiler and
-isolated conformance harness (`/tmp/meowy-field-effects-sources.log`). They cover
-owned/shared receiver calls, explicit and nested reads, narrowing/reference fields,
-panic-stopped receiver evaluation and live-borrow rejection. The 157-case catalog
-and classified coverage checks pass. Preservation against `9254aac` confirms all
-154 prior cases, 186 source assets, 37 reference files, proof obligations, hashes
-and exact capability exceptions are unchanged (`/tmp/meowy-field-effects-preservation.log`).
-The full compiler/strict gates remain next.
-
-Dependency-ordered commit plan:
-
-1. Retain the checked receiver field count beside the resolved index, without type
-   copies; extend producer tests for owned/shared/explicit loads and stable replay:
-   complete (`f834ed9`).
-2. Add typed field effects under `edges/forward/effects/`, validating index bounds,
-   exact producer/receiver identities and receiver/load/field/result edges; include
-   focused tests for owners, narrowing, Never fields and required/static boundaries:
-   complete (`e0b6732`).
-3. Add malformed-metadata, duplicate-visit and exact work/effect-limit regressions,
-   preserving atomic report failure and separate borrow/load families: complete
-   (`deb2b53`).
-4. Add required source cases for receiver order, stopped calls and borrow rejection;
-   update classified evidence without changing reference contracts or existing cases:
-   complete, ready to commit.
-5. Update the guide and run compiler/strict gates; record actual results and the next
-   bounded effect family in both trackers.
-
-Validate each implementation slice with focused Rust tests and staged diff checks.
-Preserve existing field-lookup errors, required/static exits, explicit dereferences,
-Never fields and narrowing boundaries. No storage/value provenance, borrow authority,
-callee summary or proof result is inferred; `queries::finish` stays B001-gated.
-Unrelated `docs/programs/hey/` remains preserved.
+Next add bounded indexed-read effect reports using `dependencies/indices.rs`,
+`list.rs::list_index` and `edges/forward/effects/`. First audit and retain whether the
+selected element can produce a normal result separately from `Access.may_return`,
+which currently describes position completion. Then validate receiver/position roots,
+capacity/optional length, load/control and exact load/snapshot/Checked/read/result
+stages. Preserve observed loads/snapshots when a position stops, without inventing
+a terminal read or proving bounds. Keep element borrows and explicit dereferences
+separate. Add focused identity, stage/budget and required source cases, then run
+compiler/strict gates. Other effect families, callee summaries, backedge propagation
+and proof outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2579,12 +2556,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    source coverage (`04ba6d8`) and the compiler gate pass. Explicit dereference
    result decisions (`e9aa13a`) and typed effects (`f3f4e4c`) now preserve exact
    pointer roots/modes and normal/control flags. Boundary tests (`f6044ab`), source
-   coverage (`cfc7d62`) and the compiler gate pass. Next retain the checked field-count
-   bound in `dependencies/fields.rs`, then report bounded field-read effects under
-   `edges/forward/effects/` with exact receiver/index/load/result validation. Preserve
-   explicit loads, implicit shared loads, stopped receivers, Never fields and required
-   exits; add focused/source coverage and run compiler/strict gates. No pointee-storage
-   inference, value read, borrow authority, callee summary or proof outcome is implied.
+   coverage (`cfc7d62`) and the compiler gate pass. Checked field counts (`f834ed9`)
+   and typed field effects (`e0b6732`) now retain validated receiver/index/load/result
+   boundaries. Identity/budget coverage (`deb2b53`), source cases (`e984699`) and the
+   compiler gate pass. Next audit selected-result completion in `list.rs::list_index`
+   separately from position completion, then capture bounded indexed-read effects
+   using `dependencies/indices.rs` and `edges/forward/effects/`. Preserve partial
+   receiver loads/snapshots before stopped positions, exact roots/length/capacity and
+   Checked bounds edges. Add focused/source coverage and run compiler/strict gates.
+   No pointee-storage inference, value read, borrow authority, callee summary or proof
+   outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
