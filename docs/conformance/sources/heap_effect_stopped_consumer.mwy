@@ -1,0 +1,16 @@
+d : @"debug"
+m : @"memory"
+first <m.Allocator> : () {
+    d.print("first")
+    -> m.heap
+}
+stop <never> : () {
+    d.print("stop")
+    d.panic("done")
+}
+sink <null> : (a <m.Allocator>, b <m.Allocator>) {
+    d.print("unexpected call")
+}
+sink(first(), stop())
+later : m.heap
+d.print("unexpected tail")

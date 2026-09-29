@@ -559,8 +559,14 @@ Formatting and whitespace checks pass. Step 1 is committed (`4800e0d`). All eigh
 heap-effect groups pass (`/tmp/meowy-heap-effects-limits.log`), including 18 faults
 on both observed stages, four merge conflicts, duplicate work and exact shared map/
 work limits with no payload allowance. E207/E302/E303/E222 and existing B001 gates
-remain unchanged, including diagnostics in stopped tails. Step 2 is ready to commit;
-required source coverage is next. Preserve `docs/programs/hey/`; no borrow rule changed.
+remain unchanged, including diagnostics in stopped tails. Step 2 is committed
+(`f8fca7b`). All four required source cases pass in debug/release for consumers/
+shadowing, stopped calls, temporary escape and live-borrow conflicts
+(`/tmp/meowy-heap-effects-sources.log`). Catalog/coverage checks pass for 180 cases.
+Preservation against `5597c18` confirms all 176 prior cases, 208 source assets,
+37 references, proof obligations, hashes and capability exceptions unchanged
+(`/tmp/meowy-heap-effects-preservation.log`). Step 3 is ready to commit; guide updates
+and compiler/strict gates remain next. Preserve `docs/programs/hey/`; no borrow rule changed.
 
 ## Documentation conventions and layout
 

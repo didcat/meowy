@@ -1,0 +1,5 @@
+m : @"memory"
+a := m.heap
+p : &a
+a = m.heap
+copy : *p

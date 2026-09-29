@@ -1892,6 +1892,48 @@
         "code": "E216"
       },
       "reference": "../reference/syntax.md#literals-values-and-comments"
+    },
+    {
+      "id": "heap_effect_consumers",
+      "phase": "run",
+      "source": "sources/heap_effect_consumers.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "call\ncall\ntrue\ntrue\n7\ndone\n"
+      },
+      "reference": "../reference/stdlib/memory.md#storage-and-values"
+    },
+    {
+      "id": "heap_effect_stopped_consumer",
+      "phase": "run",
+      "source": "sources/heap_effect_stopped_consumer.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "heap_effect_temporary_escape",
+      "phase": "check",
+      "source": "sources/heap_effect_temporary_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "heap_effect_live_borrow",
+      "phase": "check",
+      "source": "sources/heap_effect_live_borrow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

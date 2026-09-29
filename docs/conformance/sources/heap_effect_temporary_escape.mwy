@@ -1,0 +1,3 @@
+m : @"memory"
+p : &{ -> m.heap }
+copy : *p

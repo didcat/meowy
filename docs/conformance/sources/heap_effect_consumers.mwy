@@ -1,0 +1,20 @@
+d : @"debug"
+m : @"memory"
+alias : m
+pass <m.Allocator> : (value <m.Allocator>) {
+    d.print("call")
+    -> value
+}
+a : alias.heap
+b : a
+first : pass(b)
+second : pass(((m.heap)))
+optional <m.Allocator><null> : m.heap
+d.print(optional<m.Allocator>)
+copy : *(&{ -> m.heap })
+d.print(copy<m.Allocator>)
+{
+    m : { -> heap : 7 }
+    d.print(m.heap)
+}
+d.print("done")
