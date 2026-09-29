@@ -1,0 +1,23 @@
+d : @"debug"
+stop <never> : () {
+    d.print("receiver")
+    d.panic("stop")
+}
+item <int32> : () {
+    d.print("unexpected item")
+    -> 2
+}
+xs : [1]
+'owned {
+    xs.add({ d.print("owned item"); 'owned.leave() })
+    d.print("unexpected owned result")
+}
+d.print("after owned")
+view : &xs
+'shared {
+    view.add({ d.print("shared item"); 'shared.leave() })
+    d.print("unexpected shared result")
+}
+d.print("after shared")
+stop().add(item())
+d.print("unexpected tail")

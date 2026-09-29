@@ -1,0 +1,14 @@
+d : @"debug"
+get <&int32[3]> : (value <&int32[3]>) {
+    d.print("list")
+    -> value
+}
+text <string> : () {
+    d.print("text")
+    -> "é🙂"
+}
+xs <int32[3]> : [1, 2]
+d.print(get(&xs).size())
+d.print((*(&xs)).size())
+d.print(text().size())
+d.print("".size())

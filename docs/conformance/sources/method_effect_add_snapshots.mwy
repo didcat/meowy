@@ -1,0 +1,23 @@
+d : @"debug"
+get <&int32[3]> : (value <&int32[3]>) {
+    d.print("receiver")
+    -> value
+}
+base <int32[3]> : [1]
+next : base.add(2)
+d.print(base.size())
+d.print(next.size())
+xs <int32[3]> := [7]
+copy : get(&xs).add({
+    d.print("item")
+    xs = [8, 9]
+    -> 4
+})
+d.print(copy[1])
+d.print(copy[2])
+d.print(xs.size())
+owned <int32[3]> := [3]
+item : owned.add({ owned = []; -> 6 })
+d.print(item[1])
+d.print(item[2])
+d.print(owned.size())

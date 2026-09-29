@@ -504,6 +504,15 @@ covering 34 add faults on direct/shared paths, six faults across three size form
 ten merge conflicts, exact work/effect limits and E201/E207/E212/E103/E302 preservation.
 Formatting and whitespace checks pass; no selected test has an outstanding failure.
 
+All four new source cases pass in debug/release with the rebuilt compiler and
+isolated conformance harness (`/tmp/meowy-method-effects-sources.log`): list sizes,
+UTF-8 byte counts, owned/shared add snapshots, unchanged receiver storage without
+explicit writes, stopped receivers/items and P003 against the original full snapshot
+after the item clears the list. Catalog/coverage checks pass for 164 cases. All 160
+prior cases, 192 source assets, 37 reference files, proof obligations, reference hashes
+and capability exceptions are preserved against `3d2f92b`
+(`/tmp/meowy-method-effects-preservation.log`). Full compiler/strict gates remain next.
+
 Dependency-ordered commit plan:
 
 1. Add bounded method-stage capture under `edges/forward/effects/`, validating
@@ -513,10 +522,11 @@ Dependency-ordered commit plan:
    flags, fixed-size payloads and focused owner/control/order/partial-report tests:
    complete (`c9d4361`).
 3. Add malformed-metadata, duplicate-stage, merge-conflict and exact work/effect
-   limit regressions, preserving atomic failures and ordinary diagnostics: complete,
-   ready to commit.
+   limit regressions, preserving atomic failures and ordinary diagnostics: complete
+   (`d83f647`).
 4. Add required source cases for size results, add snapshots, stopped items and
-   capacity behavior; update classified evidence without changing prior contracts.
+   capacity behavior; update classified evidence without changing prior contracts:
+   complete, ready to commit.
 5. Update the guide, run compiler/strict gates, and record actual validation and the
    next bounded effect family in both trackers.
 

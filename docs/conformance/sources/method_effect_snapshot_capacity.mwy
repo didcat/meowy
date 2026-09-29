@@ -1,0 +1,10 @@
+d : @"debug"
+xs <int32[2]> := [7, 9]
+view : &xs
+d.print("before")
+value : view.add({
+    d.print("item")
+    xs = []
+    -> 4
+})
+d.print("unexpected result")

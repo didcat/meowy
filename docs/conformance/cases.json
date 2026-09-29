@@ -1718,6 +1718,50 @@
         "exit": 1
       },
       "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "method_effect_sizes",
+      "phase": "run",
+      "source": "sources/method_effect_sizes.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "list\n2\n2\ntext\n6\n0\n"
+      },
+      "reference": "../reference/collections.md"
+    },
+    {
+      "id": "method_effect_add_snapshots",
+      "phase": "run",
+      "source": "sources/method_effect_add_snapshots.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n2\nreceiver\nitem\n7\n4\n2\n3\n6\n0\n"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "method_effect_stopped_inputs",
+      "phase": "run",
+      "source": "sources/method_effect_stopped_inputs.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "owned item\nafter owned\nshared item\nafter shared\nreceiver\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "method_effect_snapshot_capacity",
+      "phase": "run",
+      "source": "sources/method_effect_snapshot_capacity.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nitem\n",
+        "panic": "P003",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#bounded-lists"
     }
   ]
 }
