@@ -22,6 +22,7 @@ pub(crate) struct Binary {
     pub(crate) inputs: [hir::PointId; 2],
     pub(crate) op: String,
     pub(crate) plan: Plan,
+    pub(crate) types: types::Types,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
@@ -40,7 +41,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof binary-operation identity mismatch", span);
         if !self
             .flow
-            .spend(self.binaries.len().checked_ilog2().unwrap_or(0) as usize * 2 + 5)
+            .spend(self.binaries.len().checked_ilog2().unwrap_or(0) as usize * 2 + 8)
         {
             return Err(budget());
         }
@@ -109,6 +110,10 @@ impl Checker {
             inputs,
             op: op.clone(),
             plan,
+            types: types::Types {
+                inputs: [types::Class::of(&left.ty), types::Class::of(&right.ty)],
+                result: types::Class::of(&value.ty),
+            },
             control: self.control,
             span,
             edges,
@@ -131,3 +136,5 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+pub(super) mod types;

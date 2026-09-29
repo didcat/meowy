@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Reports retain typed unary stages and conditional results.
+Updated: 2026-09-29. Bounded binary metadata and effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -501,18 +501,38 @@ outstanding failure. Preservation against `e9eaee4` confirms all 164 prior cases
 reference hashes and capability exceptions are unchanged
 (`/tmp/meowy-unary-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-Next retain bounded ordinary binary effects using `dependencies/binaries.rs`,
-`scalars.rs::binary_plan_values` and `edges/forward/effects/`. First capture compact
-operand/result scalar descriptors, with explicit stopped/nonscalar distinctions;
-the producer currently stores operator and stage plans but no types. Do not clone
-aggregate shapes or reject supported nonscalar comparisons merely for lacking scalar
-descriptors. Then validate exact roots, per-operand primary/normal flags and operator/
-result stages across both Binary edges and the retained sequence edges that connect
-the left operand to the right. Preserve partial projections and Checked arithmetic
-results. Short-circuit graphs, required-only evaluation and nonscalar transfers
-remain separate. Add focused identity/type/stage/budget and required source cases,
-then run compiler/strict gates. Callee summaries, backedge propagation and proof
-outcomes remain separate; `queries::finish` stays B001-gated.
+## Bounded binary effects
+
+Investigation confirms `binaries.rs` retains exact operands, operator text and stage
+plans, but no operand/result types. Its sequence ledger separately owns the left-to-
+right edge. Scalar reporting must validate both ledgers and retain partial primary
+projections when either operand stops. Nonscalar comparisons must remain supported
+and opaque; short-circuit and required-only paths remain separate.
+Compact Never/scalar/other classifications are implemented. All seven producer
+groups pass, including scalar widths/results, stopped projections, opaque record/
+list/reference/union equality and changed-width replay rejection
+(`/tmp/meowy-binary-effects-types.log`). Unused reexports were deferred until the report
+consumer needs them. Formatting and whitespace checks pass; no selected check fails.
+
+Dependency-ordered commit plan:
+
+1. Capture compact Never/scalar/other operand/result classifications in binary
+   metadata, without copying types or changing edges; add focused producer tests:
+   complete, ready to commit.
+2. Validate bounded operator/type signatures and projection/operation/result stages
+   against exact roots, both edge ledgers and registered operation owners.
+3. Aggregate typed scalar binary observations with independent projection/operation/
+   result flags; retain opaque nonscalar operations and focused report regressions.
+4. Cover malformed signatures/roots/ledgers, merge conflicts, duplicates and exact
+   work/effect limits while preserving atomic failure and ordinary diagnostics.
+5. Add required source cases for operator domains/order, projections, stopped inputs,
+   opaque comparisons and checked arithmetic; update classified coverage.
+6. Update the guide, run compiler/strict gates and leave the next bounded handoff.
+
+Validate and commit each slice with focused tests and staged diff checks. Do not
+infer values, storage, borrow authority, arithmetic success, callee summaries or proof
+outcomes. Retain original contracts and pinned capability gaps; `queries::finish`
+stays B001-gated. Unrelated `docs/programs/hey/` remains preserved.
 
 ## Documentation conventions and layout
 
