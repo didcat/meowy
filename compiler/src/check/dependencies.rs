@@ -316,7 +316,7 @@ mod local_reads;
 pub(crate) use local_reads::LocalRead;
 
 mod scalar_leaves;
-pub(crate) use scalar_leaves::ScalarLeaf;
+pub(crate) use scalar_leaves::{Kind as ScalarKind, ScalarLeaf};
 
 mod heap_leaves;
 pub(crate) use heap_leaves::HeapLeaf;
@@ -349,7 +349,7 @@ mod outputs;
 pub(crate) use outputs::{Input as FormatInput, Output};
 
 mod unary;
-pub(crate) use unary::Unary;
+pub(crate) use unary::{Kind as UnaryKind, Unary};
 
 mod dereferences;
 pub(crate) use dereferences::Deref;

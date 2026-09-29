@@ -5,6 +5,7 @@ mod indices;
 mod methods;
 mod outputs;
 mod reads;
+mod unary;
 
 use super::{entries::Reports, *};
 use crate::check::dependencies::{OperationKind, Origins, PathStep, references::MAX_ROOTS};
@@ -90,6 +91,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.unary_effect_stage(reports, owner, port, span)?;
                 if let Some(stage) = self.index_effect_stage(reports, owner, port, span)? {
                     self.record_index_effect(stage, &mut effects, limit, span)?;
                     continue;

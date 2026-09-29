@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Reports retain typed size/add effects and partial method stages.
+Updated: 2026-09-29. Bounded unary effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -490,16 +490,40 @@ outstanding failure. Preservation against `3d2f92b` confirms all 160 prior cases
 reference hashes and capability exceptions are unchanged
 (`/tmp/meowy-method-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-Next retain bounded scalar unary effects using `dependencies/unary.rs` and
-`edges/forward/effects/`. Preserve boolean not, resolved bits-not and numeric negation
-kinds, exact operand roots, scalar type/width, primary/control flags and existing
-edges. Reject non-scalar descriptors before copying metadata. Keep optional primary
-projection and operation observations distinct; integer negation reaches its result
-only through Checked success. Stopped operands and signed-literal scalar leaves keep
-their separate paths, as do required-only checking and expected-value projections.
-Add focused identity/type/stage/budget regressions and required source cases, then
-run compiler/strict gates. Callee summaries, backedge propagation and proof outcomes
-remain separate; `queries::finish` stays B001-gated.
+## Bounded unary effects
+
+Investigation confirms `dependencies/unary.rs` already retains operator kinds,
+operand roots, checked scalar types and primary/control flags. Integer negation's
+Checked edge follows the operation; the other supported operators use Next.
+Reports still classify unary operations as Unknown and omit projection/result stages.
+Scalar leaf kinds can supply compact type descriptors without cloning HIR types.
+Stage validation and compact scalar descriptors are implemented. The required-type
+fixture retains a unary in its construction graph, outside the runtime entry walk;
+its report correctly omits that point. The fixture now checks that boundary and
+the separate signed-literal path. All 85 effect-report groups pass
+(`/tmp/meowy-unary-effects-stages.log`), as do formatting and whitespace checks.
+No selected test has an outstanding failure; producer behavior is unchanged.
+
+Dependency-ordered commit plan:
+
+1. Add bounded unary-stage validation under `edges/forward/effects/`, reusing checked
+   unary/scalar kinds and rejecting incompatible or nonscalar types before copying;
+   test projection/operation/result edges, widths, stops and operation ownership:
+   complete, ready to commit.
+2. Aggregate typed unary reports with independent observed projection/operation/
+   result flags; preserve owners/control, expected projections and signed literals.
+3. Cover malformed types/roots/edges, duplicate stages, merge conflicts and exact
+   work/effect limits; preserve atomic failures and existing diagnostics.
+4. Add required source cases for operator types/order, projections, stopped operands
+   and checked negation; update classified coverage while preserving prior contracts.
+5. Update the guide and run compiler/strict gates; record actual validation and the
+   next bounded effect family in both trackers.
+
+Validate and commit each slice with focused tests and staged diff checks. A result
+port remains conditional on its incoming edge; observation is not runtime success.
+Keep required-only construction, signed literals and expected-value projections on
+their existing paths. No values, storage, borrow authority, callee summary or proof
+outcome is inferred; `queries::finish` stays B001-gated. Preserve `docs/programs/hey/`.
 
 ## Documentation conventions and layout
 
