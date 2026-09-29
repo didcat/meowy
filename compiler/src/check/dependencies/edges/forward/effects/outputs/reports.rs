@@ -179,3 +179,46 @@ pub(crate) fn output_effects_fail_before_aggregation_changes_for_limits_or_confl
         assert_eq!(parts, 0);
     }
 }
+
+#[test]
+pub(crate) fn output_effects_require_registered_terminal_owners_without_fabricating_completion() {
+    for owner in [None, Some(9)] {
+        let (mut checker, mut reports) = checked("d:@\"debug\";d.print(1)", false);
+        let id = *checker.outputs.first_key_value().unwrap().0;
+        let expected = reports.effects.clone();
+        reports.index.operations.remove(&id);
+        if let Some(owner) = owner {
+            reports.index.operations.insert(id, owner);
+        }
+        let error = checker
+            .operation_effects(&reports, Span::default())
+            .unwrap_err();
+        assert_eq!(error.code, "B001");
+        assert!(error.message.contains("owner mismatch"));
+        assert_eq!(reports.effects, expected);
+    }
+    let (mut checker, mut reports) = checked(
+        "d:@\"debug\";stop<never>:(){d.panic(\"stop\")};d.print(\"a{stop()}\")",
+        false,
+    );
+    let id = *checker
+        .outputs
+        .iter()
+        .find(|(_, output)| output.owner == 0)
+        .unwrap()
+        .0;
+    reports
+        .entries
+        .get_mut(&0)
+        .unwrap()
+        .1
+        .ports
+        .push(Port::Operation(id));
+    assert!(
+        checker
+            .operation_effects(&reports, Span::default())
+            .unwrap_err()
+            .message
+            .contains("identity mismatch")
+    );
+}

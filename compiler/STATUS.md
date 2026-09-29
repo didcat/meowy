@@ -440,8 +440,14 @@ metadata and are copied once across repeated visits. All 2012 library tests and
 all-target Clippy pass (`/tmp/meowy-output-effects-library.log`,
 `/tmp/meowy-output-effects-clippy.log`); all eight focused groups also pass after
 expanding header/input conflict checks (`/tmp/meowy-output-effects.log`). Next
-commit slice 2, add source coverage and run the final compiler gate. Preserve
-unrelated `docs/programs/hey/` work.
+finish terminal-owner hardening before the final gate: terminal Output stages must
+retain the operation-owner registry guard, while partial stages can exist without
+Operation ports. The guard and focused regression now pass for missing/foreign
+terminal owners and fabricated completion after a stopped part. All nine focused
+output-effect groups, formatting and Clippy pass (`/tmp/meowy-output-effects.log`,
+`/tmp/meowy-output-effects-clippy.log`). Four new source cases already
+pass in both profiles (`/tmp/meowy-output-effects-cases.log`); catalog coverage is
+148 cases. Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

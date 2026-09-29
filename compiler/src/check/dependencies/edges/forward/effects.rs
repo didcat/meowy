@@ -65,6 +65,17 @@ impl Checker {
                     return Err(budget());
                 }
                 if let Some(stage) = self.output_effect_stage(owner, port, span)? {
+                    if matches!(stage.kind, outputs::Kind::Finish) {
+                        if !self.flow.spend(
+                            reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
+                                + 1,
+                        ) {
+                            return Err(budget());
+                        }
+                        if reports.index.operations.get(&stage.point) != Some(&owner) {
+                            return Err(invalid());
+                        }
+                    }
                     self.record_output_effect(stage, &mut effects, limit, &mut parts, span)?;
                     continue;
                 }
