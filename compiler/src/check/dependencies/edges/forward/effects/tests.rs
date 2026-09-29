@@ -50,7 +50,7 @@ pub(crate) fn operation_effects_preserve_alias_storage_reference_cells_and_contr
             reports
                 .effects
                 .values()
-                .any(|(_, effect)| *effect == Effect::Unknown)
+                .any(|(_, effect)| matches!(effect, Effect::Scalar(_)))
         );
     }
     let (_, reports) = checked("flag:false;x:=1;|flag|x=2", true);

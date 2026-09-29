@@ -25,10 +25,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-binary-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next add bounded scalar-leaf effects using the existing captured kinds and edges;
-retain construction/result observations without copying literal values or inferring
-proof outcomes. The [compiler handoff](compiler/STATUS.md#bounded-binary-effects)
-records the ordered next work. Unrelated `docs/programs/hey/` work is preserved.
+Scalar-leaf effects are implemented with validated kinds/edges and independent
+construction/result observations. All 109 effect-report groups pass; adversarial
+identity/budget tests, source coverage and final gates remain next. The
+[compiler handoff](compiler/STATUS.md#bounded-scalar-leaf-effects) records the plan.
+No literal values are copied or proof outcomes inferred. Unrelated
+`docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

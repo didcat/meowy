@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Binary effects pass the compiler gate; scalar-leaf effects are next.
+Updated: 2026-09-29. Bounded scalar-leaf effect reporting is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -523,6 +523,33 @@ and `edges/forward/effects/`. Record a dependency-ordered commit plan before cod
 
 No source-text inference, value replay or proof evaluation is implied. Preserve
 reference contracts and pinned gaps; `queries::finish` remains B001-gated.
+
+## Bounded scalar-leaf effects
+
+Existing `scalar_leaves.rs` captures checked Null/Bool/Int/Float/String kinds and
+exact Entry -> Operation -> Normal edges. Required evaluation creates no such
+leaves; signed literals and resolved constants use their checked source roots.
+Reports currently leave these operations Unknown. Reuse this metadata without
+copying literal values, walking types or inferring singleton/proof domains.
+
+Dependency-ordered commit plan:
+
+1. Validate leaf kinds/widths, completed point/owner/span identity and both edges;
+   retain independent construction/result observations with focused regressions.
+2. Cover malformed identities/edges/widths, merge conflicts, duplicate visits and
+   exact shared budgets, preserving atomic failure and ordinary diagnostics.
+3. Add required source cases for signed/contextual literals, resolved constants and
+   stopped/required boundaries; update classified conformance coverage.
+4. Update the guide, run compiler/strict gates and record the next bounded handoff.
+
+Typed scalar reporting and focused regressions pass all 109 effect-report groups
+(`/tmp/meowy-scalar-effects-reports.log`). Both edges, widths, complete point/span/
+owner identity and operation registration are validated. Independent construction/
+result flags preserve contextual raw types, signed roots, required/stopped exclusions,
+function owners and control. Static alias declarations retain their own completion;
+runtime uses capture the scalar constant. Formatting and whitespace checks pass.
+Plan step 1 is ready to commit; adversarial identity/budget coverage is next.
+No source behavior or capability gate changed. Preserve `docs/programs/hey/`.
 
 ## Documentation conventions and layout
 

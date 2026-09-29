@@ -6,6 +6,7 @@ mod indices;
 mod methods;
 mod outputs;
 mod reads;
+mod scalars;
 mod unary;
 
 use super::{entries::Reports, *};
@@ -64,6 +65,7 @@ pub(crate) enum Effect {
     Method(methods::Observed),
     Unary(unary::Observed),
     Binary(binaries::Observed),
+    Scalar(scalars::Observed),
     Unknown,
 }
 
@@ -93,6 +95,10 @@ impl Checker {
             for &port in &walk.ports {
                 if !self.flow.spend(1) {
                     return Err(budget());
+                }
+                if let Some(stage) = self.scalar_effect_stage(reports, owner, port, span)? {
+                    self.record_scalar_effect(stage, &mut effects, limit, span)?;
+                    continue;
                 }
                 if let Some(stage) = self.binary_effect_stage(reports, owner, port, span)? {
                     self.record_binary_effect(stage, &mut effects, limit, span)?;
