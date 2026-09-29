@@ -33,6 +33,7 @@ pub(crate) enum Effect {
         may_return: bool,
         control: bool,
     },
+    Output(outputs::Observed),
     Unknown,
 }
 
@@ -63,7 +64,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.output_effect_stage(owner, port, span)?;
+                if let Some(stage) = self.output_effect_stage(owner, port, span)? {
+                    self.record_output_effect(stage, &mut effects, limit, &mut parts, span)?;
+                    continue;
+                }
                 let Port::Operation(id) = port else {
                     continue;
                 };

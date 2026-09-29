@@ -26,7 +26,127 @@ pub(super) struct Stage {
     pub(super) kind: Kind,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) panic: bool,
+    pub(crate) control: bool,
+    pub(crate) total: usize,
+    pub(crate) stopped: Option<usize>,
+    pub(crate) prefix: bool,
+    pub(crate) terminal: bool,
+    pub(crate) parts: BTreeMap<usize, Part>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Part {
+    pub(crate) input: Option<FormatInput>,
+    pub(crate) projection: bool,
+    pub(crate) output: bool,
+}
+
 impl Checker {
+    pub(super) fn record_output_effect(
+        &mut self,
+        stage: Stage,
+        effects: &mut Effects,
+        limit: usize,
+        parts: &mut usize,
+        span: Span,
+    ) -> Result<()> {
+        let invalid = || Diagnostic::unsupported("proof output-effect identity mismatch", span);
+        let budget = || Diagnostic::unsupported("proof output-effect budget exhausted", span);
+        if !self
+            .flow
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 6)
+        {
+            return Err(budget());
+        }
+        let part = match stage.kind {
+            Kind::Projection { part, input } => Some((part, Some(input))),
+            Kind::Part { part, input } => Some((part, input)),
+            _ => None,
+        };
+        let mut fresh = part.is_some();
+        if let Some((owner, effect)) = effects.get(&stage.point) {
+            let Effect::Output(output) = effect else {
+                return Err(invalid());
+            };
+            if *owner != stage.owner
+                || output.panic != stage.panic
+                || output.control != stage.control
+                || output.total != stage.total
+                || output.stopped != stage.stopped
+            {
+                return Err(invalid());
+            }
+            if let Some((id, input)) = part {
+                if !self
+                    .flow
+                    .spend(output.parts.len().checked_ilog2().unwrap_or(0) as usize * 2 + 2)
+                {
+                    return Err(budget());
+                }
+                if let Some(prior) = output.parts.get(&id) {
+                    if prior.input != input {
+                        return Err(invalid());
+                    }
+                    fresh = false;
+                }
+            }
+        } else if effects.len() >= limit {
+            return Err(budget());
+        }
+        if fresh && *parts == 0 {
+            return Err(budget());
+        }
+        let (_, Effect::Output(output)) = effects.entry(stage.point).or_insert_with(|| {
+            (
+                stage.owner,
+                Effect::Output(Observed {
+                    panic: stage.panic,
+                    control: stage.control,
+                    total: stage.total,
+                    stopped: stage.stopped,
+                    prefix: false,
+                    terminal: false,
+                    parts: BTreeMap::new(),
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match stage.kind {
+            Kind::Prefix => output.prefix = true,
+            Kind::Finish => output.terminal = true,
+            Kind::Projection { part, input } => {
+                output
+                    .parts
+                    .entry(part)
+                    .or_insert(Part {
+                        input: Some(input),
+                        projection: false,
+                        output: false,
+                    })
+                    .projection = true
+            }
+            Kind::Part { part, input } => {
+                output
+                    .parts
+                    .entry(part)
+                    .or_insert(Part {
+                        input,
+                        projection: false,
+                        output: false,
+                    })
+                    .output = true
+            }
+        }
+        if fresh {
+            *parts -= 1;
+        }
+        Ok(())
+    }
+
     pub(super) fn output_effect_stage(
         &mut self,
         owner: usize,
@@ -114,3 +234,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod reports;

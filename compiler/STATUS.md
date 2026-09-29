@@ -432,7 +432,15 @@ Unrelated projection/operation producers remain unhandled. Four focused capture
 groups, all 2008 library tests, formatting and all-target Clippy pass
 (`/tmp/meowy-output-capture.log`, `/tmp/meowy-output-capture-library.log`,
 `/tmp/meowy-output-capture-clippy.log`). Existing collection only uses this as
-validation so far. Next aggregate typed partial-output effects in slice 2; preserve
+validation in slice 1. Slice 2 now aggregates typed output records by producer,
+keeping separately observed prefix/projection/output/terminal stages and checked
+literal/dynamic input metadata. Partial producers do not require or invent Operation
+ports. Part records share the existing bounded payload allowance with path/call
+metadata and are copied once across repeated visits. All 2012 library tests and
+all-target Clippy pass (`/tmp/meowy-output-effects-library.log`,
+`/tmp/meowy-output-effects-clippy.log`); all eight focused groups also pass after
+expanding header/input conflict checks (`/tmp/meowy-output-effects.log`). Next
+commit slice 2, add source coverage and run the final compiler gate. Preserve
 unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
