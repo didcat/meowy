@@ -497,6 +497,12 @@ Typed aggregation now retains method kinds, receiver/item metadata and independe
 observed-stage flags. All 77 effect-report groups pass
 (`/tmp/meowy-method-effects-reports.log`), including owners/control, nested calls,
 explicit loads, index/borrow separation, stopped paths and isolated observed stages.
+Typed reports are committed (`c9d4361`). Add/size metadata corruption, original
+diagnostic precedence, duplicate-stage budgets and atomic merge-limit regressions
+pass. All twelve method-effect groups pass (`/tmp/meowy-method-effects-limits.log`),
+covering 34 add faults on direct/shared paths, six faults across three size forms,
+ten merge conflicts, exact work/effect limits and E201/E207/E212/E103/E302 preservation.
+Formatting and whitespace checks pass; no selected test has an outstanding failure.
 
 Dependency-ordered commit plan:
 
@@ -505,9 +511,10 @@ Dependency-ordered commit plan:
    include focused size/add/stopped-stage regressions: complete (`0412249`).
 2. Aggregate typed method effects with independent observed load/snapshot/terminal
    flags, fixed-size payloads and focused owner/control/order/partial-report tests:
-   complete, ready to commit.
+   complete (`c9d4361`).
 3. Add malformed-metadata, duplicate-stage, merge-conflict and exact work/effect
-   limit regressions, preserving atomic failures and ordinary diagnostics.
+   limit regressions, preserving atomic failures and ordinary diagnostics: complete,
+   ready to commit.
 4. Add required source cases for size results, add snapshots, stopped items and
    capacity behavior; update classified evidence without changing prior contracts.
 5. Update the guide, run compiler/strict gates, and record actual validation and the
