@@ -351,99 +351,67 @@ The compiler gate below preserves these checks and opaque callee effects.
 
 ## Call graph and recursion groups
 
+Bounded caller/callee adjacency (`84324c6`) retains exact sites and original
+missing/backedge boundaries. Iterative components (`d64de6c`) preserve independent
+owners, unused entries and self/mutual recursion; source coverage (`2983acc`) pins
+execution and original body errors. The component partition passed an exhaustive
+512-graph oracle. The compiler gate below preserves this work without purity,
+termination, runtime reachability or proof claims.
+
+## Component condensation and analysis order
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Retain bounded caller/callee adjacency and exact boundaries | `84324c6` |
-| Identify deterministic recursive components iteratively | `d64de6c` |
-| Pin independent recursion groups, stopped calls and body errors | `2983acc` |
+| Condense canonical components and exact call-site membership | `37be1e7` |
+| Order analysis with callees before callers | `d28ce65` |
+| Preserve explicit helper visibility while satisfying Clippy | `37ef903` |
+| Verify analysis ordering preserves runtime call behavior | `a0635f6` |
 
-The graph preserves every registered owner/body entry, groups targets by callee
-owner, and retains each call site's original operation point and both owners.
-Missing-source ports and backedge positions are copied exactly and validated against
-the retained index/owners. Node, site, boundary and shared-work limits fail before
-returning a partial graph. Stopped calls stay excluded; unused functions keep their
-independent entries. An empty target set is not a purity or reachability result.
+Condensed records use the existing component IDs and retain each internal and
+cross-group call site exactly once. Partition, owner/site membership and recursion
+flags are validated; groups, sites and shared work are bounded before growth.
+Original owner/body, missing-source and backedge records stay in the same report.
+Parallel call sites remain separate even though each distinct target contributes
+only one dependency to ordering.
 
-Components use iterative forward finishing and reverse traversal with bounded
-pending storage. Adjacency and call-site membership are validated; missing,
-duplicate or mismatched membership fails closed. Owners are sorted within groups,
-and groups by their first owner, independent of HIR function ordering. Multi-owner
-components and singleton self-loops mark recursion. Restart backedges stay separate;
-neither a recursive nor nonrecursive group establishes runtime termination.
-No body traversal at call sites, callee effect summary, backedge data propagation
-or proof outcome is introduced.
+An iterative ready set emits callees before callers, choosing the smallest ready
+component ID for deterministic ties. Internal recursive sites stay inside their
+group. Invalid targets, repeated sites and cross-group cycles return no partial
+order. This is analysis metadata, not runtime scheduling, a callee effect summary,
+termination/purity evidence or a proof result.
 
-Nine new regression groups cover owner/site/boundary identity, aliases, stopped
-inputs, malformed data, exact capacity/work limits, self/mutual/unused recursion and
-isolated entries. The component result matches an independent reachability oracle
-for all 512 directed three-owner graphs in both insertion orders. A 2048-node chain
-checks iterative traversal. Three required source cases separately pin executing
-multiple recursion groups, panic before a recursive call and unused-body type errors.
+Seven new regression groups cover partition/site preservation, diamonds, ties,
+malformed metadata, exact node/site/work limits and a 2048-group chain. Ordering
+matches independent cycle detection and edge constraints for all 64 directed
+three-group graphs without self-edges, including cyclic inputs. Two required source
+cases pin repeated calls through shared recursive callees, reversed declaration
+order and panic before later callees. The explicit helper-visibility lint issue
+was fixed; all selected checks below pass.
 
-All ten compiler checks pass: 1997 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2004 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-call-graph-gate.log`. The 142 cases report 123 required passes,
+`/tmp/meowy-condensation-gate.log`. The 144 cases report 125 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for the same known gaps (`/tmp/meowy-call-graph-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-call-graph-docs.log`); no selected check has an
-outstanding failure. Preservation against `74383fc` confirms all 139 prior cases,
-171 source assets, 37 reference files and exact capability exceptions are unchanged
-(`/tmp/meowy-call-graph-preservation.log`). AGENTS already covers this evidence
+only for the same known gaps (`/tmp/meowy-condensation-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-condensation-docs.log`); no selected check
+has an outstanding failure. Preservation against `14df111` confirms all 142 prior cases,
+174 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-condensation-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-## Component condensation and ordering in progress
-
-Validated call graphs and recursive components provide exact owner membership and
-call sites. The next layer must retain each internal and cross-group site exactly
-once, while original body/missing-port/backedge evidence remains in the same report.
-Component IDs index the existing canonical component table; they are not function
-IDs or runtime order. No effect summary or proof answer is introduced.
-
-Dependency-ordered commit plan:
-
-1. Condense adjacency into bounded component records with internal sites and grouped
-   outgoing sites. Validate partition, owner/site membership and recursion flags;
-   integrate after component construction and add focused preservation/error/budget
-   tests. Acyclicity follows the producer until explicit ordering in slice 2.
-2. Compute a deterministic iterative order that places callees before callers.
-   Validate target/site identities and reject cyclic/inconsistent condensed graphs;
-   test diamonds, ties, deep graphs, ordering properties and exact limits.
-3. Add useful source cases that distinguish analysis order from runtime execution;
-   update evidence mapping and run compiler/strict gates plus preservation against
-   `14df111`.
-4. Update root/compiler/foundation handoffs and run documentation checks.
-
-The audit covered call/component construction and report integration alongside the
-forward-group and evaluation-order contracts. Original unknown effects, missing
-paths, backedges, conditional Returned edges and final B001 proof gates remain.
-Slice 1 now validates canonical partition/owner membership, recursion flags and
-call-site coverage before retaining internal/cross-group site lists. Original graph
-and boundary records stay in the report. Group/site/work bounds precede growth;
-parallel memberships use one target lookup per source adjacency. Three focused
-condensation groups and all 2000 library tests pass
-(`/tmp/meowy-call-condensation.log`, `/tmp/meowy-condensation-library.log`).
-Slice 2 now validates condensed targets and unique site membership, then uses
-an iterative ready set to emit callees before callers with deterministic ties.
-Internal recursive calls are not DAG dependencies; cycles return no partial order.
-Four new ordering groups cover diamonds/parallel sites, invalid cycles/targets,
-all 64 three-group graphs without self-edges and a 2048-group chain with exact
-node/site/work boundaries (`/tmp/meowy-call-order.log`). All 2004 library tests and
-formatting pass (`/tmp/meowy-call-order-library.log`). The prior Clippy pass note
-was premature: Clippy rejected `pub(self)` on the free site-validation helper.
-Its visibility is now `pub(super)`, preserving explicit visibility and behavior.
-Formatting, all five selected `call_order` groups and all-target Clippy now pass
-(`/tmp/meowy-call-order.log`, `/tmp/meowy-call-order-clippy.log`). No check remains
-failed. Two required source cases now pass in debug/release with a fresh CLI
-(`/tmp/meowy-condensation-cases.log`): a diamond with shared recursive callees,
-repeated calls and reversed declaration order, and panic before later callees.
-Catalog/coverage checks validate 144 cases and 37 references. The compiler gate
-is running (`/tmp/meowy-condensation-gate.log`). Preservation against `14df111`
-confirms all 142 prior cases, 174 source assets, 37 reference files and exact
-exceptions are unchanged (`/tmp/meowy-condensation-preservation.log`). Next finish
-compiler/strict validation and the final documentation handoff.
-Preserve unrelated `docs/programs/hey/` work.
+Next retain print/panic stage metadata in effect reports before deriving callee
+summaries. `src/check/dependencies/outputs.rs` already records exact dynamic parts,
+primary projections, panic prefixes, stopped parts and control. The collector in
+`src/check/dependencies/edges/forward/effects.rs` only visits Operation ports and
+otherwise uses Unknown; prefixes/parts reached before stopped formatting need
+explicit coverage rather than being treated as no effect. Plan bounded stage
+capture and report integration separately. Preserve existing edges, owners, partial
+output/panic distinctions and no-replay behavior; test literal/dynamic parts,
+stopped prefixes, aliases, ownership and capacity/work limits, add source cases and
+run compiler/strict gates. Callee summaries, backedge data propagation and proof
+outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2508,12 +2476,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    and the compiler gate pass. Bounded call adjacency (`84324c6`) now retains exact
    site/owner membership and missing/backedge boundaries. Iterative components
    (`d64de6c`) preserve independent owners and identify self/mutual recursion;
-   source coverage (`2983acc`) and the compiler gate pass. Next condense components
-   into bounded acyclic adjacency under `dependencies/edges/forward/calls/`, retaining
-   internal/cross-group call sites, then order analysis of callees before callers in
-   a separate slice. Test diamonds, recursion, malformed metadata and budgets; run
-   compiler/strict gates. No runtime scheduling, purity, termination, complete callee
-   effect summary, backedge data propagation or proof outcome is implied.
+   source coverage (`2983acc`) and the compiler gate pass. Condensation (`37be1e7`)
+   preserves internal/cross-group sites, and bounded analysis ordering (`d28ce65`,
+   `37ef903`) places callees before callers with deterministic ties. Source coverage
+   (`a0635f6`) and the compiler gate pass. Next retain print/panic stages from
+   `dependencies/outputs.rs` in `edges/forward/effects.rs`, including prefixes and
+   parts reached before stopped formatting. Keep exact owners/parts/projections,
+   partial-output distinctions and no replay; add bounded identity/work tests and
+   source coverage, then run compiler/strict gates. No runtime scheduling, purity,
+   termination, callee summary, backedge data propagation or proof outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

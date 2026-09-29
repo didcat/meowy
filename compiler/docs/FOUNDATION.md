@@ -392,6 +392,18 @@ An independent three-owner reachability oracle and a deep-chain regression check
 the partition. Restart backedges remain separate. These groups prepare later
 analysis; they do not execute or enter callees, summarize effects, establish
 termination/purity, propagate backedges or enable proof results.
+Component condensation now retains internal call sites separately from grouped
+cross-component sites, using the same canonical component IDs. Partition and site
+membership are validated before allocation; each original call appears exactly
+once. Original body entries and missing/backedge evidence remain available in the
+retained call graph. Condensation and ordering cap owners/groups at 65,536 and
+sites at 262,144, with shared work charged before growth.
+A bounded iterative ready set orders analysis of callees before callers. Distinct
+target groups count as dependencies; parallel call sites are preserved without
+inflating dependency counts. The smallest ready component ID resolves ties.
+Invalid targets, duplicate sites or a remaining cross-group cycle return no partial
+order. Internal recursion stays within its group. This order prepares later
+analysis; it neither schedules runtime calls nor supplies complete effect summaries.
 Successful ordinary function Bind definitions now retain one entry-to-normal
 statement edge after signature/body checking, using the exact registered function
 ID. Statement identity and the independent function-body owner are validated;

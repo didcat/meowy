@@ -7,28 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Bounded call graphs and recursion groups are implemented. The graph retains exact
-call sites, caller/callee owners, unused entries and missing/backedge boundaries.
-Iterative component analysis identifies self and mutual recursion without using
-recursive host traversal. Groups do not establish purity, termination or runtime
-reachability. Nine new internal regression groups include an exhaustive 512-graph
-oracle and a 2048-node chain; three source cases cover execution and rejection rules.
-Commits: `84324c6`, `d64de6c`, `2983acc`.
+Recursion groups now have bounded condensed adjacency and a deterministic analysis
+order that places callees before callers. Every internal and cross-group call site
+is preserved; invalid membership, cycles and exhausted limits fail without partial
+results. Seven new internal regression groups include exhaustive checks of 64
+three-group layouts and a 2048-group chain. Two source cases confirm that analysis
+ordering preserves runtime execution and panic boundaries.
+Commits: `37be1e7`, `d28ce65`, `37ef903`, `a0635f6`.
 
-The catalog has 142 cases: 123 required passes, 19 unchanged pinned gaps and zero
+The catalog has 144 cases: 125 required passes, 19 unchanged pinned gaps and zero
 failures in debug/release. All prior cases, source assets and reference contracts
 are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
 37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 1997 library/914 native and 62 Python test groups;
-`/tmp/meowy-call-graph-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-call-graph-docs.log`). Proof
+compiler checks pass: 2004 library/914 native and 62 Python test groups;
+`/tmp/meowy-condensation-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-condensation-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next condense recursion groups into an acyclic graph and order analysis of callees
-before callers, retaining exact call sites and incomplete boundaries. The
-[compiler handoff](compiler/STATUS.md#call-graph-and-recursion-groups) records the
-files and checks. AGENTS already covers this evidence workflow; no update is needed.
-Unrelated `docs/programs/hey/` work is preserved.
+Next retain print/panic stage metadata in effect reports, including partial stages
+before stopped formatting. The
+[compiler handoff](compiler/STATUS.md#component-condensation-and-analysis-order)
+records the files and checks. AGENTS already covers this evidence workflow; no
+update is needed. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1143,12 +1143,14 @@ execution was not part of this documentation edit.
    argument, control and return metadata under bounded validation; the compiler
    gate and source coverage pass. Bounded call adjacency and iterative recursive
    components now retain exact sites, owners and missing/backedge boundaries;
-   regression/source coverage and the compiler gate pass. Next condense groups
-   into an acyclic graph under `compiler/src/check/dependencies/edges/forward/calls/`
-   and separately order analysis of callees before callers. Preserve internal and
-   cross-group sites and incomplete boundaries; test diamonds, recursion, metadata
-   failures and budgets. Callee summaries, backedge data propagation and proof
-   outcomes remain separate; analysis ordering is not runtime scheduling.
+   regression/source coverage and the compiler gate pass. Condensed adjacency now
+   retains internal/cross-group call sites and a bounded deterministic analysis
+   order places callees before callers. Source coverage preserves runtime ordering.
+   Next retain print/panic metadata from `compiler/src/check/dependencies/outputs.rs`
+   in forward effect reports, including prefixes/parts before stopped formatting.
+   Preserve exact owners, partial stages and no replay; add focused/source coverage
+   and run compiler/strict gates. Callee summaries, backedge data propagation and
+   proof outcomes remain separate; analysis ordering is not runtime scheduling.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
