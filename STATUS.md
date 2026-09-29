@@ -24,10 +24,11 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-index-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next retain bounded effects for list/string `size` and list `add`, including partial
-receiver stages before stopped items. The
-[compiler handoff](compiler/STATUS.md#bounded-indexed-read-effects) records the files
-and verification plan. Unrelated `docs/programs/hey/` work is preserved.
+Collection method reporting is in progress. Stage validation is committed (`0412249`),
+and typed reports retain size/add kinds and independent load/snapshot/terminal flags.
+All 77 focused effect-report groups pass. Boundary/source coverage and the full gate
+remain next; the [compiler handoff](compiler/STATUS.md#collection-method-effects)
+records the plan. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

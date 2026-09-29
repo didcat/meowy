@@ -492,15 +492,20 @@ terminal method operations as Unknown and omit partial load/snapshot stages.
 Bounded stage capture is now active. All four new stage groups and all 73 effect-report
 groups pass (`/tmp/meowy-method-effects-stages.log`), covering size kinds, implicit/
 explicit loads, known/unknown lengths, stopped items/receivers and registered terminal
-owners. Formatting and whitespace checks pass. Typed aggregation is next.
+owners. Formatting and whitespace checks pass. Stage capture is committed (`0412249`).
+Typed aggregation now retains method kinds, receiver/item metadata and independent
+observed-stage flags. All 77 effect-report groups pass
+(`/tmp/meowy-method-effects-reports.log`), including owners/control, nested calls,
+explicit loads, index/borrow separation, stopped paths and isolated observed stages.
 
 Dependency-ordered commit plan:
 
 1. Add bounded method-stage capture under `edges/forward/effects/`, validating
    kinds, exact roots, load/snapshot/operation/result edges and terminal owners;
-   include focused size/add/stopped-stage regressions: complete, ready to commit.
+   include focused size/add/stopped-stage regressions: complete (`0412249`).
 2. Aggregate typed method effects with independent observed load/snapshot/terminal
-   flags, fixed-size payloads and focused owner/control/order/partial-report tests.
+   flags, fixed-size payloads and focused owner/control/order/partial-report tests:
+   complete, ready to commit.
 3. Add malformed-metadata, duplicate-stage, merge-conflict and exact work/effect
    limit regressions, preserving atomic failures and ordinary diagnostics.
 4. Add required source cases for size results, add snapshots, stopped items and

@@ -19,7 +19,72 @@ pub(super) struct Stage {
     pub(super) kind: Kind,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) receiver: PointId,
+    pub(crate) kind: MethodKind,
+    pub(crate) load: bool,
+    pub(crate) control: bool,
+    pub(crate) loaded: bool,
+    pub(crate) snapshot: bool,
+    pub(crate) terminal: bool,
+}
+
 impl Checker {
+    pub(super) fn record_method_effect(
+        &mut self,
+        stage: Stage,
+        effects: &mut Effects,
+        limit: usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof method-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof method-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 8)
+        {
+            return Err(budget());
+        }
+        if let Some((owner, effect)) = effects.get(&stage.point) {
+            let Effect::Method(prior) = effect else {
+                return Err(invalid());
+            };
+            if *owner != stage.owner
+                || prior.receiver != stage.receiver
+                || prior.kind != stage.method
+                || prior.load != stage.load
+                || prior.control != stage.control
+            {
+                return Err(invalid());
+            }
+        } else if effects.len() >= limit {
+            return Err(budget());
+        }
+        let (_, Effect::Method(method)) = effects.entry(stage.point).or_insert_with(|| {
+            (
+                stage.owner,
+                Effect::Method(Observed {
+                    receiver: stage.receiver,
+                    kind: stage.method,
+                    load: stage.load,
+                    control: stage.control,
+                    loaded: false,
+                    snapshot: false,
+                    terminal: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match stage.kind {
+            Kind::Load => method.loaded = true,
+            Kind::Snapshot => method.snapshot = true,
+            Kind::Finish => method.terminal = true,
+        }
+        Ok(())
+    }
+
     pub(super) fn method_effect_stage(
         &mut self,
         reports: &Reports,
@@ -159,3 +224,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod reports;

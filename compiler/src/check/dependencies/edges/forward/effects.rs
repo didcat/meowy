@@ -59,6 +59,7 @@ pub(crate) enum Effect {
     },
     Output(outputs::Observed),
     Index(indices::Observed),
+    Method(methods::Observed),
     Unknown,
 }
 
@@ -93,7 +94,10 @@ impl Checker {
                     self.record_index_effect(stage, &mut effects, limit, span)?;
                     continue;
                 }
-                self.method_effect_stage(reports, owner, port, span)?;
+                if let Some(stage) = self.method_effect_stage(reports, owner, port, span)? {
+                    self.record_method_effect(stage, &mut effects, limit, span)?;
+                    continue;
+                }
                 if let Some(stage) = self.output_effect_stage(owner, port, span)? {
                     if matches!(stage.kind, outputs::Kind::Finish) {
                         if !self.flow.spend(
