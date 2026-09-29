@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded unary effect reporting is in progress.
+Updated: 2026-09-29. Reports retain typed unary stages and conditional results.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -448,104 +448,71 @@ gates below. No types/values, bounds proof, storage or borrow authority are infe
 
 ## Collection method effects
 
+Stage validation (`0412249`) and typed partial reports (`c9d4361`) retain list/string
+size and list-add kinds, exact roots and independent load/snapshot/terminal flags.
+Stopped items retain earlier stages, while stopped receivers produce no method effect.
+Boundary tests (`d83f647`) and source cases (`a1f0875`) remain covered by the current
+gates below. Receiver/error ordering and add's new-list result are preserved without
+inferring capacity success, values, storage, borrow authority or proof outcomes.
+
+## Bounded unary effects
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Validate collection method stages | `0412249` |
-| Retain typed partial method effects | `c9d4361` |
-| Cover identity, budgets, conflicts and errors | `d83f647` |
-| Pin size/add results, snapshots, stops and capacity | `a1f0875` |
+| Validate unary stages and compact scalar descriptors | `97cec7c` |
+| Retain typed observations and result boundaries | `77976fa` |
+| Cover types, identities, conflicts and budgets | `ec2d6c6` |
+| Pin scalar results, projection order, stops and overflow | `9dbc4ae` |
 
-Method reports retain checked list/string size and list-add kinds, exact receiver/
-item roots, optional length/capacity, implicit-load/control flags and independent
-observed load/snapshot/terminal flags. Complete points, parent/block/owner agreement,
-source span, kind-specific metadata and original edges are validated. Terminal
-operations require registered owners; partial add stages do not require a terminal.
-Size has no add snapshot and string size has no implicit list load.
+Unary reports retain exact operand roots, checked operator kinds, compact boolean/
+integer/float descriptors and primary/control flags before outer coercion. Invalid
+operator/type combinations, unsupported widths and nonscalar descriptors are rejected
+before copying or walking types. Complete roots, parent/block/owner agreement, spans,
+selectors and original edges are validated. Operation and result observations require
+registered Operation owners; primary projection observations remain separate.
 
-Stopped add items preserve earlier loads/snapshots; stopped receivers produce no
-method effect. Duplicate observations update existing flags, and metadata conflicts
-or shared work/effect limits return no partial collection. The payload has fixed
-size and copies no types or values. Existing receiver-first checking, argument/
-capacity error precedence and add's new-list result are preserved. No capacity
-proof, storage, borrow authority, call termination or proof outcome is inferred.
+Observed projection/operation/result flags are independent. Integer negation retains
+its Checked result edge; observing an operation does not imply observing a result
+or successful execution. Duplicate stages update existing flags; shared work/effect
+limits and metadata conflicts return no partial collection. Stopped operands and
+signed-literal leaves keep their separate paths. Required construction can retain
+unary metadata outside the runtime entry walk, where it produces no runtime effect.
+Expected primary projections are not repeated. No values or proof outcomes are evaluated.
 
-Twelve new internal groups cover method kinds, explicit/shared loads, known/unknown
-lengths, independent owners/control, nested calls, stopped paths and isolated stages.
-Boundary tests exercise 34 add faults on direct/shared paths, six faults across three
-size forms, ten merge conflicts, exact budgets and E201/E207/E212/E103/E302 precedence.
-Four required source cases pass in debug/release: list/UTF-8 byte sizes, add snapshots
-and receiver preservation, stopped receivers/items, and P003 against the original full
-snapshot after the item clears the list (`/tmp/meowy-method-effects-sources.log`).
+Twelve new internal groups cover supported widths/signedness, independent owners/
+control, raw types, expected/additional projections, required/stopped/literal paths,
+isolated observations, 25 root/edge faults on direct/primary paths, 13 invalid type
+descriptors, nine merge conflicts and exact budgets. Large aggregates have the same
+rejection work as small invalid descriptors. E222/E216/E107 remain unchanged.
+Four required source cases pass in debug/release: scalar and aliased bits-not results,
+projection order, stopped operands and P002 after operand effects
+(`/tmp/meowy-unary-effects-sources.log`). Structural reports remain separate evidence.
 
-All ten compiler checks pass: 2063 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2075 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-method-effects-gate.log`. The 164 cases report 145 required passes,
+`/tmp/meowy-unary-effects-gate.log`. The 168 cases report 149 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-method-effects-strict.log`); final documentation
-checks all pass (`/tmp/meowy-method-effects-docs.log`). No selected check has an
-outstanding failure. Preservation against `3d2f92b` confirms all 160 prior cases,
-192 source assets, 37 reference files, proof obligations,
+only for those gaps (`/tmp/meowy-unary-effects-strict.log`); final documentation
+checks all pass (`/tmp/meowy-unary-effects-docs.log`). No selected check has an
+outstanding failure. Preservation against `e9eaee4` confirms all 164 prior cases,
+196 source assets, 37 reference files, proof obligations,
 reference hashes and capability exceptions are unchanged
-(`/tmp/meowy-method-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+(`/tmp/meowy-unary-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-## Bounded unary effects
-
-Investigation confirms `dependencies/unary.rs` already retains operator kinds,
-operand roots, checked scalar types and primary/control flags. Integer negation's
-Checked edge follows the operation; the other supported operators use Next.
-Reports still classify unary operations as Unknown and omit projection/result stages.
-Scalar leaf kinds can supply compact type descriptors without cloning HIR types.
-Stage validation and compact scalar descriptors are implemented. The required-type
-fixture retains a unary in its construction graph, outside the runtime entry walk;
-its report correctly omits that point. The fixture now checks that boundary and
-the separate signed-literal path. All 85 effect-report groups pass
-(`/tmp/meowy-unary-effects-stages.log`), as do formatting and whitespace checks.
-No selected test has an outstanding failure; producer behavior is unchanged.
-Stage validation is committed (`97cec7c`). Typed reports now retain compact scalar
-types and independent observed projection/operation/result flags. All 89 effect-report
-groups pass (`/tmp/meowy-unary-effects-reports.log`), covering every supported integer
-width/signedness, raw types before coercion, independent owners/control, expected
-projections, required/stopped/signed-literal boundaries and isolated observations.
-Typed aggregation is committed (`77976fa`). Root/edge corruption, scalar/aggregate
-type rejection, shared-budget and atomic merge-conflict tests pass. All twelve
-unary-effect groups pass (`/tmp/meowy-unary-effects-limits.log`), including 25 root/
-edge faults on direct/primary paths, 13 invalid type descriptors, nine merge conflicts
-and E222/E216/E107 preservation. Large aggregate descriptors use the same rejection
-work as small invalid types. Formatting and whitespace checks pass; no test fails.
-
-All four new source cases pass in debug/release with the rebuilt compiler and
-isolated harness (`/tmp/meowy-unary-effects-sources.log`): scalar operator results,
-integer/float widths, aliased bits-not, projection order, stopped operands and P002
-after projected integer operand effects. Catalog/coverage checks pass for 168 cases.
-All 164 prior cases, 196 source assets, 37 reference files, proof obligations,
-reference hashes and capability exceptions are preserved against `e9eaee4`
-(`/tmp/meowy-unary-effects-preservation.log`). Full compiler/strict gates remain next.
-
-Dependency-ordered commit plan:
-
-1. Add bounded unary-stage validation under `edges/forward/effects/`, reusing checked
-   unary/scalar kinds and rejecting incompatible or nonscalar types before copying;
-   test projection/operation/result edges, widths, stops and operation ownership:
-   complete (`97cec7c`).
-2. Aggregate typed unary reports with independent observed projection/operation/
-   result flags; preserve owners/control, expected projections and signed literals:
-   complete (`77976fa`).
-3. Cover malformed types/roots/edges, duplicate stages, merge conflicts and exact
-   work/effect limits; preserve atomic failures and existing diagnostics: complete
-   (`ec2d6c6`).
-4. Add required source cases for operator types/order, projections, stopped operands
-   and checked negation; update classified coverage while preserving prior contracts:
-   complete, ready to commit.
-5. Update the guide and run compiler/strict gates; record actual validation and the
-   next bounded effect family in both trackers.
-
-Validate and commit each slice with focused tests and staged diff checks. A result
-port remains conditional on its incoming edge; observation is not runtime success.
-Keep required-only construction, signed literals and expected-value projections on
-their existing paths. No values, storage, borrow authority, callee summary or proof
-outcome is inferred; `queries::finish` stays B001-gated. Preserve `docs/programs/hey/`.
+Next retain bounded ordinary binary effects using `dependencies/binaries.rs`,
+`scalars.rs::binary_plan_values` and `edges/forward/effects/`. First capture compact
+operand/result scalar descriptors, with explicit stopped/nonscalar distinctions;
+the producer currently stores operator and stage plans but no types. Do not clone
+aggregate shapes or reject supported nonscalar comparisons merely for lacking scalar
+descriptors. Then validate exact roots, per-operand primary/normal flags and operator/
+result stages across both Binary edges and the retained sequence edges that connect
+the left operand to the right. Preserve partial projections and Checked arithmetic
+results. Short-circuit graphs, required-only evaluation and nonscalar transfers
+remain separate. Add focused identity/type/stage/budget and required source cases,
+then run compiler/strict gates. Callee summaries, backedge propagation and proof
+outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2631,12 +2598,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    Method-stage validation (`0412249`) and typed reports (`c9d4361`) now retain
    list/string size and list-add observations, including partial receiver stages.
    Boundary tests (`d83f647`), source cases (`a1f0875`) and the compiler gate pass.
-   Next retain bounded unary effects using `dependencies/unary.rs` and
-   `edges/forward/effects/`, preserving operand roots, scalar kinds/types, primary/
-   control flags and checked negation results. Keep stopped operands, signed literals
-   and required/expected paths separate; add focused/source coverage and run compiler/
-   strict gates. No storage/value inference, borrow authority, callee summary or proof
-   outcome is implied.
+   Unary-stage validation (`97cec7c`) and typed observations (`77976fa`) now retain
+   compact scalar descriptors and separate projection/operation/result flags. Type/
+   boundary tests (`ec2d6c6`), source cases (`9dbc4ae`) and the compiler gate pass.
+   Next retain compact binary operand/result descriptors in `dependencies/binaries.rs`
+   before typed effects under `edges/forward/effects/`. Preserve stopped/nonscalar
+   distinctions, per-operand projections, separate sequence links and checked results;
+   keep short-circuit and required-only paths separate. Add focused/source coverage
+   and run compiler/strict gates. No storage/value inference, borrow authority, callee
+   summary or proof outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

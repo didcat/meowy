@@ -206,8 +206,8 @@ roots, operation stages and scalar types before outer union coercion. Integer
 negation reaches its result only through an overflow-success edge; floating
 negation and the inversion operations use ordinary completion. A nonreturning
 operand has no operation/result edge. Signed integer literals keep their direct
-literal path, and required-only unary construction gains no synthetic runtime
-points. Contextual typing, primary projection and logical charges stay unchanged.
+literal path, and required-only unary construction stays outside runtime entry
+reports. Contextual typing, primary projection and logical charges stay unchanged.
 Unary checking also captures primary extraction performed inside its value helper.
 That projection occurs after source completion and before the unary operation,
 with no direct bypass. Primaries already extracted by expected-value checking are
@@ -402,6 +402,19 @@ infer capacity success, storage, borrow authority, call termination or proof out
 Existing receiver-first checking, argument/error precedence and add's new-list result
 are preserved; add does not implicitly mutate its receiver. Explicit dereferences,
 indexed reads and element borrows retain their separate operations.
+Unary reports retain exact operand roots, checked operator kinds, compact scalar
+types/widths and primary/control flags before outer coercion. Compatible boolean,
+integer and floating descriptors are selected without copying or walking aggregate
+types; malformed types and unsupported widths are rejected. Projection, operation
+and result observations remain independent. Integer negation retains its Checked
+result edge, so an operation observation does not imply a result observation or
+successful arithmetic. Capture validates completed roots, parent/block/owner
+agreement, source span, exact edges and registered operation/result owners.
+Repeated stages update existing flags; conflicting metadata and shared work/effect
+limits return no partial collection. Required construction can retain unary metadata
+outside runtime entry walks; those points produce no runtime effect. Stopped operands
+and signed-literal leaves keep their separate paths, and expected primary projections
+are not repeated. These structural reports evaluate no values or proof outcomes.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

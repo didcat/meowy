@@ -7,29 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-List/string `size` and list `add` now retain typed effect reports with exact roots,
-method kinds, optional lengths/capacities and independent load/snapshot/terminal
-observations. Partial stages survive stopped add items; receiver checking, errors
-and add's new-list result are preserved. Twelve new internal groups and four source
-cases cover identity, budgets, size results, snapshots, stopped inputs and capacity.
-Commits: `0412249`, `c9d4361`, `d83f647`, `a1f0875`.
+Unary reports now retain exact operands, operator kinds, compact scalar descriptors
+and independent projection/operation/result observations. Integer negation preserves
+its checked result boundary; required, stopped and signed-literal paths stay separate.
+Twelve new internal groups and four source cases cover widths, projections, identity,
+budgets, stopped operands and overflow after operand evaluation.
+Commits: `97cec7c`, `77976fa`, `ec2d6c6`, `9dbc4ae`.
 
-All ten compiler checks pass: 2063 library/914 native and 62 Python test groups;
-`/tmp/meowy-method-effects-gate.log`. The catalog has 164 cases: 145 required passes,
+All ten compiler checks pass: 2075 library/914 native and 62 Python test groups;
+`/tmp/meowy-unary-effects-gate.log`. The catalog has 168 cases: 149 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-method-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-method-effects-docs.log`).
+(`/tmp/meowy-unary-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-unary-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Unary effect reporting is in progress. Stage validation is committed (`97cec7c`),
-and typed records retain compact scalar descriptors and separate projection,
-operation and result observations. All 89 effect-report groups pass. Boundary/source
-coverage and the full gate remain next; the
-[compiler handoff](compiler/STATUS.md#bounded-unary-effects) records the plan.
-Unrelated `docs/programs/hey/` work is preserved.
+Next retain compact binary operand/result metadata and bounded binary effects,
+preserving separate sequence links, projections and checked results. The
+[compiler handoff](compiler/STATUS.md#bounded-unary-effects) records the files
+and verification plan. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
