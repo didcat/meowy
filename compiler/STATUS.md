@@ -393,8 +393,8 @@ canonical storage IDs plus normal/control flags. Point kind/completion/span,
 owner/operation registry, retained bounds, alias mapping and exact read-edge shape
 are checked before returning effects. Shared work and effect limits remain atomic.
 
-Reference-cell reads stay distinct from explicit pointee loads, which remain
-Unknown. Never reads retain no normal edge; later reads beyond stopped predecessors
+Reference-cell reads stay distinct from explicit pointee loads, captured below.
+Never reads retain no normal edge; later reads beyond stopped predecessors
 stay outside the report. Required-only inputs keep their separate InputUse records
 and gain no runtime read effects. This metadata grants no copy/borrow authority,
 value provenance, purity, termination or proof result.
@@ -420,22 +420,24 @@ workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
 ## Explicit dereference-load effects
 
-Investigation confirms `dependencies/dereferences.rs` already captures exact pointer
-roots, mode, owner/control and load/result edges. The collector still reports Unknown;
-the producer's normal-result decision must be retained before adding typed effects.
-The producer now retains `normal` without changing edge construction or typing.
+The producer retains exact pointer roots, mode, owner/control and load/result edges.
+Commit `e9aa13a` retains `normal` without changing edge construction or typing.
 Shared Never referents and stopped pointers retain `normal=false`; exclusive Never
 references retain their existing B001 ordinary-scalar-storage gate. All six focused
 `cargo test --locked --manifest-path compiler/Cargo.toml --lib deref_` groups pass,
-as do formatting and whitespace checks. No implementation capability is widened.
+as do formatting and whitespace checks. The collector now has typed Deref records
+with bounded point/owner/mode/edge validation. All 45 effect-report test groups pass,
+including four new dereference groups and the updated reference-cell regression.
+No implementation capability is widened.
 
 Dependency-ordered commit plan:
 
 1. Retain the explicit normal-result decision in `dependencies/dereferences.rs`,
    with focused producer regressions for shared/exclusive, stopped and Never inputs:
-   complete, ready to commit.
+   complete (`e9aa13a`).
 2. Add bounded typed dereference effects under `edges/forward/effects/`, validating
-   exact pointer/owner/point/edge identities and preserving reference-cell reads.
+   exact pointer/owner/point/edge identities and preserving reference-cell reads:
+   complete, ready to commit.
 3. Add malformed-metadata, duplicate-visit and exact-work/limit regressions for the
    collector, keeping failed reports atomic and stopped loads absent.
 4. Add required source cases for pointer evaluation order, stopped loads and borrow

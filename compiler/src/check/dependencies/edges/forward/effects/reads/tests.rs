@@ -59,7 +59,15 @@ pub(crate) fn read_effects_keep_reference_cells_separate_from_pointee_loads() {
     assert!(
         matches!(reports.effects[&raw].1, Effect::Read { storage, .. } if storage == read.local)
     );
-    assert_eq!(reports.effects[&deref].1, Effect::Unknown);
+    assert_eq!(
+        reports.effects[&deref].1,
+        Effect::Deref {
+            input: load.input,
+            mode: crate::hir::ReferenceMode::Shared,
+            normal: true,
+            control: false,
+        }
+    );
 }
 
 #[test]

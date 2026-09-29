@@ -24,10 +24,11 @@ compiler checks pass: 2021 library/914 native and 62 Python test groups;
 all four final documentation checks pass (`/tmp/meowy-read-effects-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next retain explicit dereference-load effects, including pointer modes and
-normal-result boundaries. The
-[compiler handoff](compiler/STATUS.md#canonical-local-read-effects) records the
-files and checks. AGENTS already covers this evidence workflow; no update is needed.
+Explicit dereference-load reporting is in progress. Result decisions are retained
+(`e9aa13a`), and typed effects preserve pointer roots/modes and normal/control flags.
+All 45 focused effect-report groups pass. Metadata/budget boundaries, source
+coverage and the full gate remain next; the
+[compiler handoff](compiler/STATUS.md#explicit-dereference-load-effects) records the plan.
 Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions

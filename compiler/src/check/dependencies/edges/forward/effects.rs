@@ -1,4 +1,5 @@
 mod calls;
+mod derefs;
 mod outputs;
 mod reads;
 
@@ -17,6 +18,12 @@ pub(crate) enum Effect {
     Read {
         local: crate::hir::LocalId,
         storage: crate::hir::LocalId,
+        normal: bool,
+        control: bool,
+    },
+    Deref {
+        input: PointId,
+        mode: crate::hir::ReferenceMode,
         normal: bool,
         control: bool,
     },
@@ -93,12 +100,13 @@ impl Checker {
                     reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.operations.len().checked_ilog2().unwrap_or(0) as usize
                         + self.local_reads.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.derefs.len().checked_ilog2().unwrap_or(0) as usize
                         + self.paths.len().checked_ilog2().unwrap_or(0) as usize
                         + self.stores.len().checked_ilog2().unwrap_or(0) as usize
                         + calls.len().checked_ilog2().unwrap_or(0) as usize
                         + self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                         + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
-                        + 7,
+                        + 8,
                 ) {
                     return Err(budget());
                 }
@@ -124,6 +132,8 @@ impl Checker {
                     }
                 } else if self.local_reads.contains_key(&id) {
                     self.read_effect(reports, id, owner, span)?
+                } else if self.derefs.contains_key(&id) {
+                    self.deref_effect(reports, id, owner, span)?
                 } else if let Some(op) = self.paths.get(&id) {
                     if op.owner != owner {
                         return Err(invalid());
