@@ -586,7 +586,13 @@ committed (`912e62d`). All nine coercion-effect groups pass
 (`/tmp/meowy-coercion-effects-limits.log`): direct/projected Never, stopped successors,
 required/shared-reference exclusions, 116 corrupt identity/edge/selector cases, six
 merge conflicts and exact shared limits. Ordinary E207/E208/E302 remain unchanged.
-Step 2 is ready to commit; required source coverage is next.
+Step 2 is committed (`16d183f`). All four required source cases pass in debug/release
+for primary/union contexts, argument order, stopped inputs and shared-reference paths
+(`/tmp/meowy-coercion-effects-sources.log`). Catalog/coverage checks pass for 188 cases.
+Preservation against `5e37849` confirms all 184 prior cases, 216 source assets,
+37 references, proof obligations, hashes and capability exceptions unchanged
+(`/tmp/meowy-coercion-effects-preservation.log`). Step 3 is ready to commit;
+guide updates and compiler/strict gates remain next.
 Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout

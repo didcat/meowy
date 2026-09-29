@@ -1,0 +1,16 @@
+d : @"debug"
+<Row> : <{ -> <int32>; tag <boolean> }>
+first <Row> : () {
+    d.print("first")
+    -> { -> 7; -> tag : true }
+}
+second <int32> : () {
+    d.print("second")
+    -> 9
+}
+consume <null> : (a <int32><null>, b <int32>) {
+    d.print("consume")
+    | a<int32> | d.print(a)
+    d.print(b)
+}
+consume(first(), second())

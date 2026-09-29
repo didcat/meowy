@@ -1,0 +1,11 @@
+d : @"debug"
+row : { -> 7; -> tag : true }
+scalar <int32> : row
+optional <int32><null> : row
+d.print(scalar)
+| optional<int32> | d.print(optional)
+d.print(row.tag)
+yes <boolean> : false || true
+no <boolean> : true && false
+d.print(yes)
+d.print(no)

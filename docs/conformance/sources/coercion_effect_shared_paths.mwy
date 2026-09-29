@@ -1,0 +1,12 @@
+d : @"debug"
+read <int32> : (x <&int32>) { -> *x }
+n := 7
+p : &!n
+d.print(read(p))
+*p = 8
+d.print(*p)
+base : 9
+row : { -> &base; -> tag : true }
+q <&int32> : row
+d.print(*q)
+d.print(row.tag)

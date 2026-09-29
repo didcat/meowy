@@ -1976,6 +1976,48 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "coercion_effect_contexts",
+      "phase": "run",
+      "source": "sources/coercion_effect_contexts.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n7\ntrue\ntrue\nfalse\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "coercion_effect_argument_order",
+      "phase": "run",
+      "source": "sources/coercion_effect_argument_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first\nsecond\nconsume\n7\n9\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "coercion_effect_stopped_input",
+      "phase": "run",
+      "source": "sources/coercion_effect_stopped_input.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\noperand\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "coercion_effect_shared_paths",
+      "phase": "run",
+      "source": "sources/coercion_effect_shared_paths.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n8\n9\ntrue\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }
