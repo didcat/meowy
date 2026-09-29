@@ -1684,6 +1684,40 @@
         "code": "E302"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "index_effect_snapshots",
+      "phase": "run",
+      "source": "sources/index_effect_snapshots.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nposition\n9\n0\nowned position\n5\n0\n13\n"
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "index_effect_stopped_inputs",
+      "phase": "run",
+      "source": "sources/index_effect_stopped_inputs.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "position\nafter leave\nreceiver\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "index_effect_snapshot_bounds",
+      "phase": "run",
+      "source": "sources/index_effect_snapshot_bounds.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nposition\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
     }
   ]
 }

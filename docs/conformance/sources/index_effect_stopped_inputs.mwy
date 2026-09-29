@@ -1,0 +1,21 @@
+d : @"debug"
+stop <never> : () {
+    d.print("receiver")
+    d.panic("stop")
+}
+position <int32> : () {
+    d.print("unexpected position")
+    -> 1
+}
+xs : [1]
+view : &xs
+'out {
+    value : view[{
+        d.print("position")
+        'out.leave()
+    }]
+    d.print("unexpected read")
+}
+d.print("after leave")
+stop()[position()]
+d.print("unexpected tail")

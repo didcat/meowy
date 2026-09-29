@@ -1,0 +1,11 @@
+d : @"debug"
+xs <int32[3]> := [7, 9]
+view : &xs
+n := 3
+d.print("before")
+value : view[{
+    d.print("position")
+    xs = [1, 2, 3]
+    -> n
+}]
+d.print("unexpected read")

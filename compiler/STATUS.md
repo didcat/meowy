@@ -496,6 +496,15 @@ shared work/effect caps and atomic merge-conflict tests pass. All twelve index-e
 groups pass, including 34 corrupted metadata cases on both direct/shared paths and
 ten merge conflicts. Formatting and whitespace checks pass; no selected test fails.
 
+All three new source cases pass in debug/release using the rebuilt compiler and
+isolated conformance harness (`/tmp/meowy-index-effects-sources.log`): owned/shared
+snapshot values, nested indices, stopped positions/receivers, and P001 bounds against
+the snapshotted initialized length after the position changes the list. The 160-case
+catalog and classified coverage checks pass. All 157 prior cases, 189 source assets,
+37 reference files, proof obligations, reference hashes and capability exceptions
+are preserved against `c98fbb8` (`/tmp/meowy-index-effects-preservation.log`).
+Full compiler/strict validation remains next.
+
 Dependency-ordered commit plan:
 
 1. Retain result completion separately in `IndexAccess`/`list_index` and preserve
@@ -508,10 +517,11 @@ Dependency-ordered commit plan:
    validation for terminal reads, deduplication and focused report regressions:
    complete (`fcb6b88`).
 4. Cover malformed metadata, mixed families and exact stage/work/effect limits;
-   keep failed reports atomic and existing diagnostics authoritative: complete,
-   ready to commit.
+   keep failed reports atomic and existing diagnostics authoritative: complete
+   (`b04783a`).
 5. Add required source cases for snapshots, stopped positions and bounds behavior;
-   update classified evidence while preserving prior sources/contracts/exceptions.
+   update classified evidence while preserving prior sources/contracts/exceptions:
+   complete, ready to commit.
 6. Update the guide, run compiler/strict gates and record actual results plus the
    next bounded effect family in both trackers.
 

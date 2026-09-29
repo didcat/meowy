@@ -1,0 +1,23 @@
+d : @"debug"
+get <&int32[3]> : (value <&int32[3]>) {
+    d.print("receiver")
+    -> value
+}
+xs <int32[3]> := [7, 9]
+copy : get(&xs)[{
+    d.print("position")
+    xs = []
+    -> 2
+}]
+d.print(copy)
+d.print(xs.size())
+owned <int32[3]> := [3, 5]
+item : owned[{
+    d.print("owned position")
+    owned = []
+    -> 2
+}]
+d.print(item)
+d.print(owned.size())
+nested : [[11, 12], [13, 14]]
+d.print(nested[2][1])
