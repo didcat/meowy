@@ -1,0 +1,21 @@
+d : @"debug"
+pick <&int32> : (p <&int32>) {
+    d.print("call")
+    -> p
+}
+n := 1
+value : *(({
+    d.print("pointer")
+    n = 7
+    -> pick(&n)
+}))
+d.print(value)
+p : &!n
+d.print(*p)
+row : { -> value : 11 }
+view : &row
+copy : *view
+d.print(copy.value)
+ref : &n
+cell : &ref
+d.print(*(*cell))

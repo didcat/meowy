@@ -1620,6 +1620,38 @@
         "code": "E211"
       },
       "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "deref_effect_pointer_order",
+      "phase": "run",
+      "source": "sources/deref_effect_pointer_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "pointer\ncall\n7\n7\n11\n7\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "deref_effect_stopped_pointer",
+      "phase": "run",
+      "source": "sources/deref_effect_stopped_pointer.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\npointer\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "deref_effect_live_borrow",
+      "phase": "check",
+      "source": "sources/deref_effect_live_borrow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

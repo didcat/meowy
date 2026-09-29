@@ -433,6 +433,14 @@ metadata cases, duplicate visits, exact work/effect caps, implicit-load/reborrow
 separation and E222/E302/E303 preservation. Formatting and whitespace checks pass;
 no selected test has an outstanding failure. No capability is widened.
 
+All three new source cases pass in debug/release using the rebuilt compiler and
+the existing isolated conformance harness (`/tmp/meowy-deref-effects-sources.log`).
+They pin pointer effects/calls before shared, exclusive, aggregate and reference-cell
+loads; panic-stopped pointers; and E302 for a live exclusive borrow. The 154-case
+catalog and classified coverage checks pass. Reference text/hashes, prior cases/
+assets, proof obligations and capability exceptions are preserved against `1e7f927`
+(`/tmp/meowy-deref-effects-preservation.log`). Full compiler/strict gates remain next.
+
 Dependency-ordered commit plan:
 
 1. Retain the explicit normal-result decision in `dependencies/dereferences.rs`,
@@ -442,10 +450,11 @@ Dependency-ordered commit plan:
    exact pointer/owner/point/edge identities and preserving reference-cell reads:
    complete (`f3f4e4c`).
 3. Add malformed-metadata, duplicate-visit and exact-work/limit regressions for the
-   collector, keeping failed reports atomic and stopped loads absent: complete,
-   ready to commit.
+   collector, keeping failed reports atomic and stopped loads absent: complete
+   (`f6044ab`).
 4. Add required source cases for pointer evaluation order, stopped loads and borrow
-   rejection; update classified coverage without changing reference contracts.
+   rejection; update classified coverage without changing reference contracts:
+   complete, ready to commit.
 5. Document the completed scope and run the compiler/strict gates; record actual
    results and the next bounded load family in both trackers.
 
