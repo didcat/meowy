@@ -466,7 +466,11 @@ owners/control, Never/stopped/required-only boundaries and index rejection.
 The producer retains the checked receiver field count without
 type copies or edge changes (`f834ed9`). All four focused
 `field_stages` groups pass, including field-count identity and replay rejection;
-formatting and whitespace checks pass.
+formatting and whitespace checks pass. Typed reporting is committed (`e0b6732`).
+All eight field-effect groups now pass. Boundary coverage exercises 26 malformed
+metadata cases for both direct and shared-load paths, duplicate visits, exact work/
+effect caps, separate borrow/list operations and E201/E302/E303 preservation.
+No selected test has an outstanding failure.
 
 Dependency-ordered commit plan:
 
@@ -476,9 +480,10 @@ Dependency-ordered commit plan:
 2. Add typed field effects under `edges/forward/effects/`, validating index bounds,
    exact producer/receiver identities and receiver/load/field/result edges; include
    focused tests for owners, narrowing, Never fields and required/static boundaries:
-   complete, ready to commit.
+   complete (`e0b6732`).
 3. Add malformed-metadata, duplicate-visit and exact work/effect-limit regressions,
-   preserving atomic report failure and separate borrow/load families.
+   preserving atomic report failure and separate borrow/load families: complete,
+   ready to commit.
 4. Add required source cases for receiver order, stopped calls and borrow rejection;
    update classified evidence without changing reference contracts or existing cases.
 5. Update the guide and run compiler/strict gates; record actual results and the next
