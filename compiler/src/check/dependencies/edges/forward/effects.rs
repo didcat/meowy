@@ -1,3 +1,4 @@
+mod binaries;
 mod calls;
 mod derefs;
 mod fields;
@@ -92,6 +93,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.binary_effect_stage(reports, owner, port, span)?;
                 if let Some(stage) = self.unary_effect_stage(reports, owner, port, span)? {
                     self.record_unary_effect(stage, &mut effects, limit, span)?;
                     continue;

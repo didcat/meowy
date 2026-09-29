@@ -24,10 +24,11 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-unary-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next retain compact binary operand/result metadata and bounded binary effects,
-preserving separate sequence links, projections and checked results. The
-[compiler handoff](compiler/STATUS.md#bounded-unary-effects) records the files
-and verification plan. Unrelated `docs/programs/hey/` work is preserved.
+Binary reporting is in progress. Compact operand/result types are retained (`5503576`),
+and stage validation checks both operation and sequence ledgers. All 97 effect-report
+groups pass. Typed scalar aggregation, boundary/source coverage and the full gate
+remain next; the [compiler handoff](compiler/STATUS.md#bounded-binary-effects)
+records the plan. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

@@ -367,6 +367,7 @@ mod narrowing;
 pub(crate) use narrowing::Narrowing;
 
 mod binaries;
+pub(crate) use binaries::types::{Class as BinaryClass, Types as BinaryTypes};
 pub(crate) use binaries::{Binary, Plan as BinaryPlan};
 
 mod dispatch;

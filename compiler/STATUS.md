@@ -513,14 +513,20 @@ groups pass, including scalar widths/results, stopped projections, opaque record
 list/reference/union equality and changed-width replay rejection
 (`/tmp/meowy-binary-effects-types.log`). Unused reexports were deferred until the report
 consumer needs them. Formatting and whitespace checks pass; no selected check fails.
+Type capture is committed (`5503576`). Binary-stage validation now checks signatures,
+exact operands and both edge ledgers while leaving nonscalar comparisons opaque;
+all 97 effect-report groups pass (`/tmp/meowy-binary-effects-stages.log`), including
+scalar domains, checked results, partial projections, sequence links, operation
+owners and opaque comparisons. Formatting and whitespace checks pass.
 
 Dependency-ordered commit plan:
 
 1. Capture compact Never/scalar/other operand/result classifications in binary
    metadata, without copying types or changing edges; add focused producer tests:
-   complete, ready to commit.
+   complete (`5503576`).
 2. Validate bounded operator/type signatures and projection/operation/result stages
-   against exact roots, both edge ledgers and registered operation owners.
+   against exact roots, both edge ledgers and registered operation owners: complete,
+   ready to commit.
 3. Aggregate typed scalar binary observations with independent projection/operation/
    result flags; retain opaque nonscalar operations and focused report regressions.
 4. Cover malformed signatures/roots/ledgers, merge conflicts, duplicates and exact
