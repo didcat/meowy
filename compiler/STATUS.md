@@ -582,7 +582,11 @@ forwarding and conversion, owners/control, inner calls/branches, composed fallba
 and isolated stage observations. Complete source/parent/block/owner/span identity,
 selectors and exact edges are validated; only conversion operation/result visits
 require operation registration. Formatting and whitespace checks pass. Step 1 is
-ready to commit; stopped/reborrow boundaries and malformed metadata/budgets are next.
+committed (`912e62d`). All nine coercion-effect groups pass
+(`/tmp/meowy-coercion-effects-limits.log`): direct/projected Never, stopped successors,
+required/shared-reference exclusions, 116 corrupt identity/edge/selector cases, six
+merge conflicts and exact shared limits. Ordinary E207/E208/E302 remain unchanged.
+Step 2 is ready to commit; required source coverage is next.
 Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
