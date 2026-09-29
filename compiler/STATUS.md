@@ -508,6 +508,12 @@ types and independent observed projection/operation/result flags. All 89 effect-
 groups pass (`/tmp/meowy-unary-effects-reports.log`), covering every supported integer
 width/signedness, raw types before coercion, independent owners/control, expected
 projections, required/stopped/signed-literal boundaries and isolated observations.
+Typed aggregation is committed (`77976fa`). Root/edge corruption, scalar/aggregate
+type rejection, shared-budget and atomic merge-conflict tests pass. All twelve
+unary-effect groups pass (`/tmp/meowy-unary-effects-limits.log`), including 25 root/
+edge faults on direct/primary paths, 13 invalid type descriptors, nine merge conflicts
+and E222/E216/E107 preservation. Large aggregate descriptors use the same rejection
+work as small invalid types. Formatting and whitespace checks pass; no test fails.
 
 Dependency-ordered commit plan:
 
@@ -517,9 +523,10 @@ Dependency-ordered commit plan:
    complete (`97cec7c`).
 2. Aggregate typed unary reports with independent observed projection/operation/
    result flags; preserve owners/control, expected projections and signed literals:
-   complete, ready to commit.
+   complete (`77976fa`).
 3. Cover malformed types/roots/edges, duplicate stages, merge conflicts and exact
-   work/effect limits; preserve atomic failures and existing diagnostics.
+   work/effect limits; preserve atomic failures and existing diagnostics: complete,
+   ready to commit.
 4. Add required source cases for operator types/order, projections, stopped operands
    and checked negation; update classified coverage while preserving prior contracts.
 5. Update the guide and run compiler/strict gates; record actual validation and the
