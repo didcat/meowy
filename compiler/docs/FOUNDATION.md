@@ -449,6 +449,18 @@ call arguments and temporary consumers; required evaluation, hints and stopped
 successors add no observations. A static handle report describes availability only;
 it does not allocate storage, extend a lifetime or grant borrow/proof authority.
 Existing nominal, lifetime, conflict, member and equality diagnostics remain unchanged.
+Narrowing reports retain exact raw-source roots, changed/normal/control flags and
+independent conversion/result observations. Capture validates complete expression
+points, matching spans, parent/block/owner agreement and exact original edges.
+Unchanged values retain only a forwarding result, without an invented operation or
+operation-owner requirement. Actual conversions require registered operation owners;
+conversion to Never may retain its operation without a result, while direct Never
+sources retain neither observation. Duplicate visits merge flags, and conflicting
+metadata or shared work/effect limits publish no partial collection. Required reads,
+projected borrows and outer expected conversions remain separate. These records
+replay no receiver effects, copy no types and infer no narrowed value, same-value
+identity, successful execution or proof outcome. Mutable guards, invalidation,
+ascription and borrow diagnostics retain their ordinary checking rules.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

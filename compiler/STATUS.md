@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded narrowing observations are in progress.
+Updated: 2026-09-29. Narrowing observations pass the compiler gate; expected coercions are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -487,100 +487,76 @@ establish no singleton domains or proof outcomes.
 
 ## Bounded heap handle effects
 
+Validated reports (`4800e0d`) retain nominal Allocator identity, control and
+independent handle/result observations. Module aliases, ordinary reads, contextual
+conversions, temporary consumers and required/hint/stopped paths remain distinct.
+Boundary tests (`f8fca7b`) and source cases (`89d7d1f`) remain covered by the current
+gates below. Duplicate/conflict handling and shared limits publish no partial
+collection. Static handle availability implies no allocation, extended lifetime,
+borrow authority or proof outcome.
+
+## Bounded narrowing observations
+
 The dependency-ordered implementation series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Validate and retain independent handle/result observations | `4800e0d` |
-| Cover metadata faults, merge conflicts and exact budgets | `f8fca7b` |
-| Pin handle consumers, stopped calls and borrow boundaries | `89d7d1f` |
+| Validate and retain narrowing/forwarding observations | `c6e092c` |
+| Cover stopped conversions, identities and exact budgets | `a86b02f` |
+| Pin guarded reads, receiver order and field invalidation | `ef17f36` |
 
-Heap reports retain the nominal Allocator type, control flags and independent
-handle/result observations at exact source roots. Capture validates completed
-expression points, owner/span identity, both Entry -> Operation -> Normal edges
-and registered operation owners. Duplicate observations merge flags; shared work/
-effect limits and conflicts publish no partial collection or metadata changes.
+Reports retain exact raw-source roots, changed/normal/control flags and independent
+conversion/result observations. Capture validates complete expression points,
+matching spans, parent/block/owner agreement and exact original edges. Unchanged
+values forward without inventing an operation or requiring operation registration.
+Actual conversions require registered owners for operation and result observations.
+Direct Never sources retain neither observation; conversion to Never can retain
+an operation without a result. Duplicate visits merge flags; conflicts and shared
+work/effect limits publish no partial collection or metadata changes.
 
-Module aliases retain lexical resolution; ordinary handle copies remain local reads.
-Reports preserve the original leaf before outer conversions, call arguments and
-temporary consumers. Required evaluation, hints and stopped successors produce no
-handle observations. A static handle report records availability; it neither allocates
-storage nor extends lifetimes, grants borrow authority or evaluates proof outcomes.
+Local/field reads, effectful receivers, mutable observations and outer expected
+conversions retain their original order and checking boundaries. Required reads and
+projected-borrow builders remain separate. No type shapes are copied, effects replayed
+or narrowed values, same-value identities, successful execution or proof outcomes
+inferred. Existing type, ascription, mutation-invalidation and borrow rules remain.
 
-Eight new internal groups cover aliases/shadowing, contextual conversions, calls,
-temporary consumers, function owners/control, independent stages and required/hint/
-stopped boundaries. E207/E302/E303/E222 and existing B001 gates remain unchanged,
-including invalid stopped tails. Eighteen metadata faults are tested on both stages,
-with four merge conflicts, duplicate work and exact shared limits
-(`/tmp/meowy-heap-effects-limits.log`). Four required source cases pass in debug/release:
-handle consumers/shadowing, stopped calls, temporary escape and live-borrow conflicts
-(`/tmp/meowy-heap-effects-sources.log`). Structural reports remain separate evidence.
+Nine new internal groups cover guarded sources, forwarding, independent stages,
+control, direct Never exclusions and a seeded conversion-to-Never operation without
+result. Fifty-two corrupt source/edge cases, six merge conflicts and exact shared
+limits preserve atomic failure and ordinary E207/E208/E302 diagnostics, including
+invalid stopped tails (`/tmp/meowy-narrowing-effects-limits.log`). Four required
+source cases pass in debug/release: guarded local/field reads, effectful/stopped
+receivers, field invalidation and unproven field ascription
+(`/tmp/meowy-narrowing-effects-sources.log`). Structural reports remain separate evidence.
 
-All ten compiler checks pass: 2107 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2116 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-heap-effects-gate.log`. The 180 cases report 161 required passes,
+`/tmp/meowy-narrowing-effects-gate.log`. The 184 cases report 165 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-heap-effects-strict.log`); all four final documentation
-checks pass (`/tmp/meowy-heap-effects-docs.log`). No selected check has an outstanding failure.
-Preservation against `5597c18` confirms all 176 prior cases, 208 source assets,
+only for those gaps (`/tmp/meowy-narrowing-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-narrowing-effects-docs.log`). No selected check has an outstanding failure.
+Preservation against `eba755e` confirms all 180 prior cases, 212 source assets,
 37 reference files, proof obligations, reference hashes and capability exceptions
-unchanged (`/tmp/meowy-heap-effects-preservation.log`). Unrelated `docs/programs/hey/`
+unchanged (`/tmp/meowy-narrowing-effects-preservation.log`). Unrelated `docs/programs/hey/`
 is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded narrowing observations using `dependencies/narrowing.rs`
+Next implement bounded coercion observations using `dependencies/coercions.rs`
 and `edges/forward/effects/`. Record a dependency-ordered commit plan before coding:
 
-1. Validate exact raw-source/parent/block/owner/span identities, changed/normal flags
-   and edges; preserve unchanged forwarding without inventing an operation.
-2. Retain independent conversion/result observations. Direct Never sources have no
-   result; conversion to Never can retain an operation without a result. Validate
-   operation registration only where an actual conversion is present.
-3. Cover local/field reads, receiver effects, outer expected conversions, mutable
-   guards, required exclusions and malformed metadata/conflicts/shared budgets.
-   Preserve ordinary type, ascription, mutation-invalidation and borrow diagnostics.
+1. Validate exact source/parent/block/owner/span identities, Forward/Convert/Stopped
+   decisions, optional primary projections and original stage edges.
+2. Retain independent projection/conversion/result observations. Forwarding creates
+   no operation; direct stops create no result, while projected Never can retain its
+   projection. Require operation registration only for actual conversion stages.
+3. Cover contextual scalar/record/union inputs, receiver/call order, short-circuit
+   sources, required exclusions and shared reborrow separation. Check malformed
+   metadata, selectors, duplicates, conflicts and exact shared budgets.
 4. Add required source cases and classified coverage; update the guide and handoff,
    then run focused checks and compiler/strict gates.
 
-No narrowed type/value, same-value identity or proof outcome may be inferred from
-these stage flags. Projected borrows and generic coercions remain separate;
+No target type/value, ownership transfer or proof outcome may be inferred from
+these stage flags. Uncaptured generic coercions and borrow builders remain separate;
 `queries::finish` stays B001-gated and no borrow authority is granted.
-
-## Bounded narrowing observations
-
-`narrowing.rs` retains exact raw-source roots and changed/normal/control flags.
-Unchanged values forward without an Operation; conversion to Never retains an
-Operation but no Normal result. Reports currently leave conversions Unknown and
-do not retain forwarding observations. Reuse these checked decisions without
-copying types, evaluating values or granting narrowing/proof authority.
-
-Dependency-ordered commit plan:
-
-1. Validate source/parent/block/owner/span identities and exact edges; retain bounded
-   independent conversion/result observations, including forwarding, with focused tests.
-2. Cover direct/conversion-to-Never boundaries, corrupt metadata, conflicts and exact
-   shared budgets; preserve required paths and ordinary type/ascription/borrow errors.
-3. Add required source cases for guarded locals/fields, effectful receivers, mutable
-   invalidation and stopped consumers; update classified conformance coverage.
-4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
-
-Narrowing stage capture and aggregation pass all 126 effect-report groups
-(`/tmp/meowy-narrowing-effects-reports.log`). Four new groups cover guarded local/
-field roots, receiver effects, outer conversions, control, forwarding, independent
-observations, required reads and direct Never exclusions. Raw-source span, complete
-parent/block/owner identity and exact edges are validated; actual conversions require
-operation registration. Formatting and whitespace checks pass. Step 1 is committed
-(`c6e092c`). All nine narrowing-effect groups pass
-(`/tmp/meowy-narrowing-effects-limits.log`): 52 corrupt source/edge cases, six merge
-conflicts, duplicate work, exact shared limits and a seeded conversion-to-Never
-operation without a result. E207/E208/E302 and invalid stopped-tail checks remain
-unchanged. Step 2 is committed (`a86b02f`). All four required source cases pass in
-debug/release for guarded reads, receiver order, field mutation invalidation and
-unproven field ascription (`/tmp/meowy-narrowing-effects-sources.log`). Catalog/
-coverage checks pass for 184 cases. Preservation against `eba755e` confirms all
-180 prior cases, 212 source assets, 37 references, proof obligations, hashes and
-capability exceptions unchanged (`/tmp/meowy-narrowing-effects-preservation.log`).
-Step 3 is ready to commit; guide updates and compiler/strict gates remain next.
-Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
 
@@ -2678,13 +2654,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    Boundary regressions (`28ec4c2`), required source cases (`6b1d6c1`) and the compiler
    gate pass. Heap reports (`4800e0d`) retain nominal Allocator identity and independent
    handle/result observations. Boundary regressions (`f8fca7b`), source cases
-   (`89d7d1f`) and the compiler gate pass. Next validate raw-source roots,
-   changed/normal/control flags and exact stage edges in `dependencies/narrowing.rs`,
-   then retain bounded observations under `edges/forward/effects/`. Preserve unchanged
-   forwarding, direct Never and conversion-to-Never boundaries, receiver effects and
-   outer expected conversions. Cover malformed metadata, merge conflicts, budgets and
-   source behavior; run compiler/strict gates. Infer no narrowed values, borrow authority,
-   same-value identity, callee summary or proof outcome from these stage observations.
+   (`89d7d1f`) and the compiler gate pass. Narrowing observations (`c6e092c`) now retain
+   exact raw sources and separate forwarding/conversion/result boundaries. Boundary
+   regressions (`a86b02f`), source cases (`ef17f36`) and the compiler gate pass.
+   Next validate Forward/Convert/Stopped decisions, primary projections,
+   exact source identities and stage edges in `dependencies/coercions.rs`, then retain
+   bounded observations under `edges/forward/effects/`. Preserve projected Never,
+   call/receiver order, required exclusions and shared reborrow separation. Add
+   identity/selector/budget/source coverage and run compiler/strict gates. Infer no
+   target types/values, ownership transfer, borrow authority or proof outcomes from
+   these stage flags; uncaptured coercions remain separate.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

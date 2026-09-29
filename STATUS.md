@@ -7,29 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Static heap reports now retain the nominal Allocator type, control flags and independent
-handle/result observations. Module aliases, ordinary reads, contextual conversions,
-temporary consumers and required/hint/stopped boundaries retain their distinctions.
-Eight new internal groups and four source cases cover identities, conflicts, budgets,
-consumer order, temporary escape and live-borrow diagnostics.
-Commits: `4800e0d`, `f8fca7b`, `89d7d1f`.
+Narrowing reports now retain exact raw-source roots, changed/normal/control flags
+and independent conversion/result observations. Unchanged values forward without
+invented operations; direct Never and conversion-to-Never boundaries remain distinct.
+Nine new internal groups and four source cases cover guarded reads, receiver order,
+field invalidation, malformed metadata, conflicts and exact shared budgets.
+Commits: `c6e092c`, `a86b02f`, `ef17f36`.
 
-All ten compiler checks pass: 2107 library/914 native and 62 Python test groups;
-`/tmp/meowy-heap-effects-gate.log`. The catalog has 180 cases: 161 required passes,
+All ten compiler checks pass: 2116 library/914 native and 62 Python test groups;
+`/tmp/meowy-narrowing-effects-gate.log`. The catalog has 184 cases: 165 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-heap-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-heap-effects-docs.log`).
+(`/tmp/meowy-narrowing-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-narrowing-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Narrowing observations are implemented with validated raw-source roots, forwarding
-and independent conversion/result flags. All 126 effect-report groups pass; Never
-conversion boundaries, malformed metadata/budget tests, source cases and final gates
-remain next. The [compiler handoff](compiler/STATUS.md#bounded-narrowing-observations)
-records the plan. No value or proof outcome is inferred. Unrelated `docs/programs/hey/`
-work is preserved.
+Next add bounded coercion observations for Forward/Convert/Stopped decisions
+and optional primary projections. The
+[compiler handoff](compiler/STATUS.md#bounded-narrowing-observations) records the ordered
+next work. No target value, ownership transfer or proof outcome is implied by stage
+observations. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
