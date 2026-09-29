@@ -1,0 +1,8 @@
+d : @"debug"
+stop <never> : () {
+    d.print("operand")
+    d.panic("stop")
+}
+d.print("before")
+value : !stop()
+d.print("unexpected result")

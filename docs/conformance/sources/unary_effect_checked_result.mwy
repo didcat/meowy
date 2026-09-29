@@ -1,0 +1,9 @@
+d : @"debug"
+n <int8> := -128
+d.print("before")
+value : -({
+    d.print("operand")
+    -> n
+    -> tag : true
+})
+d.print("unexpected result")

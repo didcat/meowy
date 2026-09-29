@@ -1762,6 +1762,50 @@
         "exit": 1
       },
       "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "unary_effect_scalars",
+      "phase": "run",
+      "source": "sources/unary_effect_scalars.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\n-7\n-8\n248\ntrue\ntrue\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "unary_effect_projections",
+      "phase": "run",
+      "source": "sources/unary_effect_projections.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "integer\n-2\nboolean\nfalse\nbits\n248\n-3\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "unary_effect_stopped_operand",
+      "phase": "run",
+      "source": "sources/unary_effect_stopped_operand.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\noperand\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "unary_effect_checked_result",
+      "phase": "run",
+      "source": "sources/unary_effect_checked_result.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\noperand\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
     }
   ]
 }

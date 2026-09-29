@@ -515,6 +515,14 @@ edge faults on direct/primary paths, 13 invalid type descriptors, nine merge con
 and E222/E216/E107 preservation. Large aggregate descriptors use the same rejection
 work as small invalid types. Formatting and whitespace checks pass; no test fails.
 
+All four new source cases pass in debug/release with the rebuilt compiler and
+isolated harness (`/tmp/meowy-unary-effects-sources.log`): scalar operator results,
+integer/float widths, aliased bits-not, projection order, stopped operands and P002
+after projected integer operand effects. Catalog/coverage checks pass for 168 cases.
+All 164 prior cases, 196 source assets, 37 reference files, proof obligations,
+reference hashes and capability exceptions are preserved against `e9eaee4`
+(`/tmp/meowy-unary-effects-preservation.log`). Full compiler/strict gates remain next.
+
 Dependency-ordered commit plan:
 
 1. Add bounded unary-stage validation under `edges/forward/effects/`, reusing checked
@@ -525,10 +533,11 @@ Dependency-ordered commit plan:
    result flags; preserve owners/control, expected projections and signed literals:
    complete (`77976fa`).
 3. Cover malformed types/roots/edges, duplicate stages, merge conflicts and exact
-   work/effect limits; preserve atomic failures and existing diagnostics: complete,
-   ready to commit.
+   work/effect limits; preserve atomic failures and existing diagnostics: complete
+   (`ec2d6c6`).
 4. Add required source cases for operator types/order, projections, stopped operands
-   and checked negation; update classified coverage while preserving prior contracts.
+   and checked negation; update classified coverage while preserving prior contracts:
+   complete, ready to commit.
 5. Update the guide and run compiler/strict gates; record actual validation and the
    next bounded effect family in both trackers.
 

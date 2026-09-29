@@ -1,0 +1,15 @@
+d : @"debug"
+b : @"bits"
+n : -({ d.print("integer"); -> 2; -> tag : true })
+d.print(n)
+flag : !({ d.print("boolean"); -> true; -> tag : 1 })
+d.print(flag)
+byte : b.not({
+    d.print("bits")
+    value <uint8> : 7
+    -> value
+    -> tag : true
+})
+d.print(byte)
+row : { -> 3; -> tag : true }
+d.print(-row)

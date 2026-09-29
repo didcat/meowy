@@ -1,0 +1,14 @@
+d : @"debug"
+b : @"bits"
+invert : b.not
+d.print(!(false && true))
+n <int8> := 7
+d.print(-n)
+s <int16> := 7
+d.print(invert(s))
+u <uint8> : 7
+d.print(u.(invert))
+f <float32> : 1.25
+d.print(-f == -1.25)
+g <float64> : 2.5
+d.print(-g == -2.5)
