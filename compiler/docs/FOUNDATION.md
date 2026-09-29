@@ -377,6 +377,21 @@ are rejected, and lookup never rescans every producer for each port. At most
 Shared work charges cover entry/port visits and lookups before map growth; failure
 returns no partial effect map or report collection. Existing graph metadata and
 conservative dependency marks remain unchanged.
+A bounded call graph now groups those typed call sites by caller and callee owner,
+retaining exact operation points and independent body entries. All entries remain,
+including unused functions and an empty program. Missing-source ports and backedge
+positions retain their exact identities beside each entry; they do not become call
+edges or establish complete effects. The graph caps entries at 65,536, call sites
+at 262,144 and copied boundaries at 917,504, with shared work charged before growth.
+Invalid ownership, identities or exhausted bounds return no partial graph.
+An iterative component pass validates adjacency/site membership and partitions
+owners into deterministic groups. It traverses the call graph and its reverse with
+bounded explicit worklists, avoiding recursion proportional to graph depth. Groups
+and their owners are sorted; multiple owners or a self-loop mark a recursive group.
+An independent three-owner reachability oracle and a deep-chain regression check
+the partition. Restart backedges remain separate. These groups prepare later
+analysis; they do not execute or enter callees, summarize effects, establish
+termination/purity, propagate backedges or enable proof results.
 Successful ordinary function Bind definitions now retain one entry-to-normal
 statement edge after signature/body checking, using the exact registered function
 ID. Statement identity and the independent function-body owner are validated;

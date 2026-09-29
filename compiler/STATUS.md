@@ -343,91 +343,65 @@ below retains these checks; completion adds no runtime query execution or outcom
 
 ## Direct-call effect metadata
 
+Bounded point-to-CallId lookup (`16c700a`) and typed call effects (`ab9a03a`) retain
+exact callee, argument/control and conditional-return metadata after HIR transfer.
+Callees are validated through independent entries; calls do not enter their bodies.
+Source coverage (`8c2cf12`) pins order, stopped arguments, arity and borrow rules.
+The compiler gate below preserves these checks and opaque callee effects.
+
+## Call graph and recursion groups
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Build a bounded operation-point to CallId index | `16c700a` |
-| Retain and validate typed direct-call effect records | `ab9a03a` |
-| Pin source call order, stopped arguments, arity and borrow rules | `8c2cf12` |
+| Retain bounded caller/callee adjacency and exact boundaries | `84324c6` |
+| Identify deterministic recursive components iteratively | `d64de6c` |
+| Pin independent recursion groups, stopped calls and body errors | `2983acc` |
 
-Effect reports retain CallId, FunctionId, ordered argument roots, control and
-conditional-return metadata for call Operation ports encountered by independent
-entry walks. The bounded index validates invocation registry keys, points, owners
-and spans. Capture validates the callee's registered entry/body, argument identity,
-completion/owner/parent and exact ordered invocation edges. Callee validation uses
-report entries after HIR moves into the program, not the emptied checker vector.
+The graph preserves every registered owner/body entry, groups targets by callee
+owner, and retains each call site's original operation point and both owners.
+Missing-source ports and backedge positions are copied exactly and validated against
+the retained index/owners. Node, site, boundary and shared-work limits fail before
+returning a partial graph. Stopped calls stay excluded; unused functions keep their
+independent entries. An empty target set is not a purity or reachability result.
 
-`Effect::Call` records the invocation; callee effects remain opaque. Calls never
-traverse a callee entry, add graph edges or infer purity/termination. Declared Never
-calls retain no return edge, and Returned remains conditional. Stopped arguments
-keep the call and later arguments outside the caller's report. Unused/recursive
-functions retain their own independent reports. Path steps and copied call argument
-roots share a 262,144-entry payload allowance; repeated ports copy once. Index,
-per-call, payload and work bounds fail before returning a partial report.
+Components use iterative forward finishing and reverse traversal with bounded
+pending storage. Adjacency and call-site membership are validated; missing,
+duplicate or mismatched membership fails closed. Owners are sorted within groups,
+and groups by their first owner, independent of HIR function ordering. Multi-owner
+components and singleton self-loops mark recursion. Restart backedges stay separate;
+neither a recursive nor nonrecursive group establishes runtime termination.
+No body traversal at call sites, callee effect summary, backedge data propagation
+or proof outcome is introduced.
 
-Seven new regression groups cover exact identities, aliases/recursion, receiver
-order, controls, Never/stopped inputs, malformed metadata, copied-payload/work limits
-and preservation after failures. Four source cases independently pin execution
-order, argument panic, wrong arity and borrow conflicts. Prior language checks and
-proof gates remain authoritative; this is structural metadata, not callee analysis.
+Nine new regression groups cover owner/site/boundary identity, aliases, stopped
+inputs, malformed data, exact capacity/work limits, self/mutual/unused recursion and
+isolated entries. The component result matches an independent reachability oracle
+for all 512 directed three-owner graphs in both insertion orders. A 2048-node chain
+checks iterative traversal. Three required source cases separately pin executing
+multiple recursion groups, panic before a recursive call and unused-body type errors.
 
-All ten compiler checks pass: 1988 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 1997 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-call-effects-gate.log`. The 139 cases report 120 required passes,
+`/tmp/meowy-call-graph-gate.log`. The 142 cases report 123 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for the same known gaps (`/tmp/meowy-call-effects-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-call-effects-docs.log`); no selected check
-has an outstanding failure. Preservation against `f9848fd` confirms all 135 prior cases,
-167 source assets, 37 reference files and exact capability exceptions are unchanged
-(`/tmp/meowy-call-effects-preservation.log`). AGENTS already covers this evidence
+only for the same known gaps (`/tmp/meowy-call-graph-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-call-graph-docs.log`); no selected check has an
+outstanding failure. Preservation against `74383fc` confirms all 139 prior cases,
+171 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-call-graph-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-## Call graph and recursion groups in progress
-
-Typed call effects provide actual caller ownership, call sites/points and callee
-FunctionIds after independent structural walks. Entry reports retain the exact
-missing-source ports and backedge positions. A graph must retain that evidence:
-no outgoing call is not proof of purity, termination or runtime reachability.
-
-Dependency-ordered commit plan:
-
-1. Build bounded caller/callee adjacency from typed call effects, preserving each
-   call site's point and both owners, all registered entries, and exact missing/
-   backedge boundaries. Integrate after effect collection and add identity, stopped
-   input, malformed metadata and capacity/work tests.
-2. Compute deterministic recursive components without recursive host traversal.
-   Bound nodes/edges/work, preserve self and mutual recursion and empty/isolated
-   entries, and integrate only after graph validation. Add focused component tests.
-3. Add useful source recursion/ordering/rejection coverage and evidence mapping;
-   run compiler/strict gates and preservation against `74383fc`.
-4. Update root/compiler/foundation handoffs with actual results and the next step;
-   run documentation checks.
-
-The audit covered entry/effect reports and the bounded forward walk. The new graph
-will reference the existing independent entries rather than enter callee bodies.
-Existing conditional Returned edges, stopped arguments, unknown effects and proof
-B001 gates remain authoritative. No callee summaries or backedge data propagation
-are introduced. Slice 1 now retains registered owner/body entries, grouped targets,
-exact call-site/point membership, missing ports and backedge positions. Entry, call,
-point and boundary identities are checked before returning the graph; node/site/
-boundary/work limits are atomic. Four focused graph tests and all 1992 library
-tests pass (`/tmp/meowy-call-graph.log`, `/tmp/meowy-call-graph-library.log`). Next
-add source coverage. Slice 2 computes components with iterative forward finishing
-and reverse traversal, validates adjacency/site membership, and sorts groups by
-actual owner IDs. Self-loops mark singleton recursion; restart backedges remain
-separate. All 1996 library tests passed before adding the independent oracle;
-all five focused component groups now pass, including all 512 three-owner graphs
-in both insertion orders and a 2048-node chain (`/tmp/meowy-call-components.log`).
-Formatting and all-target Clippy pass (`/tmp/meowy-call-components-clippy.log`).
-Three required source cases now pass in debug/release with a fresh CLI
-(`/tmp/meowy-call-graph-cases.log`): independent mutual/self/unused Never groups,
-stopped recursive-call arguments and an unused recursive body type error. Catalog
-and coverage checks validate 142 cases and 37 references. The compiler gate is
-running (`/tmp/meowy-call-graph-gate.log`). Preservation against `74383fc` confirms
-all 139 prior cases, 171 source assets, 37 reference files and exact capability
-exceptions are unchanged (`/tmp/meowy-call-graph-preservation.log`). Next finish
-compiler/strict validation and the documentation handoff. Preserve unrelated `docs/programs/hey/` work.
+Next condense components into a bounded acyclic graph under
+`src/check/dependencies/edges/forward/calls/`, retaining exact internal and cross-group
+call-site membership. Then compute a deterministic analysis order that places
+callees before callers as a separate slice. Preserve original owner/body and
+missing-source/backedge boundaries; ordering must not imply runtime scheduling or
+complete effects. Test diamonds, independent groups, self/mutual recursion,
+malformed membership and capacity/work limits; add source coverage where useful
+and run compiler/strict gates. Callee summaries, backedge data propagation and
+proof outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2489,12 +2463,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    Required rejection coverage (`532c3a5`) and the compiler gate pass. Direct-call
    effect records now retain exact CallId/FunctionId, argument/control and return
    metadata with bounded validation (`16c700a`, `ab9a03a`); source coverage (`8c2cf12`)
-   and the compiler gate pass. Next build bounded caller/callee adjacency from these
-   records in `dependencies/edges/forward/`, then identify recursive components in
-   a separate slice. Keep exact call-site membership and incomplete/backedge boundaries;
-   test aliases, self/mutual recursion, stopped inputs, owners and budgets. Run the
-   compiler/strict gates. Calls remain opaque: no purity, termination, callee summary,
-   backedge data propagation or proof outcome is implied by the graph.
+   and the compiler gate pass. Bounded call adjacency (`84324c6`) now retains exact
+   site/owner membership and missing/backedge boundaries. Iterative components
+   (`d64de6c`) preserve independent owners and identify self/mutual recursion;
+   source coverage (`2983acc`) and the compiler gate pass. Next condense components
+   into bounded acyclic adjacency under `dependencies/edges/forward/calls/`, retaining
+   internal/cross-group call sites, then order analysis of callees before callers in
+   a separate slice. Test diamonds, recursion, malformed metadata and budgets; run
+   compiler/strict gates. No runtime scheduling, purity, termination, complete callee
+   effect summary, backedge data propagation or proof outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

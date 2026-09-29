@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Direct-call effect reports now retain exact call/callee IDs, ordered argument roots,
-control and conditional-return metadata. Bounded validation preserves caller/callee
-identities after HIR transfer, and stopped arguments exclude the call from the
-caller's report. Callee effects remain opaque; no call traverses a callee body or
-implies purity, termination or runtime reachability. Seven new internal regression
-groups and four source cases cover identities, order, budgets and rejection rules.
-Commits: `16c700a`, `ab9a03a`, `8c2cf12`.
+Bounded call graphs and recursion groups are implemented. The graph retains exact
+call sites, caller/callee owners, unused entries and missing/backedge boundaries.
+Iterative component analysis identifies self and mutual recursion without using
+recursive host traversal. Groups do not establish purity, termination or runtime
+reachability. Nine new internal regression groups include an exhaustive 512-graph
+oracle and a 2048-node chain; three source cases cover execution and rejection rules.
+Commits: `84324c6`, `d64de6c`, `2983acc`.
 
-The catalog has 139 cases: 120 required passes, 19 unchanged pinned gaps and zero
+The catalog has 142 cases: 123 required passes, 19 unchanged pinned gaps and zero
 failures in debug/release. All prior cases, source assets and reference contracts
 are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
 37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 1988 library/914 native and 62 Python test groups;
-`/tmp/meowy-call-effects-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-call-effects-docs.log`). Proof
+compiler checks pass: 1997 library/914 native and 62 Python test groups;
+`/tmp/meowy-call-graph-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-call-graph-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next build bounded caller/callee adjacency and explicit recursion groups while
-preserving incomplete and backedge boundaries. The
-[compiler handoff](compiler/STATUS.md#direct-call-effect-metadata) records the files
-and checks. AGENTS already covers this evidence workflow; no update is needed.
+Next condense recursion groups into an acyclic graph and order analysis of callees
+before callers, retaining exact call sites and incomplete boundaries. The
+[compiler handoff](compiler/STATUS.md#call-graph-and-recursion-groups) records the
+files and checks. AGENTS already covers this evidence workflow; no update is needed.
 Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
@@ -1141,12 +1141,14 @@ execution was not part of this documentation edit.
    validation while preserving final proof gates. Required rejection coverage and the
    compiler gate pass. Direct-call effect records now preserve exact call/callee,
    argument, control and return metadata under bounded validation; the compiler
-   gate and source coverage pass. Next build bounded caller/callee adjacency under
-   `compiler/src/check/dependencies/edges/forward/`, then identify recursive
-   components in a separate slice. Retain exact call-site membership, owners and
-   missing-source/backedge boundaries. Add focused/source coverage and run
-   compiler/strict gates. Callee summaries, backedge data propagation and proof
-   outcomes remain separate; absence of a call edge does not establish purity.
+   gate and source coverage pass. Bounded call adjacency and iterative recursive
+   components now retain exact sites, owners and missing/backedge boundaries;
+   regression/source coverage and the compiler gate pass. Next condense groups
+   into an acyclic graph under `compiler/src/check/dependencies/edges/forward/calls/`
+   and separately order analysis of callees before callers. Preserve internal and
+   cross-group sites and incomplete boundaries; test diamonds, recursion, metadata
+   failures and budgets. Callee summaries, backedge data propagation and proof
+   outcomes remain separate; analysis ordering is not runtime scheduling.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
