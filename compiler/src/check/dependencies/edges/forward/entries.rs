@@ -8,6 +8,7 @@ pub(crate) struct Reports {
     pub(crate) index: ForwardIndex,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
+    pub(crate) calls: super::calls::CallGraph,
     pub(self) items: usize,
 }
 
@@ -36,6 +37,7 @@ impl Checker {
             index: self.forward_index(span)?,
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
+            calls: super::calls::CallGraph::default(),
             items: 0,
         };
         let entries = std::iter::once((None, program.body.id)).chain(
@@ -67,6 +69,7 @@ impl Checker {
             reports.entries.insert(owner, (block, walk));
         }
         reports.effects = self.operation_effects(&reports, span)?;
+        reports.calls = self.call_graph(&reports, span)?;
         Ok(reports)
     }
 }

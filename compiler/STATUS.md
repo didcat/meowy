@@ -383,15 +383,38 @@ has an outstanding failure. Preservation against `f9848fd` confirms all 135 prio
 (`/tmp/meowy-call-effects-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-Next build bounded caller/callee adjacency from the typed call records under
-`src/check/dependencies/edges/forward/`, then identify recursive components as a
-separate reviewable slice. Retain exact call-site membership and independent entry
-owners; preserve missing-source and backedge boundaries rather than treating an
-absent edge as proof of no effects. Add alias/self/mutual-recursion, stopped-input,
-owner and capacity/work regressions, update source coverage where useful, and run
-compiler/strict gates. This prepares callee summaries; it must not traverse bodies
-at call sites or infer purity, termination or runtime reachability. Backedge data
-propagation and proof outcomes remain separate; `queries::finish` stays B001-gated.
+## Call graph and recursion groups in progress
+
+Typed call effects provide actual caller ownership, call sites/points and callee
+FunctionIds after independent structural walks. Entry reports retain the exact
+missing-source ports and backedge positions. A graph must retain that evidence:
+no outgoing call is not proof of purity, termination or runtime reachability.
+
+Dependency-ordered commit plan:
+
+1. Build bounded caller/callee adjacency from typed call effects, preserving each
+   call site's point and both owners, all registered entries, and exact missing/
+   backedge boundaries. Integrate after effect collection and add identity, stopped
+   input, malformed metadata and capacity/work tests.
+2. Compute deterministic recursive components without recursive host traversal.
+   Bound nodes/edges/work, preserve self and mutual recursion and empty/isolated
+   entries, and integrate only after graph validation. Add focused component tests.
+3. Add useful source recursion/ordering/rejection coverage and evidence mapping;
+   run compiler/strict gates and preservation against `74383fc`.
+4. Update root/compiler/foundation handoffs with actual results and the next step;
+   run documentation checks.
+
+The audit covered entry/effect reports and the bounded forward walk. The new graph
+will reference the existing independent entries rather than enter callee bodies.
+Existing conditional Returned edges, stopped arguments, unknown effects and proof
+B001 gates remain authoritative. No callee summaries or backedge data propagation
+are introduced. Slice 1 now retains registered owner/body entries, grouped targets,
+exact call-site/point membership, missing ports and backedge positions. Entry, call,
+point and boundary identities are checked before returning the graph; node/site/
+boundary/work limits are atomic. Four focused graph tests and all 1992 library
+tests pass (`/tmp/meowy-call-graph.log`, `/tmp/meowy-call-graph-library.log`). Next
+commit slice 1, then implement bounded iterative recursion detection. Preserve
+unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 
