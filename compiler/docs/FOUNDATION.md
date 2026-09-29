@@ -439,6 +439,16 @@ resolved static constants gain leaf reports at runtime uses. Static alias declar
 ordinary storage reads, required evaluation and formatting text retain their separate
 paths. Stopped successors gain no observations. No literal values or text payloads are
 copied, and result observations do not establish singleton domains or proof outcomes.
+Static heap reports retain the nominal Allocator type, control flags and independent
+handle/result observations. Capture validates completed expression roots, owner/span
+identity, both exact edges and registered operation owners. Duplicate visits merge
+flags; conflicting metadata and shared work/effect limits publish no partial
+collection. Module aliases preserve their resolved identities, while ordinary handle
+copies remain storage reads. Reports retain the original leaf before conversions,
+call arguments and temporary consumers; required evaluation, hints and stopped
+successors add no observations. A static handle report describes availability only;
+it does not allocate storage, extend a lifetime or grant borrow/proof authority.
+Existing nominal, lifetime, conflict, member and equality diagnostics remain unchanged.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

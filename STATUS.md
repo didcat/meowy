@@ -7,29 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Scalar-leaf reports now retain checked kinds, numeric widths, control flags and
-independent construction/result observations. Signed literal roots, resolved constants,
-ordinary storage reads and required/stopped boundaries retain their distinctions.
-Nine new internal groups and four source cases cover contextual literals, aliases,
-identity/edge faults, merge conflicts, exact budgets and stopped-tail diagnostics.
-Commits: `3be764d`, `28ec4c2`, `6b1d6c1`.
+Static heap reports now retain the nominal Allocator type, control flags and independent
+handle/result observations. Module aliases, ordinary reads, contextual conversions,
+temporary consumers and required/hint/stopped boundaries retain their distinctions.
+Eight new internal groups and four source cases cover identities, conflicts, budgets,
+consumer order, temporary escape and live-borrow diagnostics.
+Commits: `4800e0d`, `f8fca7b`, `89d7d1f`.
 
-All ten compiler checks pass: 2099 library/914 native and 62 Python test groups;
-`/tmp/meowy-scalar-effects-gate.log`. The catalog has 176 cases: 157 required passes,
+All ten compiler checks pass: 2107 library/914 native and 62 Python test groups;
+`/tmp/meowy-heap-effects-gate.log`. The catalog has 180 cases: 161 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-scalar-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-scalar-effects-docs.log`).
+(`/tmp/meowy-heap-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-heap-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Static heap handle effects are implemented with validated nominal types and independent
-handle/result observations. All 118 effect-report groups pass; malformed metadata,
-budget tests, source coverage and final gates remain next. The
-[compiler handoff](compiler/STATUS.md#bounded-heap-handle-effects) records the plan.
-No allocation, borrow authority or proof outcome is implied by a handle observation.
-Unrelated `docs/programs/hey/` work is preserved.
+Next add bounded narrowing observations using existing raw-source roots and changed/
+normal flags. The [compiler handoff](compiler/STATUS.md#bounded-heap-handle-effects)
+records the ordered next work. No allocation, additional borrow authority or proof
+outcome is implied by these reports. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

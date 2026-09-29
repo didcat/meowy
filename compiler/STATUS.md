@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded static heap handle effects are in progress.
+Updated: 2026-09-29. Heap handle effects pass the compiler gate; narrowing observations are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -477,96 +477,73 @@ inferred from operation/result observations.
 
 ## Bounded scalar-leaf effects
 
+Validated reports (`3be764d`) retain scalar kinds, numeric widths, control and
+independent construction/result observations. Signed roots, runtime constant uses,
+ordinary storage reads and required/stopped paths retain their distinctions.
+Boundary tests (`28ec4c2`) and source cases (`6b1d6c1`) remain covered by the current
+gates below. Duplicate/conflict handling and shared limits publish no partial
+collection. Literal values are not copied or replayed, and result observations
+establish no singleton domains or proof outcomes.
+
+## Bounded heap handle effects
+
 The dependency-ordered implementation series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Validate and retain scalar construction/result observations | `3be764d` |
-| Cover malformed metadata, conflicts and exact budgets | `28ec4c2` |
-| Pin literals, resolved constants and stopped/required boundaries | `6b1d6c1` |
+| Validate and retain independent handle/result observations | `4800e0d` |
+| Cover metadata faults, merge conflicts and exact budgets | `f8fca7b` |
+| Pin handle consumers, stopped calls and borrow boundaries | `89d7d1f` |
 
-Reports retain compact Null/Bool/Int/Float/String kinds, supported numeric widths,
-control flags and independent construction/result observations. Capture validates
-completed expression roots, owner/span identity, exact Entry -> Operation -> Normal
-edges and operation registration for both observed stages. Duplicate observations
-update existing flags; shared work/effect limits and conflicts publish no partial
-collection. No literal values or string bytes are copied or replayed.
+Heap reports retain the nominal Allocator type, control flags and independent
+handle/result observations at exact source roots. Capture validates completed
+expression points, owner/span identity, both Entry -> Operation -> Normal edges
+and registered operation owners. Duplicate observations merge flags; shared work/
+effect limits and conflicts publish no partial collection or metadata changes.
 
-Signed literals keep their direct roots before expected conversion. Runtime uses of
-resolved static constants gain leaf reports; static alias declarations, ordinary
-storage reads, required evaluation and formatting text remain separate. Stopped
-successors gain no observations. These structural records do not infer singleton
-domains, value equality, successful execution or proof outcomes.
+Module aliases retain lexical resolution; ordinary handle copies remain local reads.
+Reports preserve the original leaf before outer conversions, call arguments and
+temporary consumers. Required evaluation, hints and stopped successors produce no
+handle observations. A static handle report records availability; it neither allocates
+storage nor extends lifetimes, grants borrow authority or evaluates proof outcomes.
 
-Nine internal groups cover all supported scalar kinds/widths, signed roots, owners/
-control, independent stages, 18 identity/edge faults on both stages, five merge
-conflicts, duplicate work and exact shared capacity. String report work is equal
-for 1/65536-byte payloads. Ordinary literal errors, including invalid stopped tails,
-are preserved (`/tmp/meowy-scalar-effects-limits.log`). Four required source cases
-pass in debug/release: contextual literals and UTF-8/NUL bytes, constant aliases/
-shadowing, required/stopped paths and grouped-minimum E216
-(`/tmp/meowy-scalar-effects-sources.log`). Structural tests remain separate evidence.
+Eight new internal groups cover aliases/shadowing, contextual conversions, calls,
+temporary consumers, function owners/control, independent stages and required/hint/
+stopped boundaries. E207/E302/E303/E222 and existing B001 gates remain unchanged,
+including invalid stopped tails. Eighteen metadata faults are tested on both stages,
+with four merge conflicts, duplicate work and exact shared limits
+(`/tmp/meowy-heap-effects-limits.log`). Four required source cases pass in debug/release:
+handle consumers/shadowing, stopped calls, temporary escape and live-borrow conflicts
+(`/tmp/meowy-heap-effects-sources.log`). Structural reports remain separate evidence.
 
-All ten compiler checks pass: 2099 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2107 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-scalar-effects-gate.log`. The 176 cases report 157 required passes,
+`/tmp/meowy-heap-effects-gate.log`. The 180 cases report 161 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-scalar-effects-strict.log`); all four final documentation
-checks pass (`/tmp/meowy-scalar-effects-docs.log`). No selected check has an outstanding failure.
-Preservation against `bbbb655` confirms all 172 prior cases, 204 source assets,
-37 reference files, proof obligations, reference hashes and capability
-exceptions are unchanged (`/tmp/meowy-scalar-effects-preservation.log`). Unrelated
-`docs/programs/hey/` is preserved. No capability or reference contract was changed.
+only for those gaps (`/tmp/meowy-heap-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-heap-effects-docs.log`). No selected check has an outstanding failure.
+Preservation against `5597c18` confirms all 176 prior cases, 208 source assets,
+37 reference files, proof obligations, reference hashes and capability exceptions
+unchanged (`/tmp/meowy-heap-effects-preservation.log`). Unrelated `docs/programs/hey/`
+is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded static heap handle effects using `dependencies/heap_leaves.rs`
+Next implement bounded narrowing observations using `dependencies/narrowing.rs`
 and `edges/forward/effects/`. Record a dependency-ordered commit plan before coding:
 
-1. Validate the nominal Allocator kind, completed point/owner/span identity, exact
-   handle/result edges and operation registration; retain independent observations.
-2. Cover resolved module aliases, ordinary handle reads, contextual conversions,
-   function owners/control, temporary consumers and stopped/required/hint boundaries.
-   Check malformed metadata, duplicate/conflicting stages and shared work/map limits.
-3. Add required source coverage, update the classified inventory/guide and run
-   focused checks plus compiler/strict gates before the next handoff.
+1. Validate exact raw-source/parent/block/owner/span identities, changed/normal flags
+   and edges; preserve unchanged forwarding without inventing an operation.
+2. Retain independent conversion/result observations. Direct Never sources have no
+   result; conversion to Never can retain an operation without a result. Validate
+   operation registration only where an actual conversion is present.
+3. Cover local/field reads, receiver effects, outer expected conversions, mutable
+   guards, required exclusions and malformed metadata/conflicts/shared budgets.
+   Preserve ordinary type, ascription, mutation-invalidation and borrow diagnostics.
+4. Add required source cases and classified coverage; update the guide and handoff,
+   then run focused checks and compiler/strict gates.
 
-A static handle observation is not an allocation or borrow-authority grant. Preserve
-lifetime/conflict/member/equality diagnostics and gates, original contracts and
-`queries::finish`'s B001 boundary. No value replay or proof evaluation is implied.
-
-## Bounded heap handle effects
-
-`heap_leaves.rs` already captures the nominal Allocator type, exact source root,
-owner/span/control and Entry -> Operation -> Normal edges. Reports currently leave
-these operations Unknown. Reuse that checked metadata; static handle availability
-must not imply an allocation, value transfer or additional borrow authority.
-
-Dependency-ordered commit plan:
-
-1. Validate nominal type, complete point/owner/span identity, both edges and operation
-   registration; retain independent handle/result observations with focused tests.
-2. Cover malformed metadata, duplicate/conflicting observations and exact shared
-   budgets; preserve lifetime, alias, temporary, stopped/required/hint boundaries.
-3. Add required source cases and classified coverage for handle consumers, aliases,
-   stopped execution and borrow diagnostics; preserve all prior expectations.
-4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
-
-Typed handle/result reports pass all 118 effect-report groups
-(`/tmp/meowy-heap-effects-reports.log`). Four new groups cover module aliases,
-shadowing, conversions/calls, local reads, temporary consumers, owners/control,
-independent observations and required/hint/stopped exclusions. Nominal type, complete
-point/owner/span identity, both edges and operation registration are validated.
-Formatting and whitespace checks pass. Step 1 is committed (`4800e0d`). All eight
-heap-effect groups pass (`/tmp/meowy-heap-effects-limits.log`), including 18 faults
-on both observed stages, four merge conflicts, duplicate work and exact shared map/
-work limits with no payload allowance. E207/E302/E303/E222 and existing B001 gates
-remain unchanged, including diagnostics in stopped tails. Step 2 is committed
-(`f8fca7b`). All four required source cases pass in debug/release for consumers/
-shadowing, stopped calls, temporary escape and live-borrow conflicts
-(`/tmp/meowy-heap-effects-sources.log`). Catalog/coverage checks pass for 180 cases.
-Preservation against `5597c18` confirms all 176 prior cases, 208 source assets,
-37 references, proof obligations, hashes and capability exceptions unchanged
-(`/tmp/meowy-heap-effects-preservation.log`). Step 3 is ready to commit; guide updates
-and compiler/strict gates remain next. Preserve `docs/programs/hey/`; no borrow rule changed.
+No narrowed type/value, same-value identity or proof outcome may be inferred from
+these stage flags. Projected borrows and generic coercions remain separate;
+`queries::finish` stays B001-gated and no borrow authority is granted.
 
 ## Documentation conventions and layout
 
@@ -2662,12 +2639,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    Scalar construction/result reports (`3be764d`) now preserve checked scalar kinds,
    numeric widths and independent observations without copying literal values.
    Boundary regressions (`28ec4c2`), required source cases (`6b1d6c1`) and the compiler
-   gate pass. Next validate nominal Allocator handle/result stages in
-   `dependencies/heap_leaves.rs` and retain bounded typed observations under
-   `edges/forward/effects/`. Preserve aliases, ordinary reads, conversions, temporary
-   consumers and stopped/required/hint boundaries. Add identity/budget/source coverage
-   and run compiler/strict gates. Infer no allocation, borrow authority, callee summary
-   or proof outcome from a static handle observation.
+   gate pass. Heap reports (`4800e0d`) retain nominal Allocator identity and independent
+   handle/result observations. Boundary regressions (`f8fca7b`), source cases
+   (`89d7d1f`) and the compiler gate pass. Next validate raw-source roots,
+   changed/normal/control flags and exact stage edges in `dependencies/narrowing.rs`,
+   then retain bounded observations under `edges/forward/effects/`. Preserve unchanged
+   forwarding, direct Never and conversion-to-Never boundaries, receiver effects and
+   outer expected conversions. Cover malformed metadata, merge conflicts, budgets and
+   source behavior; run compiler/strict gates. Infer no narrowed values, borrow authority,
+   same-value identity, callee summary or proof outcome from these stage observations.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
