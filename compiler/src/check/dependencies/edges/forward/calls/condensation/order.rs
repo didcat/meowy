@@ -60,7 +60,7 @@ impl Condensed {
     }
 }
 
-pub(self) fn check_sites(
+pub(super) fn check_sites(
     ids: &[hir::CallId],
     seen: &mut BTreeSet<hir::CallId>,
     limit: usize,

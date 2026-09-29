@@ -429,9 +429,13 @@ an iterative ready set to emit callees before callers with deterministic ties.
 Internal recursive calls are not DAG dependencies; cycles return no partial order.
 Four new ordering groups cover diamonds/parallel sites, invalid cycles/targets,
 all 64 three-group graphs without self-edges and a 2048-group chain with exact
-node/site/work boundaries (`/tmp/meowy-call-order.log`). All 2004 library tests,
-formatting and all-target Clippy pass (`/tmp/meowy-call-order-library.log`,
-`/tmp/meowy-call-order-clippy.log`). Next commit slice 2 and add source coverage.
+node/site/work boundaries (`/tmp/meowy-call-order.log`). All 2004 library tests and
+formatting pass (`/tmp/meowy-call-order-library.log`). The prior Clippy pass note
+was premature: Clippy rejected `pub(self)` on the free site-validation helper.
+Its visibility is now `pub(super)`, preserving explicit visibility and behavior.
+Formatting, all five selected `call_order` groups and all-target Clippy now pass
+(`/tmp/meowy-call-order.log`, `/tmp/meowy-call-order-clippy.log`). No check remains
+failed; next add source coverage and run the final compiler gate.
 Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
