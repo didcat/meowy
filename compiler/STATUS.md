@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Narrowing observations pass the compiler gate; expected coercions are next.
+Updated: 2026-09-29. Bounded coercion observations are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -557,6 +557,33 @@ and `edges/forward/effects/`. Record a dependency-ordered commit plan before cod
 No target type/value, ownership transfer or proof outcome may be inferred from
 these stage flags. Uncaptured generic coercions and borrow builders remain separate;
 `queries::finish` stays B001-gated and no borrow authority is granted.
+
+## Bounded coercion observations
+
+`coercions.rs` retains exact source roots, Forward/Convert/Stopped decisions and
+primary/control flags. Expected-value and composed fallback paths share these
+stages; shared reborrows use their own producer. Reports currently leave conversion
+operations Unknown and omit forwarding/primary observations. Reuse checked metadata
+without copying target types, replaying inputs or changing any coercion permissions.
+
+Dependency-ordered commit plan:
+
+1. Validate roots, owners, spans, decisions, selectors and original edges; retain
+   independent projection/conversion/result observations with focused regressions.
+2. Cover direct/projected Never, shared reborrows, required paths, malformed metadata,
+   duplicate/conflicting stages and exact shared budgets with ordinary diagnostics.
+3. Add required source cases for contextual projection, union conversion, evaluation
+   order and stopped/reborrow boundaries; update classified conformance coverage.
+4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
+
+Coercion capture and aggregation pass all 134 effect-report groups
+(`/tmp/meowy-coercion-effects-reports.log`). Three new groups cover direct/primary
+forwarding and conversion, owners/control, inner calls/branches, composed fallback
+and isolated stage observations. Complete source/parent/block/owner/span identity,
+selectors and exact edges are validated; only conversion operation/result visits
+require operation registration. Formatting and whitespace checks pass. Step 1 is
+ready to commit; stopped/reborrow boundaries and malformed metadata/budgets are next.
+Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
 

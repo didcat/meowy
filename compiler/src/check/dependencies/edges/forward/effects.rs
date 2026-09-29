@@ -1,5 +1,6 @@
 mod binaries;
 mod calls;
+mod coercions;
 mod derefs;
 mod fields;
 mod heaps;
@@ -70,6 +71,7 @@ pub(crate) enum Effect {
     Scalar(scalars::Observed),
     Heap(heaps::Observed),
     Narrowing(narrowing::Observed),
+    Coercion(coercions::Observed),
     Unknown,
 }
 
@@ -99,6 +101,10 @@ impl Checker {
             for &port in &walk.ports {
                 if !self.flow.spend(1) {
                     return Err(budget());
+                }
+                if let Some(stage) = self.coercion_effect_stage(reports, owner, port, span)? {
+                    self.record_coercion_effect(stage, &mut effects, limit, span)?;
+                    continue;
                 }
                 if let Some(stage) = self.narrowing_effect_stage(reports, owner, port, span)? {
                     self.record_narrowing_effect(stage, &mut effects, limit, span)?;

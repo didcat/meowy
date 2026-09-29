@@ -24,11 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-narrowing-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next add bounded coercion observations for Forward/Convert/Stopped decisions
-and optional primary projections. The
-[compiler handoff](compiler/STATUS.md#bounded-narrowing-observations) records the ordered
-next work. No target value, ownership transfer or proof outcome is implied by stage
-observations. Unrelated `docs/programs/hey/` work is preserved.
+Coercion observations are implemented with validated source roots and independent
+projection/conversion/result flags. All 134 effect-report groups pass; stopped/
+reborrow boundaries, malformed metadata/budgets, source cases and final gates remain
+next. The [compiler handoff](compiler/STATUS.md#bounded-coercion-observations) records
+the plan. No target value, ownership transfer or proof outcome is inferred. Unrelated
+`docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
