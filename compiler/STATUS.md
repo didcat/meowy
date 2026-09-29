@@ -555,9 +555,12 @@ Typed handle/result reports pass all 118 effect-report groups
 shadowing, conversions/calls, local reads, temporary consumers, owners/control,
 independent observations and required/hint/stopped exclusions. Nominal type, complete
 point/owner/span identity, both edges and operation registration are validated.
-Formatting and whitespace checks pass. Step 1 is ready to commit; malformed metadata
-and exact budget coverage are next. Preserve `docs/programs/hey/`; no capability or
-borrow rule changed.
+Formatting and whitespace checks pass. Step 1 is committed (`4800e0d`). All eight
+heap-effect groups pass (`/tmp/meowy-heap-effects-limits.log`), including 18 faults
+on both observed stages, four merge conflicts, duplicate work and exact shared map/
+work limits with no payload allowance. E207/E302/E303/E222 and existing B001 gates
+remain unchanged, including diagnostics in stopped tails. Step 2 is ready to commit;
+required source coverage is next. Preserve `docs/programs/hey/`; no borrow rule changed.
 
 ## Documentation conventions and layout
 
