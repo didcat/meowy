@@ -2,6 +2,7 @@ mod binaries;
 mod calls;
 mod derefs;
 mod fields;
+mod heaps;
 mod indices;
 mod methods;
 mod outputs;
@@ -66,6 +67,7 @@ pub(crate) enum Effect {
     Unary(unary::Observed),
     Binary(binaries::Observed),
     Scalar(scalars::Observed),
+    Heap(heaps::Observed),
     Unknown,
 }
 
@@ -95,6 +97,10 @@ impl Checker {
             for &port in &walk.ports {
                 if !self.flow.spend(1) {
                     return Err(budget());
+                }
+                if let Some(stage) = self.heap_effect_stage(reports, owner, port, span)? {
+                    self.record_heap_effect(stage, &mut effects, limit, span)?;
+                    continue;
                 }
                 if let Some(stage) = self.scalar_effect_stage(reports, owner, port, span)? {
                     self.record_scalar_effect(stage, &mut effects, limit, span)?;

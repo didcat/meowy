@@ -24,10 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-scalar-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next add bounded static heap handle effects using the existing nominal metadata and
-handle/result edges. The [compiler handoff](compiler/STATUS.md#bounded-scalar-leaf-effects)
-records the ordered next work. No allocation, borrow authority or proof outcome is
-implied by a handle observation. Unrelated `docs/programs/hey/` work is preserved.
+Static heap handle effects are implemented with validated nominal types and independent
+handle/result observations. All 118 effect-report groups pass; malformed metadata,
+budget tests, source coverage and final gates remain next. The
+[compiler handoff](compiler/STATUS.md#bounded-heap-handle-effects) records the plan.
+No allocation, borrow authority or proof outcome is implied by a handle observation.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

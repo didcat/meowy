@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Scalar-leaf effects pass the compiler gate; heap handle effects are next.
+Updated: 2026-09-29. Bounded static heap handle effects are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -532,6 +532,32 @@ and `edges/forward/effects/`. Record a dependency-ordered commit plan before cod
 A static handle observation is not an allocation or borrow-authority grant. Preserve
 lifetime/conflict/member/equality diagnostics and gates, original contracts and
 `queries::finish`'s B001 boundary. No value replay or proof evaluation is implied.
+
+## Bounded heap handle effects
+
+`heap_leaves.rs` already captures the nominal Allocator type, exact source root,
+owner/span/control and Entry -> Operation -> Normal edges. Reports currently leave
+these operations Unknown. Reuse that checked metadata; static handle availability
+must not imply an allocation, value transfer or additional borrow authority.
+
+Dependency-ordered commit plan:
+
+1. Validate nominal type, complete point/owner/span identity, both edges and operation
+   registration; retain independent handle/result observations with focused tests.
+2. Cover malformed metadata, duplicate/conflicting observations and exact shared
+   budgets; preserve lifetime, alias, temporary, stopped/required/hint boundaries.
+3. Add required source cases and classified coverage for handle consumers, aliases,
+   stopped execution and borrow diagnostics; preserve all prior expectations.
+4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
+
+Typed handle/result reports pass all 118 effect-report groups
+(`/tmp/meowy-heap-effects-reports.log`). Four new groups cover module aliases,
+shadowing, conversions/calls, local reads, temporary consumers, owners/control,
+independent observations and required/hint/stopped exclusions. Nominal type, complete
+point/owner/span identity, both edges and operation registration are validated.
+Formatting and whitespace checks pass. Step 1 is ready to commit; malformed metadata
+and exact budget coverage are next. Preserve `docs/programs/hey/`; no capability or
+borrow rule changed.
 
 ## Documentation conventions and layout
 
