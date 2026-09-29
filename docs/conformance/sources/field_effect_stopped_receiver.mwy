@@ -1,0 +1,8 @@
+d : @"debug"
+make <{ n <int32> }> : () {
+    d.print("receiver")
+    d.panic("stop")
+}
+d.print("before")
+value : make().n
+d.print("after")

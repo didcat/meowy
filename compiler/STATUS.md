@@ -472,6 +472,15 @@ metadata cases for both direct and shared-load paths, duplicate visits, exact wo
 effect caps, separate borrow/list operations and E201/E302/E303 preservation.
 No selected test has an outstanding failure.
 
+All three new source cases pass in debug/release through the rebuilt compiler and
+isolated conformance harness (`/tmp/meowy-field-effects-sources.log`). They cover
+owned/shared receiver calls, explicit and nested reads, narrowing/reference fields,
+panic-stopped receiver evaluation and live-borrow rejection. The 157-case catalog
+and classified coverage checks pass. Preservation against `9254aac` confirms all
+154 prior cases, 186 source assets, 37 reference files, proof obligations, hashes
+and exact capability exceptions are unchanged (`/tmp/meowy-field-effects-preservation.log`).
+The full compiler/strict gates remain next.
+
 Dependency-ordered commit plan:
 
 1. Retain the checked receiver field count beside the resolved index, without type
@@ -482,10 +491,11 @@ Dependency-ordered commit plan:
    focused tests for owners, narrowing, Never fields and required/static boundaries:
    complete (`e0b6732`).
 3. Add malformed-metadata, duplicate-visit and exact work/effect-limit regressions,
-   preserving atomic report failure and separate borrow/load families: complete,
-   ready to commit.
+   preserving atomic report failure and separate borrow/load families: complete
+   (`deb2b53`).
 4. Add required source cases for receiver order, stopped calls and borrow rejection;
-   update classified evidence without changing reference contracts or existing cases.
+   update classified evidence without changing reference contracts or existing cases:
+   complete, ready to commit.
 5. Update the guide and run compiler/strict gates; record actual results and the next
    bounded effect family in both trackers.
 

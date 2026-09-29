@@ -1,0 +1,24 @@
+d : @"debug"
+<Row> : <{
+    a <int32>
+    z <int32>
+}>
+make <Row> : () {
+    d.print("owned")
+    -> { -> z : 9; -> a : 2 }
+}
+view <&Row> : (row <&Row>) {
+    d.print("shared")
+    -> row
+}
+d.print(make().z)
+row : { -> z : 7; -> a : 3 }
+d.print(view(&row).a)
+d.print((*(&row)).z)
+outer : { -> inner : row }
+d.print(outer.inner.a)
+mixed <{ n <int32><null> }> : { -> n : 4 }
+| mixed.n <int32> | d.print(mixed.n~<int32>)
+n : 11
+refs : { -> pointer : &n }
+d.print(*(refs.pointer))

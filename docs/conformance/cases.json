@@ -1652,6 +1652,38 @@
         "code": "E302"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "field_effect_receiver_order",
+      "phase": "run",
+      "source": "sources/field_effect_receiver_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "owned\n9\nshared\n3\n7\n3\n4\n11\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "field_effect_stopped_receiver",
+      "phase": "run",
+      "source": "sources/field_effect_stopped_receiver.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nreceiver\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "field_effect_live_borrow",
+      "phase": "check",
+      "source": "sources/field_effect_live_borrow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }
