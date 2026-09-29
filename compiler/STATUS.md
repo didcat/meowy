@@ -518,6 +518,11 @@ exact operands and both edge ledgers while leaving nonscalar comparisons opaque;
 all 97 effect-report groups pass (`/tmp/meowy-binary-effects-stages.log`), including
 scalar domains, checked results, partial projections, sequence links, operation
 owners and opaque comparisons. Formatting and whitespace checks pass.
+Stage validation is committed (`3ae26e3`). Typed scalar aggregation now records
+independent left/right projections, operation and result observations with fixed-size
+metadata. All 101 effect-report groups pass (`/tmp/meowy-binary-effects-reports.log`),
+covering supported integer widths, raw comparison results, independent owners/control,
+partial projections, required/short-circuit exclusions and isolated observations.
 
 Dependency-ordered commit plan:
 
@@ -526,9 +531,10 @@ Dependency-ordered commit plan:
    complete (`5503576`).
 2. Validate bounded operator/type signatures and projection/operation/result stages
    against exact roots, both edge ledgers and registered operation owners: complete,
-   ready to commit.
+   (`3ae26e3`).
 3. Aggregate typed scalar binary observations with independent projection/operation/
-   result flags; retain opaque nonscalar operations and focused report regressions.
+   result flags; retain opaque nonscalar operations and focused report regressions:
+   complete, ready to commit.
 4. Cover malformed signatures/roots/ledgers, merge conflicts, duplicates and exact
    work/effect limits while preserving atomic failure and ordinary diagnostics.
 5. Add required source cases for operator domains/order, projections, stopped inputs,

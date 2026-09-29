@@ -22,6 +22,18 @@ pub(super) struct Stage {
     pub(super) kind: Kind,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) inputs: [PointId; 2],
+    pub(crate) op: &'static str,
+    pub(crate) types: BinaryTypes,
+    pub(crate) plan: BinaryPlan,
+    pub(crate) control: bool,
+    pub(crate) projected: [bool; 2],
+    pub(crate) operation: bool,
+    pub(crate) result: bool,
+}
+
 pub(super) fn signature(op: &str, types: BinaryTypes, plan: BinaryPlan) -> bool {
     for ty in types.inputs.into_iter().chain([types.result]) {
         match ty {
@@ -64,6 +76,65 @@ pub(super) fn signature(op: &str, types: BinaryTypes, plan: BinaryPlan) -> bool 
 }
 
 impl Checker {
+    pub(super) fn record_binary_effect(
+        &mut self,
+        stage: Stage,
+        effects: &mut Effects,
+        limit: usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof binary-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof binary-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 12)
+        {
+            return Err(budget());
+        }
+        if matches!(stage.kind, Kind::Projection(step) if step >= 2) {
+            return Err(invalid());
+        }
+        if let Some((owner, effect)) = effects.get(&stage.point) {
+            let Effect::Binary(prior) = effect else {
+                return Err(invalid());
+            };
+            if *owner != stage.owner
+                || prior.inputs != stage.inputs
+                || prior.op != stage.op
+                || prior.types != stage.types
+                || prior.plan != stage.plan
+                || prior.control != stage.control
+            {
+                return Err(invalid());
+            }
+        } else if effects.len() >= limit {
+            return Err(budget());
+        }
+        let (_, Effect::Binary(binary)) = effects.entry(stage.point).or_insert_with(|| {
+            (
+                stage.owner,
+                Effect::Binary(Observed {
+                    inputs: stage.inputs,
+                    op: stage.op,
+                    types: stage.types,
+                    plan: stage.plan,
+                    control: stage.control,
+                    projected: [false; 2],
+                    operation: false,
+                    result: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match stage.kind {
+            Kind::Projection(step) => binary.projected[step] = true,
+            Kind::Operation => binary.operation = true,
+            Kind::Result => binary.result = true,
+        }
+        Ok(())
+    }
+
     pub(super) fn binary_effect_stage(
         &mut self,
         reports: &Reports,
@@ -213,3 +284,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod reports;
