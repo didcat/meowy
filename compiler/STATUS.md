@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded binary metadata and effect reporting is in progress.
+Updated: 2026-09-29. Binary effects pass the compiler gate; scalar-leaf effects are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -457,110 +457,72 @@ inferring capacity success, values, storage, borrow authority or proof outcomes.
 
 ## Bounded unary effects
 
-The dependency-ordered series is complete:
-
-| Reviewable slice | Commit |
-| --- | --- |
-| Validate unary stages and compact scalar descriptors | `97cec7c` |
-| Retain typed observations and result boundaries | `77976fa` |
-| Cover types, identities, conflicts and budgets | `ec2d6c6` |
-| Pin scalar results, projection order, stops and overflow | `9dbc4ae` |
-
-Unary reports retain exact operand roots, checked operator kinds, compact boolean/
-integer/float descriptors and primary/control flags before outer coercion. Invalid
-operator/type combinations, unsupported widths and nonscalar descriptors are rejected
-before copying or walking types. Complete roots, parent/block/owner agreement, spans,
-selectors and original edges are validated. Operation and result observations require
-registered Operation owners; primary projection observations remain separate.
-
-Observed projection/operation/result flags are independent. Integer negation retains
-its Checked result edge; observing an operation does not imply observing a result
-or successful execution. Duplicate stages update existing flags; shared work/effect
-limits and metadata conflicts return no partial collection. Stopped operands and
-signed-literal leaves keep their separate paths. Required construction can retain
-unary metadata outside the runtime entry walk, where it produces no runtime effect.
-Expected primary projections are not repeated. No values or proof outcomes are evaluated.
-
-Twelve new internal groups cover supported widths/signedness, independent owners/
-control, raw types, expected/additional projections, required/stopped/literal paths,
-isolated observations, 25 root/edge faults on direct/primary paths, 13 invalid type
-descriptors, nine merge conflicts and exact budgets. Large aggregates have the same
-rejection work as small invalid descriptors. E222/E216/E107 remain unchanged.
-Four required source cases pass in debug/release: scalar and aliased bits-not results,
-projection order, stopped operands and P002 after operand effects
-(`/tmp/meowy-unary-effects-sources.log`). Structural reports remain separate evidence.
-
-All ten compiler checks pass: 2075 library/914 native tests, 32 tooling and 30 harness
-groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-unary-effects-gate.log`. The 168 cases report 149 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-unary-effects-strict.log`); final documentation
-checks all pass (`/tmp/meowy-unary-effects-docs.log`). No selected check has an
-outstanding failure. Preservation against `e9eaee4` confirms all 164 prior cases,
-196 source assets, 37 reference files, proof obligations,
-reference hashes and capability exceptions are unchanged
-(`/tmp/meowy-unary-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+Stage validation (`97cec7c`) and typed observations (`77976fa`) retain exact operands,
+compact scalar descriptors and independent projection/operation/result flags.
+Integer negation preserves its Checked result edge, while required, stopped and
+signed-literal paths remain separate. Boundary tests (`ec2d6c6`) and source cases
+(`9dbc4ae`) remain covered by the current gates below. Metadata conflicts and shared
+work/effect limits publish no partial collection. No values or proof outcomes are
+evaluated; operation/result observations do not establish successful execution.
 
 ## Bounded binary effects
 
-Investigation confirms `binaries.rs` retains exact operands, operator text and stage
-plans, but no operand/result types. Its sequence ledger separately owns the left-to-
-right edge. Scalar reporting must validate both ledgers and retain partial primary
-projections when either operand stops. Nonscalar comparisons must remain supported
-and opaque; short-circuit and required-only paths remain separate.
-Compact Never/scalar/other classifications are implemented. All seven producer
-groups pass, including scalar widths/results, stopped projections, opaque record/
-list/reference/union equality and changed-width replay rejection
-(`/tmp/meowy-binary-effects-types.log`). Unused reexports were deferred until the report
-consumer needs them. Formatting and whitespace checks pass; no selected check fails.
-Type capture is committed (`5503576`). Binary-stage validation now checks signatures,
-exact operands and both edge ledgers while leaving nonscalar comparisons opaque;
-all 97 effect-report groups pass (`/tmp/meowy-binary-effects-stages.log`), including
-scalar domains, checked results, partial projections, sequence links, operation
-owners and opaque comparisons. Formatting and whitespace checks pass.
-Stage validation is committed (`3ae26e3`). Typed scalar aggregation now records
-independent left/right projections, operation and result observations with fixed-size
-metadata. All 101 effect-report groups pass (`/tmp/meowy-binary-effects-reports.log`),
-covering supported integer widths, raw comparison results, independent owners/control,
-partial projections, required/short-circuit exclusions and isolated observations.
-Typed aggregation is committed (`98babec`). Signature, root, sequence-ledger,
-merge-selector and exact work/effect-limit regressions pass. All twelve binary-effect
-groups pass (`/tmp/meowy-binary-effects-limits.log`), including 40 root/ledger faults
-on direct/primary paths, eleven bad signatures, ten conflicts, invalid selectors and
-E107/E222/E213 preservation. Formatting and whitespace checks pass; no test fails.
+The dependency-ordered implementation series is complete:
 
-All four required source cases pass in debug/release using the rebuilt compiler and
-isolated harness (`/tmp/meowy-binary-effects-sources.log`): scalar and opaque comparison
-results, projection/call order, stopped inputs and checked overflow. Catalog/coverage
-checks pass for 172 cases. All 168 prior cases, 200 source assets, 37 reference files,
-proof obligations, reference hashes and capability exceptions are preserved against
-`f380605` (`/tmp/meowy-binary-effects-preservation.log`). Full compiler/strict gates
-remain next. No compiler capability or reference expectation was changed for fixtures.
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain compact Never/scalar/other operand and result types | `5503576` |
+| Validate signatures, stages and both edge ledgers | `3ae26e3` |
+| Retain independent scalar binary observations | `98babec` |
+| Cover signatures, ledgers, conflicts and aggregation limits | `cb5a88d` |
+| Pin domains, evaluation order, stopped inputs and checked results | `37726ee` |
 
-Dependency-ordered commit plan:
+Binary reports preserve exact operand roots, canonical operator symbols, compact
+type widths, primary/normal plans and control flags. Capture validates compatible
+operator/type signatures, completed points, parent/block/owner agreement, spans and
+both edge ledgers. Operation edges own projections and operation/results; the sequence
+owns the exact left-to-right link and ordered operand IDs. Integer arithmetic retains
+its Checked result edge. No aggregate shapes or literal values are copied.
 
-1. Capture compact Never/scalar/other operand/result classifications in binary
-   metadata, without copying types or changing edges; add focused producer tests:
-   complete (`5503576`).
-2. Validate bounded operator/type signatures and projection/operation/result stages
-   against exact roots, both edge ledgers and registered operation owners: complete,
-   (`3ae26e3`).
-3. Aggregate typed scalar binary observations with independent projection/operation/
-   result flags; retain opaque nonscalar operations and focused report regressions:
-   complete (`98babec`).
-4. Cover malformed signatures/roots/ledgers, merge conflicts, duplicates and exact
-   work/effect limits while preserving atomic failure and ordinary diagnostics:
-   complete (`cb5a88d`).
-5. Add required source cases for operator domains/order, projections, stopped inputs,
-   opaque comparisons and checked arithmetic; update classified coverage:
-   complete, ready to commit. Explicit record-return signatures preserve contextual
-   typing; stopped control calls remain block statements, retaining their B001 gate.
-6. Update the guide, run compiler/strict gates and leave the next bounded handoff.
+Left/right projection, operation and result observations remain independent. A
+projected Never can retain its projection while stopping later stages. Operation
+and result observations require registered owners; neither proves arithmetic success.
+Duplicate stages update existing flags, and shared work/effect limits or conflicting
+metadata publish no partial collection. Nonscalar comparisons remain supported with
+Unknown effects; short-circuit and required-only paths remain separate. No storage,
+borrow authority, callee summaries or proof outcomes are inferred.
 
-Validate and commit each slice with focused tests and staged diff checks. Do not
-infer values, storage, borrow authority, arithmetic success, callee summaries or proof
-outcomes. Retain original contracts and pinned capability gaps; `queries::finish`
-stays B001-gated. Unrelated `docs/programs/hey/` remains preserved.
+Fifteen new internal groups cover compact type capture, supported widths, partial
+projections, isolated observations, 40 root/ledger faults on direct/primary paths,
+eleven bad signatures, ten conflicts, invalid selectors and exact budgets. Ordinary
+E107/E222/E213 diagnostics remain unchanged. Four required source cases cover scalar
+and opaque comparisons, projection/call order, stopped inputs and checked overflow
+(`/tmp/meowy-binary-effects-sources.log`). Structural reports remain separate evidence.
+
+All ten compiler checks pass: 2090 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance;
+`/tmp/meowy-binary-effects-gate.log`. The 172 cases report 153 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-binary-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-binary-effects-docs.log`). No selected check has an outstanding
+failure. Preservation against `f380605` confirms all 168 prior cases, 200 source assets,
+37 reference files, proof
+obligations, reference hashes and capability exceptions are unchanged
+(`/tmp/meowy-binary-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+
+Next implement bounded scalar-leaf effects using `dependencies/scalar_leaves.rs`
+and `edges/forward/effects/`. Record a dependency-ordered commit plan before coding:
+
+1. Validate captured scalar kinds/widths, complete point/owner/span identity and exact
+   construction/result edges; keep required roots and other leaf families separate.
+2. Retain typed construction/result observations with shared work/effect budgets,
+   duplicate handling and atomic conflicts. Copy no literal values or string bytes.
+3. Cover signed literals, resolved static constants, malformed metadata and stopped/
+   required boundaries; add required source cases and update classified coverage.
+4. Update the guide and handoff; run focused checks and compiler/strict gates.
+
+No source-text inference, value replay or proof evaluation is implied. Preserve
+reference contracts and pinned gaps; `queries::finish` remains B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2649,12 +2611,17 @@ subtraction retains its documented limits. No outstanding failures remain.
    Unary-stage validation (`97cec7c`) and typed observations (`77976fa`) now retain
    compact scalar descriptors and separate projection/operation/result flags. Type/
    boundary tests (`ec2d6c6`), source cases (`9dbc4ae`) and the compiler gate pass.
-   Next retain compact binary operand/result descriptors in `dependencies/binaries.rs`
-   before typed effects under `edges/forward/effects/`. Preserve stopped/nonscalar
-   distinctions, per-operand projections, separate sequence links and checked results;
-   keep short-circuit and required-only paths separate. Add focused/source coverage
-   and run compiler/strict gates. No storage/value inference, borrow authority, callee
-   summary or proof outcome is implied.
+   Binary type capture (`5503576`), stage validation (`3ae26e3`) and typed observations
+   (`98babec`) now retain scalar descriptors, partial projections and checked results
+   across both operation and sequence ledgers. Boundary tests (`cb5a88d`), source
+   cases (`37726ee`) and the compiler gate pass; nonscalar comparisons remain opaque.
+   Next validate captured scalar-leaf kinds/widths, completed point/owner/span identity
+   and exact construction/result edges in `dependencies/scalar_leaves.rs`, then retain
+   bounded typed observations under `edges/forward/effects/`. Preserve signed-literal
+   and resolved-constant roots, stopped boundaries and required-only exclusions.
+   Add identity/budget/source coverage and run compiler/strict gates. Copy no literal
+   values or string bytes; infer no storage, borrow authority, callee summary or proof
+   outcome.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

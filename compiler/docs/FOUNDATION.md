@@ -415,6 +415,20 @@ limits return no partial collection. Required construction can retain unary meta
 outside runtime entry walks; those points produce no runtime effect. Stopped operands
 and signed-literal leaves keep their separate paths, and expected primary projections
 are not repeated. These structural reports evaluate no values or proof outcomes.
+Binary metadata now retains compact Never/scalar/other operand and result classes
+without copying aggregate shapes. Scalar binary reports preserve exact roots,
+canonical operator symbols, type widths, primary/normal plans and control flags.
+Capture validates operator/type domains, completed points, parent/block/owner
+agreement, spans and both edge ledgers: the binary edges retain projections and
+operation/results, while the sequence retains the exact left-to-right link and
+ordered operand IDs. Checked integer results cannot bypass their success edge.
+Left/right projection, operation and result observations remain independent; a
+projected Never can retain its projection while stopping later stages. Operation
+and result observations require registered owners. Duplicate observations update
+existing flags, and shared work/effect limits or metadata conflicts publish no
+partial collection. Nonscalar comparisons remain supported with Unknown effects;
+their shapes and transfers are not inferred. Short-circuit and required-only paths
+remain separate. No values, arithmetic success or proof outcomes are evaluated.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

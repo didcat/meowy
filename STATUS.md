@@ -7,28 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Unary reports now retain exact operands, operator kinds, compact scalar descriptors
-and independent projection/operation/result observations. Integer negation preserves
-its checked result boundary; required, stopped and signed-literal paths stay separate.
-Twelve new internal groups and four source cases cover widths, projections, identity,
-budgets, stopped operands and overflow after operand evaluation.
-Commits: `97cec7c`, `77976fa`, `ec2d6c6`, `9dbc4ae`.
+Binary metadata now retains compact operand/result types. Scalar reports validate
+both operation and sequence ledgers, preserving independent operand projections,
+operation/result observations and checked integer results. Nonscalar comparisons
+remain supported with opaque effects; stopped and required-only paths stay separate.
+Fifteen new internal groups and four source cases cover signatures, ledgers, budgets,
+operator domains, evaluation order, stopped inputs and overflow after operand effects.
+Commits: `5503576`, `3ae26e3`, `98babec`, `cb5a88d`, `37726ee`.
 
-All ten compiler checks pass: 2075 library/914 native and 62 Python test groups;
-`/tmp/meowy-unary-effects-gate.log`. The catalog has 168 cases: 149 required passes,
+All ten compiler checks pass: 2090 library/914 native and 62 Python test groups;
+`/tmp/meowy-binary-effects-gate.log`. The catalog has 172 cases: 153 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-unary-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-unary-effects-docs.log`).
+(`/tmp/meowy-binary-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-binary-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Binary reporting is in progress. Compact operand/result types are retained (`5503576`),
-and stage validation checks both operation and sequence ledgers. All 97 effect-report
-groups pass. Typed scalar aggregation, boundary/source coverage and the full gate
-remain next; the [compiler handoff](compiler/STATUS.md#bounded-binary-effects)
-records the plan. Unrelated `docs/programs/hey/` work is preserved.
+Next add bounded scalar-leaf effects using the existing captured kinds and edges;
+retain construction/result observations without copying literal values or inferring
+proof outcomes. The [compiler handoff](compiler/STATUS.md#bounded-binary-effects)
+records the ordered next work. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
