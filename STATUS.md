@@ -7,29 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Local-read effect reports now preserve exact local/canonical storage IDs and
-normal/control flags, validated against the transferred program's local bound,
-registered owners and original read edges. Reference cells remain distinct from
-pointee loads; stopped reads and required-only inputs keep their separate paths.
-Eight new internal regression groups and three source cases cover storage identity,
-work limits, aliases, reference retargeting and required-input rejection.
-Commits: `4f51efb`, `cb389e2`, `04ba6d8`.
+Explicit dereference effects now retain exact pointer roots, shared/exclusive mode
+and normal/control flags after bounded identity/edge validation. Reference-cell reads
+remain separate; stopped pointers have no load effect and shared Never referents
+have no normal result. Eight new internal groups and three source cases cover order,
+identity, work limits, modes, stops and existing borrow/lifetime errors.
+Commits: `e9aa13a`, `f3f4e4c`, `f6044ab`, `cfc7d62`.
 
-The catalog has 151 cases: 132 required passes, 19 unchanged pinned gaps and zero
-failures in debug/release. All prior cases, source assets and reference contracts
-are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
-37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 2021 library/914 native and 62 Python test groups;
-`/tmp/meowy-read-effects-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-read-effects-docs.log`). Proof
-evaluation and full language/release qualification remain incomplete.
+All ten compiler checks pass: 2029 library/914 native and 62 Python test groups;
+`/tmp/meowy-deref-effects-gate.log`. The catalog has 154 cases: 135 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
+source assets, reference contracts and capability exceptions are preserved. The
+[coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
+33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
+(`/tmp/meowy-deref-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-deref-effects-docs.log`).
+Proof evaluation and full language/release qualification remain incomplete.
 
-Explicit dereference-load reporting is in progress. Result decisions are retained
-(`e9aa13a`), and typed effects preserve pointer roots/modes and normal/control flags.
-All 45 focused effect-report groups pass. Metadata/budget boundaries, source
-coverage and the full gate remain next; the
-[compiler handoff](compiler/STATUS.md#explicit-dereference-load-effects) records the plan.
-Unrelated `docs/programs/hey/` work is preserved.
+Next retain bounded field-read effects, including resolved field indices and
+implicit shared-load boundaries. The
+[compiler handoff](compiler/STATUS.md#explicit-dereference-load-effects) records the
+files and verification plan. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

@@ -345,11 +345,20 @@ bounded validation of read storage and stable alias roots; they do not copy loca
 types or values. Effect capture validates that bound, the operation-owner registry,
 checked point/span, canonical mapping and original read-edge shape. Repeated ports
 produce one record; failed identity or work checks return no partial collection.
-A reference-cell read describes the cell, not its pointee. Explicit dereferences
-remain separate Unknown effects. Never reads lack normal completion, and stopped
-predecessors keep later read effects absent. Required-only inputs retain InputUse
-metadata without runtime read records. These structural facts grant no copy/borrow
-authority or complete value provenance.
+A reference-cell read describes the cell, not its pointee. Never reads lack normal
+completion; stopped predecessors keep later read effects absent. Required-only
+inputs retain InputUse metadata without runtime read records. These structural
+facts grant no copy/borrow authority or complete value provenance.
+Explicit dereferences now retain a separate Deref effect with the exact pointer
+root, shared/exclusive mode and captured normal/control flags. Capture validates
+the completed producer and pointer points, parent/block/owner agreement, source
+span, operation registry and original pointer/load/result edges. A stopped pointer
+has no load effect; a shared `never` referent has a load without normal completion.
+Reference-valued referents remain distinct from reads of their pointer cells.
+Repeated visits produce one record, and shared work/effect limits are checked before
+returning the collection. No aggregate type shape, pointee storage or value is copied
+or inferred. Implicit field/list loads and reborrows retain their separate boundaries;
+existing ownership/lifetime diagnostics and proof gates are unchanged.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Explicit dereference-load effect reporting is in progress.
+Updated: 2026-09-29. Effect reports retain validated explicit dereference loads.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -420,49 +420,51 @@ workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
 ## Explicit dereference-load effects
 
-The producer retains exact pointer roots, mode, owner/control and load/result edges.
-Commit `e9aa13a` retains `normal` without changing edge construction or typing.
-Shared Never referents and stopped pointers retain `normal=false`; exclusive Never
-references retain their existing B001 ordinary-scalar-storage gate. All six focused
-`cargo test --locked --manifest-path compiler/Cargo.toml --lib deref_` groups pass,
-as do formatting and whitespace checks. The collector now has typed Deref records
-with bounded point/owner/mode/edge validation. All 45 effect-report test groups pass,
-including four new dereference groups and the updated reference-cell regression
-(`f3f4e4c`). All eight dereference-effect groups now pass, covering 22 malformed
-metadata cases, duplicate visits, exact work/effect caps, implicit-load/reborrow
-separation and E222/E302/E303 preservation. Formatting and whitespace checks pass;
-no selected test has an outstanding failure. No capability is widened.
+The dependency-ordered series is complete:
 
-All three new source cases pass in debug/release using the rebuilt compiler and
-the existing isolated conformance harness (`/tmp/meowy-deref-effects-sources.log`).
-They pin pointer effects/calls before shared, exclusive, aggregate and reference-cell
-loads; panic-stopped pointers; and E302 for a live exclusive borrow. The 154-case
-catalog and classified coverage checks pass. Reference text/hashes, prior cases/
-assets, proof obligations and capability exceptions are preserved against `1e7f927`
-(`/tmp/meowy-deref-effects-preservation.log`). Full compiler/strict gates remain next.
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain the producer's normal-result decision | `e9aa13a` |
+| Capture bounded typed dereference effects | `f3f4e4c` |
+| Validate identity, work and capability boundaries | `f6044ab` |
+| Pin pointer order, stopped loads and live-borrow rejection | `cfc7d62` |
 
-Dependency-ordered commit plan:
+Deref effects retain exact pointer roots, shared/exclusive mode and normal/control
+flags. Capture validates completed producer/pointer points, parent/block/owner
+agreement, source span, operation registry and original pointer/load/result edges.
+Repeated visits produce one record; failed metadata/work/effect limits return no
+partial collection. No aggregate types, pointee storage or values are copied.
+Reference-cell reads remain separate. Stopped pointers have no load effect; shared
+Never referents have no normal completion. Exclusive Never references retain their
+existing B001 gate. Implicit field/list loads and reborrows remain separate.
 
-1. Retain the explicit normal-result decision in `dependencies/dereferences.rs`,
-   with focused producer regressions for shared/exclusive, stopped and Never inputs:
-   complete (`e9aa13a`).
-2. Add bounded typed dereference effects under `edges/forward/effects/`, validating
-   exact pointer/owner/point/edge identities and preserving reference-cell reads:
-   complete (`f3f4e4c`).
-3. Add malformed-metadata, duplicate-visit and exact-work/limit regressions for the
-   collector, keeping failed reports atomic and stopped loads absent: complete
-   (`f6044ab`).
-4. Add required source cases for pointer evaluation order, stopped loads and borrow
-   rejection; update classified coverage without changing reference contracts:
-   complete, ready to commit.
-5. Document the completed scope and run the compiler/strict gates; record actual
-   results and the next bounded load family in both trackers.
+Eight new effect groups cover 22 malformed metadata cases, missing mode, exact
+work/effect limits, duplicate visits, nested calls, owners/control, reference cells,
+Never/stopped inputs and E222/E302/E303 preservation. Three required source cases
+pass in debug/release: pointer effects/calls before scalar/aggregate/reference loads,
+panic-stopped pointers and live-exclusive-borrow rejection
+(`/tmp/meowy-deref-effects-sources.log`). Structural records are not proof outcomes.
 
-Validate each implementation slice with focused Rust tests and staged diff checks.
-Preserve pointer-cell versus referent identity; do not infer pointee storage or read
-values. Other load families, callee summaries, backedge propagation and proof outcomes
-remain separate; `queries::finish` stays B001-gated. Unrelated `docs/programs/hey/`
-remains untouched.
+All ten compiler checks pass: 2029 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance;
+`/tmp/meowy-deref-effects-gate.log`. The 154 cases report 135 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-deref-effects-strict.log`); final documentation
+checks all pass (`/tmp/meowy-deref-effects-docs.log`). No selected check has an
+outstanding failure. Preservation against `1e7f927` confirms all 151 prior cases,
+183 source assets, 37 reference files, proof obligations,
+reference hashes and capability exceptions are unchanged
+(`/tmp/meowy-deref-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+
+Next add bounded field-read effects using `dependencies/fields.rs` and
+`edges/forward/effects/`. First retain the checked receiver field-count bound beside
+its resolved index, without copying type shapes. Then validate exact roots, index,
+implicit shared-load choice, normal/control flags and receiver/load/field/result
+edges before reporting typed effects. Preserve explicit dereferences, stopped
+receivers, Never fields, required/static exits and original narrowing boundaries.
+Add focused identity/budget tests and required source coverage, then run the compiler
+and strict gates. Other load families, callee summaries, backedge propagation and
+proof outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2535,12 +2537,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    without inventing terminal operations. Source coverage (`44e3073`) and the compiler
    gate pass. Local storage context (`4f51efb`) and typed read effects (`cb389e2`)
    now preserve canonical storage, normal/control flags and required-only boundaries;
-   source coverage (`04ba6d8`) and the compiler gate pass. Next retain the explicit
-   normal-result decision in `dependencies/dereferences.rs`, then capture bounded
-   dereference effects with exact pointer roots/modes and edge validation. Preserve
-   reference cells, stopped pointers and Never referents; add focused/source coverage
-   and run compiler/strict gates. No pointee-storage inference, value read, borrow
-   authority, callee summary or proof outcome is implied.
+   source coverage (`04ba6d8`) and the compiler gate pass. Explicit dereference
+   result decisions (`e9aa13a`) and typed effects (`f3f4e4c`) now preserve exact
+   pointer roots/modes and normal/control flags. Boundary tests (`f6044ab`), source
+   coverage (`cfc7d62`) and the compiler gate pass. Next retain the checked field-count
+   bound in `dependencies/fields.rs`, then report bounded field-read effects under
+   `edges/forward/effects/` with exact receiver/index/load/result validation. Preserve
+   explicit loads, implicit shared loads, stopped receivers, Never fields and required
+   exits; add focused/source coverage and run compiler/strict gates. No pointee-storage
+   inference, value read, borrow authority, callee summary or proof outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
