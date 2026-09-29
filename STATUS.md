@@ -7,25 +7,26 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Print and panic effect reports now retain prefixes, primary projections, streamed
-parts and terminal stages separately, including partial formatting that stops early.
-Exact roots, owners, literal markers and stop boundaries are preserved; terminal
-stages keep their operation-owner check. Nine new internal regression groups and
-four source cases cover streaming, panic, identity/budget failures and checked tails.
-Commits: `0ad7f11`, `c018728`, `cae9858`, `44e3073`.
+Local-read effect reports now preserve exact local/canonical storage IDs and
+normal/control flags, validated against the transferred program's local bound,
+registered owners and original read edges. Reference cells remain distinct from
+pointee loads; stopped reads and required-only inputs keep their separate paths.
+Eight new internal regression groups and three source cases cover storage identity,
+work limits, aliases, reference retargeting and required-input rejection.
+Commits: `4f51efb`, `cb389e2`, `04ba6d8`.
 
-The catalog has 148 cases: 129 required passes, 19 unchanged pinned gaps and zero
+The catalog has 151 cases: 132 required passes, 19 unchanged pinned gaps and zero
 failures in debug/release. All prior cases, source assets and reference contracts
 are preserved. The [coverage inventory](docs/conformance/COVERAGE.md) tracks
 37 reference files and 33 proof obligations with explicit remaining gaps. All ten
-compiler checks pass: 2013 library/914 native and 62 Python test groups;
-`/tmp/meowy-output-effects-gate.log`. Strict mode rejects only the same 19 known gaps;
-all four final documentation checks pass (`/tmp/meowy-output-effects-docs.log`). Proof
+compiler checks pass: 2021 library/914 native and 62 Python test groups;
+`/tmp/meowy-read-effects-gate.log`. Strict mode rejects only the same 19 known gaps;
+all four final documentation checks pass (`/tmp/meowy-read-effects-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next retain exact local-read effects, preserving canonical storage and the
-reference-cell/pointee distinction. The
-[compiler handoff](compiler/STATUS.md#print-and-panic-effect-stages) records the
+Next retain explicit dereference-load effects, including pointer modes and
+normal-result boundaries. The
+[compiler handoff](compiler/STATUS.md#canonical-local-read-effects) records the
 files and checks. AGENTS already covers this evidence workflow; no update is needed.
 Unrelated `docs/programs/hey/` work is preserved.
 
@@ -1147,11 +1148,13 @@ execution was not part of this documentation edit.
    order places callees before callers. Source coverage preserves runtime ordering.
    Print/panic stages now retain exact partial prefixes, projections, streamed parts
    and terminal metadata; focused/source coverage and the compiler gate pass.
-   Next retain local-read effects from `compiler/src/check/dependencies/local_reads.rs`
-   in forward reports, validating identities after HIR transfer. Preserve canonical
-   storage, reference-cell/pointee distinctions, Never/stopped paths and required-only
-   uses; add focused/source coverage and run compiler/strict gates. Callee summaries,
-   backedge data propagation and proof outcomes remain separate.
+   Local-read effects now retain canonical storage, normal/control flags and validated
+   context after HIR transfer; focused/source coverage and the compiler gate pass.
+   Next retain explicit dereference normal-result metadata in
+   `compiler/src/check/dependencies/dereferences.rs`, then integrate bounded effects
+   with exact pointer roots/modes. Preserve reference cells, stopped pointers and
+   Never referents; add focused/source coverage and run compiler/strict gates.
+   Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.

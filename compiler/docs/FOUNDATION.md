@@ -339,6 +339,17 @@ keyed by exact producer point and paired with its owner. Direct Bind/Write effec
 canonical storage ID, optional RHS root and captured control mark. Reference-cell
 writes remain distinct from pointee writes, and emitted-slot aliases retain their
 canonical storage. Missing RHS metadata remains unknown; it is not synthesized.
+Local-read effects now preserve exact local/canonical storage IDs and the producer's
+normal/control flags. Reports retain the transferred program's local count after
+bounded validation of read storage and stable alias roots; they do not copy local
+types or values. Effect capture validates that bound, the operation-owner registry,
+checked point/span, canonical mapping and original read-edge shape. Repeated ports
+produce one record; failed identity or work checks return no partial collection.
+A reference-cell read describes the cell, not its pointee. Explicit dereferences
+remain separate Unknown effects. Never reads lack normal completion, and stopped
+predecessors keep later read effects absent. Required-only inputs retain InputUse
+metadata without runtime read records. These structural facts grant no copy/borrow
+authority or complete value provenance.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

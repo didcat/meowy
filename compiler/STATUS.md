@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Effect reports retain partial print/panic stages.
+Updated: 2026-09-29. Effect reports retain canonical local-read metadata.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -369,97 +369,64 @@ analysis order does not schedule runtime calls or provide complete summaries.
 
 ## Print and panic effect stages
 
+Bounded capture (`0ad7f11`) and typed aggregation (`c018728`, `cae9858`) retain
+prefix/projection/output/terminal stages independently, including partial formatting.
+Exact roots, literal markers, owners, stops and terminal registry checks remain;
+repeated visits copy each part once. Source coverage (`44e3073`) and the gate below
+preserve streaming, panic and checked tails. Observed stages are not successful-I/O,
+runtime reachability or complete effect-summary claims.
+
+## Canonical local-read effects
+
 The dependency-ordered series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Capture bounded prefix/projection/part/terminal stages | `0ad7f11` |
-| Aggregate typed partial print/panic effects | `c018728` |
-| Preserve terminal operation-owner validation | `cae9858` |
-| Pin streaming, formatting, panic and checked-tail behavior | `44e3073` |
+| Retain validated local/storage bounds after HIR transfer | `4f51efb` |
+| Capture typed canonical read effects | `cb389e2` |
+| Pin slot aliases, reference cells and required-input limits | `04ba6d8` |
 
-Effect collection now retains output stages seen by the structural walk, including
-prefixes and parts without a terminal Operation port. Typed records preserve the
-producer owner, panic/control flags, total/stopped metadata and distinct observed
-prefix/terminal flags. Each observed part retains its exact dynamic root and primary
-flag or literal None marker, with separate projection/output flags. A Never primary
-can therefore retain projection without output. Checked suffixes stay unobserved;
-no operand, projection or body is replayed.
+Reports retain the transferred program's local count after validating every stored
+read's local/storage bounds and stable alias root. No local types or values are
+copied. For encountered read operations, typed records preserve exact local and
+canonical storage IDs plus normal/control flags. Point kind/completion/span,
+owner/operation registry, retained bounds, alias mapping and exact read-edge shape
+are checked before returning effects. Shared work and effect limits remain atomic.
 
-Capture validates source points, owners, dynamic parents, selectors and stop limits.
-Terminal stages still require the operation-owner registry; partial stages need no
-fabricated terminal port. Aggregate headers and input identities must agree, and
-repeated visits copy each part once. Part records share the existing 262,144-entry
-payload allowance with path steps and call arguments. Budget/identity failure
-returns no partial effect collection and leaves prior reports/edges unchanged.
-Observed stages and conditional Returned edges do not establish successful I/O,
-termination, runtime reachability, callee summaries or proof outcomes.
+Reference-cell reads stay distinct from explicit pointee loads, which remain
+Unknown. Never reads retain no normal edge; later reads beyond stopped predecessors
+stay outside the report. Required-only inputs keep their separate InputUse records
+and gain no runtime read effects. This metadata grants no copy/borrow authority,
+value provenance, purity, termination or proof result.
 
-Nine new regression groups cover literal/dynamic formatting, aliases, primary and
-Never-primary stages, partial panic/print prefixes, controls/owners, malformed
-metadata, terminal registry checks, deduplication and exact payload/work limits.
-Four required source cases pin interleaved output, partial stdout before panic,
-formatted panic and errors in unexecuted formatting tails. Existing native tests
-retain exact nested/partial stderr coverage; the source catalog does not claim that
-full formatting or panic qualification is complete.
+Eight new regression groups cover HIR transfer, canonical aliases, controls,
+parameter owners, reference cells, Never/stopped/required-only boundaries, malformed
+bounds/identity/edge metadata, duplicate visits and exact work limits. The seeded
+control test is separate from complementary emissions, preserving the existing
+E205 validation. Three required source cases cover slot reads across writes,
+reference-cell copies/retargeting with a required extent, and rejection of a runtime-
+dependent type extent.
 
-All ten compiler checks pass: 2013 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2021 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-output-effects-gate.log`. The 148 cases report 129 required passes,
+`/tmp/meowy-read-effects-gate.log`. The 151 cases report 132 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for the same known gaps (`/tmp/meowy-output-effects-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-output-effects-docs.log`); no selected check
-has an outstanding failure. Preservation against `4c881ee` confirms all 144 prior cases,
-176 source assets, 37 reference files and exact capability exceptions are unchanged
-(`/tmp/meowy-output-effects-preservation.log`). AGENTS already covers this evidence
+only for the same known gaps (`/tmp/meowy-read-effects-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-read-effects-docs.log`); no selected check
+has an outstanding failure. Preservation against `a067729` confirms all 148 prior cases,
+180 source assets, 37 reference files and exact capability exceptions are unchanged
+(`/tmp/meowy-read-effects-preservation.log`). AGENTS already covers this evidence
 workflow; no update is needed. Unrelated `docs/programs/hey/` remains untouched.
 
-## Local-read effect reporting in progress
-
-LocalRead already retains the checked local ID, canonical alias root, owner,
-normal/control flags and exact read edges. Reports run after local HIR transfers
-into the program, so a retained local-count bound is needed to validate those IDs.
-Alias roots are stable registration metadata; reference-cell storage must not be
-replaced with pointee origins. Required-only reads keep their separate InputUse path.
-
-Dependency-ordered commit plan:
-
-1. Validate local-read local/storage bounds and canonical alias roots against the
-   program, retaining only its local count in reports. Add HIR-transfer, alias,
-   malformed-storage and capacity/work tests; leave read effect classification intact.
-2. Capture typed read effects for encountered operations after point/owner/storage/
-   edge validation. Preserve normal/control flags, narrowing order, reference cells
-   and stopped/required-only boundaries; add focused report and failure tests.
-3. Add useful source alias/reference/required-read conformance, update evidence maps,
-   and run compiler/strict gates plus preservation against `a067729`.
-4. Update root/compiler/foundation handoffs and run documentation checks.
-
-The audit covered local-read registration/use sites, alias root registration,
-reference borrowing, HIR transfer, report collection and the memory contract.
-No values are reread, no edges are changed, and no borrow/copy authority, complete
-callee summary or proof result is introduced. Slice 1 validates read local/storage
-bounds and stable alias roots against the transferred program, retains its local
-count, and consumes the bound in collector validation while preserving Unknown
-classification. Three focused context groups pass (`/tmp/meowy-read-context.log`),
-including an invalid retained bound; all 2016 library tests passed before the
-collector guard, and formatting/all-target Clippy pass after that guard
-(`/tmp/meowy-read-context-library.log`, `/tmp/meowy-read-context-clippy.log`).
-Slice 2 now captures typed Read effects after validating exact point/owner/span,
-retained local bounds, canonical storage and normal-edge shape. Five report groups
-cover aliases/control/parameter owners, reference cells, Never/stopped/required-only
-boundaries, fourteen malformed variants, deduplication and exact work limits.
-The control fixture was separated from complementary emissions to preserve their
-existing E205 check under proof-derived guards. All 2021 library tests, formatting
-and all-target Clippy pass (`/tmp/meowy-read-effects-library.log`,
-`/tmp/meowy-read-effects-clippy.log`). Three required source cases pass in both
-profiles with a fresh CLI (`/tmp/meowy-read-effects-cases.log`): slot-alias reads
-across writes, copied/retargeted reference cells with required-only extents, and
-runtime-dependent extent rejection. Catalog/coverage checks validate 151 cases
-and 37 references. The full compiler gate is running (`/tmp/meowy-read-effects-gate.log`).
-Preservation against `a067729` confirms all 148 prior cases, 180 source assets,
-37 reference files and exact exceptions are unchanged
-(`/tmp/meowy-read-effects-preservation.log`). Next finish compiler/strict validation
-and the documentation handoff. Preserve unrelated `docs/programs/hey/` work.
+Next retain explicit dereference-load effects. The producer in
+`src/check/dependencies/dereferences.rs` has exact pointer roots, shared/exclusive
+mode, owner/control and load/result edges; the effect collector still uses Unknown.
+First retain the producer's explicit normal-result decision, then integrate bounded
+typed records under `edges/forward/effects/`. Preserve pointer-cell versus referent
+identity, stopped pointer inputs and Never referents; do not infer pointee storage
+or read values. Add identity/mode/edge/work tests and useful source coverage, then
+run compiler/strict gates. Other load families, callee summaries, backedge data
+propagation and proof outcomes remain separate; `queries::finish` stays B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2530,11 +2497,14 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`a0635f6`) and the compiler gate pass. Bounded output-stage capture (`0ad7f11`)
    and typed aggregation (`c018728`, `cae9858`) now retain partial print/panic effects
    without inventing terminal operations. Source coverage (`44e3073`) and the compiler
-   gate pass. Next retain local-read metadata from `dependencies/local_reads.rs` in
-   `edges/forward/effects.rs`, validating the context after HIR transfer. Preserve
-   canonical alias storage, reference cells, Never/stopped boundaries and required
-   reads; add focused/source coverage and run compiler/strict gates. No purity,
-   termination, borrow authority, callee summary or proof outcome is implied.
+   gate pass. Local storage context (`4f51efb`) and typed read effects (`cb389e2`)
+   now preserve canonical storage, normal/control flags and required-only boundaries;
+   source coverage (`04ba6d8`) and the compiler gate pass. Next retain the explicit
+   normal-result decision in `dependencies/dereferences.rs`, then capture bounded
+   dereference effects with exact pointer roots/modes and edge validation. Preserve
+   reference cells, stopped pointers and Never referents; add focused/source coverage
+   and run compiler/strict gates. No pointee-storage inference, value read, borrow
+   authority, callee summary or proof outcome is implied.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks
