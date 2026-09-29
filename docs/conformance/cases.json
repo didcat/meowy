@@ -1850,6 +1850,48 @@
         "exit": 1
       },
       "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "scalar_leaf_contexts",
+      "phase": "run",
+      "source": "sources/scalar_leaf_contexts.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "-128\n-9223372036854775808\n255\n18446744073709551615\n10\ntrue\ntrue\ntrue\né\u0000🙂\n"
+      },
+      "reference": "../reference/syntax.md#literals-values-and-comments"
+    },
+    {
+      "id": "scalar_leaf_constants",
+      "phase": "run",
+      "source": "sources/scalar_leaf_constants.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\nfalse\ntrue\n1\n7\ntrue\n"
+      },
+      "reference": "../reference/stdlib/core.md#predefined-values"
+    },
+    {
+      "id": "scalar_leaf_required_and_stops",
+      "phase": "run",
+      "source": "sources/scalar_leaf_required_and_stops.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\nvalue 7\nafter leave\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "scalar_leaf_grouped_minimum",
+      "phase": "check",
+      "source": "sources/scalar_leaf_grouped_minimum.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E216"
+      },
+      "reference": "../reference/syntax.md#literals-values-and-comments"
     }
   ]
 }

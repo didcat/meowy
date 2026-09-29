@@ -1,0 +1,16 @@
+d : @"debug"
+<Items> : { n : 2; -> <int32[n]> }
+xs <Items> : [1, 2]
+stop <never> : () {
+    d.print("stop")
+    d.panic("done")
+}
+d.print(xs.size())
+'out {
+    d.print("value {7}")
+    'out.leave()
+    d.print("unexpected block tail")
+}
+d.print("after leave")
+stop()
+d.print("unexpected tail")

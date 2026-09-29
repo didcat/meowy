@@ -1,0 +1,19 @@
+d : @"debug"
+small <int8> : -128
+wide <int64> : -9223372036854775808
+byte <uint8> : 0xff
+large <uint64> : 18446744073709551615
+bits : 0b1010
+f <float32> : 16777217.0
+decimal : 1.25
+optional <int16><null> : 7
+same <int16><null> : 7
+d.print(small)
+d.print(wide)
+d.print(byte)
+d.print(large)
+d.print(bits)
+d.print(f == 16777216.0)
+d.print(decimal == 1.25)
+d.print(optional == same)
+d.print("é\0🙂")

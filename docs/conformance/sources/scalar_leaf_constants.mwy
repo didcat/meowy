@@ -1,0 +1,13 @@
+d : @"debug"
+c : @"core"
+alias : c
+p : @"proof"
+revision : p.revision
+value <uint32> : revision
+d.print(alias.true)
+d.print(alias.false)
+d.print(((alias.null)) == c.null)
+d.print(value)
+true : 7
+d.print(true)
+d.print(c.true)

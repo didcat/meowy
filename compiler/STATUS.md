@@ -552,7 +552,13 @@ Plan step 1 is committed (`3be764d`). All nine scalar-effect groups now pass
 (`/tmp/meowy-scalar-effects-limits.log`), including 18 faults for both construction/
 result ports, five merge conflicts, duplicate work, exact shared limits and constant
 work across 1/65536-byte strings. Ordinary literal and stopped-tail errors remain
-unchanged. Step 2 is ready to commit; required source coverage is next.
+unchanged. Step 2 is committed (`28ec4c2`). All four required source cases pass in
+debug/release (`/tmp/meowy-scalar-effects-sources.log`): contextual literals, resolved
+constants/shadowing, required/stopped boundaries and grouped-minimum E216. Metadata/
+coverage checks pass for 176 cases. Preservation against `bbbb655` confirms all
+172 prior cases, 204 source assets, 37 references, proof obligations, hashes and
+capability exceptions unchanged (`/tmp/meowy-scalar-effects-preservation.log`).
+Step 3 is ready to commit; guide updates and the compiler/strict gates remain next.
 No source behavior or capability gate changed. Preserve `docs/programs/hey/`.
 
 ## Documentation conventions and layout
