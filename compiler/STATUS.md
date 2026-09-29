@@ -444,7 +444,15 @@ classification. Three focused context groups pass (`/tmp/meowy-read-context.log`
 including an invalid retained bound; all 2016 library tests passed before the
 collector guard, and formatting/all-target Clippy pass after that guard
 (`/tmp/meowy-read-context-library.log`, `/tmp/meowy-read-context-clippy.log`).
-Next implement typed read records. Preserve unrelated `docs/programs/hey/` work.
+Slice 2 now captures typed Read effects after validating exact point/owner/span,
+retained local bounds, canonical storage and normal-edge shape. Five report groups
+cover aliases/control/parameter owners, reference cells, Never/stopped/required-only
+boundaries, fourteen malformed variants, deduplication and exact work limits.
+The control fixture was separated from complementary emissions to preserve their
+existing E205 check under proof-derived guards. All 2021 library tests, formatting
+and all-target Clippy pass (`/tmp/meowy-read-effects-library.log`,
+`/tmp/meowy-read-effects-clippy.log`). Next add source coverage and run the complete
+gate. Preserve unrelated `docs/programs/hey/` work.
 
 ## Documentation conventions and layout
 

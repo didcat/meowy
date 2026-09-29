@@ -1,5 +1,6 @@
 mod calls;
 mod outputs;
+mod reads;
 
 use super::{entries::Reports, *};
 use crate::check::dependencies::{OperationKind, Origins, PathStep, references::MAX_ROOTS};
@@ -11,6 +12,12 @@ pub(crate) enum Effect {
         local: crate::hir::LocalId,
         storage: crate::hir::LocalId,
         input: Option<PointId>,
+        control: bool,
+    },
+    Read {
+        local: crate::hir::LocalId,
+        storage: crate::hir::LocalId,
+        normal: bool,
         control: bool,
     },
     Path {
@@ -115,17 +122,8 @@ impl Checker {
                         input: op.input,
                         control: op.control,
                     }
-                } else if let Some(read) = self.local_reads.get(&id) {
-                    if read.owner != owner {
-                        return Err(invalid());
-                    }
-                    if read.local >= reports.locals || read.storage >= reports.locals {
-                        return Err(Diagnostic::unsupported(
-                            "proof read-effect identity mismatch",
-                            span,
-                        ));
-                    }
-                    Effect::Unknown
+                } else if self.local_reads.contains_key(&id) {
+                    self.read_effect(reports, id, owner, span)?
                 } else if let Some(op) = self.paths.get(&id) {
                     if op.owner != owner {
                         return Err(invalid());
