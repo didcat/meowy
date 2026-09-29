@@ -24,10 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-method-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next retain bounded unary-operation effects, including scalar types and checked
-negation result boundaries. The
-[compiler handoff](compiler/STATUS.md#collection-method-effects) records the files
-and verification plan. Unrelated `docs/programs/hey/` work is preserved.
+Unary effect reporting is in progress. Stage validation is committed (`97cec7c`),
+and typed records retain compact scalar descriptors and separate projection,
+operation and result observations. All 89 effect-report groups pass. Boundary/source
+coverage and the full gate remain next; the
+[compiler handoff](compiler/STATUS.md#bounded-unary-effects) records the plan.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

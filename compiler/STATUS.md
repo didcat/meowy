@@ -503,15 +503,21 @@ its report correctly omits that point. The fixture now checks that boundary and
 the separate signed-literal path. All 85 effect-report groups pass
 (`/tmp/meowy-unary-effects-stages.log`), as do formatting and whitespace checks.
 No selected test has an outstanding failure; producer behavior is unchanged.
+Stage validation is committed (`97cec7c`). Typed reports now retain compact scalar
+types and independent observed projection/operation/result flags. All 89 effect-report
+groups pass (`/tmp/meowy-unary-effects-reports.log`), covering every supported integer
+width/signedness, raw types before coercion, independent owners/control, expected
+projections, required/stopped/signed-literal boundaries and isolated observations.
 
 Dependency-ordered commit plan:
 
 1. Add bounded unary-stage validation under `edges/forward/effects/`, reusing checked
    unary/scalar kinds and rejecting incompatible or nonscalar types before copying;
    test projection/operation/result edges, widths, stops and operation ownership:
-   complete, ready to commit.
+   complete (`97cec7c`).
 2. Aggregate typed unary reports with independent observed projection/operation/
-   result flags; preserve owners/control, expected projections and signed literals.
+   result flags; preserve owners/control, expected projections and signed literals:
+   complete, ready to commit.
 3. Cover malformed types/roots/edges, duplicate stages, merge conflicts and exact
    work/effect limits; preserve atomic failures and existing diagnostics.
 4. Add required source cases for operator types/order, projections, stopped operands

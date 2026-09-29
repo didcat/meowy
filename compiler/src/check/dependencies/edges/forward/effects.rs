@@ -61,6 +61,7 @@ pub(crate) enum Effect {
     Output(outputs::Observed),
     Index(indices::Observed),
     Method(methods::Observed),
+    Unary(unary::Observed),
     Unknown,
 }
 
@@ -91,7 +92,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.unary_effect_stage(reports, owner, port, span)?;
+                if let Some(stage) = self.unary_effect_stage(reports, owner, port, span)? {
+                    self.record_unary_effect(stage, &mut effects, limit, span)?;
+                    continue;
+                }
                 if let Some(stage) = self.index_effect_stage(reports, owner, port, span)? {
                     self.record_index_effect(stage, &mut effects, limit, span)?;
                     continue;

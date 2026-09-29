@@ -24,7 +24,78 @@ pub(super) struct Stage {
     pub(super) kind: Kind,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) input: PointId,
+    pub(crate) op: UnaryKind,
+    pub(crate) ty: ScalarKind,
+    pub(crate) primary: bool,
+    pub(crate) checked: bool,
+    pub(crate) control: bool,
+    pub(crate) projected: bool,
+    pub(crate) operation: bool,
+    pub(crate) result: bool,
+}
+
 impl Checker {
+    pub(super) fn record_unary_effect(
+        &mut self,
+        stage: Stage,
+        effects: &mut Effects,
+        limit: usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof unary-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof unary-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 10)
+        {
+            return Err(budget());
+        }
+        if let Some((owner, effect)) = effects.get(&stage.point) {
+            let Effect::Unary(prior) = effect else {
+                return Err(invalid());
+            };
+            if *owner != stage.owner
+                || prior.input != stage.input
+                || prior.op != stage.op
+                || prior.ty != stage.ty
+                || prior.primary != stage.primary
+                || prior.checked != stage.checked
+                || prior.control != stage.control
+            {
+                return Err(invalid());
+            }
+        } else if effects.len() >= limit {
+            return Err(budget());
+        }
+        let (_, Effect::Unary(unary)) = effects.entry(stage.point).or_insert_with(|| {
+            (
+                stage.owner,
+                Effect::Unary(Observed {
+                    input: stage.input,
+                    op: stage.op,
+                    ty: stage.ty,
+                    primary: stage.primary,
+                    checked: stage.checked,
+                    control: stage.control,
+                    projected: false,
+                    operation: false,
+                    result: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match stage.kind {
+            Kind::Projection => unary.projected = true,
+            Kind::Operation => unary.operation = true,
+            Kind::Result => unary.result = true,
+        }
+        Ok(())
+    }
+
     pub(super) fn unary_effect_stage(
         &mut self,
         reports: &Reports,
@@ -139,3 +210,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod reports;
