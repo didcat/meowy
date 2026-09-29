@@ -429,6 +429,16 @@ existing flags, and shared work/effect limits or metadata conflicts publish no
 partial collection. Nonscalar comparisons remain supported with Unknown effects;
 their shapes and transfers are not inferred. Short-circuit and required-only paths
 remain separate. No values, arithmetic success or proof outcomes are evaluated.
+Scalar-leaf reports retain compact Null/Bool/Int/Float/String kinds, numeric widths,
+control flags and independent construction/result observations. Capture checks
+complete expression roots, owner/span identity, supported widths, exact construction/
+result edges and registered operation owners. Duplicate observations update existing
+flags; conflicting metadata and shared work/effect limits publish no partial
+collection. Signed literals retain their direct roots before outer coercion, and
+resolved static constants gain leaf reports at runtime uses. Static alias declarations,
+ordinary storage reads, required evaluation and formatting text retain their separate
+paths. Stopped successors gain no observations. No literal values or text payloads are
+copied, and result observations do not establish singleton domains or proof outcomes.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded scalar-leaf effect reporting is in progress.
+Updated: 2026-09-29. Scalar-leaf effects pass the compiler gate; heap handle effects are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -467,99 +467,71 @@ evaluated; operation/result observations do not establish successful execution.
 
 ## Bounded binary effects
 
+Compact type capture (`5503576`), stage validation (`3ae26e3`) and typed observations
+(`98babec`) preserve scalar operand/result kinds, partial projections and checked
+results across both operation and sequence ledgers. Boundary tests (`cb5a88d`) and
+source cases (`37726ee`) remain covered by the current gates below. Nonscalar
+comparisons stay opaque, and short-circuit/required paths remain separate. Shared
+limits or conflicts publish no partial collection. No values or proof outcomes are
+inferred from operation/result observations.
+
+## Bounded scalar-leaf effects
+
 The dependency-ordered implementation series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Retain compact Never/scalar/other operand and result types | `5503576` |
-| Validate signatures, stages and both edge ledgers | `3ae26e3` |
-| Retain independent scalar binary observations | `98babec` |
-| Cover signatures, ledgers, conflicts and aggregation limits | `cb5a88d` |
-| Pin domains, evaluation order, stopped inputs and checked results | `37726ee` |
+| Validate and retain scalar construction/result observations | `3be764d` |
+| Cover malformed metadata, conflicts and exact budgets | `28ec4c2` |
+| Pin literals, resolved constants and stopped/required boundaries | `6b1d6c1` |
 
-Binary reports preserve exact operand roots, canonical operator symbols, compact
-type widths, primary/normal plans and control flags. Capture validates compatible
-operator/type signatures, completed points, parent/block/owner agreement, spans and
-both edge ledgers. Operation edges own projections and operation/results; the sequence
-owns the exact left-to-right link and ordered operand IDs. Integer arithmetic retains
-its Checked result edge. No aggregate shapes or literal values are copied.
+Reports retain compact Null/Bool/Int/Float/String kinds, supported numeric widths,
+control flags and independent construction/result observations. Capture validates
+completed expression roots, owner/span identity, exact Entry -> Operation -> Normal
+edges and operation registration for both observed stages. Duplicate observations
+update existing flags; shared work/effect limits and conflicts publish no partial
+collection. No literal values or string bytes are copied or replayed.
 
-Left/right projection, operation and result observations remain independent. A
-projected Never can retain its projection while stopping later stages. Operation
-and result observations require registered owners; neither proves arithmetic success.
-Duplicate stages update existing flags, and shared work/effect limits or conflicting
-metadata publish no partial collection. Nonscalar comparisons remain supported with
-Unknown effects; short-circuit and required-only paths remain separate. No storage,
-borrow authority, callee summaries or proof outcomes are inferred.
+Signed literals keep their direct roots before expected conversion. Runtime uses of
+resolved static constants gain leaf reports; static alias declarations, ordinary
+storage reads, required evaluation and formatting text remain separate. Stopped
+successors gain no observations. These structural records do not infer singleton
+domains, value equality, successful execution or proof outcomes.
 
-Fifteen new internal groups cover compact type capture, supported widths, partial
-projections, isolated observations, 40 root/ledger faults on direct/primary paths,
-eleven bad signatures, ten conflicts, invalid selectors and exact budgets. Ordinary
-E107/E222/E213 diagnostics remain unchanged. Four required source cases cover scalar
-and opaque comparisons, projection/call order, stopped inputs and checked overflow
-(`/tmp/meowy-binary-effects-sources.log`). Structural reports remain separate evidence.
+Nine internal groups cover all supported scalar kinds/widths, signed roots, owners/
+control, independent stages, 18 identity/edge faults on both stages, five merge
+conflicts, duplicate work and exact shared capacity. String report work is equal
+for 1/65536-byte payloads. Ordinary literal errors, including invalid stopped tails,
+are preserved (`/tmp/meowy-scalar-effects-limits.log`). Four required source cases
+pass in debug/release: contextual literals and UTF-8/NUL bytes, constant aliases/
+shadowing, required/stopped paths and grouped-minimum E216
+(`/tmp/meowy-scalar-effects-sources.log`). Structural tests remain separate evidence.
 
-All ten compiler checks pass: 2090 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2099 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-binary-effects-gate.log`. The 172 cases report 153 required passes,
+`/tmp/meowy-scalar-effects-gate.log`. The 176 cases report 157 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-binary-effects-strict.log`); all four final documentation
-checks pass (`/tmp/meowy-binary-effects-docs.log`). No selected check has an outstanding
-failure. Preservation against `f380605` confirms all 168 prior cases, 200 source assets,
-37 reference files, proof
-obligations, reference hashes and capability exceptions are unchanged
-(`/tmp/meowy-binary-effects-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+only for those gaps (`/tmp/meowy-scalar-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-scalar-effects-docs.log`). No selected check has an outstanding failure.
+Preservation against `bbbb655` confirms all 172 prior cases, 204 source assets,
+37 reference files, proof obligations, reference hashes and capability
+exceptions are unchanged (`/tmp/meowy-scalar-effects-preservation.log`). Unrelated
+`docs/programs/hey/` is preserved. No capability or reference contract was changed.
 
-Next implement bounded scalar-leaf effects using `dependencies/scalar_leaves.rs`
+Next implement bounded static heap handle effects using `dependencies/heap_leaves.rs`
 and `edges/forward/effects/`. Record a dependency-ordered commit plan before coding:
 
-1. Validate captured scalar kinds/widths, complete point/owner/span identity and exact
-   construction/result edges; keep required roots and other leaf families separate.
-2. Retain typed construction/result observations with shared work/effect budgets,
-   duplicate handling and atomic conflicts. Copy no literal values or string bytes.
-3. Cover signed literals, resolved static constants, malformed metadata and stopped/
-   required boundaries; add required source cases and update classified coverage.
-4. Update the guide and handoff; run focused checks and compiler/strict gates.
+1. Validate the nominal Allocator kind, completed point/owner/span identity, exact
+   handle/result edges and operation registration; retain independent observations.
+2. Cover resolved module aliases, ordinary handle reads, contextual conversions,
+   function owners/control, temporary consumers and stopped/required/hint boundaries.
+   Check malformed metadata, duplicate/conflicting stages and shared work/map limits.
+3. Add required source coverage, update the classified inventory/guide and run
+   focused checks plus compiler/strict gates before the next handoff.
 
-No source-text inference, value replay or proof evaluation is implied. Preserve
-reference contracts and pinned gaps; `queries::finish` remains B001-gated.
-
-## Bounded scalar-leaf effects
-
-Existing `scalar_leaves.rs` captures checked Null/Bool/Int/Float/String kinds and
-exact Entry -> Operation -> Normal edges. Required evaluation creates no such
-leaves; signed literals and resolved constants use their checked source roots.
-Reports currently leave these operations Unknown. Reuse this metadata without
-copying literal values, walking types or inferring singleton/proof domains.
-
-Dependency-ordered commit plan:
-
-1. Validate leaf kinds/widths, completed point/owner/span identity and both edges;
-   retain independent construction/result observations with focused regressions.
-2. Cover malformed identities/edges/widths, merge conflicts, duplicate visits and
-   exact shared budgets, preserving atomic failure and ordinary diagnostics.
-3. Add required source cases for signed/contextual literals, resolved constants and
-   stopped/required boundaries; update classified conformance coverage.
-4. Update the guide, run compiler/strict gates and record the next bounded handoff.
-
-Typed scalar reporting and focused regressions pass all 109 effect-report groups
-(`/tmp/meowy-scalar-effects-reports.log`). Both edges, widths, complete point/span/
-owner identity and operation registration are validated. Independent construction/
-result flags preserve contextual raw types, signed roots, required/stopped exclusions,
-function owners and control. Static alias declarations retain their own completion;
-runtime uses capture the scalar constant. Formatting and whitespace checks pass.
-Plan step 1 is committed (`3be764d`). All nine scalar-effect groups now pass
-(`/tmp/meowy-scalar-effects-limits.log`), including 18 faults for both construction/
-result ports, five merge conflicts, duplicate work, exact shared limits and constant
-work across 1/65536-byte strings. Ordinary literal and stopped-tail errors remain
-unchanged. Step 2 is committed (`28ec4c2`). All four required source cases pass in
-debug/release (`/tmp/meowy-scalar-effects-sources.log`): contextual literals, resolved
-constants/shadowing, required/stopped boundaries and grouped-minimum E216. Metadata/
-coverage checks pass for 176 cases. Preservation against `bbbb655` confirms all
-172 prior cases, 204 source assets, 37 references, proof obligations, hashes and
-capability exceptions unchanged (`/tmp/meowy-scalar-effects-preservation.log`).
-Step 3 is ready to commit; guide updates and the compiler/strict gates remain next.
-No source behavior or capability gate changed. Preserve `docs/programs/hey/`.
+A static handle observation is not an allocation or borrow-authority grant. Preserve
+lifetime/conflict/member/equality diagnostics and gates, original contracts and
+`queries::finish`'s B001 boundary. No value replay or proof evaluation is implied.
 
 ## Documentation conventions and layout
 
@@ -2652,13 +2624,15 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`98babec`) now retain scalar descriptors, partial projections and checked results
    across both operation and sequence ledgers. Boundary tests (`cb5a88d`), source
    cases (`37726ee`) and the compiler gate pass; nonscalar comparisons remain opaque.
-   Next validate captured scalar-leaf kinds/widths, completed point/owner/span identity
-   and exact construction/result edges in `dependencies/scalar_leaves.rs`, then retain
-   bounded typed observations under `edges/forward/effects/`. Preserve signed-literal
-   and resolved-constant roots, stopped boundaries and required-only exclusions.
-   Add identity/budget/source coverage and run compiler/strict gates. Copy no literal
-   values or string bytes; infer no storage, borrow authority, callee summary or proof
-   outcome.
+   Scalar construction/result reports (`3be764d`) now preserve checked scalar kinds,
+   numeric widths and independent observations without copying literal values.
+   Boundary regressions (`28ec4c2`), required source cases (`6b1d6c1`) and the compiler
+   gate pass. Next validate nominal Allocator handle/result stages in
+   `dependencies/heap_leaves.rs` and retain bounded typed observations under
+   `edges/forward/effects/`. Preserve aliases, ordinary reads, conversions, temporary
+   consumers and stopped/required/hint boundaries. Add identity/budget/source coverage
+   and run compiler/strict gates. Infer no allocation, borrow authority, callee summary
+   or proof outcome from a static handle observation.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

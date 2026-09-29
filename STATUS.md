@@ -7,30 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Binary metadata now retains compact operand/result types. Scalar reports validate
-both operation and sequence ledgers, preserving independent operand projections,
-operation/result observations and checked integer results. Nonscalar comparisons
-remain supported with opaque effects; stopped and required-only paths stay separate.
-Fifteen new internal groups and four source cases cover signatures, ledgers, budgets,
-operator domains, evaluation order, stopped inputs and overflow after operand effects.
-Commits: `5503576`, `3ae26e3`, `98babec`, `cb5a88d`, `37726ee`.
+Scalar-leaf reports now retain checked kinds, numeric widths, control flags and
+independent construction/result observations. Signed literal roots, resolved constants,
+ordinary storage reads and required/stopped boundaries retain their distinctions.
+Nine new internal groups and four source cases cover contextual literals, aliases,
+identity/edge faults, merge conflicts, exact budgets and stopped-tail diagnostics.
+Commits: `3be764d`, `28ec4c2`, `6b1d6c1`.
 
-All ten compiler checks pass: 2090 library/914 native and 62 Python test groups;
-`/tmp/meowy-binary-effects-gate.log`. The catalog has 172 cases: 153 required passes,
+All ten compiler checks pass: 2099 library/914 native and 62 Python test groups;
+`/tmp/meowy-scalar-effects-gate.log`. The catalog has 176 cases: 157 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-binary-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-binary-effects-docs.log`).
+(`/tmp/meowy-scalar-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-scalar-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Scalar-leaf effects are implemented with validated kinds/edges and independent
-construction/result observations. All 109 effect-report groups pass; adversarial
-identity/budget tests, source coverage and final gates remain next. The
-[compiler handoff](compiler/STATUS.md#bounded-scalar-leaf-effects) records the plan.
-No literal values are copied or proof outcomes inferred. Unrelated
-`docs/programs/hey/` work is preserved.
+Next add bounded static heap handle effects using the existing nominal metadata and
+handle/result edges. The [compiler handoff](compiler/STATUS.md#bounded-scalar-leaf-effects)
+records the ordered next work. No allocation, borrow authority or proof outcome is
+implied by a handle observation. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
