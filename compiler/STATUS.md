@@ -600,7 +600,12 @@ limit tests now allow exactly one slot for their root borrow's address flag; all
 keeps its direct regressions inline to stay within eight files; broader scenario
 and boundary coverage follows separately. All-target Clippy passes
 (`/tmp/meowy-place-effects-clippy.log`).
-The complete compiler gate has not run for this series.
+Aggregation is committed as `6de8c96`. Additional boundary tests now cover stopped
+successors, separate borrow producers, original diagnostics, canonical alias faults,
+shared payload/work/effect limits, conflicts and the maximum retained path. Focused
+validation passes all 12 groups (`/tmp/meowy-place-boundaries.log`). Shared indexed
+borrows retain their ordinary root-reference observation while element acquisition
+stays separate. Source conformance and the complete compiler gate remain pending.
 Each implementation slice includes focused regressions; the full compiler gate
 will validate the complete series. No reference contract changes are planned.
 
@@ -2713,11 +2718,11 @@ subtraction retains its documented limits. No outstanding failures remain.
    source cases (`00fb650`) and the compiler gate pass. Predicate/ascription reports
    (`a031d11`) now retain checked kinds, operands and independent operation/result
    observations. Boundary regressions (`da43cb7`), source cases (`c68e7f9`) and the
-   compiler gate pass. Next retain bounded per-field record counts
-   in `dependencies/place_borrows.rs`, then validate and report ordinary place-borrow
-   addresses/acquisitions/results under `edges/forward/effects/`. Preserve canonical
-   alias storage, reference-cell identity and checked shared/scalar-exclusive modes.
-   Add malformed path/selector/budget/source coverage and run compiler/strict gates.
+   compiler gate pass. Place-borrow record counts (`ac590ac`), validation (`97bda15`)
+   and independent address/acquisition/result reports (`6de8c96`) now preserve
+   canonical alias storage, reference-cell identity and checked modes. Validate
+   boundary tests under `edges/forward/effects/borrows/`, add source coverage and
+   run compiler/strict gates, then document the next producer.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

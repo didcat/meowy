@@ -179,6 +179,12 @@ impl Checker {
 mod validation;
 
 #[cfg(test)]
+mod limits;
+
+#[cfg(test)]
+mod boundaries;
+
+#[cfg(test)]
 mod tests {
     use super::{super::tests::checked, *};
     use crate::hir::ReferenceMode;
