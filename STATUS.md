@@ -7,28 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Predicate/ascription reports now retain exact operands, checked kinds, normal/control
-flags and independent operation/result observations, including erased ascriptions.
-Computed target work, required reads, type queries and pending descriptors stay separate.
-Nine new internal groups and four source cases cover nested/guarded operations,
-operand order, stops, diagnostic precedence, malformed metadata and exact budgets.
-Commits: `a031d11`, `da43cb7`, `c68e7f9`.
+Ordinary place-borrow reports now retain exact local/field paths, canonical alias
+storage, checked modes/control and independent address/acquisition/result visits.
+Field counts survive local transfer; reference cells retain their own identity.
+Fourteen new internal groups cover paths, aliases, stops, diagnostics, malformed
+metadata and shared limits. Four source cases cover execution, overlap and lifetimes.
+Commits: `ac590ac`, `97bda15`, `6de8c96`, `f4ebd60`, `44e8b39`.
 
-All ten compiler checks pass: 2134 library/914 native and 62 Python test groups;
-`/tmp/meowy-typed-effects-gate.log`. The catalog has 192 cases: 173 required passes,
+All ten compiler checks pass: 2148 library/914 native and 62 Python test groups;
+`/tmp/meowy-place-gate.log`. The catalog has 196 cases: 177 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-typed-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-typed-effects-docs.log`).
+(`/tmp/meowy-place-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-place-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Ordinary place-borrow observation work is in progress: retain record counts for
-validating field paths, then report addresses, acquisitions and results. The
+Next report standalone temporary-borrow initialization, cells and results. The
 [compiler handoff](compiler/STATUS.md#bounded-ordinary-place-borrow-observations)
-records the ordered commit plan. Reference-cell identity, canonical alias storage and
-existing lifetime/conflict rules remain authoritative. Stage observations grant no
+records the ordered next work. Full-statement temporary lifetimes and existing
+conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions

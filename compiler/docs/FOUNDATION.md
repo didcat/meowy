@@ -485,11 +485,27 @@ publish no partial collection. Computed target reads, required evaluation, type
 queries and pending proof descriptors remain separate from runtime inputs. Reports
 copy no target types or values and infer no predicate truth, refined value, borrow
 authority or proof outcome. Operand/target error precedence and E208 remain unchanged.
+Ordinary place-borrow reports retain the exact local/field path, canonical storage,
+checked shared/scalar-exclusive mode and control flag. Independent flags record each
+root/field-address visit, reference acquisition and result visit. An address visit
+alone records neither acquisition nor result. Retained per-field record counts
+validate indices after locals move into the checked program, without copying type
+shapes. Capture checks completed point/owner/span identities, parent/block agreement,
+local bounds, canonical alias storage, selectors, registered operation ownership and
+the exact address/acquisition/result edges. Paths have at most 256 fields; copied
+indices and address flags share the payload budget described below. Repeated visits
+merge flags without another copy; conflicts or exhausted limits publish no partial
+collection. Stopped predecessors exclude later borrows from that entry walk.
+Reference-cell storage remains distinct from pointee storage. Indexed borrows,
+reborrows, projected references and temporary borrows retain separate producers;
+shared indexing can still report its ordinary root borrow. Observations grant no
+new loan authority, longer lifetime, referent value or proof outcome.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
-effects. Each copied path is bounded by 256 steps. Path steps, direct-call argument
-roots and observed output-part records share a limit of 262,144 copied entries.
+effects. Each copied path is bounded by 256 steps. Path steps, borrow field indices
+and address flags, direct-call argument roots and observed output-part records
+share a limit of 262,144 copied entries.
 Lookup and copy work are charged before allocation;
 duplicate operation ports copy a path once. Empty paths and owner mismatches are
 rejected. Aliases retain their shared canonical storage and distinct local IDs.

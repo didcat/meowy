@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Ordinary place-borrow observation work is in progress.
+Updated: 2026-09-30. Ordinary place-borrow reports pass the compiler gate; temporary borrows are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -559,66 +559,69 @@ is preserved. No compiler capability or reference contract changed.
 
 ## Bounded ordinary place-borrow observations
 
-The producer already retains exact local/storage identities, checked modes and
-address/acquisition/result edges. It validates field paths against source-local
-types, which leave the checker before reports are collected; reports therefore
-need retained field counts. Existing reports treat borrow operations as Unknown.
-The tree is otherwise clean apart from unrelated `docs/programs/hey/`.
+The dependency-ordered implementation series is complete:
 
-Dependency-ordered commit plan:
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain bounded per-field record counts | `ac590ac` |
+| Validate identities, selectors and stored edges | `97bda15` |
+| Report independent address/acquisition/result observations | `6de8c96` |
+| Cover stops, separate producers, conflicts and limits | `f4ebd60` |
+| Pin execution, overlap and field lifetimes | `44e8b39` |
 
-1. Retain bounded per-field record counts while the producer checks source-local
-   types, so reports can validate field indices after locals transfer into the program.
-   Charge capture work before copying, preserve error order and copy no type shapes.
-2. Validate complete point/owner/span identity, local bounds, canonical alias storage,
-   retained field bounds, address selectors and exact acquisition/result edges. Keep
-   reference-cell addresses distinct from pointee reads and retain the checked mode.
-3. Retain independent address/acquisition/result observations with shared path/effect/
-   work budgets, duplicate/conflict handling and atomic publication. Address visits
-   must not manufacture an acquisition or extend any borrow's authority or lifetime.
-4. Cover shared places, supported scalar exclusive places, aliases, owners/control,
-   malformed metadata and exact budgets in an independently useful boundary slice.
-5. Add required source cases and classified coverage, preserving existing fixtures
-   and capability pins. Run compiler/strict gates.
-6. Document validated observations, limitations and the concrete next producer.
+Reports retain exact local/field paths, canonical alias storage, checked shared/
+scalar-exclusive modes, control and independent per-address/acquisition/result
+flags. Precharged field counts survive local transfer without copying type shapes.
+Validation checks completed point/owner/span identities, parent/block agreement,
+local bounds, canonical storage, field bounds, selectors, operation registration
+and exact original edges. Reference-cell addresses remain distinct from pointees.
+An address-only visit grants no acquisition or result observation.
 
-Field-count capture is implemented with a precharged bounded vector, without
-copying type shapes or changing ordinary diagnostics. Regressions cover nested
-shared/exclusive paths after local transfer, exact capture work and atomic conflicts.
-Field-count prerequisite `ac590ac` passes all ten focused groups
-(`/tmp/meowy-place-counts.log`). Stage validation now checks point/owner/span,
-parent/block consistency, canonical storage, retained bounds, selectors and exact
-edges before collection (`97bda15`).
-All three validation groups pass, including 90 identity/path/edge faults and exact
-work limits (`/tmp/meowy-place-validation.log`). All 2139 library tests pass
-(`/tmp/meowy-place-validation-lib.log`). Aggregation now retains the exact place,
-canonical storage, checked mode/control and independent per-address/acquisition/result
-flags. Path indices and address flags share payload capacity; duplicates allocate
-nothing and conflicts fail before publication. Six focused groups pass. Five existing
-limit tests now allow exactly one slot for their root borrow's address flag; all
-2142 library tests pass (`/tmp/meowy-place-effects-lib.log`). The aggregation slice
-keeps its direct regressions inline to stay within eight files; broader scenario
-and boundary coverage follows separately. All-target Clippy passes
-(`/tmp/meowy-place-effects-clippy.log`).
-Aggregation is committed as `6de8c96`. Additional boundary tests now cover stopped
-successors, separate borrow producers, original diagnostics, canonical alias faults,
-shared payload/work/effect limits, conflicts and the maximum retained path. Focused
-validation passes all 12 groups (`/tmp/meowy-place-boundaries.log`). Shared indexed
-borrows retain their ordinary root-reference observation while element acquisition
-stays separate (`f4ebd60`). Four new source fixtures cover shared/exclusive places,
-reference cells, aliases, stopped successors, overlapping fields and local-field
-escape. All four pass in debug/release (`/tmp/meowy-place-sources.log`). Reviewed
-structural evidence is linked to memory/proof references and the coverage report is
-regenerated: 196 cases, 177 required and 19 pinned gaps. Preservation against
-`bef3b76` passes (`/tmp/meowy-place-preservation.log`); prior cases/assets, reference
-contracts/hashes, proof obligations and capability exceptions remain unchanged.
-The complete compiler/strict gates and final documentation handoff remain next.
-Each implementation slice includes focused regressions; the full compiler gate
-will validate the complete series. No reference contract changes are planned.
+Paths retain at most 256 fields. Copied indices and address flags share the
+262,144-entry payload limit with write paths, call arguments and output parts.
+Duplicate visits merge flags without another copy; conflicts or exhausted work/
+effect/payload budgets publish no partial collection. Stopped predecessors exclude
+later borrows from the same entry walk. Shared indexing may retain an ordinary
+root borrow while element acquisition stays with its separate producer.
 
-Indexed borrows, reborrows, projected references and temporary borrows retain their
-separate producers. Preserve original mutability, conflict, lifetime and capability
-diagnostics. These observations grant no new loan authority or proof outcome;
+Fourteen new internal groups cover field-count capture, shared/exclusive places,
+reference cells, aliases, owners/control, stopped paths, other producers and original
+mutability/conflict/lifetime/capability diagnostics. Ninety malformed identity/path/
+edge cases, eight merge conflicts, exact shared budgets and the maximum path are
+covered (`/tmp/meowy-place-counts.log`, `/tmp/meowy-place-boundaries.log`). Four
+required source cases pass in debug/release: shared/exclusive places, cells, aliases,
+stops, overlapping fields and local-field escape (`/tmp/meowy-place-sources.log`).
+Structural observations remain distinct from source conformance and proof evaluation.
+
+All ten compiler checks pass: 2148 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance (`/tmp/meowy-place-gate.log`).
+The 196 cases report 177 required passes, 19 pinned gaps and zero failures in both
+profiles. Strict mode exits 1 only for the same 19 gaps (`/tmp/meowy-place-strict.log`);
+all four final documentation checks pass (`/tmp/meowy-place-docs.log`). No selected
+check has an outstanding failure.
+Preservation against `bef3b76` confirms all 192 prior cases,
+224 source assets, 37 reference files, proof obligations, reference hashes and
+capability exceptions unchanged (`/tmp/meowy-place-preservation.log`). Unrelated
+`docs/programs/hey/` is preserved. No compiler capability or reference contract changed.
+
+Next implement bounded standalone temporary-borrow observations using
+`dependencies/temporary_borrows.rs` and `edges/forward/effects/`. Record the next
+commit plan before coding:
+
+1. Validate exact initializer/owner/parent/block/span identities, retained cell local
+   bounds and `Proofs.temporaries` statement registration, operation ownership and
+   original initializer/acquisition/result edges. A stopped initializer has no cell
+   or reference result; do not infer completion from successful checking.
+2. Report checked initializer/cell/control metadata with independent acquisition/
+   result visits, shared work/effect limits and atomic duplicate/conflict handling.
+   Reference-valued temporaries retain distinct cells, never pointee identities.
+3. Add stopped/nested/owner/control, statement-lifetime, malformed-identity and exact
+   budget coverage plus required source cases. Run compiler/strict gates and update
+   this handoff and the foundation guide.
+
+Indexed borrows, reborrows and projected references retain separate producers.
+Preserve full-statement temporary lifetimes and existing mutability, conflict and
+capability diagnostics. Observations grant no new borrow authority or proof outcome;
 `queries::finish` remains B001-gated.
 
 ## Documentation conventions and layout
@@ -2727,9 +2730,10 @@ subtraction retains its documented limits. No outstanding failures remain.
    observations. Boundary regressions (`da43cb7`), source cases (`c68e7f9`) and the
    compiler gate pass. Place-borrow record counts (`ac590ac`), validation (`97bda15`)
    and independent address/acquisition/result reports (`6de8c96`) now preserve
-   canonical alias storage, reference-cell identity and checked modes. Validate
-   boundary tests under `edges/forward/effects/borrows/`, add source coverage and
-   run compiler/strict gates, then document the next producer.
+   canonical alias storage, reference-cell identity and checked modes. Additional
+   boundary coverage (`f4ebd60`), source cases (`44e8b39`) and the compiler gate pass.
+   Next implement standalone temporary-borrow reports
+   from `dependencies/temporary_borrows.rs` using the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
