@@ -187,7 +187,7 @@ pub(crate) fn indirect_effects_copy_duplicate_origins_once_and_preserve_empty_co
         .extend([Port::Operation(id); 3]);
     assert_eq!(
         checker
-            .operation_effects_limited(&reports, Span::default(), expected.len(), 0, 1)
+            .operation_effects_limited(&reports, Span::default(), expected.len(), 1, 1)
             .unwrap(),
         expected
     );
@@ -197,7 +197,7 @@ pub(crate) fn indirect_effects_copy_duplicate_origins_once_and_preserve_empty_co
             complete,
         };
         let effects = checker
-            .operation_effects_limited(&reports, Span::default(), expected.len(), 0, 0)
+            .operation_effects_limited(&reports, Span::default(), expected.len(), 1, 0)
             .unwrap();
         let Effect::Indirect { origins, .. } = &effects[&id].1 else {
             panic!()

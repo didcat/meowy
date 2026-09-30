@@ -588,11 +588,19 @@ shared/exclusive paths after local transfer, exact capture work and atomic confl
 Field-count prerequisite `ac590ac` passes all ten focused groups
 (`/tmp/meowy-place-counts.log`). Stage validation now checks point/owner/span,
 parent/block consistency, canonical storage, retained bounds, selectors and exact
-edges before collection; observations remain Unknown until the aggregation slice.
+edges before collection (`97bda15`).
 All three validation groups pass, including 90 identity/path/edge faults and exact
 work limits (`/tmp/meowy-place-validation.log`). All 2139 library tests pass
-(`/tmp/meowy-place-validation-lib.log`). Aggregation is next; the complete compiler
-gate has not run for this series.
+(`/tmp/meowy-place-validation-lib.log`). Aggregation now retains the exact place,
+canonical storage, checked mode/control and independent per-address/acquisition/result
+flags. Path indices and address flags share payload capacity; duplicates allocate
+nothing and conflicts fail before publication. Six focused groups pass. Five existing
+limit tests now allow exactly one slot for their root borrow's address flag; all
+2142 library tests pass (`/tmp/meowy-place-effects-lib.log`). The aggregation slice
+keeps its direct regressions inline to stay within eight files; broader scenario
+and boundary coverage follows separately. All-target Clippy passes
+(`/tmp/meowy-place-effects-clippy.log`).
+The complete compiler gate has not run for this series.
 Each implementation slice includes focused regressions; the full compiler gate
 will validate the complete series. No reference contract changes are planned.
 

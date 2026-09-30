@@ -106,7 +106,7 @@ pub(crate) fn index_effects_share_capacity_without_variable_payload_copies() {
             &reports,
             Span::default(),
             expected.len() - spare,
-            0,
+            1,
             0,
         );
         assert_eq!(result.is_ok(), spare == 0);

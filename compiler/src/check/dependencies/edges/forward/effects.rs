@@ -75,6 +75,7 @@ pub(crate) enum Effect {
     Narrowing(narrowing::Observed),
     Coercion(coercions::Observed),
     Typed(typed::Observed),
+    Borrow(borrows::Observed),
     Unknown,
 }
 
@@ -105,7 +106,17 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_place_borrow(reports, owner, port, span)?;
+                if self.validate_place_borrow(reports, owner, port, span)? {
+                    self.record_place_borrow_effect(
+                        owner,
+                        port,
+                        &mut effects,
+                        limit,
+                        &mut parts,
+                        span,
+                    )?;
+                    continue;
+                }
                 if let Some(stage) = self.typed_effect_stage(reports, owner, port, span)? {
                     self.record_typed_effect(stage, &mut effects, limit, span)?;
                     continue;
