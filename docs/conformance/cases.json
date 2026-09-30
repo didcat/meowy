@@ -2062,6 +2062,46 @@
         "code": "E202"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "place_borrow_shared_places",
+      "phase": "run",
+      "source": "sources/place_borrow_shared_places.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n3\n11\n22\ndone\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "place_borrow_exclusive_places",
+      "phase": "run",
+      "source": "sources/place_borrow_exclusive_places.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "8\n4\ntrue\n2.5\n12\n23\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "place_borrow_overlapping_field",
+      "phase": "check",
+      "source": "sources/place_borrow_overlapping_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "place_borrow_field_escape",
+      "phase": "check",
+      "source": "sources/place_borrow_field_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
     }
   ]
 }

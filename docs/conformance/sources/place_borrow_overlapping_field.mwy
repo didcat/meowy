@@ -1,0 +1,5 @@
+row : { -> inner : { -> n := 1; -> other := 2 } }
+p : row.inner.&!n
+q : row.inner.&n
+@"debug".print(*p)
+@"debug".print(*q)

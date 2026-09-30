@@ -1,0 +1,25 @@
+d : @"debug"
+n <uint8> := 7
+p : &!n
+*p = 8
+d.print(*p)
+row : { -> inner : { -> n := 1 } }
+field : row.inner.&!n
+*field = 4
+d.print(*field)
+flag := false
+view : &!flag
+*view = true
+d.print(*view)
+ratio <float32> := 1.25
+value : &!ratio
+*value = 2.5
+d.print(*value)
+choose : (flag <boolean>) 'out {
+    |flag| { 'out -> n := 11; view : &!n; *view = 12 }
+    |!flag| { 'out -> n := 22; view : &!n; *view = 23 }
+}
+a : choose(true)
+b : choose(false)
+d.print(a.n)
+d.print(b.n)

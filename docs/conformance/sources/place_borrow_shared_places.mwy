@@ -1,0 +1,21 @@
+d : @"debug"
+n : 7
+p : &n
+cell : &p
+copy : *cell
+d.print(*copy)
+row : { -> a : 1; -> inner : { -> x : 2; -> y : 3 } }
+field : row.inner.&y
+d.print(*field)
+choose : (flag <boolean>) 'out {
+    |flag| { 'out -> n := 11; view : &n; d.print(*view) }
+    |!flag| { 'out -> n := 22; view : &n; d.print(*view) }
+}
+choose(true)
+choose(false)
+'done {
+    'done.leave()
+    skipped : &n
+    d.print(*skipped)
+}
+d.print("done")

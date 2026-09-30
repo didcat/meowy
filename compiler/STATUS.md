@@ -605,7 +605,14 @@ successors, separate borrow producers, original diagnostics, canonical alias fau
 shared payload/work/effect limits, conflicts and the maximum retained path. Focused
 validation passes all 12 groups (`/tmp/meowy-place-boundaries.log`). Shared indexed
 borrows retain their ordinary root-reference observation while element acquisition
-stays separate. Source conformance and the complete compiler gate remain pending.
+stays separate (`f4ebd60`). Four new source fixtures cover shared/exclusive places,
+reference cells, aliases, stopped successors, overlapping fields and local-field
+escape. All four pass in debug/release (`/tmp/meowy-place-sources.log`). Reviewed
+structural evidence is linked to memory/proof references and the coverage report is
+regenerated: 196 cases, 177 required and 19 pinned gaps. Preservation against
+`bef3b76` passes (`/tmp/meowy-place-preservation.log`); prior cases/assets, reference
+contracts/hashes, proof obligations and capability exceptions remain unchanged.
+The complete compiler/strict gates and final documentation handoff remain next.
 Each implementation slice includes focused regressions; the full compiler gate
 will validate the complete series. No reference contract changes are planned.
 
