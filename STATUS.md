@@ -24,11 +24,12 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-coercion-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next add bounded predicate and ascription observations, preserving stopped operands
-and the separation between compile-time targets and runtime inputs. The
-[compiler handoff](compiler/STATUS.md#bounded-coercion-observations) records the ordered
-next work. No target type, predicate truth or proof outcome is inferred from stage
-flags. Unrelated `docs/programs/hey/` work is preserved.
+Predicate and ascription observations are implemented with validated operand roots
+and independent operation/result flags. All 143 effect-report groups pass; exclusion/
+budget tests, source cases and final gates remain next. The
+[compiler handoff](compiler/STATUS.md#bounded-predicate-and-ascription-observations)
+records the plan. No target type, predicate truth or proof outcome is inferred.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 

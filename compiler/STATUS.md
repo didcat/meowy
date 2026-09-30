@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Coercion observations pass the compiler gate; predicates/ascriptions are next.
+Updated: 2026-09-29. Bounded predicate and ascription observations are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -566,6 +566,33 @@ and `edges/forward/effects/`. Record a dependency-ordered commit plan before cod
 Infer no target type, predicate truth, refined value, ownership permission or proof
 outcome from these stage flags. Preserve E208, operand/target diagnostic precedence
 and the `queries::finish` B001 boundary; no borrow authority is granted.
+
+## Bounded predicate and ascription observations
+
+`typed.rs` retains Predicate/Ascription kinds, exact operand roots and normal/control
+flags after ordinary checking. Stopped operands retain entry only; no-op ascriptions
+retain operation/result stages even if their HIR wrapper disappears. Target construction
+has separate compile-time inputs. Reuse these decisions without inferring target types,
+predicate truth, refined values or proof outcomes.
+
+Dependency-ordered commit plan:
+
+1. Validate roots, owners, spans, kinds, normal flags and exact edges; retain independent
+   operation/result observations with focused predicate/ascription regressions.
+2. Cover stopped operands, computed targets and required/type-query/pending exclusions;
+   test malformed metadata, conflicts and exact shared budgets with original diagnostics.
+3. Add required source cases for guarded/nested operations, operand order, stops and
+   diagnostic precedence; update classified conformance coverage.
+4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
+
+Predicate/ascription capture and aggregation pass all 143 effect-report groups
+(`/tmp/meowy-typed-effects-reports.log`). Three new groups cover checked kinds,
+erased ascriptions, inner calls/branches, owners/control, mutable guards and separate
+operation/result visits. Root spans, completed operand/parent/block/owner identities,
+normal flags, exact edges and operation registration are validated. Operand spans
+remain distinct from the full suffix-expression span. Formatting and whitespace
+checks pass. Step 1 is ready to commit; exclusions and malformed metadata/budgets are next.
+Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
 

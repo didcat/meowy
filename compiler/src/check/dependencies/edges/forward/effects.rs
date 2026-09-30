@@ -10,6 +10,7 @@ mod narrowing;
 mod outputs;
 mod reads;
 mod scalars;
+mod typed;
 mod unary;
 
 use super::{entries::Reports, *};
@@ -72,6 +73,7 @@ pub(crate) enum Effect {
     Heap(heaps::Observed),
     Narrowing(narrowing::Observed),
     Coercion(coercions::Observed),
+    Typed(typed::Observed),
     Unknown,
 }
 
@@ -101,6 +103,10 @@ impl Checker {
             for &port in &walk.ports {
                 if !self.flow.spend(1) {
                     return Err(budget());
+                }
+                if let Some(stage) = self.typed_effect_stage(reports, owner, port, span)? {
+                    self.record_typed_effect(stage, &mut effects, limit, span)?;
+                    continue;
                 }
                 if let Some(stage) = self.coercion_effect_stage(reports, owner, port, span)? {
                     self.record_coercion_effect(stage, &mut effects, limit, span)?;

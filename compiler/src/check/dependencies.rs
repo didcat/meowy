@@ -358,7 +358,7 @@ mod fields;
 pub(crate) use fields::Field;
 
 mod typed;
-pub(crate) use typed::Typed;
+pub(crate) use typed::{Kind as TypedKind, Typed};
 
 mod coercions;
 pub(crate) use coercions::{Coercion, Kind as CoercionKind};
