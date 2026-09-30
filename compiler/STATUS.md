@@ -585,9 +585,14 @@ Dependency-ordered commit plan:
 Field-count capture is implemented with a precharged bounded vector, without
 copying type shapes or changing ordinary diagnostics. Regressions cover nested
 shared/exclusive paths after local transfer, exact capture work and atomic conflicts.
-All ten focused place-borrow groups pass (`/tmp/meowy-place-counts.log`), including
-exact capture work and sticky-budget isolation. Formatting passes. Stage validation
-and aggregation remain next; the complete compiler gate has not run for this series.
+Field-count prerequisite `ac590ac` passes all ten focused groups
+(`/tmp/meowy-place-counts.log`). Stage validation now checks point/owner/span,
+parent/block consistency, canonical storage, retained bounds, selectors and exact
+edges before collection; observations remain Unknown until the aggregation slice.
+All three validation groups pass, including 90 identity/path/edge faults and exact
+work limits (`/tmp/meowy-place-validation.log`). All 2139 library tests pass
+(`/tmp/meowy-place-validation-lib.log`). Aggregation is next; the complete compiler
+gate has not run for this series.
 Each implementation slice includes focused regressions; the full compiler gate
 will validate the complete series. No reference contract changes are planned.
 
