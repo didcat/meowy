@@ -1,0 +1,2 @@
+d : @"debug"
+result : d.panic("must not execute")<Missing>

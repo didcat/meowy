@@ -1,0 +1,19 @@
+d : @"debug"
+value <int32> : () {
+    d.print("operand")
+    -> 7
+}
+d.print(value()<int32>)
+d.print(value()~<int32>)
+d.print(7<boolean>)
+d.print(7<never>)
+d.print(((false && true)<boolean>)~<boolean>)
+v <int32><null> := 8
+| v<int32> | d.print(v~<int32>)
+v = null
+d.print(v<null>)
+row : { -> n <int32><null> : 9 }
+| row.n<int32> | d.print(row.n~<int32>)
+n : 2
+xs : [1, 2]~<({ -> <int32[n]> })>
+d.print(xs.size())

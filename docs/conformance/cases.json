@@ -2018,6 +2018,50 @@
         "stdout": "7\n8\n9\ntrue\n"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "typed_effect_values",
+      "phase": "run",
+      "source": "sources/typed_effect_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "operand\ntrue\noperand\n7\nfalse\nfalse\ntrue\n8\ntrue\n9\n2\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "typed_effect_stopped_predicate",
+      "phase": "run",
+      "source": "sources/typed_effect_stopped_predicate.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "operand\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "typed_effect_stopped_ascription",
+      "phase": "run",
+      "source": "sources/typed_effect_stopped_ascription.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "operand\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "typed_effect_target_after_stop",
+      "phase": "check",
+      "source": "sources/typed_effect_target_after_stop.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E202"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

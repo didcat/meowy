@@ -595,7 +595,13 @@ checks pass. Step 1 is committed (`a031d11`). All nine typed-effect groups pass
 (`/tmp/meowy-typed-effects-limits.log`): stopped operands/successors, computed targets,
 required/type-query/pending exclusions, 100 corrupt source/edge cases, six merge
 conflicts and exact shared limits. E201/E202/E107/E208/E302 precedence and the B001
-proof gate remain unchanged. Step 2 is ready to commit; required source coverage is next.
+proof gate remain unchanged. Step 2 is committed (`da43cb7`). All four required source
+cases pass in debug/release for nested/guarded operations, computed targets, operand
+order, stopped inputs and target checking after a stop (`/tmp/meowy-typed-effects-sources.log`).
+Catalog/coverage checks pass for 192 cases. Preservation against `1e3306a` confirms all
+188 prior cases, 220 source assets, 37 references, proof obligations, hashes and
+capability exceptions unchanged (`/tmp/meowy-typed-effects-preservation.log`). Step 3
+is ready to commit; guide updates and compiler/strict gates remain next.
 Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout

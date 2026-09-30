@@ -1,0 +1,7 @@
+d : @"debug"
+stop <never> : () {
+    d.print("operand")
+    d.panic("stop")
+}
+result : stop()~<int32>
+d.print("unexpected result")
