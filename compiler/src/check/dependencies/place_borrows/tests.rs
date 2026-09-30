@@ -17,6 +17,7 @@ pub(crate) fn place_borrows_capture_addresses_without_operand_or_pointee_reads()
     for (&id, borrow) in &checker.place_borrows {
         assert_eq!(borrow.mode, hir::ReferenceMode::Shared);
         assert_eq!(borrow.storage, borrow.place.root);
+        assert_eq!(borrow.counts, vec![1; borrow.place.fields.len()]);
         assert!(checker.points.iter().all(|point| point.parent != Some(id)));
         assert_eq!(
             borrow.edges[0],
@@ -79,6 +80,7 @@ pub(crate) fn place_borrows_preserve_canonical_alias_storage_and_source_member_t
         let alias = &checker.proofs.aliases[&borrow.place.root];
         assert_eq!(borrow.storage, alias.root);
         assert_eq!(alias.borrowed, Some(borrow.span));
+        assert!(borrow.counts.is_empty());
         assert_ne!(borrow.owner, 0);
     }
 }
@@ -169,4 +171,68 @@ pub(crate) fn place_borrows_validate_paths_types_and_atomic_shared_budget_public
     assert!(checker.place_borrows.is_empty());
     assert_eq!(checker.place_borrow_edges, 0);
     assert_eq!(checker.points.len(), points);
+}
+
+#[test]
+pub(crate) fn place_borrows_retain_field_bounds_after_local_transfer() {
+    for mode in ["&", "&!"] {
+        let source = format!("r:{{->a:0;->inner:{{->x:1;->y:=2;->z:3}}}};p:{mode}(r.inner.y)");
+        crate::compile(&source).unwrap();
+        let (mut checker, body) = check(&source);
+        let (&id, op) = checker.place_borrows.first_key_value().unwrap();
+        assert_eq!(op.place.fields, [1, 1]);
+        assert_eq!(op.counts, [2, 3]);
+        let prior = op.clone();
+        let program = hir::Program {
+            body,
+            functions: Vec::new(),
+            locals: std::mem::take(&mut checker.locals),
+        };
+        checker.entry_reports(&program, Span::default()).unwrap();
+        assert!(checker.locals.is_empty());
+        assert_eq!(checker.place_borrows[&id], prior);
+    }
+}
+
+#[test]
+pub(crate) fn place_borrow_counts_share_capture_work_and_conflict_checks() {
+    let (mut checker, block) = check("r:{->a:0;->inner:{->x:1;->y:2;->z:3}};p:&(r.inner.y)");
+    let hir::Stmt::Bind { value, .. } = &block.stmts[1] else {
+        panic!()
+    };
+    let (&id, op) = checker.place_borrows.first_key_value().unwrap();
+    let span = op.span;
+    let expected = op.clone();
+    checker.place_borrows.clear();
+    checker.place_borrow_edges = 0;
+    let before = checker.flow.work;
+    checker.place_borrow_operation(id, value, span).unwrap();
+    let work = checker.flow.work - before;
+    for spare in [0, 1] {
+        checker.place_borrows.clear();
+        checker.place_borrow_edges = 0;
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - work + spare;
+        let result = checker.place_borrow_operation(id, value, span);
+        assert_eq!(result.is_ok(), spare == 0);
+        if result.is_ok() {
+            assert_eq!(checker.place_borrows[&id], expected);
+        } else {
+            assert!(checker.place_borrows.is_empty());
+            assert_eq!(checker.place_borrow_edges, 0);
+        }
+    }
+    checker.flow = crate::flow::Flow::default();
+    checker.place_borrow_operation(id, value, span).unwrap();
+    checker.place_borrows.get_mut(&id).unwrap().counts[0] += 1;
+    let before = checker.place_borrows.clone();
+    let edges = checker.place_borrow_edges;
+    assert!(
+        checker
+            .place_borrow_operation(id, value, span)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(checker.place_borrows, before);
+    assert_eq!(checker.place_borrow_edges, edges);
 }

@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-09-29. This is the current project handoff; Git retains prior work.
+Updated: 2026-09-30. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -24,10 +24,10 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-typed-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next retain record counts for validating field paths, then report ordinary
-place-borrow addresses, acquisitions and results. The
-[compiler handoff](compiler/STATUS.md#bounded-predicate-and-ascription-observations)
-records the ordered next work. Reference-cell identity, canonical alias storage and
+Ordinary place-borrow observation work is in progress: retain record counts for
+validating field paths, then report addresses, acquisitions and results. The
+[compiler handoff](compiler/STATUS.md#bounded-ordinary-place-borrow-observations)
+records the ordered commit plan. Reference-cell identity, canonical alias storage and
 existing lifetime/conflict rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 

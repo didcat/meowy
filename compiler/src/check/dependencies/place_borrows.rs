@@ -13,6 +13,7 @@ use crate::{
 pub(crate) struct Borrow {
     pub(crate) owner: usize,
     pub(crate) place: hir::Place,
+    pub(crate) counts: Vec<usize>,
     pub(crate) storage: hir::LocalId,
     pub(crate) mode: hir::ReferenceMode,
     pub(crate) control: bool,
@@ -46,7 +47,7 @@ impl Checker {
         };
         if place.fields.len() > crate::list::MAX_WRITE_PATH
             || !self.flow.spend(
-                place.fields.len() * 2
+                place.fields.len() * 3
                     + self.place_borrows.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.places.len().checked_ilog2().unwrap_or(0) as usize
@@ -71,10 +72,12 @@ impl Checker {
             return Err(invalid());
         }
         let mut ty = self.locals.get(place.root).ok_or_else(invalid)?;
+        let mut counts = Vec::with_capacity(place.fields.len());
         for field in &place.fields {
             let hir::Type::Record { fields, .. } = ty else {
                 return Err(invalid());
             };
+            counts.push(fields.len());
             ty = &fields.get(*field).ok_or_else(invalid)?.ty;
         }
         let size = crate::borrow_contract::type_weight(ty, &mut self.flow, span)?;
@@ -101,6 +104,7 @@ impl Checker {
         let borrow = Borrow {
             owner: self.owner,
             place: place.clone(),
+            counts,
             storage,
             mode,
             control: self.control,

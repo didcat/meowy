@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Predicate/ascription reports pass the compiler gate; place borrows are next.
+Updated: 2026-09-30. Ordinary place-borrow observation work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -557,9 +557,15 @@ Preservation against `1e3306a` confirms all 188 prior cases, 220 source assets,
 unchanged (`/tmp/meowy-typed-effects-preservation.log`). Unrelated `docs/programs/hey/`
 is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded ordinary place-borrow observations using
-`dependencies/place_borrows.rs` and `edges/forward/effects/`. Record a dependency-ordered
-commit plan before coding:
+## Bounded ordinary place-borrow observations
+
+The producer already retains exact local/storage identities, checked modes and
+address/acquisition/result edges. It validates field paths against source-local
+types, which leave the checker before reports are collected; reports therefore
+need retained field counts. Existing reports treat borrow operations as Unknown.
+The tree is otherwise clean apart from unrelated `docs/programs/hey/`.
+
+Dependency-ordered commit plan:
 
 1. Retain bounded per-field record counts while the producer checks source-local
    types, so reports can validate field indices after locals transfer into the program.
@@ -571,8 +577,19 @@ commit plan before coding:
    work budgets, duplicate/conflict handling and atomic publication. Address visits
    must not manufacture an acquisition or extend any borrow's authority or lifetime.
 4. Cover shared places, supported scalar exclusive places, aliases, owners/control,
-   malformed metadata and exact budgets; add required source cases and classified
-   coverage. Run focused checks and compiler/strict gates, then update the handoff.
+   malformed metadata and exact budgets in an independently useful boundary slice.
+5. Add required source cases and classified coverage, preserving existing fixtures
+   and capability pins. Run compiler/strict gates.
+6. Document validated observations, limitations and the concrete next producer.
+
+Field-count capture is implemented with a precharged bounded vector, without
+copying type shapes or changing ordinary diagnostics. Regressions cover nested
+shared/exclusive paths after local transfer, exact capture work and atomic conflicts.
+All ten focused place-borrow groups pass (`/tmp/meowy-place-counts.log`), including
+exact capture work and sticky-budget isolation. Formatting passes. Stage validation
+and aggregation remain next; the complete compiler gate has not run for this series.
+Each implementation slice includes focused regressions; the full compiler gate
+will validate the complete series. No reference contract changes are planned.
 
 Indexed borrows, reborrows, projected references and temporary borrows retain their
 separate producers. Preserve original mutability, conflict, lifetime and capability
