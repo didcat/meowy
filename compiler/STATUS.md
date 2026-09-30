@@ -591,7 +591,11 @@ erased ascriptions, inner calls/branches, owners/control, mutable guards and sep
 operation/result visits. Root spans, completed operand/parent/block/owner identities,
 normal flags, exact edges and operation registration are validated. Operand spans
 remain distinct from the full suffix-expression span. Formatting and whitespace
-checks pass. Step 1 is ready to commit; exclusions and malformed metadata/budgets are next.
+checks pass. Step 1 is committed (`a031d11`). All nine typed-effect groups pass
+(`/tmp/meowy-typed-effects-limits.log`): stopped operands/successors, computed targets,
+required/type-query/pending exclusions, 100 corrupt source/edge cases, six merge
+conflicts and exact shared limits. E201/E202/E107/E208/E302 precedence and the B001
+proof gate remain unchanged. Step 2 is ready to commit; required source coverage is next.
 Preserve `docs/programs/hey/` and all existing capability gates.
 
 ## Documentation conventions and layout
