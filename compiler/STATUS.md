@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-29. Bounded predicate and ascription observations are in progress.
+Updated: 2026-09-29. Predicate/ascription reports pass the compiler gate; place borrows are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -506,103 +506,78 @@ narrowed values, same-value identities, borrow authority or proof outcomes infer
 
 ## Bounded coercion observations
 
+Validated reports (`912e62d`) retain exact raw sources, Forward/Convert/Stopped
+kinds and independent projection/conversion/result observations. Forwarding,
+direct/projected Never and shared-reference exclusions remain distinct. Boundary
+tests (`16d183f`) and source cases (`00fb650`) remain covered by the current gates
+below. Duplicate/conflict handling and shared limits publish no partial collection.
+No target values, transfers, borrow authority or proof outcomes are inferred.
+
+## Bounded predicate and ascription observations
+
 The dependency-ordered implementation series is complete:
 
 | Reviewable slice | Commit |
 | --- | --- |
-| Validate and retain independent coercion stages | `912e62d` |
-| Cover stops, reborrow separation and exact budgets | `16d183f` |
-| Pin contextual projection, order, stops and shared paths | `00fb650` |
+| Validate and retain predicate/ascription stages | `a031d11` |
+| Cover exclusions, diagnostic precedence and exact budgets | `da43cb7` |
+| Pin operands, computed targets, stops and guarded results | `c68e7f9` |
 
-Reports retain exact raw sources, Forward/Convert/Stopped decisions, primary/control
-flags and independent projection/conversion/result observations. Capture validates
-complete roots, matching spans, parent/block/owner agreement, expression/short-circuit
-source kinds, selectors and exact original edges. Forwarding creates no operation;
-direct stops produce no observations, while projected Never can retain its projection
-without a conversion or result. Only conversion operation/result visits require
-registered operation owners. Duplicate visits merge flags; conflicts and shared
-work/effect limits publish no partial collection or metadata changes.
+Reports retain exact operand roots, checked Predicate/Ascription kinds, normal/control
+flags and independent operation/result observations, including erased no-op ascriptions.
+Capture validates completed expression points, root spans, parent/block/owner
+agreement, supported operand kinds, exact original edges and registered operation
+owners. Operand spans remain distinct from the complete suffix expression. Stopped
+operands gain no observations; a stopped predecessor excludes later operations from
+the same entry walk. Duplicate visits merge flags;
+conflicts and shared work/effect limits publish no partial collection or metadata changes.
 
-Composed fallback and expected-value paths retain their original inner call/branch
-identities and evaluation order. Shared reborrows, unchanged shared forwarding,
-required evaluation and source-free helpers remain separate. No target types or
-values are copied, and stage flags infer no transfer, borrow authority or proof
-outcome. Ordinary E207/E208/E302 diagnostics and capability gates remain unchanged.
+Computed target reads, required evaluation, type queries and pending proof descriptors
+remain separate from runtime operand links. Reports copy no target types or values
+and infer no predicate truth, refined values, borrow authority or proof outcomes. Ordinary
+operand/target error precedence, E208 and the final B001 proof gate are preserved.
 
-Nine new internal groups cover direct/primary forwarding and conversion, owners/
-control, calls/branches, independent visits, direct/projected Never, required paths
-and shared-reference separation. One hundred sixteen corrupt identity/edge/selector
-cases, six merge conflicts and exact shared limits preserve atomic failure
-(`/tmp/meowy-coercion-effects-limits.log`). Four required source cases pass in
-both profiles: primary/union contexts, argument order, stopped input and shared
-reference paths (`/tmp/meowy-coercion-effects-sources.log`). Projected Never evidence
-is structural; these reports do not establish runtime reachability or proof results.
+Nine new internal groups cover predicates/ascriptions, erased wrappers, nested branches,
+function owners/control, mutable guards, independent visits, computed targets and
+stopped/required/query exclusions. One hundred corrupt source/edge cases, six merge
+conflicts and exact shared limits preserve atomic failure
+(`/tmp/meowy-typed-effects-limits.log`). Four required source cases pass in debug/release:
+operand execution, nested/guarded operations, computed targets, both stopped suffixes
+and target checking after a stop (`/tmp/meowy-typed-effects-sources.log`). Structural
+reports remain separate from observable language conformance and proof evaluation.
 
-All ten compiler checks pass: 2125 library/914 native tests, 32 tooling and 30 harness
+All ten compiler checks pass: 2134 library/914 native tests, 32 tooling and 30 harness
 groups, formatting, Clippy, build, coverage and conformance;
-`/tmp/meowy-coercion-effects-gate.log`. The 188 cases report 169 required passes,
+`/tmp/meowy-typed-effects-gate.log`. The 192 cases report 173 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-coercion-effects-strict.log`); all four final documentation
-checks pass (`/tmp/meowy-coercion-effects-docs.log`). No selected check has an outstanding failure.
-Preservation against `5e37849` confirms all 184 prior cases, 216 source assets,
+only for those gaps (`/tmp/meowy-typed-effects-strict.log`); all four final documentation
+checks pass (`/tmp/meowy-typed-effects-docs.log`). No selected check has an outstanding failure.
+Preservation against `1e3306a` confirms all 188 prior cases, 220 source assets,
 37 reference files, proof obligations, reference hashes and capability exceptions
-unchanged (`/tmp/meowy-coercion-effects-preservation.log`). Unrelated `docs/programs/hey/`
+unchanged (`/tmp/meowy-typed-effects-preservation.log`). Unrelated `docs/programs/hey/`
 is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded predicate and ascription observations using `dependencies/typed.rs`
-and `edges/forward/effects/`. Record a dependency-ordered commit plan before coding:
+Next implement bounded ordinary place-borrow observations using
+`dependencies/place_borrows.rs` and `edges/forward/effects/`. Record a dependency-ordered
+commit plan before coding:
 
-1. Validate exact operand/parent/block/owner identities, spans, Predicate/Ascription
-   kinds, normal/control flags, original edges and registered operation owners.
-2. Retain independent operation/result observations, including no-op ascriptions;
-   stopped operands produce neither observation. Preserve inner call/branch order
-   and keep compile-time target work separate from runtime operand links.
-3. Cover immutable/mutable guards, nested predicates/ascriptions, computed targets,
-   owners/control, stopped operands and required/type-query/pending-query exclusions.
-   Check corrupt metadata, duplicate/conflicting stages and exact shared budgets.
-4. Add required source cases and classified coverage; update the guide and handoff,
-   then run focused checks and compiler/strict gates.
+1. Retain bounded per-field record counts while the producer checks source-local
+   types, so reports can validate field indices after locals transfer into the program.
+   Charge capture work before copying, preserve error order and copy no type shapes.
+2. Validate complete point/owner/span identity, local bounds, canonical alias storage,
+   retained field bounds, address selectors and exact acquisition/result edges. Keep
+   reference-cell addresses distinct from pointee reads and retain the checked mode.
+3. Retain independent address/acquisition/result observations with shared path/effect/
+   work budgets, duplicate/conflict handling and atomic publication. Address visits
+   must not manufacture an acquisition or extend any borrow's authority or lifetime.
+4. Cover shared places, supported scalar exclusive places, aliases, owners/control,
+   malformed metadata and exact budgets; add required source cases and classified
+   coverage. Run focused checks and compiler/strict gates, then update the handoff.
 
-Infer no target type, predicate truth, refined value, ownership permission or proof
-outcome from these stage flags. Preserve E208, operand/target diagnostic precedence
-and the `queries::finish` B001 boundary; no borrow authority is granted.
-
-## Bounded predicate and ascription observations
-
-`typed.rs` retains Predicate/Ascription kinds, exact operand roots and normal/control
-flags after ordinary checking. Stopped operands retain entry only; no-op ascriptions
-retain operation/result stages even if their HIR wrapper disappears. Target construction
-has separate compile-time inputs. Reuse these decisions without inferring target types,
-predicate truth, refined values or proof outcomes.
-
-Dependency-ordered commit plan:
-
-1. Validate roots, owners, spans, kinds, normal flags and exact edges; retain independent
-   operation/result observations with focused predicate/ascription regressions.
-2. Cover stopped operands, computed targets and required/type-query/pending exclusions;
-   test malformed metadata, conflicts and exact shared budgets with original diagnostics.
-3. Add required source cases for guarded/nested operations, operand order, stops and
-   diagnostic precedence; update classified conformance coverage.
-4. Update the guide, run compiler/strict gates and leave the next bounded handoff.
-
-Predicate/ascription capture and aggregation pass all 143 effect-report groups
-(`/tmp/meowy-typed-effects-reports.log`). Three new groups cover checked kinds,
-erased ascriptions, inner calls/branches, owners/control, mutable guards and separate
-operation/result visits. Root spans, completed operand/parent/block/owner identities,
-normal flags, exact edges and operation registration are validated. Operand spans
-remain distinct from the full suffix-expression span. Formatting and whitespace
-checks pass. Step 1 is committed (`a031d11`). All nine typed-effect groups pass
-(`/tmp/meowy-typed-effects-limits.log`): stopped operands/successors, computed targets,
-required/type-query/pending exclusions, 100 corrupt source/edge cases, six merge
-conflicts and exact shared limits. E201/E202/E107/E208/E302 precedence and the B001
-proof gate remain unchanged. Step 2 is committed (`da43cb7`). All four required source
-cases pass in debug/release for nested/guarded operations, computed targets, operand
-order, stopped inputs and target checking after a stop (`/tmp/meowy-typed-effects-sources.log`).
-Catalog/coverage checks pass for 192 cases. Preservation against `1e3306a` confirms all
-188 prior cases, 220 source assets, 37 references, proof obligations, hashes and
-capability exceptions unchanged (`/tmp/meowy-typed-effects-preservation.log`). Step 3
-is ready to commit; guide updates and compiler/strict gates remain next.
-Preserve `docs/programs/hey/` and all existing capability gates.
+Indexed borrows, reborrows, projected references and temporary borrows retain their
+separate producers. Preserve original mutability, conflict, lifetime and capability
+diagnostics. These observations grant no new loan authority or proof outcome;
+`queries::finish` remains B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2705,14 +2680,16 @@ subtraction retains its documented limits. No outstanding failures remain.
    regressions (`a86b02f`), source cases (`ef17f36`) and the compiler gate pass.
    Coercion reports (`912e62d`) now retain Forward/Convert/Stopped decisions and
    independent projection/conversion/result visits. Boundary regressions (`16d183f`),
-   source cases (`00fb650`) and the compiler gate pass. Next validate
-   operand identities, Predicate/Ascription kinds, normal/control flags and original
-   stage edges in `dependencies/typed.rs`, then retain bounded observations under
-   `edges/forward/effects/`. Preserve no-op ascriptions, stopped operands, inner calls/
-   branches, compile-time targets and required/type-query/pending-query exclusions.
-   Add identity/budget/source coverage and run compiler/strict gates. Infer no target
-   types, predicate truth, refined values, borrow authority or proof outcomes from
-   these stage flags.
+   source cases (`00fb650`) and the compiler gate pass. Predicate/ascription reports
+   (`a031d11`) now retain checked kinds, operands and independent operation/result
+   observations. Boundary regressions (`da43cb7`), source cases (`c68e7f9`) and the
+   compiler gate pass. Next retain bounded per-field record counts
+   in `dependencies/place_borrows.rs`, then validate and report ordinary place-borrow
+   addresses/acquisitions/results under `edges/forward/effects/`. Preserve canonical
+   alias storage, reference-cell identity and checked shared/scalar-exclusive modes.
+   Add malformed path/selector/budget/source coverage and run compiler/strict gates.
+   Indexed/projected/temporary borrows and reborrows stay separate; no observation
+   may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
    Preserve owners and required roots. Keep result availability
    separate from field/value provenance, and exclude backedges from acyclic walks

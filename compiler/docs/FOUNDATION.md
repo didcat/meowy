@@ -473,6 +473,18 @@ publish no partial collection. Composed fallbacks and expected contexts preserve
 inner call/branch identities. Shared reborrows, unchanged shared forwarding,
 required evaluation and uncaptured helpers remain separate. No target types or
 values are copied, and these flags infer no transfer, borrow authority or proof outcome.
+Predicate/ascription reports retain exact operand roots, checked operation kinds,
+normal/control flags and independent operation/result observations, including erased
+no-op ascriptions. Capture validates complete expression points, root spans,
+parent/block/owner agreement, supported operand kinds, exact original edges and
+registered operation owners. Operand spans remain distinct from the complete suffix
+expression. Stopped operands gain no observations; a stopped predecessor excludes
+later operations from the same entry walk.
+Duplicate visits merge flags; conflicting metadata or shared work/effect limits
+publish no partial collection. Computed target reads, required evaluation, type
+queries and pending proof descriptors remain separate from runtime inputs. Reports
+copy no target types or values and infer no predicate truth, refined value, borrow
+authority or proof outcome. Operand/target error precedence and E208 remain unchanged.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

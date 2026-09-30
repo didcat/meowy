@@ -7,29 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Coercion reports now retain exact raw sources, Forward/Convert/Stopped decisions,
-primary/control flags and independent projection/conversion/result observations.
-Forwarding, direct/projected Never, shared reborrows and required paths stay distinct.
-Nine new internal groups and four source cases cover contexts, argument order,
-stopped/shared-reference boundaries, malformed metadata, conflicts and exact budgets.
-Commits: `912e62d`, `16d183f`, `00fb650`.
+Predicate/ascription reports now retain exact operands, checked kinds, normal/control
+flags and independent operation/result observations, including erased ascriptions.
+Computed target work, required reads, type queries and pending descriptors stay separate.
+Nine new internal groups and four source cases cover nested/guarded operations,
+operand order, stops, diagnostic precedence, malformed metadata and exact budgets.
+Commits: `a031d11`, `da43cb7`, `c68e7f9`.
 
-All ten compiler checks pass: 2125 library/914 native and 62 Python test groups;
-`/tmp/meowy-coercion-effects-gate.log`. The catalog has 188 cases: 169 required passes,
+All ten compiler checks pass: 2134 library/914 native and 62 Python test groups;
+`/tmp/meowy-typed-effects-gate.log`. The catalog has 192 cases: 173 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-coercion-effects-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-coercion-effects-docs.log`).
+(`/tmp/meowy-typed-effects-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-typed-effects-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Predicate and ascription observations are implemented with validated operand roots
-and independent operation/result flags. All 143 effect-report groups pass; exclusion/
-budget tests, source cases and final gates remain next. The
+Next retain record counts for validating field paths, then report ordinary
+place-borrow addresses, acquisitions and results. The
 [compiler handoff](compiler/STATUS.md#bounded-predicate-and-ascription-observations)
-records the plan. No target type, predicate truth or proof outcome is inferred.
-Unrelated `docs/programs/hey/` work is preserved.
+records the ordered next work. Reference-cell identity, canonical alias storage and
+existing lifetime/conflict rules remain authoritative. Stage observations grant no
+new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
