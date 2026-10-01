@@ -340,7 +340,7 @@ mod methods;
 pub(crate) use methods::{Kind as MethodKind, Method};
 
 mod elements;
-pub(crate) use elements::{Access as ElementAccess, Element};
+pub(crate) use elements::{Access as ElementAccess, Element, Source as ElementSource};
 
 mod exclusive;
 pub(crate) use exclusive::Operation as ExclusiveOperation;

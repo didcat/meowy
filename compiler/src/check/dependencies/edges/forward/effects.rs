@@ -3,6 +3,7 @@ mod borrows;
 mod calls;
 mod coercions;
 mod derefs;
+mod elements;
 mod fields;
 mod heaps;
 mod indices;
@@ -110,6 +111,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.validate_element_borrow(reports, owner, port, span)?;
                 if self.validate_reborrow(reports, owner, port, span)? {
                     self.record_reborrow_effect(owner, port, &mut effects, limit, span)?;
                     continue;
