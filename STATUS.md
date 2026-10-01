@@ -7,26 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Reborrow reports retain exact parent roots, existing site IDs, checked parent/result
-modes, control and independent acquisition/result visits. Explicit shared/scalar-
-exclusive and implicit shared paths preserve existing permissions and lifetimes.
-Eleven new internal groups cover modes, nested sites, stops, diagnostics and shared
-limits. Four source cases pin execution, stopped parents and loan permissions.
-Commits: `6702ace`, `133ed62`, `ad414a1`, `3314092`.
+Shared element-borrow reports retain exact parent/index roots, source identities,
+capacity/length/site metadata and independent address/acquisition/result visits.
+Owned paths preserve canonical storage and field bounds; temporary cells keep their
+statement lifetimes. Stopped indices retain only earlier address observations.
+Seventeen new internal groups and five source cases cover sources, order, stops,
+dynamic bounds, loan/lifetime diagnostics and exact shared limits. The
+[compiler handoff](compiler/STATUS.md#bounded-shared-element-borrow-observations)
+lists the validated commit series.
 
-All ten compiler checks pass: 2170 library/914 native and 62 Python test groups;
-`/tmp/meowy-reborrow-gate.log`. The catalog has 204 cases: 185 required passes,
+All ten compiler checks pass: 2187 library/914 native and 62 Python test groups;
+`/tmp/meowy-element-gate.log`. The catalog has 209 cases: 190 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-reborrow-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-reborrow-docs.log`).
+(`/tmp/meowy-element-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-element-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Shared element-borrow reporting is in progress. The
+Next report exclusive indexed-borrow addresses, reservations and results. The
 [compiler handoff](compiler/STATUS.md#bounded-shared-element-borrow-observations)
-records the ordered commit plan. Existing source identities, bounds checks and
+records the ordered next work. Existing source identities, bounds checks and
 lifetime/conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 

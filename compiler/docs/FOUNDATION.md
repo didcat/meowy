@@ -527,12 +527,28 @@ work/effect exhaustion publish no partial collection. Unchanged shared forwardin
 indexed/projected borrows and temporary materialization stay separate. These
 observations describe child-loan creation without granting authority, extending
 lifetimes or evaluating proofs; ordinary move/conflict/permission errors remain intact.
+Shared element-borrow reports retain exact parent/index roots, source kinds, existing
+sites, capacity/optional initialized length, control and independent address,
+acquisition and result observations. Owned sources preserve bounded field indices,
+field counts and canonical storage after locals transfer; temporary sources retain
+their existing local/statement registration, while view storage stays opaque.
+Validation checks completed point/owner/parent/block/span identities, source bounds,
+temporary statement roots, selectors and exact original edges. Completing accesses
+require registered operation ownership; partial addresses validate without a terminal
+operation. A stopped parent produces no observation. A stopped index can retain the
+earlier address without acquisition or result. The Checked bounds condition remains
+explicit and does not establish success. Owned path copies share the payload budget
+below; views and temporaries copy only fixed-size metadata. Duplicate visits reuse
+records; conflicts and exhausted work/effect/payload limits publish no partial
+collection. These observations grant no new loan authority, source value, longer
+lifetime or proof outcome. Exclusive indexed paths and projected borrows remain separate.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
-effects. Each copied path is bounded by 256 steps. Path steps, borrow field indices
-and address flags, direct-call argument roots and observed output-part records
-share a limit of 262,144 copied entries.
+effects. Each copied path is bounded by 256 steps. Path steps, field indices and
+address flags for ordinary borrows, field indices and counts for element borrows,
+direct-call argument roots and observed output-part records share a limit of
+262,144 copied entries.
 Lookup and copy work are charged before allocation;
 duplicate operation ports copy a path once. Empty paths and owner mismatches are
 rejected. Aliases retain their shared canonical storage and distinct local IDs.

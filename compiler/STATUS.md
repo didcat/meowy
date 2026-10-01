@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Shared element-borrow observation work is in progress.
+Updated: 2026-09-30. Shared element-borrow reports pass the compiler gate; exclusive indexed paths are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -698,82 +698,79 @@ capability exceptions unchanged (`/tmp/meowy-reborrow-preservation.log`). Unrela
 
 ## Bounded shared element-borrow observations
 
-The producer retains parent/index roots, Source/Access metadata and exact stage
-edges. An owned Source::Place currently retains only its HIR path; reports need
-bounded field counts and canonical storage after local transfer. Temporary cells
-already retain local/statement registration. A stopped index retains its earlier
-Address port without acquisition/result edges. Unrelated `docs/programs/hey/`
-remains preserved.
+The dependency-ordered implementation series is complete:
 
-Dependency-ordered commit plan:
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain bounded source paths and canonical storage | `d013921` |
+| Validate sources, access and partial stages | `e1fa743` |
+| Report independent address/acquisition/result observations | `8644137` |
+| Cover source identities, aliases and loan boundaries | `c5abe07` |
+| Bound source payloads, duplicates and merge conflicts | `9d696e8` |
+| Pin receiver order, stopped inputs and dynamic bounds | `3fa8ab0` |
+| Pin loan conflicts and temporary escapes | `658a01c` |
+| Satisfy the test-helper visibility lint | `16cd21e` |
 
-1. Retain bounded Source::Place field counts and canonical storage during checking,
-   validating source-local paths and capacity without copying type shapes. Cover
-   nested paths, aliases, local transfer and exact capture limits.
-2. Validate exact parent/position roots, source facts, temporary registration, site/
-   capacity/length bounds, selectors and original stage edges. Keep partial address
-   visits separate from registered terminal operations; add focused identity tests.
-3. Report independent address/acquisition/result visits with bounded source payloads,
-   shared path/work/effect budgets and atomic duplicate/conflict handling. Stopped
-   parents gain no address; stopped positions may retain an earlier address without
-   acquisition/result. Preserve the Checked route and reference-cell distinction.
-4. Cover malformed owned/temporary source identities, canonical aliases, stopped
-   parents, other producers and ordinary bounds/loan/lifetime diagnostics.
-5. Cover exact shared work/effect/payload limits, maximum paths and atomic record
-   conflicts separately, keeping each boundary slice independently reviewable.
-6. Add required source execution/order/stopped-input/bounds cases and classified
-   coverage, preserving existing fixtures, contracts and capability exceptions.
-7. Add source loan/lifetime rejections separately, then run compiler/strict gates.
-8. Document validated observations and the concrete next producer in both handoffs
-   and the foundation guide.
+Reports retain exact parent/index roots, Source/Access metadata, retained sites,
+capacity/optional initialized length, control and independent address/acquisition/
+result flags. Owned source paths retain precharged field counts and canonical alias
+storage after local transfer; temporary sources preserve cell/statement registration.
+View storage remains opaque. No source values or type shapes are copied or inferred.
 
-Source::Place now retains canonical storage and precharged bounded field counts;
-source-local traversal validates field bounds and final list capacity without type
-copies. Regressions cover nested paths after local transfer, emitted aliases,
-malformed paths, exact work and atomic conflicts. All six producer groups pass
-(`/tmp/meowy-element-sources-capture.log`), as do all 2173 library tests
-(`/tmp/meowy-element-capture-lib.log`) and formatting. Report validation and
-aggregation remain next; the complete compiler gate has not run for this series.
-Source capture is committed as `d013921`. Stage validation now checks complete
-parent/index identities, selectors, access limits, original edges, canonical paths
-and temporary statement registration. Partial addresses require no terminal
-operation; completing accesses require its registered owner. Both focused groups
-pass (`/tmp/meowy-element-validation.log`), including 102 corrupt stage cases.
-All 2175 library tests pass without warnings (`/tmp/meowy-element-validation-lib.log`).
-Validation is committed as `e1fa743`. Reports now retain exact parent/source/access
-metadata, control and independent address/acquisition/result observations. Copied
-place indices/counts share the payload limit, and duplicate visits reuse the record.
-Six focused report groups cover all sources, nested paths, owners/control,
-independent visits and partial addresses before stopped positions
-(`/tmp/meowy-element-effects.log`). All 2179 library tests pass
-(`/tmp/meowy-element-effects-lib.log`), as does formatting. Broader source/budget
-coverage is next; aggregation is committed as `8644137`. Source/lifetime boundaries
-and aggregation-budget regressions are split into separate reviewable slices.
-Additional tests cover 50 corrupt owned/temporary source records, canonical alias
-agreement, stopped-parent/successor exclusions, other producers and original receiver/
-index/loan/lifetime errors. All eleven report groups pass
-(`/tmp/meowy-element-boundaries.log`), as does formatting (`c5abe07`). Additional
-tests cover exact shared work/effect/payload limits, 14 record conflicts, duplicate
-copies, maximum paths and zero-payload view/temporary sources. All 14 report groups
-pass (`/tmp/meowy-element-limits.log`), as does formatting (`9d696e8`). Three source
-fixtures cover owned/view/temporary/nested/aliased receivers, once-only parent/index
-order, stopped inputs and dynamic initialized-length bounds. All three pass in
-debug/release (`/tmp/meowy-element-execution.log`). Catalog/coverage checks pass:
-207 cases, 188 required and 19 unchanged pins (`3fa8ab0`). Two additional source
-fixtures pin E302 for an overlapping live element loan and E303 for a temporary
-element escaping its statement. Both pass in debug/release
-(`/tmp/meowy-element-rejections.log`); catalog/coverage checks pass with 209 cases,
-190 required and 19 unchanged pins. Preservation against `087ee8e` confirms all 204
-prior cases, 236 source assets, 37 reference files, proof obligations, reference
-hashes and capability exceptions unchanged (`/tmp/meowy-element-preservation.log`).
-The source-capture helper uses explicit `pub(super)` visibility; all-target Clippy
-now passes (`/tmp/meowy-element-clippy.log`). Rerun the full compiler gate, then
-strict conformance and final documentation checks. The prior gate stopped at lint;
-library/native/conformance execution has not yet run across this complete series.
+Validation checks completed point/owner/parent/block/span identities, source bounds,
+canonical storage, temporary statement roots, access limits, selectors and exact
+original edges. Completing accesses require registered operation ownership; partial
+addresses require its absence. Stopped parents produce no observation; stopped
+positions can retain earlier addresses without acquisition/result. Checked bounds
+edges remain explicit, without granting success or new loan authority.
 
-Exclusive indexed paths and projected borrows retain separate producers. Borrow
-observations grant no bounds success, lifetime extension or new loan authority;
-`queries::finish` remains B001-gated.
+Each owned source path has at most 256 fields. Copied indices and field counts share
+the 262,144-entry payload limit with existing path/call/output metadata; view and
+temporary payloads have fixed size. Duplicate visits reuse records. Conflicts and
+exhausted shared work/effect/payload limits publish no partial collection.
+
+Seventeen new internal groups cover source capture, nested paths, owned/view/temporary
+receivers, aliases, owners/control, stopped inputs, other producers and ordinary
+receiver/index/loan/lifetime diagnostics. Coverage includes 152 corrupt stage/source
+cases, canonical-alias faults, 14 record conflicts, exact shared limits and maximum
+paths (`/tmp/meowy-element-sources-capture.log`, `/tmp/meowy-element-limits.log`).
+Five required source cases pass in debug/release: receiver/index order, source kinds,
+stopped inputs, dynamic initialized-length bounds, E302 conflicts and E303 temporary
+escapes (`/tmp/meowy-element-execution.log`, `/tmp/meowy-element-rejections.log`).
+Structural reports remain distinct from source conformance and proof evaluation.
+
+All ten compiler checks pass: 2187 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance (`/tmp/meowy-element-gate.log`).
+The 209 cases report 190 required passes, 19 pinned gaps and zero failures in both
+profiles. Strict mode exits 1 only for those gaps (`/tmp/meowy-element-strict.log`);
+all four final documentation checks pass (`/tmp/meowy-element-docs.log`). No selected
+check has an outstanding failure.
+Preservation against `087ee8e` confirms all 204 prior cases, 236 source assets,
+37 reference files, proof obligations, reference hashes and capability exceptions
+unchanged (`/tmp/meowy-element-preservation.log`). Unrelated `docs/programs/hey/`
+is preserved. No compiler capability or reference contract changed.
+
+Next implement bounded exclusive indexed-borrow observations using `check/indexed.rs`,
+`dependencies/exclusive.rs` and `edges/forward/effects/`. Record the next commit plan:
+
+1. Retain missing bounded root-prefix/per-field counts while local types are present.
+   Capture each index's original initialized-length input before `list_position_point`
+   and checked completion afterward in `exclusive_indexed_points`; that helper
+   currently drops those facts from PathStep. Preserve actual returned roots, spans,
+   canonical storage and combined prefix/path limits; copy no type shapes.
+2. Validate and report independent root/field addresses, index reservations, final
+   acquisition and result visits. Preserve reservation before index evaluation and
+   Checked bounds edges. Stopped indices must not give later stages or terminal
+   results a forward path. Keep payload/work/effect publication bounded and atomic.
+3. Cover nested indexed/field paths, aliases, owner/control boundaries, stopped inputs,
+   malformed source/selectors and exact shared budgets. Add required source cases
+   for evaluation order, bounds, permissions and lifetimes; run compiler/strict gates
+   and update both handoffs and the foundation guide.
+
+Shared element borrows, ordinary places, reborrows and projected references retain
+separate producers. Preserve existing exclusive-target capability/mutability/loan
+rules; observations grant no lifetime extension or proof outcome. `queries::finish`
+remains B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2887,8 +2884,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    reports (`80d6d78`), boundary coverage (`eea5989`) and source cases (`fd9c16d`)
    and the compiler gate pass. Reborrow validation (`6702ace`) and independent
    acquisition/result reports (`133ed62`), boundary coverage (`ad414a1`) and source
-   cases (`3314092`) and the compiler gate pass. Next implement shared
-   element-borrow reports from `dependencies/elements.rs` using the ordered plan above.
+   cases (`3314092`) and the compiler gate pass. Shared element source capture
+   (`d013921`), validation (`e1fa743`) and observations (`8644137`) now retain partial
+   addresses and bounded owned/view/temporary metadata. Source/loan coverage
+   (`c5abe07`), limits (`9d696e8`), source cases (`3fa8ab0`, `658a01c`), lint repair
+   (`16cd21e`) and the compiler gate pass. Next implement exclusive indexed-borrow
+   observations using `check/indexed.rs`, `dependencies/exclusive.rs` and the plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
