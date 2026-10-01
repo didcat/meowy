@@ -806,7 +806,13 @@ Aggregation is committed as `e8debce`. Additional tests cover stopped field suff
 other producers, alias faults, retained length snapshots, ordinary diagnostics,
 14 record conflicts, exact shared budgets and combined prefix/path limits.
 All 12 report groups pass (`/tmp/meowy-exclusive-boundaries.log`), as does formatting.
-Source execution and rejection cases are next; the complete compiler gate remains pending.
+Boundary coverage is committed as `720e062`. Three source fixtures cover nested
+index order, scalar modes and field permissions, emitted aliases, stopped indices/
+field suffixes and dynamic initialized-length bounds. All three pass in debug/release
+(`/tmp/meowy-exclusive-execution.log`); catalog/coverage checks pass with 212 cases,
+193 required and 19 unchanged pins. All-target Clippy also passes
+(`/tmp/meowy-exclusive-clippy.log`). Rejection fixtures and the complete compiler gate
+remain next.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan

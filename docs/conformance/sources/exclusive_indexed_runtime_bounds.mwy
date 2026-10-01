@@ -1,0 +1,7 @@
+d : @"debug"
+position <int32> : () { d.print("position"); -> 2 }
+xs <int32[2]> := [7]
+d.print("before")
+p : &!(xs[position()])
+d.print("unexpected acquisition")
+*p = 9

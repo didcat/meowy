@@ -1,0 +1,18 @@
+d : @"debug"
+xs := [[1]]
+'first {
+    p : &!(xs[{ d.print("first"); 'first.leave() }][{ d.print("unexpected index"); -> 1 }])
+    d.print("unexpected first result")
+}
+'second {
+    p : &!(xs[{ d.print("outer"); -> 1 }][{ d.print("second"); 'second.leave() }])
+    d.print("unexpected second result")
+}
+rows := [{ -> n := 1 }]
+'field {
+    p : &!(rows[{ d.print("field"); 'field.leave() }].n)
+    d.print("unexpected field result")
+}
+stop <never> : () { d.print("stop"); d.panic("stop") }
+p : &!(xs[1][stop()])
+d.print("unexpected result")

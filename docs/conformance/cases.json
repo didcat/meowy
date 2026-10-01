@@ -2240,6 +2240,40 @@
         "code": "E303"
       },
       "reference": "../reference/memory.md#temporary-owners"
+    },
+    {
+      "id": "exclusive_indexed_values",
+      "phase": "run",
+      "source": "sources/exclusive_indexed_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "outer\ninner\n11\n11\n4\ntrue\n2.5\n6\n8\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "exclusive_indexed_stopped_paths",
+      "phase": "run",
+      "source": "sources/exclusive_indexed_stopped_paths.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first\nouter\nsecond\nfield\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "exclusive_indexed_runtime_bounds",
+      "phase": "run",
+      "source": "sources/exclusive_indexed_runtime_bounds.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nposition\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
     }
   ]
 }

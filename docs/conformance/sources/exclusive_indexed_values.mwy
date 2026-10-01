@@ -1,0 +1,28 @@
+d : @"debug"
+first <int32> : () { d.print("outer"); -> 1 }
+second <int32> : () { d.print("inner"); -> 2 }
+row : { -> rows := [{ -> xs := [7, 9] }] }
+p : &!(row.rows[first()].xs[second()])
+*p = 11
+d.print(*p)
+d.print(row.rows[1].xs[2])
+rows : [{ -> n := 3 }]
+field : &!(rows[1].n)
+*field = 4
+d.print(rows[1].n)
+flags := [false]
+flag : &!(flags[1])
+*flag = true
+d.print(*flag)
+values <float32[1]> := [1.25]
+value : &!(values[1])
+*value = 2.5
+d.print(*value)
+pick : (flag <boolean>) 'out {
+    |flag| { 'out -> xs := [5]; p : &!(xs[1]); *p = 6 }
+    |!flag| { 'out -> xs := [7]; p : &!(xs[1]); *p = 8 }
+}
+a : pick(true)
+b : pick(false)
+d.print(a.xs[1])
+d.print(b.xs[1])
