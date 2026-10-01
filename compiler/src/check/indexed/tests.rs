@@ -24,7 +24,8 @@ pub(crate) fn exclusive_index_roots_keep_projected_paths_and_once_only_effects()
             checker.exclusive_indexed_points(&expr, expr.span)
         })
         .unwrap();
-    let (value, steps) = result.unwrap();
+    let (value, plan) = result.unwrap();
+    let steps = plan.steps;
     let hir::ExprKind::ExclusivePath { place, path } = value.kind else {
         panic!()
     };

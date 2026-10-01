@@ -343,7 +343,9 @@ mod elements;
 pub(crate) use elements::{Access as ElementAccess, Element, Source as ElementSource};
 
 mod exclusive;
-pub(crate) use exclusive::Operation as ExclusiveOperation;
+pub(crate) use exclusive::{
+    Access as ExclusiveAccess, Operation as ExclusiveOperation, Plan as ExclusivePlan,
+};
 
 mod outputs;
 pub(crate) use outputs::{Input as FormatInput, Output};

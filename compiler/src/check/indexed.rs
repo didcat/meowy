@@ -1,4 +1,4 @@
-use super::dependencies::PathStep;
+use super::dependencies::{ExclusiveAccess, ExclusivePlan, PathStep};
 use super::{Checker, Result};
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
@@ -10,11 +10,11 @@ impl Checker {
         target: &ast::Expr,
         span: Span,
     ) -> Result<Option<hir::Expr>> {
-        let Some((value, steps)) = self.exclusive_indexed_points(target, span)? else {
+        let Some((value, plan)) = self.exclusive_indexed_points(target, span)? else {
             return Ok(None);
         };
         if let Some(id) = self.point {
-            self.exclusive_operation(id, &value, steps)?;
+            self.exclusive_operation(id, &value, plan)?;
         }
         Ok(Some(value))
     }
@@ -23,7 +23,7 @@ impl Checker {
         &mut self,
         target: &ast::Expr,
         span: Span,
-    ) -> Result<Option<(hir::Expr, Vec<PathStep>)>> {
+    ) -> Result<Option<(hir::Expr, ExclusivePlan)>> {
         let mut root = target;
         let mut steps = Vec::new();
         loop {
@@ -51,6 +51,7 @@ impl Checker {
         let (place, mut ty, mut mutable) = self.exclusive_place(base, span, true)?;
         let mut path = Vec::new();
         let mut points = Vec::new();
+        let mut access = Vec::new();
         let mut diverges = false;
         for step in steps[..=first].iter().rev() {
             match &step.kind {
@@ -74,6 +75,16 @@ impl Checker {
                         None
                     };
                     let (point, index) = self.list_position_point(index, length, capacity)?;
+                    if !self.flow.spend(1) {
+                        return Err(Diagnostic::unsupported(
+                            "proof exclusive-index input budget exhausted",
+                            step.span,
+                        ));
+                    }
+                    access.push(ExclusiveAccess {
+                        length,
+                        normal: index.ty != Type::Never,
+                    });
                     points.push(PathStep::Index {
                         point,
                         capacity,
@@ -109,7 +120,10 @@ impl Checker {
                 ty: if diverges { Type::Never } else { result },
                 span,
             },
-            points,
+            ExclusivePlan {
+                steps: points,
+                access,
+            },
         )))
     }
 }

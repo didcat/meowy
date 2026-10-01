@@ -782,7 +782,13 @@ transfer, emitted storage, exact capture work and atomic duplicate conflicts.
 All five focused producer groups pass (`/tmp/meowy-exclusive-counts.log`), as do
 all 2189 library tests (`/tmp/meowy-exclusive-counts-lib.log`) and formatting.
 Per-index facts and report integration remain next; the complete compiler gate
-has not run for this series.
+has not run for this series. Field counts are committed as `bf99d6f`. An exclusive
+plan now retains the original length input and checked normal flag for every index,
+plus overall completion after producer validation. Generic PathStep is unchanged.
+All 70 focused exclusive groups pass (`/tmp/meowy-exclusive-access.log`), including
+known/unknown/stopped inputs, retained snapshots and malformed plans. All 2191 library
+tests pass (`/tmp/meowy-exclusive-access-lib.log`), as does formatting. Report stage
+validation is next; the complete compiler gate has not run for this series.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan

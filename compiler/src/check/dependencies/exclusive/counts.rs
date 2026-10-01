@@ -34,18 +34,22 @@ pub(crate) fn exclusive_counts_share_capture_work_and_reject_conflicting_publica
     };
     let (&id, op) = checker.exclusives.first_key_value().unwrap();
     let op = op.clone();
+    let plan = Plan {
+        steps: op.steps.clone(),
+        access: op.access.clone(),
+    };
     checker.exclusives.clear();
     checker.exclusive_edges = 0;
     let before = checker.flow.work;
     checker
-        .exclusive_operation(id, value, op.steps.clone())
+        .exclusive_operation(id, value, plan.clone())
         .unwrap();
     let work = checker.flow.work - before;
     for spare in [0, 1] {
         checker.exclusives.clear();
         checker.exclusive_edges = 0;
         checker.flow.work = crate::flow::MAX_PROOF_WORK - work + spare;
-        let result = checker.exclusive_operation(id, value, op.steps.clone());
+        let result = checker.exclusive_operation(id, value, plan.clone());
         assert_eq!(result.is_ok(), spare == 0);
         if result.is_ok() {
             assert_eq!(checker.exclusives[&id], op);
@@ -56,14 +60,14 @@ pub(crate) fn exclusive_counts_share_capture_work_and_reject_conflicting_publica
     }
     checker.flow = crate::flow::Flow::default();
     checker
-        .exclusive_operation(id, value, op.steps.clone())
+        .exclusive_operation(id, value, plan.clone())
         .unwrap();
     checker.exclusives.get_mut(&id).unwrap().counts[0] += 1;
     let before = checker.exclusives.clone();
     let edges = checker.exclusive_edges;
     assert!(
         checker
-            .exclusive_operation(id, value, op.steps.clone())
+            .exclusive_operation(id, value, plan)
             .unwrap_err()
             .message
             .contains("identity")

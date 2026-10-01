@@ -8,6 +8,18 @@ use crate::{
     hir,
 };
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct Access {
+    pub(crate) length: Option<usize>,
+    pub(crate) normal: bool,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Plan {
+    pub(crate) steps: Vec<PathStep>,
+    pub(crate) access: Vec<Access>,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Operation {
     pub(crate) owner: usize,
@@ -15,6 +27,8 @@ pub(crate) struct Operation {
     pub(crate) storage: hir::LocalId,
     pub(crate) steps: Vec<PathStep>,
     pub(crate) counts: Vec<usize>,
+    pub(crate) access: Vec<Access>,
+    pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) span: crate::ast::Span,
     pub(crate) edges: Vec<Edge>,
@@ -25,7 +39,7 @@ impl Checker {
         &mut self,
         id: hir::PointId,
         value: &hir::Expr,
-        steps: Vec<PathStep>,
+        plan: Plan,
     ) -> Result<()> {
         let budget =
             || Diagnostic::unsupported("proof exclusive-borrow budget exhausted", value.span);
@@ -34,12 +48,15 @@ impl Checker {
         let hir::ExprKind::ExclusivePath { place, path } = &value.kind else {
             return Err(invalid());
         };
+        let Plan { steps, access } = plan;
         if steps.len() + place.fields.len() > crate::list::MAX_WRITE_PATH
+            || access.len() > crate::list::MAX_WRITE_PATH
             || !self.flow.spend(
                 self.exclusives.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
                     + steps.len() * (steps.len().checked_ilog2().unwrap_or(0) as usize + 5)
                     + place.fields.len() * 2
+                    + access.len()
                     + 4,
             )
         {
@@ -73,6 +90,7 @@ impl Checker {
         let address = |step| Port::Address { point: id, step };
         let mut edges = vec![Edge::new(Port::Entry(id), address(0), Route::Next)];
         let mut stopped = false;
+        let mut inputs = access.iter();
         for (index, (step, source)) in steps.iter().zip(path).enumerate() {
             match (step, source, ty) {
                 (
@@ -96,7 +114,10 @@ impl Checker {
                         capacity: size,
                     },
                 ) => {
+                    let input = inputs.next().ok_or_else(invalid)?;
                     if capacity != size
+                        || input.length.is_some_and(|length| length > *capacity)
+                        || input.normal != (source.index.ty != hir::Type::Never)
                         || *span != source.span
                         || !seen.insert(*child)
                         || !self.points.get(*child).is_some_and(|child| {
@@ -120,7 +141,7 @@ impl Checker {
                         Edge::new(address(index), reserve, Route::Next),
                         Edge::new(reserve, Port::Entry(*child), Route::Next),
                     ]);
-                    if source.index.ty == hir::Type::Never {
+                    if !input.normal {
                         stopped = true;
                     } else {
                         edges.push(Edge::new(
@@ -133,6 +154,9 @@ impl Checker {
                 }
                 _ => return Err(invalid()),
             }
+        }
+        if inputs.next().is_some() {
+            return Err(invalid());
         }
         if stopped {
             if value.ty != hir::Type::Never {
@@ -153,6 +177,8 @@ impl Checker {
             storage,
             steps,
             counts,
+            access,
+            normal: !stopped,
             control: self.control,
             span: value.span,
             edges,
@@ -178,3 +204,6 @@ mod tests;
 
 #[cfg(test)]
 mod counts;
+
+#[cfg(test)]
+mod access;

@@ -101,16 +101,19 @@ pub(crate) fn exclusive_paths_publish_atomically_with_valid_identity_and_shared_
         panic!()
     };
     let (&id, op) = checker.exclusives.first_key_value().unwrap();
-    let steps = op.steps.clone();
+    let plan = Plan {
+        steps: op.steps.clone(),
+        access: op.access.clone(),
+    };
     let count = checker.exclusive_edges;
     checker
-        .exclusive_operation(id, value, steps.clone())
+        .exclusive_operation(id, value, plan.clone())
         .unwrap();
     assert_eq!(checker.exclusive_edges, count);
     checker.exclusives.clear();
     checker.exclusive_edges = 0;
-    let mut repeated = steps.clone();
-    repeated[1] = steps[0].clone();
+    let mut repeated = plan.clone();
+    repeated.steps[1] = plan.steps[0].clone();
     assert!(
         checker
             .exclusive_operation(id, value, repeated)
@@ -118,13 +121,13 @@ pub(crate) fn exclusive_paths_publish_atomically_with_valid_identity_and_shared_
             .message
             .contains("identity")
     );
-    let PathStep::Index { point, .. } = steps[0] else {
+    let PathStep::Index { point, .. } = plan.steps[0] else {
         panic!()
     };
     checker.points[point].parent = None;
     assert!(
         checker
-            .exclusive_operation(id, value, steps.clone())
+            .exclusive_operation(id, value, plan.clone())
             .unwrap_err()
             .message
             .contains("identity")
@@ -133,7 +136,7 @@ pub(crate) fn exclusive_paths_publish_atomically_with_valid_identity_and_shared_
     checker.element_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
-            .exclusive_operation(id, value, steps)
+            .exclusive_operation(id, value, plan)
             .unwrap_err()
             .message
             .contains("budget")
