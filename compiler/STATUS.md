@@ -684,8 +684,13 @@ cells, nested sites, owners/control, conditional calls, duplicate independent vi
 and 120 malformed identity/mode/site/edge cases. The existing coercion boundary
 test now requires the distinct Reborrow effect while preserving its exclusion from
 coercion reports. All 2164 library tests pass (`/tmp/meowy-reborrow-effects-lib.log`),
-as does formatting. Broader boundary coverage is next; the complete compiler gate
-has not run for this series. No reference contract changed.
+as does formatting. Aggregation is committed as `133ed62`. Additional boundary
+tests cover all stopped modes, shared Never referents, noncontiguous sites, other
+producers, original diagnostics, seven record conflicts and exact shared limits.
+A 1-field/128-field comparison confirms fixed report cost. All eleven focused groups
+pass (`/tmp/meowy-reborrow-boundaries.log`), as does formatting. Source conformance
+coverage is next; the complete compiler gate has not run for this series.
+No reference contract changed.
 
 Indexed and projected borrows retain separate producers. Reborrow acquisition is
 child-loan creation, not a referent load or permission to extend a lifetime. Preserve
@@ -2801,8 +2806,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    boundary coverage (`f4ebd60`), source cases (`44e8b39`) and the compiler gate pass.
    Temporary cell/site validation (`7b28c38`) and independent acquisition/result
    reports (`80d6d78`), boundary coverage (`eea5989`) and source cases (`fd9c16d`)
-   and the compiler gate pass. Next implement reborrow reports using
-   `dependencies/reborrows.rs` and the ordered plan above.
+   and the compiler gate pass. Reborrow validation (`6702ace`) and independent
+   acquisition/result reports (`133ed62`) are implemented. Next validate boundaries
+   under `edges/forward/effects/reborrows/`, add source cases and run compiler/strict gates.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
