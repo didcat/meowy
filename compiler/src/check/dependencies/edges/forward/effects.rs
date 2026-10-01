@@ -11,6 +11,7 @@ mod narrowing;
 mod outputs;
 mod reads;
 mod scalars;
+mod temporaries;
 mod typed;
 mod unary;
 
@@ -106,6 +107,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.validate_temporary_borrow(reports, owner, port, span)?;
                 if self.validate_place_borrow(reports, owner, port, span)? {
                     self.record_place_borrow_effect(
                         owner,

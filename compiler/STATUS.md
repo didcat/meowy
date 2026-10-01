@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Ordinary place-borrow reports pass the compiler gate; temporary borrows are next.
+Updated: 2026-09-30. Standalone temporary-borrow observation work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -604,9 +604,15 @@ Preservation against `bef3b76` confirms all 192 prior cases,
 capability exceptions unchanged (`/tmp/meowy-place-preservation.log`). Unrelated
 `docs/programs/hey/` is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded standalone temporary-borrow observations using
-`dependencies/temporary_borrows.rs` and `edges/forward/effects/`. Record the next
-commit plan before coding:
+## Bounded standalone temporary-borrow observations
+
+The producer already retains exact initializer roots, optional local/statement cell
+identities, control and initializer/acquisition/result edges. Stopped inputs have
+no cell. Reports currently classify temporary acquisitions as Unknown. Checked
+statement sites and `Proofs.temporaries` survive local transfer, so no additional
+type or source capture is needed. Unrelated `docs/programs/hey/` remains untouched.
+
+Dependency-ordered commit plan:
 
 1. Validate exact initializer/owner/parent/block/span identities, retained cell local
    bounds and `Proofs.temporaries` statement registration, operation ownership and
@@ -616,8 +622,18 @@ commit plan before coding:
    result visits, shared work/effect limits and atomic duplicate/conflict handling.
    Reference-valued temporaries retain distinct cells, never pointee identities.
 3. Add stopped/nested/owner/control, statement-lifetime, malformed-identity and exact
-   budget coverage plus required source cases. Run compiler/strict gates and update
-   this handoff and the foundation guide.
+   budget coverage in an independently useful boundary slice.
+4. Add required source cases and classified coverage; preserve all prior fixtures,
+   reference contracts and capability exceptions. Run the compiler/strict gates.
+5. Document validated observations and the concrete next producer in both handoffs
+   and the foundation guide.
+
+Stage validation now checks initializer roots, cell registration, checked statement
+sites, exact edges and operation membership after local transfer. Focused regressions
+cover real temporary forms and 80 malformed identity/site/edge cases. Both focused
+groups pass (`/tmp/meowy-temporary-validation.log`), as do all 2150 library tests
+(`/tmp/meowy-temporary-validation-lib.log`) and formatting. Typed observations and
+broader boundaries remain next; the complete compiler gate has not run for this series.
 
 Indexed borrows, reborrows and projected references retain separate producers.
 Preserve full-statement temporary lifetimes and existing mutability, conflict and

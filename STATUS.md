@@ -24,9 +24,9 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-place-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next report standalone temporary-borrow initialization, cells and results. The
-[compiler handoff](compiler/STATUS.md#bounded-ordinary-place-borrow-observations)
-records the ordered next work. Full-statement temporary lifetimes and existing
+Standalone temporary-borrow reporting is in progress. The
+[compiler handoff](compiler/STATUS.md#bounded-standalone-temporary-borrow-observations)
+records the ordered commit plan. Full-statement temporary lifetimes and existing
 conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 
