@@ -83,6 +83,7 @@ pub(crate) enum Effect {
     Temporary(temporaries::Observed),
     Reborrow(reborrows::Observed),
     Element(elements::Observed),
+    Exclusive(exclusives::Observed),
     Unknown,
 }
 
@@ -113,7 +114,17 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_exclusive_borrow(reports, owner, port, span)?;
+                if self.validate_exclusive_borrow(reports, owner, port, span)? {
+                    self.record_exclusive_effect(
+                        owner,
+                        port,
+                        &mut effects,
+                        limit,
+                        &mut parts,
+                        span,
+                    )?;
+                    continue;
+                }
                 if self.validate_element_borrow(reports, owner, port, span)? {
                     self.record_element_effect(owner, port, &mut effects, limit, &mut parts, span)?;
                     continue;

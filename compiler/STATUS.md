@@ -795,7 +795,13 @@ first stopped index are rejected without deleting disconnected ledger entries.
 Both focused groups pass (`/tmp/meowy-exclusive-validation.log`), including 140
 corrupt metadata cases and stopped-stage boundaries. All 2193 library tests pass
 (`/tmp/meowy-exclusive-validation-lib.log`), as does formatting. Aggregation is next;
-the complete compiler gate has not run for this series.
+the complete compiler gate has not run for this series. Validation is committed as
+`b5cdaef`. Reports now retain bounded path/count/access metadata, canonical storage,
+normal/control and independent address/reservation/acquisition/result flags. Focused
+aggregation tests cover modes, aliases, owners/control, duplicate independent visits
+and stopped frontiers. All six report groups pass (`/tmp/meowy-exclusive-effects.log`),
+as do all 2197 library tests (`/tmp/meowy-exclusive-effects-lib.log`) and formatting.
+Broader boundary and budget coverage is next; the complete compiler gate remains pending.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan

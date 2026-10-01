@@ -1,7 +1,137 @@
 use super::*;
+use crate::check::dependencies::ExclusiveAccess;
 use std::collections::BTreeSet;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) place: crate::hir::Place,
+    pub(crate) storage: crate::hir::LocalId,
+    pub(crate) steps: Vec<PathStep>,
+    pub(crate) counts: Vec<usize>,
+    pub(crate) access: Vec<ExclusiveAccess>,
+    pub(crate) normal: bool,
+    pub(crate) control: bool,
+    pub(crate) addresses: Vec<bool>,
+    pub(crate) reservations: Vec<bool>,
+    pub(crate) acquired: bool,
+    pub(crate) result: bool,
+}
+
 impl Checker {
+    pub(super) fn record_exclusive_effect(
+        &mut self,
+        owner: usize,
+        port: Port,
+        effects: &mut Effects,
+        limit: usize,
+        parts: &mut usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof exclusive-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof exclusive-effect identity mismatch", span);
+        let id = match port {
+            Port::Address { point, .. }
+            | Port::Reserve { point, .. }
+            | Port::Operation(point)
+            | Port::Normal(point) => point,
+            _ => return Err(invalid()),
+        };
+        if !self.flow.spend(
+            self.exclusives.len().checked_ilog2().unwrap_or(0) as usize
+                + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
+                + 10,
+        ) {
+            return Err(budget());
+        }
+        let op = self.exclusives.get(&id).ok_or_else(invalid)?;
+        let len = op.steps.len();
+        let total = op.place.fields.len().saturating_add(len);
+        if total > crate::list::MAX_WRITE_PATH || op.counts.len() > total || op.access.len() > len {
+            return Err(budget());
+        }
+        let size = total + op.counts.len() + op.access.len() + len * 2 + 1;
+        if !self.flow.spend(size * 2 + len + 12) {
+            return Err(budget());
+        }
+        let mut inputs = op.access.iter();
+        let mut stop = len;
+        for (step, part) in op.steps.iter().enumerate() {
+            if matches!(part, PathStep::Index { .. }) && !inputs.next().ok_or_else(invalid)?.normal
+            {
+                stop = stop.min(step);
+            }
+        }
+        if op.owner != owner
+            || inputs.next().is_some()
+            || op.normal != (stop == len)
+            || !matches!(op.steps.first(), Some(PathStep::Index { .. }))
+            || match port {
+                Port::Address { step, .. } => step > stop,
+                Port::Reserve { step, .. } => {
+                    step > stop || !matches!(op.steps.get(step), Some(PathStep::Index { .. }))
+                }
+                _ => !op.normal,
+            }
+        {
+            return Err(invalid());
+        }
+        let fresh = if let Some((prior_owner, effect)) = effects.get(&id) {
+            let Effect::Exclusive(prior) = effect else {
+                return Err(invalid());
+            };
+            if *prior_owner != owner
+                || prior.place != op.place
+                || prior.storage != op.storage
+                || prior.steps != op.steps
+                || prior.counts != op.counts
+                || prior.access != op.access
+                || prior.normal != op.normal
+                || prior.control != op.control
+                || prior.addresses.len() != len + 1
+                || prior.reservations.len() != len
+            {
+                return Err(invalid());
+            }
+            false
+        } else {
+            if effects.len() >= limit || size > *parts {
+                return Err(budget());
+            }
+            true
+        };
+        let (_, Effect::Exclusive(observed)) = effects.entry(id).or_insert_with(|| {
+            (
+                owner,
+                Effect::Exclusive(Observed {
+                    place: op.place.clone(),
+                    storage: op.storage,
+                    steps: op.steps.clone(),
+                    counts: op.counts.clone(),
+                    access: op.access.clone(),
+                    normal: op.normal,
+                    control: op.control,
+                    addresses: vec![false; len + 1],
+                    reservations: vec![false; len],
+                    acquired: false,
+                    result: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match port {
+            Port::Address { step, .. } => observed.addresses[step] = true,
+            Port::Reserve { step, .. } => observed.reservations[step] = true,
+            Port::Operation(_) => observed.acquired = true,
+            Port::Normal(_) => observed.result = true,
+            _ => unreachable!(),
+        }
+        if fresh {
+            *parts -= size;
+        }
+        Ok(())
+    }
+
     pub(super) fn validate_exclusive_borrow(
         &mut self,
         reports: &Reports,
@@ -163,3 +293,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;
