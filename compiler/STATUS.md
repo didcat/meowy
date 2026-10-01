@@ -766,7 +766,10 @@ element escaping its statement. Both pass in debug/release
 190 required and 19 unchanged pins. Preservation against `087ee8e` confirms all 204
 prior cases, 236 source assets, 37 reference files, proof obligations, reference
 hashes and capability exceptions unchanged (`/tmp/meowy-element-preservation.log`).
-The complete compiler/strict gates and final documentation handoff remain next.
+The source-capture helper uses explicit `pub(super)` visibility; all-target Clippy
+now passes (`/tmp/meowy-element-clippy.log`). Rerun the full compiler gate, then
+strict conformance and final documentation checks. The prior gate stopped at lint;
+library/native/conformance execution has not yet run across this complete series.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
 observations grant no bounds success, lifetime extension or new loan authority;
