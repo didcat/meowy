@@ -455,6 +455,7 @@ impl Checker {
             let Type::Record { fields, .. } = &value.ty else {
                 return Err(error);
             };
+            let count = fields.len();
             let (index, ty) = fields
                 .iter()
                 .enumerate()
@@ -472,7 +473,14 @@ impl Checker {
                 span: expr.span,
             })?;
             value = field;
-            self.projection_step(&mut plan, ProjectionStep::Field { index, narrow })?;
+            self.projection_step(
+                &mut plan,
+                ProjectionStep::Field {
+                    index,
+                    count,
+                    narrow,
+                },
+            )?;
             if names.peek().is_none() {
                 return Err(error);
             }
@@ -495,7 +503,7 @@ impl Checker {
                         span,
                     ));
                 };
-                if !self.flow.spend(fields.len() + path.len() + 1) {
+                if !self.flow.spend(fields.len() + path.len() + 2) {
                     return Err(crate::borrow_value::State::budget(span));
                 }
                 let (index, field) = fields
@@ -505,7 +513,7 @@ impl Checker {
                     .ok_or_else(|| {
                         Self::error("E201", format!("unknown record field `{name}`"), span)
                     })?;
-                path.push(index);
+                path.push((index, fields.len()));
                 ty = &field.ty;
                 if matches!(ty, Type::Reference(_) | Type::Exclusive(_)) && names.peek().is_some() {
                     break;
@@ -516,8 +524,8 @@ impl Checker {
                 let ty = self.reference_type(ty.clone(), span)?;
                 let site = self.reborrows;
                 self.reborrows += 1;
-                for index in &path {
-                    self.projection_step(&mut plan, ProjectionStep::Address(*index))?;
+                for &(index, count) in &path {
+                    self.projection_step(&mut plan, ProjectionStep::Address { index, count })?;
                 }
                 plan.site = Some(site);
                 plan.mode = Some(mode);
@@ -528,7 +536,7 @@ impl Checker {
                     kind: hir::ExprKind::Reborrow {
                         site,
                         value: Box::new(value),
-                        fields: path,
+                        fields: path.into_iter().map(|(index, _)| index).collect(),
                     },
                     ty,
                     span,
@@ -541,7 +549,7 @@ impl Checker {
                 kind: hir::ExprKind::Deref(Box::new(value)),
                 span,
             };
-            for index in path {
+            for (index, count) in path {
                 let Type::Record { fields, .. } = &value.ty else {
                     unreachable!()
                 };
@@ -559,6 +567,7 @@ impl Checker {
                     &mut plan,
                     ProjectionStep::Field {
                         index,
+                        count,
                         narrow: false,
                     },
                 )?;

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-01. Exclusive indexed-borrow reports pass the compiler gate; projected borrows are next.
+Updated: 2026-10-01. Projected-borrow observation work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -805,8 +805,15 @@ Preservation against `95a1334` confirms all 209 prior cases, 241 source assets,
 unchanged (`/tmp/meowy-exclusive-preservation.log`). Unrelated `docs/programs/hey/`
 is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded projected-borrow observations using `check/references.rs`,
-`dependencies/borrow_projections.rs` and `edges/forward/effects/`. Record the next plan:
+## Bounded projected-borrow observations
+
+The producer retains parent roots, materialization/load/field/address steps, owned
+narrowing decisions and reborrow site/mode, but only broad field-index limits.
+Capture exact record counts while `borrowed` still has the concrete types. The
+stored mode describes the final parent reference; the produced borrow remains shared.
+Unrelated `docs/programs/hey/` remains preserved.
+
+Dependency-ordered commit plan:
 
 1. Retain exact per-record field counts for Field and final Address steps while
    `borrowed` still has the concrete types. Preserve original field indices and
@@ -820,9 +827,19 @@ Next implement bounded projected-borrow observations using `check/references.rs`
    acquisition/result with bounded payloads, shared work/effect limits and atomic
    duplicates/conflicts. Preserve raw parent/call identities and conditional returns.
 4. Cover owned/reference/temporary receivers, nested owners/control, stopped parents,
-   narrowed fields, malformed metadata and exact budgets. Add required source cases
-   and classified coverage, run compiler/strict gates and update both handoffs and
-   the foundation guide. Keep source capture, validation and aggregation reviewable.
+   narrowed fields, malformed metadata and exact budgets in reviewable boundary slices.
+5. Add required source execution/order/stopped-parent cases and classified coverage,
+   then loan/lifetime/guard rejections. Preserve prior fixtures and capability pins.
+6. Run compiler/strict gates and document validated observations plus the concrete
+   next step in both handoffs and the foundation guide.
+
+Field and Address steps now retain exact record counts from their checked type
+contexts, including owned/narrowed fields, paths after loads and temporary receivers.
+Capture work is charged before publication and existing index caps remain intact.
+All 16 focused producer groups pass (`/tmp/meowy-projection-counts.log`), including
+exact counts, local transfer and capture work. All 2205 library tests pass
+(`/tmp/meowy-projection-counts-lib.log`), as does formatting. Report validation and
+aggregation remain next; the complete compiler gate has not run for this series.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,

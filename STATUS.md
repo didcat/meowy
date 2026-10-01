@@ -25,9 +25,9 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-exclusive-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next report projected-borrow steps, conversions, acquisitions and results. The
-[compiler handoff](compiler/STATUS.md#bounded-exclusive-indexed-borrow-observations)
-records the ordered next work. Existing source identities, narrowing decisions and
+Projected-borrow reporting is in progress. The
+[compiler handoff](compiler/STATUS.md#bounded-projected-borrow-observations)
+records the ordered commit plan. Existing source identities, narrowing decisions and
 lifetime/conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 

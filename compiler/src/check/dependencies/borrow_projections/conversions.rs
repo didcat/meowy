@@ -36,14 +36,16 @@ pub(crate) fn projection_conversions_preserve_later_loads_owner_and_control() {
         [
             Step::Field {
                 index: 0,
+                count: 1,
                 narrow: true
             },
             Step::Load(hir::ReferenceMode::Shared),
             Step::Field {
                 index: 0,
+                count: 1,
                 narrow: false
             },
-            Step::Address(0),
+            Step::Address { index: 0, count: 1 },
         ]
     );
     assert_ne!(plan.owner, 0);
@@ -126,6 +128,7 @@ pub(crate) fn projection_conversions_keep_path_step_limits_independent_of_edge_c
     plan.steps = vec![
         Step::Field {
             index: 0,
+            count: 1,
             narrow: true
         };
         crate::list::MAX_WRITE_PATH
@@ -138,7 +141,7 @@ pub(crate) fn projection_conversions_keep_path_step_limits_independent_of_edge_c
     );
     assert!(
         checker
-            .projection_step(&mut plan, Step::Address(0))
+            .projection_step(&mut plan, Step::Address { index: 0, count: 1 })
             .unwrap_err()
             .message
             .contains("budget")

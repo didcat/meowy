@@ -30,7 +30,10 @@ pub(crate) fn projection_narrowing_captures_guarded_reference_and_nested_owned_f
             .collect();
         assert_eq!(fields, flags);
         assert_eq!(plan.steps.len(), flags.len() + 1);
-        assert_eq!(plan.steps.last(), Some(&Step::Address(0)));
+        assert_eq!(
+            plan.steps.last(),
+            Some(&Step::Address { index: 0, count: 1 })
+        );
         assert_eq!(plan.mode, Some(hir::ReferenceMode::Shared));
         assert_eq!(checker.points[plan.parent].parent, Some(id));
         assert!(plan.site.is_some());

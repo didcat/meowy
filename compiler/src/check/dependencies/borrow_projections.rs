@@ -19,10 +19,14 @@ pub(crate) enum Step {
     },
     Field {
         index: usize,
+        count: usize,
         narrow: bool,
     },
     Load(hir::ReferenceMode),
-    Address(usize),
+    Address {
+        index: usize,
+        count: usize,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -39,7 +43,8 @@ pub(crate) struct Projection {
 
 impl Checker {
     pub(crate) fn projection_step(&mut self, plan: &mut Projection, step: Step) -> Result<()> {
-        if plan.steps.len() >= crate::list::MAX_WRITE_PATH || !self.flow.spend(1) {
+        let work = 1 + usize::from(matches!(step, Step::Field { .. } | Step::Address { .. }));
+        if plan.steps.len() >= crate::list::MAX_WRITE_PATH || !self.flow.spend(work) {
             return Err(Diagnostic::unsupported(
                 "proof borrow-projection budget exhausted",
                 plan.span,
@@ -60,7 +65,7 @@ impl Checker {
             || Diagnostic::unsupported("proof borrow-projection identity mismatch", plan.span);
         if plan.steps.len() > crate::list::MAX_WRITE_PATH
             || !self.flow.spend(
-                plan.steps.len() * 2
+                plan.steps.len() * 3
                     + self.projections.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.temporaries.len().checked_ilog2().unwrap_or(0) as usize
                     + 4,
@@ -103,9 +108,14 @@ impl Checker {
                 }
                 Step::Field {
                     index: field,
+                    count,
                     narrow,
                 } => {
-                    if address || (loaded && *narrow) || *field >= crate::borrow_value::MAX_PARTS {
+                    if address
+                        || (loaded && *narrow)
+                        || field >= count
+                        || *field >= crate::borrow_value::MAX_PARTS
+                    {
                         return Err(invalid());
                     }
                 }
@@ -115,8 +125,11 @@ impl Checker {
                     }
                     loaded = true;
                 }
-                Step::Address(field) => {
-                    if *field >= crate::borrow_value::MAX_PARTS {
+                Step::Address {
+                    index: field,
+                    count,
+                } => {
+                    if field >= count || *field >= crate::borrow_value::MAX_PARTS {
                         return Err(invalid());
                     }
                     address = true;
@@ -181,3 +194,6 @@ mod narrowing;
 
 #[cfg(test)]
 mod conversions;
+
+#[cfg(test)]
+mod counts;

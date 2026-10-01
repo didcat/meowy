@@ -17,9 +17,10 @@ pub(crate) fn projection_plans_distinguish_owned_fields_loads_and_final_addresse
             vec![
                 Step::Field {
                     index: 0,
+                    count: 1,
                     narrow: false,
                 },
-                Step::Address(0),
+                Step::Address { index: 0, count: 1 },
             ],
         ),
         (
@@ -28,9 +29,10 @@ pub(crate) fn projection_plans_distinguish_owned_fields_loads_and_final_addresse
                 Step::Load(Shared),
                 Step::Field {
                     index: 0,
+                    count: 1,
                     narrow: false,
                 },
-                Step::Address(0),
+                Step::Address { index: 0, count: 1 },
             ],
         ),
         (
@@ -39,14 +41,16 @@ pub(crate) fn projection_plans_distinguish_owned_fields_loads_and_final_addresse
                 Step::Load(Shared),
                 Step::Field {
                     index: 0,
+                    count: 1,
                     narrow: false,
                 },
                 Step::Load(Shared),
                 Step::Field {
                     index: 0,
+                    count: 1,
                     narrow: false,
                 },
-                Step::Address(0),
+                Step::Address { index: 0, count: 1 },
             ],
         ),
     ] {
@@ -67,7 +71,11 @@ pub(crate) fn projection_plans_preserve_materialization_and_indexed_parent_bound
     crate::compile(source).unwrap();
     let checker = check(source);
     let plan = checker.projections.values().next().unwrap();
-    let [Step::Materialize { local, statement }, Step::Address(0)] = plan.steps.as_slice() else {
+    let [
+        Step::Materialize { local, statement },
+        Step::Address { index: 0, count: 1 },
+    ] = plan.steps.as_slice()
+    else {
         panic!()
     };
     assert_eq!(checker.proofs.temporaries[local], *statement);
@@ -79,7 +87,7 @@ pub(crate) fn projection_plans_preserve_materialization_and_indexed_parent_bound
         crate::compile(source).unwrap();
         let checker = check(source);
         let plan = checker.projections.values().next().unwrap();
-        assert_eq!(plan.steps, [Step::Address(0)]);
+        assert_eq!(plan.steps, [Step::Address { index: 0, count: 1 }]);
         assert!(
             checker.elements.contains_key(&plan.parent) || !checker.proofs.temporaries.is_empty()
         );
@@ -128,6 +136,7 @@ pub(crate) fn projection_plans_bound_steps_and_publish_atomically() {
     let mut invalid = plan.clone();
     invalid.steps.push(Step::Field {
         index: 0,
+        count: 1,
         narrow: false,
     });
     assert!(
@@ -150,13 +159,14 @@ pub(crate) fn projection_plans_bound_steps_and_publish_atomically() {
     full.steps = vec![
         Step::Field {
             index: 0,
+            count: 1,
             narrow: false
         };
         crate::list::MAX_WRITE_PATH
     ];
     assert!(
         checker
-            .projection_step(&mut full, Step::Address(0))
+            .projection_step(&mut full, Step::Address { index: 0, count: 1 })
             .unwrap_err()
             .message
             .contains("budget")
