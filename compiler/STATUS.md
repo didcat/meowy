@@ -738,7 +738,14 @@ and temporary statement registration. Partial addresses require no terminal
 operation; completing accesses require its registered owner. Both focused groups
 pass (`/tmp/meowy-element-validation.log`), including 102 corrupt stage cases.
 All 2175 library tests pass without warnings (`/tmp/meowy-element-validation-lib.log`).
-Aggregation is next; the complete compiler gate has not run for this series.
+Validation is committed as `e1fa743`. Reports now retain exact parent/source/access
+metadata, control and independent address/acquisition/result observations. Copied
+place indices/counts share the payload limit, and duplicate visits reuse the record.
+Six focused report groups cover all sources, nested paths, owners/control,
+independent visits and partial addresses before stopped positions
+(`/tmp/meowy-element-effects.log`). All 2179 library tests pass
+(`/tmp/meowy-element-effects-lib.log`), as does formatting. Broader source/budget
+coverage is next; the complete compiler gate has not run for this series.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
 observations grant no bounds success, lifetime extension or new loan authority;

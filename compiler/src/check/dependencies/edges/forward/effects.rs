@@ -81,6 +81,7 @@ pub(crate) enum Effect {
     Borrow(borrows::Observed),
     Temporary(temporaries::Observed),
     Reborrow(reborrows::Observed),
+    Element(elements::Observed),
     Unknown,
 }
 
@@ -111,7 +112,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_element_borrow(reports, owner, port, span)?;
+                if self.validate_element_borrow(reports, owner, port, span)? {
+                    self.record_element_effect(owner, port, &mut effects, limit, &mut parts, span)?;
+                    continue;
+                }
                 if self.validate_reborrow(reports, owner, port, span)? {
                     self.record_reborrow_effect(owner, port, &mut effects, limit, span)?;
                     continue;

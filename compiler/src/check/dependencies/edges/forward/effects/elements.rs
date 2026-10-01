@@ -1,7 +1,113 @@
 use super::*;
-use crate::check::dependencies::ElementSource;
+use crate::check::dependencies::{ElementAccess, ElementSource};
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) parent: PointId,
+    pub(crate) source: ElementSource,
+    pub(crate) access: ElementAccess,
+    pub(crate) control: bool,
+    pub(crate) address: bool,
+    pub(crate) acquired: bool,
+    pub(crate) result: bool,
+}
 
 impl Checker {
+    pub(super) fn record_element_effect(
+        &mut self,
+        owner: usize,
+        port: Port,
+        effects: &mut Effects,
+        limit: usize,
+        parts: &mut usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof element-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof element-effect identity mismatch", span);
+        let id = match port {
+            Port::Address { point, .. } | Port::Operation(point) | Port::Normal(point) => point,
+            _ => return Err(invalid()),
+        };
+        if !self.flow.spend(
+            self.elements.len().checked_ilog2().unwrap_or(0) as usize
+                + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
+                + 8,
+        ) {
+            return Err(budget());
+        }
+        let op = self.elements.get(&id).ok_or_else(invalid)?;
+        let access = op.access.ok_or_else(invalid)?;
+        let size = match &op.source {
+            ElementSource::Stopped => return Err(invalid()),
+            ElementSource::Place { place, counts, .. } => {
+                if place.fields.len() > crate::list::MAX_WRITE_PATH {
+                    return Err(budget());
+                }
+                if counts.len() != place.fields.len() {
+                    return Err(invalid());
+                }
+                place.fields.len() * 2
+            }
+            _ => 0,
+        };
+        if !self.flow.spend(size * 2 + 8) {
+            return Err(budget());
+        }
+        if op.owner != owner
+            || match port {
+                Port::Address { step, .. } => step != 0,
+                _ => !access.may_return,
+            }
+        {
+            return Err(invalid());
+        }
+        let fresh = if let Some((prior_owner, effect)) = effects.get(&id) {
+            let Effect::Element(prior) = effect else {
+                return Err(invalid());
+            };
+            if *prior_owner != owner
+                || prior.parent != op.parent
+                || prior.source != op.source
+                || prior.access != access
+                || prior.control != op.control
+            {
+                return Err(invalid());
+            }
+            false
+        } else {
+            if effects.len() >= limit || size > *parts {
+                return Err(budget());
+            }
+            true
+        };
+        let (_, Effect::Element(observed)) = effects.entry(id).or_insert_with(|| {
+            (
+                owner,
+                Effect::Element(Observed {
+                    parent: op.parent,
+                    source: op.source.clone(),
+                    access,
+                    control: op.control,
+                    address: false,
+                    acquired: false,
+                    result: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match port {
+            Port::Address { .. } => observed.address = true,
+            Port::Operation(_) => observed.acquired = true,
+            Port::Normal(_) => observed.result = true,
+            _ => unreachable!(),
+        }
+        if fresh {
+            *parts -= size;
+        }
+        Ok(())
+    }
+
     pub(super) fn validate_element_borrow(
         &mut self,
         reports: &Reports,
@@ -149,3 +255,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;
