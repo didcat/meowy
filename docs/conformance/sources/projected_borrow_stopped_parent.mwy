@@ -1,0 +1,9 @@
+d : @"debug"
+'out {
+    p : &({ 'out.leave() }.missing)
+    d.print("unexpected leave result")
+}
+d.print("after leave")
+stop <never> : () { d.print("parent"); d.panic("stop") }
+p : &(stop().missing)
+d.print("unexpected result")

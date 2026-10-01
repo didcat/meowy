@@ -1,0 +1,21 @@
+d : @"debug"
+<R> : <{ n <int32> }>
+<H> : <{ p <&R><null> }>
+r <R> : { -> n : 21 }
+h : { -> inner <H><null> : { -> p : &r } }
+| h.inner<H> | {
+    | h.inner.p<&R> | {
+        p : &(h.inner.p.n)
+        d.print(*p)
+    }
+}
+<Plain> : <{ p <&R> }>
+target <Plain> : { -> p : &r }
+show <null> : (box <{ maybe <&Plain><null> }>) {
+    | box.maybe<&Plain> | {
+        p : &(box.maybe.p.n)
+        d.print(*p)
+    }
+}
+show({ -> maybe <&Plain><null> : &target })
+show({ -> maybe <&Plain><null> : null })

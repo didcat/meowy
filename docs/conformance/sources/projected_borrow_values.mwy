@@ -1,0 +1,25 @@
+d : @"debug"
+r : { -> a : 0; -> n : 7; -> z : 9 }
+h : { -> a : 0; -> p : &r }
+q : &(h.p.n)
+d.print(*q)
+view : &h
+loaded : &(view.p.z)
+d.print(*loaded)
+middle : { -> v : &h }
+nested : &middle
+end : &(nested.v.p.n)
+d.print(*end)
+cell : &(view.p)
+ref : *cell
+d.print(ref.n)
+rows : [{ -> n : 11 }]
+item : &(rows[1].n)
+d.print(*item)
+<R> : <{ a <int32>; n <int32> }>
+make <R> : () { d.print("make"); -> a : 0; -> n : 13 }
+d.print(*(&(make().n)))
+get <&R> : (parent <&R>) { d.print("get"); -> parent }
+base <R> : { -> a : 0; -> n : 17 }
+returned : &(get(&base).n)
+d.print(*returned)

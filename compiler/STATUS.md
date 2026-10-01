@@ -859,8 +859,12 @@ ordinary field, guard, loan and temporary errors. All eight report groups pass
 and conflicts are next; boundary coverage is committed as `f821bad`. Additional tests
 cover exact work/effect/payload allowances, 12 merge conflicts, duplicate copies,
 maximum paths and independent conversion flags. All eleven report groups pass
-(`/tmp/meowy-projection-limits.log`), as does formatting. Source execution/guard cases
-and source rejections are next; the complete compiler gate remains pending.
+(`/tmp/meowy-projection-limits.log`), as does formatting (`c0b741c`). Three source
+fixtures cover reference chains/cells, indexed/temporary/returned parents, nested
+guarded fields and stopped parents. All three pass exact debug/release outcomes
+(`/tmp/meowy-projection-execution.log`); metadata checks pass for 218 catalog entries
+and 37 references. All-target Clippy also passes (`/tmp/meowy-projection-clippy.log`).
+Source rejections and the complete compiler gate remain next.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,

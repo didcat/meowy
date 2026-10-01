@@ -2304,6 +2304,38 @@
         "code": "E303"
       },
       "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "projected_borrow_values",
+      "phase": "run",
+      "source": "sources/projected_borrow_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n9\n7\n7\n11\nmake\n13\nget\n17\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "projected_borrow_narrowing",
+      "phase": "run",
+      "source": "sources/projected_borrow_narrowing.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "21\n21\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "projected_borrow_stopped_parent",
+      "phase": "run",
+      "source": "sources/projected_borrow_stopped_parent.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "after leave\nparent\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
     }
   ]
 }
