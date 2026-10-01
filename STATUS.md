@@ -1,34 +1,33 @@
 # meowy project status
 
-Updated: 2026-09-30. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-01. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
 ## Current compiler and coverage handoff
 
-Shared element-borrow reports retain exact parent/index roots, source identities,
-capacity/length/site metadata and independent address/acquisition/result visits.
-Owned paths preserve canonical storage and field bounds; temporary cells keep their
-statement lifetimes. Stopped indices retain only earlier address observations.
-Seventeen new internal groups and five source cases cover sources, order, stops,
-dynamic bounds, loan/lifetime diagnostics and exact shared limits. The
-[compiler handoff](compiler/STATUS.md#bounded-shared-element-borrow-observations)
+Exclusive indexed-borrow reports retain exact places/canonical storage, field bounds,
+original index lengths/completion and independent address/reservation/acquisition/
+result visits. Stopped indices exclude later observations while the ledger retains
+its disconnected entries. Sixteen new internal groups and six source cases cover
+paths, order, stops, dynamic bounds, permissions, lifetimes and shared limits. The
+[compiler handoff](compiler/STATUS.md#bounded-exclusive-indexed-borrow-observations)
 lists the validated commit series.
 
-All ten compiler checks pass: 2187 library/914 native and 62 Python test groups;
-`/tmp/meowy-element-gate.log`. The catalog has 209 cases: 190 required passes,
+All ten compiler checks pass: 2203 library/914 native and 62 Python test groups;
+`/tmp/meowy-exclusive-gate.log`. The catalog has 215 cases: 196 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-element-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-element-docs.log`).
+(`/tmp/meowy-exclusive-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-exclusive-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Exclusive indexed-borrow reporting is in progress. The
+Next report projected-borrow steps, conversions, acquisitions and results. The
 [compiler handoff](compiler/STATUS.md#bounded-exclusive-indexed-borrow-observations)
-records the ordered commit plan. Existing source identities, bounds checks and
+records the ordered next work. Existing source identities, narrowing decisions and
 lifetime/conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 

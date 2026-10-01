@@ -542,13 +542,29 @@ below; views and temporaries copy only fixed-size metadata. Duplicate visits reu
 records; conflicts and exhausted work/effect/payload limits publish no partial
 collection. These observations grant no new loan authority, source value, longer
 lifetime or proof outcome. Exclusive indexed paths and projected borrows remain separate.
+Exclusive indexed-borrow reports retain the exact source place/canonical storage,
+ordered field/index steps, bounded field counts and each index's original length
+input and checked completion. These facts are captured while types and HIR remain
+available, without extending the generic PathStep representation or copying types.
+Independent flags record root/field addresses, per-index reservations, final
+acquisition and result visits. Validation checks point/owner/parent/block/span
+identity, source and capacity bounds, distinct index roots, exact ledger edges,
+selectors and operation registration. Reservations precede index evaluation and
+Checked edges retain bounds conditions. A stopped index excludes later visits and
+terminal results; later disconnected ledger entries remain intact. Observations
+infer no runtime reachability or bounds success. Prefix plus path length is capped
+at 256; copied metadata and flags share the payload allowance below. Duplicates
+reuse records, and identity conflicts or exhausted shared budgets publish no partial
+collection. Ordinary field permissions, reservation conflicts, moves, lifetimes
+and capability gates remain authoritative; reports grant no new loan authority or
+proof outcome. Projected references retain their separate producer.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
 effects. Each copied path is bounded by 256 steps. Path steps, field indices and
 address flags for ordinary borrows, field indices and counts for element borrows,
-direct-call argument roots and observed output-part records share a limit of
-262,144 copied entries.
+exclusive prefix/step/count/access metadata and stage flags, direct-call argument
+roots and observed output-part records share a limit of 262,144 copied entries.
 Lookup and copy work are charged before allocation;
 duplicate operation ports copy a path once. Empty paths and owner mismatches are
 rejected. Aliases retain their shared canonical storage and distinct local IDs.

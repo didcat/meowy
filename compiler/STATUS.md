@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Exclusive indexed-borrow observation work is in progress.
+Updated: 2026-10-01. Exclusive indexed-borrow reports pass the compiler gate; projected borrows are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -752,78 +752,82 @@ is preserved. No compiler capability or reference contract changed.
 
 ## Bounded exclusive indexed-borrow observations
 
-The producer retains canonical storage, root-prefix fields, ordered PathSteps and
-reservation/bounds/acquisition/result edges. It currently drops field counts and
-per-index length/completion facts; both must survive local/HIR transfer before
-report validation. Later disconnected steps remain in the structural ledger after
-a stopped index. Unrelated `docs/programs/hey/` remains preserved.
+The dependency-ordered implementation series is complete:
 
-Dependency-ordered commit plan:
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain bounded prefix/per-field counts | `bf99d6f` |
+| Capture original index lengths and completion decisions | `29abc4b` |
+| Validate path stages and stopped frontiers | `b5cdaef` |
+| Report addresses, reservations, acquisition and results | `e8debce` |
+| Cover boundaries, snapshots, conflicts and exact limits | `720e062` |
+| Pin nested order, stops and dynamic initialized-length bounds | `c7abffc` |
+| Pin field permissions, reservation conflicts and lifetimes | `3d0a9bc` |
 
-1. Retain bounded prefix/per-field counts while local types are present, with focused
-   nested-path, alias, transfer and capture-budget regressions. Copy no type shapes.
-2. Capture initialized-length inputs before `list_position_point` and checked index
-   completion afterward in an exclusive-only plan, preserving generic PathStep and
-   actual returned roots/spans. Validate the plan against HIR before publication.
-3. Validate source bounds, owners, index roots, exact stored edges and selectors;
-   reject stage visits after the first stopped index without changing the ledger.
-4. Report independent addresses, reservations, acquisition and result observations
-   with bounded payloads, shared work/effect limits and atomic duplicates/conflicts.
-5. Add malformed-source, stop, alias and ordinary permission/loan/lifetime coverage.
-   Keep aggregation limits/conflicts separately reviewable if needed.
-6. Add required source execution/order/stopped-input/bounds cases and classified
-   coverage, preserving existing fixtures, contracts and capability exceptions.
-7. Add source field-permission, reservation-conflict and lifetime rejections separately.
-8. Run compiler/strict gates and document validated observations plus the concrete
-   next producer in both handoffs and the foundation guide.
+Reports retain exact place/canonical storage, ordered PathSteps, prefix/per-field
+counts, per-index original length inputs and checked normal flags, overall completion
+and control. Facts are captured before local/HIR transfer with bounded work and no
+type copies. An exclusive-only plan preserves the generic PathStep representation.
+Independent flags retain each address/reservation visit and final acquisition/result.
 
-Prefix and suffix-field counts are captured in traversal order with precharged
-bounded work and no type copies. Focused regressions cover nested paths after local
-transfer, emitted storage, exact capture work and atomic duplicate conflicts.
-All five focused producer groups pass (`/tmp/meowy-exclusive-counts.log`), as do
-all 2189 library tests (`/tmp/meowy-exclusive-counts-lib.log`) and formatting.
-Per-index facts and report integration remain next; the complete compiler gate
-has not run for this series. Field counts are committed as `bf99d6f`. An exclusive
-plan now retains the original length input and checked normal flag for every index,
-plus overall completion after producer validation. Generic PathStep is unchanged.
-All 70 focused exclusive groups pass (`/tmp/meowy-exclusive-access.log`), including
-known/unknown/stopped inputs, retained snapshots and malformed plans. All 2191 library
-tests pass (`/tmp/meowy-exclusive-access-lib.log`), as does formatting. Report stage
-validation is next; per-index facts are committed as `29abc4b`. Report validation now
-checks canonical storage, ordered field counts, distinct index roots/spans, access
-bounds/completion, exact ledger edges and operation membership. Selectors after the
-first stopped index are rejected without deleting disconnected ledger entries.
-Both focused groups pass (`/tmp/meowy-exclusive-validation.log`), including 140
-corrupt metadata cases and stopped-stage boundaries. All 2193 library tests pass
-(`/tmp/meowy-exclusive-validation-lib.log`), as does formatting. Aggregation is next;
-the complete compiler gate has not run for this series. Validation is committed as
-`b5cdaef`. Reports now retain bounded path/count/access metadata, canonical storage,
-normal/control and independent address/reservation/acquisition/result flags. Focused
-aggregation tests cover modes, aliases, owners/control, duplicate independent visits
-and stopped frontiers. All six report groups pass (`/tmp/meowy-exclusive-effects.log`),
-as do all 2197 library tests (`/tmp/meowy-exclusive-effects-lib.log`) and formatting.
-Aggregation is committed as `e8debce`. Additional tests cover stopped field suffixes,
-other producers, alias faults, retained length snapshots, ordinary diagnostics,
-14 record conflicts, exact shared budgets and combined prefix/path limits.
-All 12 report groups pass (`/tmp/meowy-exclusive-boundaries.log`), as does formatting.
-Boundary coverage is committed as `720e062`. Three source fixtures cover nested
-index order, scalar modes and field permissions, emitted aliases, stopped indices/
-field suffixes and dynamic initialized-length bounds. All three pass in debug/release
-(`/tmp/meowy-exclusive-execution.log`); catalog/coverage checks pass with 212 cases,
-193 required and 19 unchanged pins. All-target Clippy also passes
-(`/tmp/meowy-exclusive-clippy.log`); execution coverage is committed as `c7abffc`.
-Three rejection fixtures now pin final-field E305 permissions, reserved-container
-E302 conflicts and local-owner E303 escapes. All three pass in debug/release
-(`/tmp/meowy-exclusive-rejections.log`); catalog/coverage checks pass with 215 cases,
-196 required and 19 unchanged pins. Preservation against `95a1334` confirms all 209
-prior cases, 241 source assets, 37 reference files, proof obligations, reference
-hashes and capability exceptions unchanged (`/tmp/meowy-exclusive-preservation.log`).
-The complete compiler/strict gates and final documentation handoff remain next.
+Validation checks complete point/owner/parent/block/span identity, canonical storage,
+field/capacity/length bounds, distinct index roots, exact original ledger edges and
+operation membership. Reservations precede index evaluation; Checked bounds edges
+remain explicit. Selectors after the first stopped index are rejected. Later
+unreachable ledger entries remain intact and gain no observations. Missing operations
+or successful checking never imply normal completion or runtime reachability.
 
-Shared element borrows, ordinary places, reborrows and projected references retain
-separate producers. Preserve existing exclusive-target capability/mutability/loan
-rules; observations grant no lifetime extension or proof outcome. `queries::finish`
-remains B001-gated.
+Prefix plus path length is capped at 256. Copied prefixes, steps, field counts,
+index facts and stage flags share the existing 262,144-entry payload allowance.
+Duplicate visits reuse records; identity conflicts and exhausted shared work/effect/
+payload limits publish no partial collection. Ordinary permissions, reservation
+conflicts, moves, lifetimes and capability gates remain authoritative.
+
+Sixteen new internal groups cover source capture, known/unknown lengths, retained
+snapshots, nested paths, aliases, owners/control, stopped indices/fields and other
+producers. Coverage includes 140 corrupt metadata cases, malformed plans, canonical
+alias faults, 14 record conflicts, exact budgets and combined maximum paths
+(`/tmp/meowy-exclusive-counts.log`, `/tmp/meowy-exclusive-access.log`,
+`/tmp/meowy-exclusive-boundaries.log`). Six required source cases pass in debug/release:
+nested order, scalar mutation, aliases, stops, initialized-length bounds, E305 field
+permissions, E302 reservation conflicts and E303 local escapes
+(`/tmp/meowy-exclusive-execution.log`, `/tmp/meowy-exclusive-rejections.log`).
+Structural reports remain distinct from source conformance and proof evaluation.
+
+All ten compiler checks pass: 2203 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance (`/tmp/meowy-exclusive-gate.log`).
+The 215 cases report 196 required passes, 19 pinned gaps and zero failures in both
+profiles. Strict mode exits 1 only for those gaps (`/tmp/meowy-exclusive-strict.log`);
+all four final documentation checks pass (`/tmp/meowy-exclusive-docs.log`). No selected
+check has an outstanding failure.
+Preservation against `95a1334` confirms all 209 prior cases, 241 source assets,
+37 reference files, proof obligations, reference hashes and capability exceptions
+unchanged (`/tmp/meowy-exclusive-preservation.log`). Unrelated `docs/programs/hey/`
+is preserved. No compiler capability or reference contract changed.
+
+Next implement bounded projected-borrow observations using `check/references.rs`,
+`dependencies/borrow_projections.rs` and `edges/forward/effects/`. Record the next plan:
+
+1. Retain exact per-record field counts for Field and final Address steps while
+   `borrowed` still has the concrete types. Preserve original field indices and
+   narrowing decisions, including paths after reference loads. Charge bounded capture
+   work before copying; keep type shapes and values out of report metadata.
+2. Validate parent/owner/block/span identity, materialized local/statement registration,
+   field bounds, load modes, retained reborrow site/mode, legal step order, selectors
+   and exact projection/conversion/acquisition/result edges. A stopped parent has no
+   site or steps; keep missing stage data distinct from normal completion.
+3. Report independent per-step projection and narrowing-conversion visits plus final
+   acquisition/result with bounded payloads, shared work/effect limits and atomic
+   duplicates/conflicts. Preserve raw parent/call identities and conditional returns.
+4. Cover owned/reference/temporary receivers, nested owners/control, stopped parents,
+   narrowed fields, malformed metadata and exact budgets. Add required source cases
+   and classified coverage, run compiler/strict gates and update both handoffs and
+   the foundation guide. Keep source capture, validation and aggregation reviewable.
+
+Ordinary places, shared elements, exclusive indexed paths and direct/implicit
+reborrows retain separate producers. Preserve existing reference-cell identities,
+borrow authority, lifetimes and capability boundaries; `queries::finish` remains
+B001-gated. Projected observations do not evaluate predicates or infer pointee storage.
 
 ## Documentation conventions and layout
 
@@ -2941,8 +2945,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`d013921`), validation (`e1fa743`) and observations (`8644137`) now retain partial
    addresses and bounded owned/view/temporary metadata. Source/loan coverage
    (`c5abe07`), limits (`9d696e8`), source cases (`3fa8ab0`, `658a01c`), lint repair
-   (`16cd21e`) and the compiler gate pass. Next implement exclusive indexed-borrow
-   observations using `check/indexed.rs`, `dependencies/exclusive.rs` and the plan above.
+   (`16cd21e`) and the compiler gate pass. Exclusive field counts (`bf99d6f`), index
+   facts (`29abc4b`), validation (`b5cdaef`) and observations (`e8debce`) now retain
+   independent address/reservation/acquisition/result visits. Boundary coverage
+   (`720e062`), source cases (`c7abffc`, `3d0a9bc`) and the compiler gate pass. Next
+   implement projected-borrow reports using `check/references.rs`,
+   `dependencies/borrow_projections.rs` and the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
