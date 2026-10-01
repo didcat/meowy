@@ -11,6 +11,7 @@ mod indices;
 mod methods;
 mod narrowing;
 mod outputs;
+mod projections;
 mod reads;
 mod reborrows;
 mod scalars;
@@ -114,6 +115,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.validate_borrow_projection(reports, owner, port, span)?;
                 if self.validate_exclusive_borrow(reports, owner, port, span)? {
                     self.record_exclusive_effect(
                         owner,

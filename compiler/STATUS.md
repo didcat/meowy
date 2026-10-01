@@ -839,7 +839,12 @@ Capture work is charged before publication and existing index caps remain intact
 All 16 focused producer groups pass (`/tmp/meowy-projection-counts.log`), including
 exact counts, local transfer and capture work. All 2205 library tests pass
 (`/tmp/meowy-projection-counts-lib.log`), as does formatting. Report validation and
-aggregation remain next; the complete compiler gate has not run for this series.
+aggregation remain next; field counts are committed as `dc0777e`. Report validation
+now checks source identities, temporary statement registration, exact field bounds,
+legal step order, site/mode presence, selectors and the original conversion/terminal
+edges. Both focused groups pass (`/tmp/meowy-projection-validation.log`), including
+128 corrupt cases. All 2207 library tests pass (`/tmp/meowy-projection-validation-lib.log`),
+as does formatting. Aggregation is next; the complete compiler gate remains pending.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,
