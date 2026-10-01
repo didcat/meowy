@@ -500,6 +500,19 @@ Reference-cell storage remains distinct from pointee storage. Indexed borrows,
 reborrows, projected references and temporary borrows retain separate producers;
 shared indexing can still report its ordinary root borrow. Observations grant no
 new loan authority, longer lifetime, referent value or proof outcome.
+Standalone temporary-borrow reports retain exact initializer roots, cell local/
+statement identities, control and independent acquisition/result observations.
+Validation checks completed point/owner/span identities, initializer parent/block/
+site agreement, local bounds, temporary registration and the completed owning
+statement's root. Original initializer/acquisition/result edges and registered
+operation owners must agree. Stopped initializers have no cell or observation;
+stopped predecessors exclude later temporary borrows from the same entry walk.
+Records have fixed size and copy no initializer values or type shapes. Repeated
+visits merge flags; conflicting metadata or shared work/effect exhaustion publishes
+no partial collection. Reference-valued initializers retain their distinct cell
+identity. Projected/indexed temporary materialization and reborrows stay separate.
+These observations preserve full-statement lifetimes and grant no longer lifetime,
+pointee identity, loan authority or proof outcome.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS

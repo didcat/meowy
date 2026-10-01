@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Standalone temporary-borrow observation work is in progress.
+Updated: 2026-09-30. Temporary-borrow reports pass the compiler gate; reborrows are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -606,54 +606,68 @@ capability exceptions unchanged (`/tmp/meowy-place-preservation.log`). Unrelated
 
 ## Bounded standalone temporary-borrow observations
 
-The producer already retains exact initializer roots, optional local/statement cell
-identities, control and initializer/acquisition/result edges. Stopped inputs have
-no cell. Reports currently classify temporary acquisitions as Unknown. Checked
-statement sites and `Proofs.temporaries` survive local transfer, so no additional
-type or source capture is needed. Unrelated `docs/programs/hey/` remains untouched.
+The dependency-ordered implementation series is complete:
 
-Dependency-ordered commit plan:
+| Reviewable slice | Commit |
+| --- | --- |
+| Validate cell registration and checked statement identities | `7b28c38` |
+| Report independent acquisition/result observations | `80d6d78` |
+| Cover stopped inputs, lifetimes, conflicts and exact limits | `eea5989` |
+| Pin initialization order, stops and temporary escapes | `fd9c16d` |
 
-1. Validate exact initializer/owner/parent/block/span identities, retained cell local
-   bounds and `Proofs.temporaries` statement registration, operation ownership and
-   original initializer/acquisition/result edges. A stopped initializer has no cell
-   or reference result; do not infer completion from successful checking.
-2. Report checked initializer/cell/control metadata with independent acquisition/
-   result visits, shared work/effect limits and atomic duplicate/conflict handling.
-   Reference-valued temporaries retain distinct cells, never pointee identities.
-3. Add stopped/nested/owner/control, statement-lifetime, malformed-identity and exact
-   budget coverage in an independently useful boundary slice.
-4. Add required source cases and classified coverage; preserve all prior fixtures,
-   reference contracts and capability exceptions. Run the compiler/strict gates.
-5. Document validated observations and the concrete next producer in both handoffs
-   and the foundation guide.
+Reports retain exact initializer roots, temporary local/statement cells, control
+and independent acquisition/result flags. Validation checks complete point/owner/
+span identities, initializer parent/block/site agreement, local bounds, temporary
+registration, completed owning statement roots, operation membership and exact
+original edges. Locals may already have transferred into the program. Stopped
+initializers have no cell or observations; stopped predecessors exclude later
+borrows from the same entry walk. No completion is inferred from successful checking.
 
-Stage validation (`7b28c38`) checks initializer roots, cell registration, checked
-statement sites, exact edges and operation membership after local transfer. Reports
-now retain fixed-size initializer, cell local/statement and control metadata with
-independent acquisition/result flags. Five focused groups cover scalar/record/list/
-call inputs, reference cells, nested statement lifetimes, owners/control, duplicate
-independent visits and 80 malformed identity/site/edge cases. All 2153 library tests
-pass (`/tmp/meowy-temporary-effects-lib.log`), as does formatting. No pointee identity,
-type shape or lifetime extension is inferred. Aggregation is committed as `80d6d78`.
-Additional boundary tests cover stopped inputs/successors, short-circuit inputs,
-separate producers, original errors/lifetimes, six record conflicts and exact
-shared limits. A fixed-cost check compares 1-byte and 65,536-byte initializers.
-All eleven focused groups pass (`/tmp/meowy-temporary-boundaries.log`), as does
-formatting (`eea5989`). Four source fixtures now cover once-only call initialization,
-immediate scalar/record/list/reference-cell uses, short-circuit inputs, stopped
-initializers and cell/record lifetime escapes. All four pass in debug/release
-(`/tmp/meowy-temporary-sources.log`). Reviewed structural evidence is linked to
-memory/proof references and the coverage report is regenerated: 200 cases, 181
-required and 19 pinned gaps. Preservation against `0a28423` confirms all 196 prior
-cases, 228 source assets, 37 reference files, proof obligations, reference hashes
-and capability exceptions unchanged (`/tmp/meowy-temporary-preservation.log`).
-The complete compiler/strict gates and final documentation handoff remain next.
+Records have fixed size and copy no source values or type shapes. Duplicate visits
+merge flags without another record; conflicts or shared work/effect exhaustion
+publish no partial collection. Reference-valued initializers retain distinct cells,
+never inferred pointee identities. Projected/indexed temporary materialization and
+reborrows remain separate; full-statement lifetimes and E303 stay authoritative.
 
-Indexed borrows, reborrows and projected references retain separate producers.
-Preserve full-statement temporary lifetimes and existing mutability, conflict and
-capability diagnostics. Observations grant no new borrow authority or proof outcome;
-`queries::finish` remains B001-gated.
+Eleven new internal groups cover scalar/record/list/call and short-circuit inputs,
+reference cells, nested statement lifetimes, owners/control, stops and other producers.
+Eighty malformed identity/site/edge cases, six record conflicts and exact shared
+limits preserve atomic failure. A 1-byte/65,536-byte comparison confirms fixed
+report cost (`/tmp/meowy-temporary-boundaries.log`). Four required source cases
+pass in debug/release: once-only call initialization, immediate values/cells,
+short-circuit inputs, stopped initializers and cell/record lifetime escapes
+(`/tmp/meowy-temporary-sources.log`). Structural reports remain distinct from
+observable language conformance and proof evaluation.
+
+All ten compiler checks pass: 2159 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance
+(`/tmp/meowy-temporary-gate.log`). The 200 cases report 181 required passes,
+19 pinned gaps and zero failures in debug/release. Strict mode exits 1 only for those
+gaps (`/tmp/meowy-temporary-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-temporary-docs.log`). No selected check has an outstanding failure.
+Preservation against `0a28423` confirms
+all 196 prior cases, 228 source assets, 37 reference files, proof obligations,
+reference hashes and capability exceptions unchanged
+(`/tmp/meowy-temporary-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+No compiler capability or reference contract changed.
+
+Next implement bounded reborrow observations using `dependencies/reborrows.rs`
+and `edges/forward/effects/`. Record the next commit plan before coding:
+
+1. Validate exact parent roots, checked parent/result modes, retained ReborrowId
+   bounds, point/owner/parent/block/span identities, operation ownership and original
+   evaluation/acquisition/result edges. Stopped parents have no site or parent mode.
+2. Report the existing site/modes/control and independent acquisition/result visits
+   with fixed-size metadata, shared work/effect bounds and atomic duplicates/conflicts.
+   Cover explicit shared/scalar-exclusive reborrows and the existing implicit shared
+   expected-value path; preserve raw source identities and conditional call returns.
+3. Cover nested owners/control, stopped parents, malformed modes/sites, exact budgets
+   and ordinary loan/lifetime diagnostics. Add required source cases and classified
+   coverage; run compiler/strict gates and update the handoffs and foundation guide.
+
+Indexed and projected borrows retain separate producers. Reborrow acquisition is
+child-loan creation, not a referent load or permission to extend a lifetime. Preserve
+existing capability boundaries; `queries::finish` remains B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2764,8 +2778,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    canonical alias storage, reference-cell identity and checked modes. Additional
    boundary coverage (`f4ebd60`), source cases (`44e8b39`) and the compiler gate pass.
    Temporary cell/site validation (`7b28c38`) and independent acquisition/result
-   reports (`80d6d78`) are implemented; boundary coverage (`eea5989`) passes. Next
-   validate the temporary-borrow source cases and run compiler/strict gates.
+   reports (`80d6d78`), boundary coverage (`eea5989`) and source cases (`fd9c16d`)
+   and the compiler gate pass. Next implement reborrow reports using
+   `dependencies/reborrows.rs` and the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
