@@ -2102,6 +2102,48 @@
         "code": "E303"
       },
       "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "temporary_borrow_values",
+      "phase": "run",
+      "source": "sources/temporary_borrow_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n8\n9\n10\n11\n4\nfalse\ntrue\n"
+      },
+      "reference": "../reference/memory.md#temporary-owners"
+    },
+    {
+      "id": "temporary_borrow_stopped_initializer",
+      "phase": "run",
+      "source": "sources/temporary_borrow_stopped_initializer.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nafter leave\ninitializer\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/memory.md#temporary-owners"
+    },
+    {
+      "id": "temporary_borrow_cell_escape",
+      "phase": "check",
+      "source": "sources/temporary_borrow_cell_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#temporary-owners"
+    },
+    {
+      "id": "temporary_borrow_record_escape",
+      "phase": "check",
+      "source": "sources/temporary_borrow_record_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#temporary-owners"
     }
   ]
 }

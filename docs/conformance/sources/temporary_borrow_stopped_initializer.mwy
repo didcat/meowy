@@ -1,0 +1,13 @@
+d : @"debug"
+d.print("before")
+'out {
+    p : &({ 'out.leave() })
+    d.print("unexpected leave result")
+}
+d.print("after leave")
+stop <never> : () {
+    d.print("initializer")
+    d.panic("stop")
+}
+p : &(stop())
+d.print("unexpected result")

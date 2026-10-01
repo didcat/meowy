@@ -640,8 +640,15 @@ Additional boundary tests cover stopped inputs/successors, short-circuit inputs,
 separate producers, original errors/lifetimes, six record conflicts and exact
 shared limits. A fixed-cost check compares 1-byte and 65,536-byte initializers.
 All eleven focused groups pass (`/tmp/meowy-temporary-boundaries.log`), as does
-formatting. Source conformance coverage is next; the complete compiler gate has not
-run for this series.
+formatting (`eea5989`). Four source fixtures now cover once-only call initialization,
+immediate scalar/record/list/reference-cell uses, short-circuit inputs, stopped
+initializers and cell/record lifetime escapes. All four pass in debug/release
+(`/tmp/meowy-temporary-sources.log`). Reviewed structural evidence is linked to
+memory/proof references and the coverage report is regenerated: 200 cases, 181
+required and 19 pinned gaps. Preservation against `0a28423` confirms all 196 prior
+cases, 228 source assets, 37 reference files, proof obligations, reference hashes
+and capability exceptions unchanged (`/tmp/meowy-temporary-preservation.log`).
+The complete compiler/strict gates and final documentation handoff remain next.
 
 Indexed borrows, reborrows and projected references retain separate producers.
 Preserve full-statement temporary lifetimes and existing mutability, conflict and
@@ -2757,8 +2764,8 @@ subtraction retains its documented limits. No outstanding failures remain.
    canonical alias storage, reference-cell identity and checked modes. Additional
    boundary coverage (`f4ebd60`), source cases (`44e8b39`) and the compiler gate pass.
    Temporary cell/site validation (`7b28c38`) and independent acquisition/result
-   reports (`80d6d78`) are implemented. Next validate boundary coverage under
-   `edges/forward/effects/temporaries/`, add source cases and run compiler/strict gates.
+   reports (`80d6d78`) are implemented; boundary coverage (`eea5989`) passes. Next
+   validate the temporary-borrow source cases and run compiler/strict gates.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
