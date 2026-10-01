@@ -721,9 +721,10 @@ Dependency-ordered commit plan:
    parents, other producers and ordinary bounds/loan/lifetime diagnostics.
 5. Cover exact shared work/effect/payload limits, maximum paths and atomic record
    conflicts separately, keeping each boundary slice independently reviewable.
-6. Add required source cases and classified coverage, preserving existing fixtures,
-   reference contracts and capability exceptions. Run compiler/strict gates.
-7. Document validated observations and the concrete next producer in both handoffs
+6. Add required source execution/order/stopped-input/bounds cases and classified
+   coverage, preserving existing fixtures, contracts and capability exceptions.
+7. Add source loan/lifetime rejections separately, then run compiler/strict gates.
+8. Document validated observations and the concrete next producer in both handoffs
    and the foundation guide.
 
 Source::Place now retains canonical storage and precharged bounded field counts;
@@ -751,8 +752,12 @@ and aggregation-budget regressions are split into separate reviewable slices.
 Additional tests cover 50 corrupt owned/temporary source records, canonical alias
 agreement, stopped-parent/successor exclusions, other producers and original receiver/
 index/loan/lifetime errors. All eleven report groups pass
-(`/tmp/meowy-element-boundaries.log`), as does formatting. Exact aggregation limits
-and conflicts are next; the complete compiler gate has not run for this series.
+(`/tmp/meowy-element-boundaries.log`), as does formatting (`c5abe07`). Additional
+tests cover exact shared work/effect/payload limits, 14 record conflicts, duplicate
+copies, maximum paths and zero-payload view/temporary sources. All 14 report groups
+pass (`/tmp/meowy-element-limits.log`), as does formatting. Source execution/bounds
+and loan/lifetime fixtures will be separate slices to keep each review focused.
+The complete compiler gate has not run for this series.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
 observations grant no bounds success, lifetime extension or new loan authority;
