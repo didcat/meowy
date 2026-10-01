@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Shared element-borrow reports pass the compiler gate; exclusive indexed paths are next.
+Updated: 2026-09-30. Exclusive indexed-borrow observation work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -750,22 +750,39 @@ Preservation against `087ee8e` confirms all 204 prior cases, 236 source assets,
 unchanged (`/tmp/meowy-element-preservation.log`). Unrelated `docs/programs/hey/`
 is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded exclusive indexed-borrow observations using `check/indexed.rs`,
-`dependencies/exclusive.rs` and `edges/forward/effects/`. Record the next commit plan:
+## Bounded exclusive indexed-borrow observations
 
-1. Retain missing bounded root-prefix/per-field counts while local types are present.
-   Capture each index's original initialized-length input before `list_position_point`
-   and checked completion afterward in `exclusive_indexed_points`; that helper
-   currently drops those facts from PathStep. Preserve actual returned roots, spans,
-   canonical storage and combined prefix/path limits; copy no type shapes.
-2. Validate and report independent root/field addresses, index reservations, final
-   acquisition and result visits. Preserve reservation before index evaluation and
-   Checked bounds edges. Stopped indices must not give later stages or terminal
-   results a forward path. Keep payload/work/effect publication bounded and atomic.
-3. Cover nested indexed/field paths, aliases, owner/control boundaries, stopped inputs,
-   malformed source/selectors and exact shared budgets. Add required source cases
-   for evaluation order, bounds, permissions and lifetimes; run compiler/strict gates
-   and update both handoffs and the foundation guide.
+The producer retains canonical storage, root-prefix fields, ordered PathSteps and
+reservation/bounds/acquisition/result edges. It currently drops field counts and
+per-index length/completion facts; both must survive local/HIR transfer before
+report validation. Later disconnected steps remain in the structural ledger after
+a stopped index. Unrelated `docs/programs/hey/` remains preserved.
+
+Dependency-ordered commit plan:
+
+1. Retain bounded prefix/per-field counts while local types are present, with focused
+   nested-path, alias, transfer and capture-budget regressions. Copy no type shapes.
+2. Capture initialized-length inputs before `list_position_point` and checked index
+   completion afterward in an exclusive-only plan, preserving generic PathStep and
+   actual returned roots/spans. Validate the plan against HIR before publication.
+3. Validate source bounds, owners, index roots, exact stored edges and selectors;
+   reject stage visits after the first stopped index without changing the ledger.
+4. Report independent addresses, reservations, acquisition and result observations
+   with bounded payloads, shared work/effect limits and atomic duplicates/conflicts.
+5. Add malformed-source, stop, alias and ordinary permission/loan/lifetime coverage.
+   Keep aggregation limits/conflicts separately reviewable if needed.
+6. Add required source execution/order/bounds cases and classified coverage, then
+   source permission/lifetime rejections. Preserve existing fixtures and exceptions.
+7. Run compiler/strict gates and document validated observations plus the concrete
+   next producer in both handoffs and the foundation guide.
+
+Prefix and suffix-field counts are captured in traversal order with precharged
+bounded work and no type copies. Focused regressions cover nested paths after local
+transfer, emitted storage, exact capture work and atomic duplicate conflicts.
+All five focused producer groups pass (`/tmp/meowy-exclusive-counts.log`), as do
+all 2189 library tests (`/tmp/meowy-exclusive-counts-lib.log`) and formatting.
+Per-index facts and report integration remain next; the complete compiler gate
+has not run for this series.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan

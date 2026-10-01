@@ -14,6 +14,7 @@ pub(crate) struct Operation {
     pub(crate) place: hir::Place,
     pub(crate) storage: hir::LocalId,
     pub(crate) steps: Vec<PathStep>,
+    pub(crate) counts: Vec<usize>,
     pub(crate) control: bool,
     pub(crate) span: crate::ast::Span,
     pub(crate) edges: Vec<Edge>,
@@ -37,8 +38,8 @@ impl Checker {
             || !self.flow.spend(
                 self.exclusives.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
-                    + steps.len() * (steps.len().checked_ilog2().unwrap_or(0) as usize + 4)
-                    + place.fields.len()
+                    + steps.len() * (steps.len().checked_ilog2().unwrap_or(0) as usize + 5)
+                    + place.fields.len() * 2
                     + 4,
             )
         {
@@ -60,10 +61,12 @@ impl Checker {
             return Err(invalid());
         }
         let mut ty = self.locals.get(place.root).ok_or_else(invalid)?;
+        let mut counts = Vec::new();
         for field in &place.fields {
             let hir::Type::Record { fields, .. } = ty else {
                 return Err(invalid());
             };
+            counts.push(fields.len());
             ty = &fields.get(*field).ok_or_else(invalid)?.ty;
         }
         let mut seen = std::collections::BTreeSet::new();
@@ -77,6 +80,7 @@ impl Checker {
                     hir::WriteStep::Field(other),
                     hir::Type::Record { fields, .. },
                 ) if field == other => {
+                    counts.push(fields.len());
                     ty = &fields.get(*field).ok_or_else(invalid)?.ty;
                     edges.push(Edge::new(address(index), address(index + 1), Route::Next));
                 }
@@ -148,6 +152,7 @@ impl Checker {
             place: place.clone(),
             storage,
             steps,
+            counts,
             control: self.control,
             span: value.span,
             edges,
@@ -170,3 +175,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod counts;
