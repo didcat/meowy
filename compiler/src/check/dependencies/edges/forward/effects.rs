@@ -4,6 +4,7 @@ mod calls;
 mod coercions;
 mod derefs;
 mod elements;
+mod exclusives;
 mod fields;
 mod heaps;
 mod indices;
@@ -112,6 +113,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.validate_exclusive_borrow(reports, owner, port, span)?;
                 if self.validate_element_borrow(reports, owner, port, span)? {
                     self.record_element_effect(owner, port, &mut effects, limit, &mut parts, span)?;
                     continue;

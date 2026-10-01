@@ -788,7 +788,14 @@ plus overall completion after producer validation. Generic PathStep is unchanged
 All 70 focused exclusive groups pass (`/tmp/meowy-exclusive-access.log`), including
 known/unknown/stopped inputs, retained snapshots and malformed plans. All 2191 library
 tests pass (`/tmp/meowy-exclusive-access-lib.log`), as does formatting. Report stage
-validation is next; the complete compiler gate has not run for this series.
+validation is next; per-index facts are committed as `29abc4b`. Report validation now
+checks canonical storage, ordered field counts, distinct index roots/spans, access
+bounds/completion, exact ledger edges and operation membership. Selectors after the
+first stopped index are rejected without deleting disconnected ledger entries.
+Both focused groups pass (`/tmp/meowy-exclusive-validation.log`), including 140
+corrupt metadata cases and stopped-stage boundaries. All 2193 library tests pass
+(`/tmp/meowy-exclusive-validation-lib.log`), as does formatting. Aggregation is next;
+the complete compiler gate has not run for this series.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan
