@@ -676,12 +676,15 @@ Dependency-ordered commit plan:
 5. Document validated observations and the concrete next producer in both handoffs
    and the foundation guide.
 
-Stage validation now checks complete point/parent identities, checked mode
+Stage validation (`6702ace`) checks complete point/parent identities, checked mode
 compatibility, retained site bounds, original edges and operation membership.
-Focused tests cover explicit/implicit inputs and 120 malformed identity/mode/site/
-edge cases. Both focused groups pass (`/tmp/meowy-reborrow-validation.log`), as do
-all 2161 library tests (`/tmp/meowy-reborrow-validation-lib.log`) and formatting.
-Typed observations and broader boundaries remain next; the complete compiler gate
+Reports now retain fixed-size parent/site/mode/control metadata with independent
+acquisition/result flags. Five focused groups cover supported modes, reference
+cells, nested sites, owners/control, conditional calls, duplicate independent visits
+and 120 malformed identity/mode/site/edge cases. The existing coercion boundary
+test now requires the distinct Reborrow effect while preserving its exclusion from
+coercion reports. All 2164 library tests pass (`/tmp/meowy-reborrow-effects-lib.log`),
+as does formatting. Broader boundary coverage is next; the complete compiler gate
 has not run for this series. No reference contract changed.
 
 Indexed and projected borrows retain separate producers. Reborrow acquisition is

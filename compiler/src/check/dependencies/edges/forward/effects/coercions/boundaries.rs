@@ -54,7 +54,7 @@ pub(crate) fn coercion_effects_keep_required_and_shared_reference_paths_separate
     assert_eq!(checker.reborrow_ops.len(), 1);
     let id = *checker.reborrow_ops.first_key_value().unwrap().0;
     assert!(!checker.coercions.contains_key(&id));
-    assert_eq!(reports.effects[&id].1, Effect::Unknown);
+    assert!(matches!(reports.effects[&id].1, Effect::Reborrow(_)));
     assert!(
         checker
             .coercion_effect_stage(&reports, 0, Port::Operation(id), Span::default())

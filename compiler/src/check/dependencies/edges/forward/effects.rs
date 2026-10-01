@@ -79,6 +79,7 @@ pub(crate) enum Effect {
     Typed(typed::Observed),
     Borrow(borrows::Observed),
     Temporary(temporaries::Observed),
+    Reborrow(reborrows::Observed),
     Unknown,
 }
 
@@ -109,7 +110,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_reborrow(reports, owner, port, span)?;
+                if self.validate_reborrow(reports, owner, port, span)? {
+                    self.record_reborrow_effect(owner, port, &mut effects, limit, span)?;
+                    continue;
+                }
                 if self.validate_temporary_borrow(reports, owner, port, span)? {
                     self.record_temporary_effect(owner, port, &mut effects, limit, span)?;
                     continue;
