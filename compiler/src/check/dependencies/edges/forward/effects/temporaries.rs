@@ -1,6 +1,80 @@
 use super::*;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) input: PointId,
+    pub(crate) local: crate::hir::LocalId,
+    pub(crate) statement: crate::hir::StatementId,
+    pub(crate) control: bool,
+    pub(crate) acquired: bool,
+    pub(crate) result: bool,
+}
+
 impl Checker {
+    pub(super) fn record_temporary_effect(
+        &mut self,
+        owner: usize,
+        port: Port,
+        effects: &mut Effects,
+        limit: usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof temporary-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof temporary-effect identity mismatch", span);
+        let id = match port {
+            Port::Operation(id) | Port::Normal(id) => id,
+            _ => return Err(invalid()),
+        };
+        if !self.flow.spend(
+            self.temporary_borrows.len().checked_ilog2().unwrap_or(0) as usize
+                + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
+                + 8,
+        ) {
+            return Err(budget());
+        }
+        let op = self.temporary_borrows.get(&id).ok_or_else(invalid)?;
+        let cell = op.cell.ok_or_else(invalid)?;
+        if op.owner != owner {
+            return Err(invalid());
+        }
+        if let Some((prior_owner, effect)) = effects.get(&id) {
+            let Effect::Temporary(prior) = effect else {
+                return Err(invalid());
+            };
+            if *prior_owner != owner
+                || prior.input != op.input
+                || prior.local != cell.local
+                || prior.statement != cell.statement
+                || prior.control != op.control
+            {
+                return Err(invalid());
+            }
+        } else if effects.len() >= limit {
+            return Err(budget());
+        }
+        let (_, Effect::Temporary(observed)) = effects.entry(id).or_insert_with(|| {
+            (
+                owner,
+                Effect::Temporary(Observed {
+                    input: op.input,
+                    local: cell.local,
+                    statement: cell.statement,
+                    control: op.control,
+                    acquired: false,
+                    result: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match port {
+            Port::Operation(_) => observed.acquired = true,
+            Port::Normal(_) => observed.result = true,
+            _ => unreachable!(),
+        }
+        Ok(())
+    }
+
     pub(super) fn validate_temporary_borrow(
         &mut self,
         reports: &Reports,
@@ -82,3 +156,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;

@@ -628,12 +628,15 @@ Dependency-ordered commit plan:
 5. Document validated observations and the concrete next producer in both handoffs
    and the foundation guide.
 
-Stage validation now checks initializer roots, cell registration, checked statement
-sites, exact edges and operation membership after local transfer. Focused regressions
-cover real temporary forms and 80 malformed identity/site/edge cases. Both focused
-groups pass (`/tmp/meowy-temporary-validation.log`), as do all 2150 library tests
-(`/tmp/meowy-temporary-validation-lib.log`) and formatting. Typed observations and
-broader boundaries remain next; the complete compiler gate has not run for this series.
+Stage validation (`7b28c38`) checks initializer roots, cell registration, checked
+statement sites, exact edges and operation membership after local transfer. Reports
+now retain fixed-size initializer, cell local/statement and control metadata with
+independent acquisition/result flags. Five focused groups cover scalar/record/list/
+call inputs, reference cells, nested statement lifetimes, owners/control, duplicate
+independent visits and 80 malformed identity/site/edge cases. All 2153 library tests
+pass (`/tmp/meowy-temporary-effects-lib.log`), as does formatting. No pointee identity,
+type shape or lifetime extension is inferred. Broader boundary coverage is next;
+the complete compiler gate has not run for this series.
 
 Indexed borrows, reborrows and projected references retain separate producers.
 Preserve full-statement temporary lifetimes and existing mutability, conflict and
