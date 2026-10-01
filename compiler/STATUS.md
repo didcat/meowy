@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Bounded reborrow observation work is in progress.
+Updated: 2026-09-30. Reborrow reports pass the compiler gate; shared element borrows are next.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -653,55 +653,70 @@ No compiler capability or reference contract changed.
 
 ## Bounded reborrow observations
 
-The producer already captures exact parent roots, checked parent/result modes,
-optional ReborrowIds, control and evaluation/acquisition/result edges. Explicit
-shared/scalar-exclusive and implicit shared paths use the same producer; stopped
-parents have neither site nor parent mode. Reports currently classify acquisitions
-as Unknown. No additional source/type capture is needed. Unrelated
-`docs/programs/hey/` remains preserved.
+The dependency-ordered implementation series is complete:
 
-Dependency-ordered commit plan:
+| Reviewable slice | Commit |
+| --- | --- |
+| Validate parent modes, retained sites and exact edges | `6702ace` |
+| Report independent acquisition/result observations | `133ed62` |
+| Cover stops, permissions, site gaps and shared budgets | `ad414a1` |
+| Pin execution, stopped parents and loan permissions | `3314092` |
 
-1. Validate exact parent roots, checked parent/result modes, retained ReborrowId
-   bounds, point/owner/parent/block/span identities, operation ownership and original
-   evaluation/acquisition/result edges. Stopped parents have no site or parent mode.
-2. Report the existing site/modes/control and independent acquisition/result visits
-   with fixed-size metadata, shared work/effect bounds and atomic duplicates/conflicts.
-   Cover explicit shared/scalar-exclusive reborrows and the existing implicit shared
-   expected-value path; preserve raw source identities and conditional call returns.
-3. Cover nested owners/control, stopped parents, malformed modes/sites, exact budgets
-   and ordinary loan/lifetime diagnostics in an independently useful boundary slice.
-4. Add required source cases and classified coverage, preserving existing fixtures,
-   reference contracts and capability exceptions. Run compiler/strict gates.
-5. Document validated observations and the concrete next producer in both handoffs
-   and the foundation guide.
+Reports retain exact parent roots, existing ReborrowIds, checked parent/result modes,
+control and independent acquisition/result flags. Explicit shared/scalar-exclusive
+and implicit shared paths use the same producer. Validation checks completed point/
+parent/owner/block/span identities, mode compatibility, site bounds, operation
+membership and exact original edges. Parent call return conditions stay intact;
+intervening projected-borrow IDs are not renumbered. Stopped parents have no site or
+observations, while shared Never referents retain reborrow results without loads.
 
-Stage validation (`6702ace`) checks complete point/parent identities, checked mode
-compatibility, retained site bounds, original edges and operation membership.
-Reports now retain fixed-size parent/site/mode/control metadata with independent
-acquisition/result flags. Five focused groups cover supported modes, reference
-cells, nested sites, owners/control, conditional calls, duplicate independent visits
-and 120 malformed identity/mode/site/edge cases. The existing coercion boundary
-test now requires the distinct Reborrow effect while preserving its exclusion from
-coercion reports. All 2164 library tests pass (`/tmp/meowy-reborrow-effects-lib.log`),
-as does formatting. Aggregation is committed as `133ed62`. Additional boundary
-tests cover all stopped modes, shared Never referents, noncontiguous sites, other
-producers, original diagnostics, seven record conflicts and exact shared limits.
-A 1-field/128-field comparison confirms fixed report cost. All eleven focused groups
-pass (`/tmp/meowy-reborrow-boundaries.log`), as does formatting (`ad414a1`). Four
-source fixtures cover explicit/implicit reborrow execution, reference cells,
-call-returned parents, stopped modes, live-child conflicts and forbidden upgrades.
-All four pass in debug/release (`/tmp/meowy-reborrow-sources.log`). Reviewed structural
-evidence is linked to memory/proof references and coverage is regenerated: 204 cases,
-185 required and 19 pinned gaps. Preservation against `d2058e6` confirms all 200
-prior cases, 232 source assets, 37 reference files, proof obligations, reference
-hashes and capability exceptions unchanged (`/tmp/meowy-reborrow-preservation.log`).
-The complete compiler/strict gates and final documentation handoff remain next.
-No reference contract changed.
+Records have fixed size and copy no referent values or type shapes. Duplicate visits
+merge flags; conflicts or shared work/effect exhaustion publish no partial collection.
+Reference-cell reads, unchanged shared forwarding, ordinary/indexed/projected borrows
+and temporary materialization remain separate. Observations preserve existing loan
+creation and lifetimes, grant no new authority and infer no proof outcomes.
 
-Indexed and projected borrows retain separate producers. Reborrow acquisition is
-child-loan creation, not a referent load or permission to extend a lifetime. Preserve
-existing capability boundaries; `queries::finish` remains B001-gated.
+Eleven new internal groups cover supported modes, nested sites, owners/control,
+reference cells, conditional calls, stops, shared Never referents, other producers
+and ordinary diagnostics. One hundred twenty malformed identity/mode/site/edge cases,
+seven record conflicts and exact shared budgets preserve atomic failure. A 1-field/
+128-field comparison confirms fixed report cost (`/tmp/meowy-reborrow-boundaries.log`).
+Four required source cases pass in debug/release: explicit/implicit execution,
+reference cells, returned parents, stopped modes, live-child conflicts and forbidden
+upgrades (`/tmp/meowy-reborrow-sources.log`). Structural reports remain distinct from
+observable language conformance and proof evaluation.
+
+All ten compiler checks pass: 2170 library/914 native tests, 32 tooling and 30 harness
+groups, formatting, Clippy, build, coverage and conformance (`/tmp/meowy-reborrow-gate.log`).
+The 204 cases report 185 required passes, 19 pinned gaps and zero failures in
+debug/release. Strict mode exits 1 only for those gaps (`/tmp/meowy-reborrow-strict.log`);
+all four final documentation checks pass (`/tmp/meowy-reborrow-docs.log`). No selected
+check has an outstanding failure. Preservation against `d2058e6` confirms all 200 prior cases,
+232 source assets, 37 reference files, proof obligations, reference hashes and
+capability exceptions unchanged (`/tmp/meowy-reborrow-preservation.log`). Unrelated
+`docs/programs/hey/` is preserved. No compiler capability or reference contract changed.
+
+Next implement bounded shared element-borrow observations using
+`dependencies/elements.rs`, `list.rs::element_borrow` and `edges/forward/effects/`.
+Record the next commit plan before coding:
+
+1. Validate exact parent/position roots, checked Source/Access metadata, retained site,
+   capacity/length bounds and original parent/address/index/acquisition/result edges.
+   Audit Place path bounds and Temporary cell/statement registration after local
+   transfer; retain missing bounded source facts at checking time if needed. Never
+   infer path provenance or order from spans, point IDs or inventory positions.
+2. Report independent address/acquisition/result visits with bounded source payloads,
+   shared path/work/effect budgets and atomic duplicate/conflict handling. Stopped
+   parents gain no address; stopped positions may retain an earlier address without
+   acquisition/result. Preserve the Checked route and reference-cell distinction.
+3. Cover owned/shared/temporary receivers, nested owners/control, stopped inputs,
+   malformed source/site/selectors, exact budgets and ordinary bounds/loan/lifetime
+   diagnostics. Add required source cases and classified coverage; run compiler/strict
+   gates and update both handoffs and the foundation guide.
+
+Exclusive indexed paths and projected borrows retain separate producers. Borrow
+observations grant no bounds success, lifetime extension or new loan authority;
+`queries::finish` remains B001-gated.
 
 ## Documentation conventions and layout
 
@@ -2814,8 +2829,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    Temporary cell/site validation (`7b28c38`) and independent acquisition/result
    reports (`80d6d78`), boundary coverage (`eea5989`) and source cases (`fd9c16d`)
    and the compiler gate pass. Reborrow validation (`6702ace`) and independent
-   acquisition/result reports (`133ed62`) are implemented; boundary coverage
-   (`ad414a1`) passes. Next validate the reborrow source cases and run compiler/strict gates.
+   acquisition/result reports (`133ed62`), boundary coverage (`ad414a1`) and source
+   cases (`3314092`) and the compiler gate pass. Next implement shared
+   element-borrow reports from `dependencies/elements.rs` using the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

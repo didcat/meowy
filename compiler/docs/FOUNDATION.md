@@ -513,6 +513,20 @@ no partial collection. Reference-valued initializers retain their distinct cell
 identity. Projected/indexed temporary materialization and reborrows stay separate.
 These observations preserve full-statement lifetimes and grant no longer lifetime,
 pointee identity, loan authority or proof outcome.
+Reborrow reports retain exact parent roots, existing ReborrowIds, checked parent/
+result modes, control and independent acquisition/result observations. Explicit
+shared/scalar-exclusive reborrows and implicit exclusive-to-shared conversions use
+the same producer. Validation checks completed point/parent/owner/block/span
+identities, mode compatibility, site bounds, registered operation ownership and
+original evaluation/acquisition/result edges. Site IDs remain unchanged when
+other producers allocate intervening sites; parent calls retain their return
+conditions. Stopped parents have no site or observations, while a shared Never
+referent can be reborrowed without loading it. Records have fixed size and copy
+no referent shapes or values. Duplicate visits merge flags; conflicts or shared
+work/effect exhaustion publish no partial collection. Unchanged shared forwarding,
+indexed/projected borrows and temporary materialization stay separate. These
+observations describe child-loan creation without granting authority, extending
+lifetimes or evaluating proofs; ordinary move/conflict/permission errors remain intact.
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
