@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Temporary-borrow reports pass the compiler gate; reborrows are next.
+Updated: 2026-09-30. Bounded reborrow observation work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -651,8 +651,16 @@ reference hashes and capability exceptions unchanged
 (`/tmp/meowy-temporary-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 No compiler capability or reference contract changed.
 
-Next implement bounded reborrow observations using `dependencies/reborrows.rs`
-and `edges/forward/effects/`. Record the next commit plan before coding:
+## Bounded reborrow observations
+
+The producer already captures exact parent roots, checked parent/result modes,
+optional ReborrowIds, control and evaluation/acquisition/result edges. Explicit
+shared/scalar-exclusive and implicit shared paths use the same producer; stopped
+parents have neither site nor parent mode. Reports currently classify acquisitions
+as Unknown. No additional source/type capture is needed. Unrelated
+`docs/programs/hey/` remains preserved.
+
+Dependency-ordered commit plan:
 
 1. Validate exact parent roots, checked parent/result modes, retained ReborrowId
    bounds, point/owner/parent/block/span identities, operation ownership and original
@@ -662,8 +670,19 @@ and `edges/forward/effects/`. Record the next commit plan before coding:
    Cover explicit shared/scalar-exclusive reborrows and the existing implicit shared
    expected-value path; preserve raw source identities and conditional call returns.
 3. Cover nested owners/control, stopped parents, malformed modes/sites, exact budgets
-   and ordinary loan/lifetime diagnostics. Add required source cases and classified
-   coverage; run compiler/strict gates and update the handoffs and foundation guide.
+   and ordinary loan/lifetime diagnostics in an independently useful boundary slice.
+4. Add required source cases and classified coverage, preserving existing fixtures,
+   reference contracts and capability exceptions. Run compiler/strict gates.
+5. Document validated observations and the concrete next producer in both handoffs
+   and the foundation guide.
+
+Stage validation now checks complete point/parent identities, checked mode
+compatibility, retained site bounds, original edges and operation membership.
+Focused tests cover explicit/implicit inputs and 120 malformed identity/mode/site/
+edge cases. Both focused groups pass (`/tmp/meowy-reborrow-validation.log`), as do
+all 2161 library tests (`/tmp/meowy-reborrow-validation-lib.log`) and formatting.
+Typed observations and broader boundaries remain next; the complete compiler gate
+has not run for this series. No reference contract changed.
 
 Indexed and projected borrows retain separate producers. Reborrow acquisition is
 child-loan creation, not a referent load or permission to extend a lifetime. Preserve

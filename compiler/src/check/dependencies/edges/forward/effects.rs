@@ -10,6 +10,7 @@ mod methods;
 mod narrowing;
 mod outputs;
 mod reads;
+mod reborrows;
 mod scalars;
 mod temporaries;
 mod typed;
@@ -108,6 +109,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.validate_reborrow(reports, owner, port, span)?;
                 if self.validate_temporary_borrow(reports, owner, port, span)? {
                     self.record_temporary_effect(owner, port, &mut effects, limit, span)?;
                     continue;

@@ -24,9 +24,9 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-temporary-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next report explicit reborrows and implicit shared reborrows. The
-[compiler handoff](compiler/STATUS.md#bounded-standalone-temporary-borrow-observations)
-records the ordered next work. Existing parent modes, child-loan creation and
+Explicit and implicit shared reborrow reporting is in progress. The
+[compiler handoff](compiler/STATUS.md#bounded-reborrow-observations)
+records the ordered commit plan. Existing parent modes, child-loan creation and
 lifetime/conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 
