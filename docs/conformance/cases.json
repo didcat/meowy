@@ -2186,6 +2186,40 @@
         "code": "E305"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "element_borrow_values",
+      "phase": "run",
+      "source": "sources/element_borrow_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n4\n1\n6\nparent\nposition\n8\n9\n12\nview\n1\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "element_borrow_stopped_inputs",
+      "phase": "run",
+      "source": "sources/element_borrow_stopped_inputs.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "owned\nview\nparent\nposition\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "element_borrow_runtime_bounds",
+      "phase": "run",
+      "source": "sources/element_borrow_runtime_bounds.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "borrow\n",
+        "panic": "P001",
+        "exit": 1
+      },
+      "reference": "../reference/collections.md#indexing-mutation-and-removal"
     }
   ]
 }

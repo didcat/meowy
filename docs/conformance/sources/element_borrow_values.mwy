@@ -1,0 +1,22 @@
+d : @"debug"
+xs : [1, 2]
+p : &(xs[2])
+d.print(*p)
+row : { -> inner : { -> xs : [3, 4] } }
+field : &(row.inner.xs[2])
+d.print(*field)
+view : &xs
+q : &(view[1])
+d.print(*q)
+d.print(*(&([5, 6][2])))
+make <int32[2]> : () { d.print("parent"); -> [7, 8] }
+position <int32> : () { d.print("position"); -> 2 }
+d.print(*(&(make()[position()])))
+pick : (flag <boolean>) 'out {
+    |flag| { 'out -> xs := [9, 10]; p : &(xs[1]); d.print(*p) }
+    |!flag| { 'out -> xs := [11, 12]; p : &(xs[2]); d.print(*p) }
+}
+pick(true)
+pick(false)
+borrow <&int32[2]> : (items <&int32[2]>) { d.print("view"); -> items }
+d.print(*(&(borrow(&xs)[1])))

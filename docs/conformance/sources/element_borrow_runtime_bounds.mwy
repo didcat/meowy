@@ -1,0 +1,7 @@
+d : @"debug"
+at <&int32> : (xs <&int32[2]>, index <int32>) {
+    d.print("borrow")
+    -> &(xs[index])
+}
+xs <int32[2]> : [1]
+d.print(*(at(&xs, 2)))

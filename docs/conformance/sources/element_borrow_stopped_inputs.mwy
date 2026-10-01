@@ -1,0 +1,19 @@
+d : @"debug"
+xs : [1]
+view : &xs
+'owned {
+    p : &(xs[{ d.print("owned"); 'owned.leave() }])
+    d.print("unexpected owned result")
+}
+'view {
+    p : &(view[{ d.print("view"); 'view.leave() }])
+    d.print("unexpected view result")
+}
+make <int32[1]> : () { d.print("parent"); -> [1] }
+'temporary {
+    p : &(make()[{ d.print("position"); 'temporary.leave() }])
+    d.print("unexpected temporary result")
+}
+stop <never> : () { d.print("stop"); d.panic("stop") }
+p : &(stop()[missing])
+d.print("unexpected result")

@@ -755,8 +755,11 @@ index/loan/lifetime errors. All eleven report groups pass
 (`/tmp/meowy-element-boundaries.log`), as does formatting (`c5abe07`). Additional
 tests cover exact shared work/effect/payload limits, 14 record conflicts, duplicate
 copies, maximum paths and zero-payload view/temporary sources. All 14 report groups
-pass (`/tmp/meowy-element-limits.log`), as does formatting. Source execution/bounds
-and loan/lifetime fixtures will be separate slices to keep each review focused.
+pass (`/tmp/meowy-element-limits.log`), as does formatting (`9d696e8`). Three source
+fixtures cover owned/view/temporary/nested/aliased receivers, once-only parent/index
+order, stopped inputs and dynamic initialized-length bounds. All three pass in
+debug/release (`/tmp/meowy-element-execution.log`). Catalog/coverage checks pass:
+207 cases, 188 required and 19 unchanged pins. Source loan/lifetime rejections are next.
 The complete compiler gate has not run for this series.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
