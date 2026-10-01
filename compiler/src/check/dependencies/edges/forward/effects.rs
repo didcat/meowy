@@ -85,6 +85,7 @@ pub(crate) enum Effect {
     Reborrow(reborrows::Observed),
     Element(elements::Observed),
     Exclusive(exclusives::Observed),
+    Projection(projections::Observed),
     Unknown,
 }
 
@@ -115,7 +116,17 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_borrow_projection(reports, owner, port, span)?;
+                if self.validate_borrow_projection(reports, owner, port, span)? {
+                    self.record_projection_effect(
+                        owner,
+                        port,
+                        &mut effects,
+                        limit,
+                        &mut parts,
+                        span,
+                    )?;
+                    continue;
+                }
                 if self.validate_exclusive_borrow(reports, owner, port, span)? {
                     self.record_exclusive_effect(
                         owner,

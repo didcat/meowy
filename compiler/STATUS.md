@@ -844,7 +844,12 @@ now checks source identities, temporary statement registration, exact field boun
 legal step order, site/mode presence, selectors and the original conversion/terminal
 edges. Both focused groups pass (`/tmp/meowy-projection-validation.log`), including
 128 corrupt cases. All 2207 library tests pass (`/tmp/meowy-projection-validation-lib.log`),
-as does formatting. Aggregation is next; the complete compiler gate remains pending.
+as does formatting. Validation is committed as `d7735b0`. Reports now retain parent,
+checked steps, site/parent mode and control with independent step/conversion/acquisition/
+result flags. Copied steps and flags share the payload budget; duplicates reuse the
+record. All five focused groups pass (`/tmp/meowy-projection-effects.log`), as do
+all 2210 library tests (`/tmp/meowy-projection-effects-lib.log`) and formatting.
+Broader boundary and budget coverage is next; the complete compiler gate remains pending.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,

@@ -1,7 +1,117 @@
 use super::*;
 use crate::check::dependencies::ProjectionStep;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct Observed {
+    pub(crate) parent: PointId,
+    pub(crate) steps: Vec<ProjectionStep>,
+    pub(crate) site: crate::hir::ReborrowId,
+    pub(crate) parent_mode: crate::hir::ReferenceMode,
+    pub(crate) control: bool,
+    pub(crate) projected: Vec<bool>,
+    pub(crate) converted: Vec<bool>,
+    pub(crate) acquired: bool,
+    pub(crate) result: bool,
+}
+
 impl Checker {
+    pub(super) fn record_projection_effect(
+        &mut self,
+        owner: usize,
+        port: Port,
+        effects: &mut Effects,
+        limit: usize,
+        parts: &mut usize,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof projection-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof projection-effect identity mismatch", span);
+        let id = match port {
+            Port::Projection { point, .. }
+            | Port::Conversion { point, .. }
+            | Port::Operation(point)
+            | Port::Normal(point) => point,
+            _ => return Err(invalid()),
+        };
+        if !self.flow.spend(
+            self.projections.len().checked_ilog2().unwrap_or(0) as usize
+                + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
+                + 8,
+        ) {
+            return Err(budget());
+        }
+        let op = self.projections.get(&id).ok_or_else(invalid)?;
+        let len = op.steps.len();
+        if len > crate::list::MAX_WRITE_PATH || !self.flow.spend(len * 6 + 10) {
+            return Err(budget());
+        }
+        let site = op.site.ok_or_else(invalid)?;
+        let mode = op.mode.ok_or_else(invalid)?;
+        if op.owner != owner
+            || match port {
+                Port::Projection { step, .. } => step >= len,
+                Port::Conversion { part, .. } => !matches!(
+                    op.steps.get(part),
+                    Some(ProjectionStep::Field { narrow: true, .. })
+                ),
+                _ => false,
+            }
+        {
+            return Err(invalid());
+        }
+        let fresh = if let Some((prior_owner, effect)) = effects.get(&id) {
+            let Effect::Projection(prior) = effect else {
+                return Err(invalid());
+            };
+            if *prior_owner != owner
+                || prior.parent != op.parent
+                || prior.steps != op.steps
+                || prior.site != site
+                || prior.parent_mode != mode
+                || prior.control != op.control
+                || prior.projected.len() != len
+                || prior.converted.len() != len
+            {
+                return Err(invalid());
+            }
+            false
+        } else {
+            if effects.len() >= limit || len * 3 > *parts {
+                return Err(budget());
+            }
+            true
+        };
+        let (_, Effect::Projection(observed)) = effects.entry(id).or_insert_with(|| {
+            (
+                owner,
+                Effect::Projection(Observed {
+                    parent: op.parent,
+                    steps: op.steps.clone(),
+                    site,
+                    parent_mode: mode,
+                    control: op.control,
+                    projected: vec![false; len],
+                    converted: vec![false; len],
+                    acquired: false,
+                    result: false,
+                }),
+            )
+        }) else {
+            unreachable!()
+        };
+        match port {
+            Port::Projection { step, .. } => observed.projected[step] = true,
+            Port::Conversion { part, .. } => observed.converted[part] = true,
+            Port::Operation(_) => observed.acquired = true,
+            Port::Normal(_) => observed.result = true,
+            _ => unreachable!(),
+        }
+        if fresh {
+            *parts -= len * 3;
+        }
+        Ok(())
+    }
+
     pub(super) fn validate_borrow_projection(
         &mut self,
         reports: &Reports,
@@ -168,3 +278,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;
