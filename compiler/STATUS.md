@@ -771,9 +771,10 @@ Dependency-ordered commit plan:
    with bounded payloads, shared work/effect limits and atomic duplicates/conflicts.
 5. Add malformed-source, stop, alias and ordinary permission/loan/lifetime coverage.
    Keep aggregation limits/conflicts separately reviewable if needed.
-6. Add required source execution/order/bounds cases and classified coverage, then
-   source permission/lifetime rejections. Preserve existing fixtures and exceptions.
-7. Run compiler/strict gates and document validated observations plus the concrete
+6. Add required source execution/order/stopped-input/bounds cases and classified
+   coverage, preserving existing fixtures, contracts and capability exceptions.
+7. Add source field-permission, reservation-conflict and lifetime rejections separately.
+8. Run compiler/strict gates and document validated observations plus the concrete
    next producer in both handoffs and the foundation guide.
 
 Prefix and suffix-field counts are captured in traversal order with precharged
@@ -801,7 +802,11 @@ normal/control and independent address/reservation/acquisition/result flags. Foc
 aggregation tests cover modes, aliases, owners/control, duplicate independent visits
 and stopped frontiers. All six report groups pass (`/tmp/meowy-exclusive-effects.log`),
 as do all 2197 library tests (`/tmp/meowy-exclusive-effects-lib.log`) and formatting.
-Broader boundary and budget coverage is next; the complete compiler gate remains pending.
+Aggregation is committed as `e8debce`. Additional tests cover stopped field suffixes,
+other producers, alias faults, retained length snapshots, ordinary diagnostics,
+14 record conflicts, exact shared budgets and combined prefix/path limits.
+All 12 report groups pass (`/tmp/meowy-exclusive-boundaries.log`), as does formatting.
+Source execution and rejection cases are next; the complete compiler gate remains pending.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan
