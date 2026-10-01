@@ -826,11 +826,13 @@ Dependency-ordered commit plan:
 3. Report independent per-step projection and narrowing-conversion visits plus final
    acquisition/result with bounded payloads, shared work/effect limits and atomic
    duplicates/conflicts. Preserve raw parent/call identities and conditional returns.
-4. Cover owned/reference/temporary receivers, nested owners/control, stopped parents,
-   narrowed fields, malformed metadata and exact budgets in reviewable boundary slices.
-5. Add required source execution/order/stopped-parent cases and classified coverage,
+4. Cover malformed temporary registration, stopped parents, other producers and
+   ordinary loan/lifetime/guard errors in a focused boundary slice.
+5. Cover exact shared budgets, maximum paths and atomic duplicate/conflict handling
+   separately to keep each boundary slice independently reviewable.
+6. Add required source execution/order/stopped-parent cases and classified coverage,
    then loan/lifetime/guard rejections. Preserve prior fixtures and capability pins.
-6. Run compiler/strict gates and document validated observations plus the concrete
+7. Run compiler/strict gates and document validated observations plus the concrete
    next step in both handoffs and the foundation guide.
 
 Field and Address steps now retain exact record counts from their checked type
@@ -849,7 +851,12 @@ checked steps, site/parent mode and control with independent step/conversion/acq
 result flags. Copied steps and flags share the payload budget; duplicates reuse the
 record. All five focused groups pass (`/tmp/meowy-projection-effects.log`), as do
 all 2210 library tests (`/tmp/meowy-projection-effects-lib.log`) and formatting.
-Broader boundary and budget coverage is next; the complete compiler gate remains pending.
+Aggregation is committed as `73be259`. Source/lifetime boundaries and aggregation
+limits will be separate reviewable slices. Additional tests now cover 36 corrupt
+temporary/statement records, stopped-parent/successor exclusions, other producers and
+ordinary field, guard, loan and temporary errors. All eight report groups pass
+(`/tmp/meowy-projection-boundaries.log`), as does formatting. Exact aggregation limits
+and conflicts are next; the complete compiler gate remains pending.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,
