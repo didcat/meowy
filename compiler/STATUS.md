@@ -635,8 +635,13 @@ independent acquisition/result flags. Five focused groups cover scalar/record/li
 call inputs, reference cells, nested statement lifetimes, owners/control, duplicate
 independent visits and 80 malformed identity/site/edge cases. All 2153 library tests
 pass (`/tmp/meowy-temporary-effects-lib.log`), as does formatting. No pointee identity,
-type shape or lifetime extension is inferred. Broader boundary coverage is next;
-the complete compiler gate has not run for this series.
+type shape or lifetime extension is inferred. Aggregation is committed as `80d6d78`.
+Additional boundary tests cover stopped inputs/successors, short-circuit inputs,
+separate producers, original errors/lifetimes, six record conflicts and exact
+shared limits. A fixed-cost check compares 1-byte and 65,536-byte initializers.
+All eleven focused groups pass (`/tmp/meowy-temporary-boundaries.log`), as does
+formatting. Source conformance coverage is next; the complete compiler gate has not
+run for this series.
 
 Indexed borrows, reborrows and projected references retain separate producers.
 Preserve full-statement temporary lifetimes and existing mutability, conflict and
@@ -2751,8 +2756,9 @@ subtraction retains its documented limits. No outstanding failures remain.
    and independent address/acquisition/result reports (`6de8c96`) now preserve
    canonical alias storage, reference-cell identity and checked modes. Additional
    boundary coverage (`f4ebd60`), source cases (`44e8b39`) and the compiler gate pass.
-   Next implement standalone temporary-borrow reports
-   from `dependencies/temporary_borrows.rs` using the ordered plan above.
+   Temporary cell/site validation (`7b28c38`) and independent acquisition/result
+   reports (`80d6d78`) are implemented. Next validate boundary coverage under
+   `edges/forward/effects/temporaries/`, add source cases and run compiler/strict gates.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
