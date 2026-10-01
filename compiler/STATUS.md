@@ -856,7 +856,11 @@ limits will be separate reviewable slices. Additional tests now cover 36 corrupt
 temporary/statement records, stopped-parent/successor exclusions, other producers and
 ordinary field, guard, loan and temporary errors. All eight report groups pass
 (`/tmp/meowy-projection-boundaries.log`), as does formatting. Exact aggregation limits
-and conflicts are next; the complete compiler gate remains pending.
+and conflicts are next; boundary coverage is committed as `f821bad`. Additional tests
+cover exact work/effect/payload allowances, 12 merge conflicts, duplicate copies,
+maximum paths and independent conversion flags. All eleven report groups pass
+(`/tmp/meowy-projection-limits.log`), as does formatting. Source execution/guard cases
+and source rejections are next; the complete compiler gate remains pending.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,

@@ -287,3 +287,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod temporaries;
+
+#[cfg(test)]
+mod limits;
