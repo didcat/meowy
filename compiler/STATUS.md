@@ -688,8 +688,15 @@ as does formatting. Aggregation is committed as `133ed62`. Additional boundary
 tests cover all stopped modes, shared Never referents, noncontiguous sites, other
 producers, original diagnostics, seven record conflicts and exact shared limits.
 A 1-field/128-field comparison confirms fixed report cost. All eleven focused groups
-pass (`/tmp/meowy-reborrow-boundaries.log`), as does formatting. Source conformance
-coverage is next; the complete compiler gate has not run for this series.
+pass (`/tmp/meowy-reborrow-boundaries.log`), as does formatting (`ad414a1`). Four
+source fixtures cover explicit/implicit reborrow execution, reference cells,
+call-returned parents, stopped modes, live-child conflicts and forbidden upgrades.
+All four pass in debug/release (`/tmp/meowy-reborrow-sources.log`). Reviewed structural
+evidence is linked to memory/proof references and coverage is regenerated: 204 cases,
+185 required and 19 pinned gaps. Preservation against `d2058e6` confirms all 200
+prior cases, 232 source assets, 37 reference files, proof obligations, reference
+hashes and capability exceptions unchanged (`/tmp/meowy-reborrow-preservation.log`).
+The complete compiler/strict gates and final documentation handoff remain next.
 No reference contract changed.
 
 Indexed and projected borrows retain separate producers. Reborrow acquisition is
@@ -2807,8 +2814,8 @@ subtraction retains its documented limits. No outstanding failures remain.
    Temporary cell/site validation (`7b28c38`) and independent acquisition/result
    reports (`80d6d78`), boundary coverage (`eea5989`) and source cases (`fd9c16d`)
    and the compiler gate pass. Reborrow validation (`6702ace`) and independent
-   acquisition/result reports (`133ed62`) are implemented. Next validate boundaries
-   under `edges/forward/effects/reborrows/`, add source cases and run compiler/strict gates.
+   acquisition/result reports (`133ed62`) are implemented; boundary coverage
+   (`ad414a1`) passes. Next validate the reborrow source cases and run compiler/strict gates.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

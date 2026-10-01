@@ -1,0 +1,26 @@
+d : @"debug"
+n := 1
+parent : &!n
+child : &!*parent
+*child = 2
+d.print(*child)
+shared <&int32> : parent
+d.print(*shared)
+*parent = 3
+d.print(*parent)
+row : { -> n : 4; -> xs : [5, 6] }
+p : &row
+copy : &*p
+d.print(copy.n)
+d.print(copy.xs[2])
+plain : &n
+cell : &plain
+again : &*cell
+d.print(**again)
+id <&!int32> : (p <&!int32>) {
+    d.print("parent")
+    -> p
+}
+other := 7
+read <&int32> : id(&!other)
+d.print(*read)

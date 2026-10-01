@@ -1,0 +1,23 @@
+d : @"debug"
+d.print("start")
+'shared {
+    p : &*({ 'shared.leave() })
+    d.print("unexpected shared result")
+}
+d.print("shared")
+'exclusive {
+    p : &!*({ 'exclusive.leave() })
+    d.print("unexpected exclusive result")
+}
+d.print("exclusive")
+'implicit {
+    p <&int32> : { 'implicit.leave() }
+    d.print("unexpected implicit result")
+}
+d.print("implicit")
+stop <never> : () {
+    d.print("stop")
+    d.panic("stop")
+}
+p <&int32> : stop()
+d.print("unexpected result")

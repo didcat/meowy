@@ -1,0 +1,5 @@
+n := 1
+p : &!n
+child <&int32> : p
+*p = 2
+@"debug".print(*child)

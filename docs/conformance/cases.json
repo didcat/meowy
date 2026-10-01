@@ -2144,6 +2144,48 @@
         "code": "E303"
       },
       "reference": "../reference/memory.md#temporary-owners"
+    },
+    {
+      "id": "reborrow_effect_values",
+      "phase": "run",
+      "source": "sources/reborrow_effect_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n2\n3\n4\n6\n3\nparent\n7\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "reborrow_effect_stopped_parents",
+      "phase": "run",
+      "source": "sources/reborrow_effect_stopped_parents.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "start\nshared\nexclusive\nimplicit\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "reborrow_effect_live_child",
+      "phase": "check",
+      "source": "sources/reborrow_effect_live_child.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "reborrow_effect_shared_upgrade",
+      "phase": "check",
+      "source": "sources/reborrow_effect_shared_upgrade.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

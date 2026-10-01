@@ -1,0 +1,4 @@
+n : 1
+p : &n
+child : &!*p
+@"debug".print(*child)
