@@ -759,8 +759,14 @@ pass (`/tmp/meowy-element-limits.log`), as does formatting (`9d696e8`). Three so
 fixtures cover owned/view/temporary/nested/aliased receivers, once-only parent/index
 order, stopped inputs and dynamic initialized-length bounds. All three pass in
 debug/release (`/tmp/meowy-element-execution.log`). Catalog/coverage checks pass:
-207 cases, 188 required and 19 unchanged pins. Source loan/lifetime rejections are next.
-The complete compiler gate has not run for this series.
+207 cases, 188 required and 19 unchanged pins (`3fa8ab0`). Two additional source
+fixtures pin E302 for an overlapping live element loan and E303 for a temporary
+element escaping its statement. Both pass in debug/release
+(`/tmp/meowy-element-rejections.log`); catalog/coverage checks pass with 209 cases,
+190 required and 19 unchanged pins. Preservation against `087ee8e` confirms all 204
+prior cases, 236 source assets, 37 reference files, proof obligations, reference
+hashes and capability exceptions unchanged (`/tmp/meowy-element-preservation.log`).
+The complete compiler/strict gates and final documentation handoff remain next.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
 observations grant no bounds success, lifetime extension or new loan authority;

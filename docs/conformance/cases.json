@@ -2220,6 +2220,26 @@
         "exit": 1
       },
       "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "element_borrow_live_write",
+      "phase": "check",
+      "source": "sources/element_borrow_live_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "element_borrow_temporary_escape",
+      "phase": "check",
+      "source": "sources/element_borrow_temporary_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#temporary-owners"
     }
   ]
 }
