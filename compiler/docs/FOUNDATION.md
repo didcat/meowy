@@ -558,13 +558,34 @@ reuse records, and identity conflicts or exhausted shared budgets publish no par
 collection. Ordinary field permissions, reservation conflicts, moves, lifetimes
 and capability gates remain authoritative; reports grant no new loan authority or
 proof outcome. Projected references retain their separate producer.
+
+Projected-borrow reports retain exact parent roots, ordered materialization/field/
+load/address steps, existing reborrow sites, parent modes and control. The stored
+mode describes the final parent reference; the resulting borrow remains shared.
+Field/address counts are captured while concrete types are available. Temporary
+steps retain their original local/statement identities after locals transfer.
+Independent flags record each projection and owned-field narrowing conversion,
+final acquisition and result. Validation checks completed point/owner/parent/block/
+span identities, temporary registration and statement roots, field bounds, step
+order, selectors, operation registration and exact original edges. Narrowing after
+a reference load remains forbidden. Stopped parents retain no site or observation;
+stopped predecessors exclude later borrows from the same entry walk. Calls retain
+their original conditional return boundaries. Paths contain at most 256 steps;
+each copied descriptor and its two observation flags consume three shared payload
+entries. Duplicate visits merge flags without another copy; conflicts and exhausted
+work/effect/payload budgets publish no partial collection. Ordinary places, elements,
+exclusive indexed paths and direct/implicit reborrows remain separate. These records
+copy no values or type shapes and infer no pointee storage, narrowed truth, loan
+authority, longer lifetime, runtime reachability or proof outcome.
+
 Owned field/index writes now retain a Path effect with local/canonical storage,
 ordered Field/Index steps, exact index roots/capacities/spans, RHS and control.
 Paths reuse captured metadata without evaluating indices or replaying address/RHS
 effects. Each copied path is bounded by 256 steps. Path steps, field indices and
 address flags for ordinary borrows, field indices and counts for element borrows,
 exclusive prefix/step/count/access metadata and stage flags, direct-call argument
-roots and observed output-part records share a limit of 262,144 copied entries.
+roots, projected-borrow steps and observation flags, and observed output-part records
+share a limit of 262,144 copied entries.
 Lookup and copy work are charged before allocation;
 duplicate operation ports copy a path once. Empty paths and owner mismatches are
 rejected. Aliases retain their shared canonical storage and distinct local IDs.

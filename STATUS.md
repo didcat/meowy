@@ -7,29 +7,30 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Exclusive indexed-borrow reports retain exact places/canonical storage, field bounds,
-original index lengths/completion and independent address/reservation/acquisition/
-result visits. Stopped indices exclude later observations while the ledger retains
-its disconnected entries. Sixteen new internal groups and six source cases cover
-paths, order, stops, dynamic bounds, permissions, lifetimes and shared limits. The
-[compiler handoff](compiler/STATUS.md#bounded-exclusive-indexed-borrow-observations)
+Projected-borrow reports retain exact parent roots, bounded materialization/field/
+load/address steps, narrowing conversions, reborrow sites and parent modes. Stage,
+acquisition and result visits remain independent; stopped parents gain no observation.
+Thirteen new internal groups and six source cases cover identities, reference chains,
+guards, order, stopped parents, lifetimes, conflicts and shared budgets. The
+[compiler handoff](compiler/STATUS.md#bounded-projected-borrow-observations)
 lists the validated commit series.
 
-All ten compiler checks pass: 2203 library/914 native and 62 Python test groups;
-`/tmp/meowy-exclusive-gate.log`. The catalog has 215 cases: 196 required passes,
+All ten compiler checks pass: 2216 library/914 native and 62 Python test groups;
+`/tmp/meowy-projection-gate.log`. The catalog has 221 cases: 202 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-exclusive-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-exclusive-docs.log`).
+(`/tmp/meowy-projection-strict.log`); all four final documentation checks pass
+(`/tmp/meowy-projection-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Projected-borrow reporting is in progress. The
-[compiler handoff](compiler/STATUS.md#bounded-projected-borrow-observations)
-records the ordered commit plan. Existing source identities, narrowing decisions and
-lifetime/conflict/capability rules remain authoritative. Stage observations grant no
-new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
+Next, report list construction from its existing input/conversion sequences. Retain
+explicit list identity and checked facts before aggregating stages; generic expression
+sequences must not be treated as lists. The compiler handoff records the ordered plan.
+Existing lifetime/conflict/capability rules remain authoritative. Stage observations
+grant no new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work
+is preserved.
 
 ## Documentation conventions
 

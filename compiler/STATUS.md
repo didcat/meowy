@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-01. Projected-borrow observation work is in progress.
+Updated: 2026-10-01. Projected-borrow observations and compiler validation are complete.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -807,75 +807,77 @@ is preserved. No compiler capability or reference contract changed.
 
 ## Bounded projected-borrow observations
 
-The producer retains parent roots, materialization/load/field/address steps, owned
-narrowing decisions and reborrow site/mode, but only broad field-index limits.
-Capture exact record counts while `borrowed` still has the concrete types. The
-stored mode describes the final parent reference; the produced borrow remains shared.
-Unrelated `docs/programs/hey/` remains preserved.
+Reports retain exact parent roots, materialization/field/load/address steps, owned
+narrowing decisions, reborrow sites, parent modes and control. Field/address counts
+come from the concrete checked records before their type context disappears. The
+stored mode describes the final parent reference; the produced borrow stays shared.
+Independent flags record each projection and narrowing conversion, acquisition and
+result. Stopped parents have no site or observation; calls retain conditional returns.
 
-Dependency-ordered commit plan:
+Validation checks complete point/owner/parent/block/span identities, temporary local/
+statement registration and roots, exact field bounds, step order, selectors, operation
+registration and original edges. Paths retain the 256-step cap; descriptors and their
+two flags cost three shared payload entries per step. Duplicates merge flags without
+another copy. Invalid identities or exhausted work/effect/payload budgets publish no
+partial collection. Ordinary places, shared elements, exclusive indexed paths and
+direct/implicit reborrows remain separate; reference cells do not identify pointee
+storage. No observation grants borrow authority, extends lifetimes, evaluates a
+predicate or proves runtime reachability. `queries::finish` remains B001-gated.
 
-1. Retain exact per-record field counts for Field and final Address steps while
-   `borrowed` still has the concrete types. Preserve original field indices and
-   narrowing decisions, including paths after reference loads. Charge bounded capture
-   work before copying; keep type shapes and values out of report metadata.
-2. Validate parent/owner/block/span identity, materialized local/statement registration,
-   field bounds, load modes, retained reborrow site/mode, legal step order, selectors
-   and exact projection/conversion/acquisition/result edges. A stopped parent has no
-   site or steps; keep missing stage data distinct from normal completion.
-3. Report independent per-step projection and narrowing-conversion visits plus final
-   acquisition/result with bounded payloads, shared work/effect limits and atomic
-   duplicates/conflicts. Preserve raw parent/call identities and conditional returns.
-4. Cover malformed temporary registration, stopped parents, other producers and
-   ordinary loan/lifetime/guard errors in a focused boundary slice.
-5. Cover exact shared budgets, maximum paths and atomic duplicate/conflict handling
-   separately to keep each boundary slice independently reviewable.
-6. Add required source execution/order/stopped-parent cases and classified coverage,
-   then loan/lifetime/guard rejections. Preserve prior fixtures and capability pins.
-7. Run compiler/strict gates and document validated observations plus the concrete
-   next step in both handoffs and the foundation guide.
+| Reviewable slice | Commit |
+| --- | --- |
+| Exact field counts and capture bounds | `dc0777e` |
+| Source, temporary and stage validation | `d7735b0` |
+| Independent projection/conversion/acquisition/result reports | `73be259` |
+| Temporary identities, stops and ordinary error boundaries | `f821bad` |
+| Shared budgets, maximum paths and atomic conflicts | `c0b741c` |
+| Reference-chain, narrowing, order and stopped-parent execution | `39423eb` |
+| Owner-write, temporary-lifetime and invalidated-guard rejections | `c6ae594` |
 
-Field and Address steps now retain exact record counts from their checked type
-contexts, including owned/narrowed fields, paths after loads and temporary receivers.
-Capture work is charged before publication and existing index caps remain intact.
-All 16 focused producer groups pass (`/tmp/meowy-projection-counts.log`), including
-exact counts, local transfer and capture work. All 2205 library tests pass
-(`/tmp/meowy-projection-counts-lib.log`), as does formatting. Report validation and
-aggregation remain next; field counts are committed as `dc0777e`. Report validation
-now checks source identities, temporary statement registration, exact field bounds,
-legal step order, site/mode presence, selectors and the original conversion/terminal
-edges. Both focused groups pass (`/tmp/meowy-projection-validation.log`), including
-128 corrupt cases. All 2207 library tests pass (`/tmp/meowy-projection-validation-lib.log`),
-as does formatting. Validation is committed as `d7735b0`. Reports now retain parent,
-checked steps, site/parent mode and control with independent step/conversion/acquisition/
-result flags. Copied steps and flags share the payload budget; duplicates reuse the
-record. All five focused groups pass (`/tmp/meowy-projection-effects.log`), as do
-all 2210 library tests (`/tmp/meowy-projection-effects-lib.log`) and formatting.
-Aggregation is committed as `73be259`. Source/lifetime boundaries and aggregation
-limits will be separate reviewable slices. Additional tests now cover 36 corrupt
-temporary/statement records, stopped-parent/successor exclusions, other producers and
-ordinary field, guard, loan and temporary errors. All eight report groups pass
-(`/tmp/meowy-projection-boundaries.log`), as does formatting. Exact aggregation limits
-and conflicts are next; boundary coverage is committed as `f821bad`. Additional tests
-cover exact work/effect/payload allowances, 12 merge conflicts, duplicate copies,
-maximum paths and independent conversion flags. All eleven report groups pass
-(`/tmp/meowy-projection-limits.log`), as does formatting (`c0b741c`). Three source
-fixtures cover reference chains/cells, indexed/temporary/returned parents, nested
-guarded fields and stopped parents. All three pass exact debug/release outcomes
-(`/tmp/meowy-projection-execution.log`); metadata checks pass for 218 catalog entries
-and 37 references. All-target Clippy also passes (`/tmp/meowy-projection-clippy.log`).
-Execution coverage is committed as `39423eb`. Three additional fixtures pin owner
-replacement, escaped temporary receivers and invalidated narrowing guards to
-E302/E303/E208 in debug/release (`/tmp/meowy-projection-rejections.log`). Metadata
-checks pass for 221 cases and 37 references. The preservation audit against `ef3fa41`
-passes for all 215 prior cases, 247 source assets, 37 reference files/hashes, capability
-pins and proof obligations (`/tmp/meowy-projection-preservation.log`). The complete
-compiler gate and final handoff remain next.
+All ten compiler checks pass (`/tmp/meowy-projection-gate.log`): 2216 library,
+914 native and 32 tooling/30 harness tests, formatting, all-target Clippy, schemas,
+links, coverage and source execution. Thirteen new internal groups cover counts,
+128 corrupt stage cases, 36 corrupt temporary cases, 12 merge conflicts, exact
+shared limits and independent observations. Six new required source cases pass
+debug/release, including exact output, stopped parents/P006 and E302/E303/E208.
+The catalog has 221 cases: 202 required passes, 19 unchanged pinned gaps, zero failures.
+Strict mode exits 1 solely for the same 19 gaps, with zero failures
+(`/tmp/meowy-projection-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-projection-docs.log`).
 
-Ordinary places, shared elements, exclusive indexed paths and direct/implicit
-reborrows retain separate producers. Preserve existing reference-cell identities,
-borrow authority, lifetimes and capability boundaries; `queries::finish` remains
-B001-gated. Projected observations do not evaluate predicates or infer pointee storage.
+The audit against `ef3fa41` preserves all 215 prior cases, 247 source assets,
+37 reference files/hashes, capability pins and 33 proof obligations
+(`/tmp/meowy-projection-preservation.log`). The coverage map distinguishes structural
+report evidence from source behavior. Full language/release qualification remains
+incomplete. Unrelated `docs/programs/hey/` remains untouched.
+
+Next, implement bounded list-construction observations. `list.rs::list_literal` uses
+`dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
+`dependencies/lists/conversions.rs::contextual_list_sequence`. Their original source
+order and final primary/Forward/Convert/Stopped decisions already feed sequence and
+endpoint edges, but list construction still falls through to `Effect::Unknown`.
+Plain lists have no dedicated producer header; expression sequences also serve other
+operations. Do not infer list identity or normal completion from sequence presence.
+
+Dependency-ordered next commit plan:
+
+1. Retain bounded, explicit list-producer identity, owner/control/span, capacity and
+   checked completion at the two construction entry points, reusing ordered input
+   roots and contextual decisions. Preserve deferred scalar source order, empty
+   construction, outer union coercions and existing source/capability errors. Validate
+   focused list producer tests before committing this prerequisite.
+2. Validate root/input/owner/parent/block identities, source-slot order, stage selectors
+   and exact sequence/endpoint edges under `edges/forward/effects/`. Keep ordinary
+   per-input coercions distinct from final contextual-list projections/conversions.
+   Test malformed metadata, direct stopped inputs and projected Never prefixes.
+3. Aggregate independent projection/conversion/construction/result visits with bounded
+   input copies and shared work/effect/payload limits. Keep partial prefixes before
+   stops, disconnected later input records and conditional calls intact. Test duplicate
+   visits, conflicts, exact limits and owner/control separation without inferring values.
+4. Add required source order/empty/nested/contextual/stopped cases and relevant source
+   errors, update classified coverage, preserve prior fixtures/pins, then run the full
+   compiler and strict gates. Update both handoffs and the foundation guide. List reads,
+   borrows, methods, generic sequences and required evaluation remain separate.
 
 ## Documentation conventions and layout
 
@@ -2996,9 +2998,13 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`16cd21e`) and the compiler gate pass. Exclusive field counts (`bf99d6f`), index
    facts (`29abc4b`), validation (`b5cdaef`) and observations (`e8debce`) now retain
    independent address/reservation/acquisition/result visits. Boundary coverage
-   (`720e062`), source cases (`c7abffc`, `3d0a9bc`) and the compiler gate pass. Next
-   implement projected-borrow reports using `check/references.rs`,
-   `dependencies/borrow_projections.rs` and the ordered plan above.
+   (`720e062`), source cases (`c7abffc`, `3d0a9bc`) and the compiler gate pass.
+   Projected field counts (`dc0777e`), validation (`d7735b0`) and reports (`73be259`)
+   now retain independent materialization/field/load/address/conversion stages and
+   acquisition/results. Boundary and budget coverage (`f821bad`, `c0b741c`), required
+   source cases (`39423eb`, `c6ae594`) and the compiler gate pass. Next implement
+   list-construction reports using `list.rs`, `list_context.rs`, `dependencies/lists.rs`
+   and its `conversions.rs`, following the dependency-ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
