@@ -717,12 +717,13 @@ Dependency-ordered commit plan:
    shared path/work/effect budgets and atomic duplicate/conflict handling. Stopped
    parents gain no address; stopped positions may retain an earlier address without
    acquisition/result. Preserve the Checked route and reference-cell distinction.
-4. Cover owned/shared/temporary receivers, nested owners/control, stopped inputs,
-   malformed source/site/selectors, exact budgets and ordinary bounds/loan/lifetime
-   diagnostics in an independently useful boundary slice.
-5. Add required source cases and classified coverage, preserving existing fixtures,
+4. Cover malformed owned/temporary source identities, canonical aliases, stopped
+   parents, other producers and ordinary bounds/loan/lifetime diagnostics.
+5. Cover exact shared work/effect/payload limits, maximum paths and atomic record
+   conflicts separately, keeping each boundary slice independently reviewable.
+6. Add required source cases and classified coverage, preserving existing fixtures,
    reference contracts and capability exceptions. Run compiler/strict gates.
-6. Document validated observations and the concrete next producer in both handoffs
+7. Document validated observations and the concrete next producer in both handoffs
    and the foundation guide.
 
 Source::Place now retains canonical storage and precharged bounded field counts;
@@ -745,7 +746,13 @@ Six focused report groups cover all sources, nested paths, owners/control,
 independent visits and partial addresses before stopped positions
 (`/tmp/meowy-element-effects.log`). All 2179 library tests pass
 (`/tmp/meowy-element-effects-lib.log`), as does formatting. Broader source/budget
-coverage is next; the complete compiler gate has not run for this series.
+coverage is next; aggregation is committed as `8644137`. Source/lifetime boundaries
+and aggregation-budget regressions are split into separate reviewable slices.
+Additional tests cover 50 corrupt owned/temporary source records, canonical alias
+agreement, stopped-parent/successor exclusions, other producers and original receiver/
+index/loan/lifetime errors. All eleven report groups pass
+(`/tmp/meowy-element-boundaries.log`), as does formatting. Exact aggregation limits
+and conflicts are next; the complete compiler gate has not run for this series.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
 observations grant no bounds success, lifetime extension or new loan authority;
