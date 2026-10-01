@@ -2336,6 +2336,36 @@
         "exit": 1
       },
       "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "projected_borrow_owner_write",
+      "phase": "check",
+      "source": "sources/projected_borrow_owner_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "projected_borrow_temporary_escape",
+      "phase": "check",
+      "source": "sources/projected_borrow_temporary_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#temporary-owners"
+    },
+    {
+      "id": "projected_borrow_invalidated_guard",
+      "phase": "check",
+      "source": "sources/projected_borrow_invalidated_guard.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

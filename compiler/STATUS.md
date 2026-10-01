@@ -864,7 +864,13 @@ fixtures cover reference chains/cells, indexed/temporary/returned parents, neste
 guarded fields and stopped parents. All three pass exact debug/release outcomes
 (`/tmp/meowy-projection-execution.log`); metadata checks pass for 218 catalog entries
 and 37 references. All-target Clippy also passes (`/tmp/meowy-projection-clippy.log`).
-Source rejections and the complete compiler gate remain next.
+Execution coverage is committed as `39423eb`. Three additional fixtures pin owner
+replacement, escaped temporary receivers and invalidated narrowing guards to
+E302/E303/E208 in debug/release (`/tmp/meowy-projection-rejections.log`). Metadata
+checks pass for 221 cases and 37 references. The preservation audit against `ef3fa41`
+passes for all 215 prior cases, 247 source assets, 37 reference files/hashes, capability
+pins and proof obligations (`/tmp/meowy-projection-preservation.log`). The complete
+compiler gate and final handoff remain next.
 
 Ordinary places, shared elements, exclusive indexed paths and direct/implicit
 reborrows retain separate producers. Preserve existing reference-cell identities,
