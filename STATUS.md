@@ -24,9 +24,9 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-reborrow-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next report shared element-borrow addresses, acquisitions and results. The
-[compiler handoff](compiler/STATUS.md#bounded-reborrow-observations)
-records the ordered next work. Existing source identities, bounds checks and
+Shared element-borrow reporting is in progress. The
+[compiler handoff](compiler/STATUS.md#bounded-shared-element-borrow-observations)
+records the ordered commit plan. Existing source identities, bounds checks and
 lifetime/conflict/capability rules remain authoritative. Stage observations grant no
 new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 

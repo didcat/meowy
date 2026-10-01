@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-09-30. Reborrow reports pass the compiler gate; shared element borrows are next.
+Updated: 2026-09-30. Shared element-borrow observation work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -696,23 +696,42 @@ check has an outstanding failure. Preservation against `d2058e6` confirms all 20
 capability exceptions unchanged (`/tmp/meowy-reborrow-preservation.log`). Unrelated
 `docs/programs/hey/` is preserved. No compiler capability or reference contract changed.
 
-Next implement bounded shared element-borrow observations using
-`dependencies/elements.rs`, `list.rs::element_borrow` and `edges/forward/effects/`.
-Record the next commit plan before coding:
+## Bounded shared element-borrow observations
 
-1. Validate exact parent/position roots, checked Source/Access metadata, retained site,
-   capacity/length bounds and original parent/address/index/acquisition/result edges.
-   Audit Place path bounds and Temporary cell/statement registration after local
-   transfer; retain missing bounded source facts at checking time if needed. Never
-   infer path provenance or order from spans, point IDs or inventory positions.
-2. Report independent address/acquisition/result visits with bounded source payloads,
+The producer retains parent/index roots, Source/Access metadata and exact stage
+edges. An owned Source::Place currently retains only its HIR path; reports need
+bounded field counts and canonical storage after local transfer. Temporary cells
+already retain local/statement registration. A stopped index retains its earlier
+Address port without acquisition/result edges. Unrelated `docs/programs/hey/`
+remains preserved.
+
+Dependency-ordered commit plan:
+
+1. Retain bounded Source::Place field counts and canonical storage during checking,
+   validating source-local paths and capacity without copying type shapes. Cover
+   nested paths, aliases, local transfer and exact capture limits.
+2. Validate exact parent/position roots, source facts, temporary registration, site/
+   capacity/length bounds, selectors and original stage edges. Keep partial address
+   visits separate from registered terminal operations; add focused identity tests.
+3. Report independent address/acquisition/result visits with bounded source payloads,
    shared path/work/effect budgets and atomic duplicate/conflict handling. Stopped
    parents gain no address; stopped positions may retain an earlier address without
    acquisition/result. Preserve the Checked route and reference-cell distinction.
-3. Cover owned/shared/temporary receivers, nested owners/control, stopped inputs,
+4. Cover owned/shared/temporary receivers, nested owners/control, stopped inputs,
    malformed source/site/selectors, exact budgets and ordinary bounds/loan/lifetime
-   diagnostics. Add required source cases and classified coverage; run compiler/strict
-   gates and update both handoffs and the foundation guide.
+   diagnostics in an independently useful boundary slice.
+5. Add required source cases and classified coverage, preserving existing fixtures,
+   reference contracts and capability exceptions. Run compiler/strict gates.
+6. Document validated observations and the concrete next producer in both handoffs
+   and the foundation guide.
+
+Source::Place now retains canonical storage and precharged bounded field counts;
+source-local traversal validates field bounds and final list capacity without type
+copies. Regressions cover nested paths after local transfer, emitted aliases,
+malformed paths, exact work and atomic conflicts. All six producer groups pass
+(`/tmp/meowy-element-sources-capture.log`), as do all 2173 library tests
+(`/tmp/meowy-element-capture-lib.log`) and formatting. Report validation and
+aggregation remain next; the complete compiler gate has not run for this series.
 
 Exclusive indexed paths and projected borrows retain separate producers. Borrow
 observations grant no bounds success, lifetime extension or new loan authority;

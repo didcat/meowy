@@ -12,7 +12,11 @@ use crate::{
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) enum Source {
     Stopped,
-    Place(hir::Place),
+    Place {
+        place: hir::Place,
+        storage: hir::LocalId,
+        counts: Vec<usize>,
+    },
     View,
     Temporary {
         local: hir::LocalId,
@@ -56,12 +60,15 @@ impl Checker {
         } else {
             0
         };
-        if !self.flow.spend(
-            self.elements.len().checked_ilog2().unwrap_or(0) as usize * 2
-                + self.proofs.temporaries.len().checked_ilog2().unwrap_or(0) as usize
-                + fields
-                + 6,
-        ) {
+        if fields > crate::list::MAX_WRITE_PATH
+            || !self.flow.spend(
+                self.elements.len().checked_ilog2().unwrap_or(0) as usize * 2
+                    + self.proofs.temporaries.len().checked_ilog2().unwrap_or(0) as usize
+                    + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
+                    + fields * 3
+                    + 6,
+            )
+        {
             return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
@@ -85,10 +92,32 @@ impl Checker {
         let source = match &value.kind {
             _ if value.ty == hir::Type::Never => Source::Stopped,
             hir::ExprKind::Borrow(place) => {
-                if self.locals.get(place.root).is_none() {
+                let storage = self
+                    .proofs
+                    .aliases
+                    .get(&place.root)
+                    .map_or(place.root, |alias| alias.root);
+                if self.locals.get(storage).is_none() {
                     return Err(invalid());
                 }
-                Source::Place(place.clone())
+                let mut ty = self.locals.get(place.root).ok_or_else(invalid)?;
+                let mut counts = Vec::with_capacity(fields);
+                for field in &place.fields {
+                    let hir::Type::Record { fields, .. } = ty else {
+                        return Err(invalid());
+                    };
+                    counts.push(fields.len());
+                    ty = &fields.get(*field).ok_or_else(invalid)?.ty;
+                }
+                if !matches!(ty, hir::Type::List { capacity, .. } if access.is_some_and(|access| access.capacity == *capacity))
+                {
+                    return Err(invalid());
+                }
+                Source::Place {
+                    place: place.clone(),
+                    storage,
+                    counts,
+                }
             }
             hir::ExprKind::TemporaryBorrow { id, statement, .. } => {
                 if self.locals.get(*id).is_none()
@@ -182,7 +211,7 @@ mod tests {
             let (&id, element) = checker.elements.first_key_value().unwrap();
             let access = element.access.unwrap();
             match (&element.source, kind) {
-                (Source::Place(_), 0) | (Source::View, 1) => {}
+                (Source::Place { .. }, 0) | (Source::View, 1) => {}
                 (Source::Temporary { local, statement }, 2) => {
                     assert_eq!(checker.proofs.temporaries[local], *statement)
                 }
@@ -241,7 +270,7 @@ mod tests {
         let mut checker = check("xs:[1];p:&(xs[1])");
         let (&id, element) = checker.elements.first_key_value().unwrap();
         let element = element.clone();
-        let Source::Place(place) = &element.source else {
+        let Source::Place { place, .. } = &element.source else {
             panic!()
         };
         let value = hir::Expr {
@@ -275,3 +304,6 @@ mod tests {
         assert_eq!(checker.element_edges, 0);
     }
 }
+
+#[cfg(test)]
+mod sources;
