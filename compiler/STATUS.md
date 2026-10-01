@@ -811,8 +811,14 @@ index order, scalar modes and field permissions, emitted aliases, stopped indice
 field suffixes and dynamic initialized-length bounds. All three pass in debug/release
 (`/tmp/meowy-exclusive-execution.log`); catalog/coverage checks pass with 212 cases,
 193 required and 19 unchanged pins. All-target Clippy also passes
-(`/tmp/meowy-exclusive-clippy.log`). Rejection fixtures and the complete compiler gate
-remain next.
+(`/tmp/meowy-exclusive-clippy.log`); execution coverage is committed as `c7abffc`.
+Three rejection fixtures now pin final-field E305 permissions, reserved-container
+E302 conflicts and local-owner E303 escapes. All three pass in debug/release
+(`/tmp/meowy-exclusive-rejections.log`); catalog/coverage checks pass with 215 cases,
+196 required and 19 unchanged pins. Preservation against `95a1334` confirms all 209
+prior cases, 241 source assets, 37 reference files, proof obligations, reference
+hashes and capability exceptions unchanged (`/tmp/meowy-exclusive-preservation.log`).
+The complete compiler/strict gates and final documentation handoff remain next.
 
 Shared element borrows, ordinary places, reborrows and projected references retain
 separate producers. Preserve existing exclusive-target capability/mutability/loan

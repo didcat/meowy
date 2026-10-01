@@ -2274,6 +2274,36 @@
         "exit": 1
       },
       "reference": "../reference/collections.md#indexing-mutation-and-removal"
+    },
+    {
+      "id": "exclusive_indexed_immutable_field",
+      "phase": "check",
+      "source": "sources/exclusive_indexed_immutable_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "exclusive_indexed_reserved_write",
+      "phase": "check",
+      "source": "sources/exclusive_indexed_reserved_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "exclusive_indexed_local_escape",
+      "phase": "check",
+      "source": "sources/exclusive_indexed_local_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
     }
   ]
 }
