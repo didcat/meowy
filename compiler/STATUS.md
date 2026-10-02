@@ -1240,7 +1240,12 @@ effects retain flags; mutable/aggregate source state is referenced unchanged.
 Two focused groups pass (`/tmp/meowy-field-slot-links.log`), covering exact indices,
 owners, unknown values, excluded local/call/reference/group inputs and the existing
 E201 rejection for selecting a field from a Never block. Primary links and final
-coverage/gates remain.
+coverage/gates remain. Field links are committed as `e07bd3d`. Unary/binary primary
+links now use observed Projection ports and slot0, retaining each binary step and
+leaving operation/result flags in the owning effects. Three focused groups pass
+(`/tmp/meowy-primary-slot-links.log`), including projection before a stopped RHS,
+invalid later-stage rejection and no inferred visit through local/group/coercion
+wrappers. Adversarial checks, source qualification and final gates remain.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link

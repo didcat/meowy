@@ -3,6 +3,7 @@ use crate::{check::dependencies::bodies::Layout, hir};
 
 mod fields;
 mod index;
+mod primary;
 
 pub(crate) type Index = BTreeMap<PointId, (usize, hir::BlockId)>;
 
@@ -37,7 +38,22 @@ impl Checker {
         }
         let mut uses = Uses::new();
         for (&id, (owner, effect)) in &reports.effects {
-            if let Some(slot) = self.field_slot(reports, id, *owner, effect, span)? {
+            let mut slots = [None; 3];
+            slots[0] = self
+                .field_slot(reports, id, *owner, effect, span)?
+                .map(|slot| (Port::Operation(id), slot));
+            for (step, input) in self
+                .primary_effect_inputs(reports, id, *owner, effect, span)?
+                .into_iter()
+                .enumerate()
+            {
+                if let Some(input) = input {
+                    slots[step + 1] = self
+                        .primary_slot(reports, input, *owner, span)?
+                        .map(|slot| (Port::Projection { point: id, step }, slot));
+                }
+            }
+            for (port, slot) in slots.into_iter().flatten() {
                 if uses.len() >= limit
                     || !self
                         .flow
@@ -45,7 +61,7 @@ impl Checker {
                 {
                     return Err(budget());
                 }
-                uses.insert(Port::Operation(id), (*owner, slot));
+                uses.insert(port, (*owner, slot));
             }
         }
         Ok(uses)

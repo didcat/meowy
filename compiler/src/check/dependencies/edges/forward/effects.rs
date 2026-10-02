@@ -14,6 +14,7 @@ mod lists;
 mod methods;
 mod narrowing;
 mod outputs;
+mod primary_sources;
 mod projections;
 mod reads;
 mod reborrows;
