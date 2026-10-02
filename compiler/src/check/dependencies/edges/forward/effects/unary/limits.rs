@@ -177,7 +177,7 @@ pub(crate) fn unary_effects_bound_duplicate_stage_work_and_fixed_payload_capacit
             &reports,
             Span::default(),
             expected.len() - spare,
-            0,
+            7,
             0,
         );
         assert_eq!(result.is_ok(), spare == 0);

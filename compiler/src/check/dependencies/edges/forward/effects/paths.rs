@@ -47,7 +47,7 @@ pub(crate) fn path_effects_bound_copied_steps_across_distinct_operations() {
     assert_eq!(checker.paths.len(), 2);
     let expected = reports.effects.clone();
     let counts = checker.edge_counts();
-    for steps in [0, 2, 3] {
+    for steps in [0, 12, 13] {
         assert!(
             checker
                 .operation_effects_limited(&reports, Span::default(), MAX_EDGES, steps, MAX_EDGES)
@@ -60,7 +60,7 @@ pub(crate) fn path_effects_bound_copied_steps_across_distinct_operations() {
     }
     assert_eq!(
         checker
-            .operation_effects_limited(&reports, Span::default(), MAX_EDGES, 4, MAX_EDGES)
+            .operation_effects_limited(&reports, Span::default(), MAX_EDGES, 14, MAX_EDGES)
             .unwrap(),
         expected
     );
@@ -130,7 +130,7 @@ pub(crate) fn path_effects_charge_duplicate_ports_only_once_for_copied_storage()
         .extend([Port::Operation(id); 3]);
     assert_eq!(
         checker
-            .operation_effects_limited(&reports, Span::default(), expected.len(), 2, MAX_EDGES)
+            .operation_effects_limited(&reports, Span::default(), expected.len(), 12, MAX_EDGES)
             .unwrap(),
         expected
     );

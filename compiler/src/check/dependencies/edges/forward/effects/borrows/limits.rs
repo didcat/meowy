@@ -4,7 +4,7 @@ use super::{super::tests::checked, *};
 pub(crate) fn place_borrow_effects_share_exact_work_effect_and_payload_limits() {
     let source = "f<null>:(n<int32>){};r:{->inner:{->x:=1}};p:&(r.inner.x);n:*p;r.inner.x=2;f(n);@\"debug\".print(n)";
     crate::compile(source).unwrap();
-    for (missing, parts, pass) in [(0, 9, true), (0, 8, false), (1, 9, false)] {
+    for (missing, parts, pass) in [(0, 19, true), (0, 18, false), (1, 19, false)] {
         let (mut checker, mut reports) = checked(source, false);
         for (_, walk) in reports.entries.values_mut() {
             walk.ports.extend(walk.ports.clone());

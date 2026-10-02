@@ -3,7 +3,7 @@ use super::{super::tests::checked, *};
 #[test]
 pub(crate) fn projection_effects_share_exact_work_effect_and_payload_limits() {
     let source = "<R>:<{n<int32>}>;<H>:<{p<&R><null>}>;r<R>:{->n:1};h:{->inner<H><null>:{->p:&r}};|h.inner<H>|{|h.inner.p<&R>|q:&(h.inner.p.n)}";
-    for (missing, parts, pass) in [(0, 10, true), (0, 9, false), (1, 10, false)] {
+    for (missing, parts, pass) in [(0, 23, true), (0, 22, false), (1, 23, false)] {
         let (mut checker, mut reports) = checked(source, false);
         for (_, walk) in reports.entries.values_mut() {
             walk.ports.extend(walk.ports.clone());

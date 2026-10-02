@@ -107,7 +107,7 @@ pub(crate) fn field_effects_obey_effect_limits_without_variable_payload_copies()
             &reports,
             Span::default(),
             expected.len() - spare,
-            1,
+            4,
             0,
         );
         assert_eq!(result.is_ok(), spare == 0);

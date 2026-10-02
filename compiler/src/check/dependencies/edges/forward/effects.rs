@@ -91,6 +91,7 @@ pub(crate) enum Effect {
     Projection(projections::Observed),
     List(lists::Observed),
     Dispatch(dispatch::Observed),
+    Emission(emissions::Observed),
     Unknown,
 }
 
@@ -121,7 +122,17 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.emission_effect_stage(reports, owner, port, span)?;
+                if let Some(stage) = self.emission_effect_stage(reports, owner, port, span)? {
+                    self.record_emission_effect(
+                        owner,
+                        stage,
+                        &mut effects,
+                        limit,
+                        &mut parts,
+                        span,
+                    )?;
+                    continue;
+                }
                 if self.validate_dispatch_effect(reports, owner, port, span)? {
                     self.record_dispatch_effect(owner, port, &mut effects, limit, span)?;
                     continue;

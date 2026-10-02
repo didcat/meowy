@@ -134,7 +134,7 @@ pub(crate) fn call_effects_bound_shared_path_argument_storage_and_charge_copies_
         .ports
         .extend([Port::Operation(call); 3]);
     let expected = reports.effects.clone();
-    for parts in [0, 2, 3] {
+    for parts in [0, 7, 8] {
         let result = checker.operation_effects_limited(
             &reports,
             Span::default(),
@@ -142,7 +142,7 @@ pub(crate) fn call_effects_bound_shared_path_argument_storage_and_charge_copies_
             parts,
             MAX_EDGES,
         );
-        assert_eq!(result.is_ok(), parts == 3);
+        assert_eq!(result.is_ok(), parts == 8);
         if let Ok(effects) = result {
             assert_eq!(effects, expected);
         }

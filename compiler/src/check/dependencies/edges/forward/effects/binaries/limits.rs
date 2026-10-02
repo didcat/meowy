@@ -184,7 +184,7 @@ pub(crate) fn binary_effects_bound_duplicate_stage_work_and_fixed_payload_capaci
             &reports,
             Span::default(),
             expected.len() - spare,
-            0,
+            14,
             0,
         );
         assert_eq!(result.is_ok(), spare == 0);

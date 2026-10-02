@@ -118,7 +118,7 @@ pub(crate) fn coercion_effects_bound_duplicate_work_and_shared_capacity() {
             &reports,
             Span::default(),
             expected.len() - spare,
-            0,
+            7,
             0,
         );
         assert_eq!(result.is_ok(), spare == 0);

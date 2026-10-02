@@ -13,7 +13,7 @@ pub(crate) fn dispatch_effects_share_exact_work_and_map_limits_without_payload_c
         let counts = checker.edge_counts();
         let limit = before.len() - missing;
         let start = checker.flow.work;
-        let result = checker.operation_effects_limited(&reports, Span::default(), limit, 0, 0);
+        let result = checker.operation_effects_limited(&reports, Span::default(), limit, 8, 0);
         assert_eq!(result.is_ok(), missing == 0);
         let work = checker.flow.work - start;
         if let Ok(actual) = result {
@@ -21,7 +21,7 @@ pub(crate) fn dispatch_effects_share_exact_work_and_map_limits_without_payload_c
             for spare in [0, 1] {
                 checker.flow.work = crate::flow::MAX_PROOF_WORK - work + spare;
                 let result =
-                    checker.operation_effects_limited(&reports, Span::default(), limit, 0, 0);
+                    checker.operation_effects_limited(&reports, Span::default(), limit, 8, 0);
                 assert_eq!(result.is_ok(), spare == 0);
                 if let Ok(actual) = result {
                     assert_eq!(actual, before);

@@ -1006,6 +1006,17 @@ lifetime site; validation follows a bounded same-site parent chain to its checke
 root. Three validation groups, including six additional site faults, pass
 (`/tmp/meowy-emission-site-validation.log`); formatting passes. Next aggregate
 independent target and statement-result observations with bounded shared payloads.
+Validation is committed as `298e75b`. Aggregation now charges two payload entries
+per target plus field-name bytes, retaining independent initialization/result flags.
+Inherited matcher-site validation is committed separately as `de88cc4`. All seven
+emission groups pass. Integration updates 14 exact shared-budget regressions in 13
+existing files to count the new emission descriptors, flags and field-name bytes.
+After split review, those small expectation changes must land with the report hook:
+either side alone breaks the existing whole-program budget boundaries. The resulting
+18-file slice remains one report-integration change; additional boundary/source work
+stays separate. All 251 effect groups pass (`/tmp/meowy-emission-effects.log`),
+including the four new observation groups; formatting passes. Next add composition,
+ancestry, alias and shared-budget boundary coverage before source conformance.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse

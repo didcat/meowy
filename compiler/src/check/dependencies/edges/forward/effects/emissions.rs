@@ -2,6 +2,9 @@ use super::*;
 use crate::check::dependencies::emissions::{Composition, MAX_TARGETS, Projection, Target};
 use std::collections::BTreeSet;
 
+mod report;
+pub(crate) use report::Observed;
+
 pub(super) type Stage = (PointId, Option<usize>);
 
 pub(super) fn name_bytes(
@@ -261,3 +264,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;

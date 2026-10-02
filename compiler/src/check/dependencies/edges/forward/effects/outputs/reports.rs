@@ -85,13 +85,13 @@ pub(crate) fn output_effects_bound_part_copies_deduplicate_visits_and_preserve_r
     let expected = reports.effects.clone();
     assert_eq!(
         checker
-            .operation_effects_limited(&reports, Span::default(), MAX_EDGES, 1, MAX_EDGES)
+            .operation_effects_limited(&reports, Span::default(), MAX_EDGES, 8, MAX_EDGES)
             .unwrap(),
         expected
     );
     assert!(
         checker
-            .operation_effects_limited(&reports, Span::default(), MAX_EDGES, 0, MAX_EDGES)
+            .operation_effects_limited(&reports, Span::default(), MAX_EDGES, 7, MAX_EDGES)
             .is_err()
     );
     let before = checker.flow.work;
