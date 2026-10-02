@@ -14,6 +14,7 @@ pub(crate) struct Plan {
     pub(crate) primary: [bool; 2],
     pub(crate) normal: [bool; 2],
     pub(crate) checked: bool,
+    pub(crate) equality: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -64,6 +65,7 @@ impl Checker {
             "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^" | "==" | "!=" | "<" | "<=" | ">" | ">="
         ) || plan.normal != normal
             || plan.checked != checked
+            || plan.equality != (ready && matches!(op.as_str(), "==" | "!="))
             || ready != (value.ty != hir::Type::Never)
         {
             return Err(invalid());

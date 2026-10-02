@@ -493,6 +493,7 @@ impl Checker {
         let plan = super::dependencies::BinaryPlan {
             primary,
             normal,
+            equality: !diverges && matches!(op, "==" | "!="),
             checked: !diverges
                 && matches!(left.ty, Type::Int { .. })
                 && matches!(op, "+" | "-" | "*" | "/" | "%"),

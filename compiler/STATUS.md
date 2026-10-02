@@ -1022,7 +1022,18 @@ The audit against `16c06d9` preserves all 236 prior cases, 268 source assets,
 structural metadata from source execution. Proof outcomes and full language/release
 qualification remain incomplete. Unrelated `docs/programs/hey/` is preserved.
 
-Next, cover the existing aggregate/reference/union equality operations that still
+## Bounded non-scalar equality observations
+
+In progress from `28f61c9`: ordinary `binary_plan_values` already checks complete
+type identity and recursive equality eligibility. Capture its successful equality
+decision in the plan, plus bounded top-level operand categories, without copying or
+rechecking types. Keep reports excluded until the next validation slice. The ordered
+plan below remains active. All 26 focused binary groups pass, including three new
+capture/boundary/replay groups (`/tmp/meowy-equality-capture.log`); formatting passes.
+Record/list/union counts are bounded and nominal values stay Other. Reports still
+exclude the new non-scalar classes. Preserve `docs/programs/hey/`.
+
+Cover the existing aggregate/reference/union equality operations that still
 fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these
 operands to Other, and `edges/forward/effects/binaries.rs` deliberately excludes them.
 Preserve that boundary until concrete checked categories have been retained.

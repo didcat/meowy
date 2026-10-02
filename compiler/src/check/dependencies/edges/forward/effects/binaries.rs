@@ -45,7 +45,9 @@ pub(super) fn signature(op: &str, types: BinaryTypes, plan: BinaryPlan) -> bool 
         }
     }
     let normal = types.inputs.map(|ty| ty != Class::Never);
-    if plan.normal != normal {
+    if plan.normal != normal
+        || plan.equality != (normal.into_iter().all(|value| value) && matches!(op, "==" | "!="))
+    {
         return false;
     }
     if !normal.into_iter().all(|value| value) {
@@ -266,7 +268,13 @@ impl Checker {
                 return Err(invalid());
             }
         }
-        if op.types.inputs.contains(&Class::Other) || op.types.result == Class::Other {
+        if op
+            .types
+            .inputs
+            .into_iter()
+            .chain([op.types.result])
+            .any(|ty| !matches!(ty, Class::Never | Class::Scalar(_)))
+        {
             return Ok(None);
         }
         Ok(Some(Stage {
