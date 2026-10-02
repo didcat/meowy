@@ -5,6 +5,7 @@ mod coercions;
 mod derefs;
 mod dispatch;
 mod elements;
+mod emissions;
 mod exclusives;
 mod fields;
 mod heaps;
@@ -120,6 +121,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.emission_effect_stage(reports, owner, port, span)?;
                 if self.validate_dispatch_effect(reports, owner, port, span)? {
                     self.record_dispatch_effect(owner, port, &mut effects, limit, span)?;
                     continue;

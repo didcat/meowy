@@ -996,6 +996,14 @@ capture tests as structural evidence. Typed emission observations and proof
 outcomes remain unimplemented; no language/release qualification is claimed.
 Unrelated `docs/programs/hey/` is preserved.
 
+In progress from `16c06d9`: emission ports require lookup through `emission_sources`,
+not the Operation registry. The validator now checks statement/input/site/target
+identities, lexical target ancestry, retained composition bounds, aliases and exact
+edges, with bounded field-name work. Both focused groups pass, including 58 corrupt
+metadata cases (`/tmp/meowy-emission-validation.log`), on the separately qualified
+LLVM/Rust upgrade (`712afe6`). Formatting passes. Next aggregate independent target
+and statement-result observations; additional boundary/source coverage follows.
+
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse
 `emission_sources` registry retain target identities, projections, fields and aliases;
