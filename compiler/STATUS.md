@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-01. Projected-borrow observations and compiler validation are complete.
+Updated: 2026-10-02. List-construction observations and compiler validation are complete.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -853,73 +853,76 @@ incomplete. Unrelated `docs/programs/hey/` remains untouched.
 
 ## Bounded list-construction observations
 
-In progress: the producer audit confirms that ordinary lists retain input sequences
-without a dedicated header, while union-context lists also retain final conversion
-plans. The working tree starts from `5e3dff1`; only unrelated `docs/programs/hey/`
-is untracked. Existing source order and stopped-input edges will be preserved.
-The first slice captures capacity, source count, owner/control/span, contextual
-identity and checked completion at both construction entry points. All 20 focused
-list groups pass, including three new producer groups; formatting passes
-(`/tmp/meowy-list-producers.log`). Graph edges and language checking are unchanged.
-Producer capture is committed as `3450dfd`. Exact root/owner/parent/block, source-slot,
-selector, operation-registry and stored-edge validation passes three focused groups,
-including 27 malformed-metadata cases (`/tmp/meowy-list-validation.log`). Formatting
-passes. Ordinary per-input coercions remain separate from final contextual stages.
-Validation is committed as `7344c0f`. Aggregation now retains ordered input roots,
-optional final contextual plans, independent projection/conversion flags and
-construction/result visits. Shared payload copies cost three entries per input;
-duplicates merge flags. Six focused list groups pass. The wider effect suite exposed
-six prior expectations that treated list construction as Unknown or free payload;
-their exact shared totals now include the new list inputs. This integration slice
-needs 11 files after split review: six existing regression files must change with the
-new report family to keep their exact-boundary checks passing. Deferring them would
-leave a failing intermediate commit; no unrelated scenarios are included. All 226
-effect groups now pass (`/tmp/meowy-list-effects.log`); formatting passes. Aggregation
-is committed as `6ff637d`. All nine list-report groups now pass, including 72
-contextual corruptions, independent owners/control, conditional calls, deferred
-slots and unchanged source errors (`/tmp/meowy-list-boundaries.log`). Formatting
-passes; boundary coverage is committed as `520b8d2`. Exact shared work/effect/payload
-limits, ten atomic conflicts, the 65,536-input boundary and unused-capacity costs
-pass all three limit groups (`/tmp/meowy-list-limits-final.log`); all 12 list-report
-groups passed before the final owner-name cleanup (`/tmp/meowy-list-limits.log`).
-Formatting passes; limits are committed as `e90b966`. Three required source cases
-now cover deferred/empty/nested order, contextual primary/union conversion, scoped
-leave and stopped panic suffixes. All three pass exact output/P006 checks in debug
-and release (`/tmp/meowy-list-source-runs.log`). Catalog/coverage checks pass for 224
-cases (`/tmp/meowy-list-catalog.log`), with structural evidence classified separately.
-Source execution is committed as `9b32d9f`. Four new required diagnostic cases pin
-capacity, ambiguous context, heterogeneous inference and scalar-range errors. Their
-debug/release checks pass (`/tmp/meowy-list-source-errors.log`); catalog and coverage
-checks pass for 228 cases (`/tmp/meowy-list-catalog-final.log`). The full compiler
-and strict gates are next across the complete series.
+Explicit producer records now distinguish list construction from generic expression
+sequences. They retain capacity, source count, contextual identity, checked completion,
+owner/control/span and ordered input roots. Reports preserve optional final contextual
+primary/Forward/Convert/Stopped plans; ordinary per-input coercions remain separate.
+Projection, conversion, construction and result visits are independent. Stopped inputs
+retain earlier stages and disconnected suffix records without construction or results.
+The normal flag describes the checked type, so a projected Never can stop construction
+even when contextual coercion gives the final HIR a non-Never type.
 
-Implement bounded list-construction observations. `list.rs::list_literal` uses
-`dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
-`dependencies/lists/conversions.rs::contextual_list_sequence`. Their original source
-order and final primary/Forward/Convert/Stopped decisions already feed sequence and
-endpoint edges, but list construction still falls through to `Effect::Unknown`.
-Plain lists have no dedicated producer header; expression sequences also serve other
-operations. Do not infer list identity or normal completion from sequence presence.
+Validation checks complete roots, exact owners/parents/blocks, unique source slots,
+selectors, operation registration and original sequence/endpoint edges. Inputs retain
+the 65,536-item cap; descriptors and their two flags cost three shared payload entries
+per input. Unused capacity costs no copies. Duplicate visits merge flags. Invalid
+metadata, conflicts or exhausted work/effect/payload limits publish no partial map.
+No value, allocation, reachability, storage provenance, loan authority or proof answer
+is inferred. Required evaluation, list reads/methods/borrows and generic sequences
+remain separate. `queries::finish` stays B001-gated.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Explicit list identity and checked facts | `3450dfd` |
+| Root, source-slot and stage validation | `7344c0f` |
+| Independent construction and contextual-stage reports | `6ff637d` |
+| Owners, control, calls and malformed contextual plans | `520b8d2` |
+| Shared limits, maximum inputs and atomic conflicts | `e90b966` |
+| Source order, contextual conversion and stopped suffixes | `9b32d9f` |
+| Capacity, inference and scalar-range diagnostics | `13f8aaa` |
+
+The report integration includes six existing regression files whose exact shared
+payload totals or Unknown expectations had to change with the new report family.
+That dependency required an 11-file slice to keep the intermediate suite passing.
+
+All ten compiler checks pass (`/tmp/meowy-list-construction-gate.log`): 2231 library,
+914 native and 32 tooling/30 harness tests, formatting, all-target Clippy, schemas,
+links, coverage and source execution. Fifteen new internal groups include 99 corrupt
+metadata cases, ten merge conflicts, independent visits, exact shared limits and a
+seeded maximum-input boundary. Seven new required source cases pin exact output/P006
+and E103/E207/E216 in debug/release. The catalog has 228 cases: 209 required passes,
+19 unchanged pinned gaps and zero failures. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-list-construction-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-list-construction-docs.log`). No outstanding test failures remain.
+
+Preservation against `5e3dff1` passes for all 221 prior cases, 253 source assets,
+37 reference files/hashes, capability pins and 33 proof obligations
+(`/tmp/meowy-list-preservation.log`). The coverage map and foundation guide distinguish
+structural reports from source behavior. Full language/release qualification remains
+incomplete. Unrelated `docs/programs/hey/` is preserved.
+
+Next, report dispatch receiver initialization and results. The producer in
+`dependencies/dispatch.rs` already retains exact receiver/local/body identities and
+entry/initialization/body-result edges for ordinary and composed dispatch, but the
+initialization still falls through to Unknown. Checked receiver/body completion is
+not retained independently of those edges.
 
 Dependency-ordered next commit plan:
 
-1. Retain bounded, explicit list-producer identity, owner/control/span, capacity and
-   checked completion at the two construction entry points, reusing ordered input
-   roots and contextual decisions. Preserve deferred scalar source order, empty
-   construction, outer union coercions and existing source/capability errors. Validate
-   focused list producer tests before committing this prerequisite.
-2. Validate root/input/owner/parent/block identities, source-slot order, stage selectors
-   and exact sequence/endpoint edges under `edges/forward/effects/`. Keep ordinary
-   per-input coercions distinct from final contextual-list projections/conversions.
-   Test malformed metadata, direct stopped inputs and projected Never prefixes.
-3. Aggregate independent projection/conversion/construction/result visits with bounded
-   input copies and shared work/effect/payload limits. Keep partial prefixes before
-   stops, disconnected later input records and conditional calls intact. Test duplicate
-   visits, conflicts, exact limits and owner/control separation without inferring values.
-4. Add required source order/empty/nested/contextual/stopped cases and relevant source
-   errors, update classified coverage, preserve prior fixtures/pins, then run the full
-   compiler and strict gates. Update both handoffs and the foundation guide. List reads,
-   borrows, methods, generic sequences and required evaluation remain separate.
+1. Retain checked receiver and body completion in `dependencies/dispatch.rs` before
+   their HIR types disappear. Audit `expressions.rs::DispatchBlock` and the composed
+   branch in `blocks.rs`; preserve partial records, receiver gates and caller errors.
+   Add focused producer tests for stopped receivers/bodies and empty dispatch.
+2. Validate root/input/body/local identities, owner/parent/block relationships,
+   receiver registration, the synthetic leading None slot, immediate successor and
+   exact edges under `edges/forward/effects/`. Preserve opaque successor barriers;
+   never skip to a later statement or infer completion from a missing producer.
+3. Aggregate independent initialization/result visits with shared work/effect limits.
+   Test partial observations, duplicates, conflicts, owner/control separation and
+   conditional calls. Keep body effects and callee summaries separate.
+4. Add required source receiver/body order, composed/empty/stopped cases and relevant
+   diagnostics. Update classified coverage and the foundation guide, preserve prior
+   cases/pins, then run compiler and strict gates and update both handoffs.
 
 ## Documentation conventions and layout
 
@@ -3044,9 +3047,12 @@ subtraction retains its documented limits. No outstanding failures remain.
    Projected field counts (`dc0777e`), validation (`d7735b0`) and reports (`73be259`)
    now retain independent materialization/field/load/address/conversion stages and
    acquisition/results. Boundary and budget coverage (`f821bad`, `c0b741c`), required
-   source cases (`39423eb`, `c6ae594`) and the compiler gate pass. Next implement
-   list-construction reports using `list.rs`, `list_context.rs`, `dependencies/lists.rs`
-   and its `conversions.rs`, following the dependency-ordered plan above.
+   source cases (`39423eb`, `c6ae594`) and the compiler gate pass. List producer
+   identity (`3450dfd`), validation (`7344c0f`), reports (`6ff637d`), boundaries/limits
+   (`520b8d2`, `e90b966`) and required source cases (`9b32d9f`, `13f8aaa`) now pass
+   the compiler gate. Next retain checked dispatch completion in
+   `dependencies/dispatch.rs`, then validate/report receiver initialization and
+   results using the dependency-ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

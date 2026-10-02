@@ -1,37 +1,35 @@
 # meowy project status
 
-Updated: 2026-10-01. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-02. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
 ## Current compiler and coverage handoff
 
-Projected-borrow reports retain exact parent roots, bounded materialization/field/
-load/address steps, narrowing conversions, reborrow sites and parent modes. Stage,
-acquisition and result visits remain independent; stopped parents gain no observation.
-Thirteen new internal groups and six source cases cover identities, reference chains,
-guards, order, stopped parents, lifetimes, conflicts and shared budgets. The
-[compiler handoff](compiler/STATUS.md#bounded-projected-borrow-observations)
-lists the validated commit series.
+List-construction reports retain explicit producer identities, checked capacity/count,
+ordered input roots and final contextual conversion plans. Projection, conversion,
+construction and result visits remain independent; stopped inputs keep only earlier
+stages. Fifteen new internal groups and seven source cases cover identities, deferred
+order, empty/nested lists, contextual conversions, stops, errors and shared budgets.
+The [compiler handoff](compiler/STATUS.md#bounded-list-construction-observations)
+lists the validated commits and the next ordered plan.
 
-All ten compiler checks pass: 2216 library/914 native and 62 Python test groups;
-`/tmp/meowy-projection-gate.log`. The catalog has 221 cases: 202 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
+All ten compiler checks pass: 2231 library/914 native and 62 Python test groups;
+`/tmp/meowy-list-construction-gate.log`. The catalog has 228 cases: 209 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-projection-strict.log`); all four final documentation checks pass
-(`/tmp/meowy-projection-docs.log`).
+(`/tmp/meowy-list-construction-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-list-construction-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-List-construction work is in progress. Explicit producer identity and checked facts
-now accompany the existing input/conversion sequences; 20 focused list groups pass.
-Next validate exact roots and stages before aggregating reports. The compiler handoff
-records the ordered plan; the complete compiler gate remains pending for this series.
-Existing lifetime/conflict/capability rules remain authoritative. Stage observations
-grant no new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work
-is preserved.
+Next, retain checked dispatch receiver/body completion and report initialization
+and results from `compiler/src/check/dependencies/dispatch.rs`. Preserve immediate
+successors, opaque barriers, composed partial records and existing source errors.
+Stage observations grant no new borrow authority or proof outcome. Unrelated
+`docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1153,10 +1151,11 @@ execution was not part of this documentation edit.
    and terminal metadata; focused/source coverage and the compiler gate pass.
    Local-read effects now retain canonical storage, normal/control flags and validated
    context after HIR transfer; focused/source coverage and the compiler gate pass.
-   Next retain explicit dereference normal-result metadata in
-   `compiler/src/check/dependencies/dereferences.rs`, then integrate bounded effects
-   with exact pointer roots/modes. Preserve reference cells, stopped pointers and
-   Never referents; add focused/source coverage and run compiler/strict gates.
+   Subsequent read/scalar/conversion/borrow and list-construction reports now pass
+   their focused/source coverage and compiler gates; the detailed compiler handoff
+   records those series. Next retain checked receiver/body completion in
+   `compiler/src/check/dependencies/dispatch.rs`, then validate and report dispatch
+   initialization/results with focused/source coverage and compiler/strict gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

@@ -159,6 +159,25 @@ execution order; candidate probes remain free of graph roots. Direct or projecte
 changes the final HIR type. Inputs, sequence links and endpoints are validated
 together before publication and share the existing edge budget. Candidate
 selection, HIR, ordinary diagnostics and required-evaluation gates are preserved.
+
+List-construction reports now require an explicit checked producer record with
+capacity, input count, owner, control and source span. Generic expression sequences
+do not identify lists. Reports retain exact input roots in source order and optional
+final contextual plans; ordinary per-input coercions keep their own reports.
+Projection, conversion, construction and result visits are independent. Earlier
+stages can survive a stopped input while later input records remain unobserved.
+The retained normal flag describes the checked result type; a projected `never`
+can still prevent construction after contextual coercion changes that type.
+
+Validation checks complete roots, owners, parent/block relationships, unique source
+slots, selectors, operation registration and exact original sequence/endpoint edges.
+Input records and their two stage flags cost three shared payload entries each;
+unused capacity adds no copies. The 65,536-input cap and shared work/effect limits
+apply before publication. Repeated visits merge flags without another payload copy;
+conflicts or exhaustion return no partial collection. These records infer no
+element values, allocation effects, ownership authority, reachability or proof
+answers. Required evaluation, reads, methods and borrows retain their own boundaries.
+
 List/string `size` operations retain exact receiver roots and distinct length
 operations. List `add` snapshots the receiver and its length before checking the
 item; capacity-success edges then lead to a new list result. Nonreturning receivers
