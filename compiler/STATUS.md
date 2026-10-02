@@ -1178,7 +1178,11 @@ All four layout groups, 45 body groups and seven endpoint groups pass
 identity. Capture is committed as `0592307`. Operation-effect collection now
 returns its remaining payload budget without changing the existing test helpers
 or charging repeated observations twice. The focused remainder/limit group passes
-(`/tmp/meowy-slot-payload.log`). Source-link validation/integration and final gates remain.
+(`/tmp/meowy-slot-payload.log`), committed as `3395b59`. Result-layout validation now
+rejects inconsistent completion categories, missing/duplicate fields, invalid
+primary markers and malformed shallow shapes before reports use slot positions.
+Two focused groups pass (`/tmp/meowy-result-layout-validation.log`). Source-index
+validation/integration and final gates remain.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection

@@ -4,6 +4,7 @@ use std::collections::BTreeSet;
 
 mod report;
 pub(crate) use report::Blocks;
+mod layout;
 
 impl Checker {
     pub(super) fn validate_block_effect(
@@ -145,6 +146,7 @@ impl Checker {
         if self.endpoints.get(&key).map(Vec::as_slice) != Some(&ends[..count]) {
             return Err(invalid());
         }
+        self.validate_result_layout(id, span)?;
         Ok(true)
     }
 }
