@@ -947,7 +947,18 @@ Preservation against `bf9a160` passes for all 228 prior cases, 260 source assets
 separate structural evidence from source behavior. Full language/release qualification
 remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
-Next, report emission target initialization and statement completion from
+## Bounded emission observations
+
+In progress from `9eecae2`: capture composition's staging local and concrete field
+count before local types are transferred. Existing projection validation already
+checks every Primary/Field access against that local. Direct emissions, aliases,
+the Never-input bypass and all source checks stay separate. The first planned slice
+below now captures an optional composition local/count without copying its type.
+All 12 emission groups pass, including four new capture/boundary/replay groups
+(`/tmp/meowy-emission-composition.log`); formatting passes. Next validate exact
+target identities, projections, aliases and original edges before collecting reports.
+
+Report emission target initialization and statement completion from
 `dependencies/emissions.rs`. Its ordered `Port::Emission` stages and reverse
 `emission_sources` registry retain direct/composed target identities, projections,
 fields and aliases, but are not yet collected as typed effects. Composition's

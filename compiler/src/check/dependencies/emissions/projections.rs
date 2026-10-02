@@ -1,4 +1,4 @@
-use super::Projection;
+use super::{Composition, MAX_TARGETS, Projection};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -7,6 +7,30 @@ use crate::{
 };
 
 impl Checker {
+    pub(crate) fn emission_composition(
+        &self,
+        from: Option<hir::LocalId>,
+        span: Span,
+    ) -> Result<Option<Composition>> {
+        let Some(local) = from else { return Ok(None) };
+        let Some(hir::Type::Record { fields, .. }) = self.locals.get(local) else {
+            return Err(Diagnostic::unsupported(
+                "proof emission composition identity mismatch",
+                span,
+            ));
+        };
+        if fields.len() >= MAX_TARGETS {
+            return Err(Diagnostic::unsupported(
+                "proof emission composition budget exhausted",
+                span,
+            ));
+        }
+        Ok(Some(Composition {
+            local,
+            count: fields.len(),
+        }))
+    }
+
     pub(crate) fn emission_projection(
         &self,
         from: Option<hir::LocalId>,

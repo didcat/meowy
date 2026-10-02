@@ -18,6 +18,12 @@ pub(crate) enum Projection {
     Field(usize),
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct Composition {
+    pub(crate) local: hir::LocalId,
+    pub(crate) count: usize,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Target {
     pub(crate) id: hir::EmitId,
@@ -32,6 +38,7 @@ pub(crate) struct Target {
 pub(crate) struct Emission {
     pub(crate) owner: usize,
     pub(crate) input: hir::PointId,
+    pub(crate) composed: Option<Composition>,
     pub(crate) targets: Vec<Target>,
     pub(crate) control: bool,
     pub(crate) span: Span,
@@ -60,7 +67,7 @@ impl Checker {
                         + 4)
                     + self.emissions.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
-                    + 4,
+                    + 7,
             )
         {
             return Err(budget());
@@ -82,6 +89,7 @@ impl Checker {
         {
             return Err(invalid());
         }
+        let composed = self.emission_composition(from, span)?;
         let mut targets = Vec::new();
         let mut alias = None;
         let mut seen = std::collections::BTreeSet::new();
@@ -170,6 +178,7 @@ impl Checker {
         let emission = Emission {
             owner: self.owner,
             input,
+            composed,
             targets,
             control: self.control,
             span,
@@ -198,6 +207,9 @@ mod projections;
 
 #[cfg(test)]
 mod fanout;
+
+#[cfg(test)]
+mod composition;
 
 #[cfg(test)]
 mod tests {
