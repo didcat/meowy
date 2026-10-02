@@ -1032,6 +1032,12 @@ plan below remains active. All 26 focused binary groups pass, including three ne
 capture/boundary/replay groups (`/tmp/meowy-equality-capture.log`); formatting passes.
 Record/list/union counts are bounded and nominal values stay Other. Reports still
 exclude the new non-scalar classes. Preserve `docs/programs/hey/`.
+Capture is committed as `3db93eb`. Binary reporting now admits the bounded checked
+equality categories while preserving Other exclusions and existing edge validation.
+All 260 effect groups pass (`/tmp/meowy-equality-effects.log`), including three new
+stage/stop/eligibility groups; formatting passes. Exclusive-reference comparisons
+retain their B001 ownership-pass gate and Unknown report boundary. Next add corrupt
+category/flag, owner/control, exact-budget and ordinary-shape compatibility coverage.
 
 Cover the existing aggregate/reference/union equality operations that still
 fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these

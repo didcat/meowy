@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::{
     BinaryClass as Class, BinaryPlan, BinaryTypes, ScalarKind, SequenceSource,
+    binaries::types::MAX_COUNT,
 };
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -41,6 +42,9 @@ pub(super) fn signature(op: &str, types: BinaryTypes, plan: BinaryPlan) -> bool 
                 return false;
             }
             Class::Scalar(ScalarKind::Float { bits }) if !matches!(bits, 32 | 64) => return false,
+            Class::Record { fields } if fields > MAX_COUNT => return false,
+            Class::List { capacity } if capacity > crate::list::MAX_CAPACITY => return false,
+            Class::Union { members } if !(2..=MAX_COUNT).contains(&members) => return false,
             _ => (),
         }
     }
@@ -273,7 +277,12 @@ impl Checker {
             .inputs
             .into_iter()
             .chain([op.types.result])
-            .any(|ty| !matches!(ty, Class::Never | Class::Scalar(_)))
+            .any(|ty| {
+                matches!(
+                    ty,
+                    Class::Other | Class::Reference(crate::hir::ReferenceMode::Exclusive)
+                )
+            })
         {
             return Ok(None);
         }
@@ -298,3 +307,6 @@ mod reports;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod equality;

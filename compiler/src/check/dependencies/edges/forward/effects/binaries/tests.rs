@@ -45,7 +45,7 @@ pub(crate) fn binary_effect_stages_preserve_scalars_projections_and_result_route
 }
 
 #[test]
-pub(crate) fn binary_effect_stages_preserve_partial_primaries_and_opaque_comparisons() {
+pub(crate) fn binary_effect_stages_preserve_partial_primaries_and_whole_shape_comparisons() {
     for (tail, step) in [("r+1", 0), ("1+r", 1)] {
         let source = format!("f<never>:(r<{{-><never>;tag<boolean>}}> ){{->{tail}}}");
         crate::compile(&source).unwrap();
@@ -82,9 +82,9 @@ pub(crate) fn binary_effect_stages_preserve_partial_primaries_and_opaque_compari
             checker
                 .binary_effect_stage(&reports, 0, Port::Operation(id), Span::default())
                 .unwrap()
-                .is_none()
+                .is_some()
         );
-        assert_eq!(reports.effects[&id].1, Effect::Unknown);
+        assert!(matches!(reports.effects[&id].1, Effect::Binary(_)));
     }
 }
 
