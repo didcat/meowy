@@ -452,20 +452,31 @@ limits return no partial collection. Required construction can retain unary meta
 outside runtime entry walks; those points produce no runtime effect. Stopped operands
 and signed-literal leaves keep their separate paths, and expected primary projections
 are not repeated. These structural reports evaluate no values or proof outcomes.
-Binary metadata now retains compact Never/scalar/other operand and result classes
-without copying aggregate shapes. Scalar binary reports preserve exact roots,
+Binary metadata retains compact Never/scalar/record/list/reference/union/other
+classes without copying aggregate shapes. Record field counts, list capacities,
+reference modes and union member counts come from the checked types. Counts have
+explicit bounds; unsupported nominal types stay Other. Reports preserve exact roots,
 canonical operator symbols, type widths, primary/normal plans and control flags.
-Capture validates operator/type domains, completed points, parent/block/owner
-agreement, spans and both edge ledgers: the binary edges retain projections and
+Ordinary checking establishes complete type compatibility and recursive equality
+eligibility before capturing an equality flag. Matching categories or counts alone
+never admit an operator. The flag records eligibility, not a comparison result;
+it is distinct from integer arithmetic's checked-success requirement.
+
+Capture validates bounded categories, operator/type domains, completed points,
+parent/block/owner agreement, spans and both edge ledgers: the binary edges retain projections and
 operation/results, while the sequence retains the exact left-to-right link and
 ordered operand IDs. Checked integer results cannot bypass their success edge.
 Left/right projection, operation and result observations remain independent; a
 projected Never can retain its projection while stopping later stages. Operation
 and result observations require registered owners. Duplicate observations update
 existing flags, and shared work/effect limits or metadata conflicts publish no
-partial collection. Nonscalar comparisons remain supported with Unknown effects;
-their shapes and transfers are not inferred. Short-circuit and required-only paths
-remain separate. No values, arithmetic success or proof outcomes are evaluated.
+partial collection. Supported record/list/shared-reference/union equality now has
+these reports. Each binary record has fixed-size metadata, with no variable payload
+charge or type traversal; operand producers retain their own shared payload costs.
+Other classes retain Unknown effects. Exclusive-reference comparisons keep their
+existing ownership-pass gate and Unknown boundary. Short-circuit and required-only
+paths remain separate. No values, addresses, dereference authority, reachability,
+arithmetic success or proof outcomes are inferred.
 Scalar-leaf reports retain compact Null/Bool/Int/Float/String kinds, numeric widths,
 control flags and independent construction/result observations. Capture checks
 complete expression roots, owner/span identity, supported widths, exact construction/

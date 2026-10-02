@@ -7,28 +7,30 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Emission reports now retain exact input/target identities, projections, composition
-bounds, field names, canonical alias storage and control. Target initialization and
-statement completion are independent; emissions preserve subsequent tail work and
-stopped-input boundaries. Thirteen new internal groups and eight required source
-cases cover identity, inherited matcher sites, order, aliases, scopes and budgets.
-The [compiler handoff](compiler/STATUS.md#bounded-emission-observations) records the
-validated commit series and next ordered plan.
+Non-scalar equality reports now retain checked operand categories, bounded counts,
+reference modes and prior equality eligibility. Exact operand order, independent
+projection/operation/result stages and atomic budgets are preserved. Twelve new
+internal groups and eight required source cases cover full-shape equality, reference
+addresses, stops, type errors and bounds. Reports do not infer comparison results,
+borrow authority or proof outcomes. The
+[compiler handoff](compiler/STATUS.md#bounded-non-scalar-equality-observations)
+records the validated commit series and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2262 library/914 native tests
-and 62 Python groups (`/tmp/meowy-emission-reports-gate.log`). Conformance has 244
-cases: 225 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2274 library/914 native tests
+and 62 Python groups (`/tmp/meowy-equality-reports-gate.log`). Conformance has 252
+cases: 233 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
 Prior fixtures, reference contracts and capability pins are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-emission-reports-strict.log`). All four final documentation checks pass
-(`/tmp/meowy-emission-reports-docs.log`).
+(`/tmp/meowy-equality-reports-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-equality-reports-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, retain checked aggregate/reference/union equality categories in
-`compiler/src/check/dependencies/binaries/types.rs`, then extend bounded binary
-reports beyond their current Other/Unknown boundary. Preserve ordinary typing,
-operand order and existing gates. Unrelated `docs/programs/hey/` is preserved.
+Next, repair the existing Never-left contextual RHS typing gap in
+`compiler/src/check/scalars.rs::binary`: a list-emitting RHS block receives Never
+as its expected type and reports E207. Declared-result helper cases pass but do
+not qualify that context boundary. Preserve unreachable-body checking, contextual
+widths, operand order and existing gates. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -38,7 +40,7 @@ tests and 217 required conformance cases (`/tmp/meowy-llvm23-compiler.log`). All
 runtime harness groups and native debug/release/ASan/UBSan/LSan checks pass; the
 sanitizer run required execution outside ptrace (`/tmp/meowy-llvm23-runtime.log`).
 Owning diagnostic sizes are unchanged. This is host qualification, not full release
-or minimum-OS qualification. The completed emission series above uses these tools.
+or minimum-OS qualification. The completed equality series above uses these tools.
 All four final documentation checks pass (`/tmp/meowy-llvm23-docs.log`).
 
 ## Documentation conventions

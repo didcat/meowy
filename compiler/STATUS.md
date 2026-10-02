@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Emission reports and the LLVM 23/Rust 1.99 bootstrap are validated.
+Updated: 2026-10-02. Non-scalar equality reports pass the LLVM 23/Rust 1.99 compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1024,64 +1024,81 @@ qualification remain incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Bounded non-scalar equality observations
 
-In progress from `28f61c9`: ordinary `binary_plan_values` already checks complete
-type identity and recursive equality eligibility. Capture its successful equality
-decision in the plan, plus bounded top-level operand categories, without copying or
-rechecking types. Keep reports excluded until the next validation slice. The ordered
-plan below remains active. All 26 focused binary groups pass, including three new
-capture/boundary/replay groups (`/tmp/meowy-equality-capture.log`); formatting passes.
-Record/list/union counts are bounded and nominal values stay Other. Reports still
-exclude the new non-scalar classes. Preserve `docs/programs/hey/`.
-Capture is committed as `3db93eb`. Binary reporting now admits the bounded checked
-equality categories while preserving Other exclusions and existing edge validation.
-All 260 effect groups pass (`/tmp/meowy-equality-effects.log`), including three new
-stage/stop/eligibility groups; formatting passes. Exclusive-reference comparisons
-retain their B001 ownership-pass gate and Unknown report boundary. Next add corrupt
-category/flag, owner/control, exact-budget and ordinary-shape compatibility coverage.
-Integration is committed as `308fcbc`. Category/flag corruption, composed call order,
-owner/control separation and full-type compatibility regressions pass all 27 focused
-equality groups (`/tmp/meowy-equality-boundaries.log`), including 32 corrupt-signature
-cases. Formatting passes. Exact shared limits and source conformance follow separately.
-Boundary coverage is committed as `240cec7`. Exact shared work/map limits, fixed
-report costs across list capacities and eight atomic merge conflicts pass all 30
-focused equality groups (`/tmp/meowy-equality-limits.log`); formatting passes.
-Required source result/order and rejection cases are next.
-Budget coverage is committed as `c685bf3`. Four required execution cases now cover
-record field/primary behavior and call order, list lengths/union alternatives,
-reference-cell addresses and stopped operands. All four pass exact output/P006 in
-debug/release (`/tmp/meowy-equality-source-runs.log`); catalog/coverage validation
-passes for 248 cases (`/tmp/meowy-equality-catalog.log`). The draft with a
-Never left operand and contextual RHS block emitted E207 (`expected Never, found
-List`); its source/diagnostic are `/tmp/meowy-equality-stopped-context.mwy` and `.log`.
-Declared-result helpers isolate stopped evaluation order. That contextual typing
-case remains a separate coverage gap; no reference fixture or diagnostic was changed.
-Execution cases are committed as `4735fb1`. Four required rejection cases now cover
-different record-field types, opaque empty lists, inactive opaque union alternatives
-and different reference pointee types. All four report E222 in debug/release
-(`/tmp/meowy-equality-source-errors.log`); catalog/coverage checks pass for all 252
-cases (`/tmp/meowy-equality-catalog-final.log`). Full compiler/strict gates and the
-final guide/handoff update remain.
+Checked record/list/shared-reference/union equality now has bounded Binary reports.
+Ordinary `binary_plan_values` establishes complete type identity and recursive
+eligibility before recording its successful equality decision. Compact operand
+classes retain field/member counts, list capacities and reference modes without
+copying or walking types. Equal summaries alone never admit a source comparison.
+The eligibility flag does not record an equality result or arithmetic success.
 
-Cover the existing aggregate/reference/union equality operations that still
-fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these
-operands to Other, and `edges/forward/effects/binaries.rs` deliberately excludes them.
-Preserve that boundary until concrete checked categories have been retained.
+Reports preserve exact ordered operand roots, projections, owner/control flags and
+independent operation/result visits. Existing sequence/operation edges and registered
+owners remain authoritative. A stopped input can retain its projection but cannot
+introduce later stages. Fixed-size records add no variable payload copies; operand
+producers keep their own costs. Shared work/map limits, duplicate visits and metadata
+conflicts preserve atomic publication. Unsupported nominal types remain Other;
+exclusive-reference comparisons retain their B001 ownership gate and Unknown reports.
+Values, addresses, borrow authority, reachability and proof outcomes are not inferred.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture checked equality and bounded categories | `3db93eb` |
+| Admit supported equality reports | `308fcbc` |
+| Validate categories, owners and complete type compatibility | `240cec7` |
+| Bound shared work/maps and atomic merges | `c685bf3` |
+| Pin whole-shape results, reference addresses and operand order | `4735fb1` |
+| Pin incompatible types and recursive opaque-member rejections | `ccebb5d` |
+
+Twelve new internal groups cover capture, stopped stages, matching-summary type
+mismatches, 32 corrupt signatures, fixed costs across capacities and atomic limits.
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2274 library/914 native tests,
+32 tooling/30 compiler-harness groups, formatting, Clippy, build and conformance
+(`/tmp/meowy-equality-reports-gate.log`). The eight new required source cases pass
+in debug/release. The catalog has 252 cases: 233 required passes, 19 unchanged pinned
+gaps and zero failures. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-equality-reports-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-equality-reports-docs.log`).
+
+All 244 prior case records, 276 source assets, 37 reference contracts/hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-equality-preservation.log`). Classified coverage and the foundation
+guide distinguish metadata tests from observable source behavior. The native runtime
+and toolchain sources did not change in this series. Preserve `docs/programs/hey/`.
+
+### Next: stopped-left contextual operand typing
+
+A separate existing checker gap was exposed while authoring the stopping fixture:
+
+```meowy
+d : @"debug"
+'out {
+    value : ({ d.print("leave"); 'out.leave() }) == {
+        d.print("late right")
+        -> [1]
+    }
+}
+```
+
+The Never left operand becomes the RHS block's expected type, so its list emission
+reports E207 (`expected Never, found List`). The draft source and diagnostic are
+`/tmp/meowy-equality-stopped-context.mwy` and `.log`. The committed stopping fixture
+uses a declared-result RHS helper to test evaluation order; it does not qualify
+contextual RHS construction. This remains an explicit coverage gap, separate from
+the 19 pinned B001 cases. No existing reference expectation was changed.
 
 Dependency-ordered next commit plan:
 
-1. Retain bounded non-scalar operand categories/counts or reference modes in
-   `dependencies/binaries/types.rs` and `binary_operation`, using actual checked HIR
-   types. Keep unsupported nominal/opaque types distinct. Preserve scalar-primary
-   conversions, stopped operands and required evaluation; add focused capture tests.
-2. Validate and admit only supported checked ==/!= signatures in
-   `edges/forward/effects/binaries.rs`, with exact existing roots, sequence/stage edges
-   and operation ownership. Keep scalar arithmetic and checked-success routes intact.
-   Matching summaries alone must not establish type compatibility or an equality result.
-3. Add independent stage/owner/control, corrupt metadata, duplicate, work/map-bound
-   and stopped-input tests. Keep values, dereference authority and proof answers out.
-4. Add required whole-record/list/reference/union equality order/results and relevant
-   rejection cases. Update classified coverage and the guide, preserve prior cases/
-   pins, then run compiler/strict gates and update both handoffs.
+1. In `src/check/scalars.rs::binary`, inspect hint and right-context selection when
+   the left operand is Never. Prevent that bottom type from constraining a later
+   value-building operand while preserving contextual widths, required evaluation,
+   ordinary checking of unreachable bodies and first-error behavior. Pair the
+   smallest checker repair with focused block/list/record and stopped-order tests.
+2. Add required source acceptance/order and rejection fixtures for that boundary,
+   linked to the operator-order/type contracts. Preserve prior cases and capability
+   pins; update the classified coverage gap only after both profiles pass.
+3. Run the complete compiler and strict gates, update the guide and both handoffs,
+   then resume the remaining dependency-transfer work below. Equality metadata does
+   not itself enable proof evaluation or restart propagation.
 
 ## Documentation conventions and layout
 
@@ -2660,7 +2677,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
-subtraction retains its documented limits. No outstanding failures remain.
+subtraction retains its documented limits. The compiler gate passes; the known
+Never-left contextual RHS typing gap above is the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3215,9 +3233,11 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`9f5dcc5`, `6d1ddbc`) now pass the compiler gate. Emission composition locals
    and field counts (`b54c7d6`), validation/site repair (`298e75b`, `de88cc4`),
    reports (`2261568`), boundary/limit coverage (`7c7e172`, `e28d8ea`) and required
-   source cases (`acb7fe0`, `36cead6`) now pass the compiler gate. Next retain checked
-   non-scalar equality categories before replacing their current Unknown reports,
-   following the dependency-ordered plan above.
+   source cases (`acb7fe0`, `36cead6`) now pass the compiler gate. Checked equality
+   categories (`3db93eb`), reports (`308fcbc`), boundary/limit tests (`240cec7`,
+   `c685bf3`) and required source cases (`4735fb1`, `ccebb5d`) now pass the compiler
+   gate. Next repair Never-left contextual RHS typing in `check/scalars.rs::binary`,
+   following the dependency-ordered plan above, before further transfer work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
