@@ -901,7 +901,19 @@ Preservation against `5e3dff1` passes for all 221 prior cases, 253 source assets
 structural reports from source behavior. Full language/release qualification remains
 incomplete. Unrelated `docs/programs/hey/` is preserved.
 
-Next, report dispatch receiver initialization and results. The producer in
+## Bounded dispatch observations
+
+In progress from `bf9a160`: the producer audit confirms that ordinary and composed
+dispatch share `dispatch_operation`, while their caller-specific checks remain
+separate. The body retains the synthetic receiver Bind and leading None slot.
+First retain receiver/body completion from checked HIR, then validate and report
+initialization/results. Both completion flags are captured without changing edges or
+caller behavior. All nine focused dispatch groups, including ordinary/composed
+completion and replay checks, pass (`/tmp/meowy-dispatch-completion.log`). Formatting
+passes. Next validate the receiver binding, body sequence and exact stage edges.
+Unrelated `docs/programs/hey/` is preserved.
+
+Report dispatch receiver initialization and results. The producer in
 `dependencies/dispatch.rs` already retains exact receiver/local/body identities and
 entry/initialization/body-result edges for ordinary and composed dispatch, but the
 initialization still falls through to Unknown. Checked receiver/body completion is

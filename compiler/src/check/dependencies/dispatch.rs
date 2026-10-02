@@ -15,6 +15,8 @@ pub(crate) struct Dispatch {
     pub(crate) input: hir::PointId,
     pub(crate) local: hir::LocalId,
     pub(crate) block: hir::BlockId,
+    pub(crate) input_normal: bool,
+    pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
@@ -104,11 +106,13 @@ impl Checker {
         if ty != &value.ty {
             return Err(invalid());
         }
+        let input_normal = value.ty != hir::Type::Never;
+        let normal = body.ty != hir::Type::Never;
         let mut edges = vec![
             Edge::new(Port::Entry(id), Port::BlockEntry(body.id), Route::Next),
             Edge::new(Port::BlockEntry(body.id), Port::Entry(input), Route::Next),
         ];
-        if value.ty != hir::Type::Never {
+        if input_normal {
             edges.push(Edge::new(
                 Port::Normal(input),
                 Port::Operation(id),
@@ -122,7 +126,7 @@ impl Checker {
             if let Some(next) = next {
                 edges.push(Edge::new(Port::Operation(id), next, Route::Next));
             }
-            if body.ty != hir::Type::Never {
+            if normal {
                 edges.push(Edge::new(
                     Port::BlockResult(body.id),
                     Port::Normal(id),
@@ -135,6 +139,8 @@ impl Checker {
             input,
             local,
             block: body.id,
+            input_normal,
+            normal,
             control: self.control,
             span,
             edges,
@@ -156,3 +162,6 @@ mod tests;
 
 #[cfg(test)]
 mod composed;
+
+#[cfg(test)]
+mod completion;
