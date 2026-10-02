@@ -1218,7 +1218,22 @@ capability pins and 33 proof obligations are unchanged
 structural source history from observable source behavior. Unrelated
 `docs/programs/hey/` is preserved.
 
-### Next: direct result-slot consumers
+## In progress: direct result-slot consumers
+
+Resumed from `06fb7fe`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Implement the reverse consumer index, direct owned-field links, direct
+primary-projection links, adversarial/shared-limit tests, required source coverage
+and final guide/gates as separate validated slices. Links retain only `(BlockId,
+slot)` identities; owning effects keep stage flags and source reports keep candidate
+or unknown state. No value, lifetime, call-return or proof inference is added.
+
+The reverse index validates result visits, owners, layouts and exact endpoints,
+preserving roots and unknown layouts without copying candidates. Four focused
+groups pass (`/tmp/meowy-result-consumer-index.log`), including corruption and exact
+combined map/work bounds. Source probes confirm direct unary/binary block primary
+projections; typed scalar inline record constructors retain their existing E207
+boundary. Extraction links will therefore use actual Operation/Projection ports,
+with unary/binary primary steps distinct and coercions left outside this slice.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link

@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 
 mod blocks;
 mod calls;
+mod consumers;
 mod effects;
 mod entries;
 mod results;
