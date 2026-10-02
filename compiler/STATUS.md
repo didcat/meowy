@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. List-construction observations and compiler validation are complete.
+Updated: 2026-10-02. Dispatch observations and compiler validation are complete.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -903,63 +903,74 @@ incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Bounded dispatch observations
 
-In progress from `bf9a160`: the producer audit confirms that ordinary and composed
-dispatch share `dispatch_operation`, while their caller-specific checks remain
-separate. The body retains the synthetic receiver Bind and leading None slot.
-First retain receiver/body completion from checked HIR, then validate and report
-initialization/results. Both completion flags are captured without changing edges or
-caller behavior. All nine focused dispatch groups, including ordinary/composed
-completion and replay checks, pass (`/tmp/meowy-dispatch-completion.log`). Formatting
-passes; capture is committed as `833ab1a`. Validation now checks the receiver Bind,
-body/local registrations, statement sites, leading None slot and exact dispatch/body
-endpoint edges after HIR transfer. All three focused groups pass, including 78
-malformed cases (`/tmp/meowy-dispatch-validation.log`); formatting passes.
-Validation is committed as `68334bb`. Aggregation now retains independent
-initialization/result visits and fixed-size input/local/body/completion/control
-metadata. Duplicate visits merge flags; stopped receivers yield no dispatch effect.
-All 238 effect groups pass, including ordinary/composed/empty dispatch, independent
-visits, nested owners/control, conditional calls and stopped receivers/bodies
-(`/tmp/meowy-dispatch-effects.log`). Formatting passes. Next cover opaque successor
-barriers, foreign receiver bindings, exact budgets and atomic merge failures.
-Aggregation is committed as `73511c7`. All nine dispatch-report groups pass, including
-an opaque-successor walk, ten additional identity faults and preserved source errors
-(`/tmp/meowy-dispatch-boundaries.log`); formatting passes. Boundaries are committed
-as `7768051`. All 12 dispatch-report groups pass, including exact work/map limits,
-seven atomic merge conflicts and equal report costs for 1/65,536-byte receivers
-(`/tmp/meowy-dispatch-limits.log`); formatting passes. Limits are committed as
-`a6fae62`. Four required source cases now cover receiver/body order, nested `$`,
-empty/composed dispatch, forward declarations, scoped leave and both panic stops.
-All four pass exact stdout/P006 expectations in debug/release
-(`/tmp/meowy-dispatch-source-runs.log`). Catalog/coverage checks pass for 232 cases
-(`/tmp/meowy-dispatch-catalog.log`); execution cases are committed as `9f5dcc5`.
-Four required diagnostic cases now pin receiver escape, borrowed-owner writes,
-composed receiver assignment and missing outer fields. All four pass in debug/release
-(`/tmp/meowy-dispatch-source-errors.log`); catalog/coverage validation passes for 236
-cases (`/tmp/meowy-dispatch-catalog-final.log`). Full compiler/strict gates are next.
-Unrelated `docs/programs/hey/` is preserved.
+Dispatch reports retain exact receiver input/local/body identities, checked body
+completion and control, with independent initialization/result visits. Receiver
+completion is captured separately before HIR transfer. Stopped receivers produce no
+observation; stopped bodies retain only initialization. Conditional calls keep their
+return edges, and nested/ordinary/composed dispatch preserve their existing checking.
+Body effects remain independent; reports copy neither receiver values nor statements.
 
-Report dispatch receiver initialization and results. The producer in
-`dependencies/dispatch.rs` already retains exact receiver/local/body identities and
-entry/initialization/body-result edges for ordinary and composed dispatch, but the
-initialization still falls through to Unknown. Checked receiver/body completion is
-not retained independently of those edges.
+Validation checks complete points, owners, parents/blocks, the synthetic receiver
+Bind and its storage/source/link identity, receiver/dispatch registration, the leading
+None slot, immediate/final statement sites and exact dispatch/body endpoint edges.
+An opaque successor does not connect initialization to a later statement. Metadata
+has fixed size and shares work/map limits; duplicate visits merge flags. Conflicts
+and exhausted budgets publish no partial collection. These observations infer no
+reachability, values, pointee storage, ownership/borrow authority or proof answers.
+`queries::finish` remains B001-gated.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Separate checked receiver/body completion | `833ab1a` |
+| Receiver binding and stage validation | `68334bb` |
+| Independent initialization/result reports | `73511c7` |
+| Opaque successors, receiver identities and source boundaries | `7768051` |
+| Shared work/map limits and atomic conflicts | `a6fae62` |
+| Receiver order, composition and stopped-stage execution | `9f5dcc5` |
+| Lifetimes, loans and composed-result diagnostics | `6d1ddbc` |
+
+All ten compiler checks pass (`/tmp/meowy-dispatch-reports-gate.log`): 2245 library,
+914 native and 32 tooling/30 harness tests, formatting, all-target Clippy, schemas,
+links, coverage and source execution. Fourteen new internal groups cover 88 malformed
+identity cases, seven merge conflicts, an opaque-successor walk, independent visits,
+exact shared limits and fixed report costs for 1/65,536-byte receiver values. Eight
+new required source cases pin nested/empty/composed order, forward declarations,
+scoped leave, stopped receivers/bodies/P006 and E303/E302/E305/E204 in debug/release.
+The catalog has 236 cases: 217 required passes, 19 unchanged pinned gaps, zero failures.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-dispatch-reports-strict.log`).
+All four final documentation checks pass (`/tmp/meowy-dispatch-reports-docs.log`).
+No outstanding test failures remain.
+
+Preservation against `bf9a160` passes for all 228 prior cases, 260 source assets,
+37 reference files/hashes, capability pins and 33 proof obligations
+(`/tmp/meowy-dispatch-preservation.log`). The coverage map and foundation guide
+separate structural evidence from source behavior. Full language/release qualification
+remains incomplete. Unrelated `docs/programs/hey/` is preserved.
+
+Next, report emission target initialization and statement completion from
+`dependencies/emissions.rs`. Its ordered `Port::Emission` stages and reverse
+`emission_sources` registry retain direct/composed target identities, projections,
+fields and aliases, but are not yet collected as typed effects. Composition's
+staging local and checked field bounds are not retained after type context is lost.
 
 Dependency-ordered next commit plan:
 
-1. Retain checked receiver and body completion in `dependencies/dispatch.rs` before
-   their HIR types disappear. Audit `expressions.rs::DispatchBlock` and the composed
-   branch in `blocks.rs`; preserve partial records, receiver gates and caller errors.
-   Add focused producer tests for stopped receivers/bodies and empty dispatch.
-2. Validate root/input/body/local identities, owner/parent/block relationships,
-   receiver registration, the synthetic leading None slot, immediate successor and
-   exact edges under `edges/forward/effects/`. Preserve opaque successor barriers;
-   never skip to a later statement or infer completion from a missing producer.
-3. Aggregate independent initialization/result visits with shared work/effect limits.
-   Test partial observations, duplicates, conflicts, owner/control separation and
-   conditional calls. Keep body effects and callee summaries separate.
-4. Add required source receiver/body order, composed/empty/stopped cases and relevant
-   diagnostics. Update classified coverage and the foundation guide, preserve prior
-   cases/pins, then run compiler and strict gates and update both handoffs.
+1. Retain the bounded composition local and concrete field bounds in
+   `dependencies/emissions.rs` and `emissions/projections.rs` before HIR/local types
+   disappear. Audit `statements.rs::emit` and preserve Value/Primary/Field decisions,
+   source order, direct aliases and the existing Never-input bypass. Add focused
+   producer regressions without changing emission or required-evaluation semantics.
+2. Validate statement/input/target owner identities, exact EmitIds and source slots,
+   composition projections, alias/storage registration and original emission edges
+   under `edges/forward/effects/`. Do not treat slot initialization as scope exit or
+   infer a result from a missing producer. Test malformed metadata and outer targets.
+3. Aggregate independent per-target and statement-result visits under bounded target
+   and field-name copies and shared work/effect/payload limits. Preserve partial
+   observations, duplicate visits, source order, conflicts and stopped inputs without
+   granting new ownership authority or inferring emitted values.
+4. Add required named/primary/composed emission order, alias/outer-target, stopped
+   input and relevant diagnostic cases. Update classified coverage and the guide,
+   preserve prior cases/pins, run compiler/strict gates and update both handoffs.
 
 ## Documentation conventions and layout
 
@@ -3087,9 +3098,11 @@ subtraction retains its documented limits. No outstanding failures remain.
    source cases (`39423eb`, `c6ae594`) and the compiler gate pass. List producer
    identity (`3450dfd`), validation (`7344c0f`), reports (`6ff637d`), boundaries/limits
    (`520b8d2`, `e90b966`) and required source cases (`9b32d9f`, `13f8aaa`) now pass
-   the compiler gate. Next retain checked dispatch completion in
-   `dependencies/dispatch.rs`, then validate/report receiver initialization and
-   results using the dependency-ordered plan above.
+   the compiler gate. Dispatch completion (`833ab1a`), validation (`68334bb`),
+   reports (`73511c7`), boundaries/limits (`7768051`, `a6fae62`) and source cases
+   (`9f5dcc5`, `6d1ddbc`) now pass the compiler gate. Next retain bounded composition
+   locals/field bounds in `dependencies/emissions.rs`, then validate/report emission
+   target initialization and statement completion using the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

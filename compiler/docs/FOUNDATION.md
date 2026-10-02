@@ -822,6 +822,24 @@ elsewhere. Composed dispatch retains its separate partial-record checking path
 and now captures receiver/local/body identities for the same bounded prefix stages.
 Partial mode, expected slots and caller-specific error order remain unchanged;
 the ordinary caller's early exclusive-receiver gate is not imposed here.
+
+Dispatch reports now retain independent receiver-initialization and result visits,
+with the exact input point, receiver local, body, checked body completion and control.
+Receiver completion is captured separately before HIR transfer. Stopped receivers
+produce no dispatch observation; stopped bodies can retain initialization alone.
+The body keeps its own effects, and conditional receiver calls keep their return edges.
+An observation does not prove reachability or copy/move authority.
+
+Validation checks complete points, owners, parent/block relationships, the body's
+synthetic receiver Bind, local/dispatch registration and the leading None slot.
+Immediate and final statement sites must match their checked identities. Exact
+dispatch and body endpoint edges preserve empty bodies and opaque successors;
+initialization never skips an unknown entry to reach a later statement.
+Each record has fixed-size metadata and shares work/map limits with other effects.
+Receiver values and body statements are not copied. Duplicate visits merge flags;
+conflicts or exhaustion publish no partial collection. Ordinary/composed checking,
+receiver immutability, loans, lifetimes and proof-outcome gates remain unchanged.
+
 Record-context equality retains both exact composed operand roots for ordered
 sequencing, including scalar-primary comparisons. Existing hinting, contextual
 widths, projections and once-only effects are preserved.

@@ -7,29 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-List-construction reports retain explicit producer identities, checked capacity/count,
-ordered input roots and final contextual conversion plans. Projection, conversion,
-construction and result visits remain independent; stopped inputs keep only earlier
-stages. Fifteen new internal groups and seven source cases cover identities, deferred
-order, empty/nested lists, contextual conversions, stops, errors and shared budgets.
-The [compiler handoff](compiler/STATUS.md#bounded-list-construction-observations)
-lists the validated commits and the next ordered plan.
+Dispatch reports retain exact receiver/local/body identities and separate checked
+completion facts. Initialization and result visits remain independent; stopped
+receivers produce no report and stopped bodies retain only initialization. Fourteen
+new internal groups and eight source cases cover order, nested/empty/composed bodies,
+opaque successors, source errors, identities, conflicts and shared budgets.
+The [compiler handoff](compiler/STATUS.md#bounded-dispatch-observations) records the
+validated commits and the next ordered plan.
 
-All ten compiler checks pass: 2231 library/914 native and 62 Python test groups;
-`/tmp/meowy-list-construction-gate.log`. The catalog has 228 cases: 209 required
+All ten compiler checks pass: 2245 library/914 native and 62 Python test groups;
+`/tmp/meowy-dispatch-reports-gate.log`. The catalog has 236 cases: 217 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-list-construction-strict.log`). All four final documentation checks pass
-(`/tmp/meowy-list-construction-docs.log`).
+(`/tmp/meowy-dispatch-reports-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-dispatch-reports-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, retain checked dispatch receiver/body completion and report initialization
-and results from `compiler/src/check/dependencies/dispatch.rs`. Preserve immediate
-successors, opaque barriers, composed partial records and existing source errors.
-Stage observations grant no new borrow authority or proof outcome. Unrelated
-`docs/programs/hey/` work is preserved.
+Next, retain composition locals and field bounds in
+`compiler/src/check/dependencies/emissions.rs`, then report emission target
+initialization and statement completion. Preserve direct/composed order, aliases,
+outer targets and stopped inputs. Stage observations grant no new borrow authority
+or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1151,11 +1151,11 @@ execution was not part of this documentation edit.
    and terminal metadata; focused/source coverage and the compiler gate pass.
    Local-read effects now retain canonical storage, normal/control flags and validated
    context after HIR transfer; focused/source coverage and the compiler gate pass.
-   Subsequent read/scalar/conversion/borrow and list-construction reports now pass
-   their focused/source coverage and compiler gates; the detailed compiler handoff
-   records those series. Next retain checked receiver/body completion in
-   `compiler/src/check/dependencies/dispatch.rs`, then validate and report dispatch
-   initialization/results with focused/source coverage and compiler/strict gates.
+   Subsequent read/scalar/conversion/borrow, list-construction and dispatch reports
+   now pass focused/source coverage and compiler gates; the compiler handoff records
+   those series. Next retain bounded composition locals and field counts in
+   `compiler/src/check/dependencies/emissions.rs`, then validate/report emission
+   targets and statement completion with focused/source and compiler/strict gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
