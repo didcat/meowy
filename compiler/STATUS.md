@@ -1021,6 +1021,10 @@ Report integration is committed as `2261568`. Composition-slot corruption, lexic
 target ancestry/cycles, canonical alias storage and ordinary errors pass all ten
 emission groups (`/tmp/meowy-emission-boundaries.log`), including 72 composition
 faults and five invalid target paths. Formatting passes; exact shared limits follow.
+Boundary coverage is committed as `7c7e172`. Exact shared work/map/payload limits,
+15 merge conflicts, field-name byte bounds and descriptor caps pass all 13 emission
+groups (`/tmp/meowy-emission-limits.log`); formatting passes. Required source order,
+composition, alias, stopped-input and diagnostic cases are next.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse
