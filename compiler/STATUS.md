@@ -1038,6 +1038,10 @@ All 260 effect groups pass (`/tmp/meowy-equality-effects.log`), including three 
 stage/stop/eligibility groups; formatting passes. Exclusive-reference comparisons
 retain their B001 ownership-pass gate and Unknown report boundary. Next add corrupt
 category/flag, owner/control, exact-budget and ordinary-shape compatibility coverage.
+Integration is committed as `308fcbc`. Category/flag corruption, composed call order,
+owner/control separation and full-type compatibility regressions pass all 27 focused
+equality groups (`/tmp/meowy-equality-boundaries.log`), including 32 corrupt-signature
+cases. Formatting passes. Exact shared limits and source conformance follow separately.
 
 Cover the existing aggregate/reference/union equality operations that still
 fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these
