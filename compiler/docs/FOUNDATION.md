@@ -310,6 +310,15 @@ remain local reads. Required evaluation and hints gain no runtime handle stages.
 The operation represents availability of the static handle, not resource allocation.
 Nominal-type validation and shared-budget failures publish no partial operation;
 existing borrow lifetimes, conflicts and unsupported member/equality rules remain.
+
+Emission composition now retains the exact staging local and its checked field
+count before local types are transferred, without another type copy. The field count
+leaves room for the primary within the existing target limit. Per-target
+Value/Primary/Field decisions still come from checked HIR. Direct emissions retain
+no composition local; named aliases keep their canonical slot storage, and Never
+inputs create no emission record. This is a capture prerequisite: typed emission
+target and statement-result observations remain pending.
+
 An internal bounded inventory now enumerates stored edges from all 31 families.
 It preserves duplicates, exact ports, conditional routes and explicit backedges;
 it neither fills gaps nor treats inventory order as execution order. Actual family

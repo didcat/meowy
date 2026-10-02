@@ -15,21 +15,24 @@ opaque successors, source errors, identities, conflicts and shared budgets.
 The [compiler handoff](compiler/STATUS.md#bounded-dispatch-observations) records the
 validated commits and the next ordered plan.
 
-All ten compiler checks pass: 2245 library/914 native and 62 Python test groups;
-`/tmp/meowy-dispatch-reports-gate.log`. The catalog has 236 cases: 217 required
+Emission composition capture now also retains the checked staging local and field
+count (`b54c7d6`), with four new structural groups. Typed emission reports are next.
+
+All ten compiler checks pass: 2249 library/914 native and 62 Python test groups;
+`/tmp/meowy-emission-composition-gate.log`. The catalog has 236 cases: 217 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
 source assets, reference contracts and capability exceptions are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-dispatch-reports-strict.log`). All four final documentation checks pass
-(`/tmp/meowy-dispatch-reports-docs.log`).
+(`/tmp/meowy-emission-composition-strict.log`). All four final documentation checks
+pass (`/tmp/meowy-emission-composition-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, retain composition locals and field bounds in
-`compiler/src/check/dependencies/emissions.rs`, then report emission target
-initialization and statement completion. Preserve direct/composed order, aliases,
-outer targets and stopped inputs. Stage observations grant no new borrow authority
-or proof outcome. Unrelated `docs/programs/hey/` work is preserved.
+Next, validate exact emission identities, composition bounds, aliases and edges
+from `compiler/src/check/dependencies/emissions.rs`, then collect target and
+statement-result observations. Preserve direct/composed order, outer targets and
+stopped inputs. Stage observations grant no new borrow authority or proof outcome.
+Unrelated `docs/programs/hey/` work is preserved.
 
 ## Documentation conventions
 
@@ -1153,9 +1156,10 @@ execution was not part of this documentation edit.
    context after HIR transfer; focused/source coverage and the compiler gate pass.
    Subsequent read/scalar/conversion/borrow, list-construction and dispatch reports
    now pass focused/source coverage and compiler gates; the compiler handoff records
-   those series. Next retain bounded composition locals and field counts in
-   `compiler/src/check/dependencies/emissions.rs`, then validate/report emission
-   targets and statement completion with focused/source and compiler/strict gates.
+   those series. Emission composition locals and field counts are now retained.
+   Next validate identities/projections/aliases in
+   `compiler/src/check/dependencies/emissions.rs`, then report targets and statement
+   completion with focused/source and compiler/strict gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

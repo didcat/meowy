@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Dispatch observations and compiler validation are complete.
+Updated: 2026-10-02. Dispatch reports and emission composition capture are validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -949,37 +949,48 @@ remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Bounded emission observations
 
-In progress from `9eecae2`: capture composition's staging local and concrete field
-count before local types are transferred. Existing projection validation already
-checks every Primary/Field access against that local. Direct emissions, aliases,
-the Never-input bypass and all source checks stay separate. The first planned slice
-below now captures an optional composition local/count without copying its type.
-All 12 emission groups pass, including four new capture/boundary/replay groups
-(`/tmp/meowy-emission-composition.log`); formatting passes. Next validate exact
-target identities, projections, aliases and original edges before collecting reports.
+The composition-capture prerequisite is complete (`b54c7d6`). `Emission.composed`
+retains the exact staging local and concrete field count before local types are
+transferred. Direct emissions retain None. Existing projection checking still
+validates Value/Primary/Field against the checked HIR; the count leaves room for the
+primary within `MAX_TARGETS`. No type is copied. Source order, canonical direct
+aliases, outer targets and the Never-input bypass remain intact. Replays compare
+composition identity before publication; malformed context or exhausted capture
+budgets leave the original records and reverse registry unchanged.
 
-Report emission target initialization and statement completion from
-`dependencies/emissions.rs`. Its ordered `Port::Emission` stages and reverse
-`emission_sources` registry retain direct/composed target identities, projections,
-fields and aliases, but are not yet collected as typed effects. Composition's
-staging local and checked field bounds are not retained after type context is lost.
+All 12 focused emission groups pass, including four new capture, alias/stop,
+count-boundary and replay groups (`/tmp/meowy-emission-composition.log`). All ten
+compiler checks pass: 2249 library/914 native and 32 tooling/30 harness tests,
+formatting, all-target Clippy, schemas, links, coverage and source execution
+(`/tmp/meowy-emission-composition-gate.log`). Conformance retains 217 required passes,
+19 pinned gaps and zero failures in debug/release. Strict mode exits 1 only for the
+same gaps (`/tmp/meowy-emission-composition-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-emission-composition-docs.log`). No test failures remain.
+
+The audit against `9eecae2` preserves all 236 cases, 268 source assets, 37 reference
+files/hashes, capability pins and 33 proof obligations
+(`/tmp/meowy-emission-composition-preservation.log`). Coverage classifies the new
+capture tests as structural evidence. Typed emission observations and proof
+outcomes remain unimplemented; no language/release qualification is claimed.
+Unrelated `docs/programs/hey/` is preserved.
+
+Next, validate and report emission target initialization and statement completion
+from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse
+`emission_sources` registry retain target identities, projections, fields and aliases;
+composition local/count is now available after HIR transfer.
 
 Dependency-ordered next commit plan:
 
-1. Retain the bounded composition local and concrete field bounds in
-   `dependencies/emissions.rs` and `emissions/projections.rs` before HIR/local types
-   disappear. Audit `statements.rs::emit` and preserve Value/Primary/Field decisions,
-   source order, direct aliases and the existing Never-input bypass. Add focused
-   producer regressions without changing emission or required-evaluation semantics.
-2. Validate statement/input/target owner identities, exact EmitIds and source slots,
-   composition projections, alias/storage registration and original emission edges
-   under `edges/forward/effects/`. Do not treat slot initialization as scope exit or
-   infer a result from a missing producer. Test malformed metadata and outer targets.
-3. Aggregate independent per-target and statement-result visits under bounded target
+1. Validate statement/input/target owner identities, exact EmitIds and source slots,
+   retained composition bounds, alias/storage registration and original emission
+   edges under `edges/forward/effects/`. Do not treat slot initialization as scope
+   exit or infer a result from a missing producer. Add focused malformed metadata,
+   direct/composed, alias and outer-target regressions before committing validation.
+2. Aggregate independent per-target and statement-result visits under bounded target
    and field-name copies and shared work/effect/payload limits. Preserve partial
    observations, duplicate visits, source order, conflicts and stopped inputs without
    granting new ownership authority or inferring emitted values.
-4. Add required named/primary/composed emission order, alias/outer-target, stopped
+3. Add required named/primary/composed emission order, alias/outer-target, stopped
    input and relevant diagnostic cases. Update classified coverage and the guide,
    preserve prior cases/pins, run compiler/strict gates and update both handoffs.
 
@@ -3111,9 +3122,10 @@ subtraction retains its documented limits. No outstanding failures remain.
    (`520b8d2`, `e90b966`) and required source cases (`9b32d9f`, `13f8aaa`) now pass
    the compiler gate. Dispatch completion (`833ab1a`), validation (`68334bb`),
    reports (`73511c7`), boundaries/limits (`7768051`, `a6fae62`) and source cases
-   (`9f5dcc5`, `6d1ddbc`) now pass the compiler gate. Next retain bounded composition
-   locals/field bounds in `dependencies/emissions.rs`, then validate/report emission
-   target initialization and statement completion using the ordered plan above.
+   (`9f5dcc5`, `6d1ddbc`) now pass the compiler gate. Emission composition locals
+   and field counts (`b54c7d6`) now pass focused and compiler gates. Next validate
+   exact emission identities/projections/aliases and report target initialization
+   and statement completion using the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
