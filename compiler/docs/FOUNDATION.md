@@ -349,6 +349,33 @@ merge flags, while conflicting identities or exhausted budgets return no partial
 collection. These reports do not identify slot values, join contributing emissions,
 prove execution, extend borrow authority or evaluate proof outcomes.
 
+Checked result layouts retain an explicit primary and ordered field slots, with
+exact names, mutability and shallow shapes. Stopped and unknown layouts are distinct.
+Capture bounds each layout to 65,536 slots including its primary and 65,536 name
+bytes, with total caps of 262,144 slots and 262,144 name bytes. Checks precede copying;
+duplicate capture does not charge those persistent totals again.
+
+Result-source reports attach observed initialization candidates to immutable scalar
+slots after a BlockResult visit. Each candidate retains the exact EmitId, emission
+statement and target index, preserving primary/field composition projections.
+Joins use checked block and field identities, including named outer targets;
+program/function roots gain no caller link. Ordinary consumers retain their
+validated block-expression endpoint.
+
+Target-initialization flags are independent of emission-statement completion.
+Candidates can include discarded paths whose value shape differs from the completed
+slot. Valid targets absent from the checked layout create no slot. Mutable slots,
+mutable-alias histories, aggregates and unions remain unknown. Empty candidate sets
+do not establish implicit null, initialization completeness or a selected value.
+These are structural links, with no value-domain, ownership or proof inference.
+
+Operation, block and result records share the map limit. Temporary source-index
+rows/candidates, result-slot entries and copied candidates consume the remaining
+operation-report payload budget; index names are borrowed from validated reports.
+Shared work accounts for validation, lookup and copying. Duplicate observations
+retain one source descriptor; any late failure preserves existing reports and
+publishes no partial source map or remaining-budget update.
+
 An internal bounded inventory now enumerates stored edges from all 31 families.
 It preserves duplicates, exact ports, conditional routes and explicit backedges;
 it neither fills gaps nor treats inventory order as execution order. Actual family

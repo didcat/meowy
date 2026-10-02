@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Ordinary block reports pass the full compiler and documentation gates.
+Updated: 2026-10-02. Result-slot source links pass the full compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1160,74 +1160,90 @@ capability pins and 33 proof obligations are unchanged
 reports from observable source behavior. The catalog has 262 cases: 243 required
 and the same 19 pinned gaps. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: bounded block result-slot source links
+## Bounded block result-slot source links
 
-Resumed from `0f96936`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. Implement separate checked layout capture, report-payload budget
-plumbing, conservative source-link validation/integration, boundary tests, required
-source coverage and final guide/gates. Start immutable scalar slots; mutable,
-aggregate/union or unsupported slots remain explicit unknowns. Candidate emissions
-do not identify a runtime contributor, and an empty set does not prove a null value.
+Checked layouts now retain an explicit primary plus ordered field names, mutability
+and shallow shapes before HIR transfer. Each layout has caps of 65,536 slots and
+65,536 name bytes; persistent totals cap slots and name bytes at 262,144 each.
+Preflight bounds precede copies, successful replay charges no new persistent payload,
+and failed capture publishes no metadata/counters. Stopped/unknown layouts remain
+distinct. Endpoint validation checks exact names/order/mutability/shape agreement.
 
-Checked layouts retain an explicit primary plus exact ordered field names,
-mutability and shallow shapes; stopped and unknown roots remain distinct. Slot/name
-copies are capped before allocation, and replay or failure does not alter counters.
-All four layout groups, 45 body groups and seven endpoint groups pass
-(`/tmp/meowy-result-layout-capture.log`, `/tmp/meowy-result-layout-bodies.log`,
-`/tmp/meowy-result-layout-endpoints.log`). Endpoint replay compares complete layout
-identity. Capture is committed as `0592307`. Operation-effect collection now
-returns its remaining payload budget without changing the existing test helpers
-or charging repeated observations twice. The focused remainder/limit group passes
-(`/tmp/meowy-slot-payload.log`), committed as `3395b59`. Result-layout validation now
-rejects inconsistent completion categories, missing/duplicate fields, invalid
-primary markers and malformed shallow shapes before reports use slot positions.
-Two focused groups pass (`/tmp/meowy-result-layout-validation.log`), committed as
-`716f535`. Result-source reports now join observed BlockResult slots to exact
-initialized emission statement/target identities, preserving composition selectors
-and validated consumer endpoints. Mutable/aggregate slots and mutable-alias histories
-remain unknown; absent candidates do not imply null. Operation, block and result
-maps share their limit, while scratch index rows/candidates and result copies use
-the remaining payload budget. Two integration groups pass
-(`/tmp/meowy-result-sources.log`), committed as `16cdf31`. All nine result-source
-groups pass (`/tmp/meowy-result-source-boundaries.log`), including independent
-target/result visits, exact composition indexes, discarded fields/primaries,
-mutable discarded aliases and late corrupted metadata. Required fixtures also pass
-both profiles (`/tmp/meowy-result-slot-source-fixtures.log`); test/catalog slices
-and the final coverage/compiler gates remain to be committed. Index boundaries
-are committed as `3a30543`. Three additional limit groups pin the combined
-operation/block/result map cap, exact scratch/output payload, exact shared work,
-duplicate observations and atomic failure without changing prior maps or capture
-counters. Unknown layouts need no slot payload. Limits are committed as `cda38c4`.
-Four required run cases now pin omitted nullable fields, branch choices, mutable
-alias replacement, composition/outer-target order and P006 after initialization.
-All pass exact output in both profiles; classified coverage distinguishes those
-runtime cases from conservative source metadata, committed as `cb60d46`. Required
-E205/E206 fixtures preserve duplicate-slot and mixed-mutability errors. All six
-new cases pass both profiles; catalog/coverage checks pass for 268 cases. The full
-compiler/strict gates and final handoffs remain.
+`Reports.results` associates observed BlockResult slots with exact initialized
+emission target identities: EmitId, statement PointId and target index. Composition
+projections remain recoverable. Joins use owner, BlockId and exact optional field
+name; ordinary consumers use validated block-expression endpoints. Program/function
+roots acquire no caller link. Target visits stay independent of statement completion.
 
-Completion reports do not yet associate a result slot with its contributing
-emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
-and canonical storage; `emission_sources` resolves each ID to its exact checked
-source. Capture the missing result-slot identities before HIR transfer, then join
-only those existing identities without choosing a runtime contributor.
+These candidates record observed initialization history. Discarded paths may supply
+candidates with a value shape unlike the final scalar slot; valid targets absent
+from the checked layout create no slot. Mutable slots or mutable-alias histories,
+aggregate/union slots and unsupported layouts remain unknown. An empty candidate
+set does not establish null, completeness, a compatible value domain or a selected
+runtime contributor. Ownership and proof-outcome gates are unchanged.
+
+Operation, block and result maps share the existing map cap. Scratch source-index
+rows/candidates, result-slot entries and copied candidates use the remaining
+operation payload budget. Index names are borrowed; shared work charges validation,
+lookups and copies. Duplicates retain one descriptor. Late failure leaves previous
+maps, capture counters and remaining payload unchanged.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture bounded checked layouts and persistent copy totals | `0592307` |
+| Preserve remaining operation payload budget | `3395b59` |
+| Validate result-slot identities before reporting | `716f535` |
+| Join conservative emission candidates and consumers | `16cdf31` |
+| Cover independent visits, composition and discarded paths | `3a30543` |
+| Bound combined maps/payload/work and atomic publication | `cda38c4` |
+| Pin defaults, branches, composition and stopping order | `cb60d46` |
+| Pin duplicate-slot and mixed-mutability errors | `c41d71c` |
+
+Sixteen new internal groups cover capture, shallow validation, budget carry-over,
+source identity, independent visits, mutable discarded aliases, exact limits and
+atomic failures. All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2313
+library/915 native tests, 32 tooling/30 compiler-harness groups, formatting, Clippy,
+build and conformance (`/tmp/meowy-result-slot-gate.log`). Six new required fixtures
+pass both profiles (`/tmp/meowy-result-slot-source-fixtures.log`), covering nullable
+defaults, branch choices, aliases, composition/outer-target order, stopping after
+initialization, duplicate slots (E205) and mixed mutability (E206).
+Conformance has 268 cases: 249 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-result-slot-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-result-slot-docs.log`).
+
+All 262 prior case records, 294 source assets, 37 reference contracts/hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-result-slot-preservation.log`). Coverage and the guide distinguish
+structural source history from observable source behavior. Unrelated
+`docs/programs/hey/` is preserved.
+
+### Next: direct result-slot consumers
+
+Result reports retain a validated consumer PointId but do not yet connect its
+field/primary reads to a specific result slot. Advance that bounded identity link
+before broader storage joins, function returns or restart propagation.
 
 Dependency-ordered next commit plan:
 
-1. Retain a bounded checked result-slot layout in `dependencies/bodies.rs` and the
-   owning block completion code while the HIR type is available. Start with immutable
-   primaries/simple fields, cap slot/name copies, and keep partial/union/unsupported
-   layouts explicit. Test root/nested identities, missing/null slots and atomic limits.
-2. Link supported result slots conservatively to existing emission candidates by
-   exact target/field/EmitId identity. Preserve multiple branch candidates and unknown
-   mutable/alias-overwrite cases. Connect ordinary BlockResult consumers only through
-   existing endpoints; never infer a link from traversal order or matching counts.
-3. Add source order/result/error coverage, update classified evidence and run the
+1. Build a bounded reverse index from validated result consumers to exact BlockIds,
+   preserving owners and exact endpoints. Root/function bodies without consumers
+   remain separate. Reject duplicate/conflicting identities atomically and test
+   map/work limits, unknown layouts and independently owned roots.
+2. Link direct owned field observations (`Effect::Field`, load=false) to the checked
+   block slot at field index+1, preserving the HIR field order and stage flags.
+   Retain slot references without copying or resolving candidate values. Keep
+   mutable/unsupported candidate state explicit; test differing emission/field order,
+   nested same-name fields, stopped results and corrupt indices/owners.
+3. Link observed direct primary projection to slot0 in a separate slice. Preserve
+   conversion/projection order and partial visits. Local reads, reference loads,
+   calls, unions and grouping without an exact transparent source link stay unknown.
+4. Add required source order/error fixtures, update classified evidence and run the
    compiler/strict gates. Preserve prior cases, capability pins and both handoffs.
 
-An observed emission or BlockResult visit does not establish which value supplied
-a slot. Precise branch/overwrite joins, function-return provenance, restart backedges,
-E225 enforcement and proof evaluation remain later dependency-ordered work.
+No candidate or consumer link establishes a runtime value. Precise branch/overwrite
+joins, implicit-null selection, storage provenance, function-return transfers,
+restart backedges, E225 and proof evaluation remain later work.
 
 ## Documentation conventions and layout
 
@@ -2807,8 +2823,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
-above. Ordinary block completion/result reports are implemented; bounded result-slot
-source links are the immediate next task.
+above. Bounded result-slot source links are implemented; direct field/primary
+consumer links are the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3370,8 +3386,11 @@ source links are the immediate next task.
    repaired. Checked block completion (`1816109`), validation (`0d5b5de`), reports
    (`e5191fc`), boundaries/limits (`84e8d09`, `16a4e99`), source cases (`fb8b386`,
    `b8b80a0`) and identity/span repairs (`e00f349`, `8d53ba2`) are implemented.
-   Next retain bounded block result-slot identities and conservative emission-source
-   links, following the ordered plan above.
+   Result-slot layouts (`0592307`), budget plumbing (`3395b59`), validation (`716f535`),
+   candidate links (`16cdf31`), boundaries/limits (`3a30543`, `cda38c4`) and source
+   cases (`cb60d46`, `c41d71c`) now pass the compiler gate. Next connect direct owned
+   field and primary-projection consumers to exact result slots, following the
+   ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
