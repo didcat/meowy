@@ -1129,8 +1129,10 @@ as `0d5b5de`. `Reports.blocks` now collects independent normal/result visits by
 BlockId, retaining owner, parent, span and checked completion. Operation effects
 reserve their share of the same map limit; work uses the existing shared Flow.
 Three collection groups pass (`/tmp/meowy-block-reports.log`), covering partial
-shapes, independent roots, duplicate/stage visits and stopped results. Adversarial
-validation, exact-limit coverage and source qualification remain.
+shapes, independent roots, duplicate/stage visits and stopped results. Collection
+is committed as `e5191fc`. All eight validation groups pass, including four new
+corruption/barrier groups (`/tmp/meowy-block-validation-bounds.log`). Exact shared
+limits, source qualification and the final compiler gate remain.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
