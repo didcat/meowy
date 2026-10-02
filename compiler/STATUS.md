@@ -910,7 +910,11 @@ First retain receiver/body completion from checked HIR, then validate and report
 initialization/results. Both completion flags are captured without changing edges or
 caller behavior. All nine focused dispatch groups, including ordinary/composed
 completion and replay checks, pass (`/tmp/meowy-dispatch-completion.log`). Formatting
-passes. Next validate the receiver binding, body sequence and exact stage edges.
+passes; capture is committed as `833ab1a`. Validation now checks the receiver Bind,
+body/local registrations, statement sites, leading None slot and exact dispatch/body
+endpoint edges after HIR transfer. All three focused groups pass, including 78
+malformed cases (`/tmp/meowy-dispatch-validation.log`); formatting passes.
+Next aggregate independent initialization/result visits with fixed-size payloads.
 Unrelated `docs/programs/hey/` is preserved.
 
 Report dispatch receiver initialization and results. The producer in
