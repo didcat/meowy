@@ -1,0 +1,6 @@
+'out {
+    value : ({ 'out.leave() }) == {
+        n <uint8> : 256
+        -> [1]
+    }
+}

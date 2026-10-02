@@ -1,0 +1,5 @@
+'out {
+    value : ({ 'out.leave() }) == {
+        -> missing
+    }
+}

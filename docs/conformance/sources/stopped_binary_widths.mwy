@@ -1,0 +1,17 @@
+d : @"debug"
+'left {
+    value <uint64> : ({ d.print("wide left stop"); 'left.leave() }) + {
+        d.print("late wide right")
+        -> 4294967296
+    }
+}
+'right {
+    value <uint64> : ({ d.print("wide left value"); -> 4294967296 }) + {
+        d.print("wide right stop")
+        'right.leave()
+    }
+}
+n <uint64> : 1
+stop <never> : () { d.print("nested stop"); d.panic("halt") }
+value : (stop() + 4294967296) + n
+d.print("later")

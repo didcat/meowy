@@ -1,0 +1,35 @@
+d : @"debug"
+'list {
+    value : ({ d.print("list stop"); 'list.leave() }) == {
+        d.print("late list")
+        -> [1]
+    }
+}
+d.print("after list")
+'record {
+    value : ({ d.print("record stop"); 'record.leave() }) != {
+        d.print("late record")
+        -> n : 1
+    }
+}
+d.print("after record")
+'right {
+    value : ({ d.print("list left"); -> [1] }) == {
+        d.print("right stop")
+        'right.leave()
+    }
+}
+d.print("after right")
+'and {
+    value : ({ d.print("and stop"); 'and.leave() }) && {
+        d.print("late and")
+        -> true
+    }
+}
+'or {
+    value : ({ d.print("or stop"); 'or.leave() }) || {
+        d.print("late or")
+        -> false
+    }
+}
+d.print("done")

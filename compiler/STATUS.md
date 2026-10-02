@@ -1079,8 +1079,11 @@ Four focused checker groups and one native group pass, including both-profile
 operand order, nested uint64 inference, explicit width errors, unreachable-body
 diagnostics, required evaluation and preserved stop edges
 (`/tmp/meowy-stopped-context-focused.log`). Formatting passes. Independent read-only
-review found no blocker. Required source cases and the final gates remain; root
-owns STATUS and a separate agent owns the new source fixtures/catalog additions.
+review found no blocker. The repair is committed as `418e681`. Four required source
+cases now pass independently in debug/release, covering constructor/stop order,
+boolean operands, nested widths, missing names and explicit overflow
+(`/tmp/meowy-stopped-binary-conformance.log`). Catalog/coverage checks pass for 256
+cases. Classified evidence is updated; full compiler/strict gates and final handoffs remain.
 
 A separate existing checker gap was exposed while authoring the stopping fixture:
 
@@ -1098,8 +1101,8 @@ Previously the Never left operand became the RHS block's expected type, so its l
 emission reported E207 (`expected Never, found List`). The original source and diagnostic are
 `/tmp/meowy-equality-stopped-context.mwy` and `.log`. The committed stopping fixture
 uses a declared-result RHS helper to test evaluation order; it does not qualify
-contextual RHS construction. The focused tests now pass; catalog qualification is
-pending, separate from the 19 pinned B001 cases. No existing reference expectation changed.
+contextual RHS construction. The new required cases qualify that boundary, separately
+from the 19 pinned B001 cases. No existing reference expectation changed.
 
 Dependency-ordered next commit plan:
 

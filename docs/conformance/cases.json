@@ -2686,6 +2686,48 @@
         "code": "E222"
       },
       "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "stopped_binary_order",
+      "phase": "run",
+      "source": "sources/stopped_binary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "list stop\nafter list\nrecord stop\nafter record\nlist left\nright stop\nafter right\nand stop\nor stop\ndone\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "stopped_binary_widths",
+      "phase": "run",
+      "source": "sources/stopped_binary_widths.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "wide left stop\nwide left value\nwide right stop\nnested stop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "stopped_binary_missing",
+      "phase": "check",
+      "source": "sources/stopped_binary_missing.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "stopped_binary_overflow",
+      "phase": "check",
+      "source": "sources/stopped_binary_overflow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E216"
+      },
+      "reference": "../reference/syntax.md#literals-values-and-comments"
     }
   ]
 }
