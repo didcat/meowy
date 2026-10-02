@@ -75,7 +75,8 @@ pub(crate) fn forward_group_sequences_keep_nested_function_owners_and_unknown_pr
             .is_empty()
     );
     let block = checker.functions[0].as_ref().unwrap().body.clone();
-    checker.block_endpoints(&block, Span::default()).unwrap();
+    let span = checker.bodies[&body].span;
+    checker.block_endpoints(&block, span).unwrap();
     let graph = checker.forward_index(Span::default()).unwrap();
     let walk = graph
         .walk(Port::BlockEntry(body), &mut checker.flow, Span::default())

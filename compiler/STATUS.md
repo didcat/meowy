@@ -1147,7 +1147,15 @@ in the new test helper; its visibility is corrected. Review also identified a
 seeded identity gap for missing/foreign enclosing bodies; nested parent validation
 now requires a registered same-owner container, with three added corrupt cases.
 All 14 block validation/report groups pass after the repair
-(`/tmp/meowy-block-parent-check.log`). The full gate is being rerun.
+(`/tmp/meowy-block-parent-check.log`). The full gate then found nine module cases
+whose synthetic root statements lie outside the entry-file span, plus one legacy
+endpoint replay still passing a default span. Only the owner-0 program root is exempt
+from statement-span containment; exact point/site/block/owner/span identities remain
+checked, and function/nested-body containment is preserved.
+The replay uses its original captured span. All 33 module groups and the endpoint
+replay pass (`/tmp/meowy-block-modules.log`, `/tmp/meowy-block-replay.log`); the
+module regression also pins exact wrapper/module spans and result reports. The
+complete compiler gate is being rerun.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently

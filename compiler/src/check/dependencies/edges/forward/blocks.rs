@@ -98,8 +98,8 @@ impl Checker {
                 || point.block != Some(id)
                 || point.parent != body.parent
                 || point.span.start > point.span.end
-                || point.span.start < body.span.start
-                || point.span.end > body.span.end
+                || ((owner != 0 || body.parent.is_some())
+                    && (point.span.start < body.span.start || point.span.end > body.span.end))
                 || site >= self.statements
                 || !seen.insert(item)
                 || !self.sites.get(&site).is_some_and(|site| {

@@ -45,12 +45,20 @@ pub(crate) fn module_initializers_link_exact_roots_and_order_storage_after_bodie
         locals: checker.locals.clone(),
     };
     let reports = checker.entry_reports(&program, Span::default()).unwrap();
+    assert_eq!(reports.blocks[&body.id].1.span, Span::default());
+    assert!(reports.blocks[&body.id].1.normal && reports.blocks[&body.id].1.result);
     let walk = &reports.entries[&0].1;
     let mut prior = 0;
     for id in items.into_iter().flatten() {
         let op = &checker.operations[&id];
         let input = op.input.unwrap();
         let module = &checker.exports[&op.local];
+        let (owner, observed) = reports.blocks[&module.block];
+        assert_eq!(owner, op.owner);
+        assert_eq!(observed.parent, Some(input));
+        assert_eq!(observed.span, checker.bodies[&module.block].span);
+        assert!(observed.span.end > reports.blocks[&body.id].1.span.end);
+        assert!(observed.normal && observed.result);
         assert_eq!(checker.points[input].parent, Some(id));
         assert_eq!(checker.points[input].block, checker.points[id].block);
         assert_eq!(checker.points[input].owner, op.owner);
