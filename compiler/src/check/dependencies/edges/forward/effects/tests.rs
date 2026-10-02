@@ -1,5 +1,29 @@
 use super::*;
 
+#[test]
+pub(crate) fn operation_payload_remainder_preserves_shared_costs_and_duplicate_visits() {
+    let (mut checker, mut reports) = checked("row:{->x:1;->y:2};xs:[row.x]", false);
+    assert_eq!(reports.parts, MAX_EDGES - 9);
+    let expected = reports.effects.clone();
+    for (_, walk) in reports.entries.values_mut() {
+        walk.ports.extend(walk.ports.clone());
+    }
+    for (parts, room) in [(9, 0), (12, 3)] {
+        let (effects, remaining) = checker
+            .operation_effects_with_room(&reports, Span::default(), expected.len(), parts, 0)
+            .unwrap();
+        assert_eq!(effects, expected);
+        assert_eq!(remaining, room);
+    }
+    assert!(
+        checker
+            .operation_effects_with_room(&reports, Span::default(), expected.len(), 8, 0)
+            .is_err()
+    );
+    assert_eq!(reports.effects, expected);
+    assert_eq!(reports.parts, MAX_EDGES - 9);
+}
+
 pub(super) fn checked(source: &str, marked: bool) -> (Checker, Reports) {
     let ast = crate::parser::parse(source).unwrap();
     let mut checker = Checker::new();

@@ -1175,7 +1175,10 @@ copies are capped before allocation, and replay or failure does not alter counte
 All four layout groups, 45 body groups and seven endpoint groups pass
 (`/tmp/meowy-result-layout-capture.log`, `/tmp/meowy-result-layout-bodies.log`,
 `/tmp/meowy-result-layout-endpoints.log`). Endpoint replay compares complete layout
-identity. Report source links and final gates remain.
+identity. Capture is committed as `0592307`. Operation-effect collection now
+returns its remaining payload budget without changing the existing test helpers
+or charging repeated observations twice. The focused remainder/limit group passes
+(`/tmp/meowy-slot-payload.log`). Source-link validation/integration and final gates remain.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection

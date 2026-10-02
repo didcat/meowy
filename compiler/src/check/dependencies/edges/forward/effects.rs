@@ -98,18 +98,41 @@ pub(crate) enum Effect {
 pub(crate) type Effects = BTreeMap<PointId, (usize, Effect)>;
 
 impl Checker {
+    #[cfg(test)]
     pub(super) fn operation_effects(&mut self, reports: &Reports, span: Span) -> Result<Effects> {
-        self.operation_effects_limited(reports, span, MAX_EDGES, MAX_EDGES, MAX_EDGES)
+        self.operation_effects_budgeted(reports, span)
+            .map(|(effects, _)| effects)
     }
 
+    pub(super) fn operation_effects_budgeted(
+        &mut self,
+        reports: &Reports,
+        span: Span,
+    ) -> Result<(Effects, usize)> {
+        self.operation_effects_with_room(reports, span, MAX_EDGES, MAX_EDGES, MAX_EDGES)
+    }
+
+    #[cfg(test)]
     pub(self) fn operation_effects_limited(
+        &mut self,
+        reports: &Reports,
+        span: Span,
+        limit: usize,
+        parts: usize,
+        roots: usize,
+    ) -> Result<Effects> {
+        self.operation_effects_with_room(reports, span, limit, parts, roots)
+            .map(|(effects, _)| effects)
+    }
+
+    pub(self) fn operation_effects_with_room(
         &mut self,
         reports: &Reports,
         span: Span,
         limit: usize,
         mut parts: usize,
         mut roots: usize,
-    ) -> Result<Effects> {
+    ) -> Result<(Effects, usize)> {
         let budget = || Diagnostic::unsupported("proof operation-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof operation-effect owner mismatch", span);
         if !self.flow.spend(reports.entries.len() + 1) {
@@ -333,7 +356,7 @@ impl Checker {
                 effects.insert(id, (owner, effect));
             }
         }
-        Ok(effects)
+        Ok((effects, parts))
     }
 }
 
