@@ -2,7 +2,7 @@ use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-pub(crate) const VERSION: &str = "22.1.8";
+pub(crate) const VERSION: &str = "23.1.1";
 pub(crate) const CLANG: &str = "/usr/bin/clang";
 pub(crate) const CXX: &str = "/usr/bin/clang++";
 pub(crate) const LLD: &str = "/usr/bin/ld.lld";

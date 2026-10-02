@@ -238,7 +238,7 @@ pub(crate) fn publish(output: &Path, entry: &Path, page: &str) -> Result<()> {
             if item.file_name() != "index.html" {
                 return Err(fail("documentation output contains unrelated files".into()));
             }
-            driver::protect(&item.path(), entry).map_err(&fail)?;
+            driver::protect(&item.path(), entry).map_err(fail)?;
             let meta = item.metadata().map_err(|error| fail(error.to_string()))?;
             if meta.len() > 16 * 1024 * 1024 {
                 return Err(fail(
@@ -252,7 +252,7 @@ pub(crate) fn publish(output: &Path, entry: &Path, page: &str) -> Result<()> {
         }
     }
     let index = output.join("index.html");
-    driver::protect(&index, entry).map_err(&fail)?;
+    driver::protect(&index, entry).map_err(fail)?;
     let scratch = Scratch::new(output.parent().unwrap_or(Path::new(".")))
         .map_err(|error| fail(error.to_string()))?;
     let staged = scratch.path.join("index.html");

@@ -5,6 +5,25 @@ Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
+## LLVM 23 and Rust 1.99 host qualification
+
+The bootstrap now pins LLVM/Clang/LLD/ar 23.1.1 and Rust 1.99.0. Target lookup passes
+Triple directly for LLVM 23; two redundant closure borrows satisfy Rust 1.99 Clippy.
+The runtime runner requires matching Clang and rejects the former version before
+building. Cargo's Rust compatibility floor remains 1.98.1.
+
+The isolated `16c06d9` baseline at `/tmp/meowy-llvm23-check` passes all ten compiler
+checks: 2249 library/914 native tests, 217 required conformance passes, 19 unchanged
+gaps and no failures (`/tmp/meowy-llvm23-compiler.log`). All 15 runtime harness groups
+pass; native debug/release and ASan/UBSan/LSan, including the expired-fiber-local
+probe, pass (`/tmp/meowy-llvm23-runtime.log`). LeakSanitizer required execution
+outside ptrace; no sanitizer was disabled. Owning diagnostic sizes remain identical.
+
+This qualifies the host bootstrap, not a bundled distribution or minimum OS/libc.
+Reverting the toolchain pins and API adaptation restores the previous selection;
+no host packages changed. Active toolchain documentation is the next slice. The
+in-progress emission validator was excluded from this baseline qualification.
+
 ## Documentation coverage and conformance audit
 
 The initial coverage strengthening series is complete. Compiler implementation,

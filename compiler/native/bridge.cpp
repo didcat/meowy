@@ -54,7 +54,7 @@ extern "C" int meowy_emit_object_v1(const char *ir, std::size_t size, const char
         return fail("LLVM verification: " + message, error, capacity);
     }
     const llvm::Triple triple("x86_64-unknown-linux-gnu");
-    const llvm::Target *target = llvm::TargetRegistry::lookupTarget(triple.str(), message);
+    const llvm::Target *target = llvm::TargetRegistry::lookupTarget(triple, message);
     if (target == nullptr) {
         return fail("LLVM target: " + message, error, capacity);
     }
