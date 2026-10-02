@@ -1135,8 +1135,11 @@ corruption/barrier groups (`/tmp/meowy-block-validation-bounds.log`), committed 
 `84e8d09`. All six report groups pass, including exact combined map/work limits,
 duplicate stage visits, six merge conflicts and late-failure atomicity
 (`/tmp/meowy-block-limits.log`). Six new required source cases also pass both
-profiles (`/tmp/meowy-block-source-fixtures.log`); their run/rejection catalog slices
-and final coverage/compiler gates remain to be committed.
+profiles (`/tmp/meowy-block-source-fixtures.log`). Limits are committed as `16a4e99`.
+The first four required run cases and classified coverage now pin nested partial
+composition, tail order, named leaves, unused Never definitions and tail panic.
+The two required rejections follow separately; prior catalog records/expectations
+are unchanged. The complete compiler gate and final handoff remain.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently

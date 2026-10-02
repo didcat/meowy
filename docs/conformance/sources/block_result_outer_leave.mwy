@@ -1,0 +1,16 @@
+d : @"debug"
+row <{ -> <int32>; n <int32> }> : 'out {
+    d.print("outer")
+    -> 9
+    unused : {
+        d.print("inner")
+        'out -> n : 2
+        d.print("leave")
+        'out.leave()
+        d.print("late inner")
+    }
+    d.print("late outer")
+}
+d.print(row)
+d.print(row.n)
+d.print("after")

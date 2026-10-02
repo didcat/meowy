@@ -2728,6 +2728,48 @@
         "code": "E216"
       },
       "reference": "../reference/syntax.md#literals-values-and-comments"
+    },
+    {
+      "id": "block_result_nested",
+      "phase": "run",
+      "source": "sources/block_result_nested.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "scalar\nscalar tail\nfield\ninner tail\nouter tail\n7\n1\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "block_result_outer_leave",
+      "phase": "run",
+      "source": "sources/block_result_outer_leave.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "outer\ninner\nleave\n9\n2\nafter\n"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "block_result_unused_never",
+      "phase": "run",
+      "source": "sources/block_result_unused_never.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry\nvalue tail\nfunction tail\n42\nnull\ndone\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "block_result_tail_panic",
+      "phase": "run",
+      "source": "sources/block_result_tail_panic.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "caller\ncallee\nchild tail\nemitted\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

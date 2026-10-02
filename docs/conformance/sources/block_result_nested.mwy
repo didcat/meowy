@@ -1,0 +1,17 @@
+d : @"debug"
+row <{ -> <int32>; a <int32>; b <int32> }> : {
+    -> {
+        -> {
+            d.print("scalar")
+            -> 7
+            d.print("scalar tail")
+        }
+        -> a : { d.print("field"); -> 1 }
+        d.print("inner tail")
+    }
+    -> b : 2
+    d.print("outer tail")
+}
+d.print(row)
+d.print(row.a)
+d.print(row.b)

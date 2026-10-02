@@ -1,0 +1,14 @@
+d : @"debug"
+outer <int32> : () {
+    stop <never> : () {
+        d.print("unused")
+        d.panic("unused")
+    }
+    value : { -> 42; d.print("value tail") }
+    d.print("function tail")
+    -> value
+}
+d.print("entry")
+d.print(outer())
+d.print({})
+d.print("done")
