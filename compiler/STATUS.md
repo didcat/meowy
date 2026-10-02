@@ -878,7 +878,11 @@ effect groups now pass (`/tmp/meowy-list-effects.log`); formatting passes. Aggre
 is committed as `6ff637d`. All nine list-report groups now pass, including 72
 contextual corruptions, independent owners/control, conditional calls, deferred
 slots and unchanged source errors (`/tmp/meowy-list-boundaries.log`). Formatting
-passes. Exact shared limits and merge-conflict coverage are the next slice.
+passes; boundary coverage is committed as `520b8d2`. Exact shared work/effect/payload
+limits, ten atomic conflicts, the 65,536-input boundary and unused-capacity costs
+pass all three limit groups (`/tmp/meowy-list-limits-final.log`); all 12 list-report
+groups passed before the final owner-name cleanup (`/tmp/meowy-list-limits.log`).
+Formatting passes. Required source coverage and the full gate follow.
 
 Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
