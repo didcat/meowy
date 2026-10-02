@@ -1017,6 +1017,10 @@ either side alone breaks the existing whole-program budget boundaries. The resul
 stays separate. All 251 effect groups pass (`/tmp/meowy-emission-effects.log`),
 including the four new observation groups; formatting passes. Next add composition,
 ancestry, alias and shared-budget boundary coverage before source conformance.
+Report integration is committed as `2261568`. Composition-slot corruption, lexical
+target ancestry/cycles, canonical alias storage and ordinary errors pass all ten
+emission groups (`/tmp/meowy-emission-boundaries.log`), including 72 composition
+faults and five invalid target paths. Formatting passes; exact shared limits follow.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse
