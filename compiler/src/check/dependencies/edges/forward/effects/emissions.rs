@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 mod report;
 pub(crate) use report::Observed;
 
-pub(super) type Stage = (PointId, Option<usize>);
+pub(in super::super) type Stage = (PointId, Option<usize>);
 
 pub(super) fn name_bytes(
     targets: &[Target],
@@ -28,7 +28,7 @@ pub(super) fn name_bytes(
 }
 
 impl Checker {
-    pub(super) fn emission_effect_stage(
+    pub(in super::super) fn emission_effect_stage(
         &mut self,
         reports: &Reports,
         owner: usize,

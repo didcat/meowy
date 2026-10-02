@@ -3,7 +3,11 @@ use super::*;
 #[test]
 pub(crate) fn operation_payload_remainder_preserves_shared_costs_and_duplicate_visits() {
     let (mut checker, mut reports) = checked("row:{->x:1;->y:2};xs:[row.x]", false);
-    assert_eq!(reports.parts, MAX_EDGES - 9);
+    let (_, parts) = checker
+        .operation_effects_budgeted(&reports, Span::default())
+        .unwrap();
+    assert_eq!(parts, MAX_EDGES - 9);
+    let final_parts = reports.parts;
     let expected = reports.effects.clone();
     for (_, walk) in reports.entries.values_mut() {
         walk.ports.extend(walk.ports.clone());
@@ -21,7 +25,7 @@ pub(crate) fn operation_payload_remainder_preserves_shared_costs_and_duplicate_v
             .is_err()
     );
     assert_eq!(reports.effects, expected);
-    assert_eq!(reports.parts, MAX_EDGES - 9);
+    assert_eq!(reports.parts, final_parts);
 }
 
 pub(super) fn checked(source: &str, marked: bool) -> (Checker, Reports) {

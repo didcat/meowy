@@ -1181,8 +1181,14 @@ or charging repeated observations twice. The focused remainder/limit group passe
 (`/tmp/meowy-slot-payload.log`), committed as `3395b59`. Result-layout validation now
 rejects inconsistent completion categories, missing/duplicate fields, invalid
 primary markers and malformed shallow shapes before reports use slot positions.
-Two focused groups pass (`/tmp/meowy-result-layout-validation.log`). Source-index
-validation/integration and final gates remain.
+Two focused groups pass (`/tmp/meowy-result-layout-validation.log`), committed as
+`716f535`. Result-source reports now join observed BlockResult slots to exact
+initialized emission statement/target identities, preserving composition selectors
+and validated consumer endpoints. Mutable/aggregate slots and mutable-alias histories
+remain unknown; absent candidates do not imply null. Operation, block and result
+maps share their limit, while scratch index rows/candidates and result copies use
+the remaining payload budget. Two integration groups pass
+(`/tmp/meowy-result-sources.log`). Adversarial cases, source fixtures and final gates remain.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
