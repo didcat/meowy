@@ -2482,6 +2482,46 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "dispatch_receiver_escape",
+      "phase": "check",
+      "source": "sources/dispatch_receiver_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "dispatch_receiver_owner_write",
+      "phase": "check",
+      "source": "sources/dispatch_receiver_owner_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "dispatch_composed_assignment",
+      "phase": "check",
+      "source": "sources/dispatch_composed_assignment.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_composed_missing_field",
+      "phase": "check",
+      "source": "sources/dispatch_composed_missing_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E204"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

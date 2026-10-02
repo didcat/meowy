@@ -931,7 +931,11 @@ seven atomic merge conflicts and equal report costs for 1/65,536-byte receivers
 empty/composed dispatch, forward declarations, scoped leave and both panic stops.
 All four pass exact stdout/P006 expectations in debug/release
 (`/tmp/meowy-dispatch-source-runs.log`). Catalog/coverage checks pass for 232 cases
-(`/tmp/meowy-dispatch-catalog.log`). Required diagnostic cases and the full gate follow.
+(`/tmp/meowy-dispatch-catalog.log`); execution cases are committed as `9f5dcc5`.
+Four required diagnostic cases now pin receiver escape, borrowed-owner writes,
+composed receiver assignment and missing outer fields. All four pass in debug/release
+(`/tmp/meowy-dispatch-source-errors.log`); catalog/coverage validation passes for 236
+cases (`/tmp/meowy-dispatch-catalog-final.log`). Full compiler/strict gates are next.
 Unrelated `docs/programs/hey/` is preserved.
 
 Report dispatch receiver initialization and results. The producer in
