@@ -8,6 +8,7 @@ mod exclusives;
 mod fields;
 mod heaps;
 mod indices;
+mod lists;
 mod methods;
 mod narrowing;
 mod outputs;
@@ -116,6 +117,7 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
+                self.validate_list_construction(reports, owner, port, span)?;
                 if self.validate_borrow_projection(reports, owner, port, span)? {
                     self.record_projection_effect(
                         owner,

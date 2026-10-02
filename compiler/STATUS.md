@@ -861,7 +861,11 @@ The first slice captures capacity, source count, owner/control/span, contextual
 identity and checked completion at both construction entry points. All 20 focused
 list groups pass, including three new producer groups; formatting passes
 (`/tmp/meowy-list-producers.log`). Graph edges and language checking are unchanged.
-Next validate exact roots, source slots, stages and edges before collecting reports.
+Producer capture is committed as `3450dfd`. Exact root/owner/parent/block, source-slot,
+selector, operation-registry and stored-edge validation passes three focused groups,
+including 27 malformed-metadata cases (`/tmp/meowy-list-validation.log`). Formatting
+passes. Ordinary per-input coercions remain separate from final contextual stages.
+Next aggregate independent stages with shared input-copy and work limits.
 
 Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
