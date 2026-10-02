@@ -70,7 +70,7 @@ pub(crate) fn emission_effects_reject_sibling_foreign_and_cyclic_target_scopes()
     for fault in 0..5 {
         let (mut checker, reports) =
             checked("row:'out{{'out->1}};sibling:{->2};f<int32>:(){->3}", false);
-        let (&id, op) = checker.emissions.first_key_value().unwrap();
+        let (&id, _) = checker.emissions.first_key_value().unwrap();
         let block = checker.points[id].block.unwrap();
         let parent = checker.bodies[&block].parent.unwrap();
         let sibling = checker.emissions.values().nth(1).unwrap().targets[0].block;

@@ -1034,7 +1034,12 @@ Runtime cases are committed as `acb7fe0`. Four required rejection cases now cove
 composed duplicate fields, annotated slot mismatch, foreign-function targets and
 reference escape. All four pass in debug/release (`/tmp/meowy-emission-source-errors.log`);
 catalog/coverage checks pass for 244 cases (`/tmp/meowy-emission-catalog-final.log`).
-Full compiler and strict gates are next.
+Rejections are committed as `36cead6`. The full gate found one unused test binding;
+it is removed; all ten compiler checks pass, including Clippy, 2262 library/914
+native tests and 225 required conformance passes with 19 unchanged gaps and zero
+failures (`/tmp/meowy-emission-reports-gate.log`). The preservation audit
+passes for all 236 prior cases, 268 assets, 37 reference hashes, capability pins and
+proof obligations (`/tmp/meowy-emission-preservation.log`). Strict checks follow.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse
