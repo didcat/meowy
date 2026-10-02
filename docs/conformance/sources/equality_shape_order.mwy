@@ -1,0 +1,12 @@
+d : @"debug"
+make <{ -> <int32>; n <int32> }> : (v <int32>) {
+    d.print(v)
+    -> 7
+    -> n : v
+}
+d.print(make(1) == make(2))
+a : make(3)
+b : { -> 7; -> n : 3 }
+d.print(a == b)
+d.print(a != b)
+d.print(a == 7)

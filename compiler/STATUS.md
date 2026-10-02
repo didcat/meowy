@@ -1046,6 +1046,15 @@ Boundary coverage is committed as `240cec7`. Exact shared work/map limits, fixed
 report costs across list capacities and eight atomic merge conflicts pass all 30
 focused equality groups (`/tmp/meowy-equality-limits.log`); formatting passes.
 Required source result/order and rejection cases are next.
+Budget coverage is committed as `c685bf3`. Four required execution cases now cover
+record field/primary behavior and call order, list lengths/union alternatives,
+reference-cell addresses and stopped operands. All four pass exact output/P006 in
+debug/release (`/tmp/meowy-equality-source-runs.log`); catalog/coverage validation
+passes for 248 cases (`/tmp/meowy-equality-catalog.log`). The draft with a
+Never left operand and contextual RHS block emitted E207 (`expected Never, found
+List`); its source/diagnostic are `/tmp/meowy-equality-stopped-context.mwy` and `.log`.
+Declared-result helpers isolate stopped evaluation order. That contextual typing
+case remains a separate coverage gap; no reference fixture or diagnostic was changed.
 
 Cover the existing aggregate/reference/union equality operations that still
 fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these

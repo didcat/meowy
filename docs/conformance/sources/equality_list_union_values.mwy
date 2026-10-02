@@ -1,0 +1,18 @@
+d : @"debug"
+a <int32[3]> : [1, 2]
+b <int32[3]> : [1, 2]
+short <int32[3]> : [1]
+different <int32[3]> : [1, 3]
+d.print(a == b)
+d.print(a == short)
+d.print(a != different)
+empty_a <int32[0]> : []
+empty_b <int32[0]> : []
+d.print(empty_a == empty_b)
+<T> : <int32[3]><null>
+first <T> : a
+second <T> : b
+absent <T> : null
+d.print(first == second)
+d.print(first == absent)
+d.print(absent != first)

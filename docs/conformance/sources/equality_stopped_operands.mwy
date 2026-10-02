@@ -1,0 +1,10 @@
+d : @"debug"
+right <int32[1]> : () { d.print("late right"); -> [1] }
+'out {
+    value : ({ d.print("leave"); 'out.leave() }) == right()
+}
+d.print("after leave")
+left <int32[1]> : () { d.print("left"); -> [1] }
+stop <never> : () { d.print("stop"); d.panic("halt") }
+d.print(left() == stop())
+d.print("later")

@@ -1,0 +1,14 @@
+d : @"debug"
+n := 5
+m := 5
+p : &n
+q : p
+other : &m
+d.print(p == q)
+d.print(p == other)
+d.print(p != other)
+memory : @"memory"
+a : memory.heap
+b : memory.heap
+d.print((&a) == (&a))
+d.print((&a) == (&b))
