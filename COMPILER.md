@@ -88,12 +88,12 @@ Adopt more elaborate incremental machinery when measurements justify it.
 
 ## Pin a toolchain, not somebody's workstation
 
-Use **LLVM 22.1.8** as the initial backend candidate, with Clang, LLD, compiler-rt,
-and libunwind from the same `llvmorg-22.1.8` source release. This is a proposed
+Use **LLVM 23.1.1** as the backend candidate, with Clang, LLD, compiler-rt,
+and libunwind from the same `llvmorg-23.1.1` source release. This is a proposed
 baseline to qualify, not a claim that a complete meowy distribution has passed
 qualification. Record the resolved revision, archive checksums, build options,
 patches, and resulting payload digests. The upstream
-[release](https://github.com/llvm/llvm-project/releases/tag/llvmorg-22.1.8)
+[release](https://github.com/llvm/llvm-project/releases/tag/llvmorg-23.1.1)
 provides source archives and verification material.
 
 Choose an exact stable Rust release when establishing the bootstrap, test that
@@ -112,8 +112,8 @@ source does not gain access to meowy application build hooks.
 The LLVM developer preset should select `clang;lld`, the `X86` target, a release
 build with LLVM assertions, and bounded compile/link parallelism. Build the
 required compiler-rt and unwind libraries for the target sysroot in a separate
-runtime preset. CMake 3.20 is the LLVM 22 documented minimum; select and pin a
-tested version. The [LLVM CMake guide](https://releases.llvm.org/22.1.0/docs/CMake.html)
+runtime preset. Select and pin a tested CMake version compatible with the chosen
+LLVM release. The [LLVM CMake guide](https://llvm.org/docs/CMake.html)
 documents these project, target, assertion, and parallelism options.
 
 The initial [target profile](docs/reference/target-profile.md) is already precise:

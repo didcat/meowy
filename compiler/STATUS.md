@@ -21,8 +21,11 @@ outside ptrace; no sanitizer was disabled. Owning diagnostic sizes remain identi
 
 This qualifies the host bootstrap, not a bundled distribution or minimum OS/libc.
 Reverting the toolchain pins and API adaptation restores the previous selection;
-no host packages changed. Active toolchain documentation is the next slice. The
-in-progress emission validator was excluded from this baseline qualification.
+no host packages changed. Toolchain code is committed as `712afe6`; active compiler,
+runtime and implementation-plan documentation now uses the same pins. Historical
+Clang 22 size measurements remain labeled; Clang 23 reproduces their current column.
+The in-progress emission validator was excluded from baseline qualification.
+All four final documentation checks pass (`/tmp/meowy-llvm23-docs.log`).
 
 ## Documentation coverage and conformance audit
 

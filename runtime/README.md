@@ -2,7 +2,7 @@
 
 This directory exercises explicit cleanup, owned payloads, guarded stack allocation
 and pinned context switching with bounded scheduling independently of the compiler. It uses C++20 and
-Clang 22.1.8 with exceptions and RTTI disabled. The
+Clang 23.1.1 with exceptions and RTTI disabled. The
 compiler still emits its existing scalar runtime calls. Its archive now also includes
 an explicitly tested [private cleanup bridge](GENERATED_CLEANUP.md); normal meowy
 code generation does not yet emit those calls or support owning resource/task syntax.
@@ -39,7 +39,7 @@ directly. Context tests separately exercise the fiber hooks with instrumented
 callback bodies, live cross-switch stack borrows and the expired-local probe.
 
 Use `--build-dir runtime/build` to retain executables. `--clang PATH` selects a
-compiler executable but still requires version 22.1.8. `--no-sanitizers` explicitly
+compiler executable but still requires version 23.1.1. `--no-sanitizers` explicitly
 omits sanitizer checks. Missing tools, sanitizer failures and unsupported execution
 environments fail the selected checks. LeakSanitizer requires an environment
 without ptrace-based sandbox supervision; run the normal command with the required
@@ -343,7 +343,7 @@ Caller-saved registers retain ordinary call semantics. Tests check all six integ
 callee-saved registers, FP rounding state, nested locals through 64 yields, host
 alternation and execution within the guarded mapping.
 
-ASan's [fiber interface](https://github.com/llvm/llvm-project/blob/llvmorg-22.1.8/compiler-rt/include/sanitizer/common_interface_defs.h)
+ASan's [fiber interface](https://github.com/llvm/llvm-project/blob/llvmorg-23.1.1/compiler-rt/include/sanitizer/common_interface_defs.h)
 is called immediately around each switch. The wrapper preserves each fake-stack
 handle, discovers the host bounds on initial entry and destroys the fiber's fake
 stack on terminal departure. Only the three transition shims exclude address
@@ -541,7 +541,9 @@ Measured sizes on this Linux x86-64 host with Clang 22.1.8:
 | `ChildFailure` | 80 | 336 |
 | `ScopeClose` | 208 | 720 |
 
-These are private layout measurements, not portable ABI guarantees. A task slot
+Clang 23.1.1 qualification reproduces the owning-snapshot column in debug, release
+and sanitizer runs. These are private layout measurements, not portable ABI
+guarantees. A task slot
 contains its outcome plus 16 first-failure scope snapshots, adding 4,352 bytes to
 its caller-provided metadata. Report buffers likewise account for their full
 inline snapshots. Source spans, related diagnostic attachments, serialization and

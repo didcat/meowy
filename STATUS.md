@@ -34,6 +34,17 @@ statement-result observations. Preserve direct/composed order, outer targets and
 stopped inputs. Stage observations grant no new borrow authority or proof outcome.
 Unrelated `docs/programs/hey/` work is preserved.
 
+## Host toolchain
+
+The bootstrap now pins LLVM/Clang/LLD/ar 23.1.1 and Rust 1.99.0 (`712afe6`). The
+isolated compiler baseline passes all ten checks, including 2249 library/914 native
+tests and 217 required conformance cases (`/tmp/meowy-llvm23-compiler.log`). All 15
+runtime harness groups and native debug/release/ASan/UBSan/LSan checks pass; the
+sanitizer run required execution outside ptrace (`/tmp/meowy-llvm23-runtime.log`).
+Owning diagnostic sizes are unchanged. This is host qualification, not full release
+or minimum-OS qualification. Emission validation continues separately on these tools.
+All four final documentation checks pass (`/tmp/meowy-llvm23-docs.log`).
+
 ## Documentation conventions
 
 Agent responses default to English unless the user requests another language,
