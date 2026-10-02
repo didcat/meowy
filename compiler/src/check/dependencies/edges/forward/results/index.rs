@@ -8,6 +8,9 @@ pub(super) struct Candidates {
     pub(super) values: Vec<Candidate>,
 }
 
+#[cfg(test)]
+mod tests;
+
 pub(super) type Index<'a> = BTreeMap<(hir::BlockId, Option<&'a str>), Candidates>;
 
 impl Checker {

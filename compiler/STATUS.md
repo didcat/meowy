@@ -1188,7 +1188,12 @@ and validated consumer endpoints. Mutable/aggregate slots and mutable-alias hist
 remain unknown; absent candidates do not imply null. Operation, block and result
 maps share their limit, while scratch index rows/candidates and result copies use
 the remaining payload budget. Two integration groups pass
-(`/tmp/meowy-result-sources.log`). Adversarial cases, source fixtures and final gates remain.
+(`/tmp/meowy-result-sources.log`), committed as `16cdf31`. All nine result-source
+groups pass (`/tmp/meowy-result-source-boundaries.log`), including independent
+target/result visits, exact composition indexes, discarded fields/primaries,
+mutable discarded aliases and late corrupted metadata. Required fixtures also pass
+both profiles (`/tmp/meowy-result-slot-source-fixtures.log`); test/catalog slices
+and the final coverage/compiler gates remain to be committed.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
