@@ -21,6 +21,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof block-effect identity mismatch", span);
         let work = [
             self.bodies.len(),
+            self.bodies.len(),
             self.sequences.len(),
             self.endpoints.len(),
             self.endpoints.len(),
@@ -58,7 +59,11 @@ impl Checker {
             if !point.complete
                 || point.kind != PointKind::Expr
                 || point.owner != owner
-                || point.block == Some(id)
+                || !point
+                    .block
+                    .filter(|block| *block != id)
+                    .and_then(|block| self.bodies.get(&block))
+                    .is_some_and(|container| container.owner == owner)
                 || point.span.start > body.span.start
                 || point.span.end < body.span.end
                 || self

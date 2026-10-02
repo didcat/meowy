@@ -4,7 +4,7 @@ use crate::check::dependencies::{
     bodies::{MAX_BODY_RESULTS, completion::Shape},
 };
 
-pub(self) fn rejected(checker: &mut Checker, reports: &Reports, id: crate::hir::BlockId) {
+pub(super) fn rejected(checker: &mut Checker, reports: &Reports, id: crate::hir::BlockId) {
     let effects = reports.effects.clone();
     let counts = checker.edge_counts();
     for port in [Port::BlockNormal(id), Port::BlockResult(id)] {
@@ -22,7 +22,7 @@ pub(self) fn rejected(checker: &mut Checker, reports: &Reports, id: crate::hir::
 
 #[test]
 pub(crate) fn block_validation_rejects_wrong_parents_roots_and_completion_shapes() {
-    for fault in 0..13 {
+    for fault in 0..16 {
         let (mut checker, reports) = checked("v:{a:1;b:2;->3};f<int32>:(){->4}");
         let (&id, body) = checker
             .bodies
@@ -45,6 +45,18 @@ pub(crate) fn block_validation_rejects_wrong_parents_roots_and_completion_shapes
             10 => checker.bodies.get_mut(&id).unwrap().span.start = span.end + 1,
             11 => checker.bodies.get_mut(&id).unwrap().completion.normal = false,
             12 => checker.bodies.get_mut(&id).unwrap().completion.result = Shape::Never,
+            13 => checker.points[parent].block = None,
+            14 => checker.points[parent].block = Some(usize::MAX),
+            15 => {
+                let foreign = checker
+                    .bodies
+                    .iter()
+                    .find_map(|(&id, body)| {
+                        (body.owner == 1 && body.parent.is_none()).then_some(id)
+                    })
+                    .unwrap();
+                checker.points[parent].block = Some(foreign);
+            }
             _ => unreachable!(),
         }
         rejected(&mut checker, &reports, id);

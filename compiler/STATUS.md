@@ -1142,7 +1142,12 @@ The execution cases are committed as `fb8b386`. Two required rejection cases ret
 E204 for a missing outer field and E205 for a nested duplicate emission. All six
 source cases pass both profiles; catalog/coverage checks pass for 262 cases. Prior
 catalog records/expectations are unchanged. The complete compiler gate and final
-handoff remain.
+handoff remain. The first full gate stopped at Clippy's needless-pub-self warning
+in the new test helper; its visibility is corrected. Review also identified a
+seeded identity gap for missing/foreign enclosing bodies; nested parent validation
+now requires a registered same-owner container, with three added corrupt cases.
+All 14 block validation/report groups pass after the repair
+(`/tmp/meowy-block-parent-check.log`). The full gate is being rerun.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
