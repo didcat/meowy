@@ -1193,7 +1193,11 @@ groups pass (`/tmp/meowy-result-source-boundaries.log`), including independent
 target/result visits, exact composition indexes, discarded fields/primaries,
 mutable discarded aliases and late corrupted metadata. Required fixtures also pass
 both profiles (`/tmp/meowy-result-slot-source-fixtures.log`); test/catalog slices
-and the final coverage/compiler gates remain to be committed.
+and the final coverage/compiler gates remain to be committed. Index boundaries
+are committed as `3a30543`. Three additional limit groups pin the combined
+operation/block/result map cap, exact scratch/output payload, exact shared work,
+duplicate observations and atomic failure without changing prior maps or capture
+counters. Unknown layouts need no slot payload.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
