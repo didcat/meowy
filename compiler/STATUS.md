@@ -1030,6 +1030,11 @@ composed order, continued tail effects, outer targets, canonical branch aliases 
 stopped inputs/blocks. All four pass exact stdout/P006 checks in debug/release
 (`/tmp/meowy-emission-source-runs.log`); catalog/coverage checks pass for 240 cases
 (`/tmp/meowy-emission-catalog.log`). Required rejection cases are next.
+Runtime cases are committed as `acb7fe0`. Four required rejection cases now cover
+composed duplicate fields, annotated slot mismatch, foreign-function targets and
+reference escape. All four pass in debug/release (`/tmp/meowy-emission-source-errors.log`);
+catalog/coverage checks pass for 244 cases (`/tmp/meowy-emission-catalog-final.log`).
+Full compiler and strict gates are next.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse

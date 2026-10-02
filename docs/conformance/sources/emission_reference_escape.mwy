@@ -1,0 +1,1 @@
+row : { local : 1; -> view : &local }

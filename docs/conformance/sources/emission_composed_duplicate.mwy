@@ -1,0 +1,2 @@
+source : { -> a : 1 }
+row : { -> source; -> a : 2 }

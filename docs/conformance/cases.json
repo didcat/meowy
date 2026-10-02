@@ -2564,6 +2564,46 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "emission_composed_duplicate",
+      "phase": "check",
+      "source": "sources/emission_composed_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "emission_annotation_mismatch",
+      "phase": "check",
+      "source": "sources/emission_annotation_mismatch.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "emission_foreign_target",
+      "phase": "check",
+      "source": "sources/emission_foreign_target.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
+    },
+    {
+      "id": "emission_reference_escape",
+      "phase": "check",
+      "source": "sources/emission_reference_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
     }
   ]
 }
