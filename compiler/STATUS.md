@@ -1065,7 +1065,22 @@ capability pins and 33 proof obligations are unchanged
 guide distinguish metadata tests from observable source behavior. The native runtime
 and toolchain sources did not change in this series. Preserve `docs/programs/hey/`.
 
-### Next: stopped-left contextual operand typing
+### In progress: stopped-left contextual operand typing
+
+Resumed from `7159adb`. The saved reproduction and focused red tests confirmed
+Never leaking through both initial hints and the checked left operand's RHS context
+(`/tmp/meowy-stopped-context-before.log`). The checker now discards Never from each
+candidate hint, retains useful RHS/outer widths and boolean requirements, and lets
+unconstrained RHS constructors infer their own types. Exact-Never left hints bypass
+record composition so fallback coercion cannot turn a stopped call into a normal
+binary operand. Whole-record equality and Never primaries retain their prior rules.
+
+Four focused checker groups and one native group pass, including both-profile
+operand order, nested uint64 inference, explicit width errors, unreachable-body
+diagnostics, required evaluation and preserved stop edges
+(`/tmp/meowy-stopped-context-focused.log`). Formatting passes. Independent read-only
+review found no blocker. Required source cases and the final gates remain; root
+owns STATUS and a separate agent owns the new source fixtures/catalog additions.
 
 A separate existing checker gap was exposed while authoring the stopping fixture:
 
@@ -1079,12 +1094,12 @@ d : @"debug"
 }
 ```
 
-The Never left operand becomes the RHS block's expected type, so its list emission
-reports E207 (`expected Never, found List`). The draft source and diagnostic are
+Previously the Never left operand became the RHS block's expected type, so its list
+emission reported E207 (`expected Never, found List`). The original source and diagnostic are
 `/tmp/meowy-equality-stopped-context.mwy` and `.log`. The committed stopping fixture
 uses a declared-result RHS helper to test evaluation order; it does not qualify
-contextual RHS construction. This remains an explicit coverage gap, separate from
-the 19 pinned B001 cases. No existing reference expectation was changed.
+contextual RHS construction. The focused tests now pass; catalog qualification is
+pending, separate from the 19 pinned B001 cases. No existing reference expectation changed.
 
 Dependency-ordered next commit plan:
 

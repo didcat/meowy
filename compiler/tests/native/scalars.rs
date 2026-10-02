@@ -1,6 +1,31 @@
 use super::Case;
 
 #[test]
+pub fn stopped_binary_contexts_keep_operand_effect_order() {
+    Case::new(
+        r#"
+d:@"debug"
+'left {
+    value:({d.print("leave left");'left.leave()})=={d.print("late list");->[1]}
+}
+d.print("after left")
+'right {
+    value:({d.print("list left");->[1]})=={d.print("leave right");'right.leave()}
+}
+d.print("after right")
+'number {
+    value<uint64>:({'number.leave()})+{d.print("late number");->4294967296}
+}
+'logic {
+    value:({'logic.leave()})&&{d.print("late boolean");->true}
+}
+d.print("done")
+"#,
+    )
+    .runs(b"leave left\nafter left\nlist left\nleave right\nafter right\ndone\n");
+}
+
+#[test]
 pub fn intrinsics_alias_and_names_shadow_normally() {
     Case::new(
         r#"

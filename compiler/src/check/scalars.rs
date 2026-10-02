@@ -266,18 +266,21 @@ impl Checker {
         let boolean = ["&&", "||"].contains(&op);
         let equality = ["==", "!="].contains(&op);
         let compare = ["==", "!=", "<", ">", "<=", ">="].contains(&op);
+        let hint = if boolean { None } else { self.hint(left) };
+        let stopped = hint == Some(Type::Never);
         let context = if boolean {
             Some(Type::Bool)
         } else {
-            self.hint(left)
-                .or_else(|| self.hint(right))
-                .map(|ty| {
-                    if equality {
-                        ty
-                    } else {
-                        Self::primary_type(&ty)
-                    }
-                })
+            let operand = |ty| {
+                let ty = if equality {
+                    ty
+                } else {
+                    Self::primary_type(&ty)
+                };
+                (ty != Type::Never).then_some(ty)
+            };
+            hint.and_then(operand)
+                .or_else(|| self.hint(right).and_then(operand))
                 .or_else(|| {
                     if compare {
                         None
@@ -285,6 +288,7 @@ impl Checker {
                         expected.map(Self::primary_type)
                     }
                 })
+                .filter(|ty| *ty != Type::Never)
         };
         let (test, input, left) = if boolean {
             let (id, (root, value)) =
@@ -292,7 +296,7 @@ impl Checker {
                     checker.expression_point(left, context.as_ref())
                 })?;
             (Some(id), Some(root), value)
-        } else if equality && matches!(context, Some(Type::Record { .. })) {
+        } else if equality && !stopped && matches!(context, Some(Type::Record { .. })) {
             let record = context.clone().expect("record context");
             let primary = Self::primary_type(&record);
             let (root, value) = self.composed_point(left, record, Some(&primary))?;
@@ -320,6 +324,9 @@ impl Checker {
         } else {
             Self::primary_type(&left.ty)
         };
+        let right_context = (right_context != Type::Never)
+            .then_some(right_context)
+            .or(context);
         let (arm, content, right) = if boolean {
             let kind = if op == "&&" {
                 PointKind::Then
@@ -327,15 +334,16 @@ impl Checker {
                 PointKind::Else
             };
             let (id, (root, value)) = self.with_point_id(kind, right.span, |checker| {
-                checker.expression_point(right, Some(&right_context))
+                checker.expression_point(right, right_context.as_ref())
             })?;
             (Some(id), Some(root), value)
-        } else if equality && matches!(right_context, Type::Record { .. }) {
-            let primary = Self::primary_type(&right_context);
-            let (root, value) = self.composed_point(right, right_context, Some(&primary))?;
+        } else if equality && matches!(right_context, Some(Type::Record { .. })) {
+            let record = right_context.expect("record context");
+            let primary = Self::primary_type(&record);
+            let (root, value) = self.composed_point(right, record, Some(&primary))?;
             (None, Some(root), value)
         } else {
-            let (root, value) = self.expression_point(right, Some(&right_context))?;
+            let (root, value) = self.expression_point(right, right_context.as_ref())?;
             (None, Some(root), value)
         };
         let skipped = if boolean {
@@ -652,3 +660,6 @@ mod unary;
 
 #[cfg(test)]
 mod binary;
+
+#[cfg(test)]
+mod contexts;
