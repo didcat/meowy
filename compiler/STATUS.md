@@ -1120,7 +1120,12 @@ body/count limit. Endpoint publication verifies agreement with the checked HIR;
 replays and exhausted budgets publish nothing. All 41 body groups and seven endpoint
 groups pass (`/tmp/meowy-block-bodies.log`, `/tmp/meowy-block-endpoints.log`), including
 five new capture/limit groups. Exact function spans include the parameter list.
-Block-port validation and report collection remain in progress.
+Capture is committed as `1816109`. Ordinary block-port validation now checks exact
+root/parent identities, contained source spans, all sequence points/sites and both
+edge ledgers. Dispatch remains excluded. Four focused groups pass
+(`/tmp/meowy-block-validation.log`), including grouped contextual-list spans and
+Never blocks with structural normal visits but no result. Adversarial validation
+and report collection remain in progress.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
