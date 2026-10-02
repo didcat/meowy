@@ -1197,7 +1197,11 @@ and the final coverage/compiler gates remain to be committed. Index boundaries
 are committed as `3a30543`. Three additional limit groups pin the combined
 operation/block/result map cap, exact scratch/output payload, exact shared work,
 duplicate observations and atomic failure without changing prior maps or capture
-counters. Unknown layouts need no slot payload.
+counters. Unknown layouts need no slot payload. Limits are committed as `cda38c4`.
+Four required run cases now pin omitted nullable fields, branch choices, mutable
+alias replacement, composition/outer-target order and P006 after initialization.
+All pass exact output in both profiles; classified coverage distinguishes those
+runtime cases from conservative source metadata. Two rejection cases follow separately.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection

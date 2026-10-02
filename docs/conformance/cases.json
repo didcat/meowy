@@ -2790,6 +2790,48 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_slot_nullable",
+      "phase": "run",
+      "source": "sources/result_slot_nullable.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "optional\nrow tail\nnull\n7\ntrue\nrow tail\nnull\nnull\ntrue\nnull\nnull\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_slot_branches",
+      "phase": "run",
+      "source": "sources/result_slot_branches.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\njoin\n1\nright\njoin\n2\nreplace\n3\n3\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_slot_composition",
+      "phase": "run",
+      "source": "sources/result_slot_composition.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "primary\nfield\ninner tail\n20\nouter tail\n7\n11\n30\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "result_slot_stopped",
+      "phase": "run",
+      "source": "sources/result_slot_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "caller\nreplace\n2\ninitialized\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

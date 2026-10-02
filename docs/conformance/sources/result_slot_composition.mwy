@@ -1,0 +1,20 @@
+d : @"debug"
+row : 'out {
+    -> {
+        d.print("primary")
+        -> 7
+        -> a : { d.print("field"); -> 11 }
+    }
+    inner : {
+        -> n : 20
+        { 'out -> n : 30 }
+        d.print("inner tail")
+    }
+    d.print(inner.n)
+    -> flag : true
+    d.print("outer tail")
+}
+d.print(row)
+d.print(row.a)
+d.print(row.n)
+d.print(row.flag)

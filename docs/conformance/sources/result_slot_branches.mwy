@@ -1,0 +1,25 @@
+d : @"debug"
+choose : (flag <boolean>) {
+    row : 'out {
+        | flag | { d.print("left"); 'out -> n : 1 }
+        | !flag | { d.print("right"); 'out -> n : 2 }
+        d.print("join")
+    }
+    d.print(row.n)
+}
+choose(true)
+choose(false)
+mutable : {
+    -> n := 1
+    n = { d.print("replace"); -> 3 }
+    d.print(n)
+}
+d.print(mutable.n)
+survive : (flag <boolean>) {
+    row : 'out {
+        | flag | { 'out -> n := 1; n = 2; d.panic("discarded") }
+        | !flag | 'out -> n : 4
+    }
+    d.print(row.n)
+}
+survive(false)

@@ -1,0 +1,18 @@
+d : @"debug"
+make <int32> : () {
+    row : {
+        -> 7
+        -> count := 1
+        count = { d.print("replace"); -> 2 }
+        d.print(count)
+        d.print("initialized")
+        d.panic("halt")
+        d.print("late row")
+    }
+    -> row
+    d.print("late make")
+}
+d.print("caller")
+value : make()
+d.print("late caller")
+d.print(value)

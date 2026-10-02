@@ -1,0 +1,16 @@
+d : @"debug"
+show : (flag <boolean>) {
+    row : 'out {
+        | flag | { d.print("optional"); 'out -> optional : 7 }
+        -> tag : true
+        d.print("row tail")
+    }
+    d.print(row)
+    d.print(row.optional)
+    d.print(row.tag)
+}
+show(true)
+show(false)
+empty <{ optional <int32><null> }> : {}
+d.print(empty)
+d.print(empty.optional)
