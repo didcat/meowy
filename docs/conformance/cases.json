@@ -2770,6 +2770,26 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "block_result_missing_field",
+      "phase": "check",
+      "source": "sources/block_result_missing_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E204"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "block_result_duplicate_field",
+      "phase": "check",
+      "source": "sources/block_result_duplicate_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

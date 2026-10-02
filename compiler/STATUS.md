@@ -1138,8 +1138,11 @@ duplicate stage visits, six merge conflicts and late-failure atomicity
 profiles (`/tmp/meowy-block-source-fixtures.log`). Limits are committed as `16a4e99`.
 The first four required run cases and classified coverage now pin nested partial
 composition, tail order, named leaves, unused Never definitions and tail panic.
-The two required rejections follow separately; prior catalog records/expectations
-are unchanged. The complete compiler gate and final handoff remain.
+The execution cases are committed as `fb8b386`. Two required rejection cases retain
+E204 for a missing outer field and E205 for a nested duplicate emission. All six
+source cases pass both profiles; catalog/coverage checks pass for 262 cases. Prior
+catalog records/expectations are unchanged. The complete compiler gate and final
+handoff remain.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently

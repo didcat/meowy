@@ -1,0 +1,5 @@
+row <{ x <int32>; y <int32> }> : 'out {
+    -> x : 1
+    { 'out.leave() }
+    -> y : 2
+}
