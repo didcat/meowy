@@ -313,3 +313,6 @@ mod equality;
 
 #[cfg(test)]
 mod equality_boundaries;
+
+#[cfg(test)]
+mod equality_limits;

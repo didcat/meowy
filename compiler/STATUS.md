@@ -1042,6 +1042,10 @@ Integration is committed as `308fcbc`. Category/flag corruption, composed call o
 owner/control separation and full-type compatibility regressions pass all 27 focused
 equality groups (`/tmp/meowy-equality-boundaries.log`), including 32 corrupt-signature
 cases. Formatting passes. Exact shared limits and source conformance follow separately.
+Boundary coverage is committed as `240cec7`. Exact shared work/map limits, fixed
+report costs across list capacities and eight atomic merge conflicts pass all 30
+focused equality groups (`/tmp/meowy-equality-limits.log`); formatting passes.
+Required source result/order and rejection cases are next.
 
 Cover the existing aggregate/reference/union equality operations that still
 fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these
