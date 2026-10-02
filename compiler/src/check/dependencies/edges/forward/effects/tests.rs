@@ -98,7 +98,7 @@ pub(crate) fn operation_effects_exclude_stopped_writes_and_distinguish_store_kin
         reports
             .effects
             .values()
-            .any(|(_, effect)| *effect == Effect::Unknown)
+            .any(|(_, effect)| matches!(effect, Effect::List(_)))
     );
 }
 

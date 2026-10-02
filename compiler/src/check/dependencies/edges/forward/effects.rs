@@ -87,6 +87,7 @@ pub(crate) enum Effect {
     Element(elements::Observed),
     Exclusive(exclusives::Observed),
     Projection(projections::Observed),
+    List(lists::Observed),
     Unknown,
 }
 
@@ -117,7 +118,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_list_construction(reports, owner, port, span)?;
+                if self.validate_list_construction(reports, owner, port, span)? {
+                    self.record_list_effect(owner, port, &mut effects, limit, &mut parts, span)?;
+                    continue;
+                }
                 if self.validate_borrow_projection(reports, owner, port, span)? {
                     self.record_projection_effect(
                         owner,

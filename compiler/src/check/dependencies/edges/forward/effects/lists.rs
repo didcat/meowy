@@ -2,6 +2,9 @@ use super::*;
 use crate::check::dependencies::{CoercionKind, SequenceSource};
 use std::collections::BTreeSet;
 
+mod report;
+pub(crate) use report::Observed;
+
 impl Checker {
     pub(super) fn validate_list_construction(
         &mut self,
@@ -159,3 +162,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;

@@ -865,7 +865,17 @@ Producer capture is committed as `3450dfd`. Exact root/owner/parent/block, sourc
 selector, operation-registry and stored-edge validation passes three focused groups,
 including 27 malformed-metadata cases (`/tmp/meowy-list-validation.log`). Formatting
 passes. Ordinary per-input coercions remain separate from final contextual stages.
-Next aggregate independent stages with shared input-copy and work limits.
+Validation is committed as `7344c0f`. Aggregation now retains ordered input roots,
+optional final contextual plans, independent projection/conversion flags and
+construction/result visits. Shared payload copies cost three entries per input;
+duplicates merge flags. Six focused list groups pass. The wider effect suite exposed
+six prior expectations that treated list construction as Unknown or free payload;
+their exact shared totals now include the new list inputs. This integration slice
+needs 11 files after split review: six existing regression files must change with the
+new report family to keep their exact-boundary checks passing. Deferring them would
+leave a failing intermediate commit; no unrelated scenarios are included. All 226
+effect groups now pass (`/tmp/meowy-list-effects.log`); formatting passes. Next add
+contextual corruption, owner/control, exact shared limits and merge-conflict coverage.
 
 Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
