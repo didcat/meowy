@@ -7,32 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Dispatch reports retain exact receiver/local/body identities and separate checked
-completion facts. Initialization and result visits remain independent; stopped
-receivers produce no report and stopped bodies retain only initialization. Fourteen
-new internal groups and eight source cases cover order, nested/empty/composed bodies,
-opaque successors, source errors, identities, conflicts and shared budgets.
-The [compiler handoff](compiler/STATUS.md#bounded-dispatch-observations) records the
-validated commits and the next ordered plan.
+Emission reports now retain exact input/target identities, projections, composition
+bounds, field names, canonical alias storage and control. Target initialization and
+statement completion are independent; emissions preserve subsequent tail work and
+stopped-input boundaries. Thirteen new internal groups and eight required source
+cases cover identity, inherited matcher sites, order, aliases, scopes and budgets.
+The [compiler handoff](compiler/STATUS.md#bounded-emission-observations) records the
+validated commit series and next ordered plan.
 
-Emission composition capture now also retains the checked staging local and field
-count (`b54c7d6`), with four new structural groups. Typed emission reports are next.
-
-All ten compiler checks pass: 2249 library/914 native and 62 Python test groups;
-`/tmp/meowy-emission-composition-gate.log`. The catalog has 236 cases: 217 required
-passes, 19 unchanged pinned gaps and zero failures in debug/release. All prior cases,
-source assets, reference contracts and capability exceptions are preserved. The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2262 library/914 native tests
+and 62 Python groups (`/tmp/meowy-emission-reports-gate.log`). Conformance has 244
+cases: 225 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Prior fixtures, reference contracts and capability pins are preserved. The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
-33 proof obligations with explicit gaps. Strict mode rejects only the same 19 gaps
-(`/tmp/meowy-emission-composition-strict.log`). All four final documentation checks
-pass (`/tmp/meowy-emission-composition-docs.log`).
+33 proof obligations. Strict mode rejects only the same 19 gaps
+(`/tmp/meowy-emission-reports-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-emission-reports-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, validate exact emission identities, composition bounds, aliases and edges
-from `compiler/src/check/dependencies/emissions.rs`, then collect target and
-statement-result observations. Preserve direct/composed order, outer targets and
-stopped inputs. Stage observations grant no new borrow authority or proof outcome.
-Unrelated `docs/programs/hey/` work is preserved.
+Next, retain checked aggregate/reference/union equality categories in
+`compiler/src/check/dependencies/binaries/types.rs`, then extend bounded binary
+reports beyond their current Other/Unknown boundary. Preserve ordinary typing,
+operand order and existing gates. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -42,7 +38,7 @@ tests and 217 required conformance cases (`/tmp/meowy-llvm23-compiler.log`). All
 runtime harness groups and native debug/release/ASan/UBSan/LSan checks pass; the
 sanitizer run required execution outside ptrace (`/tmp/meowy-llvm23-runtime.log`).
 Owning diagnostic sizes are unchanged. This is host qualification, not full release
-or minimum-OS qualification. Emission validation continues separately on these tools.
+or minimum-OS qualification. The completed emission series above uses these tools.
 All four final documentation checks pass (`/tmp/meowy-llvm23-docs.log`).
 
 ## Documentation conventions
@@ -1167,10 +1163,11 @@ execution was not part of this documentation edit.
    context after HIR transfer; focused/source coverage and the compiler gate pass.
    Subsequent read/scalar/conversion/borrow, list-construction and dispatch reports
    now pass focused/source coverage and compiler gates; the compiler handoff records
-   those series. Emission composition locals and field counts are now retained.
-   Next validate identities/projections/aliases in
-   `compiler/src/check/dependencies/emissions.rs`, then report targets and statement
-   completion with focused/source and compiler/strict gates.
+   those series. Emission targets and statement completion now have bounded reports
+   with focused/source coverage and compiler/strict evidence. Next retain checked
+   aggregate/reference/union equality categories in
+   `compiler/src/check/dependencies/binaries/types.rs`, then extend their reports
+   using the ordered compiler handoff. Preserve all existing source/capability gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

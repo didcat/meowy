@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Dispatch reports and emission composition capture are validated.
+Updated: 2026-10-02. Emission reports and the LLVM 23/Rust 1.99 bootstrap are validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -24,7 +24,8 @@ Reverting the toolchain pins and API adaptation restores the previous selection;
 no host packages changed. Toolchain code is committed as `712afe6`; active compiler,
 runtime and implementation-plan documentation now uses the same pins. Historical
 Clang 22 size measurements remain labeled; Clang 23 reproduces their current column.
-The in-progress emission validator was excluded from baseline qualification.
+Emission changes were excluded from baseline qualification; their final validation
+is recorded below.
 All four final documentation checks pass (`/tmp/meowy-llvm23-docs.log`).
 
 ## Documentation coverage and conformance audit
@@ -971,95 +972,76 @@ remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Bounded emission observations
 
-The composition-capture prerequisite is complete (`b54c7d6`). `Emission.composed`
-retains the exact staging local and concrete field count before local types are
-transferred. Direct emissions retain None. Existing projection checking still
-validates Value/Primary/Field against the checked HIR; the count leaves room for the
-primary within `MAX_TARGETS`. No type is copied. Source order, canonical direct
-aliases, outer targets and the Never-input bypass remain intact. Replays compare
-composition identity before publication; malformed context or exhausted capture
-budgets leave the original records and reverse registry unchanged.
+Emission reports retain exact input/EmitId/target identities, Value/Primary/Field
+projections, composition local/count, field names, canonical alias storage and
+control. Every target initialization and statement completion is independent.
+An emission is not a scope exit or publication of the whole block: tail work and
+failures still follow. Stopped inputs and disconnected later statements gain no
+observation; required/type-only emissions remain separate.
 
-All 12 focused emission groups pass, including four new capture, alias/stop,
-count-boundary and replay groups (`/tmp/meowy-emission-composition.log`). All ten
-compiler checks pass: 2249 library/914 native and 32 tooling/30 harness tests,
-formatting, all-target Clippy, schemas, links, coverage and source execution
-(`/tmp/meowy-emission-composition-gate.log`). Conformance retains 217 required passes,
-19 pinned gaps and zero failures in debug/release. Strict mode exits 1 only for the
-same gaps (`/tmp/meowy-emission-composition-strict.log`). All four final documentation
-checks pass (`/tmp/meowy-emission-composition-docs.log`). No test failures remain.
+Validation uses the emission-source registry rather than invented Operation ports.
+It checks completed roots, bounded same-site matcher ancestry, lexical target scopes,
+composition bounds, unique slots, aliases and exact stored edges. Descriptors and
+visit flags cost two shared payload entries per target, plus UTF-8 field-name bytes.
+Caps of 65,536 targets and 262,144 bytes of names apply before copying, with shared
+work/map/payload limits. Duplicate visits merge flags without another copy. Invalid
+metadata, conflicts or exhaustion publish no partial collection. No values,
+reachability, storage provenance, ownership authority or proof outcomes are inferred.
 
-The audit against `9eecae2` preserves all 236 cases, 268 source assets, 37 reference
-files/hashes, capability pins and 33 proof obligations
-(`/tmp/meowy-emission-composition-preservation.log`). Coverage classifies the new
-capture tests as structural evidence. Typed emission observations and proof
-outcomes remain unimplemented; no language/release qualification is claimed.
-Unrelated `docs/programs/hey/` is preserved.
+| Reviewable slice | Commit |
+| --- | --- |
+| Composition local and field-count prerequisite | `b54c7d6` |
+| Sources, targets, aliases and exact edge validation | `298e75b` |
+| Inherited matcher lifetime-site validation | `de88cc4` |
+| Independent target and statement-completion reports | `2261568` |
+| Composition, lexical ancestry and canonical alias boundaries | `7c7e172` |
+| Shared payload/work limits and atomic merges | `e28d8ea` |
+| Order, composition, aliases and stopped-source execution | `acb7fe0` |
+| Composition, scope, type and lifetime errors | `36cead6` |
+| Final lint repair and compiler gate | `ff256ab` |
 
-In progress from `16c06d9`: emission ports require lookup through `emission_sources`,
-not the Operation registry. The validator now checks statement/input/site/target
-identities, lexical target ancestry, retained composition bounds, aliases and exact
-edges, with bounded field-name work. Both focused groups pass, including 58 corrupt
-metadata cases (`/tmp/meowy-emission-validation.log`), on the separately qualified
-LLVM/Rust upgrade (`712afe6`). Inline matcher emissions reuse their enclosing
-lifetime site; validation follows a bounded same-site parent chain to its checked
-root. Three validation groups, including six additional site faults, pass
-(`/tmp/meowy-emission-site-validation.log`); formatting passes. Next aggregate
-independent target and statement-result observations with bounded shared payloads.
-Validation is committed as `298e75b`. Aggregation now charges two payload entries
-per target plus field-name bytes, retaining independent initialization/result flags.
-Inherited matcher-site validation is committed separately as `de88cc4`. All seven
-emission groups pass. Integration updates 14 exact shared-budget regressions in 13
-existing files to count the new emission descriptors, flags and field-name bytes.
-After split review, those small expectation changes must land with the report hook:
-either side alone breaks the existing whole-program budget boundaries. The resulting
-18-file slice remains one report-integration change; additional boundary/source work
-stays separate. All 251 effect groups pass (`/tmp/meowy-emission-effects.log`),
-including the four new observation groups; formatting passes. Next add composition,
-ancestry, alias and shared-budget boundary coverage before source conformance.
-Report integration is committed as `2261568`. Composition-slot corruption, lexical
-target ancestry/cycles, canonical alias storage and ordinary errors pass all ten
-emission groups (`/tmp/meowy-emission-boundaries.log`), including 72 composition
-faults and five invalid target paths. Formatting passes; exact shared limits follow.
-Boundary coverage is committed as `7c7e172`. Exact shared work/map/payload limits,
-15 merge conflicts, field-name byte bounds and descriptor caps pass all 13 emission
-groups (`/tmp/meowy-emission-limits.log`); formatting passes. Required source order,
-composition, alias, stopped-input and diagnostic cases are next.
-Limits are committed as `e28d8ea`. Four required runtime cases now cover direct/
-composed order, continued tail effects, outer targets, canonical branch aliases and
-stopped inputs/blocks. All four pass exact stdout/P006 checks in debug/release
-(`/tmp/meowy-emission-source-runs.log`); catalog/coverage checks pass for 240 cases
-(`/tmp/meowy-emission-catalog.log`). Required rejection cases are next.
-Runtime cases are committed as `acb7fe0`. Four required rejection cases now cover
-composed duplicate fields, annotated slot mismatch, foreign-function targets and
-reference escape. All four pass in debug/release (`/tmp/meowy-emission-source-errors.log`);
-catalog/coverage checks pass for 244 cases (`/tmp/meowy-emission-catalog-final.log`).
-Rejections are committed as `36cead6`. The full gate found one unused test binding;
-it is removed; all ten compiler checks pass, including Clippy, 2262 library/914
-native tests and 225 required conformance passes with 19 unchanged gaps and zero
-failures (`/tmp/meowy-emission-reports-gate.log`). The preservation audit
-passes for all 236 prior cases, 268 assets, 37 reference hashes, capability pins and
-proof obligations (`/tmp/meowy-emission-preservation.log`). Strict checks follow.
+Report integration needed an 18-file slice after split review: 14 existing exact
+shared-budget regressions in 13 files had to count the new emission copies when the
+hook became active. Either side alone would break their exact pass/fail boundaries.
+Additional validation, boundary and source scenarios remained separate commits.
 
-Next, validate and report emission target initialization and statement completion
-from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse
-`emission_sources` registry retain target identities, projections, fields and aliases;
-composition local/count is now available after HIR transfer.
+All ten compiler checks pass (`/tmp/meowy-emission-reports-gate.log`) on LLVM 23.1.1
+and Rust 1.99.0: 2262 library/914 native tests, 32 tooling/30 harness groups, formatting,
+all-target Clippy, schemas, links, coverage and source execution. Thirteen new report
+and validation groups cover 141 seeded identity/site/ancestry faults, 15 merge
+conflicts, independent visits, shared exact limits and bounded field-name copies.
+Eight new required sources pin normal output/P006 and E205/E207/E201/E303. Conformance
+has 244 cases: 225 required passes, 19 unchanged pinned gaps and zero failures in both
+profiles. Strict mode exits 1 only for those gaps (`/tmp/meowy-emission-reports-strict.log`).
+All four final documentation checks pass (`/tmp/meowy-emission-reports-docs.log`).
+No outstanding test failures remain.
+
+The audit against `16c06d9` preserves all 236 prior cases, 268 source assets,
+37 reference files/hashes, capability pins and 33 proof obligations
+(`/tmp/meowy-emission-preservation.log`). Coverage and the foundation guide distinguish
+structural metadata from source execution. Proof outcomes and full language/release
+qualification remain incomplete. Unrelated `docs/programs/hey/` is preserved.
+
+Next, cover the existing aggregate/reference/union equality operations that still
+fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these
+operands to Other, and `edges/forward/effects/binaries.rs` deliberately excludes them.
+Preserve that boundary until concrete checked categories have been retained.
 
 Dependency-ordered next commit plan:
 
-1. Validate statement/input/target owner identities, exact EmitIds and source slots,
-   retained composition bounds, alias/storage registration and original emission
-   edges under `edges/forward/effects/`. Do not treat slot initialization as scope
-   exit or infer a result from a missing producer. Add focused malformed metadata,
-   direct/composed, alias and outer-target regressions before committing validation.
-2. Aggregate independent per-target and statement-result visits under bounded target
-   and field-name copies and shared work/effect/payload limits. Preserve partial
-   observations, duplicate visits, source order, conflicts and stopped inputs without
-   granting new ownership authority or inferring emitted values.
-3. Add required named/primary/composed emission order, alias/outer-target, stopped
-   input and relevant diagnostic cases. Update classified coverage and the guide,
-   preserve prior cases/pins, run compiler/strict gates and update both handoffs.
+1. Retain bounded non-scalar operand categories/counts or reference modes in
+   `dependencies/binaries/types.rs` and `binary_operation`, using actual checked HIR
+   types. Keep unsupported nominal/opaque types distinct. Preserve scalar-primary
+   conversions, stopped operands and required evaluation; add focused capture tests.
+2. Validate and admit only supported checked ==/!= signatures in
+   `edges/forward/effects/binaries.rs`, with exact existing roots, sequence/stage edges
+   and operation ownership. Keep scalar arithmetic and checked-success routes intact.
+   Matching summaries alone must not establish type compatibility or an equality result.
+3. Add independent stage/owner/control, corrupt metadata, duplicate, work/map-bound
+   and stopped-input tests. Keep values, dereference authority and proof answers out.
+4. Add required whole-record/list/reference/union equality order/results and relevant
+   rejection cases. Update classified coverage and the guide, preserve prior cases/
+   pins, then run compiler/strict gates and update both handoffs.
 
 ## Documentation conventions and layout
 
@@ -2631,7 +2613,8 @@ Whole-record module inputs, conditional module exports, helper
 initializer eligibility, module-data captures, borrowed module storage, package/manifest
 resolution, full required evaluation and generic specialization, public FFI, wider
 ownership/cleanup, executable networking, public artifacts/replay and LSP remain separate. Host execution does not qualify minimum
-platforms or bundled distributions. Toolchain: Rust 1.98.1 and LLVM/Clang/LLD/LLVM ar 22.1.8.
+platforms or bundled distributions. That earlier validation used Rust 1.98.1 and
+LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
@@ -3190,9 +3173,11 @@ subtraction retains its documented limits. No outstanding failures remain.
    the compiler gate. Dispatch completion (`833ab1a`), validation (`68334bb`),
    reports (`73511c7`), boundaries/limits (`7768051`, `a6fae62`) and source cases
    (`9f5dcc5`, `6d1ddbc`) now pass the compiler gate. Emission composition locals
-   and field counts (`b54c7d6`) now pass focused and compiler gates. Next validate
-   exact emission identities/projections/aliases and report target initialization
-   and statement completion using the ordered plan above.
+   and field counts (`b54c7d6`), validation/site repair (`298e75b`, `de88cc4`),
+   reports (`2261568`), boundary/limit coverage (`7c7e172`, `e28d8ea`) and required
+   source cases (`acb7fe0`, `36cead6`) now pass the compiler gate. Next retain checked
+   non-scalar equality categories before replacing their current Unknown reports,
+   following the dependency-ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

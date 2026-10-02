@@ -311,13 +311,22 @@ The operation represents availability of the static handle, not resource allocat
 Nominal-type validation and shared-budget failures publish no partial operation;
 existing borrow lifetimes, conflicts and unsupported member/equality rules remain.
 
-Emission composition now retains the exact staging local and its checked field
-count before local types are transferred, without another type copy. The field count
-leaves room for the primary within the existing target limit. Per-target
-Value/Primary/Field decisions still come from checked HIR. Direct emissions retain
-no composition local; named aliases keep their canonical slot storage, and Never
-inputs create no emission record. This is a capture prerequisite: typed emission
-target and statement-result observations remain pending.
+Emission reports retain exact input and target identities, Value/Primary/Field
+projections, optional composition local/count, field names, canonical alias storage
+and control. Each target visit and statement completion is observed independently.
+Initializing a slot does not exit its scope or publish the whole block; tail effects
+and failures still follow. Stopped inputs and disconnected later statements produce
+no observation. Required/type-only emissions retain their separate paths.
+
+Validation uses EmitIds and the existing emission-source registry, without inventing
+Operation ports. It checks complete statement/input roots, inherited matcher lifetime
+sites, lexical target ancestry, composition bounds, aliases and exact ordered edges.
+Foreign targets, cycles, duplicate slots and conflicting metadata are rejected before
+publication. Target descriptors and visit flags cost two shared payload entries per
+target, plus UTF-8 field-name bytes. The 65,536-target cap, 262,144-byte name cap and
+shared work/map/payload limits precede copying. Duplicate visits merge flags without
+another payload copy; failure returns no partial collection. These structural records
+do not infer emitted values, reachability, ownership authority or proof outcomes.
 
 An internal bounded inventory now enumerates stored edges from all 31 families.
 It preserves duplicates, exact ports, conditional routes and explicit backedges;
