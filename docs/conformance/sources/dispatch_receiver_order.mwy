@@ -1,0 +1,15 @@
+d : @"debug"
+make <int32> : () {
+    d.print("receiver")
+    -> 3
+}
+value : make().{
+    d.print("body")
+    { d.print($) }
+    inner : 4.{ d.print($); -> $ }
+    d.print($)
+    -> $ + inner
+}
+d.print(value)
+make().{}
+d.print("empty done")

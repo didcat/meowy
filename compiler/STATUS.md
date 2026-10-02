@@ -926,7 +926,12 @@ an opaque-successor walk, ten additional identity faults and preserved source er
 (`/tmp/meowy-dispatch-boundaries.log`); formatting passes. Boundaries are committed
 as `7768051`. All 12 dispatch-report groups pass, including exact work/map limits,
 seven atomic merge conflicts and equal report costs for 1/65,536-byte receivers
-(`/tmp/meowy-dispatch-limits.log`); formatting passes. Required source cases follow.
+(`/tmp/meowy-dispatch-limits.log`); formatting passes. Limits are committed as
+`a6fae62`. Four required source cases now cover receiver/body order, nested `$`,
+empty/composed dispatch, forward declarations, scoped leave and both panic stops.
+All four pass exact stdout/P006 expectations in debug/release
+(`/tmp/meowy-dispatch-source-runs.log`). Catalog/coverage checks pass for 232 cases
+(`/tmp/meowy-dispatch-catalog.log`). Required diagnostic cases and the full gate follow.
 Unrelated `docs/programs/hey/` is preserved.
 
 Report dispatch receiver initialization and results. The producer in

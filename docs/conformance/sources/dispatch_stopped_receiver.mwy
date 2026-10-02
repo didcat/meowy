@@ -1,0 +1,13 @@
+d : @"debug"
+'out {
+    value : ({ d.print("receiver leave"); 'out.leave() }).{
+        d.print("unreached receiver body")
+    }
+}
+d.print("after receiver leave")
+stop <never> : () {
+    d.print("receiver panic")
+    d.panic("halt")
+}
+value : stop().{ d.print("unreached panic body") }
+d.print("after receiver panic")

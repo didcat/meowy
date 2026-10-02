@@ -2438,6 +2438,50 @@
         "code": "E216"
       },
       "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "dispatch_receiver_order",
+      "phase": "run",
+      "source": "sources/dispatch_receiver_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nbody\n3\n4\n3\n7\nreceiver\nempty done\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_composed_order",
+      "phase": "run",
+      "source": "sources/dispatch_composed_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nbody\n6\n7\nreceiver\n9\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "dispatch_stopped_receiver",
+      "phase": "run",
+      "source": "sources/dispatch_stopped_receiver.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver leave\nafter receiver leave\nreceiver panic\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "dispatch_stopped_body",
+      "phase": "run",
+      "source": "sources/dispatch_stopped_body.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "body leave\nafter body leave\nbody panic\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#named-scopes-and-cleanup"
     }
   ]
 }

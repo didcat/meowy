@@ -1,0 +1,18 @@
+d : @"debug"
+make <int32> : () {
+    d.print("receiver")
+    -> 5
+}
+row <{ x <int32>; y <int32> }> : {
+    -> make().{
+        g <() -> int32>
+        g <int32> : () { -> 1 }
+        d.print("body")
+        -> x : $ + g()
+    }
+    -> y : 7
+}
+d.print(row.x)
+d.print(row.y)
+empty <{ x <int32> }> : { -> make().{}; -> x : 9 }
+d.print(empty.x)

@@ -1,0 +1,11 @@
+d : @"debug"
+'out {
+    value : 3.{ d.print("body leave"); 'out.leave() }
+    d.print("after inner body")
+}
+d.print("after body leave")
+stop <{ x <int32> }> : () {
+    -> 4.{ d.print("body panic"); d.panic("halt") }
+}
+stop()
+d.print("after body panic")
