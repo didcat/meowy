@@ -872,6 +872,13 @@ receiver immutability, loans, lifetimes and proof-outcome gates remain unchanged
 Record-context equality retains both exact composed operand roots for ordered
 sequencing, including scalar-primary comparisons. Existing hinting, contextual
 widths, projections and once-only effects are preserved.
+Binary operand contexts discard Never hints before selecting the other operand's
+type or an enclosing arithmetic width. A checked Never left operand supplies no
+value type to a later constructor; useful numeric and boolean contexts remain.
+The later operand is still checked for names, explicit annotations and operator
+errors even when it will not run. A known Never left call bypasses record composition
+so coercion cannot create a normal binary operand. Full-record equality, required
+evaluation and the shared composition helper retain their existing rules.
 The composed fallback retains its exact nested source and classifies forwarding,
 new conversion and stopped input before coercion changes the HIR type. Forwarding
 links source completion directly to the result; conversions use a distinct

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Non-scalar equality reports pass the LLVM 23/Rust 1.99 compiler gate.
+Updated: 2026-10-02. Never operand contexts are repaired and pass the full compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1065,58 +1065,72 @@ capability pins and 33 proof obligations are unchanged
 guide distinguish metadata tests from observable source behavior. The native runtime
 and toolchain sources did not change in this series. Preserve `docs/programs/hey/`.
 
-### In progress: stopped-left contextual operand typing
+## Stopped operand context repair
 
-Resumed from `7159adb`. The saved reproduction and focused red tests confirmed
-Never leaking through both initial hints and the checked left operand's RHS context
-(`/tmp/meowy-stopped-context-before.log`). The checker now discards Never from each
-candidate hint, retains useful RHS/outer widths and boolean requirements, and lets
-unconstrained RHS constructors infer their own types. Exact-Never left hints bypass
-record composition so fallback coercion cannot turn a stopped call into a normal
-binary operand. Whole-record equality and Never primaries retain their prior rules.
+Binary checking no longer supplies Never as a value-construction context. Each
+operand hint is filtered after scalar-primary selection, so a usable RHS hint or
+enclosing arithmetic width can still guide literals. The RHS uses the checked left
+type when available, otherwise the selected context or independent inference.
+Boolean operators retain their boolean context. A known Never left call bypasses
+record composition, preserving its stopped type and graph edges instead of coercing
+it into a normal operand. Full-record equality and shared composition stay unchanged.
 
-Four focused checker groups and one native group pass, including both-profile
-operand order, nested uint64 inference, explicit width errors, unreachable-body
-diagnostics, required evaluation and preserved stop edges
-(`/tmp/meowy-stopped-context-focused.log`). Formatting passes. Independent read-only
-review found no blocker. The repair is committed as `418e681`. Four required source
-cases now pass independently in debug/release, covering constructor/stop order,
-boolean operands, nested widths, missing names and explicit overflow
-(`/tmp/meowy-stopped-binary-conformance.log`). Catalog/coverage checks pass for 256
-cases. Classified evidence is updated; full compiler/strict gates and final handoffs remain.
+This repairs the E207 exposed by a leaving left block compared with an emitting
+RHS block, as well as widths hidden by nested Never hints. Later operands are still
+checked for names, annotations, duplicate declarations and operator errors. Runtime
+order, stopped stages, ordinary type compatibility and required evaluation remain
+intact. No reference contract, ownership gate or proof outcome changed.
 
-A separate existing checker gap was exposed while authoring the stopping fixture:
+| Reviewable slice | Commit |
+| --- | --- |
+| Repair context selection with checker and native regressions | `418e681` |
+| Require constructor/order, width and unreachable-error source cases | `e6621f4` |
 
-```meowy
-d : @"debug"
-'out {
-    value : ({ d.print("leave"); 'out.leave() }) == {
-        d.print("late right")
-        -> [1]
-    }
-}
-```
+Four checker groups and one native group pass
+(`/tmp/meowy-stopped-context-focused.log`). Four new required cases pass independently
+in debug/release (`/tmp/meowy-stopped-binary-conformance.log`): list/record and boolean
+stop order, wide/nested arithmetic, missing-name E201 and explicit-width E216.
+The original reproduction now reaches its expected P006 with ordered output
+(`/tmp/meowy-stopped-context-repro.log`). All ten compiler checks pass on LLVM 23.1.1
+and Rust 1.99.0: 2278 library/915 native tests, 32 tooling/30 compiler-harness groups,
+formatting, Clippy, build and conformance (`/tmp/meowy-stopped-context-gate.log`).
+Conformance has 237 required passes, 19 unchanged pinned gaps and zero failures in
+debug/release. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-stopped-context-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-stopped-context-docs.log`).
 
-Previously the Never left operand became the RHS block's expected type, so its list
-emission reported E207 (`expected Never, found List`). The original source and diagnostic are
-`/tmp/meowy-equality-stopped-context.mwy` and `.log`. The committed stopping fixture
-uses a declared-result RHS helper to test evaluation order; it does not qualify
-contextual RHS construction. The new required cases qualify that boundary, separately
-from the 19 pinned B001 cases. No existing reference expectation changed.
+All 252 prior case records, 284 source assets, 37 reference contracts/hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-stopped-context-preservation.log`). The catalog has 256 cases, with
+237 required and the same 19 pinned B001 gaps. Classified coverage closes the
+specific Never/RHS-constructor gap; broader contextual builders and composition
+transfers remain separately bounded. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: ordinary block completion and result observations
+
+`dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
+but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
+retains owner/parent/facts without a checked completion/result shape. Record those
+facts before HIR transfer; do not reconstruct them from traversal or point indices.
 
 Dependency-ordered next commit plan:
 
-1. In `src/check/scalars.rs::binary`, inspect hint and right-context selection when
-   the left operand is Never. Prevent that bottom type from constraining a later
-   value-building operand while preserving contextual widths, required evaluation,
-   ordinary checking of unreachable bodies and first-error behavior. Pair the
-   smallest checker repair with focused block/list/record and stopped-order tests.
-2. Add required source acceptance/order and rejection fixtures for that boundary,
-   linked to the operator-order/type contracts. Preserve prior cases and capability
-   pins; update the classified coverage gap only after both profiles pass.
-3. Run the complete compiler and strict gates, update the guide and both handoffs,
-   then resume the remaining dependency-transfer work below. Equality metadata does
-   not itself enable proof evaluation or restart propagation.
+1. Capture bounded checked block completion and compact result categories/counts
+   in `dependencies/bodies.rs` and `edges/blocks.rs` while `hir::Block.ty` is available.
+   Preserve existing endpoint edges and test empty/scalar/record/partial/Never bodies,
+   independent owners, exact identities and capture limits.
+2. Validate exact block, owner, parent and endpoint identities, then collect
+   independent normal/result observations through the existing forward machinery.
+   Use BlockId identity distinctly from PointId, including program/function roots.
+   Keep emission sources and initialized-slot metadata separate. Test malformed
+   identities, duplicates and atomic shared work/map limits.
+3. Add required source order/result/error coverage for nested blocks, tail panic,
+   named outer leaves and stopped predecessors. Preserve required-only boundaries;
+   run compiler/strict gates and update classified coverage, the guide and handoffs.
+
+Block completion is not field-value provenance, proof of execution or a completed
+result-slot join. Keep restart backedges, proof evaluation and broader transfers
+for their later dependency-ordered work below.
 
 ## Documentation conventions and layout
 
@@ -2695,8 +2709,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
-subtraction retains its documented limits. The compiler gate passes; the known
-Never-left contextual RHS typing gap above is the immediate next task.
+subtraction retains its documented limits. Never operand contexts are repaired
+above. Ordinary block completion/result observations are the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3254,8 +3268,9 @@ Never-left contextual RHS typing gap above is the immediate next task.
    source cases (`acb7fe0`, `36cead6`) now pass the compiler gate. Checked equality
    categories (`3db93eb`), reports (`308fcbc`), boundary/limit tests (`240cec7`,
    `c685bf3`) and required source cases (`4735fb1`, `ccebb5d`) now pass the compiler
-   gate. Next repair Never-left contextual RHS typing in `check/scalars.rs::binary`,
-   following the dependency-ordered plan above, before further transfer work.
+   gate. Never operand contexts (`418e681`) and their source cases (`e6621f4`) are
+   repaired. Next retain checked ordinary block completion/result metadata and
+   report exact BlockNormal/BlockResult visits, following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
