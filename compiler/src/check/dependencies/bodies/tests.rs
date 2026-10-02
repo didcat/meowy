@@ -107,13 +107,11 @@ pub(crate) fn invalid_bodies_preserve_errors_and_do_not_publish_summaries() {
 pub(crate) fn body_fact_bounds_and_identity_fail_without_partial_publication() {
     let (mut checker, body) = check("x:1;y:x");
     let count = checker.body_facts;
-    checker.track_body(&body, Span::default()).unwrap();
+    let span = checker.bodies[&body.id].span;
+    checker.track_body(&body, span).unwrap();
     assert_eq!(checker.body_facts, count);
     checker.owner += 1;
-    assert_eq!(
-        checker.track_body(&body, Span::default()).unwrap_err().code,
-        "B001"
-    );
+    assert_eq!(checker.track_body(&body, span).unwrap_err().code, "B001");
     assert_eq!(checker.body_facts, count);
     for capacity in [true, false] {
         let mut checker = Checker::new();

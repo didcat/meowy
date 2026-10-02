@@ -1106,7 +1106,21 @@ capability pins and 33 proof obligations are unchanged
 specific Never/RHS-constructor gap; broader contextual builders and composition
 transfers remain separately bounded. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: ordinary block completion and result observations
+## In progress: ordinary block completion and result observations
+
+Resumed from `1717c5b`; only unrelated `docs/programs/hey/` was untracked. Capture
+checked body metadata first, then add block-port validation, collection/integration,
+boundary tests, source coverage and final documentation as independently validated
+slices. Keep BlockId reports separate from PointId operation effects while sharing
+the total map/work budget. Root owns STATUS and commits; delegated edits stay in
+assigned capture/test files. No reference behavior or proof-outcome gate changes.
+
+Checked body spans and shallow completion/result shapes are captured with a 65,536
+body/count limit. Endpoint publication verifies agreement with the checked HIR;
+replays and exhausted budgets publish nothing. All 41 body groups and seven endpoint
+groups pass (`/tmp/meowy-block-bodies.log`, `/tmp/meowy-block-endpoints.log`), including
+five new capture/limit groups. Exact function spans include the parameter list.
+Block-port validation and report collection remain in progress.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently

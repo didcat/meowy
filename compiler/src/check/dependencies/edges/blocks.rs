@@ -68,10 +68,12 @@ impl Checker {
         let key = SequenceSource::Block(body.id);
         let sequence = self.sequences.get(&key).ok_or_else(invalid)?;
         if sequence.owner != self.owner
-            || !self
-                .bodies
-                .get(&body.id)
-                .is_some_and(|body| body.owner == self.owner)
+            || !self.bodies.get(&body.id).is_some_and(|tracked| {
+                tracked.owner == self.owner
+                    && tracked.span == span
+                    && tracked.completion.valid()
+                    && tracked.completion == super::super::bodies::Completion::of(&body.ty)
+            })
         {
             return Err(invalid());
         }
@@ -218,13 +220,14 @@ mod tests {
     pub(crate) fn block_endpoints_bound_atomic_registration_and_identity() {
         let (mut checker, body) = check("1");
         let count = checker.endpoint_edges;
-        checker.block_endpoints(&body, Span::default()).unwrap();
+        let span = checker.bodies[&body.id].span;
+        checker.block_endpoints(&body, span).unwrap();
         assert_eq!(checker.endpoint_edges, count);
         let mut changed = body.clone();
         changed.ty = hir::Type::Never;
         assert!(
             checker
-                .block_endpoints(&changed, Span::default())
+                .block_endpoints(&changed, span)
                 .unwrap_err()
                 .message
                 .contains("identity mismatch")
@@ -234,7 +237,7 @@ mod tests {
         checker.sequence_edges = super::super::MAX_EDGES;
         assert!(
             checker
-                .block_endpoints(&body, Span::default())
+                .block_endpoints(&body, span)
                 .unwrap_err()
                 .message
                 .contains("endpoint budget")

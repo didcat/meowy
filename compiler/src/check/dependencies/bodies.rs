@@ -3,6 +3,9 @@ use crate::{ast::Span, check::Result, diagnostic::Diagnostic, hir};
 
 pub(crate) const MAX_BODY_FACTS: usize = 262_144;
 
+pub(crate) mod completion;
+pub(crate) use completion::{Completion, MAX_BODY_RESULTS};
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Role {
     Data,
@@ -40,6 +43,8 @@ pub(crate) enum Fact {
 pub(crate) struct Body {
     pub(crate) owner: usize,
     pub(crate) parent: Option<hir::PointId>,
+    pub(crate) span: Span,
+    pub(crate) completion: Completion,
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
     pub(crate) storage: Vec<Option<hir::LocalId>>,
@@ -470,6 +475,9 @@ impl Checker {
         {
             return Err(Walk::budget(span));
         }
+        if self.bodies.len() >= MAX_BODY_RESULTS && !self.bodies.contains_key(&block.id) {
+            return Err(Walk::budget(span));
+        }
         let mut walk = Walk {
             pending: Vec::new(),
             facts: Vec::new(),
@@ -494,6 +502,8 @@ impl Checker {
         let body = Body {
             owner: self.owner,
             parent: self.point.filter(|id| self.points[*id].owner == self.owner),
+            span,
+            completion: Completion::of(&block.ty),
             facts: walk.facts,
             links: walk.links,
             storage: walk.storage,
