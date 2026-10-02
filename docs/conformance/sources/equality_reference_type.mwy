@@ -1,0 +1,5 @@
+n : 1
+flag : true
+p : &n
+q : &flag
+value : p == q

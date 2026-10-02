@@ -1,0 +1,3 @@
+a : { -> n : 1 }
+b : { -> n : true }
+value : a == b

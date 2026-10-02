@@ -1055,6 +1055,12 @@ Never left operand and contextual RHS block emitted E207 (`expected Never, found
 List`); its source/diagnostic are `/tmp/meowy-equality-stopped-context.mwy` and `.log`.
 Declared-result helpers isolate stopped evaluation order. That contextual typing
 case remains a separate coverage gap; no reference fixture or diagnostic was changed.
+Execution cases are committed as `4735fb1`. Four required rejection cases now cover
+different record-field types, opaque empty lists, inactive opaque union alternatives
+and different reference pointee types. All four report E222 in debug/release
+(`/tmp/meowy-equality-source-errors.log`); catalog/coverage checks pass for all 252
+cases (`/tmp/meowy-equality-catalog-final.log`). Full compiler/strict gates and the
+final guide/handoff update remain.
 
 Cover the existing aggregate/reference/union equality operations that still
 fall through to Unknown. `dependencies/binaries/types.rs::Class::of` reduces these

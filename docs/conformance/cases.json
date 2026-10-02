@@ -2646,6 +2646,46 @@
         "exit": 1
       },
       "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "equality_record_field_type",
+      "phase": "check",
+      "source": "sources/equality_record_field_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "equality_empty_opaque_list",
+      "phase": "check",
+      "source": "sources/equality_empty_opaque_list.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "equality_inactive_opaque_union",
+      "phase": "check",
+      "source": "sources/equality_inactive_opaque_union.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "equality_reference_type",
+      "phase": "check",
+      "source": "sources/equality_reference_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
     }
   ]
 }

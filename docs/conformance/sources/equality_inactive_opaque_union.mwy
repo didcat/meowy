@@ -1,0 +1,4 @@
+memory : @"memory"
+a <memory.Allocator><null> : null
+b <memory.Allocator><null> : null
+value : a == b
