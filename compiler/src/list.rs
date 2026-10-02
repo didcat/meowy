@@ -210,6 +210,7 @@ impl Checker {
                 ty != Type::Never,
                 span,
             )?;
+            self.list_producer(*capacity, values.len(), ty != Type::Never, span)?;
             return Ok(hir::Expr {
                 kind: hir::ExprKind::List { values, list },
                 ty,
@@ -280,6 +281,7 @@ impl Checker {
             ty != Type::Never,
             span,
         )?;
+        self.list_producer(values.len(), values.len(), ty != Type::Never, span)?;
         Ok(hir::Expr {
             kind: hir::ExprKind::List { values, list },
             ty,

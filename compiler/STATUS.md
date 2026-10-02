@@ -851,7 +851,19 @@ The audit against `ef3fa41` preserves all 215 prior cases, 247 source assets,
 report evidence from source behavior. Full language/release qualification remains
 incomplete. Unrelated `docs/programs/hey/` remains untouched.
 
-Next, implement bounded list-construction observations. `list.rs::list_literal` uses
+## Bounded list-construction observations
+
+In progress: the producer audit confirms that ordinary lists retain input sequences
+without a dedicated header, while union-context lists also retain final conversion
+plans. The working tree starts from `5e3dff1`; only unrelated `docs/programs/hey/`
+is untracked. Existing source order and stopped-input edges will be preserved.
+The first slice captures capacity, source count, owner/control/span, contextual
+identity and checked completion at both construction entry points. All 20 focused
+list groups pass, including three new producer groups; formatting passes
+(`/tmp/meowy-list-producers.log`). Graph edges and language checking are unchanged.
+Next validate exact roots, source slots, stages and edges before collecting reports.
+
+Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
 `dependencies/lists/conversions.rs::contextual_list_sequence`. Their original source
 order and final primary/Forward/Convert/Stopped decisions already feed sequence and

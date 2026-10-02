@@ -334,7 +334,7 @@ mod indices;
 pub(crate) use indices::{Access as IndexAccess, Index};
 
 mod lists;
-pub(crate) use lists::Input as ListInput;
+pub(crate) use lists::{Construction as ListConstruction, Input as ListInput};
 
 mod methods;
 pub(crate) use methods::{Kind as MethodKind, Method};

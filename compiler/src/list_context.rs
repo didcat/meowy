@@ -156,7 +156,7 @@ impl Checker {
             ));
         }
         let list = choices[0].clone();
-        let Type::List { element, .. } = &list else {
+        let Type::List { element, capacity } = &list else {
             unreachable!()
         };
         for (index, reach) in deferred {
@@ -198,6 +198,7 @@ impl Checker {
             ty != Type::Never,
             span,
         )?;
+        self.list_producer(*capacity, values.len(), ty != Type::Never, span)?;
         Ok(hir::Expr {
             kind: hir::ExprKind::List { values, list },
             ty,

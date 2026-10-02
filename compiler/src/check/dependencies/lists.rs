@@ -12,6 +12,9 @@ use crate::{
 mod conversions;
 pub(crate) use conversions::Input;
 
+mod producer;
+pub(crate) use producer::Construction;
+
 impl Checker {
     pub(crate) fn list_sequence(
         &mut self,

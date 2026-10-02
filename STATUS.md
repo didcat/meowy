@@ -25,9 +25,10 @@ source assets, reference contracts and capability exceptions are preserved. The
 (`/tmp/meowy-projection-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, report list construction from its existing input/conversion sequences. Retain
-explicit list identity and checked facts before aggregating stages; generic expression
-sequences must not be treated as lists. The compiler handoff records the ordered plan.
+List-construction work is in progress. Explicit producer identity and checked facts
+now accompany the existing input/conversion sequences; 20 focused list groups pass.
+Next validate exact roots and stages before aggregating reports. The compiler handoff
+records the ordered plan; the complete compiler gate remains pending for this series.
 Existing lifetime/conflict/capability rules remain authoritative. Stage observations
 grant no new borrow authority or proof outcome. Unrelated `docs/programs/hey/` work
 is preserved.
