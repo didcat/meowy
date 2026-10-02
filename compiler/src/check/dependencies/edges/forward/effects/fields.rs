@@ -1,7 +1,7 @@
 use super::*;
 
 impl Checker {
-    pub(super) fn field_effect(
+    pub(in super::super) fn field_effect(
         &mut self,
         reports: &Reports,
         id: PointId,

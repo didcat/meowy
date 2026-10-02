@@ -1,0 +1,50 @@
+use super::*;
+use crate::check::dependencies::bodies::completion::Shape;
+
+impl Checker {
+    pub(super) fn field_slot(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        effect: &Effect,
+        span: Span,
+    ) -> Result<Option<Slot>> {
+        let Effect::Field {
+            input,
+            index,
+            load,
+            normal,
+            ..
+        } = effect
+        else {
+            return Ok(None);
+        };
+        let invalid = || Diagnostic::unsupported("proof field-slot identity mismatch", span);
+        if self.field_effect(reports, id, owner, span)? != *effect {
+            return Err(invalid());
+        }
+        if *load {
+            return Ok(None);
+        }
+        let Some(block) = self.slot_block(reports, *input, owner, span)? else {
+            return Ok(None);
+        };
+        let body = &self.bodies[&block];
+        let Layout::Slots(slots) = &body.layout else {
+            return Ok(None);
+        };
+        let Shape::Record { fields } = body.completion.result else {
+            return Err(invalid());
+        };
+        let slot = index.checked_add(1).ok_or_else(invalid)?;
+        let selected = slots.get(slot).ok_or_else(invalid)?;
+        if self.fields[&id].count != fields
+            || selected.field.is_none()
+            || *normal != (selected.shape != Shape::Never)
+        {
+            return Err(invalid());
+        }
+        Ok(Some(Slot { block, index: slot }))
+    }
+}

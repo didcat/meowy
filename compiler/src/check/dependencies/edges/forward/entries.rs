@@ -15,6 +15,7 @@ pub(crate) struct Reports {
     pub(crate) blocks: super::blocks::Blocks,
     pub(crate) results: super::results::Results,
     pub(crate) consumers: super::consumers::Index,
+    pub(crate) slot_uses: super::consumers::Uses,
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
     pub(crate) condensed: super::calls::Condensed,
@@ -53,6 +54,7 @@ impl Checker {
             blocks: BTreeMap::new(),
             results: BTreeMap::new(),
             consumers: BTreeMap::new(),
+            slot_uses: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
             condensed: super::calls::Condensed::default(),
@@ -91,6 +93,7 @@ impl Checker {
         reports.blocks = self.block_effects(&reports, span)?;
         (reports.results, reports.parts) = self.result_sources(&reports, span)?;
         reports.consumers = self.result_consumers(&reports, span)?;
+        reports.slot_uses = self.slot_uses(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports

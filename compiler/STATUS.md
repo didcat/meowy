@@ -1234,6 +1234,13 @@ combined map/work bounds. Source probes confirm direct unary/binary block primar
 projections; typed scalar inline record constructors retain their existing E207
 boundary. Extraction links will therefore use actual Operation/Projection ports,
 with unary/binary primary steps distinct and coercions left outside this slice.
+The index is committed as `ec42f09`. Direct owned fields now link Operation ports
+to checked record slots using retained field order/count and availability. Owning
+effects retain flags; mutable/aggregate source state is referenced unchanged.
+Two focused groups pass (`/tmp/meowy-field-slot-links.log`), covering exact indices,
+owners, unknown values, excluded local/call/reference/group inputs and the existing
+E201 rejection for selecting a field from a Never block. Primary links and final
+coverage/gates remain.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link
