@@ -1131,8 +1131,12 @@ reserve their share of the same map limit; work uses the existing shared Flow.
 Three collection groups pass (`/tmp/meowy-block-reports.log`), covering partial
 shapes, independent roots, duplicate/stage visits and stopped results. Collection
 is committed as `e5191fc`. All eight validation groups pass, including four new
-corruption/barrier groups (`/tmp/meowy-block-validation-bounds.log`). Exact shared
-limits, source qualification and the final compiler gate remain.
+corruption/barrier groups (`/tmp/meowy-block-validation-bounds.log`), committed as
+`84e8d09`. All six report groups pass, including exact combined map/work limits,
+duplicate stage visits, six merge conflicts and late-failure atomicity
+(`/tmp/meowy-block-limits.log`). Six new required source cases also pass both
+profiles (`/tmp/meowy-block-source-fixtures.log`); their run/rejection catalog slices
+and final coverage/compiler gates remain to be committed.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
