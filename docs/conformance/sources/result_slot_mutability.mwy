@@ -1,0 +1,6 @@
+choose : (flag <boolean>) {
+    row : 'out {
+        | flag | 'out -> n := 1
+        | !flag | 'out -> n : 2
+    }
+}

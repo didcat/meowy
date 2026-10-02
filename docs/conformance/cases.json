@@ -2832,6 +2832,26 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_slot_duplicate",
+      "phase": "check",
+      "source": "sources/result_slot_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_slot_mutability",
+      "phase": "check",
+      "source": "sources/result_slot_mutability.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E206"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

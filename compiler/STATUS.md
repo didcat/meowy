@@ -1201,7 +1201,10 @@ counters. Unknown layouts need no slot payload. Limits are committed as `cda38c4
 Four required run cases now pin omitted nullable fields, branch choices, mutable
 alias replacement, composition/outer-target order and P006 after initialization.
 All pass exact output in both profiles; classified coverage distinguishes those
-runtime cases from conservative source metadata. Two rejection cases follow separately.
+runtime cases from conservative source metadata, committed as `cb60d46`. Required
+E205/E206 fixtures preserve duplicate-slot and mixed-mutability errors. All six
+new cases pass both profiles; catalog/coverage checks pass for 268 cases. The full
+compiler/strict gates and final handoffs remain.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
