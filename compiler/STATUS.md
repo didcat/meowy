@@ -874,8 +874,11 @@ their exact shared totals now include the new list inputs. This integration slic
 needs 11 files after split review: six existing regression files must change with the
 new report family to keep their exact-boundary checks passing. Deferring them would
 leave a failing intermediate commit; no unrelated scenarios are included. All 226
-effect groups now pass (`/tmp/meowy-list-effects.log`); formatting passes. Next add
-contextual corruption, owner/control, exact shared limits and merge-conflict coverage.
+effect groups now pass (`/tmp/meowy-list-effects.log`); formatting passes. Aggregation
+is committed as `6ff637d`. All nine list-report groups now pass, including 72
+contextual corruptions, independent owners/control, conditional calls, deferred
+slots and unchanged source errors (`/tmp/meowy-list-boundaries.log`). Formatting
+passes. Exact shared limits and merge-conflict coverage are the next slice.
 
 Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
