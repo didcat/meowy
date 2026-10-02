@@ -88,13 +88,6 @@ impl Checker {
             || point.span != op.span
             || site >= self.statements
             || op.input == id
-            || !self.sites.get(&site).is_some_and(|site| {
-                site.complete
-                    && site.owner == owner
-                    && site.block == point.block
-                    && site.point == Some(id)
-                    && site.span == point.span
-            })
             || !self.points.get(op.input).is_some_and(|input| {
                 input.complete
                     && input.owner == owner
@@ -181,8 +174,51 @@ impl Checker {
             return Err(invalid());
         }
         let target = first.block;
+        self.emission_statement_site(id, site, block, owner, span)?;
         self.emission_target_scope(block, target, owner, span)?;
         Ok(Some((id, part)))
+    }
+
+    pub(self) fn emission_statement_site(
+        &mut self,
+        mut id: PointId,
+        site: crate::hir::StatementId,
+        block: crate::hir::BlockId,
+        owner: usize,
+        span: Span,
+    ) -> Result<()> {
+        let invalid = || Diagnostic::unsupported("proof emission-effect identity mismatch", span);
+        let site_id = site;
+        let site = self.sites.get(&site).ok_or_else(invalid)?;
+        let root = site.point.ok_or_else(invalid)?;
+        if !site.complete || site.owner != owner || site.block != Some(block) {
+            return Err(invalid());
+        }
+        for _ in 0..=self.points.len() {
+            if !self.flow.spend(4) {
+                return Err(Diagnostic::unsupported(
+                    "proof emission-effect budget exhausted",
+                    span,
+                ));
+            }
+            let point = self.points.get(id).ok_or_else(invalid)?;
+            if !point.complete
+                || point.owner != owner
+                || point.block != Some(block)
+                || point.site != Some(site_id)
+            {
+                return Err(invalid());
+            }
+            if id == root {
+                return if point.kind == PointKind::Stmt && point.span == site.span {
+                    Ok(())
+                } else {
+                    Err(invalid())
+                };
+            }
+            id = point.parent.ok_or_else(invalid)?;
+        }
+        Err(invalid())
     }
 
     pub(self) fn emission_target_scope(

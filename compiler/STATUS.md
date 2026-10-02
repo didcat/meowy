@@ -1001,8 +1001,11 @@ not the Operation registry. The validator now checks statement/input/site/target
 identities, lexical target ancestry, retained composition bounds, aliases and exact
 edges, with bounded field-name work. Both focused groups pass, including 58 corrupt
 metadata cases (`/tmp/meowy-emission-validation.log`), on the separately qualified
-LLVM/Rust upgrade (`712afe6`). Formatting passes. Next aggregate independent target
-and statement-result observations; additional boundary/source coverage follows.
+LLVM/Rust upgrade (`712afe6`). Inline matcher emissions reuse their enclosing
+lifetime site; validation follows a bounded same-site parent chain to its checked
+root. Three validation groups, including six additional site faults, pass
+(`/tmp/meowy-emission-site-validation.log`); formatting passes. Next aggregate
+independent target and statement-result observations with bounded shared payloads.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse

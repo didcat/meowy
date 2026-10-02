@@ -42,6 +42,38 @@ pub(crate) fn emission_validation_keeps_direct_composed_alias_and_outer_targets(
 }
 
 #[test]
+pub(crate) fn emission_validation_keeps_inherited_matcher_lifetime_sites() {
+    for source in ["flag:false;|flag|->1", "a:false;b:false;|a| |b| ->1"] {
+        crate::compile(source).unwrap();
+        let (checker, _) = checked(source, false);
+        let (&id, _) = checker.emissions.first_key_value().unwrap();
+        let point = &checker.points[id];
+        assert_ne!(checker.sites[&point.site.unwrap()].point, Some(id));
+    }
+    for fault in 0..6 {
+        let (mut checker, reports) = checked("flag:false;|flag|->1", false);
+        let (&id, op) = checker.emissions.first_key_value().unwrap();
+        let target = op.targets[0].id;
+        let site = checker.points[id].site.unwrap();
+        let parent = checker.points[id].parent.unwrap();
+        match fault {
+            0 => checker.points[id].parent = None,
+            1 => checker.points[parent].owner += 1,
+            2 => checker.points[parent].site = None,
+            3 => checker.points[parent].complete = false,
+            4 => checker.sites.get_mut(&site).unwrap().point = Some(id),
+            5 => checker.points[parent].parent = Some(parent),
+            _ => unreachable!(),
+        }
+        assert!(
+            checker
+                .emission_effect_stage(&reports, 0, Port::Emission(target), Span::default())
+                .is_err()
+        );
+    }
+}
+
+#[test]
 pub(crate) fn emission_validation_rejects_corrupt_roots_targets_aliases_and_edges() {
     for result in [false, true] {
         for fault in 0..29 {
