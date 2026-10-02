@@ -1,0 +1,18 @@
+d : @"debug"
+mark <uint8> : (n <uint8>) {
+    d.print(n)
+    -> n
+}
+n <uint8> : 2
+xs : [1, mark(n), 3]
+d.print(xs[1])
+d.print(xs[2])
+d.print(xs[3])
+empty <int32[4]> : []
+d.print(empty.size())
+nested <int32[2][2]> : [
+    [{ d.print("inner first"); -> 4 }],
+    [{ d.print("inner second"); -> 5 }]
+]
+d.print(nested[1][1])
+d.print(nested[2][1])

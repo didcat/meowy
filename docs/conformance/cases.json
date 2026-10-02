@@ -2366,6 +2366,38 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "list_construction_order",
+      "phase": "run",
+      "source": "sources/list_construction_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n1\n2\n3\n0\ninner first\ninner second\n4\n5\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "list_construction_context",
+      "phase": "run",
+      "source": "sources/list_construction_context.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "second\n2\n7\ntrue\n"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "list_construction_stopped",
+      "phase": "run",
+      "source": "sources/list_construction_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "leave\nafter leave\nfirst\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
     }
   ]
 }

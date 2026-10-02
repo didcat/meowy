@@ -882,7 +882,12 @@ passes; boundary coverage is committed as `520b8d2`. Exact shared work/effect/pa
 limits, ten atomic conflicts, the 65,536-input boundary and unused-capacity costs
 pass all three limit groups (`/tmp/meowy-list-limits-final.log`); all 12 list-report
 groups passed before the final owner-name cleanup (`/tmp/meowy-list-limits.log`).
-Formatting passes. Required source coverage and the full gate follow.
+Formatting passes; limits are committed as `e90b966`. Three required source cases
+now cover deferred/empty/nested order, contextual primary/union conversion, scoped
+leave and stopped panic suffixes. All three pass exact output/P006 checks in debug
+and release (`/tmp/meowy-list-source-runs.log`). Catalog/coverage checks pass for 224
+cases (`/tmp/meowy-list-catalog.log`), with structural evidence classified separately.
+Source diagnostics are next, followed by the full compiler and strict gates.
 
 Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses

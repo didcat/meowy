@@ -1,0 +1,18 @@
+d : @"debug"
+<T> : <int32><boolean>
+<R> : <{ -> <int32>; tag <boolean> }>
+<S> : <{ -> <string>; tag <boolean> }>
+show : (v <R><S>) {
+    | v <R> | {
+        xs <T[2]><string[2]> : [v, { d.print("second"); -> true }]
+        | xs <T[2]> | {
+            d.print(xs.size())
+            first : xs[1]
+            | first <int32> | d.print(first~<int32>)
+            second : xs[2]
+            | second <boolean> | d.print(second~<boolean>)
+        }
+    }
+}
+row <R> : { -> 7; -> tag : true }
+show(row)

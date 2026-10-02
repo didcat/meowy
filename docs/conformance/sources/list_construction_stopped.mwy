@@ -1,0 +1,22 @@
+d : @"debug"
+'out {
+    xs <int32[2]> : [
+        { d.print("leave"); 'out.leave() },
+        { d.print("late leave"); -> 2 }
+    ]
+}
+d.print("after leave")
+stop <never> : () {
+    d.print("stop")
+    d.panic("halt")
+}
+<T> : <int32><boolean>
+show : (v <int32><string>) {
+    | v <int32> | {
+        d.print("first")
+        xs <T[3]><string[3]> : [v, stop(), { d.print("late panic"); -> true }]
+        d.print("after list")
+    }
+}
+show(7)
+d.print("after call")
