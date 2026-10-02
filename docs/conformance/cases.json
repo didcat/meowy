@@ -2398,6 +2398,46 @@
         "exit": 1
       },
       "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "list_construction_capacity",
+      "phase": "check",
+      "source": "sources/list_construction_capacity.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E103"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "list_construction_ambiguous",
+      "phase": "check",
+      "source": "sources/list_construction_ambiguous.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "list_construction_mixed",
+      "phase": "check",
+      "source": "sources/list_construction_mixed.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "list_construction_range",
+      "phase": "check",
+      "source": "sources/list_construction_range.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E216"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
     }
   ]
 }

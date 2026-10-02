@@ -887,7 +887,11 @@ now cover deferred/empty/nested order, contextual primary/union conversion, scop
 leave and stopped panic suffixes. All three pass exact output/P006 checks in debug
 and release (`/tmp/meowy-list-source-runs.log`). Catalog/coverage checks pass for 224
 cases (`/tmp/meowy-list-catalog.log`), with structural evidence classified separately.
-Source diagnostics are next, followed by the full compiler and strict gates.
+Source execution is committed as `9b32d9f`. Four new required diagnostic cases pin
+capacity, ambiguous context, heterogeneous inference and scalar-range errors. Their
+debug/release checks pass (`/tmp/meowy-list-source-errors.log`); catalog and coverage
+checks pass for 228 cases (`/tmp/meowy-list-catalog-final.log`). The full compiler
+and strict gates are next across the complete series.
 
 Implement bounded list-construction observations. `list.rs::list_literal` uses
 `dependencies/lists.rs::list_sequence`; `list_context.rs::list_union` uses
