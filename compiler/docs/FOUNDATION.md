@@ -328,6 +328,27 @@ shared work/map/payload limits precede copying. Duplicate visits merge flags wit
 another payload copy; failure returns no partial collection. These structural records
 do not infer emitted values, reachability, ownership authority or proof outcomes.
 
+Ordinary block reports use BlockId keys distinct from operation PointIds. Each
+retains its owner, parent, source span and shallow checked completion/result shape,
+with independent normal and result visit flags. Empty program and function bodies
+keep their own root identities. Partial records retain their checked field counts;
+unsupported or oversized shapes remain Other without copying their types.
+
+Validation checks exact root/parent ownership, registered enclosing bodies,
+contained nested/function spans, statement sites, sequence adjacency and endpoint
+order. Synthetic program-root statements retain their separate file spans.
+Unknown statement slots remain barriers. A structural normal visit can coexist with
+a checked Never shape; only a normally completing checked block has a result edge.
+Emitted-slot initialization, later tail effects and result availability stay distinct.
+Dispatch retains its own reports, and required-only blocks add no runtime reports.
+
+The 65,536-body/count cap applies at capture. Operation and block reports share the
+262,144-record map limit and existing work budget; entry and call-graph bounds remain
+separate. Fixed-size block records add no variable payload copies. Duplicate visits
+merge flags, while conflicting identities or exhausted budgets return no partial
+collection. These reports do not identify slot values, join contributing emissions,
+prove execution, extend borrow authority or evaluate proof outcomes.
+
 An internal bounded inventory now enumerates stored edges from all 31 families.
 It preserves duplicates, exact ports, conditional routes and explicit backedges;
 it neither fills gaps nor treats inventory order as execution order. Actual family

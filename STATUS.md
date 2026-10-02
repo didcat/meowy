@@ -7,31 +7,30 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Never operands no longer constrain later binary constructors to the uninhabited
-type. Useful RHS hints and outer numeric widths survive, boolean operands keep
-their required type, and known Never calls preserve stopped edges across record
-contexts. Four checker groups, one native group and four required source cases
-cover construction, order, nested widths and errors in unreachable operands.
-The [compiler handoff](compiler/STATUS.md#stopped-operand-context-repair) records the
-commit series and next ordered plan.
+Ordinary block reports now retain checked source identities, shallow result shapes
+and independent normal/result visits. BlockId keys stay separate from operation
+PointIds while sharing the map/work limits. Unknown statement slots, stopped
+results, grouped source spans and separate module-file spans are preserved.
+Nineteen new internal groups and six required source cases cover capture, validation,
+limits, nested composition, outer leaves, tail effects and result-field errors.
+The [compiler handoff](compiler/STATUS.md#bounded-ordinary-block-completion-and-result-observations)
+records the commit series and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2278 library/915 native
-tests and 62 Python groups (`/tmp/meowy-stopped-context-gate.log`). Conformance has
-256 cases: 237 required passes, 19 unchanged pinned gaps and zero failures in
-debug/release. Strict mode rejects only those gaps
-(`/tmp/meowy-stopped-context-strict.log`). Prior fixtures,
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2297 library/915 native tests
+and 62 Python groups (`/tmp/meowy-block-reports-gate.log`). Conformance has 262 cases:
+243 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode rejects only those gaps (`/tmp/meowy-block-reports-strict.log`). Prior fixtures,
 reference contracts and capability pins are preserved
-(`/tmp/meowy-stopped-context-preservation.log`). The
+(`/tmp/meowy-block-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. All four final documentation checks pass
-(`/tmp/meowy-stopped-context-docs.log`).
+(`/tmp/meowy-block-reports-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, capture bounded checked block completion/result metadata, then report exact
-BlockNormal/BlockResult visits through the existing forward analysis. Preserve
-BlockId identity, independent roots, emission sources and stopped boundaries;
-completion must not imply field values or proof outcomes. Unrelated
-`docs/programs/hey/` is preserved.
+Next, retain bounded checked result-slot identities and conservatively link them
+to existing emission sources. Preserve multiple/unknown contributors and exact
+BlockId/EmitId identities; a completion visit does not identify a runtime value.
+Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Never operand contexts are repaired and pass the full compiler gate.
+Updated: 2026-10-02. Ordinary block reports pass the full compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1106,80 +1106,84 @@ capability pins and 33 proof obligations are unchanged
 specific Never/RHS-constructor gap; broader contextual builders and composition
 transfers remain separately bounded. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: ordinary block completion and result observations
+## Bounded ordinary block completion and result observations
 
-Resumed from `1717c5b`; only unrelated `docs/programs/hey/` was untracked. Capture
-checked body metadata first, then add block-port validation, collection/integration,
-boundary tests, source coverage and final documentation as independently validated
-slices. Keep BlockId reports separate from PointId operation effects while sharing
-the total map/work budget. Root owns STATUS and commits; delegated edits stay in
-assigned capture/test files. No reference behavior or proof-outcome gate changes.
+`Reports.blocks` now retains exact BlockId keys independently of PointId operation
+effects. Each record has its checked owner, parent, source span and shallow
+completion/result shape, with separate normal/result visit flags. Empty program
+and function roots stay independent; partial records keep their actual checked
+field counts. The capture cap is 65,536 bodies/counts, with oversized or unsupported
+shapes retained as Other without walking or copying types.
 
-Checked body spans and shallow completion/result shapes are captured with a 65,536
-body/count limit. Endpoint publication verifies agreement with the checked HIR;
-replays and exhausted budgets publish nothing. All 41 body groups and seven endpoint
-groups pass (`/tmp/meowy-block-bodies.log`, `/tmp/meowy-block-endpoints.log`), including
-five new capture/limit groups. Exact function spans include the parameter list.
-Capture is committed as `1816109`. Ordinary block-port validation now checks exact
-root/parent identities, contained source spans, all sequence points/sites and both
-edge ledgers. Dispatch remains excluded. Four focused groups pass
-(`/tmp/meowy-block-validation.log`), including grouped contextual-list spans and
-Never blocks with structural normal visits but no result. Validation is committed
-as `0d5b5de`. `Reports.blocks` now collects independent normal/result visits by
-BlockId, retaining owner, parent, span and checked completion. Operation effects
-reserve their share of the same map limit; work uses the existing shared Flow.
-Three collection groups pass (`/tmp/meowy-block-reports.log`), covering partial
-shapes, independent roots, duplicate/stage visits and stopped results. Collection
-is committed as `e5191fc`. All eight validation groups pass, including four new
-corruption/barrier groups (`/tmp/meowy-block-validation-bounds.log`), committed as
-`84e8d09`. All six report groups pass, including exact combined map/work limits,
-duplicate stage visits, six merge conflicts and late-failure atomicity
-(`/tmp/meowy-block-limits.log`). Six new required source cases also pass both
-profiles (`/tmp/meowy-block-source-fixtures.log`). Limits are committed as `16a4e99`.
-The first four required run cases and classified coverage now pin nested partial
-composition, tail order, named leaves, unused Never definitions and tail panic.
-The execution cases are committed as `fb8b386`. Two required rejection cases retain
-E204 for a missing outer field and E205 for a nested duplicate emission. All six
-source cases pass both profiles; catalog/coverage checks pass for 262 cases. Prior
-catalog records/expectations are unchanged. The complete compiler gate and final
-handoff remain. The first full gate stopped at Clippy's needless-pub-self warning
-in the new test helper; its visibility is corrected. Review also identified a
-seeded identity gap for missing/foreign enclosing bodies; nested parent validation
-now requires a registered same-owner container, with three added corrupt cases.
-All 14 block validation/report groups pass after the repair
-(`/tmp/meowy-block-parent-check.log`). The full gate then found nine module cases
-whose synthetic root statements lie outside the entry-file span, plus one legacy
-endpoint replay still passing a default span. Only the owner-0 program root is exempt
-from statement-span containment; exact point/site/block/owner/span identities remain
-checked, and function/nested-body containment is preserved.
-The replay uses its original captured span. All 33 module groups and the endpoint
-replay pass (`/tmp/meowy-block-modules.log`, `/tmp/meowy-block-replay.log`); the
-module regression also pins exact wrapper/module spans and result reports. The
-complete compiler gate is being rerun.
+Validation checks root ownership, complete expression parents, registered enclosing
+bodies, source spans, all statement sites, sequence adjacency and exact endpoint
+order. Unknown slots stay barriers. Grouped contextual list bodies may have wider
+parent spans. The synthetic owner-0 module-startup root preserves per-file statement
+spans outside the entry-file span; function and nested-body containment remains
+required. A Never block may have a structural normal visit, but no checked result
+edge. Dispatch keeps its own reports; required-only bodies add no runtime reports.
 
-`dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
-but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
-retains owner/parent/facts without a checked completion/result shape. Record those
-facts before HIR transfer; do not reconstruct them from traversal or point indices.
+Block and operation records share the 262,144-entry map limit and existing Flow work
+budget. Entry/call-graph bounds remain separate. Duplicate visits merge fixed flags;
+conflicts, malformed metadata or exhausted limits publish no partial collection.
+Emission-slot initialization and result availability stay separate. No slot values,
+reachability, ownership authority, restart propagation or proof outcomes are inferred.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture bounded checked body spans/completion | `1816109` |
+| Validate ordinary block ports and endpoint identities | `0d5b5de` |
+| Collect independent normal/result observations | `e5191fc` |
+| Cover corrupt identities and unknown sequence barriers | `84e8d09` |
+| Bound shared maps/work and atomic merges | `16a4e99` |
+| Pin block results, outer leaves and tail-effect order | `fb8b386` |
+| Pin missing and duplicate emitted fields | `b8b80a0` |
+| Require registered enclosing identities | `e00f349` |
+| Preserve module-root source spans and original replay spans | `8d53ba2` |
+
+Nineteen new internal groups cover capture, result shapes, independent roots/stages,
+corrupt metadata, grouped source spans, unknown slots, exact budgets and atomic
+merges. The module regression also pins wrapper/module spans and result reports.
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2297 library/915 native tests,
+32 tooling/30 compiler-harness groups, formatting, Clippy, build and conformance
+(`/tmp/meowy-block-reports-gate.log`). Six required source cases
+pass independently in debug/release (`/tmp/meowy-block-source-fixtures.log`), covering
+nested partial composition, outer leaves, unused Never definitions, tail panic,
+missing fields (E204) and duplicate emissions (E205). Full conformance has 243
+required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-block-reports-strict.log`). All
+four final documentation checks pass (`/tmp/meowy-block-reports-docs.log`).
+
+All 256 prior case records, 288 source assets, 37 reference contracts/hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-block-preservation.log`). Classified coverage distinguishes structural
+reports from observable source behavior. The catalog has 262 cases: 243 required
+and the same 19 pinned gaps. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: bounded block result-slot source links
+
+Completion reports do not yet associate a result slot with its contributing
+emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
+and canonical storage; `emission_sources` resolves each ID to its exact checked
+source. Capture the missing result-slot identities before HIR transfer, then join
+only those existing identities without choosing a runtime contributor.
 
 Dependency-ordered next commit plan:
 
-1. Capture bounded checked block completion and compact result categories/counts
-   in `dependencies/bodies.rs` and `edges/blocks.rs` while `hir::Block.ty` is available.
-   Preserve existing endpoint edges and test empty/scalar/record/partial/Never bodies,
-   independent owners, exact identities and capture limits.
-2. Validate exact block, owner, parent and endpoint identities, then collect
-   independent normal/result observations through the existing forward machinery.
-   Use BlockId identity distinctly from PointId, including program/function roots.
-   Keep emission sources and initialized-slot metadata separate. Test malformed
-   identities, duplicates and atomic shared work/map limits.
-3. Add required source order/result/error coverage for nested blocks, tail panic,
-   named outer leaves and stopped predecessors. Preserve required-only boundaries;
-   run compiler/strict gates and update classified coverage, the guide and handoffs.
+1. Retain a bounded checked result-slot layout in `dependencies/bodies.rs` and the
+   owning block completion code while the HIR type is available. Start with immutable
+   primaries/simple fields, cap slot/name copies, and keep partial/union/unsupported
+   layouts explicit. Test root/nested identities, missing/null slots and atomic limits.
+2. Link supported result slots conservatively to existing emission candidates by
+   exact target/field/EmitId identity. Preserve multiple branch candidates and unknown
+   mutable/alias-overwrite cases. Connect ordinary BlockResult consumers only through
+   existing endpoints; never infer a link from traversal order or matching counts.
+3. Add source order/result/error coverage, update classified evidence and run the
+   compiler/strict gates. Preserve prior cases, capability pins and both handoffs.
 
-Block completion is not field-value provenance, proof of execution or a completed
-result-slot join. Keep restart backedges, proof evaluation and broader transfers
-for their later dependency-ordered work below.
+An observed emission or BlockResult visit does not establish which value supplied
+a slot. Precise branch/overwrite joins, function-return provenance, restart backedges,
+E225 enforcement and proof evaluation remain later dependency-ordered work.
 
 ## Documentation conventions and layout
 
@@ -2759,7 +2763,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
-above. Ordinary block completion/result observations are the immediate next task.
+above. Ordinary block completion/result reports are implemented; bounded result-slot
+source links are the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3318,8 +3323,11 @@ above. Ordinary block completion/result observations are the immediate next task
    categories (`3db93eb`), reports (`308fcbc`), boundary/limit tests (`240cec7`,
    `c685bf3`) and required source cases (`4735fb1`, `ccebb5d`) now pass the compiler
    gate. Never operand contexts (`418e681`) and their source cases (`e6621f4`) are
-   repaired. Next retain checked ordinary block completion/result metadata and
-   report exact BlockNormal/BlockResult visits, following the ordered plan above.
+   repaired. Checked block completion (`1816109`), validation (`0d5b5de`), reports
+   (`e5191fc`), boundaries/limits (`84e8d09`, `16a4e99`), source cases (`fb8b386`,
+   `b8b80a0`) and identity/span repairs (`e00f349`, `8d53ba2`) are implemented.
+   Next retain bounded block result-slot identities and conservative emission-source
+   links, following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
