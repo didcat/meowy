@@ -1,0 +1,10 @@
+d : @"debug"
+choose : (flag <boolean>) {
+    row : 'out {
+        | flag | { 'out -> count := 1; count = 3 }
+        | !flag | { 'out -> count := 2; count = 4 }
+    }
+    d.print(row.count)
+}
+choose(true)
+choose(false)

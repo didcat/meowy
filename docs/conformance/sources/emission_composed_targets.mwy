@@ -1,0 +1,17 @@
+d : @"debug"
+make <{ -> <int32>; a <int32>; b <boolean> }> : () {
+    d.print("source")
+    -> 7
+    -> a : 1
+    -> b : true
+    d.print("source tail")
+}
+copy <{ -> <int32>; a <int32>; b <boolean>; c <int32> }> : 'out {
+    { 'out -> make() }
+    -> c : { d.print("extra"); -> 3 }
+    d.print("tail")
+}
+d.print(copy)
+d.print(copy.a)
+d.print(copy.b)
+d.print(copy.c)

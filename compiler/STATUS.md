@@ -1025,6 +1025,11 @@ Boundary coverage is committed as `7c7e172`. Exact shared work/map/payload limit
 15 merge conflicts, field-name byte bounds and descriptor caps pass all 13 emission
 groups (`/tmp/meowy-emission-limits.log`); formatting passes. Required source order,
 composition, alias, stopped-input and diagnostic cases are next.
+Limits are committed as `e28d8ea`. Four required runtime cases now cover direct/
+composed order, continued tail effects, outer targets, canonical branch aliases and
+stopped inputs/blocks. All four pass exact stdout/P006 checks in debug/release
+(`/tmp/meowy-emission-source-runs.log`); catalog/coverage checks pass for 240 cases
+(`/tmp/meowy-emission-catalog.log`). Required rejection cases are next.
 
 Next, validate and report emission target initialization and statement completion
 from `dependencies/emissions.rs`. Ordered `Port::Emission` stages and the reverse

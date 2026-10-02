@@ -2522,6 +2522,48 @@
         "code": "E204"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "emission_target_order",
+      "phase": "run",
+      "source": "sources/emission_target_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nfield\n1\nprimary\ntail\n7\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "emission_composed_targets",
+      "phase": "run",
+      "source": "sources/emission_composed_targets.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nextra\ntail\n7\n1\ntrue\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "emission_alias_branches",
+      "phase": "run",
+      "source": "sources/emission_alias_branches.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "emission_stopped_input",
+      "phase": "run",
+      "source": "sources/emission_stopped_input.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "leave\nafter leave\nfield\ntail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

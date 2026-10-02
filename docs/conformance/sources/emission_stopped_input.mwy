@@ -1,0 +1,12 @@
+d : @"debug"
+'out {
+    -> { d.print("leave"); 'out.leave() }
+    d.print("late emission")
+}
+d.print("after leave")
+row : {
+    -> count : { d.print("field"); -> 1 }
+    d.print("tail")
+    d.panic("halt")
+}
+d.print("after row")

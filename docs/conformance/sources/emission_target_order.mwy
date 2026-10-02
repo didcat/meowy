@@ -1,0 +1,11 @@
+d : @"debug"
+row : 'out {
+    d.print("before")
+    -> count := { d.print("field"); -> 1 }
+    d.print(count)
+    count = 2
+    { 'out -> { d.print("primary"); -> 7 } }
+    d.print("tail")
+}
+d.print(row)
+d.print(row.count)
