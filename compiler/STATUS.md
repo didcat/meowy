@@ -921,6 +921,9 @@ All 238 effect groups pass, including ordinary/composed/empty dispatch, independ
 visits, nested owners/control, conditional calls and stopped receivers/bodies
 (`/tmp/meowy-dispatch-effects.log`). Formatting passes. Next cover opaque successor
 barriers, foreign receiver bindings, exact budgets and atomic merge failures.
+Aggregation is committed as `73511c7`. All nine dispatch-report groups pass, including
+an opaque-successor walk, ten additional identity faults and preserved source errors
+(`/tmp/meowy-dispatch-boundaries.log`); formatting passes. Budget tests are next.
 Unrelated `docs/programs/hey/` is preserved.
 
 Report dispatch receiver initialization and results. The producer in
