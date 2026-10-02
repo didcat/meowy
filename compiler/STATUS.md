@@ -923,7 +923,10 @@ visits, nested owners/control, conditional calls and stopped receivers/bodies
 barriers, foreign receiver bindings, exact budgets and atomic merge failures.
 Aggregation is committed as `73511c7`. All nine dispatch-report groups pass, including
 an opaque-successor walk, ten additional identity faults and preserved source errors
-(`/tmp/meowy-dispatch-boundaries.log`); formatting passes. Budget tests are next.
+(`/tmp/meowy-dispatch-boundaries.log`); formatting passes. Boundaries are committed
+as `7768051`. All 12 dispatch-report groups pass, including exact work/map limits,
+seven atomic merge conflicts and equal report costs for 1/65,536-byte receivers
+(`/tmp/meowy-dispatch-limits.log`); formatting passes. Required source cases follow.
 Unrelated `docs/programs/hey/` is preserved.
 
 Report dispatch receiver initialization and results. The producer in
