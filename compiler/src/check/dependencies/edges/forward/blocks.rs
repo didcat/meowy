@@ -2,6 +2,9 @@ use super::{entries::Reports, *};
 use crate::check::dependencies::{SequenceSource, sequences::MAX_ITEMS};
 use std::collections::BTreeSet;
 
+mod report;
+pub(crate) use report::Blocks;
+
 impl Checker {
     pub(super) fn validate_block_effect(
         &mut self,

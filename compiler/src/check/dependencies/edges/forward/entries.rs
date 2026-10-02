@@ -11,6 +11,7 @@ pub(crate) struct Reports {
     pub(crate) locals: usize,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
+    pub(crate) blocks: super::blocks::Blocks,
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
     pub(crate) condensed: super::calls::Condensed,
@@ -45,6 +46,7 @@ impl Checker {
             locals,
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
+            blocks: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
             condensed: super::calls::Condensed::default(),
@@ -80,6 +82,7 @@ impl Checker {
             reports.entries.insert(owner, (block, walk));
         }
         reports.effects = self.operation_effects(&reports, span)?;
+        reports.blocks = self.block_effects(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports

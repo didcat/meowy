@@ -122,9 +122,6 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                if self.validate_block_effect(reports, owner, port, span)? {
-                    continue;
-                }
                 if let Some(stage) = self.emission_effect_stage(reports, owner, port, span)? {
                     self.record_emission_effect(
                         owner,

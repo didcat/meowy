@@ -1124,8 +1124,13 @@ Capture is committed as `1816109`. Ordinary block-port validation now checks exa
 root/parent identities, contained source spans, all sequence points/sites and both
 edge ledgers. Dispatch remains excluded. Four focused groups pass
 (`/tmp/meowy-block-validation.log`), including grouped contextual-list spans and
-Never blocks with structural normal visits but no result. Adversarial validation
-and report collection remain in progress.
+Never blocks with structural normal visits but no result. Validation is committed
+as `0d5b5de`. `Reports.blocks` now collects independent normal/result visits by
+BlockId, retaining owner, parent, span and checked completion. Operation effects
+reserve their share of the same map limit; work uses the existing shared Flow.
+Three collection groups pass (`/tmp/meowy-block-reports.log`), covering partial
+shapes, independent roots, duplicate/stage visits and stopped results. Adversarial
+validation, exact-limit coverage and source qualification remain.
 
 `dependencies/edges/blocks.rs` already retains BlockNormal and BlockResult edges,
 but `edges/forward/effects.rs` does not collect those visits. Body metadata currently
