@@ -1,6 +1,9 @@
 use super::*;
 use crate::check::dependencies::{SequenceSource, bodies::Fact};
 
+mod report;
+pub(crate) use report::Observed;
+
 impl Checker {
     pub(super) fn validate_dispatch_effect(
         &mut self,
@@ -185,3 +188,6 @@ impl Checker {
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod tests;

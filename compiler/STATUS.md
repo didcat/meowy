@@ -914,7 +914,13 @@ passes; capture is committed as `833ab1a`. Validation now checks the receiver Bi
 body/local registrations, statement sites, leading None slot and exact dispatch/body
 endpoint edges after HIR transfer. All three focused groups pass, including 78
 malformed cases (`/tmp/meowy-dispatch-validation.log`); formatting passes.
-Next aggregate independent initialization/result visits with fixed-size payloads.
+Validation is committed as `68334bb`. Aggregation now retains independent
+initialization/result visits and fixed-size input/local/body/completion/control
+metadata. Duplicate visits merge flags; stopped receivers yield no dispatch effect.
+All 238 effect groups pass, including ordinary/composed/empty dispatch, independent
+visits, nested owners/control, conditional calls and stopped receivers/bodies
+(`/tmp/meowy-dispatch-effects.log`). Formatting passes. Next cover opaque successor
+barriers, foreign receiver bindings, exact budgets and atomic merge failures.
 Unrelated `docs/programs/hey/` is preserved.
 
 Report dispatch receiver initialization and results. The producer in

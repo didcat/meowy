@@ -89,6 +89,7 @@ pub(crate) enum Effect {
     Exclusive(exclusives::Observed),
     Projection(projections::Observed),
     List(lists::Observed),
+    Dispatch(dispatch::Observed),
     Unknown,
 }
 
@@ -119,7 +120,10 @@ impl Checker {
                 if !self.flow.spend(1) {
                     return Err(budget());
                 }
-                self.validate_dispatch_effect(reports, owner, port, span)?;
+                if self.validate_dispatch_effect(reports, owner, port, span)? {
+                    self.record_dispatch_effect(owner, port, &mut effects, limit, span)?;
+                    continue;
+                }
                 if self.validate_list_construction(reports, owner, port, span)? {
                     self.record_list_effect(owner, port, &mut effects, limit, &mut parts, span)?;
                     continue;
