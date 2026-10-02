@@ -5,6 +5,8 @@ pub(crate) const MAX_BODY_FACTS: usize = 262_144;
 
 pub(crate) mod completion;
 pub(crate) use completion::{Completion, MAX_BODY_RESULTS};
+pub(crate) mod layout;
+pub(crate) use layout::Layout;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Role {
@@ -45,6 +47,7 @@ pub(crate) struct Body {
     pub(crate) parent: Option<hir::PointId>,
     pub(crate) span: Span,
     pub(crate) completion: Completion,
+    pub(crate) layout: Layout,
     pub(crate) facts: Vec<(Fact, Span)>,
     pub(crate) links: Vec<Option<Link>>,
     pub(crate) storage: Vec<Option<hir::LocalId>>,
@@ -478,6 +481,14 @@ impl Checker {
         if self.bodies.len() >= MAX_BODY_RESULTS && !self.bodies.contains_key(&block.id) {
             return Err(Walk::budget(span));
         }
+        let replay = self.bodies.contains_key(&block.id);
+        let (layout, slots, names) = Layout::capture(
+            &block.ty,
+            &mut self.flow,
+            if replay { 0 } else { self.body_slots },
+            if replay { 0 } else { self.body_names },
+            span,
+        )?;
         let mut walk = Walk {
             pending: Vec::new(),
             facts: Vec::new(),
@@ -504,6 +515,7 @@ impl Checker {
             parent: self.point.filter(|id| self.points[*id].owner == self.owner),
             span,
             completion: Completion::of(&block.ty),
+            layout,
             facts: walk.facts,
             links: walk.links,
             storage: walk.storage,
@@ -519,6 +531,8 @@ impl Checker {
             return Ok(());
         }
         self.body_facts += body.facts.len();
+        self.body_slots += slots;
+        self.body_names += names;
         self.bodies.insert(block.id, body);
         Ok(())
     }

@@ -67,12 +67,24 @@ impl Checker {
         }
         let key = SequenceSource::Block(body.id);
         let sequence = self.sequences.get(&key).ok_or_else(invalid)?;
+        let tracked = self.bodies.get(&body.id).ok_or_else(invalid)?;
+        if let super::super::bodies::Layout::Slots(slots) = &tracked.layout
+            && (slots.len() > super::super::bodies::layout::MAX_SLOTS
+                || !self.flow.spend(slots.len()))
+        {
+            return Err(budget());
+        }
+        let (slots, names) = tracked.layout.counts().ok_or_else(invalid)?;
+        if !self.flow.spend(slots + names) {
+            return Err(budget());
+        }
         if sequence.owner != self.owner
             || !self.bodies.get(&body.id).is_some_and(|tracked| {
                 tracked.owner == self.owner
                     && tracked.span == span
                     && tracked.completion.valid()
                     && tracked.completion == super::super::bodies::Completion::of(&body.ty)
+                    && tracked.layout.matches(&body.ty)
             })
         {
             return Err(invalid());

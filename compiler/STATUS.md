@@ -1160,7 +1160,22 @@ capability pins and 33 proof obligations are unchanged
 reports from observable source behavior. The catalog has 262 cases: 243 required
 and the same 19 pinned gaps. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: bounded block result-slot source links
+## In progress: bounded block result-slot source links
+
+Resumed from `0f96936`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Implement separate checked layout capture, report-payload budget
+plumbing, conservative source-link validation/integration, boundary tests, required
+source coverage and final guide/gates. Start immutable scalar slots; mutable,
+aggregate/union or unsupported slots remain explicit unknowns. Candidate emissions
+do not identify a runtime contributor, and an empty set does not prove a null value.
+
+Checked layouts retain an explicit primary plus exact ordered field names,
+mutability and shallow shapes; stopped and unknown roots remain distinct. Slot/name
+copies are capped before allocation, and replay or failure does not alter counters.
+All four layout groups, 45 body groups and seven endpoint groups pass
+(`/tmp/meowy-result-layout-capture.log`, `/tmp/meowy-result-layout-bodies.log`,
+`/tmp/meowy-result-layout-endpoints.log`). Endpoint replay compares complete layout
+identity. Report source links and final gates remain.
 
 Completion reports do not yet associate a result slot with its contributing
 emissions. `Emission` targets already retain EmitId, target BlockId, field/projection
