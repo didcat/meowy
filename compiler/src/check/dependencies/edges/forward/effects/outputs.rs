@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::FormatInput;
 
+mod edges;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
     Prefix,

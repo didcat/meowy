@@ -1645,6 +1645,13 @@ Shared insertion extraction passes all 57 consumer groups
 work charge and insertion behavior. Exact producer-edge replay will be validated
 and committed before sparse-report qualification and consumer integration.
 
+Insertion refactor: `9aaca5d`. Whole-producer replay now passes three new edge groups
+and all 57 consumer groups (`/tmp/meowy-output-edges.log`,
+`/tmp/meowy-output-edges-consumers.log`). It validates all stored children, including
+stopped suffixes, and compares the original prefix/projection/output/terminal edges
+once without rebuilding them. Tests cover 21 identity/edge faults and exact work/caps.
+No output slot links have been added yet.
+
 ### Dependency-ordered plan
 
 1. Extract bounded Uses insertion from `consumers.rs` as a behavior-preserving
