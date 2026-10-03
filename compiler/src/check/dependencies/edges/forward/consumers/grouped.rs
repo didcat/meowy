@@ -106,3 +106,6 @@ mod tests;
 
 #[cfg(test)]
 mod validation;
+
+#[cfg(test)]
+mod limits;
