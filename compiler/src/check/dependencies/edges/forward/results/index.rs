@@ -1,5 +1,4 @@
 use super::*;
-use crate::check::dependencies::emissions::MAX_TARGETS;
 use std::collections::btree_map::Entry;
 
 #[derive(Debug, Default, PartialEq, Eq)]
@@ -31,32 +30,7 @@ impl Checker {
             let super::super::effects::Effect::Emission(observed) = effect else {
                 continue;
             };
-            let len = observed.targets.len();
-            if len > MAX_TARGETS || !self.flow.spend(len + 1) {
-                return Err(budget());
-            }
-            let bytes = observed.targets.iter().try_fold(0usize, |bytes, target| {
-                bytes
-                    .checked_add(target.field.as_ref().map_or(0, String::len))
-                    .ok_or_else(budget)
-            })?;
-            if bytes > MAX_EDGES || !self.flow.spend(bytes + len * 3 + 8) {
-                return Err(budget());
-            }
-            if self.emission_effect_stage(reports, *owner, Port::Normal(statement), span)?
-                != Some((statement, None))
-            {
-                return Err(invalid());
-            }
-            let op = self.emissions.get(&statement).ok_or_else(invalid)?;
-            if observed.input != op.input
-                || observed.composed != op.composed
-                || observed.targets != op.targets
-                || observed.control != op.control
-                || observed.initialized.len() != len
-            {
-                return Err(invalid());
-            }
+            self.validate_emission_report(reports, statement, *owner, observed, span)?;
             for (target, value) in observed.targets.iter().enumerate() {
                 if !observed.initialized[target] {
                     continue;

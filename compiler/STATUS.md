@@ -1730,7 +1730,22 @@ All 310 prior case records, 342 source assets, 37 reference files/reviewed hashe
 19 capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-list-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-### Next: composed-emission source-slot consumers
+## In progress: composed-emission source-slot consumers
+
+Resumed from `673bf59`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Extract shared whole-report qualification first without changing
+result-source candidates. Then add source-layout validation and streamed initialized
+composition targets, followed by independent observation/corruption/resource tests,
+required source cases, guide and final gates. Resolve each source once and retain
+EmitIds, owners, exact slot names/order and Unknown/multiple candidate histories.
+
+Shared qualification passes 35 emission-related groups and all nine result-source
+groups, with formatting/whitespace checks clean (`/tmp/meowy-emission-qualifier.log`,
+`/tmp/meowy-emission-result-source.log`). Three new groups retain independent
+initialized/result flags, absent destination results, 17 corrupt metadata cases and
+exact work. Existing candidate construction and payload accounting are unchanged.
+
+### Dependency-ordered plan
 
 1. Extract shared whole-emission report qualification from the existing checks in
    `results/index.rs` and `effects/emissions.rs`. Preserve exact input/composed/
