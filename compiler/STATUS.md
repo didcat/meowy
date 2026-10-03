@@ -1401,7 +1401,25 @@ All 286 prior case records, 318 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-narrow-preservation.log`). Source execution remains distinct from
 structural eligibility. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: immutable-local eligibility and initializer joins
+## In progress: immutable-local eligibility
+
+Resumed from `fd6cbf3`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. First add a bounded borrowed-type classifier and eligibility reporting
+with focused shape/transfer tests; then separate identity/resource/atomic regressions,
+source cases and classified evidence, and final guide/compiler/strict gates.
+Keep eligible LocalIds under the existing combined fixed-map cap, without type
+copies or payload use. Exclude reference and opaque Foundation types; parameters
+and aliases still require later initializer-index admission. No read joins here.
+
+The initial classifier/report integration passes all nine entry-report groups
+(`/tmp/meowy-local-entries.log`). It walks borrowed type nodes with a 65,536-entry
+pending-stack cap and shared Flow work, validates transferred local/binding IDs,
+and appends eligible IDs after existing slot links under their combined map cap.
+Primitive/record/list/union eligibility excludes mutable bindings, nested mutable
+fields, references and all Foundation variants. Parameters and aliases remain
+shape-eligible without read links. Additional budget/identity tests and gates follow.
+
+### Dependency-ordered plan
 
 1. Extend `edges/forward/entries/locals.rs` to retain bounded eligibility for
    recursively immutable, reference-free local types. `entry_reports_limited`

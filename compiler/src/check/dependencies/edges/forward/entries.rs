@@ -9,6 +9,7 @@ pub(crate) const MAX_REPORT_ITEMS: usize = MAX_EDGES * 3 + MAX_ENTRIES * 2;
 pub(crate) struct Reports {
     pub(crate) index: ForwardIndex,
     pub(crate) locals: usize,
+    pub(crate) eligible: std::collections::BTreeSet<crate::hir::LocalId>,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
     pub(crate) parts: usize,
@@ -48,6 +49,7 @@ impl Checker {
         let mut reports = Reports {
             index: self.forward_index(span)?,
             locals,
+            eligible: std::collections::BTreeSet::new(),
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
             parts: 0,
@@ -94,6 +96,7 @@ impl Checker {
         (reports.results, reports.parts) = self.result_sources(&reports, span)?;
         reports.consumers = self.result_consumers(&reports, span)?;
         reports.slot_uses = self.slot_uses(&reports, span)?;
+        reports.eligible = self.eligible_locals(program, &reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports

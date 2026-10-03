@@ -1,5 +1,7 @@
 use super::*;
 
+mod eligibility;
+
 impl Checker {
     pub(super) fn report_local_count(
         &mut self,
