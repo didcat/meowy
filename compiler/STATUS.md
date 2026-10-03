@@ -1668,8 +1668,12 @@ collection or payload debit. Opaque sources and prior projections before a stopp
 part are preserved. Consumer integration: `7ac15f3`. Four additional groups pass
 (`/tmp/meowy-output-limits.log`), covering sparse owners, projection-only and
 terminal/prefix-only observations, seeded stopped anchors, 18 late faults,
-duplicate visits and exact map/work limits at zero payload. Source commits and
-full gates remain pending.
+duplicate visits and exact map/work limits at zero payload. Boundary tests: `4509d0e`.
+Four source cases pass rebuilt-compiler debug/release (`/tmp/meowy-output-source-final.log`).
+Metadata checks pass at 310 cases, 291 required and 19 unchanged pins
+(`/tmp/meowy-output-metadata.log`). All 306 prior records, 338 assets, 37 references/
+hashes and 33 proof obligations are preserved (`/tmp/meowy-output-preservation.log`).
+Full gates remain pending.
 
 ### Dependency-ordered plan
 

@@ -3248,6 +3248,50 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "output_consumer_order",
+      "phase": "run",
+      "source": "sources/output_consumer_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry init\ninner tail\nouter tail\nentry 7|7/7 end\ndirect tail\n8\nfunction init 2\nfunction tail 2\nfunction 2|2/2 end\nfunction init 3\nfunction tail 3\nfunction 3|3/3 end\nagain 7|7/7 end\n"
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_consumer_panic",
+      "phase": "run",
+      "source": "sources/output_consumer_panic.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "message init\nmessage tail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_consumer_stopped",
+      "phase": "run",
+      "source": "sources/output_consumer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "ready init\nready tail\nprefix 4|4|stop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_consumer_checked_tail",
+      "phase": "check",
+      "source": "sources/output_consumer_checked_tail.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
     }
   ]
 }

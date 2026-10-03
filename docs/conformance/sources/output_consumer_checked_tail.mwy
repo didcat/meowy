@@ -1,0 +1,5 @@
+d : @"debug"
+stop <never> : () { d.panic("halt") }
+row : { -> 1; -> tag : true }
+copy : ((row))
+d.print("prefix {copy}|{row}|{stop()}|{missing} end")

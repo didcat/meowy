@@ -1,0 +1,12 @@
+d : @"debug"
+stop <never> : () { d.print("stop"); d.panic("halt") }
+late <int32> : () { d.print("late input"); -> 9 }
+row <{ -> <int32>; tag <boolean> }> : (({
+    d.print("ready init")
+    -> 4
+    -> tag : true
+    d.print("ready tail")
+}))
+copy : ((row))
+d.print("prefix {copy}|{row}|{stop()}|{late()} end")
+d.print("late output")

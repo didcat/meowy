@@ -1,0 +1,29 @@
+d : @"debug"
+show : d.print
+emit <null> : (n <int32>) {
+    row <{ -> <int32>; tag <boolean> }> : (({
+        d.print("function init {n}")
+        -> n
+        -> tag : true
+        d.print("function tail {n}")
+    }))
+    copy : ((row))
+    saved <{ -> <int32>; tag <boolean> }> : copy
+    show("function {saved}|{row}/{copy} end")
+}
+row <{ -> <int32>; tag <boolean> }> : (({
+    -> {
+        d.print("entry init")
+        -> 7
+        -> tag : true
+        d.print("inner tail")
+    }
+    d.print("outer tail")
+}))
+copy : ((row))
+saved <{ -> <int32>; tag <boolean> }> : copy
+show("entry {saved}|{row}/{copy} end")
+show((({ -> 8; -> tag : false; d.print("direct tail") })))
+emit(2)
+emit(3)
+show("again {saved}|{copy}/{row} end")

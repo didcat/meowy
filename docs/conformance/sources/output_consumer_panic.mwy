@@ -1,0 +1,12 @@
+d : @"debug"
+fail : d.panic
+row <{ -> <int32>; tag <boolean> }> : (({
+    d.print("message init")
+    -> 9
+    -> tag : true
+    d.print("message tail")
+}))
+copy : ((row))
+saved <{ -> <int32>; tag <boolean> }> : copy
+fail("failure {saved}|{row}/{copy} end")
+d.print("late")
