@@ -1422,7 +1422,11 @@ shape-eligible without read links. Implementation: `5af4c18`; Clippy passes
 five additional identity/map/work/atomic/type-boundary groups
 (`/tmp/meowy-local-eligibility-limits.log`). A 65,537-deep type uses one pending
 slot; width 65,537 exceeds the scratch cap. Source cases pass rebuilt-compiler
-debug/release (`/tmp/meowy-local-source-final.log`). Source commits and gates follow.
+debug/release (`/tmp/meowy-local-source-final.log`). Boundary tests: `407c6d7`.
+Source/coverage records now contain 293 cases, 274 required and 19 unchanged pins;
+metadata checks pass (`/tmp/meowy-local-metadata.log`). Preservation against
+`fd6cbf3` passes for 290 prior records, 322 assets, 37 references/hashes and all
+proof obligations (`/tmp/meowy-local-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

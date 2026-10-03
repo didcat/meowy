@@ -1,0 +1,24 @@
+d : @"debug"
+whole := { -> n : 1 }
+before : whole
+whole = { -> n : 2 }
+d.print(before.n)
+d.print(whole.n)
+row : { -> inner : { -> n := 3 }; -> xs := [5, 6] }
+saved : ((row))
+row.inner.n = 4
+row.xs[1] = 7
+d.print(saved.inner.n)
+d.print(row.inner.n)
+d.print(saved.xs[1])
+d.print(row.xs[1])
+n := 8
+value : n
+p : &n
+box : { -> p : p }
+copy : box
+d.print(copy.*p)
+n = 9
+d.print(value)
+after : &n
+d.print(*after)

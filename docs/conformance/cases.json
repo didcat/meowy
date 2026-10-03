@@ -3080,6 +3080,36 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "local_eligibility_values",
+      "phase": "run",
+      "source": "sources/local_eligibility_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "8\nfirst\nsecond\nrow tail\n3\n2\n2\n8\nfirst\nsecond\nrow tail\n5\n4\n4\nempty\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "local_eligibility_barriers",
+      "phase": "run",
+      "source": "sources/local_eligibility_barriers.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n2\n3\n4\n5\n7\n8\n8\n9\n"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
+    },
+    {
+      "id": "local_eligibility_shared_write",
+      "phase": "check",
+      "source": "sources/local_eligibility_shared_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

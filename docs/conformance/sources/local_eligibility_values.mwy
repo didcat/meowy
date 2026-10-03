@@ -1,0 +1,24 @@
+d : @"debug"
+pick <null> : (n <int32>) {
+    row : {
+        -> inner : {
+            -> xs : [
+                { d.print("first"); -> n },
+                { d.print("second"); -> n + 1 }
+            ]
+            -> maybe <int32><null> : n
+        }
+        d.print("row tail")
+    }
+    copy : ((row))
+    d.print(copy.inner.xs[2])
+    | copy.inner.maybe <int32> | d.print(copy.inner.maybe~<int32>)
+    d.print(row.inner.xs[1])
+}
+row : { -> inner : { -> xs : [7, 8]; -> maybe <int32><null> : null } }
+copy : ((row))
+d.print(copy.inner.xs[2])
+pick(2)
+d.print(row.inner.xs[2])
+pick(4)
+| copy.inner.maybe <null> | d.print("empty")
