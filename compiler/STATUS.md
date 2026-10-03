@@ -1338,9 +1338,11 @@ consistent cycles, five/four-hop and exact/one-short work limits, missing visits
 logical terminals. Report/capture registries and payload remain unchanged on failure.
 Six source cases pass rebuilt-compiler debug/release
 (`/tmp/meowy-forward-source-final.log`). Boundary regressions: `c2552a2`.
-The first source slice adds four required runs and classified structural evidence:
-284 catalog cases, 265 required and 19 unchanged pins. E207/E216 fixtures remain
-unstaged for the next slice; complete metadata/final gates follow their registration.
+Four required runs and classified structural evidence are committed as `31f9912`.
+The E207/E216 slice completes the catalog at 286 cases, 267 required and 19 unchanged
+pins. Metadata/coverage checks pass (`/tmp/meowy-forward-metadata.log`). All 280 prior
+records, 312 assets, 37 references/hashes and 33 proof obligations are preserved
+(`/tmp/meowy-forward-preservation.log`). Full compiler/strict and guide gates remain.
 
 Expected contexts introduce checked coercion wrappers around inputs, and ordinary
 bindings retain those outer roots. The resolver now qualifies observed,

@@ -3018,6 +3018,26 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "forward_consumer_type",
+      "phase": "check",
+      "source": "sources/forward_consumer_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "forward_consumer_width",
+      "phase": "check",
+      "source": "sources/forward_consumer_width.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E216"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
     }
   ]
 }
