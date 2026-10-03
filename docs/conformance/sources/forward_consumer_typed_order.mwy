@@ -1,0 +1,22 @@
+d : @"debug"
+n <uint64> : (({
+    -> ((4294967296))
+    d.print("number tail")
+}))
+flag <boolean> : ((false || { d.print("boolean"); -> true }))
+row <{ n <uint64>; flag <boolean> }> : (({
+    -> n : (({ -> n; d.print("field tail") }))
+    -> flag : ((flag))
+    d.print("record tail")
+}))
+xs <uint8[3]> : (({
+    -> [(({ d.print("first"); -> 255 })), (({ d.print("second"); -> 1 }))]
+    d.print("list tail")
+}))
+d.print(n)
+d.print(flag)
+d.print(row.n)
+d.print(row.flag)
+d.print(xs.size())
+d.print(xs[1])
+d.print(xs[2])

@@ -1,0 +1,17 @@
+d : @"debug"
+pick <int32> : (n <int32>) {
+    row <{ n <int32> }> : (({ -> n : ((n)); d.print("pick row") }))
+    -> ((row.n))
+    d.print("pick tail")
+}
+other <int32> : (n <int32>) {
+    row <{ n <int32> }> : (({ -> n : ((n + 1)); d.print("other row") }))
+    -> ((row.n))
+    d.print("other tail")
+}
+row <{ n <int32> }> : (({ -> n : 7; d.print("entry row") }))
+d.print(pick(2))
+d.print(other(4))
+d.print(row.n)
+d.print(pick(3))
+d.print(row.n)

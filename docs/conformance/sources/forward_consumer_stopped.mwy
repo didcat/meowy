@@ -1,0 +1,19 @@
+d : @"debug"
+'out {
+    row <{ n <int32> }> : (({
+        -> n : 1
+        d.print("leave")
+        'out.leave()
+        d.print("late row tail")
+    }))
+    d.print(row.n)
+}
+d.print("after leave")
+xs <int32[1]> : (({
+    -> [1]
+    d.print("stop")
+    d.panic("halt")
+    d.print("late list tail")
+}))
+d.print(xs.size())
+d.print("later")

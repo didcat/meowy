@@ -1337,7 +1337,10 @@ unlinked. Implementation: `97032a4`. Five additional mixed-chain groups now pass
 consistent cycles, five/four-hop and exact/one-short work limits, missing visits and
 logical terminals. Report/capture registries and payload remain unchanged on failure.
 Six source cases pass rebuilt-compiler debug/release
-(`/tmp/meowy-forward-source-final.log`); source commits and final gates remain pending.
+(`/tmp/meowy-forward-source-final.log`). Boundary regressions: `c2552a2`.
+The first source slice adds four required runs and classified structural evidence:
+284 catalog cases, 265 required and 19 unchanged pins. E207/E216 fixtures remain
+unstaged for the next slice; complete metadata/final gates follow their registration.
 
 Expected contexts introduce checked coercion wrappers around inputs, and ordinary
 bindings retain those outer roots. The resolver now qualifies observed,

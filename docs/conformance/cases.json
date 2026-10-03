@@ -2976,6 +2976,48 @@
         "code": "E222"
       },
       "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "forward_consumer_typed_order",
+      "phase": "run",
+      "source": "sources/forward_consumer_typed_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "number tail\nboolean\nfield tail\nrecord tail\nfirst\nsecond\nlist tail\n4294967296\ntrue\n4294967296\ntrue\n2\n255\n1\n"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "forward_consumer_owners",
+      "phase": "run",
+      "source": "sources/forward_consumer_owners.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry row\npick row\npick tail\n2\nother row\nother tail\n5\n7\npick row\npick tail\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "forward_consumer_barriers",
+      "phase": "run",
+      "source": "sources/forward_consumer_barriers.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "row tail\n9\n9\n9\ntrue\ntrue\n-9\n"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "forward_consumer_stopped",
+      "phase": "run",
+      "source": "sources/forward_consumer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "leave\nafter leave\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

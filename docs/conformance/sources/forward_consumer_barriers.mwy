@@ -1,0 +1,16 @@
+d : @"debug"
+row <{ -> <int32>; tag <boolean> }> : (({
+    -> 9
+    -> tag : true
+    d.print("row tail")
+}))
+n <int32> : ((row))
+maybe <int32><null> : ((row))
+p <&int32> : ((&n))
+d.print(n)
+| maybe <int32> | d.print(((maybe~<int32>)))
+d.print(*p)
+d.print(row.tag)
+copy <{ -> <int32>; tag <boolean> }> : ((row))
+d.print(copy.tag)
+d.print(-((copy)))
