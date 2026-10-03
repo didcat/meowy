@@ -1254,7 +1254,10 @@ fixtures pass rebuilt-compiler debug/release (`/tmp/meowy-result-consumer-source
 Field boundaries are committed as `120c657`. Four limit groups preserve exact total
 map/work bounds, zero payload use, duplicate observations, owning flags/projection
 steps and atomic failure after a valid prefix. Test/catalog commits and final
-compiler/coverage gates remain.
+compiler/coverage gates remain. Limits are committed as `2ac60c2`. The first three
+required source cases now pin direct-field order, tails, independent/nested owners
+and E201 for a missing field. Both profiles pass, and the staged coverage report
+tracks the field slice separately from the following primary cases.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link

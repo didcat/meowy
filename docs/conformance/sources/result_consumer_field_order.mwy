@@ -1,0 +1,11 @@
+d : @"debug"
+d.print({
+    -> z : { d.print("z"); -> 9 }
+    -> a : { d.print("a"); -> 1 }
+    d.print("z tail")
+}.z)
+d.print({
+    -> z : { d.print("second z"); -> 8 }
+    -> a : { d.print("second a"); -> 2 }
+    d.print("a tail")
+}.a)

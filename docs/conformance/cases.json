@@ -2852,6 +2852,36 @@
         "code": "E206"
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_consumer_field_order",
+      "phase": "run",
+      "source": "sources/result_consumer_field_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "z\na\nz tail\n9\nsecond z\nsecond a\na tail\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "result_consumer_field_owners",
+      "phase": "run",
+      "source": "sources/result_consumer_field_owners.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "inner tail\nouter tail\n3\nowned tail\nfunction tail\n4\nlocal tail\n5\n5\ncall tail\n6\n5\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "result_consumer_missing_field",
+      "phase": "check",
+      "source": "sources/result_consumer_missing_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/values-and-blocks.md#the-shape-of-a-block-value"
     }
   ]
 }

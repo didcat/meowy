@@ -1,0 +1,26 @@
+d : @"debug"
+d.print({
+    -> n : {
+        -> n : 3
+        d.print("inner tail")
+    }.n
+    d.print("outer tail")
+}.n)
+pick <int32> : () {
+    -> {
+        -> n : 4
+        d.print("owned tail")
+    }.n
+    d.print("function tail")
+}
+d.print(pick())
+row : { -> n : 5; d.print("local tail") }
+d.print(row.n)
+d.print(row.n)
+make <{ n <int32> }> : () {
+    -> n : 6
+    d.print("call tail")
+}
+d.print(make().n)
+p : &row
+d.print(p.n)
