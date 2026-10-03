@@ -1516,7 +1516,11 @@ remain absent. Index integration: `869e5c7`; Clippy passes (`/tmp/meowy-init-lin
 All eight index groups pass (`/tmp/meowy-init-limits.log`), including six added
 duplicate/unknown/exclusion/owner/capacity/work tests. Storage qualification runs
 before every admission filter; late failures preserve reports, registries and payload.
-Source commits and full gates remain pending.
+Boundary regressions: `a433f00`. All three required source cases pass rebuilt-compiler
+debug/release (`/tmp/meowy-init-source-final.log`). Catalog/coverage metadata passes
+at 299 cases, 280 required and 19 unchanged pins (`/tmp/meowy-init-metadata.log`).
+All 296 prior records, 328 assets, 37 references/hashes and 33 proof obligations are
+preserved (`/tmp/meowy-init-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

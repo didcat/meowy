@@ -3142,6 +3142,38 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "initializer_index_owners",
+      "phase": "run",
+      "source": "sources/initializer_index_owners.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry init\n1\nfunction init\n2\nfunction init\narm init\n3\n2\n1\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "initializer_index_sources",
+      "phase": "run",
+      "source": "sources/initializer_index_sources.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "4\n5\n5\n6\n7\n8\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "initializer_index_stopped",
+      "phase": "run",
+      "source": "sources/initializer_index_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "9\n10\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

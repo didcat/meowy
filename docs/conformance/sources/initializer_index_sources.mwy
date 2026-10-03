@@ -1,0 +1,20 @@
+d : @"debug"
+show <null> : (row <{ n <int32> }>) {
+    saved <{ n <int32> }> : ((row))
+    d.print(saved.n)
+}
+show({ -> n : 4 })
+row : {
+    -> inner : { -> n : 5 }
+    saved <{ n <int32> }> : ((inner))
+    d.print(saved.n)
+}
+d.print(row.inner.n)
+value : ({ -> n : 6 }).{
+    saved <{ n <int32> }> : (($))
+    d.print(saved.n)
+    -> $.n + 1
+}
+d.print(value)
+saved : *(&({ -> n : 8 }))
+d.print(saved.n)
