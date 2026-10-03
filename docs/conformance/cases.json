@@ -3174,6 +3174,48 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "read_initializer_order",
+      "phase": "run",
+      "source": "sources/read_initializer_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry init\nentry tail\n5\n-4\n8\nnested tail\n7\nfunction init\nfunction tail\n3\n0\nfunction init\nfunction tail\n7\n0\n5\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "read_initializer_barriers",
+      "phase": "run",
+      "source": "sources/read_initializer_barriers.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n2\n3\n4\n4\n5\n6\n7\n8\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "read_initializer_stopped",
+      "phase": "run",
+      "source": "sources/read_initializer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "init\ntail\n10\nrhs\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "read_initializer_shared_write",
+      "phase": "check",
+      "source": "sources/read_initializer_shared_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

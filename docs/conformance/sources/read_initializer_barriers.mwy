@@ -1,0 +1,36 @@
+d : @"debug"
+show <null> : (row <{ n <int32> }>) {
+    copy : row
+    saved : ((copy))
+    d.print(saved.n)
+}
+row := { -> n : 1 }
+copy : row
+saved : ((copy))
+row = { -> n : 2 }
+d.print(saved.n)
+d.print(row.n)
+n := 3
+p : &n
+q : p
+box : { -> p : q }
+refcopy : box
+d.print(refcopy.*p)
+alias : {
+    -> n : 4
+    copy : n
+    saved : ((copy))
+    d.print(saved)
+}
+d.print(alias.n)
+show({ -> n : 5 })
+value : ({ -> n : 6 }).{
+    copy : $
+    saved : ((copy))
+    d.print(saved.n)
+    -> saved.n + 1
+}
+d.print(value)
+temp : *(&({ -> n : 8 }))
+tempcopy : temp
+d.print(tempcopy.n)

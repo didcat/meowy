@@ -1570,8 +1570,12 @@ exact initializer blocks, including same-owner cross-block jumps. Unary projecti
 owned by expected-value coercions remain separate. Implementation: `1308c62`.
 Four mixed-read adversarial groups now pass (`/tmp/meowy-read-mixed.log`), covering
 Read/anchor/wrapper overlap, consistent initializer cycles, exact nine/eight-hop
-and shared-work limits, missing evidence and payload/report atomicity. Source commits
-and full gates remain pending.
+and shared-work limits, missing evidence and payload/report atomicity. Boundary tests:
+`b2d0033`. Four source cases pass rebuilt-compiler debug/release
+(`/tmp/meowy-read-source-final.log`). Metadata checks pass at 303 cases, 284 required
+and 19 unchanged pins (`/tmp/meowy-read-metadata.log`). Preservation against
+`2acfe01` passes for 299 prior records, 331 assets, 37 references/hashes and all proof
+obligations (`/tmp/meowy-read-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

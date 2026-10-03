@@ -1,0 +1,6 @@
+row : { -> n := 1 }
+copy : row
+saved : ((copy))
+p : saved.&n
+q : p
+*q = 2

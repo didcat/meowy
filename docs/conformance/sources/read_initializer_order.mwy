@@ -1,0 +1,33 @@
+d : @"debug"
+pick <int32> : (n <int32>) {
+    row <{ -> <int32>; n <int32> }> : (({
+        d.print("function init")
+        -> n
+        -> n : n + 1
+        d.print("function tail")
+    }))
+    copy : ((row))
+    saved : copy
+    d.print(saved.n)
+    -> -saved + saved
+}
+row <{ -> <int32>; n <int32> }> : (({
+    d.print("entry init")
+    -> 4
+    -> n : 5
+    d.print("entry tail")
+}))
+copy : ((row))
+saved <{ -> <int32>; n <int32> }> : ((copy))
+d.print(saved.n)
+d.print(-saved)
+d.print(saved + saved)
+{
+    row : { -> n : 7; d.print("nested tail") }
+    copy : row
+    saved : ((copy))
+    d.print(saved.n)
+}
+d.print(pick(2))
+d.print(pick(6))
+d.print(saved.n)

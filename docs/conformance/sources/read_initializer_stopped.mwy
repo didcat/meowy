@@ -1,0 +1,12 @@
+d : @"debug"
+row <{ -> <int32>; n <int32> }> : (({
+    d.print("init")
+    -> 9
+    -> n : 10
+    d.print("tail")
+}))
+copy : row
+saved : ((copy))
+d.print(saved.n)
+d.print(saved + { d.print("rhs"); d.panic("halt"); -> 1 })
+d.print("late")
