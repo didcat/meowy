@@ -28,6 +28,55 @@ pub(crate) struct Observed {
 }
 
 impl Checker {
+    pub(in super::super) fn unchanged_narrowing_input(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<PointId>> {
+        let budget = || Diagnostic::unsupported("proof narrowing-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof narrowing-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(reports.effects.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
+            return Err(budget());
+        }
+        let Some((reported_owner, Effect::Narrowing(observed))) = reports.effects.get(&id) else {
+            return Ok(None);
+        };
+        if !self
+            .flow
+            .spend(self.narrowings.len().checked_ilog2().unwrap_or(0) as usize + 7)
+        {
+            return Err(budget());
+        }
+        let op = self.narrowings.get(&id).ok_or_else(invalid)?;
+        if *reported_owner != owner
+            || op.owner != owner
+            || observed.input != op.input
+            || observed.changed != op.changed
+            || observed.normal != op.normal
+            || observed.control != op.control
+        {
+            return Err(invalid());
+        }
+        if op.changed || !op.normal {
+            return Ok(None);
+        }
+        if observed.operation {
+            return Err(invalid());
+        }
+        if !observed.result {
+            return Ok(None);
+        }
+        let input = op.input;
+        self.narrowing_effect_stage(reports, owner, Port::Normal(id), span)?
+            .ok_or_else(invalid)?;
+        Ok(Some(input))
+    }
+
     pub(super) fn narrowing_effect_stage(
         &mut self,
         reports: &Reports,
@@ -174,3 +223,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod forward;

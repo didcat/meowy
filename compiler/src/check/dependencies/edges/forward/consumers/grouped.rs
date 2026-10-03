@@ -34,7 +34,8 @@ impl Checker {
                 reports.consumers.len().checked_ilog2().unwrap_or(0) as usize
                     + self.group_inputs.len().checked_ilog2().unwrap_or(0) as usize
                     + self.coercions.len().checked_ilog2().unwrap_or(0) as usize
-                    + 6,
+                    + self.narrowings.len().checked_ilog2().unwrap_or(0) as usize
+                    + 7,
             ) {
                 return Err(budget());
             }
@@ -48,9 +49,14 @@ impl Checker {
             }
             let group = self.group_inputs.get(&current).copied();
             let coercion = self.coercions.contains_key(&current);
+            let narrowing = self.narrowings.contains_key(&current);
+            if coercion && narrowing {
+                return Err(invalid());
+            }
             if let Some(&(source_owner, _)) = reports.consumers.get(&current) {
                 if group.is_some()
                     || coercion
+                    || narrowing
                     || source_owner != owner
                     || point.kind != PointKind::Expr
                 {
@@ -60,7 +66,7 @@ impl Checker {
             }
             let block = point.block;
             let next = if let Some(group) = group {
-                if coercion {
+                if coercion || narrowing {
                     return Err(invalid());
                 }
                 if !self
@@ -96,12 +102,16 @@ impl Checker {
                     return Err(invalid());
                 }
                 group.input
-            } else {
-                let Some(input) = self.forward_coercion_input(reports, current, owner, span)?
-                else {
-                    return Ok(None);
-                };
+            } else if let Some(input) =
+                self.forward_coercion_input(reports, current, owner, span)?
+            {
                 input
+            } else if let Some(input) =
+                self.unchanged_narrowing_input(reports, current, owner, span)?
+            {
+                input
+            } else {
+                return Ok(None);
             };
             if !self.flow.spend(
                 self.bodies.len().checked_ilog2().unwrap_or(0) as usize
@@ -140,3 +150,6 @@ mod mixed;
 
 #[cfg(test)]
 mod forward;
+
+#[cfg(test)]
+mod narrowing;

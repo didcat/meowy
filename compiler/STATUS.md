@@ -1361,7 +1361,24 @@ capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-forward-preservation.log`). Source execution and internal structural
 qualification remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: unchanged narrowing before immutable initializer joins
+## In progress: unchanged narrowing consumers
+
+Resumed from `c4cd81d`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. The dependency-ordered slices are: narrow qualification plus bounded
+resolver integration and core regressions; separate corrupt-identity/cycle/budget
+coverage; required source behavior cases and classified evidence; guide/handoff
+and compiler/strict/documentation gates. Require unchanged, normal, observed-result
+wrappers and exact checked metadata. Immutable-local indexing and read joins remain
+subsequent work; source execution does not establish structural provenance.
+
+The helper and resolver integration pass 41 consumer and two qualification groups
+(`/tmp/meowy-narrow-consumers.log`, `/tmp/meowy-narrow-qualifier.log`). Real typed
+local-read roots traverse six wrappers but stop at Read; field wrappers stop at
+their Field operation and retain only existing extraction links. Success through
+all three wrapper kinds to a block anchor requires deliberately seeded evidence.
+Additional identity/budget regressions, source commits and full gates remain pending.
+
+### Dependency-ordered plan
 
 1. Ordinary local reads are wrapped by `expressions.rs::narrow_source`. Reuse
    `effects/narrowing.rs` validation to qualify only unchanged (`changed=false`),
