@@ -1489,7 +1489,25 @@ All 293 prior case records, 325 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-bind-preservation.log`). Source behavior and structural qualification
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: bounded ordinary initializer index
+## In progress: bounded ordinary initializer index
+
+Resumed from `b9d5343`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. First validate bounded parameter exclusions, then separately integrate
+ordinary initializer indexing with focused admission/owner tests; follow with
+separate corruption/duplicate/unknown-root/work
+coverage, required source cases and evidence, and final guide/compiler/strict gates.
+Replace the standalone validation pass without weakening qualification of any
+observed Storage header. Retain only LocalId, statement, owner and optional root;
+no read joins, value inference or candidate copies belong in this slice.
+
+Parameter-context validation now passes three focused groups and all 14 existing
+entry-report groups (`/tmp/meowy-initializer-parameters.log`,
+`/tmp/meowy-init-parameter-entries.log`). It validates main/function entry-body
+identity, FunctionId owners, unique bounded parameter IDs and exact shared work.
+The parameter-only prerequisite leaves Bind validation intact; index integration
+will consume the same helper and replace that validation pass without repeating it.
+
+### Dependency-ordered plan
 
 1. Add a fixed-size LocalId index of qualified ordinary Bind identities, retaining
    statement, owner and optional initializer root. Reuse `binding_effect` and

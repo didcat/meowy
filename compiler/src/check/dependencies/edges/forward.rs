@@ -7,6 +7,7 @@ mod calls;
 mod consumers;
 mod effects;
 mod entries;
+mod initializers;
 mod results;
 mod walk;
 

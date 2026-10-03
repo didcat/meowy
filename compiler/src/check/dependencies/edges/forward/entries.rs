@@ -92,6 +92,7 @@ impl Checker {
             reports.entries.insert(owner, (block, walk));
         }
         (reports.effects, reports.parts) = self.operation_effects_budgeted(&reports, span)?;
+        self.initializer_parameters(program, &reports, span)?;
         self.validate_bindings(&reports, span)?;
         reports.blocks = self.block_effects(&reports, span)?;
         (reports.results, reports.parts) = self.result_sources(&reports, span)?;
