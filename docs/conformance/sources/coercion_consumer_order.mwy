@@ -1,0 +1,30 @@
+d : @"debug"
+take <int32> : (n <int32>) {
+    row <{ -> <int32>; tag <boolean> }> : (({
+        d.print("function init")
+        -> n
+        -> tag : true
+        d.print("function tail")
+    }))
+    copy : ((row))
+    saved <{ -> <int32>; tag <boolean> }> : copy
+    scalar <int32> : ((saved))
+    d.print(scalar)
+    -> -saved
+}
+row <{ -> <int32>; tag <boolean> }> : (({
+    d.print("entry init")
+    -> 7
+    -> tag : true
+    d.print("entry tail")
+}))
+copy : ((row))
+saved <{ -> <int32>; tag <boolean> }> : copy
+scalar <int32> : ((saved))
+optional <int32><null> : ((saved))
+d.print(-saved)
+d.print(scalar)
+| optional<int32> | d.print(optional)
+d.print(take(3))
+d.print(take(5))
+d.print(saved.tag)

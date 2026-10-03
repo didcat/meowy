@@ -3216,6 +3216,38 @@
         "code": "E305"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "coercion_consumer_order",
+      "phase": "run",
+      "source": "sources/coercion_consumer_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry init\nentry tail\n-7\n7\n7\nfunction init\nfunction tail\n3\n-3\nfunction init\nfunction tail\n5\n-5\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "coercion_consumer_stopped",
+      "phase": "run",
+      "source": "sources/coercion_consumer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "init\ntail\n8\nrhs\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "coercion_consumer_width",
+      "phase": "check",
+      "source": "sources/coercion_consumer_width.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
     }
   ]
 }

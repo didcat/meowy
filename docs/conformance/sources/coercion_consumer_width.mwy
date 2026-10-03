@@ -1,0 +1,4 @@
+row <{ -> <int32>; tag <boolean> }> : (({ -> 7; -> tag : true }))
+copy : ((row))
+saved <{ -> <int32>; tag <boolean> }> : copy
+small <uint8> : ((saved))

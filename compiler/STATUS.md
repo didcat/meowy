@@ -1606,7 +1606,11 @@ expectations now retain coercion-owned slot-zero links. Implementation: `5001917
 Four boundary groups pass (`/tmp/meowy-coercion-limits.log`): seeded Stopped
 projection-only evidence, Convert registration rules, 18 late identity/stage faults,
 duplicate visits and exact map/work limits. Primary coercions remain opaque to
-value forwarding. Source commits and full gates remain pending.
+value forwarding. Boundary tests: `0399df9`. Three source cases pass rebuilt-compiler
+debug/release (`/tmp/meowy-coercion-source-final.log`). Metadata checks pass at 306
+cases, 287 required and 19 unchanged pins (`/tmp/meowy-coercion-metadata.log`).
+All 303 prior records, 335 assets, 37 references/hashes and 33 proof obligations are
+preserved (`/tmp/meowy-coercion-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

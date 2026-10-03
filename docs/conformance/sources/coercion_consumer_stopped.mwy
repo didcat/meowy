@@ -1,0 +1,13 @@
+d : @"debug"
+row <{ -> <int32>; tag <boolean> }> : (({
+    d.print("init")
+    -> 8
+    -> tag : true
+    d.print("tail")
+}))
+copy : ((row))
+saved <{ -> <int32>; tag <boolean> }> : copy
+scalar <int32> : ((saved))
+d.print(scalar)
+d.print(-saved + { d.print("rhs"); d.panic("halt"); -> 1 })
+d.print("late")
