@@ -48,7 +48,8 @@ pub(crate) fn local_eligibility_shares_report_capacity_without_payload_copies() 
             + reports.blocks.len()
             + reports.results.len()
             + reports.consumers.len()
-            + reports.slot_uses.len();
+            + reports.slot_uses.len()
+            + reports.initializers.len();
         let before = format!("{reports:?}");
         for room in 0..=reports.eligible.len() {
             let result =
@@ -204,4 +205,33 @@ pub(crate) fn local_eligibility_rejects_nested_reference_mutation_and_foundation
         let result = checker.eligible_local_type(&ty, Span::default(), MAX_TYPES);
         assert_eq!(result.is_ok(), spare == 0);
     }
+}
+
+#[test]
+pub(crate) fn local_eligibility_and_initializer_rebuilds_preserve_shared_reports() {
+    let (mut checker, program) =
+        checked("a:({->n:1}).n;r:{->n:2};copy:r;f<int32>:(p<int32>){local:p;->local}");
+    let reports = checker.entry_reports(&program, Span::default()).unwrap();
+    assert!(!reports.eligible.is_empty() && !reports.initializers.is_empty());
+    assert_eq!(reports.slot_uses.len(), 1);
+    let before = format!("{reports:?}");
+    for _ in 0..2 {
+        assert_eq!(
+            checker
+                .eligible_locals(&program, &reports, Span::default())
+                .unwrap(),
+            reports.eligible
+        );
+        assert_eq!(
+            checker
+                .binding_initializers(&program, &reports, Span::default())
+                .unwrap(),
+            reports.initializers
+        );
+        assert_eq!(
+            checker.slot_uses(&reports, Span::default()).unwrap(),
+            reports.slot_uses
+        );
+    }
+    assert_eq!(format!("{reports:?}"), before);
 }

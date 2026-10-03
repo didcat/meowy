@@ -91,7 +91,9 @@ pub(crate) fn grouped_consumers_charge_exact_shared_work_and_combined_map_room()
     let base = reports.effects.len()
         + reports.blocks.len()
         + reports.results.len()
-        + reports.consumers.len();
+        + reports.consumers.len()
+        + reports.eligible.len()
+        + reports.initializers.len();
     let limit = base + reports.slot_uses.len();
     assert_eq!(
         checker

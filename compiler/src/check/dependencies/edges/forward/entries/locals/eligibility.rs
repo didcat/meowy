@@ -36,6 +36,7 @@ impl Checker {
             .and_then(|room| room.checked_sub(reports.results.len()))
             .and_then(|room| room.checked_sub(reports.consumers.len()))
             .and_then(|room| room.checked_sub(reports.slot_uses.len()))
+            .and_then(|room| room.checked_sub(reports.initializers.len()))
             .ok_or_else(budget)?;
         let mut eligible = BTreeSet::new();
         for (id, ty) in program.locals.iter().enumerate() {

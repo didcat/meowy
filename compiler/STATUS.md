@@ -1537,7 +1537,24 @@ All 296 prior case records, 328 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-init-preservation.log`). Source behavior and structural indexing
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: validated local-read initializer forwarding
+## In progress: local-read initializer forwarding
+
+Resumed from `2acfe01`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. First reorder collection and reserve all shared fixed-map room with
+focused rebuild/capacity checks. Consolidate existing local-read assertions without
+changing coverage, then qualify observed local reads and integrate
+same-owner initializer jumps with focused regressions, followed by separate
+corruption/cycle/work coverage, required source cases, guide and final gates.
+Preserve checked availability versus observed stage/runtime claims. No value,
+field-value, caller, lifetime or proof inference belongs in this slice.
+
+The collection/budget prerequisite passes 45 consumer, eight eligibility and eight
+initializer-index groups (`/tmp/meowy-read-budget-consumers.log`,
+`/tmp/meowy-read-budget-eligibility.log`, `/tmp/meowy-read-budget-index.log`).
+Eligibility/indexing now precede extraction, all retained collections reserve shared
+room, and repeated rebuilds preserve reports and payload. Read behavior is unchanged.
+
+### Dependency-ordered plan
 
 1. Reorder `entries.rs` collection to consumers -> eligible -> initializers ->
    slot_uses. Update `consumers.rs::slot_uses_limited` to subtract eligibility and

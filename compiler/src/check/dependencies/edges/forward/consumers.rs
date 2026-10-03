@@ -33,6 +33,8 @@ impl Checker {
             .and_then(|room| room.checked_sub(reports.blocks.len()))
             .and_then(|room| room.checked_sub(reports.results.len()))
             .and_then(|room| room.checked_sub(reports.consumers.len()))
+            .and_then(|room| room.checked_sub(reports.eligible.len()))
+            .and_then(|room| room.checked_sub(reports.initializers.len()))
             .ok_or_else(budget)?;
         if !self.flow.spend(reports.effects.len() + 1) {
             return Err(budget());

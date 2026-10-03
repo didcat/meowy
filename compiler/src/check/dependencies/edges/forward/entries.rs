@@ -97,9 +97,9 @@ impl Checker {
         reports.blocks = self.block_effects(&reports, span)?;
         (reports.results, reports.parts) = self.result_sources(&reports, span)?;
         reports.consumers = self.result_consumers(&reports, span)?;
-        reports.slot_uses = self.slot_uses(&reports, span)?;
         reports.eligible = self.eligible_locals(program, &reports, span)?;
         reports.initializers = self.binding_initializers(program, &reports, span)?;
+        reports.slot_uses = self.slot_uses(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports

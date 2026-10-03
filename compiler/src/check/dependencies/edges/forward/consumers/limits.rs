@@ -30,7 +30,9 @@ pub(crate) fn slot_uses_share_exact_map_and_work_limits_without_payload() {
     let base = reports.effects.len()
         + reports.blocks.len()
         + reports.results.len()
-        + reports.consumers.len();
+        + reports.consumers.len()
+        + reports.eligible.len()
+        + reports.initializers.len();
     let limit = base + uses.len();
     assert_eq!(uses.len(), 3);
     reports.parts = 0;
