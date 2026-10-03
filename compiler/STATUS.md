@@ -1602,7 +1602,11 @@ and library Clippy (`/tmp/meowy-coercion-consumers.log`,
 `/tmp/meowy-coercion-effects.log`, `/tmp/meowy-coercion-lint.log`). Three new groups
 cover exact Forward/Convert projection ports, independent owners, stage selection
 and opaque parameters/references/calls. Existing local-unary and typed-scalar
-expectations now retain coercion-owned slot-zero links. Boundary tests and gates follow.
+expectations now retain coercion-owned slot-zero links. Implementation: `5001917`.
+Four boundary groups pass (`/tmp/meowy-coercion-limits.log`): seeded Stopped
+projection-only evidence, Convert registration rules, 18 late identity/stage faults,
+duplicate visits and exact map/work limits. Primary coercions remain opaque to
+value forwarding. Source commits and full gates remain pending.
 
 ### Dependency-ordered plan
 
