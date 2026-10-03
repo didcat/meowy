@@ -1561,6 +1561,15 @@ expectations. All 46 consumer groups and focused eligibility/index groups pass
 `/tmp/meowy-read-consolidation-index.log`). This test-only consolidation keeps the
 upcoming behavior change within one reviewable implementation slice.
 
+Consolidation: `64339d7`. Read qualification and resolver integration pass all 46
+consumer groups, three new qualifier groups, 15 entry-report groups, eight index
+groups and Clippy (`/tmp/meowy-read-consumers.log`, `/tmp/meowy-read-qualifier.log`,
+`/tmp/meowy-read-entries.log`, `/tmp/meowy-read-index.log`, `/tmp/meowy-read-lint.log`).
+Owned fields and observed binary primary projections follow immutable copies to
+exact initializer blocks, including same-owner cross-block jumps. Unary projections
+owned by expected-value coercions remain separate. Mixed-read adversarial tests,
+source commits and full gates remain pending.
+
 ### Dependency-ordered plan
 
 1. Reorder `entries.rs` collection to consumers -> eligible -> initializers ->

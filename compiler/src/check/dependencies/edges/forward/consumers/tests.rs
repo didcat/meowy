@@ -62,7 +62,7 @@ pub(crate) fn field_slot_links_keep_unknown_values_and_indirect_inputs_separate(
 }
 
 #[test]
-pub(crate) fn narrowing_consumers_traverse_local_wrappers_without_initializer_joins() {
+pub(crate) fn narrowing_consumers_traverse_local_wrappers_to_exact_initializers() {
     for source in [
         "r:{->n:1};s<{n<int32>}>:((r));v:s.n",
         "f<int32>:(){r:{->n:1};s<{n<int32>}>:((r));->s.n}",
@@ -90,34 +90,69 @@ pub(crate) fn narrowing_consumers_traverse_local_wrappers_without_initializer_jo
                 checker.group_inputs[&raw].input
             };
         }
-        assert!(matches!(reports.effects[&raw].1, Effect::Read { .. }));
-        assert!(
+        let Effect::Read { local, .. } = reports.effects[&raw].1 else {
+            panic!()
+        };
+        let input = reports.initializers[&local].input.unwrap();
+        assert!(reports.consumers.contains_key(&input));
+        assert_eq!(
             checker
-                .grouped_consumer_limited(&reports, root, owner, Span::default(), 6)
-                .unwrap()
-                .is_none()
+                .grouped_consumer_limited(&reports, root, owner, Span::default(), 7)
+                .unwrap(),
+            Some(input)
         );
         let error = checker
-            .grouped_consumer_limited(&reports, root, owner, Span::default(), 5)
+            .grouped_consumer_limited(&reports, root, owner, Span::default(), 6)
             .unwrap_err();
         assert!(error.message.contains("budget"));
-        assert!(reports.slot_uses.is_empty());
+        assert_eq!(reports.slot_uses.len(), 1);
     }
 }
 
 #[test]
-pub(crate) fn local_read_consumer_boundaries() {
-    for source in [
-        "r:{->n:1};v:r.n",
-        "r:{->n:1};v:((r)).n",
-        "r:{->1;->tag:true};x:-r",
-        "r:{->1;->tag:true};x:-((r))",
-        "r<{n<int32>}>:(({->n:1}));v:r.n",
-        "f<int32>:(){r<{n<int32>}>:(({->n:1}));->r.n}",
-        "r<{n<int32>}>:(({->n:1}));copy:r.n;f<int32>:(flag<boolean>){|flag|x:2;n:3;->n}",
-        "a:null;b:true;n:1;s:\"x\";xs:[1,2];r:{->n:1};u<int32><null>:n;f<int32>:(v<int32>){->v};copy:r.n",
+pub(crate) fn local_read_consumers_resolve_immutable_initializer_chains() {
+    for (source, count) in [
+        ("r:{->n:1};v:r.n", 1),
+        ("r:{->n:1};v:((r)).n", 1),
+        ("r:{->1;->tag:true};x:-r", 0),
+        ("r:{->1;->tag:true};x:-((r))", 0),
+        ("r<{n<int32>}>:(({->n:1}));v:r.n", 1),
+        ("f<int32>:(){r<{n<int32>}>:(({->n:1}));->r.n}", 1),
+        (
+            "r<{n<int32>}>:(({->n:1}));copy:r.n;f<int32>:(flag<boolean>){|flag|x:2;n:3;->n}",
+            1,
+        ),
+        (
+            "a:null;b:true;n:1;s:\"x\";xs:[1,2];r:{->n:1};u<int32><null>:n;f<int32>:(v<int32>){->v};copy:r.n",
+            1,
+        ),
+        ("r:{->n:1};s:r;t:s;v:{->t.n}", 1),
+        ("r:{->1;->tag:true};s:r;t:s;v:t+2", 1),
+        ("r:{->true;->tag:true};s:r;v:!s", 0),
     ] {
-        let (_, reports) = checked(source);
-        assert!(reports.slot_uses.is_empty(), "{source}");
+        let (mut checker, reports) = checked(source);
+        assert_eq!(reports.slot_uses.len(), count, "{source}");
+        if count == 0 {
+            assert!(reports.effects.values().any(
+                |(_, effect)| matches!(effect, Effect::Coercion(op) if op.primary && op.projected)
+            ));
+            continue;
+        }
+        let (&port, &(owner, slot)) = reports.slot_uses.first_key_value().unwrap();
+        let input = match port {
+            Port::Operation(id) => checker.fields[&id].input,
+            Port::Projection { point, step } => match &reports.effects[&point].1 {
+                Effect::Unary(op) => op.input,
+                Effect::Binary(op) => op.inputs[step],
+                _ => panic!(),
+            },
+            _ => panic!(),
+        };
+        let anchor = checker
+            .grouped_consumer(&reports, input, owner, Span::default())
+            .unwrap()
+            .unwrap();
+        assert_eq!(reports.consumers[&anchor], (owner, slot.block));
+        assert_eq!(checker.bodies[&slot.block].owner, owner);
     }
 }

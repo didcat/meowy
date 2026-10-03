@@ -1,5 +1,7 @@
 use super::*;
 
+mod initializers;
+
 impl Checker {
     pub(super) fn read_effect(
         &mut self,

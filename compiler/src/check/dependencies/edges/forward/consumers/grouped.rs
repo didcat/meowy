@@ -35,7 +35,8 @@ impl Checker {
                     + self.group_inputs.len().checked_ilog2().unwrap_or(0) as usize
                     + self.coercions.len().checked_ilog2().unwrap_or(0) as usize
                     + self.narrowings.len().checked_ilog2().unwrap_or(0) as usize
-                    + 7,
+                    + self.local_reads.len().checked_ilog2().unwrap_or(0) as usize
+                    + 8,
             ) {
                 return Err(budget());
             }
@@ -50,13 +51,15 @@ impl Checker {
             let group = self.group_inputs.get(&current).copied();
             let coercion = self.coercions.contains_key(&current);
             let narrowing = self.narrowings.contains_key(&current);
-            if coercion && narrowing {
+            let read = self.local_reads.contains_key(&current);
+            if usize::from(coercion) + usize::from(narrowing) + usize::from(read) > 1 {
                 return Err(invalid());
             }
             if let Some(&(source_owner, _)) = reports.consumers.get(&current) {
                 if group.is_some()
                     || coercion
                     || narrowing
+                    || read
                     || source_owner != owner
                     || point.kind != PointKind::Expr
                 {
@@ -66,7 +69,7 @@ impl Checker {
             }
             let block = point.block;
             let next = if let Some(group) = group {
-                if coercion || narrowing {
+                if coercion || narrowing || read {
                     return Err(invalid());
                 }
                 if !self
@@ -108,6 +111,10 @@ impl Checker {
                 input
             } else if let Some(input) =
                 self.unchanged_narrowing_input(reports, current, owner, span)?
+            {
+                input
+            } else if let Some(input) =
+                self.read_initializer_input(reports, current, owner, span)?
             {
                 input
             } else {
