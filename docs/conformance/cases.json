@@ -3038,6 +3038,48 @@
         "code": "E216"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "narrow_consumer_reads",
+      "phase": "run",
+      "source": "sources/narrow_consumer_reads.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry row\n7\npick row\npick tail\n2\n7\npick row\npick tail\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "narrow_consumer_barriers",
+      "phase": "run",
+      "source": "sources/narrow_consumer_barriers.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n5\n7\n9\n11\nempty\n"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
+    },
+    {
+      "id": "narrow_consumer_stopped",
+      "phase": "run",
+      "source": "sources/narrow_consumer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "row tail\n4\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "narrow_consumer_unproven",
+      "phase": "check",
+      "source": "sources/narrow_consumer_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

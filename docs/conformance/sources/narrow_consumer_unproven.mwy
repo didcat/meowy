@@ -1,0 +1,4 @@
+read <int32> : (row <{ n <int32><null> }>) {
+    copy <{ n <int32><null> }> : ((row))
+    -> ((copy.n))~<int32>
+}

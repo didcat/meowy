@@ -1,0 +1,14 @@
+d : @"debug"
+stop <{ n <int32> }> : (row <{ n <int32> }>) {
+    copy <{ n <int32> }> : ((row))
+    d.print(((copy)).n)
+    d.print("stop")
+    d.panic("halt")
+}
+row <{ n <int32> }> : (({
+    -> n : 4
+    d.print("row tail")
+}))
+value <int32> : ((stop(((row)))).n)
+d.print(value)
+d.print("late")

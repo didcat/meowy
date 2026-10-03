@@ -1380,8 +1380,11 @@ Implementation: `a8442b3`. Four seeded mixed-chain and four helper groups pass
 (`/tmp/meowy-narrow-mixed.log`, `/tmp/meowy-narrow-qualifier-limits.log`), covering
 19 corruption variants, producer overlaps, cycles and exact hop/work limits without
 report or payload mutation. All four new source cases pass rebuilt-compiler
-debug/release (`/tmp/meowy-narrow-source-final.log`). Source commits and full gates
-remain pending.
+debug/release (`/tmp/meowy-narrow-source-final.log`). Boundary regressions: `554cbfb`.
+The source slice registers 290 cases, 271 required and 19 unchanged pins, with
+classified evidence and passing metadata checks (`/tmp/meowy-narrow-metadata.log`).
+All 286 prior records, 318 source assets, 37 references/hashes and 33 proof obligations
+are preserved (`/tmp/meowy-narrow-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

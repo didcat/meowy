@@ -1,0 +1,21 @@
+d : @"debug"
+show <null> : (v <int32><null>) {
+    | v <int32> | {
+        copy <int32> : ((v))
+        d.print(copy)
+    }
+    | v <null> | d.print("empty")
+}
+n := 3
+saved : ((n))
+n = 5
+p : &n
+d.print(saved)
+d.print(*p)
+row : { -> inner : { -> n := 7 } }
+before : ((row.inner.n))
+row.inner.n = 9
+d.print(before)
+d.print(((row.inner)).n)
+show(11)
+show(null)
