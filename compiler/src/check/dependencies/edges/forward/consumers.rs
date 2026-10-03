@@ -57,17 +57,32 @@ impl Checker {
                 }
             }
             for (port, slot) in slots.into_iter().flatten() {
-                if uses.len() >= limit
-                    || !self
-                        .flow
-                        .spend(uses.len().checked_ilog2().unwrap_or(0) as usize + 2)
-                {
-                    return Err(budget());
-                }
-                uses.insert(port, (*owner, slot));
+                self.record_slot_use(&mut uses, port, (*owner, slot), limit, span)?;
             }
         }
         Ok(uses)
+    }
+
+    pub(super) fn record_slot_use(
+        &mut self,
+        uses: &mut Uses,
+        port: Port,
+        value: (usize, Slot),
+        limit: usize,
+        span: Span,
+    ) -> Result<()> {
+        if uses.len() >= limit
+            || !self
+                .flow
+                .spend(uses.len().checked_ilog2().unwrap_or(0) as usize + 2)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof slot-use budget exhausted",
+                span,
+            ));
+        }
+        uses.insert(port, value);
+        Ok(())
     }
 
     pub(self) fn slot_block(

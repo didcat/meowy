@@ -1631,7 +1631,21 @@ All 303 prior case records, 335 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-coercion-preservation.log`). Structural projection-only evidence remains
 distinct from observable source execution. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: output-owned primary consumers
+## In progress: output-owned primary consumers
+
+Resumed from `0fcaae0`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. First extract shared slot insertion without changing behavior. Then
+validate whole output edges and sparse observed reports before linking, add streamed
+projection consumers with focused tests, and separately cover corruption/stops/limits,
+source evidence and final gates. Keep original formatting indices, independent stage
+flags and shared map/work bounds; no new input/payload copies or value inference.
+
+Shared insertion extraction passes all 57 consumer groups
+(`/tmp/meowy-output-insertion.log`). It preserves the existing capacity check,
+work charge and insertion behavior. Exact producer-edge replay will be validated
+and committed before sparse-report qualification and consumer integration.
+
+### Dependency-ordered plan
 
 1. Extract bounded Uses insertion from `consumers.rs` as a behavior-preserving
    prerequisite, retaining existing insertion behavior and map/work checks.
