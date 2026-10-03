@@ -114,8 +114,8 @@ pub(crate) fn local_read_consumers_resolve_immutable_initializer_chains() {
     for (source, count) in [
         ("r:{->n:1};v:r.n", 1),
         ("r:{->n:1};v:((r)).n", 1),
-        ("r:{->1;->tag:true};x:-r", 0),
-        ("r:{->1;->tag:true};x:-((r))", 0),
+        ("r:{->1;->tag:true};x:-r", 1),
+        ("r:{->1;->tag:true};x:-((r))", 1),
         ("r<{n<int32>}>:(({->n:1}));v:r.n", 1),
         ("f<int32>:(){r<{n<int32>}>:(({->n:1}));->r.n}", 1),
         (
@@ -128,22 +128,17 @@ pub(crate) fn local_read_consumers_resolve_immutable_initializer_chains() {
         ),
         ("r:{->n:1};s:r;t:s;v:{->t.n}", 1),
         ("r:{->1;->tag:true};s:r;t:s;v:t+2", 1),
-        ("r:{->true;->tag:true};s:r;v:!s", 0),
+        ("r:{->true;->tag:true};s:r;v:!s", 1),
     ] {
         let (mut checker, reports) = checked(source);
         assert_eq!(reports.slot_uses.len(), count, "{source}");
-        if count == 0 {
-            assert!(reports.effects.values().any(
-                |(_, effect)| matches!(effect, Effect::Coercion(op) if op.primary && op.projected)
-            ));
-            continue;
-        }
         let (&port, &(owner, slot)) = reports.slot_uses.first_key_value().unwrap();
         let input = match port {
             Port::Operation(id) => checker.fields[&id].input,
             Port::Projection { point, step } => match &reports.effects[&point].1 {
                 Effect::Unary(op) => op.input,
                 Effect::Binary(op) => op.inputs[step],
+                Effect::Coercion(op) => op.input,
                 _ => panic!(),
             },
             _ => panic!(),

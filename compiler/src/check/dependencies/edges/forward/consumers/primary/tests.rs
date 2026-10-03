@@ -54,7 +54,7 @@ pub(crate) fn primary_slot_links_preserve_projection_only_observation_before_sto
 
 #[test]
 pub(crate) fn primary_slot_links_do_not_infer_projection_visits_or_unwrap_other_sources() {
-    for source in ["x:-{->1}", "r:{->1;->tag:true};x<int32>:r"] {
+    for source in ["x:-{->1}", "r:={->1;->tag:true};x<int32>:r"] {
         let (_, reports) = checked(source);
         assert!(reports.slot_uses.is_empty(), "{source}");
     }

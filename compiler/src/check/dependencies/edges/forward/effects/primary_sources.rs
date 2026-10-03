@@ -13,6 +13,36 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof primary-source identity mismatch", span);
         let mut inputs = [None; 2];
         match effect {
+            Effect::Coercion(op) => {
+                if !op.projected && !op.operation && !op.result {
+                    return Err(invalid());
+                }
+                for (port, seen) in [
+                    (Port::Projection { point: id, step: 0 }, op.projected),
+                    (Port::Operation(id), op.operation),
+                    (Port::Normal(id), op.result),
+                ] {
+                    if !seen {
+                        continue;
+                    }
+                    if !self.flow.spend(7) {
+                        return Err(budget());
+                    }
+                    let stage = self
+                        .coercion_effect_stage(reports, owner, port, span)?
+                        .ok_or_else(invalid)?;
+                    if op.input != stage.input
+                        || op.op != stage.op
+                        || op.primary != stage.primary
+                        || op.control != stage.control
+                    {
+                        return Err(invalid());
+                    }
+                }
+                if op.projected {
+                    inputs[0] = Some(op.input);
+                }
+            }
             Effect::Unary(op) => {
                 if !op.projected && !op.operation && !op.result {
                     return Err(invalid());

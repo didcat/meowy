@@ -1588,7 +1588,23 @@ All 299 prior case records, 331 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-read-preservation.log`). Structural links do not evaluate candidate
 values or proof outcomes. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: coercion-owned primary consumers
+## In progress: coercion-owned primary consumers
+
+Resumed from `c10b693`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. First add coercion-stage validation and primary-input selection with
+focused Forward/Convert and source-port regressions. Follow with separate stopped/
+corruption/resource tests, required source cases and evidence, and final guide/gates.
+Keep primary coercions opaque as value sources; retain observed projection-only
+evidence without requiring later operation/result stages or inventing completion.
+
+Core consumer integration passes 53 consumer groups, nine coercion-effect groups
+and library Clippy (`/tmp/meowy-coercion-consumers.log`,
+`/tmp/meowy-coercion-effects.log`, `/tmp/meowy-coercion-lint.log`). Three new groups
+cover exact Forward/Convert projection ports, independent owners, stage selection
+and opaque parameters/references/calls. Existing local-unary and typed-scalar
+expectations now retain coercion-owned slot-zero links. Boundary tests and gates follow.
+
+### Dependency-ordered plan
 
 1. Extend `effects/primary_sources.rs::primary_effect_inputs` for `Effect::Coercion`.
    Revalidate each observed Projection(step0), Operation and Normal stage with
