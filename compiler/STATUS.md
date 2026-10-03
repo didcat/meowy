@@ -1457,8 +1457,12 @@ identities, checked sites and producer edges. Three focused groups pass, includi
 matcher lifetime sites, stopped initializer/body separation and synthetic module
 spans (`/tmp/meowy-bind-core.log`). Existing 14 entry-report, four module-initializer
 and four raw Storage-effect groups pass (`/tmp/meowy-bind-entries.log`,
-`/tmp/meowy-bind-modules.log`, `/tmp/meowy-bind-effects.log`). Broader corruption,
-absent-input/work tests, source commits and final gates remain pending.
+`/tmp/meowy-bind-modules.log`, `/tmp/meowy-bind-effects.log`). Implementation:
+`7ec1583`; library Clippy passes (`/tmp/meowy-bind-lint.log`). All seven Bind groups
+now pass (`/tmp/meowy-bind-limits.log`), including 35 identity faults, absent versus
+unknown inputs, matcher cycles, exact shared work and atomic late failures.
+Source cases pass rebuilt-compiler debug/release (`/tmp/meowy-bind-source-final.log`).
+Source commits and full gates remain pending.
 
 ### Dependency-ordered plan
 
