@@ -7,29 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Observed Bind metadata now receives exact qualification through a separate
-entry-report validation pass. It rechecks checked headers, canonical storage,
-statement/site/body identities and ordered edges while preserving raw Storage
-reports. Matcher lifetime sites, synthetic module spans and later body stops retain
-their distinct behavior. Missing initializers remain explicit unknowns; no index or
-read join is added. Seven internal groups and three required source cases cover
-identity failures, shared work, order, stopping and E207 rejection. The
-[compiler handoff](compiler/STATUS.md#exact-observed-bind-qualification) records
-the three implementation/test commits and next ordered plan.
+Entry reports now retain a bounded ordinary initializer index with exact local,
+statement, owner and optional outer root identities. Storage validation precedes
+admission; parameters, aliases, receivers, temporary cells and ineligible values
+remain excluded. Duplicate declarations and exhausted map/work bounds fail atomically.
+Unknown roots remain explicit and reads remain unlinked. Eleven internal groups
+and three required source cases cover ownership, exclusions, resource limits,
+order and stopping. The
+[compiler handoff](compiler/STATUS.md#bounded-ordinary-initializer-index) records
+the four implementation/test commits and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2382 library/915 native tests
-and 62 Python groups (`/tmp/meowy-bind-gate.log`). Conformance has 296 cases:
-277 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-bind-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-bind-docs.log`).
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2393 library/915 native tests
+and 62 Python groups (`/tmp/meowy-init-gate.log`). Conformance has 299 cases:
+280 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-init-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-init-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-bind-preservation.log`). The
+preserved (`/tmp/meowy-init-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, index qualified ordinary Bind initializers using immutable-local eligibility.
-Read integration follows separately with explicit owner checks and shared budgets.
+Next, move eligibility/index collection before slot-use resolution with shared-budget
+accounting, then add validated same-owner read-to-initializer forwarding.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Exact Bind qualification passes the compiler and documentation gates.
+Updated: 2026-10-03. Ordinary initializer indexing passes the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1445,8 +1445,8 @@ remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
 ## Exact observed Bind qualification
 
-A separate validation pass now qualifies observed Bind metadata before later
-initializer indexing. Raw Storage reports retain their existing representation.
+The Bind qualifier validates observed Storage metadata during initializer indexing.
+Raw Storage reports retain their existing representation.
 The qualifier requires exact reported/checked owner, kind, local, canonical storage,
 input and control headers; complete statement/site identities; registered Operation
 ownership; local/binding bounds; checked containing-body ownership; and exact
@@ -1462,8 +1462,8 @@ an earlier observed Bind. No new normal-completion claim is introduced.
 A qualified absent initializer is `Some(Binding { input: None, .. })`, distinct from
 an unobserved/non-Bind result. It requires exactly Operation-to-Normal; removing an
 input while retaining stale edges fails. Work, identity and cycle failures preserve
-all reports, captured registries and payload. No map, initializer index or read join
-is added; eligibility and alias/parameter admission remain separate.
+all reports, captured registries and payload. Qualification alone adds no map or
+read join; eligibility and alias/parameter admission belong to the index below.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -1489,64 +1489,77 @@ All 293 prior case records, 325 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-bind-preservation.log`). Source behavior and structural qualification
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: bounded ordinary initializer index
+## Bounded ordinary initializer index
 
-Resumed from `b9d5343`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. First validate bounded parameter exclusions, then separately integrate
-ordinary initializer indexing with focused admission/owner tests; follow with
-separate corruption/duplicate/unknown-root/work
-coverage, required source cases and evidence, and final guide/compiler/strict gates.
-Replace the standalone validation pass without weakening qualification of any
-observed Storage header. Retain only LocalId, statement, owner and optional root;
-no read joins, value inference or candidate copies belong in this slice.
+Entry reports now index admitted ordinary Bind identities by LocalId, retaining
+statement, owner and optional outer input root. The builder qualifies every observed
+Storage header before admission, replacing the earlier validation-only pass. Eligible
+immutable locals must be their own canonical storage and have no alias, parameter,
+receiver or temporary-cell classification. Writes and missing observations add no
+entry; malformed excluded Storage still fails validation.
 
-Parameter-context validation now passes three focused groups and all 14 existing
-entry-report groups (`/tmp/meowy-initializer-parameters.log`,
-`/tmp/meowy-init-parameter-entries.log`). It validates main/function entry-body
-identity, FunctionId owners, unique bounded parameter IDs and exact shared work.
-The parameter-only prerequisite leaves Bind validation intact; index integration
-will consume the same helper and replace that validation pass without repeating it.
+Parameters come from borrowed Program functions with checked FunctionId owners and
+entry/body identities, independent of vector order. Duplicate/out-of-range parameters,
+conflicting function contexts and exhausted bounded scratch/work fail. The retained
+index shares remaining capacity with effects, blocks, results, consumers, slot uses
+and eligibility; it copies no types/candidates and leaves variable payload unchanged.
+Rebuilds ignore the old index size because they return a fresh replacement.
 
-Parameter prerequisite: `d3b22ec`. Index integration passes both new admission/root
-groups, all 38 initializer-related groups, 14 entry-report groups and seven Bind
-qualification groups (`/tmp/meowy-init-core.log`, `/tmp/meowy-init-integration.log`,
-`/tmp/meowy-init-entries.log`, `/tmp/meowy-init-bindings.log`). Eligible ordinary
-locals retain exact outer roots and owners; special cells and stopped declarations
-remain absent. Index integration: `869e5c7`; Clippy passes (`/tmp/meowy-init-lint.log`).
-All eight index groups pass (`/tmp/meowy-init-limits.log`), including six added
-duplicate/unknown/exclusion/owner/capacity/work tests. Storage qualification runs
-before every admission filter; late failures preserve reports, registries and payload.
-Boundary regressions: `a433f00`. All three required source cases pass rebuilt-compiler
-debug/release (`/tmp/meowy-init-source-final.log`). Catalog/coverage metadata passes
-at 299 cases, 280 required and 19 unchanged pins (`/tmp/meowy-init-metadata.log`).
-All 296 prior records, 328 assets, 37 references/hashes and 33 proof obligations are
-preserved (`/tmp/meowy-init-preservation.log`). Full gates remain pending.
+A second statement for an admitted LocalId is a conflict even if owner/input agrees.
+Missing roots remain explicit indexed unknowns. Conditional declarations retain
+structural history without proving execution or selecting a value. Exact outer
+roots remain unresolved, owners stay independent, and local reads remain unlinked.
+Late failures publish no partial map or report mutation.
 
-### Dependency-ordered plan
+| Reviewable slice | Commit |
+| --- | --- |
+| Validate bounded function/parameter exclusion context | `d3b22ec` |
+| Index qualified ordinary initializer identities | `869e5c7` |
+| Cover conflicts, unknown roots, exclusions and shared limits | `a433f00` |
+| Pin source order, special sources and stopped initializers | `2d460d2` |
 
-1. Add a fixed-size LocalId index of qualified ordinary Bind identities, retaining
-   statement, owner and optional initializer root. Reuse `binding_effect` and
-   `Reports.eligible`; qualification alone grants no initializer authority. Reject
-   conflicting declarations and preserve qualified missing inputs as explicit
-   unknowns. Exclude aliases directly even when local equals canonical storage,
-   parameters, receiver/temporary cells and writes. Borrow function parameter IDs
-   from the Program with bounded work/scratch; validate owners via FunctionId and
-   entry-body identities, not vector order. Qualified statements supply index owners;
-   local IDs alone carry no owner identity.
-2. Append indexing after eligibility and account for its entries alongside existing
-   effect/block/result/consumer/slot-link/eligibility maps. Keep publication atomic;
-   cover exact room/work, duplicate/conflicting identities, absent roots, aliases,
-   parameters, ineligible values and independent owners. Keep initializer indexing
-   separate from read integration. Replace the validation-only entry call with this
-   scan, qualifying every observed Storage before admission filters, including
-   ineligible Binds and Write headers. Keep exact owner membership in entry reports;
-   reject a second statement for the same LocalId even if its root/owner agrees.
-3. Integrate validated reads in a separate slice. Move eligibility/indexing before
-   `slot_uses`, charging both retained collections against its remaining room; do
-   not run extraction twice. A read-to-initializer jump crosses wrapper parent/span
-   boundaries and needs its own identity/owner checks. Preserve original extraction
-   ports, stage flags, unknown/multiple candidates and caller boundaries. Add
-   source order/error tests and compiler/strict/documentation gates.
+Eleven new internal groups pass: three parameter groups, two admission/root groups
+and six boundary groups (`/tmp/meowy-initializer-parameters.log`,
+`/tmp/meowy-init-limits.log`). Related initializer, entry-report and Bind regressions
+plus library Clippy pass (`/tmp/meowy-init-integration.log`, `/tmp/meowy-init-entries.log`,
+`/tmp/meowy-init-bindings.log`, `/tmp/meowy-init-lint.log`). Three required source
+cases pass rebuilt-compiler debug/release (`/tmp/meowy-init-source-final.log`).
+Catalog/coverage checks pass at 299 cases, 280 required and 19 unchanged pins
+(`/tmp/meowy-init-metadata.log`). All ten compiler checks pass on LLVM 23.1.1/Rust
+1.99.0: 2393 library/915 native tests, 32 tooling/30 compiler-harness groups,
+formatting, Clippy, build and conformance (`/tmp/meowy-init-gate.log`). All 280
+required cases pass debug/release, with 19 unchanged pins and zero failures.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-init-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-init-docs.log`).
+
+All 296 prior case records, 328 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-init-preservation.log`). Source behavior and structural indexing
+remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: validated local-read initializer forwarding
+
+1. Reorder `entries.rs` collection to consumers -> eligible -> initializers ->
+   slot_uses. Update `consumers.rs::slot_uses_limited` to subtract eligibility and
+   initializer entries. Eligibility recomputation must reserve the existing index
+   too; each collector excludes its own prior output from the aggregate cap.
+   Keep payload unchanged and do not run extraction twice. Commit this budget/order
+   prerequisite with exact-capacity/rebuild/atomicity tests before read integration.
+2. Add narrow read qualification beside `effects/reads.rs::read_effect` and integrate
+   it into `consumers/grouped.rs`. Require an observed Read with matching checked
+   header, normal availability, exact local/storage identity and a known same-owner
+   indexed initializer. Revalidate the indexed statement using `binding_effect` and
+   compare local/storage/root/owner. Missing Read/index/root remains unknown;
+   inconsistent metadata fails. `Read.normal` is checked availability, not an
+   observed Normal visit or runtime completion. Its exact unconditional Next edge
+   supports this structural join without a new stage-observation map.
+3. Treat read-to-initializer lookup as a same-owner jump across statement/block/span
+   boundaries, not parent-child forwarding. Keep wrapper-specific identity checks,
+   add Read to exclusive producer classifications, and reuse the shared seen/hop/
+   Flow bounds for mixed cycles. Preserve original extraction ports, owning stage
+   and control flags, unknown/multiple candidates and caller boundaries. Add focused
+   read/header/index/owner/cycle regressions, then source order/stop/error cases and
+   full compiler/strict/documentation gates.
 
 Precise branch/overwrite joins, field-value and function-return provenance, restart
 propagation, E225 enforcement and proof outcomes remain later dependency-ordered work.
@@ -3131,8 +3144,8 @@ complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
 above. Explicit group and observed non-projecting Forward consumer resolution are
 implemented, including unchanged observed narrowing and bounded local eligibility.
-Exact Bind qualification is complete. Bounded ordinary initializer indexing is next,
-before read integration.
+Exact Bind qualification and bounded ordinary initializer indexing are complete.
+Validated local-read initializer forwarding is next, after budget/order plumbing.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3706,8 +3719,10 @@ before read integration.
    (`a8442b3`, `554cbfb`) and source cases (`9a251dd`) pass the gate. Bounded local
    eligibility (`5af4c18`, `407c6d7`) and source cases (`5e7e3a5`) pass the gate.
    Exact Bind qualification (`7ec1583`, `970c6a3`) and source cases (`6d910f8`) are
-   implemented. Next index qualified ordinary initializers, then integrate reads
-   following the ordered plan above.
+   complete. Parameter/index collection (`d3b22ec`, `869e5c7`), boundary coverage
+   (`a433f00`) and source cases (`2d460d2`) are implemented. Next update shared
+   collection ordering/budgets, then integrate validated local reads following the
+   ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

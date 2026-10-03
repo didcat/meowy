@@ -430,7 +430,7 @@ original block consumers. Ordinary narrowing wrappers lead to raw Read or Field
 operations, where traversal stops. Following a field's wrapper does not follow
 the field's input as though it were the extracted value. Successful mixed-chain
 narrowing-to-block tests use explicitly seeded identities; they add no source-level
-initializer joins. Ordinary initializer indexing remains a prerequisite.
+initializer joins. Read-to-initializer forwarding remains separate.
 Structural resolution does not select candidate values, infer call
 results or establish runtime completion, lifetime authority or proof outcomes.
 
@@ -448,8 +448,8 @@ Failed identity, work or capacity checks publish no partial set. Parameters and
 emitted aliases can be type-eligible: that does not establish an ordinary initializer,
 ownership, completion or read provenance. Initializer admission remains separate.
 
-Before later initializer indexing, entry reports now run a separate Bind validation
-pass over observed Storage headers. The narrow qualifier checks exact reported and
+Initializer indexing validates observed Storage headers before applying admission
+filters. The narrow Bind qualifier checks exact reported and
 captured owner/kind/local/storage/input/control metadata, local bounds and canonical
 alias storage, completed statement/site identities and containing-body ownership.
 It checks Entry(statement)-to-Entry(input), Normal(input)-to-Operation(statement)
@@ -467,8 +467,24 @@ A qualified Bind with no initializer root retains an explicit unknown input and
 must have exactly its Operation-to-Normal edge. Missing observations produce no
 qualification; deleting the root while retaining old input edges is invalid.
 All validation shares bounded work and preserves reports, payload and captured
-registries on failure. It creates no initializer index, value/proof result or read
-join; eligibility, alias/parameter admission and cross-owner rules remain separate.
+registries on failure. Qualification alone creates no initializer authority,
+value/proof result or read join.
+
+Entry reports now index qualified ordinary initializers by LocalId, retaining only
+statement, owner and optional outer input root. Eligible immutable locals must be
+their own canonical storage and have no alias, parameter, receiver or temporary-cell
+classification. Every Storage header is qualified before filtering, preserving
+validation even for excluded Binds and writes. Function parameters are collected
+from the borrowed Program with bounded scratch/work; FunctionIds and entry-body
+identities preserve ownership when the function table is reordered.
+
+A second statement for one admitted LocalId is a conflict, even if its owner/input
+agrees. Missing roots remain indexed unknowns; absent observations create no entry.
+Conditional declarations retain structural history without asserting execution.
+The index consumes remaining combined fixed-map capacity, shares Flow work and
+leaves variable payload unchanged. Rebuilds return a fresh map without charging the
+old index again. Failures publish no partial map. Original wrapper roots are retained
+without resolution; local reads still have no initializer or result-slot joins.
 
 The resolver reuses existing field and unary/binary primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child
