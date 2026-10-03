@@ -1512,8 +1512,11 @@ groups, all 38 initializer-related groups, 14 entry-report groups and seven Bind
 qualification groups (`/tmp/meowy-init-core.log`, `/tmp/meowy-init-integration.log`,
 `/tmp/meowy-init-entries.log`, `/tmp/meowy-init-bindings.log`). Eligible ordinary
 locals retain exact outer roots and owners; special cells and stopped declarations
-remain absent. Storage qualification runs once before filtering; additional index
-corruption/capacity tests and full gates remain pending.
+remain absent. Index integration: `869e5c7`; Clippy passes (`/tmp/meowy-init-lint.log`).
+All eight index groups pass (`/tmp/meowy-init-limits.log`), including six added
+duplicate/unknown/exclusion/owner/capacity/work tests. Storage qualification runs
+before every admission filter; late failures preserve reports, registries and payload.
+Source commits and full gates remain pending.
 
 ### Dependency-ordered plan
 
