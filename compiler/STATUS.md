@@ -1712,7 +1712,11 @@ their separate coercion ports; parameter-only sources remain opaque. Boundary
 tests now pass (`/tmp/meowy-list-limits.log`): four groups cover sparse plans,
 independent stages/registration, seeded stops and unvisited suffix faults, 13 late
 corruptions, duplicate visits and exact shared map/work limits at zero payload.
-Consumer integration: `c214833`. Source commits and full gates remain pending.
+Consumer integration: `c214833`; boundary tests: `5d908ad`. Three source cases pass
+rebuilt-compiler debug/release (`/tmp/meowy-list-source-final.log`). Metadata checks
+pass at 313 cases, 294 required and 19 unchanged pins (`/tmp/meowy-list-metadata.log`).
+All 310 prior records, 342 assets, 37 references/hashes and 33 proof obligations are
+preserved (`/tmp/meowy-list-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

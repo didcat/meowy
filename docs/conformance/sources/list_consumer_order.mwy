@@ -1,0 +1,53 @@
+d : @"debug"
+<R> : <{ -> <int32>; tag <boolean> }>
+<T> : <int32><boolean>
+<U> : <int32><string>
+show <null> : (n <int32>, choice <boolean><string>) {
+    row <R> : (({
+        d.print("function init {n}")
+        -> n
+        -> tag : true
+        d.print("function tail {n}")
+    }))
+    copy : ((row))
+    saved <R> : copy
+    | choice <boolean> | {
+        xs <T[4]><U[4]> : [1, row, ((saved)), choice]
+        d.print("function list {n}")
+        | xs <T[4]> | {
+            first : xs[1]
+            second : xs[2]
+            third : xs[3]
+            fourth : xs[4]
+            | first <int32> | d.print(first~<int32>)
+            | second <int32> | d.print(second~<int32>)
+            | third <int32> | d.print(third~<int32>)
+            | fourth <boolean> | d.print(fourth~<boolean>)
+        }
+    }
+}
+row <R> : (({
+    d.print("entry init")
+    -> 7
+    -> tag : true
+    d.print("entry tail")
+}))
+copy : ((row))
+saved <R> : copy
+choice <boolean><string> : true
+| choice <boolean> | {
+    xs <T[4]><U[4]> : [1, row, ((saved)), choice]
+    d.print("entry list")
+    | xs <T[4]> | {
+        first : xs[1]
+        second : xs[2]
+        third : xs[3]
+        fourth : xs[4]
+        | first <int32> | d.print(first~<int32>)
+        | second <int32> | d.print(second~<int32>)
+        | third <int32> | d.print(third~<int32>)
+        | fourth <boolean> | d.print(fourth~<boolean>)
+    }
+}
+show(2, true)
+show(3, false)
