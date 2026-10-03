@@ -9,6 +9,9 @@ mod primary;
 #[cfg(test)]
 mod outputs;
 
+#[cfg(test)]
+mod lists;
+
 pub(crate) type Index = BTreeMap<PointId, (usize, hir::BlockId)>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -68,6 +71,19 @@ impl Checker {
             }
             if let Effect::List(list) = effect {
                 self.validate_list_report(reports, id, *owner, list, span)?;
+                if !self.flow.spend(list.inputs.len() * 2 + 1) {
+                    return Err(budget());
+                }
+                for (step, input) in list.inputs.iter().enumerate() {
+                    if !input.projected {
+                        continue;
+                    }
+                    if let Some(slot) = self.primary_slot(reports, input.point, *owner, span)? {
+                        let port = Port::Projection { point: id, step };
+                        self.record_slot_use(&mut uses, port, (*owner, slot), limit, span)?;
+                    }
+                }
+                continue;
             }
             let mut slots = [None; 3];
             slots[0] = self

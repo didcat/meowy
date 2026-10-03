@@ -1703,6 +1703,14 @@ stage flags. The common-element/late-selector source has a genuine list-owned
 projection whose unchanged local read resolves to a same-owner initializer anchor.
 Streaming consumer links and adversarial coverage remain next.
 
+Report qualification: `d5e966b`. Streamed list consumers pass two new groups, all
+65 consumer groups, 80 list-related groups and Clippy (`/tmp/meowy-list-consumers.log`,
+`/tmp/meowy-list-all-consumers.log`, `/tmp/meowy-list-focused.log`,
+`/tmp/meowy-list-consumer-lint.log`). A real late-selector list preserves sparse
+projected indices 0/2/3 through immutable record copies. Ordinary typed lists retain
+their separate coercion ports; parameter-only sources remain opaque. Boundary
+tests, source commits and full gates follow.
+
 ### Dependency-ordered plan
 
 1. Separate whole-producer validation from stage selection in `effects/lists.rs`,
