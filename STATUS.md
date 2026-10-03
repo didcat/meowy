@@ -7,29 +7,29 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Observed non-projecting Forward coercions now resolve through mixed explicit-group
-chains to exact block-result consumers. Qualification checks observed results,
-recorded identities and exact edges, preserving owner boundaries, opaque stages,
-cycle/work limits and atomic failure. Typed initializer roots resolve; later local
-reads remain separate. Ten new internal groups and six required source cases cover
-eligibility, corruption, bounds, order, stops and type/width rejection. The
-[compiler handoff](compiler/STATUS.md#observed-forward-coercion-consumers) records
-the four implementation/test commits and the next ordered plan.
+Observed unchanged narrowing wrappers now join bounded group/Forward traversal.
+Qualification requires exact checked metadata, normal availability and an observed
+result. Conflicting producer classifications, cycles and exhausted bounds fail
+atomically. Real wrappers still stop at Read or Field operations; no local-initializer
+or field-value joins are introduced. Ten new internal groups and four required
+source cases cover boundaries, order, mutable snapshots, stops and E208 rejection.
+The [compiler handoff](compiler/STATUS.md#observed-unchanged-narrowing-consumers)
+records the three implementation/test commits and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2358 library/915 native tests
-and 62 Python groups (`/tmp/meowy-forward-gate.log`). Conformance has 286 cases:
-267 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-forward-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-forward-docs.log`). Prior fixtures,
-reference contracts, capability pins and proof obligations are preserved
-(`/tmp/meowy-forward-preservation.log`). The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2368 library/915 native tests
+and 62 Python groups (`/tmp/meowy-narrow-gate.log`). Conformance has 290 cases:
+271 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-narrow-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-narrow-docs.log`).
+Prior fixtures, reference contracts, capability pins and proof obligations are
+preserved (`/tmp/meowy-narrow-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, qualify observed unchanged narrowing wrappers, which ordinary local reads
-already acquire. Immutable initializer eligibility/indexing and read joins follow;
-mutable fields, references, aliases, writes and cross-owner sources remain separate.
+Next, retain bounded immutable-local eligibility from the transferred Program types.
+Initializer indexing and read joins follow as separate slices; mutable fields,
+references, aliases, writes and cross-owner sources remain excluded.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

@@ -387,8 +387,9 @@ operation or result flags alone do not create a primary link.
 Slot links retain identities only. Owning effects keep their flags, and result
 sources keep unknown or multiple-candidate state without extra copies. Inputs must
 resolve to a validated block consumer, directly or through explicit group identities
-and qualified Forward coercions. Local reads, reference loads, calls, ascriptions
-and unclassified regions remain outside these links.
+and qualified Forward/unchanged narrowing wrappers. Local reads, field-result
+values, reference loads, calls, ascriptions and unclassified regions remain outside
+these links.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
@@ -411,17 +412,27 @@ two-edge forwarding. A coercion requires an observed result, no primary extracti
 agreement with the checked descriptor and exact stage edges. Its child retains the
 same span as the wrapper; equality of spans does not merge their identities.
 
+Unchanged narrowing also forwards its exact input when checked normal availability
+and an observed result agree. Reported input/owner/changed/normal/control metadata
+must match the producer, and unchanged wrappers cannot have an operation visit.
+Stage validation retains complete Expr children, equal spans, parent/block/owner
+identity and exact edges. Changed, nonnormal and unobserved narrowing stays opaque.
+
 Mixed chains retain one bounded visited set and shared work charges. Conflicting
-group/coercion/direct-anchor classifications, corrupt identities and cycles fail.
+group/coercion/narrowing/direct-anchor classifications, corrupt identities and
+cycles fail.
 Group registry and mixed-chain scratch bounds are 65,536 entries. Missing result
 observations, Convert, projected Forward, Stopped, reborrows and shared-reference
 regions remain opaque. Qualification copies no types, candidates or payload.
 
 Typed initializer roots can now resolve through nested Forward/group chains to their
-original block consumers. Later local reads remain separate: unchanged narrowing
-qualification and immutable initializer indexing must precede those joins. This
-structural resolution does not select candidate values, infer call results or
-establish runtime completion, lifetime authority or proof outcomes.
+original block consumers. Ordinary narrowing wrappers lead to raw Read or Field
+operations, where traversal stops. Following a field's wrapper does not follow
+the field's input as though it were the extracted value. Successful mixed-chain
+narrowing-to-block tests use explicitly seeded identities; they add no source-level
+initializer joins. Immutable-local eligibility and initializer indexing remain
+prerequisites. Structural resolution does not select candidate values, infer call
+results or establish runtime completion, lifetime authority or proof outcomes.
 
 The resolver reuses existing field and unary/binary primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child

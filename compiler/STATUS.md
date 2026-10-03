@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Mixed Forward/group consumers pass the compiler and documentation gates.
+Updated: 2026-10-02. Unchanged narrowing consumers pass the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1361,53 +1361,71 @@ capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-forward-preservation.log`). Source execution and internal structural
 qualification remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: unchanged narrowing consumers
+## Observed unchanged narrowing consumers
 
-Resumed from `c4cd81d`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. The dependency-ordered slices are: narrow qualification plus bounded
-resolver integration and core regressions; separate corrupt-identity/cycle/budget
-coverage; required source behavior cases and classified evidence; guide/handoff
-and compiler/strict/documentation gates. Require unchanged, normal, observed-result
-wrappers and exact checked metadata. Immutable-local indexing and read joins remain
-subsequent work; source execution does not establish structural provenance.
+Unchanged narrowing wrappers now join the bounded group/Forward resolver. The
+helper requires unchanged checked type handling, normal availability and an observed
+result, with exact reported owner/input/changed/normal/control agreement. An
+operation visit on an unchanged wrapper is invalid. Existing stage validation
+rechecks complete Expr children, equal spans, parents, owners, blocks and edges.
+Changed, nonnormal and unobserved wrappers remain opaque.
 
-The helper and resolver integration pass 41 consumer and two qualification groups
-(`/tmp/meowy-narrow-consumers.log`, `/tmp/meowy-narrow-qualifier.log`). Real typed
-local-read roots traverse six wrappers but stop at Read; field wrappers stop at
-their Field operation and retain only existing extraction links. Success through
-all three wrapper kinds to a block anchor requires deliberately seeded evidence.
-Implementation: `a8442b3`. Four seeded mixed-chain and four helper groups pass
-(`/tmp/meowy-narrow-mixed.log`, `/tmp/meowy-narrow-qualifier-limits.log`), covering
-19 corruption variants, producer overlaps, cycles and exact hop/work limits without
-report or payload mutation. All four new source cases pass rebuilt-compiler
-debug/release (`/tmp/meowy-narrow-source-final.log`). Boundary regressions: `554cbfb`.
-The source slice registers 290 cases, 271 required and 19 unchanged pins, with
-classified evidence and passing metadata checks (`/tmp/meowy-narrow-metadata.log`).
-All 286 prior records, 318 source assets, 37 references/hashes and 33 proof obligations
-are preserved (`/tmp/meowy-narrow-preservation.log`). Full gates remain pending.
+Group/Forward/narrowing/direct-anchor classification overlaps fail even without
+observations. Mixed chains share the existing 65,536-hop scratch and Flow bounds.
+Failures preserve reports, capture registries and payload. Real typed local reads traverse six
+wrappers but stop at Read; field wrappers stop at Field and preserve existing
+extraction links. Successful narrowing-to-block chains are deliberately seeded
+structural tests. No immutable-local or field-value joins are implemented here.
 
-### Dependency-ordered plan
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify unchanged wrappers and integrate bounded traversal | `a8442b3` |
+| Cover identity conflicts, cycles and shared work limits | `554cbfb` |
+| Pin read order, mutable snapshots, stopping and E208 | `9a251dd` |
 
-1. Ordinary local reads are wrapped by `expressions.rs::narrow_source`. Reuse
-   `effects/narrowing.rs` validation to qualify only unchanged (`changed=false`),
-   normal wrappers with an observed result. Integrate them into bounded mixed
-   resolution, preserving exact edges, owners, stage independence, overlap checks
-   and atomic failures. Changed/nonnormal/unobserved narrowing stays opaque.
-   Include focused eligibility, corruption, cycle and work-bound regressions.
-2. Before initializer joins, retain bounded eligibility for reference-free,
-   recursively immutable local types while `Checker.locals` is available.
-   `Reports` currently retains only its count; `proofs.mutable` alone cannot exclude
-   immutable bindings containing mutable fields. Reuse checked type predicates
-   (`hir.rs::has_mutable_fields`) without copying types or weakening work limits.
-3. Index exact ordinary Bind initializer roots from `dependencies/operations.rs`,
-   then join validated `effects/reads.rs` identities through the qualified wrappers.
-   Keep local/storage/owner identity exact; exclude aliases, writes, parameters,
-   references and cross-owner sources. Preserve unknown/multiple candidates and
-   caller boundaries. Split eligibility/indexing from read integration, with
-   focused tests in each slice, then source order/error cases and compiler/strict gates.
+Ten new internal groups cover real read/field boundaries, owner/control metadata,
+19 corruption variants, overlap, cycles and exact hop/work limits. Focused checks
+pass (`/tmp/meowy-narrow-consumers.log`, `/tmp/meowy-narrow-mixed.log`,
+`/tmp/meowy-narrow-qualifier-limits.log`). Four required source cases pass rebuilt
+compiler debug/release (`/tmp/meowy-narrow-source-final.log`). Catalog/coverage
+checks pass (`/tmp/meowy-narrow-metadata.log`). All ten compiler checks pass on
+LLVM 23.1.1/Rust 1.99.0: 2368 library/915 native tests, 32 tooling/30 compiler-harness
+groups, formatting, Clippy, build and conformance (`/tmp/meowy-narrow-gate.log`).
+The 290-case catalog has 271 required passes, 19 unchanged pins and zero failures
+in debug/release. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-narrow-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-narrow-docs.log`).
 
-Precise branch/overwrite joins, function-return provenance, restart propagation,
-E225 enforcement and proof outcomes remain later dependency-ordered work.
+All 286 prior case records, 318 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-narrow-preservation.log`). Source execution remains distinct from
+structural eligibility. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: immutable-local eligibility and initializer joins
+
+1. Extend `edges/forward/entries/locals.rs` to retain bounded eligibility for
+   recursively immutable, reference-free local types. `entry_reports_limited`
+   already borrows `program.locals` after their transfer from the checker; use
+   those types directly without another capture registry or type copies.
+   `names.rs::local` records nested mutable fields in `proofs.fields`, and
+   `proofs.variable(id)` combines them with mutable bindings. Charge all type
+   traversal and retained IDs through existing work/map bounds; reuse the bounded
+   traversal pattern from `borrow_contract::type_weight`. Do not import unrelated
+   carried-publication type restrictions. Test nested fields, unions, lists,
+   references, missing local identities and exact work/capacity failures.
+2. Index exact ordinary Bind initializer roots from `dependencies/operations.rs`
+   using validated operation reports and eligible local IDs. Keep local/storage/
+   owner identities exact and exclude aliases, parameters, writes, references and
+   cross-owner sources. Retain missing/unknown candidates; eligibility alone grants
+   no provenance. Include focused index-conflict and atomic-capacity regressions.
+3. Integrate validated `effects/reads.rs` roots with that index through the existing
+   qualified wrappers. Preserve extraction ports, owning stage flags, unknown or
+   multiple candidates, and caller boundaries. Keep this separate from indexing;
+   include focused propagation tests, then source order/error cases and full
+   compiler/strict/documentation gates.
+
+Precise branch/overwrite joins, field-value and function-return provenance, restart
+propagation, E225 enforcement and proof outcomes remain later dependency-ordered work.
 
 ## Documentation conventions and layout
 
@@ -2988,7 +3006,8 @@ Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
 above. Explicit group and observed non-projecting Forward consumer resolution are
-implemented. Qualifying unchanged observed narrowing is the immediate next task.
+implemented, including unchanged observed narrowing. Bounded immutable-local
+eligibility is the immediate next task, before initializer indexing and read joins.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3558,8 +3577,10 @@ implemented. Qualifying unchanged observed narrowing is the immediate next task.
    Explicit group capture/resolution (`eb7e6d0`, `b1311c1`), identity/limit coverage
    (`a790e3e`, `d1f839d`) and source cases (`4817fba`, `5da70d0`) now pass the gate.
    Observed Forward qualification and mixed chains (`97032a4`, `c2552a2`) plus
-   typed source cases (`31f9912`, `4523ee7`) are implemented. Next qualify unchanged
-   observed narrowing before immutable-local indexing/joins, following the plan above.
+   typed source cases (`31f9912`, `4523ee7`) pass the gate. Unchanged narrowing
+   (`a8442b3`, `554cbfb`) and source cases (`9a251dd`) are implemented. Next retain
+   bounded immutable-local eligibility, then index initializers and join reads
+   following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
