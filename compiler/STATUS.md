@@ -1332,7 +1332,12 @@ Qualification and mixed-chain integration pass all 34 consumer and four helper
 groups (`/tmp/meowy-forward-consumers.log`, `/tmp/meowy-forward-qualifier.log`).
 The real typed initializer traverses five alternating Forward/group wrappers in
 entry and function owners; equal spans retain identity and later local reads stay
-unlinked. Additional mixed corruption/limit tests and source/final gates are pending.
+unlinked. Implementation: `97032a4`. Five additional mixed-chain groups now pass
+(`/tmp/meowy-forward-mixed-tests.log`): ambiguous markers, eight late corruptions,
+consistent cycles, five/four-hop and exact/one-short work limits, missing visits and
+logical terminals. Report/capture registries and payload remain unchanged on failure.
+Six source cases pass rebuilt-compiler debug/release
+(`/tmp/meowy-forward-source-final.log`); source commits and final gates remain pending.
 
 Expected contexts introduce checked coercion wrappers around inputs, and ordinary
 bindings retain those outer roots. The resolver now qualifies observed,
