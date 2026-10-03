@@ -1,0 +1,10 @@
+d : @"debug"
+stop <never> : () { d.print("stop"); d.panic("halt") }
+value : (({
+    d.print("left")
+    -> 8
+    -> tag : { d.print("tag"); -> false }
+    d.print("tail")
+})) + ((stop()))
+d.print(value)
+d.print("later")

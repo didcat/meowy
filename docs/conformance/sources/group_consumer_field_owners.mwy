@@ -1,0 +1,15 @@
+d : @"debug"
+d.print((({
+    -> n : (({ -> n : 1; d.print("inner") })).n
+    d.print("outer")
+})).n)
+pick <int32> : (n <int32>) {
+    -> (({
+        -> n : n
+        d.print("owned")
+    })).n
+    d.print("function")
+}
+d.print(pick(2))
+d.print((({ -> n : 3; d.print("entry") })).n)
+d.print(pick(4))

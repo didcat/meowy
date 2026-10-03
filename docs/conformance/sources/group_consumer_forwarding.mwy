@@ -1,0 +1,19 @@
+d : @"debug"
+d.print((({
+    -> (({
+        -> n : 5
+        d.print("composed")
+    }))
+    -> tag : true
+    d.print("composition tail")
+})).n)
+make <{ n <int32> }> : () {
+    -> n : 6
+    d.print("called")
+}
+d.print(((make())).n)
+row : { -> n : 7; d.print("stored") }
+p : &row
+d.print(((p)).n)
+d.print(((&row)).n)
+d.print(((row)).n)

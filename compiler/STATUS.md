@@ -1297,7 +1297,11 @@ wrapper IDs. All six required source cases pass rebuilt-compiler debug/release
 (`/tmp/meowy-group-consumer-source-final.log`). Boundary/catalog commits and the
 complete compiler gate remain. Four limit groups also pin a 32-wrapper chain,
 direct anchors with zero hops, scratch/registry limits, exact shared work/map room,
-reordered wrapper identities, duplicate observations and atomic late-chain failure.
+reordered wrapper identities, duplicate observations and atomic late-chain failure
+(`a790e3e`, `d1f839d`). Four required execution cases now pin grouped field/function
+order, numeric/boolean primary projection, composition/call/reference behavior and
+projection before RHS panic. Exact outputs and P006 pass both profiles; two grouped
+rejections follow separately. Classified coverage is updated for the execution slice.
 
 Grouped field/unary inputs still stop at their wrapper point, although checked
 region edges retain the exact child. Region edges also serve statement/control

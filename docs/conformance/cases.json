@@ -2914,6 +2914,48 @@
         "code": "E222"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "group_consumer_field_owners",
+      "phase": "run",
+      "source": "sources/group_consumer_field_owners.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "inner\nouter\n1\nowned\nfunction\n2\nentry\n3\nowned\nfunction\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "group_consumer_primary_order",
+      "phase": "run",
+      "source": "sources/group_consumer_primary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "number\nnumber tag\nnumber tail\n-4\nboolean\nboolean tag\nboolean tail\nfalse\nleft\nright\n5\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "group_consumer_forwarding",
+      "phase": "run",
+      "source": "sources/group_consumer_forwarding.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "composed\ncomposition tail\n5\ncalled\n6\nstored\n7\n7\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "group_consumer_stopped",
+      "phase": "run",
+      "source": "sources/group_consumer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\ntag\ntail\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
     }
   ]
 }

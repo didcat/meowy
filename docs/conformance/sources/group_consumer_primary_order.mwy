@@ -1,0 +1,15 @@
+d : @"debug"
+d.print(-(({
+    d.print("number")
+    -> 4
+    -> tag : { d.print("number tag"); -> true }
+    d.print("number tail")
+})))
+d.print(!({
+    d.print("boolean")
+    -> true
+    -> tag : { d.print("boolean tag"); -> false }
+    d.print("boolean tail")
+}))
+d.print((({ -> 3; -> tag : true; d.print("left") })) +
+    (({ -> 2; d.print("right") })))
