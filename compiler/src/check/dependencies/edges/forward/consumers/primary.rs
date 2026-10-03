@@ -13,6 +13,15 @@ impl Checker {
         let Some(block) = self.slot_block(reports, input, owner, span)? else {
             return Ok(None);
         };
+        if !self
+            .flow
+            .spend(self.bodies.len().checked_ilog2().unwrap_or(0) as usize + 2)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof primary-slot budget exhausted",
+                span,
+            ));
+        }
         let body = &self.bodies[&block];
         let Layout::Slots(slots) = &body.layout else {
             return Ok(None);

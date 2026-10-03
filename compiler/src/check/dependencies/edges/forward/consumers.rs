@@ -80,6 +80,7 @@ impl Checker {
             reports.consumers.len().checked_ilog2().unwrap_or(0) as usize
                 + reports.results.len().checked_ilog2().unwrap_or(0) as usize
                 + reports.blocks.len().checked_ilog2().unwrap_or(0) as usize
+                + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                 + 6,
         ) {
             return Err(budget());
@@ -117,3 +118,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod limits;

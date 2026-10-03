@@ -1251,7 +1251,10 @@ operation-only observations, explicitly seeded Never availability, 26 primary
 header/stage faults, late source failures and exact shared map/work bounds. Review
 also charged the wrappers' additional body/field lookups. The six required source
 fixtures pass rebuilt-compiler debug/release (`/tmp/meowy-result-consumer-source-final.log`).
-Test/catalog commits and final compiler/coverage gates remain.
+Field boundaries are committed as `120c657`. Four limit groups preserve exact total
+map/work bounds, zero payload use, duplicate observations, owning flags/projection
+steps and atomic failure after a valid prefix. Test/catalog commits and final
+compiler/coverage gates remain.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link
