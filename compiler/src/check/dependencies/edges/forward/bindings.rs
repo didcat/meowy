@@ -9,6 +9,7 @@ pub(super) struct Binding {
 }
 
 impl Checker {
+    #[cfg(test)]
     pub(super) fn validate_bindings(&mut self, reports: &Reports, span: Span) -> Result<()> {
         if reports.effects.len() > MAX_EDGES || !self.flow.spend(reports.effects.len() + 1) {
             return Err(Diagnostic::unsupported(

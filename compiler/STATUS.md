@@ -1507,6 +1507,14 @@ identity, FunctionId owners, unique bounded parameter IDs and exact shared work.
 The parameter-only prerequisite leaves Bind validation intact; index integration
 will consume the same helper and replace that validation pass without repeating it.
 
+Parameter prerequisite: `d3b22ec`. Index integration passes both new admission/root
+groups, all 38 initializer-related groups, 14 entry-report groups and seven Bind
+qualification groups (`/tmp/meowy-init-core.log`, `/tmp/meowy-init-integration.log`,
+`/tmp/meowy-init-entries.log`, `/tmp/meowy-init-bindings.log`). Eligible ordinary
+locals retain exact outer roots and owners; special cells and stopped declarations
+remain absent. Storage qualification runs once before filtering; additional index
+corruption/capacity tests and full gates remain pending.
+
 ### Dependency-ordered plan
 
 1. Add a fixed-size LocalId index of qualified ordinary Bind identities, retaining
