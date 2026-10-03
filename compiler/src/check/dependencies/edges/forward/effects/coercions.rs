@@ -31,6 +31,55 @@ pub(crate) struct Observed {
 }
 
 impl Checker {
+    pub(in super::super) fn forward_coercion_input(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<PointId>> {
+        let budget = || Diagnostic::unsupported("proof coercion-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof coercion-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(reports.effects.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
+            return Err(budget());
+        }
+        let Some((reported_owner, Effect::Coercion(observed))) = reports.effects.get(&id) else {
+            return Ok(None);
+        };
+        if !self
+            .flow
+            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize + 7)
+        {
+            return Err(budget());
+        }
+        let op = self.coercions.get(&id).ok_or_else(invalid)?;
+        if *reported_owner != owner
+            || op.owner != owner
+            || observed.input != op.input
+            || observed.op != op.kind
+            || observed.primary != op.primary
+            || observed.control != op.control
+        {
+            return Err(invalid());
+        }
+        if op.kind != CoercionKind::Forward || op.primary {
+            return Ok(None);
+        }
+        if observed.projected || observed.operation {
+            return Err(invalid());
+        }
+        if !observed.result {
+            return Ok(None);
+        }
+        let input = op.input;
+        self.coercion_effect_stage(reports, owner, Port::Normal(id), span)?
+            .ok_or_else(invalid)?;
+        Ok(Some(input))
+    }
+
     pub(super) fn coercion_effect_stage(
         &mut self,
         reports: &Reports,
@@ -194,3 +243,6 @@ mod limits;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod forward;

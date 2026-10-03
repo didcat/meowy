@@ -1319,14 +1319,26 @@ capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-group-preservation.log`). Source execution and structural forwarding
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: non-projecting Forward coercion consumers
+## In progress: non-projecting Forward coercion consumers
+
+Resumed from `e01ab6a`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Add the narrow coercion qualification helper together with mixed-chain
+integration and focused regressions, then separate corruption/budget tests, typed
+initializer source coverage and final guide/gates. Reuse recorded coercion metadata;
+require an observed result and no primary extraction. Local-read joins, conversions,
+reborrows and proof outcomes remain outside this slice.
+
+Qualification and mixed-chain integration pass all 34 consumer and four helper
+groups (`/tmp/meowy-forward-consumers.log`, `/tmp/meowy-forward-qualifier.log`).
+The real typed initializer traverses five alternating Forward/group wrappers in
+entry and function owners; equal spans retain identity and later local reads stay
+unlinked. Additional mixed corruption/limit tests and source/final gates are pending.
 
 Expected contexts introduce checked coercion wrappers around inputs, and ordinary
-bindings retain those outer roots. The group resolver deliberately stops at these
-unmarked points. Qualify only observed, non-projecting Forward wrappers before
-attempting immutable-local initializer joins.
+bindings retain those outer roots. The resolver now qualifies observed,
+non-projecting Forward wrappers. Immutable-local initializer joins remain separate.
 
-Dependency-ordered next commit plan:
+Dependency-ordered commit plan (steps 1-2 implemented; broader validation pending):
 
 1. Reuse `effects/coercions.rs` stage validation in a narrow helper requiring an
    observed result, `CoercionKind::Forward` and primary=false. Check exact recorded
