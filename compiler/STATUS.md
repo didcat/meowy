@@ -1284,7 +1284,13 @@ Explicit group markers now retain checked input, owner, block and span, with a
 publication; failures leave both registries intact. Required-only paths retain
 their old edges without a group marker. Seven new capture groups and the existing
 four group-link/three composed-link groups pass (`/tmp/meowy-group-capture.log`,
-`/tmp/meowy-group-regions.log`). Resolver integration and final gates remain.
+`/tmp/meowy-group-regions.log`), committed as `eb7e6d0`. Bounded resolution now follows
+only explicit markers with exact parent/owner/block/span/edge validation, rejects
+anchor overlap and cycles, and stops at unclassified terminals. Three focused
+consumer groups pass (`/tmp/meowy-group-consumers.log`), covering nested fields,
+unary/binary/boolean primaries, partial/composed results, owners and stopped stages.
+Existing grouped exclusions are replaced by these qualified links; local/call/ref
+terminals remain unlinked. Adversarial/source validation and final gates remain.
 
 Grouped field/unary inputs still stop at their wrapper point, although checked
 region edges retain the exact child. Region edges also serve statement/control

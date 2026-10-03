@@ -53,7 +53,6 @@ pub(crate) fn field_slot_links_keep_unknown_values_and_indirect_inputs_separate(
         "r:{->n:1};v:r.n",
         "r:{->n:1};p:&r;v:p.n",
         "r:{->n:1};p:&r;v:(*p).n",
-        "v:({->n:1}).n",
         "f<{n<int32>}>:(){->n:1};v:f().n",
     ] {
         let (_, reports) = checked(source);

@@ -2,6 +2,7 @@ use super::{effects::Effect, entries::Reports, *};
 use crate::{check::dependencies::bodies::Layout, hir};
 
 mod fields;
+mod grouped;
 mod index;
 mod primary;
 
@@ -74,6 +75,9 @@ impl Checker {
         owner: usize,
         span: Span,
     ) -> Result<Option<hir::BlockId>> {
+        let Some(input) = self.grouped_consumer(reports, input, owner, span)? else {
+            return Ok(None);
+        };
         let budget = || Diagnostic::unsupported("proof slot-use budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof slot-use identity mismatch", span);
         if !self.flow.spend(

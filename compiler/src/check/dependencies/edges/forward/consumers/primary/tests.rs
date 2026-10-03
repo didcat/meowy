@@ -56,7 +56,7 @@ pub(crate) fn primary_slot_links_preserve_projection_only_observation_before_sto
 pub(crate) fn primary_slot_links_do_not_infer_projection_visits_or_unwrap_other_sources() {
     for source in [
         "r:{->1;->tag:true};x:-r",
-        "x:-({->1;->tag:true})",
+        "r:{->1;->tag:true};x:-((r))",
         "x:-{->1}",
         "r:{->1;->tag:true};x<int32>:r",
     ] {
