@@ -66,6 +66,9 @@ impl Checker {
                 }
                 continue;
             }
+            if let Effect::List(list) = effect {
+                self.validate_list_report(reports, id, *owner, list, span)?;
+            }
             let mut slots = [None; 3];
             slots[0] = self
                 .field_slot(reports, id, *owner, effect, span)?

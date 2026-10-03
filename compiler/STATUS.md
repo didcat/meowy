@@ -1695,6 +1695,14 @@ corruption/stop checks and two new selector groups; Clippy and formatting pass
 replay retains uniqueness, exact sequence/endpoints, suffix identities and operation
 registration. Indexed stage selection is bounded independently of list length.
 
+Validation split: `6694ada`. Full-report qualification now passes two new groups,
+all 63 consumer groups and Clippy (`/tmp/meowy-list-reports.log`,
+`/tmp/meowy-list-report-consumers.log`, `/tmp/meowy-list-report-lint.log`). Every
+reported root/plan, including unobserved suffixes, is checked before independent
+stage flags. The common-element/late-selector source has a genuine list-owned
+projection whose unchanged local read resolves to a same-owner initializer anchor.
+Streaming consumer links and adversarial coverage remain next.
+
 ### Dependency-ordered plan
 
 1. Separate whole-producer validation from stage selection in `effects/lists.rs`,

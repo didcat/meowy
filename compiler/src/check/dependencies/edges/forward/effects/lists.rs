@@ -2,6 +2,7 @@ use super::*;
 use crate::check::dependencies::{CoercionKind, SequenceSource};
 use std::collections::BTreeSet;
 
+mod qualification;
 mod report;
 pub(crate) use report::Observed;
 
