@@ -1,6 +1,8 @@
 use super::{tests::checked, *};
 use crate::check::dependencies::CoercionKind;
 
+mod limits;
+
 #[test]
 pub(crate) fn list_consumers_link_original_contextual_parts_to_local_record_anchors() {
     let source = "<T>:<int32><boolean>;<U>:<int32><string>;f:(v<boolean><string>){r:{->7;->tag:true};copy:((r));|v<boolean>|xs<T[5]><U[5]>:[r,1,copy,r,v]};f(true)";

@@ -1709,7 +1709,10 @@ Report qualification: `d5e966b`. Streamed list consumers pass two new groups, al
 `/tmp/meowy-list-consumer-lint.log`). A real late-selector list preserves sparse
 projected indices 0/2/3 through immutable record copies. Ordinary typed lists retain
 their separate coercion ports; parameter-only sources remain opaque. Boundary
-tests, source commits and full gates follow.
+tests now pass (`/tmp/meowy-list-limits.log`): four groups cover sparse plans,
+independent stages/registration, seeded stops and unvisited suffix faults, 13 late
+corruptions, duplicate visits and exact shared map/work limits at zero payload.
+Consumer integration: `c214833`. Source commits and full gates remain pending.
 
 ### Dependency-ordered plan
 
