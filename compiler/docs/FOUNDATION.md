@@ -448,6 +448,28 @@ Failed identity, work or capacity checks publish no partial set. Parameters and
 emitted aliases can be type-eligible: that does not establish an ordinary initializer,
 ownership, completion or read provenance. Initializer admission remains separate.
 
+Before later initializer indexing, entry reports now run a separate Bind validation
+pass over observed Storage headers. The narrow qualifier checks exact reported and
+captured owner/kind/local/storage/input/control metadata, local bounds and canonical
+alias storage, completed statement/site identities and containing-body ownership.
+It checks Entry(statement)-to-Entry(input), Normal(input)-to-Operation(statement)
+and Operation(statement)-to-Normal(statement) edges in order. Raw Storage reports
+retain their existing representation; writes receive no Bind qualification.
+
+Matcher bodies can share their outer statement site. Qualification follows a
+bounded parent walk to that exact site root, checking shared owner/block/site
+identities and site spans. It does not require each point to contain its child:
+matcher condition spans exclude their bodies. Synthetic module roots can have
+empty outer-body spans, so body-span containment is not imposed. An initialized
+local remains valid when its containing body later stops.
+
+A qualified Bind with no initializer root retains an explicit unknown input and
+must have exactly its Operation-to-Normal edge. Missing observations produce no
+qualification; deleting the root while retaining old input edges is invalid.
+All validation shares bounded work and preserves reports, payload and captured
+registries on failure. It creates no initializer index, value/proof result or read
+join; eligibility, alias/parameter admission and cross-owner rules remain separate.
+
 The resolver reuses existing field and unary/binary primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child
 returns; observed extraction stages and block results still govern publication.
