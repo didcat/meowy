@@ -1270,7 +1270,21 @@ capability pins and 33 proof obligations are unchanged
 structural links from observable field/projection behavior. Unrelated
 `docs/programs/hey/` is preserved.
 
-### Next: bounded transparent expression forwarding
+## In progress: bounded grouped-expression forwarding
+
+Resumed from `5dd844b`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Capture explicit ordinary/composed AST-group identities alongside
+their existing region edges, then validate/resolve bounded chains, integrate grouped
+slot uses, add adversarial/source cases and run the final gates. Shared-reference,
+control, required-only and unclassified regions remain separate; no generic
+Entry-to-Normal bypass or value/proof inference is introduced.
+
+Explicit group markers now retain checked input, owner, block and span, with a
+65,536-entry cap. Map/replay/work preflight precedes the unchanged region-edge
+publication; failures leave both registries intact. Required-only paths retain
+their old edges without a group marker. Seven new capture groups and the existing
+four group-link/three composed-link groups pass (`/tmp/meowy-group-capture.log`,
+`/tmp/meowy-group-regions.log`). Resolver integration and final gates remain.
 
 Grouped field/unary inputs still stop at their wrapper point, although checked
 region edges retain the exact child. Region edges also serve statement/control

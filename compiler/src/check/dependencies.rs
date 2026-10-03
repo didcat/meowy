@@ -303,6 +303,9 @@ pub(crate) use points::{Kind as PointKind, Point};
 mod edges;
 pub(crate) use edges::{BindingIdentity, Edge};
 
+mod grouped;
+pub(crate) use grouped::Group;
+
 mod sequences;
 pub(crate) use sequences::{Sequence, Source as SequenceSource};
 

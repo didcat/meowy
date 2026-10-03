@@ -366,7 +366,7 @@ impl Checker {
             ExprKind::Group(child) => {
                 let (input, result) = self.composed_point(child, record, expected)?;
                 if let Some(point) = self.point {
-                    self.region_edges(point, input, value.span)?;
+                    self.group_region(point, input, value.span)?;
                 }
                 Ok(result)
             }

@@ -309,7 +309,7 @@ impl Checker {
             ExprKind::Group(value) => {
                 let (child, value) = self.expr_point(value, expected)?;
                 if let Some(point) = self.point {
-                    self.region_edges(point, child, expr.span)?;
+                    self.group_region(point, child, expr.span)?;
                 }
                 return Ok(value);
             }
