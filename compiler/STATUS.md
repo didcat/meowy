@@ -1245,7 +1245,13 @@ links now use observed Projection ports and slot0, retaining each binary step an
 leaving operation/result flags in the owning effects. Three focused groups pass
 (`/tmp/meowy-primary-slot-links.log`), including projection before a stopped RHS,
 invalid later-stage rejection and no inferred visit through local/group/coercion
-wrappers. Adversarial checks, source qualification and final gates remain.
+wrappers. Primary links are committed as `2fba3c2`. All 17 consumer groups now
+pass (`/tmp/meowy-consumer-boundaries.log`), including 18 field corruption cases,
+operation-only observations, explicitly seeded Never availability, 26 primary
+header/stage faults, late source failures and exact shared map/work bounds. Review
+also charged the wrappers' additional body/field lookups. The six required source
+fixtures pass rebuilt-compiler debug/release (`/tmp/meowy-result-consumer-source-final.log`).
+Test/catalog commits and final compiler/coverage gates remain.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link

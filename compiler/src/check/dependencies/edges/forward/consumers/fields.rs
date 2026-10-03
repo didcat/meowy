@@ -30,6 +30,16 @@ impl Checker {
         let Some(block) = self.slot_block(reports, *input, owner, span)? else {
             return Ok(None);
         };
+        if !self.flow.spend(
+            self.bodies.len().checked_ilog2().unwrap_or(0) as usize
+                + self.fields.len().checked_ilog2().unwrap_or(0) as usize
+                + 3,
+        ) {
+            return Err(Diagnostic::unsupported(
+                "proof field-slot budget exhausted",
+                span,
+            ));
+        }
         let body = &self.bodies[&block];
         let Layout::Slots(slots) = &body.layout else {
             return Ok(None);
@@ -48,3 +58,6 @@ impl Checker {
         Ok(Some(Slot { block, index: slot }))
     }
 }
+
+#[cfg(test)]
+mod tests;
