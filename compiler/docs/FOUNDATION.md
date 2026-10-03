@@ -386,8 +386,9 @@ operation or result flags alone do not create a primary link.
 
 Slot links retain identities only. Owning effects keep their flags, and result
 sources keep unknown or multiple-candidate state without extra copies. Inputs must
-match a direct validated block consumer. Local reads, reference loads, calls,
-coercions, ascriptions and unresolved grouping remain outside these links.
+resolve to a validated block consumer, directly or through explicit group identities.
+Local reads, reference loads, calls, coercions, ascriptions and unclassified regions
+remain outside these links.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
@@ -396,6 +397,24 @@ lookups. Duplicate observations retain one link per port. Late failures publish
 no partial maps and preserve the original effects, candidate reports and payload
 budget. Seeded Never-field checks remain structural evidence, distinct from source
 typing and observable execution.
+
+Ordinary and composed AST groups now retain exact input, owner, block and span
+identities alongside their existing region edges. Required-only checking keeps
+its old edges without a marker. Shared-reference forwarding and statement/control
+regions gain no group classification. Specialized list paths that flatten groups
+retain their existing identities rather than synthesizing markers from spans.
+
+Consumer resolution follows only these markers. It checks completed Expr wrappers,
+Expr/And/Or children, exact parent/owner/block identities, contained source spans
+and the original ordered two-edge forwarding. Unmarked terminals remain unknown;
+group/direct-anchor conflicts and cycles fail. Registry and scratch-set bounds are
+65,536 entries, with shared work charged before each lookup and insertion.
+
+The resolver reuses existing field and unary/binary primary slot links, preserving
+their original ports and flags. Stored Normal edges do not establish that a child
+returns; observed extraction stages and block results still govern publication.
+No entry-to-normal shortcut, type/candidate copy or value/ownership inference is
+introduced. Failed capture or traversal publishes no partial metadata or links.
 
 An internal bounded inventory now enumerates stored edges from all 31 families.
 It preserves duplicates, exact ports, conditional routes and explicit backedges;

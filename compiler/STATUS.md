@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Direct result-slot consumers pass the full compiler and documentation gates.
+Updated: 2026-10-02. Grouped result-slot consumers pass the full compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1270,67 +1270,79 @@ capability pins and 33 proof obligations are unchanged
 structural links from observable field/projection behavior. Unrelated
 `docs/programs/hey/` is preserved.
 
-## In progress: bounded grouped-expression forwarding
+## Bounded grouped-expression forwarding
 
-Resumed from `5dd844b`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. Capture explicit ordinary/composed AST-group identities alongside
-their existing region edges, then validate/resolve bounded chains, integrate grouped
-slot uses, add adversarial/source cases and run the final gates. Shared-reference,
-control, required-only and unclassified regions remain separate; no generic
-Entry-to-Normal bypass or value/proof inference is introduced.
+Ordinary and composed AST groups now register exact checked input, owner, block and
+span identities alongside their unchanged two-edge regions. Required-only checking
+keeps its old edges without a marker. Shared-reference, statement/control and
+specialized group-flattening paths acquire no group classification. Capture has a
+65,536-entry cap; identity/replay/map/work checks precede edge publication so failures
+publish neither a partial marker nor new edges.
 
-Explicit group markers now retain checked input, owner, block and span, with a
-65,536-entry cap. Map/replay/work preflight precedes the unchanged region-edge
-publication; failures leave both registries intact. Required-only paths retain
-their old edges without a group marker. Seven new capture groups and the existing
-four group-link/three composed-link groups pass (`/tmp/meowy-group-capture.log`,
-`/tmp/meowy-group-regions.log`), committed as `eb7e6d0`. Bounded resolution now follows
-only explicit markers with exact parent/owner/block/span/edge validation, rejects
-anchor overlap and cycles, and stops at unclassified terminals. Three focused
-consumer groups pass (`/tmp/meowy-group-consumers.log`), covering nested fields,
-unary/binary/boolean primaries, partial/composed results, owners and stopped stages.
-Existing grouped exclusions are replaced by these qualified links; local/call/ref
-terminals remain unlinked. Resolution is committed as `b1311c1`. All 11 resolver
-groups pass (`/tmp/meowy-group-boundaries.log`), including 28 identity corruptions,
-consistent cycles, unmarked regions, logical terminals, exact limits and reversed
-wrapper IDs. All six required source cases pass rebuilt-compiler debug/release
-(`/tmp/meowy-group-consumer-source-final.log`). Boundary/catalog commits and the
-complete compiler gate remain. Four limit groups also pin a 32-wrapper chain,
-direct anchors with zero hops, scratch/registry limits, exact shared work/map room,
-reordered wrapper identities, duplicate observations and atomic late-chain failure
-(`a790e3e`, `d1f839d`). Four required execution cases now pin grouped field/function
-order, numeric/boolean primary projection, composition/call/reference behavior and
-projection before RHS panic. Exact outputs and P006 pass both profiles; two grouped
-rejections follow separately. Execution coverage is committed as `4817fba`.
-Grouped missing-field E201 and incompatible-primary E222 cases now pass both
-profiles too; catalog/coverage validation passes for all 280 cases. The full
-compiler/strict gates and final handoff remain.
+Consumer resolution follows only those explicit identities. It validates completed
+Expr wrappers, Expr/And/Or children, parent/owner/block/span agreement and the exact
+ordered edges. Direct-anchor/group overlap, malformed metadata and cycles fail.
+Unmarked terminals remain unknown. Scratch is bounded to 65,536 visited groups;
+shared work covers every lookup, comparison and insertion. Reversing seeded wrapper
+IDs preserves the answer, so traversal does not depend on numerical allocation order.
 
-Grouped field/unary inputs still stop at their wrapper point, although checked
-region edges retain the exact child. Region edges also serve statement/control
-regions and shared-reference forwarding, so an Expr region is not automatically
-evidence of AST grouping. Preserve that distinction before following wrappers.
+Resolved anchors reuse existing field and unary/binary primary slot links. Original
+extraction ports, independent flags and candidate/unknown state remain unchanged.
+Stored Normal edges never establish completion, and no Entry-to-Normal shortcut is
+added. A left projection can remain observed before a stopped RHS without operation
+or result observations. Calls, coercions, ascriptions, shared-reference forwarding
+and unclassified regions remain outside these links; no value or proof is inferred.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture explicit AST-group forwarding identities | `eb7e6d0` |
+| Resolve bounded checked chains to existing consumers | `b1311c1` |
+| Cover corrupt identities, cycles and opaque regions | `a790e3e` |
+| Bound traversal, reordered IDs and atomic failures | `d1f839d` |
+| Pin grouped execution and stopping order | `4817fba` |
+| Pin grouped E201/E222 rejection behavior | `5da70d0` |
+
+Eighteen new internal groups cover capture, repeated spans, required exclusion,
+owners, stopped children, 28 corruption variants, cycles, logical terminals and
+exact hop/map/work limits. Grouped-focused checks pass
+(`/tmp/meowy-group-forwarding-tests.log`, `/tmp/meowy-group-boundaries.log`). All ten
+compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2348 library/915 native tests,
+32 tooling/30 compiler-harness groups, formatting, Clippy, build and conformance
+(`/tmp/meowy-group-gate.log`). Six required fixtures pass rebuilt-compiler debug/release
+(`/tmp/meowy-group-consumer-source-final.log`). Conformance has 280 cases: 261
+required passes, 19 unchanged pinned gaps and zero failures. Strict mode exits 1
+only for those gaps (`/tmp/meowy-group-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-group-docs.log`).
+
+All 274 prior case records, 306 source assets, 37 reference contracts/hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-group-preservation.log`). Source execution and structural forwarding
+remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: non-projecting Forward coercion consumers
+
+Expected contexts introduce checked coercion wrappers around inputs, and ordinary
+bindings retain those outer roots. The group resolver deliberately stops at these
+unmarked points. Qualify only observed, non-projecting Forward wrappers before
+attempting immutable-local initializer joins.
 
 Dependency-ordered next commit plan:
 
-1. Capture or retain explicit value-forwarding classification at the owning checker
-   sites (`expressions.rs` Group and `blocks.rs::composed_value` Group). Reuse exact
-   existing point/region identities; distinguish grouping from shared-reference,
-   statement/control and required-only paths. Test capture identity/replay and caps.
-2. Resolve bounded supported chains to the existing validated result-consumer index.
-   Require complete same-owner/block parent-child Expr identities and exact two-edge
-   forwarding, with cycle/work/map bounds and atomic failure. Never connect Entry
-   directly to Normal across exits or unknown effects, or infer forwarding from
-   source spans, types or point order.
-3. Reuse owned field and unary/binary primary links for qualified grouped inputs,
-   preserving extraction ports, independent visits and unknown candidate state.
-   Keep calls, narrowing, ascriptions, coercions and unsupported forwarding separate.
-   Cover nested groups, owners, stopped paths and corrupt edges/cycles.
-4. Add required `({ -> n : 1 }).n`, `-({ -> 1; -> tag : true })` and
-   `!({ -> true; -> tag : false })` order/error cases, update classified evidence
-   and run compiler/strict gates.
+1. Reuse `effects/coercions.rs` stage validation in a narrow helper requiring an
+   observed result, `CoercionKind::Forward` and primary=false. Check exact recorded
+   input/owner/edges/header without treating Convert, projected Forward, Stopped,
+   reborrow or an arbitrary Expr region as transparent. Keep stage visits independent.
+2. Extend bounded resolution to mixed group/qualified-Forward chains, preserving
+   cycle/work bounds and atomic failure. Retain the direct consumer anchor and
+   original extraction ports, with no new value, lifetime or call-return inference.
+   Test nested chains, missing visits, foreign owners and corrupted descriptors.
+3. Qualify typed initializer roots such as
+   `r <{ n <int32> }> : (({ -> n : 1 })); v : r.n` structurally. Source runtime behavior
+   remains unchanged; joining the later local read to its initializer is a separate
+   subsequent slice. Add focused source order/error coverage, update classified
+   evidence and run compiler/strict gates.
 
-Precise value/branch/overwrite joins, storage and function-return provenance,
+Precise value/branch/overwrite joins, local storage and function-return provenance,
 restart propagation, E225 and proof outcomes remain later dependency-ordered work.
 
 ## Documentation conventions and layout
@@ -2911,8 +2923,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
-above. Direct field/primary result-slot consumers are implemented; bounded
-transparent expression forwarding is the immediate next task.
+above. Explicit grouped-expression forwarding is implemented; qualified
+non-projecting Forward coercion consumers are the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3479,8 +3491,10 @@ transparent expression forwarding is the immediate next task.
    cases (`cb60d46`, `c41d71c`) now pass the compiler gate. Consumer indexing
    (`ec42f09`), direct fields/primaries (`e07bd3d`, `2fba3c2`), boundaries/limits
    (`120c657`, `2ac60c2`) and source cases (`06b7c8b`, `f0dba6d`) now pass the gate.
-   Next retain and resolve bounded transparent expression forwarding, following
-   the ordered plan above.
+   Explicit group capture/resolution (`eb7e6d0`, `b1311c1`), identity/limit coverage
+   (`a790e3e`, `d1f839d`) and source cases (`4817fba`, `5da70d0`) now pass the gate.
+   Next qualify observed non-projecting Forward coercions, following the ordered
+   plan above, before joining immutable local initializers.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
