@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Grouped result-slot consumers pass the full compiler and documentation gates.
+Updated: 2026-10-02. Mixed Forward/group consumers pass the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1319,53 +1319,70 @@ capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-group-preservation.log`). Source execution and structural forwarding
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: non-projecting Forward coercion consumers
+## Observed Forward coercion consumers
 
-Resumed from `e01ab6a`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. Add the narrow coercion qualification helper together with mixed-chain
-integration and focused regressions, then separate corruption/budget tests, typed
-initializer source coverage and final guide/gates. Reuse recorded coercion metadata;
-require an observed result and no primary extraction. Local-read joins, conversions,
-reborrows and proof outcomes remain outside this slice.
+Consumer resolution now traverses mixed explicit-group and observed Forward chains.
+The coercion helper requires Forward, no primary extraction and an observed result;
+reported owner/input/kind/control must match the checked producer. Existing stage
+validation checks completed roots, parents, owners, equal spans and exact edges.
+Conversions, projected Forward, Stopped, reborrows and missing observations remain
+opaque. Groups retain their existing capture rules and contained-span validation.
 
-Qualification and mixed-chain integration pass all 34 consumer and four helper
-groups (`/tmp/meowy-forward-consumers.log`, `/tmp/meowy-forward-qualifier.log`).
-The real typed initializer traverses five alternating Forward/group wrappers in
-entry and function owners; equal spans retain identity and later local reads stay
-unlinked. Implementation: `97032a4`. Five additional mixed-chain groups now pass
-(`/tmp/meowy-forward-mixed-tests.log`): ambiguous markers, eight late corruptions,
-consistent cycles, five/four-hop and exact/one-short work limits, missing visits and
-logical terminals. Report/capture registries and payload remain unchanged on failure.
-Six source cases pass rebuilt-compiler debug/release
-(`/tmp/meowy-forward-source-final.log`). Boundary regressions: `c2552a2`.
-Four required runs and classified structural evidence are committed as `31f9912`.
-The E207/E216 slice completes the catalog at 286 cases, 267 required and 19 unchanged
-pins. Metadata/coverage checks pass (`/tmp/meowy-forward-metadata.log`). All 280 prior
-records, 312 assets, 37 references/hashes and 33 proof obligations are preserved
-(`/tmp/meowy-forward-preservation.log`). Full compiler/strict and guide gates remain.
+Mixed traversal shares one 65,536-hop scratch bound and the existing Flow budget.
+Group/coercion/direct-anchor overlap is invalid even without a coercion observation.
+Cycles and corrupt late metadata fail without changing reports, captured registries
+or remaining payload. No values, candidate copies, loan authority, caller provenance
+or proof answers are introduced. Real typed initializer roots now resolve through
+five alternating wrappers in both entry and function owners. Later local reads
+still have no result-slot link.
 
-Expected contexts introduce checked coercion wrappers around inputs, and ordinary
-bindings retain those outer roots. The resolver now qualifies observed,
-non-projecting Forward wrappers. Immutable-local initializer joins remain separate.
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify observed Forward wrappers and resolve mixed chains | `97032a4` |
+| Cover mixed identity conflicts, cycles and resource limits | `c2552a2` |
+| Pin typed initializer order, owners and stopped execution | `31f9912` |
+| Pin typed slot E207 and width E216 rejections | `4523ee7` |
 
-Dependency-ordered commit plan (steps 1-2 implemented; broader validation pending):
+Ten new internal groups cover eligibility, exact edges, 24 corruption variants,
+classification overlap, cycles, missing results, logical terminals and exact
+hop/work bounds. Focused checks pass (`/tmp/meowy-forward-consumers.log`,
+`/tmp/meowy-forward-qualifier.log`, `/tmp/meowy-forward-mixed-tests.log`). All six
+new required cases pass rebuilt-compiler debug/release
+(`/tmp/meowy-forward-source-final.log`). All ten compiler checks pass on
+LLVM 23.1.1/Rust 1.99.0: 2358 library/915 native tests, 32 tooling/30 compiler-harness
+groups, formatting, Clippy, build and conformance
+(`/tmp/meowy-forward-gate.log`). Catalog/coverage checks pass at 286 cases:
+267 required passes, 19 unchanged pins and zero failures in debug/release. Strict
+mode exits 1 only for those gaps (`/tmp/meowy-forward-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-forward-docs.log`).
 
-1. Reuse `effects/coercions.rs` stage validation in a narrow helper requiring an
-   observed result, `CoercionKind::Forward` and primary=false. Check exact recorded
-   input/owner/edges/header without treating Convert, projected Forward, Stopped,
-   reborrow or an arbitrary Expr region as transparent. Keep stage visits independent.
-2. Extend bounded resolution to mixed group/qualified-Forward chains, preserving
-   cycle/work bounds and atomic failure. Retain the direct consumer anchor and
-   original extraction ports, with no new value, lifetime or call-return inference.
-   Test nested chains, missing visits, foreign owners and corrupted descriptors.
-3. Qualify typed initializer roots such as
-   `r <{ n <int32> }> : (({ -> n : 1 })); v : r.n` structurally. Source runtime behavior
-   remains unchanged; joining the later local read to its initializer is a separate
-   subsequent slice. Add focused source order/error coverage, update classified
-   evidence and run compiler/strict gates.
+All 280 prior case records, 312 source assets, 37 reference files/reviewed hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-forward-preservation.log`). Source execution and internal structural
+qualification remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-Precise value/branch/overwrite joins, local storage and function-return provenance,
-restart propagation, E225 and proof outcomes remain later dependency-ordered work.
+### Next: unchanged narrowing before immutable initializer joins
+
+1. Ordinary local reads are wrapped by `expressions.rs::narrow_source`. Reuse
+   `effects/narrowing.rs` validation to qualify only unchanged (`changed=false`),
+   normal wrappers with an observed result. Integrate them into bounded mixed
+   resolution, preserving exact edges, owners, stage independence, overlap checks
+   and atomic failures. Changed/nonnormal/unobserved narrowing stays opaque.
+   Include focused eligibility, corruption, cycle and work-bound regressions.
+2. Before initializer joins, retain bounded eligibility for reference-free,
+   recursively immutable local types while `Checker.locals` is available.
+   `Reports` currently retains only its count; `proofs.mutable` alone cannot exclude
+   immutable bindings containing mutable fields. Reuse checked type predicates
+   (`hir.rs::has_mutable_fields`) without copying types or weakening work limits.
+3. Index exact ordinary Bind initializer roots from `dependencies/operations.rs`,
+   then join validated `effects/reads.rs` identities through the qualified wrappers.
+   Keep local/storage/owner identity exact; exclude aliases, writes, parameters,
+   references and cross-owner sources. Preserve unknown/multiple candidates and
+   caller boundaries. Split eligibility/indexing from read integration, with
+   focused tests in each slice, then source order/error cases and compiler/strict gates.
+
+Precise branch/overwrite joins, function-return provenance, restart propagation,
+E225 enforcement and proof outcomes remain later dependency-ordered work.
 
 ## Documentation conventions and layout
 
@@ -2945,8 +2962,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
-above. Explicit grouped-expression forwarding is implemented; qualified
-non-projecting Forward coercion consumers are the immediate next task.
+above. Explicit group and observed non-projecting Forward consumer resolution are
+implemented. Qualifying unchanged observed narrowing is the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3515,8 +3532,9 @@ non-projecting Forward coercion consumers are the immediate next task.
    (`120c657`, `2ac60c2`) and source cases (`06b7c8b`, `f0dba6d`) now pass the gate.
    Explicit group capture/resolution (`eb7e6d0`, `b1311c1`), identity/limit coverage
    (`a790e3e`, `d1f839d`) and source cases (`4817fba`, `5da70d0`) now pass the gate.
-   Next qualify observed non-projecting Forward coercions, following the ordered
-   plan above, before joining immutable local initializers.
+   Observed Forward qualification and mixed chains (`97032a4`, `c2552a2`) plus
+   typed source cases (`31f9912`, `4523ee7`) are implemented. Next qualify unchanged
+   observed narrowing before immutable-local indexing/joins, following the plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

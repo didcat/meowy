@@ -386,9 +386,9 @@ operation or result flags alone do not create a primary link.
 
 Slot links retain identities only. Owning effects keep their flags, and result
 sources keep unknown or multiple-candidate state without extra copies. Inputs must
-resolve to a validated block consumer, directly or through explicit group identities.
-Local reads, reference loads, calls, coercions, ascriptions and unclassified regions
-remain outside these links.
+resolve to a validated block consumer, directly or through explicit group identities
+and qualified Forward coercions. Local reads, reference loads, calls, ascriptions
+and unclassified regions remain outside these links.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
@@ -404,11 +404,24 @@ its old edges without a marker. Shared-reference forwarding and statement/contro
 regions gain no group classification. Specialized list paths that flatten groups
 retain their existing identities rather than synthesizing markers from spans.
 
-Consumer resolution follows only these markers. It checks completed Expr wrappers,
-Expr/And/Or children, exact parent/owner/block identities, contained source spans
-and the original ordered two-edge forwarding. Unmarked terminals remain unknown;
-group/direct-anchor conflicts and cycles fail. Registry and scratch-set bounds are
-65,536 entries, with shared work charged before each lookup and insertion.
+Consumer resolution follows these markers and observed non-projecting Forward
+coercions. Group validation checks completed Expr wrappers, Expr/And/Or children,
+exact parent/owner/block identities, contained source spans and the original ordered
+two-edge forwarding. A coercion requires an observed result, no primary extraction,
+agreement with the checked descriptor and exact stage edges. Its child retains the
+same span as the wrapper; equality of spans does not merge their identities.
+
+Mixed chains retain one bounded visited set and shared work charges. Conflicting
+group/coercion/direct-anchor classifications, corrupt identities and cycles fail.
+Group registry and mixed-chain scratch bounds are 65,536 entries. Missing result
+observations, Convert, projected Forward, Stopped, reborrows and shared-reference
+regions remain opaque. Qualification copies no types, candidates or payload.
+
+Typed initializer roots can now resolve through nested Forward/group chains to their
+original block consumers. Later local reads remain separate: unchanged narrowing
+qualification and immutable initializer indexing must precede those joins. This
+structural resolution does not select candidate values, infer call results or
+establish runtime completion, lifetime authority or proof outcomes.
 
 The resolver reuses existing field and unary/binary primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child

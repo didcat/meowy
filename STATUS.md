@@ -7,31 +7,30 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Explicit ordinary/composed group identities now let nested grouped fields and
-unary/binary primary projections reuse exact result-slot links. Resolution validates
-owners, child identities, spans and unchanged region edges, with cycle and resource
-bounds. Required-only, shared-reference and unclassified regions remain separate;
-stored Normal edges do not prove completion or authorize new value/proof inference.
-Eighteen new internal groups and six required source cases cover capture, traversal,
-order, stops, errors and atomic failures. The
-[compiler handoff](compiler/STATUS.md#bounded-grouped-expression-forwarding)
-records the commit series and next ordered plan.
+Observed non-projecting Forward coercions now resolve through mixed explicit-group
+chains to exact block-result consumers. Qualification checks observed results,
+recorded identities and exact edges, preserving owner boundaries, opaque stages,
+cycle/work limits and atomic failure. Typed initializer roots resolve; later local
+reads remain separate. Ten new internal groups and six required source cases cover
+eligibility, corruption, bounds, order, stops and type/width rejection. The
+[compiler handoff](compiler/STATUS.md#observed-forward-coercion-consumers) records
+the four implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2348 library/915 native tests
-and 62 Python groups (`/tmp/meowy-group-gate.log`). Conformance has 280 cases:
-261 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode rejects only those gaps (`/tmp/meowy-group-strict.log`). Prior fixtures,
-reference contracts and capability pins are preserved
-(`/tmp/meowy-group-preservation.log`). The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2358 library/915 native tests
+and 62 Python groups (`/tmp/meowy-forward-gate.log`). Conformance has 286 cases:
+267 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-forward-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-forward-docs.log`). Prior fixtures,
+reference contracts, capability pins and proof obligations are preserved
+(`/tmp/meowy-forward-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
-33 proof obligations. All four final documentation checks pass
-(`/tmp/meowy-group-docs.log`).
-Proof evaluation and full language/release qualification remain incomplete.
+33 proof obligations. Proof evaluation and full language/release qualification
+remain incomplete.
 
-Next, qualify observed non-projecting Forward coercion wrappers through their exact
-checked metadata. Mixed forwarding chains precede immutable-local initializer joins;
-conversions, projected/stopped paths and arbitrary regions stay separate. Unrelated
-`docs/programs/hey/` is preserved.
+Next, qualify observed unchanged narrowing wrappers, which ordinary local reads
+already acquire. Immutable initializer eligibility/indexing and read joins follow;
+mutable fields, references, aliases, writes and cross-owner sources remain separate.
+Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
