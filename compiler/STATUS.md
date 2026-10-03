@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Coercion-owned primary consumers pass the compiler and documentation gates.
+Updated: 2026-10-03. Output-owned primary consumers pass the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1631,73 +1631,80 @@ All 303 prior case records, 335 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-coercion-preservation.log`). Structural projection-only evidence remains
 distinct from observable source execution. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: output-owned primary consumers
+## Output-owned primary consumers
 
-Resumed from `0fcaae0`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. First extract shared slot insertion without changing behavior. Then
-validate whole output edges and sparse observed reports before linking, add streamed
-projection consumers with focused tests, and separately cover corruption/stops/limits,
-source evidence and final gates. Keep original formatting indices, independent stage
-flags and shared map/work bounds; no new input/payload copies or value inference.
+Formatting primary projections now retain their original sparse part indices in
+slot-use links. Literal/scalar gaps are preserved, more than two parts can link,
+and each observed projection resolves through the existing qualified source path
+to slot zero. Parameters, mutable/reference storage, calls and unknown sources stay
+opaque. No projection is inferred from an output or terminal observation.
 
-Shared insertion extraction passes all 57 consumer groups
-(`/tmp/meowy-output-insertion.log`). It preserves the existing capacity check,
-work charge and insertion behavior. Exact producer-edge replay will be validated
-and committed before sparse-report qualification and consumer integration.
+One whole-producer replay per output compares exact stored prefix/input/projection/
+output/terminal edges, preserving Next/Returned routes and the stopped boundary.
+Every stored child is checked, including suffix descriptors after a stopped part;
+no suffix edges or result visits are invented. Capture remains the authority for
+unique source roots and formatting types. Replay checks descriptor/edge agreement
+without PointId ordering or another seen set/input vector.
 
-Insertion refactor: `9aaca5d`. Whole-producer replay now passes three new edge groups
-and all 57 consumer groups (`/tmp/meowy-output-edges.log`,
-`/tmp/meowy-output-edges-consumers.log`). It validates all stored children, including
-stopped suffixes, and compares the original prefix/projection/output/terminal edges
-once without rebuilding them. Tests cover 21 identity/edge faults and exact work/caps.
-No output slot links have been added yet.
+Sparse report qualification checks owner/panic/control/total/stopped headers, exact
+part inputs, nonempty independent observation flags and valid selectors. Only an
+observed terminal requires its registered operation owner. The collector streams
+observed projections into the existing Uses scratch map through shared insertion,
+with bounded Flow/map capacity and unchanged payload. Late failures publish no
+partial links. Seeded stopped-record anchors remain structural evidence, separate
+from runtime completion or I/O success.
 
-Edge replay: `0c5c184`. Sparse report qualification passes two focused groups and
-all 57 consumers (`/tmp/meowy-output-reports.log`,
-`/tmp/meowy-output-reports-consumers.log`). It checks exact headers, nonempty part
-observations, selectors/inputs and terminal ownership, with one whole edge pass per
-output. Projection/output/prefix/terminal observations remain independent; malformed
-reports fail without mutation. Streaming projection links are the next slice.
+| Reviewable slice | Commit |
+| --- | --- |
+| Extract shared bounded slot insertion | `9aaca5d` |
+| Replay exact whole-output edge sequences | `0c5c184` |
+| Qualify sparse observed output reports | `1bf878c` |
+| Stream original primary-part ports to result slots | `7ac15f3` |
+| Cover observed stages, corruption and shared limits | `4509d0e` |
+| Pin print/panic, stopped prefixes and checked tails | `8e1269d` |
 
-Report qualification: `1bf878c`. Streamed output consumers pass two new core groups,
-all 59 consumer groups, 29 output-related groups and Clippy
-(`/tmp/meowy-output-consumers.log`, `/tmp/meowy-output-all-consumers.log`,
-`/tmp/meowy-output-focused.log`, `/tmp/meowy-output-lint.log`). Original sparse part
-indices map to slot zero through qualified local copies, without another input
-collection or payload debit. Opaque sources and prior projections before a stopped
-part are preserved. Consumer integration: `7ac15f3`. Four additional groups pass
-(`/tmp/meowy-output-limits.log`), covering sparse owners, projection-only and
-terminal/prefix-only observations, seeded stopped anchors, 18 late faults,
-duplicate visits and exact map/work limits at zero payload. Boundary tests: `4509d0e`.
-Four source cases pass rebuilt-compiler debug/release (`/tmp/meowy-output-source-final.log`).
-Metadata checks pass at 310 cases, 291 required and 19 unchanged pins
-(`/tmp/meowy-output-metadata.log`). All 306 prior records, 338 assets, 37 references/
-hashes and 33 proof obligations are preserved (`/tmp/meowy-output-preservation.log`).
-Full gates remain pending.
+Eleven new groups cover complete edges, sparse reports, source/owner links, stopped
+stages, 21 edge faults, 14 report faults, 18 late consumer faults and exact resources.
+Focused checks and library Clippy pass (`/tmp/meowy-output-edges.log`,
+`/tmp/meowy-output-reports.log`, `/tmp/meowy-output-consumers.log`,
+`/tmp/meowy-output-limits.log`, `/tmp/meowy-output-lint.log`). All ten compiler
+checks pass on LLVM 23.1.1/Rust 1.99.0: 2420 library/915 native tests, 32 tooling/30
+harness groups, formatting, Clippy, build and conformance (`/tmp/meowy-output-gate.log`).
+Four required cases pass rebuilt-compiler debug/release
+(`/tmp/meowy-output-source-final.log`). The catalog has 310 cases: 291 required
+passes, 19 unchanged pins and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-output-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-output-docs.log`).
 
-### Dependency-ordered plan
+All 306 prior case records, 338 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-output-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-1. Extract bounded Uses insertion from `consumers.rs` as a behavior-preserving
-   prerequisite, retaining existing insertion behavior and map/work checks.
-   Keep the fixed two-input API for scalar producers; outputs need their original
-   arbitrary formatting-part indices, including gaps for literal parts.
-2. Qualify reports in `effects/outputs.rs`, invoked from `slot_uses` before adding
-   links. `output_effect_stage` validates headers, selectors and child identities
-   but currently does not recheck
-   exact Output edges. Add one bounded allocation-free whole-producer edge pass per
-   output, preserving Next/Returned routes and stopped suffixes. Check reported
-   owner/panic/control/total/stopped, each stored part's input and nonempty stage
-   flags, all observed Prefix/Projection/Output/terminal stages, and terminal
-   operation registration. Do not infer any unobserved projection/output/terminal stage.
-3. Stream only observed projected parts through `primary_slot` into the same Uses
-   scratch map as `Projection { point: output_id, step: original_part } -> slot0`.
-   Avoid another input Vec/map or payload debit and avoid rescanning all edges for
-   every part. Keep literal/scalar/call/reference/parameter sources separate and
-   preserve independent owners, original flags and unknown candidate state.
-4. Include sparse and more-than-two projections, stopped/projection-only stages,
-   duplicate visits, late corruption and exact capacity/work regressions, with
-   focused tests in each slice. Add print/panic source cases and run the full
-   compiler/strict/documentation gates. List-owned primary inputs can follow later.
+### Next: contextual-list primary consumers
+
+1. Separate whole-producer validation from stage selection in `effects/lists.rs`,
+   preserving exact sequence/endpoints, unique input roots, child/source order,
+   stopped boundaries and existing operation registration. Keep this refactor
+   behavior-preserving with focused tests. The current per-stage path scans inputs
+   and builds a bounded uniqueness set; a new consumer must not repeat that work
+   for each part. Validate once per list when qualifying its consumer report.
+2. Qualify `Effect::List` headers and every `Observed.inputs` root/plan against
+   checked metadata, including unobserved suffix descriptors. Validate projection,
+   conversion, construction and result observations independently. Terminal
+   availability is `normal && no stopped input`, not `normal` alone; preserve the
+   existing operation-owner requirement whenever the descriptor has construction
+   edges, even for projection-only observations. Do not copy output's looser
+   projection-registration policy onto lists.
+3. Stream only observed projected inputs through `primary_slot`, keeping
+   `Projection { point: list_id, step: original_index } -> slot0` and shared map/work
+   bounds, without extra payload copies or new value-flow edges. Ordinary typed
+   lists already delegate primaries to Coercion effects; list-owned projections
+   occur in contextual `list_inputs` plans. Establish a positive source path before
+   claiming executable link coverage: current narrowed-parameter examples remain
+   opaque to source joins, and seeded anchors are structural evidence only.
+4. Add focused identity/plan/stopped-prefix/duplicate/budget regressions alongside
+   each implementation slice, then required source cases and compiler/strict/docs
+   gates. Preserve unknown result sources, independent owners and ordinary errors.
 
 Field-value joins remain a separate provenance design: aggregate slots in
 `results.rs` deliberately remain Unknown. Precise branch/overwrite joins, function
@@ -3285,7 +3292,8 @@ above. Explicit group and observed non-projecting Forward consumer resolution ar
 implemented, including unchanged observed narrowing and bounded local eligibility.
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
-complete. Output-owned primary consumers are next, after report/edge qualification.
+complete, including output-owned primary parts. Contextual-list primary consumers
+are next, after separating whole-producer validation from stage selection.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3863,9 +3871,10 @@ complete. Output-owned primary consumers are next, after report/edge qualificati
    (`a433f00`) and source cases (`2d460d2`) pass the gate. Collection budgets
    (`f83ba59`), read forwarding (`1308c62`), mixed bounds (`b2d0033`) and source cases
    (`8e5c5d1`) pass the gate. Coercion-owned primary consumers (`5001917`), boundary
-   coverage (`0399df9`) and source cases (`9748410`) are implemented. Next qualify
-   output reports/edges, then connect their observed primary parts following the
-   ordered plan above.
+   coverage (`0399df9`) and source cases (`9748410`) pass the gate. Output edge/report
+   qualification (`0c5c184`, `1bf878c`), streamed links (`7ac15f3`), limits (`4509d0e`)
+   and source cases (`8e1269d`) are implemented. Next qualify contextual-list primary
+   consumers following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

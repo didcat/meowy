@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Observed coercion-owned primary projections now retain exact step-zero links to
-result slot zero, including local unary and typed/nullable scalar contexts. Each
-observed stage is revalidated independently; later stages never imply projection.
-Convert registration rules and projection-only Stopped evidence remain distinct.
-Primary-extracting coercions stay opaque to value forwarding. The
-[compiler handoff](compiler/STATUS.md#coercion-owned-primary-consumers) records
-the three implementation/test commits and next ordered plan.
+Output-owned primary projections now retain original sparse formatting indices and
+slot-zero links through qualified sources. Whole-output edge replay and independent
+prefix/projection/output/terminal validation preserve stopped boundaries and operation
+ownership. Streaming reuses bounded slot insertion without another input collection
+or payload charge; failures publish no partial links. The
+[compiler handoff](compiler/STATUS.md#output-owned-primary-consumers) records the
+six implementation/test commits and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2409 library/915 native tests
-and 62 Python groups (`/tmp/meowy-coercion-gate.log`). Conformance has 306 cases:
-287 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-coercion-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-coercion-docs.log`).
-Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-coercion-preservation.log`). The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2420 library/915 native tests
+and 62 Python groups (`/tmp/meowy-output-gate.log`). Conformance has 310 cases:
+291 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-output-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-output-docs.log`). Prior fixtures,
+reference contracts, capability pins and proof obligations are preserved
+(`/tmp/meowy-output-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, qualify output reports and exact edges, then connect observed formatting
-primary parts with their original indices and shared work/map bounds.
+Next, separate whole-list validation from stage selection, then qualify and link
+observed contextual-list primary inputs. Preserve their stricter registration rules.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
@@ -1164,16 +1164,17 @@ execution was not part of this documentation edit.
    Subsequent read/scalar/conversion/borrow, list-construction and dispatch reports
    now pass focused/source coverage and compiler gates; the compiler handoff records
    those series. Emission targets and statement completion now have bounded reports
-   with focused/source coverage and compiler/strict evidence. Next retain checked
-   aggregate/reference/union equality categories in
-   `compiler/src/check/dependencies/binaries/types.rs`, then extend their reports
-   using the ordered compiler handoff. Preserve all existing source/capability gates.
+   with focused/source coverage and compiler/strict evidence. Checked equality,
+   result-slot consumers, local initializer forwarding and output primary links
+   now pass their gates. Next separate whole-list validation from stage selection,
+   then qualify contextual-list primary consumers using the ordered compiler
+   handoff. Preserve all existing source/capability gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.
    Result availability is not complete value provenance.
-   Other operand families and contextual
-   list/effect blocks remain sequence-coverage gaps.
+   Remaining operand/contextual-builder gaps are recorded in the compiler handoff;
+   absence of a sequence is not independence.
    Normal ports do not imply reachability. Preserve independent matcher arms,
    nested targets and unknown effects; do not
    infer runtime order from point IDs or source spans. Bounded backedge/header

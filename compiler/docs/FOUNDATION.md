@@ -521,7 +521,28 @@ Primary-extracting coercions remain opaque as value-forwarding steps. The collec
 uses existing map/work bounds, retains one link per port, and copies no payload;
 invalid stages or late failures preserve the original reports and links.
 
-The resolver reuses field and unary/binary/coercion primary slot links, preserving
+Output-owned primary consumers retain each formatting part's original index,
+including gaps for literals and scalar inputs. Sparse observed reports independently
+validate prefix, projection, output and terminal flags against exact checked headers,
+inputs and selectors. Terminal observations require registered operation ownership;
+projection-only, output-only and panic-prefix-only reports remain distinct.
+
+Each output receives one bounded allocation-free replay of its stored edge sequence,
+preserving Next/Returned routes and the stopped boundary. All stored children are
+validated, including checked suffixes after a stop; suffix edges and terminal/result
+observations are never invented. Capture remains the authority for unique source
+roots and formatting-type decisions. Replay compares descriptors with stored edges
+without deriving source order from PointIds or rebuilding an input/edge collection.
+
+The consumer streams only observed projected parts into the existing slot-use map,
+mapping their original Projection ports to slot zero through qualified sources.
+It preserves independent owners and unknown/opaque sources, shares insertion and
+Flow limits, and consumes no extra report payload. More than two sparse projections,
+stopped prefixes, duplicate visits and late failures retain their existing semantics.
+Seeded stopped-record links establish structural coverage, not runtime completion.
+No projection implies output/terminal observation or successful I/O.
+
+The resolver reuses field and scalar/output primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child
 returns; observed extraction stages and block results still govern publication.
 No entry-to-normal shortcut, type/candidate copy or value/ownership inference is
