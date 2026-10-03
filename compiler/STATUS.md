@@ -1652,6 +1652,13 @@ stopped suffixes, and compares the original prefix/projection/output/terminal ed
 once without rebuilding them. Tests cover 21 identity/edge faults and exact work/caps.
 No output slot links have been added yet.
 
+Edge replay: `0c5c184`. Sparse report qualification passes two focused groups and
+all 57 consumers (`/tmp/meowy-output-reports.log`,
+`/tmp/meowy-output-reports-consumers.log`). It checks exact headers, nonempty part
+observations, selectors/inputs and terminal ownership, with one whole edge pass per
+output. Projection/output/prefix/terminal observations remain independent; malformed
+reports fail without mutation. Streaming projection links are the next slice.
+
 ### Dependency-ordered plan
 
 1. Extract bounded Uses insertion from `consumers.rs` as a behavior-preserving

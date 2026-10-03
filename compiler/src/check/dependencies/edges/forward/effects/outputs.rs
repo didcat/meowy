@@ -2,6 +2,7 @@ use super::*;
 use crate::check::dependencies::FormatInput;
 
 mod edges;
+mod validation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {

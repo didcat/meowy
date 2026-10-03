@@ -41,8 +41,8 @@ impl Checker {
         }
         let mut uses = Uses::new();
         for (&id, (owner, effect)) in &reports.effects {
-            if matches!(effect, Effect::Output(_)) {
-                self.validate_output_edges(id, *owner, span)?;
+            if let Effect::Output(output) = effect {
+                self.validate_output_report(reports, id, *owner, output, span)?;
             }
             let mut slots = [None; 3];
             slots[0] = self
