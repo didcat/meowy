@@ -2,7 +2,7 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::{CoercionKind, OperationKind};
 
 #[test]
-pub(crate) fn forward_consumers_resolve_typed_initializer_roots_without_local_joins() {
+pub(crate) fn forward_consumers_resolve_typed_initializer_roots_and_owners() {
     for source in [
         "r<{n<int32>}>:(({->n:1}));v:r.n",
         "f<int32>:(){r<{n<int32>}>:(({->n:1}));->r.n}",
@@ -45,6 +45,5 @@ pub(crate) fn forward_consumers_resolve_typed_initializer_roots_without_local_jo
                 .unwrap(),
             Some(input)
         );
-        assert!(reports.slot_uses.is_empty());
     }
 }

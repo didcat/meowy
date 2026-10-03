@@ -50,7 +50,6 @@ pub(crate) fn field_slot_links_keep_unknown_values_and_indirect_inputs_separate(
         );
     }
     for source in [
-        "r:{->n:1};v:r.n",
         "r:{->n:1};p:&r;v:p.n",
         "r:{->n:1};p:&r;v:(*p).n",
         "f<{n<int32>}>:(){->n:1};v:f().n",
@@ -60,4 +59,65 @@ pub(crate) fn field_slot_links_keep_unknown_values_and_indirect_inputs_separate(
     }
     let errors = crate::compile("d:@\"debug\";v:{d.panic(\"stop\");->n:1}.n").unwrap_err();
     assert_eq!(errors[0].code, "E201");
+}
+
+#[test]
+pub(crate) fn narrowing_consumers_traverse_local_wrappers_without_initializer_joins() {
+    for source in [
+        "r:{->n:1};s<{n<int32>}>:((r));v:s.n",
+        "f<int32>:(){r:{->n:1};s<{n<int32>}>:((r));->s.n}",
+    ] {
+        let (mut checker, reports) = checked(source);
+        let root = checker
+            .operations
+            .values()
+            .filter_map(|op| op.input)
+            .find(|id| {
+                checker
+                    .coercions
+                    .get(id)
+                    .is_some_and(|op| checker.group_inputs.contains_key(&op.input))
+            })
+            .unwrap();
+        let owner = checker.points[root].owner;
+        let mut raw = root;
+        for index in 0..6 {
+            raw = if index == 5 {
+                checker.narrowings[&raw].input
+            } else if index % 2 == 0 {
+                checker.coercions[&raw].input
+            } else {
+                checker.group_inputs[&raw].input
+            };
+        }
+        assert!(matches!(reports.effects[&raw].1, Effect::Read { .. }));
+        assert!(
+            checker
+                .grouped_consumer_limited(&reports, root, owner, Span::default(), 6)
+                .unwrap()
+                .is_none()
+        );
+        let error = checker
+            .grouped_consumer_limited(&reports, root, owner, Span::default(), 5)
+            .unwrap_err();
+        assert!(error.message.contains("budget"));
+        assert!(reports.slot_uses.is_empty());
+    }
+}
+
+#[test]
+pub(crate) fn local_read_consumer_boundaries() {
+    for source in [
+        "r:{->n:1};v:r.n",
+        "r:{->n:1};v:((r)).n",
+        "r:{->1;->tag:true};x:-r",
+        "r:{->1;->tag:true};x:-((r))",
+        "r<{n<int32>}>:(({->n:1}));v:r.n",
+        "f<int32>:(){r<{n<int32>}>:(({->n:1}));->r.n}",
+        "r<{n<int32>}>:(({->n:1}));copy:r.n;f<int32>:(flag<boolean>){|flag|x:2;n:3;->n}",
+        "a:null;b:true;n:1;s:\"x\";xs:[1,2];r:{->n:1};u<int32><null>:n;f<int32>:(v<int32>){->v};copy:r.n",
+    ] {
+        let (_, reports) = checked(source);
+        assert!(reports.slot_uses.is_empty(), "{source}");
+    }
 }

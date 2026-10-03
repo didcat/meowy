@@ -35,7 +35,6 @@ pub(crate) fn initializer_index_retains_exact_roots_and_independent_owners() {
         op.input
             .is_some_and(|input| checker.coercions.contains_key(&input))
     }));
-    assert!(reports.slot_uses.is_empty());
     program.functions.reverse();
     assert_eq!(
         checker

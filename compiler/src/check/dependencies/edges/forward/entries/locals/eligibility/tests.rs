@@ -2,7 +2,7 @@ use super::super::super::tests::checked;
 use super::*;
 
 #[test]
-pub(crate) fn local_eligibility_survives_transfer_without_initializer_links() {
+pub(crate) fn local_eligibility_survives_transfer_with_exact_local_identities() {
     let source = "a:null;b:true;n:1;s:\"x\";xs:[1,2];r:{->n:1};u<int32><null>:n;f<int32>:(v<int32>){->v};copy:r.n";
     crate::compile(source).unwrap();
     let (mut checker, program) = checked(source);
@@ -11,7 +11,6 @@ pub(crate) fn local_eligibility_survives_transfer_without_initializer_links() {
     assert_eq!(reports.eligible, (0..program.locals.len()).collect());
     assert!(!checker.proofs.aliases.is_empty());
     assert!(reports.eligible.contains(&program.functions[0].params[0]));
-    assert!(reports.slot_uses.is_empty());
     let parts = reports.parts;
     assert_eq!(
         checker

@@ -33,7 +33,6 @@ pub(crate) fn grouped_consumers_link_owned_fields_and_observed_primary_ports() {
 #[test]
 pub(crate) fn grouped_consumers_keep_opaque_terminals_and_stopped_stages() {
     for source in [
-        "r:{->n:1};v:((r)).n",
         "r:{->n:1};p:&r;v:((p)).n",
         "f<{n<int32>}>:(){->n:1};v:((f())).n",
         "x:((false&&true));y:((false||true))",

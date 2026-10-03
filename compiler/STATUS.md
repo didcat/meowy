@@ -1554,6 +1554,13 @@ initializer-index groups (`/tmp/meowy-read-budget-consumers.log`,
 Eligibility/indexing now precede extraction, all retained collections reserve shared
 room, and repeated rebuilds preserve reports and payload. Read behavior is unchanged.
 
+Budget/order prerequisite: `f83ba59`. Existing local-read assertions are now grouped
+in `consumers/tests.rs`, retaining the same source cases and six-hop opaque-read
+expectations. All 46 consumer groups and focused eligibility/index groups pass
+(`/tmp/meowy-read-consolidation.log`, `/tmp/meowy-read-consolidation-eligibility.log`,
+`/tmp/meowy-read-consolidation-index.log`). This test-only consolidation keeps the
+upcoming behavior change within one reviewable implementation slice.
+
 ### Dependency-ordered plan
 
 1. Reorder `entries.rs` collection to consumers -> eligible -> initializers ->
