@@ -1680,7 +1680,22 @@ All 306 prior case records, 338 source assets, 37 reference files/reviewed hashe
 19 capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-output-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-### Next: contextual-list primary consumers
+## In progress: contextual-list primary consumers
+
+Resumed from `230c9cc`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Split whole-producer list validation from stage selection first,
+preserving all existing checks. Then qualify full reports once, stream observed
+primary inputs into existing consumers, add separate corruption/stopped/budget
+coverage, source evidence and final gates. Establish any positive contextual source
+path explicitly; parameter/changed-narrowing opacity and seeded evidence stay distinct.
+
+The in-place validation split passes all 14 list-effect groups, including existing
+corruption/stop checks and two new selector groups; Clippy and formatting pass
+(`/tmp/meowy-list-selection.log`, `/tmp/meowy-list-selection-lint.log`). Whole
+replay retains uniqueness, exact sequence/endpoints, suffix identities and operation
+registration. Indexed stage selection is bounded independently of list length.
+
+### Dependency-ordered plan
 
 1. Separate whole-producer validation from stage selection in `effects/lists.rs`,
    preserving exact sequence/endpoints, unique input roots, child/source order,

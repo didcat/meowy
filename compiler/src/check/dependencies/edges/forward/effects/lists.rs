@@ -5,6 +5,13 @@ use std::collections::BTreeSet;
 mod report;
 pub(crate) use report::Observed;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Checked {
+    pub(super) point: PointId,
+    pub(super) stopped: Option<usize>,
+    pub(super) terminal: bool,
+}
+
 impl Checker {
     pub(super) fn validate_list_construction(
         &mut self,
@@ -13,8 +20,6 @@ impl Checker {
         port: Port,
         span: Span,
     ) -> Result<bool> {
-        let budget = || Diagnostic::unsupported("proof list-effect budget exhausted", span);
-        let invalid = || Diagnostic::unsupported("proof list-effect identity mismatch", span);
         let id = match port {
             Port::Projection { point, .. }
             | Port::Conversion { point, .. }
@@ -22,6 +27,22 @@ impl Checker {
             | Port::Normal(point) => point,
             _ => return Ok(false),
         };
+        let Some(checked) = self.validate_list_producer(reports, owner, id, span)? else {
+            return Ok(false);
+        };
+        self.select_list_stage(&checked, port, span)?;
+        Ok(true)
+    }
+
+    pub(super) fn validate_list_producer(
+        &mut self,
+        reports: &Reports,
+        owner: usize,
+        id: PointId,
+        span: Span,
+    ) -> Result<Option<Checked>> {
+        let budget = || Diagnostic::unsupported("proof list-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof list-effect identity mismatch", span);
         if !self
             .flow
             .spend(self.lists.len().checked_ilog2().unwrap_or(0) as usize + 1)
@@ -29,7 +50,7 @@ impl Checker {
             return Err(budget());
         }
         let Some(op) = self.lists.get(&id) else {
-            return Ok(false);
+            return Ok(None);
         };
         if op.count > crate::list::MAX_CAPACITY
             || !self.flow.spend(
@@ -82,8 +103,7 @@ impl Checker {
         let mut edges = sequence.edges.iter();
         let mut ends = ends.iter();
         let mut from = Port::Entry(id);
-        let mut observed = false;
-        let mut stopped = false;
+        let mut stopped = None;
         if let Some(inputs) = inputs {
             if (!op.normal
                 && !inputs
@@ -110,11 +130,10 @@ impl Checker {
                     if ends.next() != Some(&Edge::new(from, to, Route::Next)) {
                         return Err(invalid());
                     }
-                    observed |= port == to;
                     from = to;
                 }
                 if input.kind == CoercionKind::Stopped {
-                    stopped = true;
+                    stopped = Some(part);
                     break;
                 }
                 if input.kind == CoercionKind::Convert {
@@ -122,7 +141,6 @@ impl Checker {
                     if ends.next() != Some(&Edge::new(from, to, Route::Next)) {
                         return Err(invalid());
                     }
-                    observed |= port == to;
                     from = to;
                 }
             }
@@ -139,24 +157,68 @@ impl Checker {
                 return Err(invalid());
             }
         }
-        if op.normal && !stopped {
-            if ends.next() != Some(&Edge::new(from, Port::Operation(id), Route::Next))
+        let terminal = op.normal && stopped.is_none();
+        if terminal
+            && (ends.next() != Some(&Edge::new(from, Port::Operation(id), Route::Next))
                 || ends.next()
                     != Some(&Edge::new(
                         Port::Operation(id),
                         Port::Normal(id),
                         Route::Next,
                     ))
-                || reports.index.operations.get(&id) != Some(&owner)
-            {
-                return Err(invalid());
-            }
-            observed |= matches!(port, Port::Operation(_) | Port::Normal(_));
-        }
-        if edges.next().is_some() || ends.next().is_some() || !observed {
+                || reports.index.operations.get(&id) != Some(&owner))
+        {
             return Err(invalid());
         }
-        Ok(true)
+        if edges.next().is_some() || ends.next().is_some() {
+            return Err(invalid());
+        }
+        Ok(Some(Checked {
+            point: id,
+            stopped,
+            terminal,
+        }))
+    }
+
+    pub(super) fn select_list_stage(
+        &mut self,
+        checked: &Checked,
+        port: Port,
+        span: Span,
+    ) -> Result<()> {
+        let budget = || Diagnostic::unsupported("proof list-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof list-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize + 3)
+        {
+            return Err(budget());
+        }
+        let inputs = self.list_inputs.get(&checked.point);
+        let valid = match port {
+            Port::Projection { point, step } => {
+                point == checked.point
+                    && checked.stopped.is_none_or(|stop| step <= stop)
+                    && inputs
+                        .and_then(|inputs| inputs.get(step))
+                        .is_some_and(|input| input.primary)
+            }
+            Port::Conversion { point, part } => {
+                point == checked.point
+                    && checked.stopped.is_none_or(|stop| part < stop)
+                    && inputs
+                        .and_then(|inputs| inputs.get(part))
+                        .is_some_and(|input| input.kind == CoercionKind::Convert)
+            }
+            Port::Operation(point) | Port::Normal(point) => {
+                point == checked.point && checked.terminal
+            }
+            _ => false,
+        };
+        if !valid {
+            return Err(invalid());
+        }
+        Ok(())
     }
 }
 
@@ -171,3 +233,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod selection;
