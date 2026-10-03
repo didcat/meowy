@@ -430,9 +430,23 @@ original block consumers. Ordinary narrowing wrappers lead to raw Read or Field
 operations, where traversal stops. Following a field's wrapper does not follow
 the field's input as though it were the extracted value. Successful mixed-chain
 narrowing-to-block tests use explicitly seeded identities; they add no source-level
-initializer joins. Immutable-local eligibility and initializer indexing remain
-prerequisites. Structural resolution does not select candidate values, infer call
+initializer joins. Ordinary initializer indexing remains a prerequisite.
+Structural resolution does not select candidate values, infer call
 results or establish runtime completion, lifetime authority or proof outcomes.
+
+Entry reports now retain a bounded set of type-eligible LocalIds directly from
+the transferred Program types. Null, Never, booleans, numbers and strings qualify;
+records, lists and unions qualify only when their children have no mutable fields,
+references or opaque Foundation values. Mutable bindings are excluded too. The
+classifier independently checks field mutability and follows borrowed type nodes
+with an iterative 65,536-entry scratch bound and shared work charges.
+
+The local count and every binding ID must match the transferred Program. Eligible
+IDs consume the remaining combined effect/block/result/consumer/slot-link map
+capacity; no type trees or candidates are copied and payload room is unchanged.
+Failed identity, work or capacity checks publish no partial set. Parameters and
+emitted aliases can be type-eligible: that does not establish an ordinary initializer,
+ownership, completion or read provenance. Initializer admission remains separate.
 
 The resolver reuses existing field and unary/binary primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child

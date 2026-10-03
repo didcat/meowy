@@ -1,35 +1,35 @@
 # meowy project status
 
-Updated: 2026-10-02. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-03. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
 ## Current compiler and coverage handoff
 
-Observed unchanged narrowing wrappers now join bounded group/Forward traversal.
-Qualification requires exact checked metadata, normal availability and an observed
-result. Conflicting producer classifications, cycles and exhausted bounds fail
-atomically. Real wrappers still stop at Read or Field operations; no local-initializer
-or field-value joins are introduced. Ten new internal groups and four required
-source cases cover boundaries, order, mutable snapshots, stops and E208 rejection.
-The [compiler handoff](compiler/STATUS.md#observed-unchanged-narrowing-consumers)
-records the three implementation/test commits and next ordered plan.
+Entry reports now retain bounded immutable-local eligibility from transferred
+Program types, without copying type trees. Mutable bindings, nested mutable fields,
+references and Foundation values stay excluded. Checked local/binding identities,
+iterative type bounds and shared report capacity fail atomically. Parameters and
+aliases may be type-eligible; initializer and read joins remain separate. Seven new
+internal groups and three required source cases cover transfer, identity, resource
+limits, copy order, mutable snapshots and shared-write rejection. The
+[compiler handoff](compiler/STATUS.md#bounded-immutable-local-eligibility) records
+the three implementation/test commits and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2368 library/915 native tests
-and 62 Python groups (`/tmp/meowy-narrow-gate.log`). Conformance has 290 cases:
-271 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-narrow-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-narrow-docs.log`).
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2375 library/915 native tests
+and 62 Python groups (`/tmp/meowy-local-gate.log`). Conformance has 293 cases:
+274 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-local-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-local-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-narrow-preservation.log`). The
+preserved (`/tmp/meowy-local-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, retain bounded immutable-local eligibility from the transferred Program types.
-Initializer indexing and read joins follow as separate slices; mutable fields,
-references, aliases, writes and cross-owner sources remain excluded.
+Next, qualify exact ordinary Bind metadata before initializer indexing. Validated
+read joins follow as a separate slice with explicit owner checks and budget updates.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

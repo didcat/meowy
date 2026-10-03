@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Unchanged narrowing consumers pass the compiler and documentation gates.
+Updated: 2026-10-03. Immutable-local eligibility passes the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1401,55 +1401,73 @@ All 286 prior case records, 318 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-narrow-preservation.log`). Source execution remains distinct from
 structural eligibility. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: immutable-local eligibility
+## Bounded immutable-local eligibility
 
-Resumed from `fd6cbf3`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. First add a bounded borrowed-type classifier and eligibility reporting
-with focused shape/transfer tests; then separate identity/resource/atomic regressions,
-source cases and classified evidence, and final guide/compiler/strict gates.
-Keep eligible LocalIds under the existing combined fixed-map cap, without type
-copies or payload use. Exclude reference and opaque Foundation types; parameters
-and aliases still require later initializer-index admission. No read joins here.
+Entry reports now retain eligible LocalIds directly from borrowed `Program.locals`
+after HIR transfer. Primitive values (including Null/Never), records, lists and
+unions qualify only when recursively immutable and reference-free. All Foundation
+variants remain opaque. Mutable bindings and nested mutable fields are excluded;
+field flags are inspected independently of the existing `proofs.fields` registry.
 
-The initial classifier/report integration passes all nine entry-report groups
-(`/tmp/meowy-local-entries.log`). It walks borrowed type nodes with a 65,536-entry
-pending-stack cap and shared Flow work, validates transferred local/binding IDs,
-and appends eligible IDs after existing slot links under their combined map cap.
-Primitive/record/list/union eligibility excludes mutable bindings, nested mutable
-fields, references and all Foundation variants. Parameters and aliases remain
-shape-eligible without read links. Implementation: `5af4c18`; Clippy passes
-(`/tmp/meowy-local-lint.log`). All seven eligibility groups now pass, including
-five additional identity/map/work/atomic/type-boundary groups
-(`/tmp/meowy-local-eligibility-limits.log`). A 65,537-deep type uses one pending
-slot; width 65,537 exceeds the scratch cap. Source cases pass rebuilt-compiler
-debug/release (`/tmp/meowy-local-source-final.log`). Boundary tests: `407c6d7`.
-Source/coverage records now contain 293 cases, 274 required and 19 unchanged pins;
-metadata checks pass (`/tmp/meowy-local-metadata.log`). Preservation against
-`fd6cbf3` passes for 290 prior records, 322 assets, 37 references/hashes and all
-proof obligations (`/tmp/meowy-local-preservation.log`). Full gates remain pending.
+The iterative type walk charges inspected nodes, fields and pending children, with
+a 65,536-entry scratch cap. A deeper chain using one pending slot remains valid;
+shared Flow work bounds its traversal. Local count, binding count and every binding
+ID must agree, including unread locals. Eligible IDs append after existing slot links
+under their combined MAX_EDGES map cap. No type/candidate copies or payload charges
+are added. Late identity/work/capacity failures publish no partial set.
 
-### Dependency-ordered plan
+Parameters and emitted aliases may be type-eligible. Eligibility grants no ordinary
+initializer, owner/lifetime authority, completion, value or proof result. Local
+read and field-value joins remain unimplemented.
 
-1. Extend `edges/forward/entries/locals.rs` to retain bounded eligibility for
-   recursively immutable, reference-free local types. `entry_reports_limited`
-   already borrows `program.locals` after their transfer from the checker; use
-   those types directly without another capture registry or type copies.
-   `names.rs::local` records nested mutable fields in `proofs.fields`, and
-   `proofs.variable(id)` combines them with mutable bindings. Charge all type
-   traversal and retained IDs through existing work/map bounds; reuse the bounded
-   traversal pattern from `borrow_contract::type_weight`. Do not import unrelated
-   carried-publication type restrictions. Test nested fields, unions, lists,
-   references, missing local identities and exact work/capacity failures.
-2. Index exact ordinary Bind initializer roots from `dependencies/operations.rs`
-   using validated operation reports and eligible local IDs. Keep local/storage/
-   owner identities exact and exclude aliases, parameters, writes, references and
-   cross-owner sources. Retain missing/unknown candidates; eligibility alone grants
-   no provenance. Include focused index-conflict and atomic-capacity regressions.
-3. Integrate validated `effects/reads.rs` roots with that index through the existing
-   qualified wrappers. Preserve extraction ports, owning stage flags, unknown or
-   multiple candidates, and caller boundaries. Keep this separate from indexing;
-   include focused propagation tests, then source order/error cases and full
-   compiler/strict/documentation gates.
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain bounded type eligibility after HIR transfer | `5af4c18` |
+| Cover identities, shared capacity and iterative type bounds | `407c6d7` |
+| Pin immutable copies, mutable snapshots and shared-write rejection | `5e7e3a5` |
+
+Seven new eligibility groups pass (`/tmp/meowy-local-eligibility-limits.log`), along
+with existing entry-report tests (`/tmp/meowy-local-entries.log`) and library lint
+(`/tmp/meowy-local-lint.log`). Three required source cases pass rebuilt-compiler
+debug/release (`/tmp/meowy-local-source-final.log`). Metadata/coverage checks pass
+at 293 cases: 274 required and 19 unchanged pins (`/tmp/meowy-local-metadata.log`).
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2375 library/915 native
+tests, 32 tooling/30 compiler-harness groups, formatting, Clippy, build and conformance
+(`/tmp/meowy-local-gate.log`). All 274 required cases pass debug/release, with
+19 unchanged pins and zero failures. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-local-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-local-docs.log`).
+
+All 290 prior case records, 322 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-local-preservation.log`). Source behavior and structural eligibility
+remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: exact Bind qualification before initializer indexing
+
+1. Add a narrow Bind qualifier using checked `dependencies/operations.rs` metadata.
+   Current `Effect::Storage` reporting checks owner and copies the header; it does
+   not revalidate all local/storage/input identities or exact edges. Preserve that
+   existing report boundary while requiring exact observed/checked headers,
+   completed statement/site and checked containing-body/owner/span identities,
+   canonical local/storage bounds,
+   initializer child identity and the stored input-to-Operation-to-Normal edges.
+   Validate genuinely absent input separately; retain it as unknown, not evidence
+   of independence or a dropped declaration. Include corrupt-header/edge, owner,
+   absent-input and work-bound regressions with the qualifier.
+2. Index qualified ordinary Bind identities using `Reports.eligible`, retaining
+   statement, owner and optional initializer root. Exclude aliases explicitly,
+   parameters, writes and foreign owners; type eligibility alone cannot admit them.
+   Inspect borrowed function parameter IDs if needed to reject otherwise consistent
+   forged Bind metadata. Reject conflicting declarations and preserve unknown
+   roots. Append this stage after eligibility with shared remaining map capacity;
+   add atomic conflict/capacity tests before source cases and full gates.
+3. Integrate validated reads in a separate slice. Move eligibility/indexing before
+   `slot_uses`, charging both retained collections against its remaining room; do
+   not run extraction twice. A read-to-initializer jump crosses wrapper parent/span
+   boundaries and needs its own identity/owner checks. Preserve original extraction
+   ports, stage flags, unknown/multiple candidates and caller boundaries. Add
+   source order/error tests and compiler/strict/documentation gates.
 
 Precise branch/overwrite joins, field-value and function-return provenance, restart
 propagation, E225 enforcement and proof outcomes remain later dependency-ordered work.
@@ -3033,8 +3051,8 @@ Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
 above. Explicit group and observed non-projecting Forward consumer resolution are
-implemented, including unchanged observed narrowing. Bounded immutable-local
-eligibility is the immediate next task, before initializer indexing and read joins.
+implemented, including unchanged observed narrowing and bounded local eligibility.
+Exact Bind qualification is next, before initializer indexing and read joins.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3605,8 +3623,9 @@ eligibility is the immediate next task, before initializer indexing and read joi
    (`a790e3e`, `d1f839d`) and source cases (`4817fba`, `5da70d0`) now pass the gate.
    Observed Forward qualification and mixed chains (`97032a4`, `c2552a2`) plus
    typed source cases (`31f9912`, `4523ee7`) pass the gate. Unchanged narrowing
-   (`a8442b3`, `554cbfb`) and source cases (`9a251dd`) are implemented. Next retain
-   bounded immutable-local eligibility, then index initializers and join reads
+   (`a8442b3`, `554cbfb`) and source cases (`9a251dd`) pass the gate. Bounded local
+   eligibility (`5af4c18`, `407c6d7`) and source cases (`5e7e3a5`) are implemented.
+   Next qualify exact ordinary Bind metadata, then index initializers and join reads
    following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
