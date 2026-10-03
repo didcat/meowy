@@ -1,0 +1,20 @@
+d : @"debug"
+source : {
+    d.print("source")
+    -> z : { d.print("source z"); -> 11 }
+    -> a : { d.print("source a"); -> true }
+    -> 7
+    d.print("source tail")
+}
+copy : ((source))
+row : 'out {
+    { 'out -> ((copy)); d.print("nested tail") }
+    d.print("destination")
+    -> later : {
+        d.print("later field")
+        d.panic("halt")
+    }
+    d.print("destination tail")
+}
+d.print(row)
+d.print("after destination")

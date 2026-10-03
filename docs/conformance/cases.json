@@ -3324,6 +3324,38 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "emission_consumer_order",
+      "phase": "run",
+      "source": "sources/emission_consumer_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry source\nentry z\nentry a\nentry source tail\nentry nested tail\n5\nentry destination tail\n7\ntrue\n11\n7\nfunction source 2\nfunction z 2\nfunction a 2\nfunction source tail 2\nfunction nested tail 2\nfunction destination tail 2\n2\nfalse\n12\n2\nfunction source 3\nfunction z 3\nfunction a 3\nfunction source tail 3\nfunction nested tail 3\nfunction destination tail 3\n3\nfalse\n13\n3\n11\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "emission_consumer_stopped",
+      "phase": "run",
+      "source": "sources/emission_consumer_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource z\nsource a\nsource tail\nnested tail\ndestination\nlater field\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "emission_consumer_duplicate",
+      "phase": "check",
+      "source": "sources/emission_consumer_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

@@ -1752,12 +1752,18 @@ library Clippy pass (`/tmp/meowy-emission-consumers.log`,
 `/tmp/meowy-emission-candidates.log`, `/tmp/meowy-emission-consumer-lint.log`).
 Five new groups cover exact source order/owners, mutable/aggregate Unknown values,
 partial and discarded destination layouts, stopped destination tails, opaque sources
-and empty records. Five boundary groups additionally pass sparse initialization and
+and empty records. Five boundary groups (`2ec24cf`) additionally pass sparse initialization and
 result-only reports, missing destination results, 16 late identity faults, Unknown
 versus scalar sources, duplicate visits and exact work/map limits. Depth/width work
 comparison proves source resolution happens once per composition
 (`/tmp/meowy-emission-limits.log`, six groups including one existing backend test).
-No outstanding failures remain; required source cases and final gates are next.
+Test-target Clippy and formatting pass (`/tmp/meowy-emission-test-lint.log`).
+Three required source cases pass fresh-compiler debug/release: grouped-copy order
+across owners/named outer targets, composition before later P006 and duplicate-field
+E205 (`/tmp/meowy-emission-source-final.log`). Classified coverage and metadata
+checks pass with 316 cases, 297 required and 19 unchanged pins
+(`/tmp/meowy-emission-metadata.log`). No outstanding failures remain; full compiler,
+strict and final documentation gates are next.
 The preservation audit passes against `673bf59`:
 313 case records, 345 assets, 37 references/hashes, 19 pins and 33 proof obligations
 are unchanged (`/tmp/meowy-emission-preservation.log`).

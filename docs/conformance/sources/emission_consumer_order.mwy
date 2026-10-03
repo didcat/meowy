@@ -1,0 +1,45 @@
+d : @"debug"
+source : {
+    d.print("entry source")
+    -> z : { d.print("entry z"); -> 11 }
+    -> a : { d.print("entry a"); -> true }
+    -> 7
+    d.print("entry source tail")
+}
+copy : ((source))
+row : 'out {
+    nested : {
+        -> own : 5
+        { 'out -> ((copy)) }
+        d.print("entry nested tail")
+    }
+    -> scalar <int32> : ((copy))
+    d.print(nested.own)
+    d.print("entry destination tail")
+}
+d.print(row)
+d.print(row.a)
+d.print(row.z)
+d.print(row.scalar)
+show <null> : (n <int32>) {
+    source : {
+        d.print("function source {n}")
+        -> z : { d.print("function z {n}"); -> n + 10 }
+        -> a : { d.print("function a {n}"); -> false }
+        -> n
+        d.print("function source tail {n}")
+    }
+    copy : ((source))
+    row : 'out {
+        { 'out -> ((copy)); d.print("function nested tail {n}") }
+        -> scalar <int32> : ((copy))
+        d.print("function destination tail {n}")
+    }
+    d.print(row)
+    d.print(row.a)
+    d.print(row.z)
+    d.print(row.scalar)
+}
+show(2)
+show(3)
+d.print(row.z)
