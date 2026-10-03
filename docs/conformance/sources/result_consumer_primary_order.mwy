@@ -1,0 +1,19 @@
+d : @"debug"
+d.print(-{
+    d.print("unary")
+    -> 7
+    -> tag : true
+    d.print("unary tail")
+})
+d.print({
+    d.print("left")
+    -> 7
+    -> tag : true
+    d.print("left tail")
+} + { d.print("right"); -> 1 })
+d.print({
+    d.print("equal")
+    -> 1
+    -> tag : false
+    d.print("equal tail")
+} == 1)

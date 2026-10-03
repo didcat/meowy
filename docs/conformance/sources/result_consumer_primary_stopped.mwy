@@ -1,0 +1,9 @@
+d : @"debug"
+value : {
+    d.print("left")
+    -> 1
+    -> tag : false
+    d.print("left tail")
+} + { d.print("right"); d.panic("halt") }
+d.print(value)
+d.print("later")

@@ -1257,7 +1257,10 @@ steps and atomic failure after a valid prefix. Test/catalog commits and final
 compiler/coverage gates remain. Limits are committed as `2ac60c2`. The first three
 required source cases now pin direct-field order, tails, independent/nested owners
 and E201 for a missing field. Both profiles pass, and the staged coverage report
-tracks the field slice separately from the following primary cases.
+tracks the field slice separately from the following primary cases (`06b7c8b`).
+Three required primary cases now pin unary/binary order, P006 after left projection
+and E222 for an incompatible unary primary. All six cases pass both profiles, and
+catalog/coverage checks pass for 274 cases. The full compiler gate and final handoff remain.
 
 Result reports retain a validated consumer PointId but do not yet connect its
 field/primary reads to a specific result slot. Advance that bounded identity link

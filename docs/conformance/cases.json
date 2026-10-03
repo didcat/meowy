@@ -2882,6 +2882,38 @@
         "code": "E201"
       },
       "reference": "../reference/values-and-blocks.md#the-shape-of-a-block-value"
+    },
+    {
+      "id": "result_consumer_primary_order",
+      "phase": "run",
+      "source": "sources/result_consumer_primary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "unary\nunary tail\n-7\nleft\nleft tail\nright\n8\nequal\nequal tail\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "result_consumer_primary_stopped",
+      "phase": "run",
+      "source": "sources/result_consumer_primary_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nleft tail\nright\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "result_consumer_primary_type",
+      "phase": "check",
+      "source": "sources/result_consumer_primary_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }
