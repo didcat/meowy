@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Contextual-list primary projections now retain original input indices and source
-slot-zero links through qualified record copies. Whole-producer replay is separate
-from indexed stage selection; complete reports preserve suffix identities, independent
-flags and strict construction registration. A real late-selector source proves
-list-owned linkage, while ordinary lists keep their coercion-owned ports. The
-[compiler handoff](compiler/STATUS.md#contextual-list-primary-consumers) records
-five implementation/test commits and the next ordered plan.
+Composed emissions now link initialized targets to their original primary/named
+source slots through qualified record copies. Complete report and source-layout
+checks include unobserved suffixes; each source resolves once. Target initialization
+remains independent of statement and destination completion. Candidate histories,
+Unknown values and direct-value boundaries are preserved. The
+[compiler handoff](compiler/STATUS.md#composed-emission-source-slot-consumers) records
+four implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2430 library/915 native tests
-and 62 Python groups (`/tmp/meowy-list-gate.log`). Conformance has 313 cases:
-294 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-list-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-list-docs.log`).
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2443 library/915 native tests
+and 62 Python groups (`/tmp/meowy-emission-gate.log`). Conformance has 316 cases:
+297 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-emission-strict.log`).
+All four final documentation checks pass (`/tmp/meowy-emission-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-list-preservation.log`). The
+preserved (`/tmp/meowy-emission-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, share whole-emission report qualification, then connect observed composed
-emission targets to their source slots without changing candidate-value histories.
+Next, retain and qualify unchanged explicit-ascription decisions, then extend the
+bounded consumer resolver through observed ascription results.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Contextual-list primary consumers pass the compiler and documentation gates.
+Updated: 2026-10-03. Composed-emission consumers pass compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1730,69 +1730,71 @@ All 310 prior case records, 342 source assets, 37 reference files/reviewed hashe
 19 capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-list-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: composed-emission source-slot consumers
+## Composed-emission source-slot consumers
 
-Resumed from `673bf59`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. Extract shared whole-report qualification first without changing
-result-source candidates. Then add source-layout validation and streamed initialized
-composition targets, followed by independent observation/corruption/resource tests,
-required source cases, guide and final gates. Resolve each source once and retain
-EmitIds, owners, exact slot names/order and Unknown/multiple candidate histories.
+Composed emissions now link initialized `Emission(EmitId)` ports to the original
+source block: primary slot zero and named field slot `index + 1`. Whole-report
+qualification is shared with result-source indexing and preserves checked statement,
+input, composition, target, alias, registry and edge identities. Each composition
+resolves its source once, then validates the complete source count and ordered names,
+including unobserved target suffixes. Streaming shares existing map/work limits and
+adds no candidate copies or report payload.
 
-Shared qualification (`2a2de97`) passes 35 emission-related groups and all nine result-source
-groups, with formatting/whitespace checks clean (`/tmp/meowy-emission-qualifier.log`,
-`/tmp/meowy-emission-result-source.log`). Three new groups retain independent
-initialized/result flags, absent destination results, 17 corrupt metadata cases and
-exact work. Existing candidate construction and payload accounting are unchanged.
-The resource test now resets sticky Flow state before each descriptor-bound check;
-all three qualification groups pass (`/tmp/meowy-emission-report-recheck.log`).
-Consumer integration (`bcf8eb0`) resolves each source once, validates the complete layout and
-streams initialized EmitIds. All 74 consumer groups, nine result-source groups and
-library Clippy pass (`/tmp/meowy-emission-consumers.log`,
-`/tmp/meowy-emission-candidates.log`, `/tmp/meowy-emission-consumer-lint.log`).
-Five new groups cover exact source order/owners, mutable/aggregate Unknown values,
-partial and discarded destination layouts, stopped destination tails, opaque sources
-and empty records. Five boundary groups (`2ec24cf`) additionally pass sparse initialization and
-result-only reports, missing destination results, 16 late identity faults, Unknown
-versus scalar sources, duplicate visits and exact work/map limits. Depth/width work
-comparison proves source resolution happens once per composition
-(`/tmp/meowy-emission-limits.log`, six groups including one existing backend test).
-Test-target Clippy and formatting pass (`/tmp/meowy-emission-test-lint.log`).
-Three required source cases pass fresh-compiler debug/release: grouped-copy order
-across owners/named outer targets, composition before later P006 and duplicate-field
-E205 (`/tmp/meowy-emission-source-final.log`). Classified coverage and metadata
-checks pass with 316 cases, 297 required and 19 unchanged pins
-(`/tmp/meowy-emission-metadata.log`). No outstanding failures remain; full compiler,
-strict and final documentation gates are next.
-The preservation audit passes against `673bf59`:
-313 case records, 345 assets, 37 references/hashes, 19 pins and 33 proof obligations
-are unchanged (`/tmp/meowy-emission-preservation.log`).
+Initialization flags remain independent of statement results and destination
+BlockResult. Partial expected records, discarded destination fields and later stopped
+tails retain source identity. Direct Value emissions are not primary extraction;
+empty records still have slot zero. Unknown sources and mutable/aggregate candidate
+values preserve their boundaries. Empty/multiple source histories are unchanged.
+These links do not infer values, runtime reachability, lifetime authority or proof results.
 
-### Dependency-ordered plan
+| Reviewable slice | Commit |
+| --- | --- |
+| Share complete emission report qualification | `2a2de97` |
+| Link initialized composition targets to source slots | `bcf8eb0` |
+| Cover partial observations, corruption and resources | `2ec24cf` |
+| Pin source order, stopped tails and duplicate-field rejection | `b13d8fc` |
 
-1. Extract shared whole-emission report qualification from the existing checks in
-   `results/index.rs` and `effects/emissions.rs`. Preserve exact input/composed/
-   control/target/initialized metadata, EmitId source registry, aliases, composition
-   target counts/names, statement sites, lexical target ancestry and ordered edges.
-   Validate once per statement; do not repeat full target/name/ancestry work for
-   each target. Preserve current result-source behavior in this prerequisite.
-2. In `consumers.rs`, resolve each qualified composed input once through `slot_block`.
-   Stream only observed initialized targets into Uses as `Port::Emission(target.id)`
-   with source `Primary -> slot0` or `Field(i) -> slot(i+1)`. Validate source owner,
-   layout/count and field names before insertion. `Projection::Value` does not imply
-   primary extraction; absent/unknown sources remain unknown. Destination target
-   initialization does not require destination BlockResult, and statement completion
-   must not imply a target visit. Preserve existing shared map/work/payload accounting.
-3. Cover copies/groups, independent owners, named outer targets, stopped destination
-   tails, independent initialized/result flags, late corrupt targets/aliases/source
-   layouts and exact resource limits. Keep focused tests with implementation, then
-   add source order/error cases and run compiler/strict/documentation gates.
+Thirteen new library groups cover qualification, source mapping, independent owners,
+empty records, partial flags, opaque/Unknown sources, late identity faults and exact
+resources. Depth/width work comparison checks that source resolution runs once per
+composition. Focused tests and Clippy pass (`/tmp/meowy-emission-consumers.log`,
+`/tmp/meowy-emission-candidates.log`, `/tmp/meowy-emission-limits.log`,
+`/tmp/meowy-emission-test-lint.log`). Three required source cases pass fresh-compiler
+debug/release (`/tmp/meowy-emission-source-final.log`).
 
-Keep all `results::Sources` values unchanged: empty/multiple scalar candidate
-histories and aggregate Unknown slots are separate from these consumer identities.
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2443 library/915 native tests,
+32 tooling/30 harness groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-emission-gate.log`). All 297 required cases pass debug/release, with
+19 unchanged pinned gaps and zero failures. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-emission-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-emission-docs.log`).
+
+All 313 prior case records, 345 source assets, 37 reference contracts/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-emission-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+No compiler test failures remain. Proof evaluation and full release qualification
+remain incomplete.
+
+### Next: unchanged explicit-ascription consumers
+
+1. In `expressions.rs` and `dependencies/typed.rs`, retain the existing
+   `refinement.rs::coercion` changed decision for explicit ascriptions while preserving
+   HIR and edge behavior. Capture the actual decision without cloning types or
+   inferring transparency from TypedKind alone. Include focused capture regressions.
+2. In `effects/typed.rs`, carry and qualify that decision against the checked producer,
+   preserving exact input/owner/kind/normal/control and independent operation/result
+   flags. Validate report corruption and resource limits separately from traversal.
+3. Extend `consumers/grouped.rs` through observed normal, unchanged Ascription results.
+   Include the producer in conflict/cycle/hop/work checks. Predicates, changed/widening
+   coercions, stopped inputs and missing result observations stay opaque. Exercise
+   direct/grouped/local-copy field, primary and composed-emission consumers and owners.
+4. Add independent adversarial boundaries and required source cases, review classified
+   evidence, then run compiler, strict and final documentation gates. Keep each slice
+   buildable and commit its focused regressions with implementation.
+
 Field-value provenance, precise branch/overwrite joins, function returns, restart
 propagation, E225 enforcement and proof outcomes remain later work. Shared-reference
-load projections are not record-primary consumers and must not be treated as slot0.
+loads remain opaque and gain no slot-zero or loan authority.
 
 ## Documentation conventions and layout
 
@@ -3376,8 +3378,9 @@ above. Explicit group and observed non-projecting Forward consumer resolution ar
 implemented, including unchanged observed narrowing and bounded local eligibility.
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
-complete, including output- and contextual-list-owned primary parts. Composed-emission
-source-slot consumers are next, after shared report qualification.
+complete, including output- and contextual-list-owned primary parts and composed-emission
+source slots. Unchanged explicit-ascription capture, report qualification and forwarding
+are next, following the ordered plan above.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3959,8 +3962,10 @@ source-slot consumers are next, after shared report qualification.
    qualification (`0c5c184`, `1bf878c`), streamed links (`7ac15f3`), limits (`4509d0e`)
    and source cases (`8e1269d`) pass the gate. List validation/report qualification
    (`6694ada`, `d5e966b`), contextual links (`c214833`), boundaries (`5d908ad`) and source
-   cases (`0c48b3e`) are implemented. Next qualify composed-emission source-slot
-   consumers following the ordered plan above.
+   cases (`0c48b3e`) pass the gate. Shared emission qualification (`2a2de97`), source-slot
+   consumers (`bcf8eb0`), boundaries (`2ec24cf`) and source cases (`b13d8fc`) pass the gate.
+   Next retain and qualify unchanged explicit-ascription decisions before extending
+   the mixed consumer resolver, following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

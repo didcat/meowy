@@ -563,9 +563,30 @@ sources remain opaque; stopped-anchor seeds provide structural evidence only.
 Streaming reuses the shared slot-use map and work limits, with atomic failures and
 unchanged payload. No values, branch choice, lifetime authority or proof result is inferred.
 
-The resolver reuses field and scalar/output/list primary slot links, preserving
-their original ports and flags. Stored Normal edges do not establish that a child
-returns; observed extraction stages and block results still govern publication.
+Composed emissions now link each observed initialized `Emission(EmitId)` port to
+the original source block's primary slot zero or named field slot `index + 1`.
+Whole-report qualification is shared with result-source indexing and preserves exact
+statement, input, composition, target, alias, source-registry and edge identities.
+Each composition resolves its input once through the existing qualified wrappers
+and immutable local-copy chains, then validates the complete source record count and
+ordered field names, including targets without an initialization observation.
+
+Only initialization flags create these links. An emission-statement result does not
+imply a target visit; a later stopped destination does not erase earlier initialized
+targets. Source and destination layouts remain distinct, including partial expected
+records and discarded destination fields. Empty records retain a primary slot;
+direct Value emissions do not imply primary extraction. Unknown sources, reference
+loads, parameters and calls remain opaque. Mutable or aggregate slot values retain
+their existing Unknown candidates, and empty/multiple histories are unchanged.
+
+Streaming shares the existing map and Flow limits without copying candidates or
+charging report payload again. Corrupt suffixes and exact resource failures publish
+no partial map. These identities do not select a value, establish runtime reachability,
+grant lifetime authority or answer a proof query.
+
+The resolver reuses field, scalar/output/list primary and composed-emission slot
+links, preserving their original ports and flags. Stored Normal edges do not establish
+that a child returns; observed extraction stages and block results govern publication.
 No entry-to-normal shortcut, type/candidate copy or value/ownership inference is
 introduced. Failed capture or traversal publishes no partial metadata or links.
 
