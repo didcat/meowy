@@ -1290,7 +1290,12 @@ anchor overlap and cycles, and stops at unclassified terminals. Three focused
 consumer groups pass (`/tmp/meowy-group-consumers.log`), covering nested fields,
 unary/binary/boolean primaries, partial/composed results, owners and stopped stages.
 Existing grouped exclusions are replaced by these qualified links; local/call/ref
-terminals remain unlinked. Adversarial/source validation and final gates remain.
+terminals remain unlinked. Resolution is committed as `b1311c1`. All 11 resolver
+groups pass (`/tmp/meowy-group-boundaries.log`), including 28 identity corruptions,
+consistent cycles, unmarked regions, logical terminals, exact limits and reversed
+wrapper IDs. All six required source cases pass rebuilt-compiler debug/release
+(`/tmp/meowy-group-consumer-source-final.log`). Boundary/catalog commits and the
+complete compiler gate remain.
 
 Grouped field/unary inputs still stop at their wrapper point, although checked
 region edges retain the exact child. Region edges also serve statement/control
