@@ -57,7 +57,23 @@ pub(crate) fn grouped_consumers_keep_opaque_terminals_and_stopped_stages() {
 pub(crate) fn grouped_consumers_keep_composed_results_and_function_owners() {
     let source = "f<int32>:(){->(({->n:1})).n};v:(({->(({->x:1}));->y:2})).y";
     let (checker, reports) = checked(source);
-    assert_eq!(reports.slot_uses.len(), 2);
+    assert_eq!(reports.slot_uses.len(), 4);
+    assert_eq!(
+        reports
+            .slot_uses
+            .keys()
+            .filter(|port| matches!(port, Port::Operation(_)))
+            .count(),
+        2
+    );
+    assert_eq!(
+        reports
+            .slot_uses
+            .keys()
+            .filter(|port| matches!(port, Port::Emission(_)))
+            .count(),
+        2
+    );
     assert!(reports.slot_uses.values().any(|(owner, _)| *owner == 1));
     for (owner, slot) in reports.slot_uses.values() {
         assert_eq!(checker.bodies[&slot.block].owner, *owner);

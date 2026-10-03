@@ -1739,11 +1739,23 @@ composition targets, followed by independent observation/corruption/resource tes
 required source cases, guide and final gates. Resolve each source once and retain
 EmitIds, owners, exact slot names/order and Unknown/multiple candidate histories.
 
-Shared qualification passes 35 emission-related groups and all nine result-source
+Shared qualification (`2a2de97`) passes 35 emission-related groups and all nine result-source
 groups, with formatting/whitespace checks clean (`/tmp/meowy-emission-qualifier.log`,
 `/tmp/meowy-emission-result-source.log`). Three new groups retain independent
 initialized/result flags, absent destination results, 17 corrupt metadata cases and
 exact work. Existing candidate construction and payload accounting are unchanged.
+The resource test now resets sticky Flow state before each descriptor-bound check;
+all three qualification groups pass (`/tmp/meowy-emission-report-recheck.log`).
+Consumer integration resolves each source once, validates the complete layout and
+streams initialized EmitIds. All 74 consumer groups, nine result-source groups and
+library Clippy pass (`/tmp/meowy-emission-consumers.log`,
+`/tmp/meowy-emission-candidates.log`, `/tmp/meowy-emission-consumer-lint.log`).
+Five new groups cover exact source order/owners, mutable/aggregate Unknown values,
+partial and discarded destination layouts, stopped destination tails, opaque sources
+and empty records. No outstanding failures remain. Boundary tests remain an
+independent follow-up slice. The preservation audit passes against `673bf59`:
+313 case records, 345 assets, 37 references/hashes, 19 pins and 33 proof obligations
+are unchanged (`/tmp/meowy-emission-preservation.log`).
 
 ### Dependency-ordered plan
 

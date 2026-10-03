@@ -1,6 +1,7 @@
 use super::{effects::Effect, entries::Reports, *};
 use crate::{check::dependencies::bodies::Layout, hir};
 
+mod emissions;
 mod fields;
 mod grouped;
 mod index;
@@ -47,6 +48,10 @@ impl Checker {
         }
         let mut uses = Uses::new();
         for (&id, (owner, effect)) in &reports.effects {
+            if matches!(effect, Effect::Emission(_)) {
+                self.emission_slot_uses(reports, (id, *owner), effect, &mut uses, limit, span)?;
+                continue;
+            }
             if let Effect::Output(output) = effect {
                 self.validate_output_report(reports, id, *owner, output, span)?;
                 if !self.flow.spend(output.parts.len() * 2 + 1) {
