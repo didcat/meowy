@@ -1,0 +1,15 @@
+d : @"debug"
+ready : {
+    d.print("ready init")
+    -> n : 4
+    d.print("ready tail")
+}
+d.print(ready.n)
+stopped <{ n <int32> }> : {
+    -> n : 5
+    d.print("stop init")
+    d.panic("halt")
+    d.print("late tail")
+}
+d.print(stopped.n)
+d.print("late")

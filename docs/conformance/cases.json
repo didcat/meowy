@@ -3110,6 +3110,38 @@
         "code": "E305"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "bind_qualification_order",
+      "phase": "run",
+      "source": "sources/bind_qualification_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "entry init\n1\nfunction init\n2\nfunction init\narm init\narm tail\n3\n2\n1\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "bind_qualification_stopped",
+      "phase": "run",
+      "source": "sources/bind_qualification_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "ready init\nready tail\n4\nstop init\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "bind_qualification_type",
+      "phase": "check",
+      "source": "sources/bind_qualification_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
     }
   ]
 }

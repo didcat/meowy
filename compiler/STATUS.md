@@ -1462,7 +1462,10 @@ and four raw Storage-effect groups pass (`/tmp/meowy-bind-entries.log`,
 now pass (`/tmp/meowy-bind-limits.log`), including 35 identity faults, absent versus
 unknown inputs, matcher cycles, exact shared work and atomic late failures.
 Source cases pass rebuilt-compiler debug/release (`/tmp/meowy-bind-source-final.log`).
-Source commits and full gates remain pending.
+Boundary tests: `970c6a3`. Source/coverage metadata passes at 296 cases, 277 required
+and 19 unchanged pins (`/tmp/meowy-bind-metadata.log`). All 293 prior case records,
+325 assets, 37 references/hashes and 33 proof obligations are preserved
+(`/tmp/meowy-bind-preservation.log`). Full gates remain pending.
 
 ### Dependency-ordered plan
 

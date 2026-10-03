@@ -1,0 +1,6 @@
+check <null> : (take <boolean>) {
+    | take | {
+        row <{ n <int32> }> : { -> n : true }
+    }
+}
+check(false)

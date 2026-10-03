@@ -1,0 +1,18 @@
+d : @"debug"
+pick <null> : (take <boolean>) {
+    row : { d.print("function init"); -> n : 2 }
+    | take | {
+        row <{ n <int32> }> : (({
+            d.print("arm init")
+            -> n : row.n + 1
+            d.print("arm tail")
+        }))
+        d.print(row.n)
+    }
+    d.print(row.n)
+}
+row : { d.print("entry init"); -> n : 1 }
+d.print(row.n)
+pick(false)
+pick(true)
+d.print(row.n)
