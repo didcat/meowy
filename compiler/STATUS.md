@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-02. Result-slot source links pass the full compiler and documentation gates.
+Updated: 2026-10-02. Direct result-slot consumers pass the full compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1218,74 +1218,86 @@ capability pins and 33 proof obligations are unchanged
 structural source history from observable source behavior. Unrelated
 `docs/programs/hey/` is preserved.
 
-## In progress: direct result-slot consumers
+## Direct block result-slot consumers
 
-Resumed from `06fb7fe`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. Implement the reverse consumer index, direct owned-field links, direct
-primary-projection links, adversarial/shared-limit tests, required source coverage
-and final guide/gates as separate validated slices. Links retain only `(BlockId,
-slot)` identities; owning effects keep stage flags and source reports keep candidate
-or unknown state. No value, lifetime, call-return or proof inference is added.
+`Reports.consumers` indexes validated block-result consumer PointIds to exact
+BlockIds/owners. Root/function results remain separate; unknown layouts remain
+explicit. `Reports.slot_uses` maps extraction ports to `(block, slot)` identities,
+without copying or resolving source candidates. Direct owned field Operation ports
+use checked field index+1, preserving HIR field order, field count and availability.
+A field's normal flag is checked result availability, not an observed Normal visit.
 
-The reverse index validates result visits, owners, layouts and exact endpoints,
-preserving roots and unknown layouts without copying candidates. Four focused
-groups pass (`/tmp/meowy-result-consumer-index.log`), including corruption and exact
-combined map/work bounds. Source probes confirm direct unary/binary block primary
-projections; typed scalar inline record constructors retain their existing E207
-boundary. Extraction links will therefore use actual Operation/Projection ports,
-with unary/binary primary steps distinct and coercions left outside this slice.
-The index is committed as `ec42f09`. Direct owned fields now link Operation ports
-to checked record slots using retained field order/count and availability. Owning
-effects retain flags; mutable/aggregate source state is referenced unchanged.
-Two focused groups pass (`/tmp/meowy-field-slot-links.log`), covering exact indices,
-owners, unknown values, excluded local/call/reference/group inputs and the existing
-E201 rejection for selecting a field from a Never block. Primary links and final
-coverage/gates remain. Field links are committed as `e07bd3d`. Unary/binary primary
-links now use observed Projection ports and slot0, retaining each binary step and
-leaving operation/result flags in the owning effects. Three focused groups pass
-(`/tmp/meowy-primary-slot-links.log`), including projection before a stopped RHS,
-invalid later-stage rejection and no inferred visit through local/group/coercion
-wrappers. Primary links are committed as `2fba3c2`. All 17 consumer groups now
-pass (`/tmp/meowy-consumer-boundaries.log`), including 18 field corruption cases,
-operation-only observations, explicitly seeded Never availability, 26 primary
-header/stage faults, late source failures and exact shared map/work bounds. Review
-also charged the wrappers' additional body/field lookups. The six required source
-fixtures pass rebuilt-compiler debug/release (`/tmp/meowy-result-consumer-source-final.log`).
-Field boundaries are committed as `120c657`. Four limit groups preserve exact total
-map/work bounds, zero payload use, duplicate observations, owning flags/projection
-steps and atomic failure after a valid prefix. Test/catalog commits and final
-compiler/coverage gates remain. Limits are committed as `2ac60c2`. The first three
-required source cases now pin direct-field order, tails, independent/nested owners
-and E201 for a missing field. Both profiles pass, and the staged coverage report
-tracks the field slice separately from the following primary cases (`06b7c8b`).
-Three required primary cases now pin unary/binary order, P006 after left projection
-and E222 for an incompatible unary primary. All six cases pass both profiles, and
-catalog/coverage checks pass for 274 cases. The full compiler gate and final handoff remain.
+Observed unary/binary primary Projection ports use slot0 and retain the binary
+step. Full producer headers, identities, edges and every observed stage are
+validated. Operation/result flags alone cannot create a projection link, and a
+left projection may exist before a stopped RHS with no operation or result.
+Owning effects keep flags; result sources keep multiple/unknown candidate state.
+Local reads, reference loads, calls, coercions, ascriptions and unresolved grouping
+remain unlinked. Ordinary scalar-context constructor errors are unchanged.
 
-Result reports retain a validated consumer PointId but do not yet connect its
-field/primary reads to a specific result slot. Advance that bounded identity link
-before broader storage joins, function returns or restart propagation.
+The operation/block/result maps, reverse index and extraction links share the map
+cap. Fixed-size consumer records consume no variable payload. Shared work charges
+validators and subsequent body/field lookups. Duplicate visits retain one link per
+port. Late failure preserves prior maps, candidate histories and payload counters.
+Seeded Never-field availability is structural evidence only; ordinary selection
+from a Never block still reports E201. No value, lifetime, caller-return or proof
+inference is added.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Index exact validated result consumers | `ec42f09` |
+| Link direct owned-field Operation ports | `e07bd3d` |
+| Link observed unary/binary primary Projection ports | `2fba3c2` |
+| Cover field identities, availability and unknown sources | `120c657` |
+| Bound shared maps/work and preserve partial observations | `2ac60c2` |
+| Pin field order, tails, owners and E201 | `06b7c8b` |
+| Pin primary order, stopped RHS and E222 | `f0dba6d` |
+
+Seventeen new internal groups cover reverse identities, 18 field corruptions,
+independent visits, seeded Never availability, 26 primary header/stage faults,
+late failures and exact map/work limits (`/tmp/meowy-consumer-boundaries.log`).
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2330 library/915 native tests,
+32 tooling/30 compiler-harness groups, formatting, Clippy, build and conformance
+(`/tmp/meowy-consumer-gate.log`). Six required fixtures pass debug/release with the
+rebuilt compiler (`/tmp/meowy-result-consumer-source-final.log`). Conformance has
+274 cases: 255 required passes, 19 unchanged pinned gaps and zero failures.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-consumer-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-consumer-docs.log`).
+
+All 268 prior case records, 300 source assets, 37 reference contracts/hashes,
+capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-consumer-preservation.log`). Coverage and the guide distinguish
+structural links from observable field/projection behavior. Unrelated
+`docs/programs/hey/` is preserved.
+
+### Next: bounded transparent expression forwarding
+
+Grouped field/unary inputs still stop at their wrapper point, although checked
+region edges retain the exact child. Region edges also serve statement/control
+regions and shared-reference forwarding, so an Expr region is not automatically
+evidence of AST grouping. Preserve that distinction before following wrappers.
 
 Dependency-ordered next commit plan:
 
-1. Build a bounded reverse index from validated result consumers to exact BlockIds,
-   preserving owners and exact endpoints. Root/function bodies without consumers
-   remain separate. Reject duplicate/conflicting identities atomically and test
-   map/work limits, unknown layouts and independently owned roots.
-2. Link direct owned field observations (`Effect::Field`, load=false) to the checked
-   block slot at field index+1, preserving the HIR field order and stage flags.
-   Retain slot references without copying or resolving candidate values. Keep
-   mutable/unsupported candidate state explicit; test differing emission/field order,
-   nested same-name fields, stopped results and corrupt indices/owners.
-3. Link observed direct primary projection to slot0 in a separate slice. Preserve
-   conversion/projection order and partial visits. Local reads, reference loads,
-   calls, unions and grouping without an exact transparent source link stay unknown.
-4. Add required source order/error fixtures, update classified evidence and run the
-   compiler/strict gates. Preserve prior cases, capability pins and both handoffs.
+1. Capture or retain explicit value-forwarding classification at the owning checker
+   sites (`expressions.rs` Group and `blocks.rs::composed_value` Group). Reuse exact
+   existing point/region identities; distinguish grouping from shared-reference,
+   statement/control and required-only paths. Test capture identity/replay and caps.
+2. Resolve bounded supported chains to the existing validated result-consumer index.
+   Require complete same-owner/block parent-child Expr identities and exact two-edge
+   forwarding, with cycle/work/map bounds and atomic failure. Never connect Entry
+   directly to Normal across exits or unknown effects, or infer forwarding from
+   source spans, types or point order.
+3. Reuse owned field and unary/binary primary links for qualified grouped inputs,
+   preserving extraction ports, independent visits and unknown candidate state.
+   Keep calls, narrowing, ascriptions, coercions and unsupported forwarding separate.
+   Cover nested groups, owners, stopped paths and corrupt edges/cycles.
+4. Add required `({ -> n : 1 }).n`, `-({ -> 1; -> tag : true })` and
+   `!({ -> true; -> tag : false })` order/error cases, update classified evidence
+   and run compiler/strict gates.
 
-No candidate or consumer link establishes a runtime value. Precise branch/overwrite
-joins, implicit-null selection, storage provenance, function-return transfers,
-restart backedges, E225 and proof evaluation remain later work.
+Precise value/branch/overwrite joins, storage and function-return provenance,
+restart propagation, E225 and proof outcomes remain later dependency-ordered work.
 
 ## Documentation conventions and layout
 
@@ -2865,8 +2877,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
-above. Bounded result-slot source links are implemented; direct field/primary
-consumer links are the immediate next task.
+above. Direct field/primary result-slot consumers are implemented; bounded
+transparent expression forwarding is the immediate next task.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3430,9 +3442,11 @@ consumer links are the immediate next task.
    `b8b80a0`) and identity/span repairs (`e00f349`, `8d53ba2`) are implemented.
    Result-slot layouts (`0592307`), budget plumbing (`3395b59`), validation (`716f535`),
    candidate links (`16cdf31`), boundaries/limits (`3a30543`, `cda38c4`) and source
-   cases (`cb60d46`, `c41d71c`) now pass the compiler gate. Next connect direct owned
-   field and primary-projection consumers to exact result slots, following the
-   ordered plan above.
+   cases (`cb60d46`, `c41d71c`) now pass the compiler gate. Consumer indexing
+   (`ec42f09`), direct fields/primaries (`e07bd3d`, `2fba3c2`), boundaries/limits
+   (`120c657`, `2ac60c2`) and source cases (`06b7c8b`, `f0dba6d`) now pass the gate.
+   Next retain and resolve bounded transparent expression forwarding, following
+   the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

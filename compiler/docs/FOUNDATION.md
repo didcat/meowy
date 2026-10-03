@@ -376,6 +376,27 @@ Shared work accounts for validation, lookup and copying. Duplicate observations
 retain one source descriptor; any late failure preserves existing reports and
 publishes no partial source map or remaining-budget update.
 
+Validated result consumers now have a bounded reverse index to exact BlockIds.
+Direct owned field Operation ports reference the checked field slot at index+1,
+with field counts, ordering, owners and availability revalidated. A field's normal
+flag describes checked result availability; the link does not claim a Normal visit.
+Observed unary/binary primary Projection ports reference slot0, keeping binary
+steps distinct. Every recorded projection/operation/result stage is validated;
+operation or result flags alone do not create a primary link.
+
+Slot links retain identities only. Owning effects keep their flags, and result
+sources keep unknown or multiple-candidate state without extra copies. Inputs must
+match a direct validated block consumer. Local reads, reference loads, calls,
+coercions, ascriptions and unresolved grouping remain outside these links.
+Program/function roots gain no caller provenance or execution claim.
+
+The shared map cap also covers the reverse index and slot links. These fixed-size
+records consume no variable payload; shared work charges validators and subsequent
+lookups. Duplicate observations retain one link per port. Late failures publish
+no partial maps and preserve the original effects, candidate reports and payload
+budget. Seeded Never-field checks remain structural evidence, distinct from source
+typing and observable execution.
+
 An internal bounded inventory now enumerates stored edges from all 31 families.
 It preserves duplicates, exact ports, conditional routes and explicit backedges;
 it neither fills gaps nor treats inventory order as execution order. Actual family

@@ -7,31 +7,30 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Bounded result-slot layouts now retain checked primary/field identities, and result
-reports link immutable scalar slots to exact observed emission candidates. Multiple
-and discarded paths remain candidates; mutable/aggregate/union cases stay unknown.
-Empty candidate sets do not prove null or completeness. Map, payload and work limits
-are shared, and failures publish no partial reports.
-Sixteen new internal groups and six required source cases cover identities, defaults,
-branches, composition, mutation, stops and error preservation. The
-[compiler handoff](compiler/STATUS.md#bounded-block-result-slot-source-links)
+Direct owned-field operations and observed unary/binary primary projections now
+link to exact checked block result slots. A bounded reverse index preserves owners
+and endpoints; owning effects keep stage flags and source reports keep unknown or
+multiple candidates. Shared map/work limits and atomic failure are covered without
+copying candidate values or inferring execution.
+Seventeen new internal groups and six required source cases cover field order,
+projection/operand order, owners, stops, errors and resource boundaries. The
+[compiler handoff](compiler/STATUS.md#direct-block-result-slot-consumers)
 records the commit series and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2313 library/915 native tests
-and 62 Python groups (`/tmp/meowy-result-slot-gate.log`). Conformance has 268 cases:
-249 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode rejects only those gaps (`/tmp/meowy-result-slot-strict.log`). Prior fixtures,
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2330 library/915 native tests
+and 62 Python groups (`/tmp/meowy-consumer-gate.log`). Conformance has 274 cases:
+255 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode rejects only those gaps (`/tmp/meowy-consumer-strict.log`). Prior fixtures,
 reference contracts and capability pins are preserved
-(`/tmp/meowy-result-slot-preservation.log`). The
+(`/tmp/meowy-consumer-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. All four final documentation checks pass
-(`/tmp/meowy-result-slot-docs.log`).
+(`/tmp/meowy-consumer-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, connect direct owned field and primary-projection observations to checked
-result slots through exact consumer endpoints. Preserve stage flags and unknown
-candidate state; local reads, reference loads, calls and broader transfer joins
-remain separate. Unrelated `docs/programs/hey/` is preserved.
+Next, qualify bounded transparent expression forwarding so grouped consumers can
+reuse these slot links. Distinguish grouping from other region edges; preserve
+unknown sources, owners and partial visits. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
