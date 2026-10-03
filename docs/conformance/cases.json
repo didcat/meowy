@@ -2956,6 +2956,26 @@
         "exit": 1
       },
       "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "group_consumer_missing_field",
+      "phase": "check",
+      "source": "sources/group_consumer_missing_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/values-and-blocks.md#the-shape-of-a-block-value"
+    },
+    {
+      "id": "group_consumer_primary_type",
+      "phase": "check",
+      "source": "sources/group_consumer_primary_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
     }
   ]
 }

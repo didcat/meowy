@@ -1301,7 +1301,10 @@ reordered wrapper identities, duplicate observations and atomic late-chain failu
 (`a790e3e`, `d1f839d`). Four required execution cases now pin grouped field/function
 order, numeric/boolean primary projection, composition/call/reference behavior and
 projection before RHS panic. Exact outputs and P006 pass both profiles; two grouped
-rejections follow separately. Classified coverage is updated for the execution slice.
+rejections follow separately. Execution coverage is committed as `4817fba`.
+Grouped missing-field E201 and incompatible-primary E222 cases now pass both
+profiles too; catalog/coverage validation passes for all 280 cases. The full
+compiler/strict gates and final handoff remain.
 
 Grouped field/unary inputs still stop at their wrapper point, although checked
 region edges retain the exact child. Region edges also serve statement/control
