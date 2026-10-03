@@ -7,29 +7,28 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Entry reports now retain a bounded ordinary initializer index with exact local,
-statement, owner and optional outer root identities. Storage validation precedes
-admission; parameters, aliases, receivers, temporary cells and ineligible values
-remain excluded. Duplicate declarations and exhausted map/work bounds fail atomically.
-Unknown roots remain explicit and reads remain unlinked. Eleven internal groups
-and three required source cases cover ownership, exclusions, resource limits,
-order and stopping. The
-[compiler handoff](compiler/STATUS.md#bounded-ordinary-initializer-index) records
-the four implementation/test commits and next ordered plan.
+Observed immutable local reads now forward through revalidated same-owner
+initializer identities. Owned fields and observed binary-primary projections retain
+exact result-slot links through copy chains, including cross-block lookups. Shared
+collection budgets, producer conflicts, mixed cycles and missing evidence remain
+bounded and atomic. Coercion-owned unary projections and field-value provenance
+remain separate. The
+[compiler handoff](compiler/STATUS.md#validated-local-read-initializer-forwarding)
+records the five implementation/test commits and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2393 library/915 native tests
-and 62 Python groups (`/tmp/meowy-init-gate.log`). Conformance has 299 cases:
-280 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-init-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-init-docs.log`).
-Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-init-preservation.log`). The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2402 library/915 native tests
+and 62 Python groups (`/tmp/meowy-read-gate.log`). Conformance has 303 cases:
+284 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-read-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-read-docs.log`). Prior fixtures,
+reference contracts, capability pins and proof obligations are preserved
+(`/tmp/meowy-read-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, move eligibility/index collection before slot-use resolution with shared-budget
-accounting, then add validated same-owner read-to-initializer forwarding.
+Next, connect observed coercion-owned primary projections to slot zero using existing
+stage validation; primary-extracting coercions remain opaque to value forwarding.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

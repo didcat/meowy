@@ -387,9 +387,9 @@ operation or result flags alone do not create a primary link.
 Slot links retain identities only. Owning effects keep their flags, and result
 sources keep unknown or multiple-candidate state without extra copies. Inputs must
 resolve to a validated block consumer, directly or through explicit group identities
-and qualified Forward/unchanged narrowing wrappers. Local reads, field-result
-values, reference loads, calls, ascriptions and unclassified regions remain outside
-these links.
+and qualified Forward/unchanged narrowing wrappers or immutable local reads.
+Field-result values, reference loads, calls, ascriptions and unclassified regions
+remain outside these links.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
@@ -419,7 +419,7 @@ Stage validation retains complete Expr children, equal spans, parent/block/owner
 identity and exact edges. Changed, nonnormal and unobserved narrowing stays opaque.
 
 Mixed chains retain one bounded visited set and shared work charges. Conflicting
-group/coercion/narrowing/direct-anchor classifications, corrupt identities and
+group/coercion/narrowing/read/direct-anchor classifications, corrupt identities and
 cycles fail.
 Group registry and mixed-chain scratch bounds are 65,536 entries. Missing result
 observations, Convert, projected Forward, Stopped, reborrows and shared-reference
@@ -427,12 +427,12 @@ regions remain opaque. Qualification copies no types, candidates or payload.
 
 Typed initializer roots can now resolve through nested Forward/group chains to their
 original block consumers. Ordinary narrowing wrappers lead to raw Read or Field
-operations, where traversal stops. Following a field's wrapper does not follow
-the field's input as though it were the extracted value. Successful mixed-chain
-narrowing-to-block tests use explicitly seeded identities; they add no source-level
-initializer joins. Read-to-initializer forwarding remains separate.
-Structural resolution does not select candidate values, infer call
-results or establish runtime completion, lifetime authority or proof outcomes.
+operations. Eligible Read operations now have a separate initializer lookup;
+Field operations remain terminal. Following a field's wrapper does not follow
+the field's input as though it were the extracted value. Direct narrowing-to-block
+tests retain seeded structural evidence; ordinary read paths qualify their indexed
+initializer separately. Structural resolution does not select candidate values,
+infer call results or establish runtime completion, lifetime authority or proof outcomes.
 
 Entry reports now retain a bounded set of type-eligible LocalIds directly from
 the transferred Program types. Null, Never, booleans, numbers and strings qualify;
@@ -442,7 +442,7 @@ classifier independently checks field mutability and follows borrowed type nodes
 with an iterative 65,536-entry scratch bound and shared work charges.
 
 The local count and every binding ID must match the transferred Program. Eligible
-IDs consume the remaining combined effect/block/result/consumer/slot-link map
+IDs consume the remaining combined effect/block/result/consumer/slot-link/initializer map
 capacity; no type trees or candidates are copied and payload room is unchanged.
 Failed identity, work or capacity checks publish no partial set. Parameters and
 emitted aliases can be type-eligible: that does not establish an ordinary initializer,
@@ -484,7 +484,27 @@ Conditional declarations retain structural history without asserting execution.
 The index consumes remaining combined fixed-map capacity, shares Flow work and
 leaves variable payload unchanged. Rebuilds return a fresh map without charging the
 old index again. Failures publish no partial map. Original wrapper roots are retained
-without resolution; local reads still have no initializer or result-slot joins.
+for later consumer resolution.
+
+Eligibility and initializer collection now precede slot-use extraction. Their
+retained entries share its fixed-map budget; rebuilding eligibility also reserves
+the existing initializer index. Each of these collectors excludes its own previous output
+from the aggregate reservation. Rebuilds preserve reports and variable payload.
+
+Observed canonical immutable Read operations can now resolve to their same-owner
+indexed initializer. Qualification compares the full reported Read header with the
+checked effect and revalidates the indexed Bind, local/storage IDs and exact root.
+Normal availability plus the read's unconditional Next edge supports structural
+forwarding; it is not a separate observed Normal visit or runtime completion proof.
+Missing observations, indexes or roots remain unknown. Mutable/reference storage,
+aliases, parameters, receiver/temporary cells and foreign owners do not gain links.
+
+A read-to-initializer jump crosses statements, blocks and source spans within one
+owner. Wrapper containment checks do not apply across that lookup. Mixed cycles,
+producer conflicts and exhausted hop/work limits fail atomically. Owned field and
+observed binary-primary ports retain their exact existing slot identities through
+immutable copy chains. Unary projections already owned by expected-value coercions
+remain separate; the resolver does not invent a second projection.
 
 The resolver reuses existing field and unary/binary primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child

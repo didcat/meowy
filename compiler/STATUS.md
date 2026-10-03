@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Ordinary initializer indexing passes the compiler and documentation gates.
+Updated: 2026-10-03. Local-read initializer forwarding passes the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1232,8 +1232,9 @@ step. Full producer headers, identities, edges and every observed stage are
 validated. Operation/result flags alone cannot create a projection link, and a
 left projection may exist before a stopped RHS with no operation or result.
 Owning effects keep flags; result sources keep multiple/unknown candidate state.
-Local reads, reference loads, calls, coercions, ascriptions and unresolved grouping
-remain unlinked. Ordinary scalar-context constructor errors are unchanged.
+Reference loads, calls, primary-extracting/converting coercions, ascriptions and
+unclassified regions remain separate. Wrapper and immutable-read forwarding are
+described below. Ordinary scalar-context constructor errors are unchanged.
 
 The operation/block/result maps, reverse index and extraction links share the map
 cap. Fixed-size consumer records consume no variable payload. Shared work charges
@@ -1333,8 +1334,8 @@ Group/coercion/direct-anchor overlap is invalid even without a coercion observat
 Cycles and corrupt late metadata fail without changing reports, captured registries
 or remaining payload. No values, candidate copies, loan authority, caller provenance
 or proof answers are introduced. Real typed initializer roots now resolve through
-five alternating wrappers in both entry and function owners. Later local reads
-still have no result-slot link.
+five alternating wrappers in both entry and function owners. Local-read joins are
+qualified separately by the consumer pass below.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -1373,9 +1374,9 @@ Changed, nonnormal and unobserved wrappers remain opaque.
 Group/Forward/narrowing/direct-anchor classification overlaps fail even without
 observations. Mixed chains share the existing 65,536-hop scratch and Flow bounds.
 Failures preserve reports, capture registries and payload. Real typed local reads traverse six
-wrappers but stop at Read; field wrappers stop at Field and preserve existing
-extraction links. Successful narrowing-to-block chains are deliberately seeded
-structural tests. No immutable-local or field-value joins are implemented here.
+wrappers to Read; initializer traversal is handled separately below. Field wrappers
+stop at Field and preserve existing extraction links. Direct narrowing-to-block
+chains retain seeded structural evidence; field-value joins remain separate.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -1417,8 +1418,8 @@ under their combined MAX_EDGES map cap. No type/candidate copies or payload char
 are added. Late identity/work/capacity failures publish no partial set.
 
 Parameters and emitted aliases may be type-eligible. Eligibility grants no ordinary
-initializer, owner/lifetime authority, completion, value or proof result. Local
-read and field-value joins remain unimplemented.
+initializer, owner/lifetime authority, completion, value or proof result. Eligibility
+alone grants no read or field-value join; qualified read forwarding is described below.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -1508,7 +1509,8 @@ Rebuilds ignore the old index size because they return a fresh replacement.
 A second statement for an admitted LocalId is a conflict even if owner/input agrees.
 Missing roots remain explicit indexed unknowns. Conditional declarations retain
 structural history without proving execution or selecting a value. Exact outer
-roots remain unresolved, owners stay independent, and local reads remain unlinked.
+roots remain unresolved in the index and owners stay independent. The consumer
+pass below now handles qualified local reads.
 Late failures publish no partial map or report mutation.
 
 | Reviewable slice | Commit |
@@ -1537,72 +1539,76 @@ All 296 prior case records, 328 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-init-preservation.log`). Source behavior and structural indexing
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: local-read initializer forwarding
+## Validated local-read initializer forwarding
 
-Resumed from `2acfe01`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. First reorder collection and reserve all shared fixed-map room with
-focused rebuild/capacity checks. Consolidate existing local-read assertions without
-changing coverage, then qualify observed local reads and integrate
-same-owner initializer jumps with focused regressions, followed by separate
-corruption/cycle/work coverage, required source cases, guide and final gates.
-Preserve checked availability versus observed stage/runtime claims. No value,
-field-value, caller, lifetime or proof inference belongs in this slice.
+Eligibility and initializer collection now precede slot-use extraction. Extraction
+reserves both retained collections; eligibility rebuilds reserve the existing index.
+Each of these collectors excludes its own prior output from the aggregate cap. Rebuilds
+preserve report maps and variable payload, and extraction runs once.
 
-The collection/budget prerequisite passes 45 consumer, eight eligibility and eight
-initializer-index groups (`/tmp/meowy-read-budget-consumers.log`,
-`/tmp/meowy-read-budget-eligibility.log`, `/tmp/meowy-read-budget-index.log`).
-Eligibility/indexing now precede extraction, all retained collections reserve shared
-room, and repeated rebuilds preserve reports and payload. Read behavior is unchanged.
+Observed canonical immutable Read operations now resolve through revalidated
+same-owner initializer identities. The helper compares complete Read metadata against
+`read_effect`, checks normal availability, eligibility and ordinary storage, then
+revalidates the indexed statement through `binding_effect`. Missing observations,
+indexes or roots remain unknown. Corrupt Read/Bind/index metadata fails atomically.
+Normal is checked availability, not an observed Normal visit or runtime completion.
 
-Budget/order prerequisite: `f83ba59`. Existing local-read assertions are now grouped
-in `consumers/tests.rs`, retaining the same source cases and six-hop opaque-read
-expectations. All 46 consumer groups and focused eligibility/index groups pass
-(`/tmp/meowy-read-consolidation.log`, `/tmp/meowy-read-consolidation-eligibility.log`,
-`/tmp/meowy-read-consolidation-index.log`). This test-only consolidation keeps the
-upcoming behavior change within one reviewable implementation slice.
+Read-to-initializer lookup can cross statements, blocks and spans within one owner;
+wrapper parent/containment rules apply only to their own edges. Reads join the
+exclusive group/Forward/narrowing/anchor classifications and share the existing
+65,536-hop scratch and Flow limits. Consistent mixed initializer cycles fail.
+Owned field and observed binary-primary consumers preserve original ports and slot
+identities through immutable copy chains. Unary projections performed by expected
+coercions remain separate; no additional projection is inferred. Special storage,
+field values, calls, mutable/reference inputs and caller provenance stay opaque.
 
-Consolidation: `64339d7`. Read qualification and resolver integration pass all 46
-consumer groups, three new qualifier groups, 15 entry-report groups, eight index
-groups and Clippy (`/tmp/meowy-read-consumers.log`, `/tmp/meowy-read-qualifier.log`,
-`/tmp/meowy-read-entries.log`, `/tmp/meowy-read-index.log`, `/tmp/meowy-read-lint.log`).
-Owned fields and observed binary primary projections follow immutable copies to
-exact initializer blocks, including same-owner cross-block jumps. Unary projections
-owned by expected-value coercions remain separate. Implementation: `1308c62`.
-Four mixed-read adversarial groups now pass (`/tmp/meowy-read-mixed.log`), covering
-Read/anchor/wrapper overlap, consistent initializer cycles, exact nine/eight-hop
-and shared-work limits, missing evidence and payload/report atomicity. Boundary tests:
-`b2d0033`. Four source cases pass rebuilt-compiler debug/release
-(`/tmp/meowy-read-source-final.log`). Metadata checks pass at 303 cases, 284 required
-and 19 unchanged pins (`/tmp/meowy-read-metadata.log`). Preservation against
-`2acfe01` passes for 299 prior records, 331 assets, 37 references/hashes and all proof
-obligations (`/tmp/meowy-read-preservation.log`). Full gates remain pending.
+| Reviewable slice | Commit |
+| --- | --- |
+| Reserve initializer maps before consumer extraction | `f83ba59` |
+| Consolidate existing local-read expectations without behavior changes | `64339d7` |
+| Forward immutable reads to checked initializer roots | `1308c62` |
+| Bound mixed read chains, conflicts and missing evidence | `b2d0033` |
+| Pin source order, barriers, panic and shared-write rejection | `8e5c5d1` |
 
-### Dependency-ordered plan
+Eight new regression groups plus consolidated consumer coverage exercise shared
+budgets, real owner/copy chains, 17 identity corruptions, producer overlap, mixed
+cycles, missing evidence and exact hop/work limits. Focused checks and library lint
+pass (`/tmp/meowy-read-consumers.log`, `/tmp/meowy-read-qualifier.log`,
+`/tmp/meowy-read-mixed.log`, `/tmp/meowy-read-lint.log`). All ten compiler checks pass
+on LLVM 23.1.1/Rust 1.99.0: 2402 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build and conformance (`/tmp/meowy-read-gate.log`).
+Four required cases pass rebuilt-compiler debug/release
+(`/tmp/meowy-read-source-final.log`). The catalog has 303 cases: 284 required passes,
+19 unchanged pins and zero failures in debug/release. Strict mode exits 1 only for
+those gaps (`/tmp/meowy-read-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-read-docs.log`).
 
-1. Reorder `entries.rs` collection to consumers -> eligible -> initializers ->
-   slot_uses. Update `consumers.rs::slot_uses_limited` to subtract eligibility and
-   initializer entries. Eligibility recomputation must reserve the existing index
-   too; each collector excludes its own prior output from the aggregate cap.
-   Keep payload unchanged and do not run extraction twice. Commit this budget/order
-   prerequisite with exact-capacity/rebuild/atomicity tests before read integration.
-2. Add narrow read qualification beside `effects/reads.rs::read_effect` and integrate
-   it into `consumers/grouped.rs`. Require an observed Read with matching checked
-   header, normal availability, exact local/storage identity and a known same-owner
-   indexed initializer. Revalidate the indexed statement using `binding_effect` and
-   compare local/storage/root/owner. Missing Read/index/root remains unknown;
-   inconsistent metadata fails. `Read.normal` is checked availability, not an
-   observed Normal visit or runtime completion. Its exact unconditional Next edge
-   supports this structural join without a new stage-observation map.
-3. Treat read-to-initializer lookup as a same-owner jump across statement/block/span
-   boundaries, not parent-child forwarding. Keep wrapper-specific identity checks,
-   add Read to exclusive producer classifications, and reuse the shared seen/hop/
-   Flow bounds for mixed cycles. Preserve original extraction ports, owning stage
-   and control flags, unknown/multiple candidates and caller boundaries. Add focused
-   read/header/index/owner/cycle regressions, then source order/stop/error cases and
-   full compiler/strict/documentation gates.
+All 299 prior case records, 331 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-read-preservation.log`). Structural links do not evaluate candidate
+values or proof outcomes. Unrelated `docs/programs/hey/` is preserved.
 
-Precise branch/overwrite joins, field-value and function-return provenance, restart
-propagation, E225 enforcement and proof outcomes remain later dependency-ordered work.
+### Next: coercion-owned primary consumers
+
+1. Extend `effects/primary_sources.rs::primary_effect_inputs` for `Effect::Coercion`.
+   Revalidate each observed Projection(step0), Operation and Normal stage with
+   `coercion_effect_stage`, comparing input/kind/primary/control metadata. Expose
+   input zero only when the projection was observed; later stages cannot imply it.
+   Integrate with existing `slot_uses` and `primary_slot`, keeping the exact coercion
+   Projection port and slot zero. No new map or collection reorder is needed.
+2. Keep primary-extracting coercions opaque to value forwarding: do not broaden
+   `forward_coercion_input`. Projected Forward/Convert/Stopped are distinct observed
+   consumers. Convert Operation/Normal require registered operation ownership;
+   Projection alone does not. Stopped may retain projection-only structural evidence
+   without a result or value-completion claim. Include real local unary/typed-scalar
+   cases and seeded stopped-stage tests with the implementation.
+3. Add separate corruption/duplicate/capacity/work regressions as needed, source
+   order/stop/error cases and the compiler/strict/documentation gates. Preserve
+   ordinary diagnostics, unknown or multiple candidate sources and owner separation.
+
+Field-value joins remain a separate provenance design: aggregate slots in
+`results.rs` deliberately remain Unknown. Precise branch/overwrite joins, function
+returns, restart propagation, E225 enforcement and proof outcomes remain later work.
 
 ## Documentation conventions and layout
 
@@ -3185,7 +3191,8 @@ subtraction retains its documented limits. Never operand contexts are repaired
 above. Explicit group and observed non-projecting Forward consumer resolution are
 implemented, including unchanged observed narrowing and bounded local eligibility.
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
-Validated local-read initializer forwarding is next, after budget/order plumbing.
+Validated local-read initializer forwarding is complete. Coercion-owned primary
+consumer links are next, preserving the value-forwarding boundary.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3760,9 +3767,10 @@ Validated local-read initializer forwarding is next, after budget/order plumbing
    eligibility (`5af4c18`, `407c6d7`) and source cases (`5e7e3a5`) pass the gate.
    Exact Bind qualification (`7ec1583`, `970c6a3`) and source cases (`6d910f8`) are
    complete. Parameter/index collection (`d3b22ec`, `869e5c7`), boundary coverage
-   (`a433f00`) and source cases (`2d460d2`) are implemented. Next update shared
-   collection ordering/budgets, then integrate validated local reads following the
-   ordered plan above.
+   (`a433f00`) and source cases (`2d460d2`) pass the gate. Collection budgets
+   (`f83ba59`), read forwarding (`1308c62`), mixed bounds (`b2d0033`) and source cases
+   (`8e5c5d1`) are implemented. Next add coercion-owned primary consumers following
+   the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
