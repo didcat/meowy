@@ -1417,7 +1417,12 @@ pending-stack cap and shared Flow work, validates transferred local/binding IDs,
 and appends eligible IDs after existing slot links under their combined map cap.
 Primitive/record/list/union eligibility excludes mutable bindings, nested mutable
 fields, references and all Foundation variants. Parameters and aliases remain
-shape-eligible without read links. Additional budget/identity tests and gates follow.
+shape-eligible without read links. Implementation: `5af4c18`; Clippy passes
+(`/tmp/meowy-local-lint.log`). All seven eligibility groups now pass, including
+five additional identity/map/work/atomic/type-boundary groups
+(`/tmp/meowy-local-eligibility-limits.log`). A 65,537-deep type uses one pending
+slot; width 65,537 exceeds the scratch cap. Source cases pass rebuilt-compiler
+debug/release (`/tmp/meowy-local-source-final.log`). Source commits and gates follow.
 
 ### Dependency-ordered plan
 
