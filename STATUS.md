@@ -7,27 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Output-owned primary projections now retain original sparse formatting indices and
-slot-zero links through qualified sources. Whole-output edge replay and independent
-prefix/projection/output/terminal validation preserve stopped boundaries and operation
-ownership. Streaming reuses bounded slot insertion without another input collection
-or payload charge; failures publish no partial links. The
-[compiler handoff](compiler/STATUS.md#output-owned-primary-consumers) records the
-six implementation/test commits and next ordered plan.
+Contextual-list primary projections now retain original input indices and source
+slot-zero links through qualified record copies. Whole-producer replay is separate
+from indexed stage selection; complete reports preserve suffix identities, independent
+flags and strict construction registration. A real late-selector source proves
+list-owned linkage, while ordinary lists keep their coercion-owned ports. The
+[compiler handoff](compiler/STATUS.md#contextual-list-primary-consumers) records
+five implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2420 library/915 native tests
-and 62 Python groups (`/tmp/meowy-output-gate.log`). Conformance has 310 cases:
-291 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-output-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-output-docs.log`). Prior fixtures,
-reference contracts, capability pins and proof obligations are preserved
-(`/tmp/meowy-output-preservation.log`). The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2430 library/915 native tests
+and 62 Python groups (`/tmp/meowy-list-gate.log`). Conformance has 313 cases:
+294 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-list-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-list-docs.log`).
+Prior fixtures, reference contracts, capability pins and proof obligations are
+preserved (`/tmp/meowy-list-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, separate whole-list validation from stage selection, then qualify and link
-observed contextual-list primary inputs. Preserve their stricter registration rules.
+Next, share whole-emission report qualification, then connect observed composed
+emission targets to their source slots without changing candidate-value histories.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
@@ -1166,9 +1166,9 @@ execution was not part of this documentation edit.
    those series. Emission targets and statement completion now have bounded reports
    with focused/source coverage and compiler/strict evidence. Checked equality,
    result-slot consumers, local initializer forwarding and output primary links
-   now pass their gates. Next separate whole-list validation from stage selection,
-   then qualify contextual-list primary consumers using the ordered compiler
-   handoff. Preserve all existing source/capability gates.
+   now pass their gates, including contextual-list primary consumers. Next share
+   whole-emission report qualification, then connect composed-emission source slots
+   using the ordered compiler handoff. Preserve all source/capability gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

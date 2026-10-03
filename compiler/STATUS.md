@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Output-owned primary consumers pass the compiler and documentation gates.
+Updated: 2026-10-03. Contextual-list primary consumers pass the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1680,73 +1680,81 @@ All 306 prior case records, 338 source assets, 37 reference files/reviewed hashe
 19 capability pins and 33 proof obligations are unchanged
 (`/tmp/meowy-output-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: contextual-list primary consumers
+## Contextual-list primary consumers
 
-Resumed from `230c9cc`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. Split whole-producer list validation from stage selection first,
-preserving all existing checks. Then qualify full reports once, stream observed
-primary inputs into existing consumers, add separate corruption/stopped/budget
-coverage, source evidence and final gates. Establish any positive contextual source
-path explicitly; parameter/changed-narrowing opacity and seeded evidence stay distinct.
+Whole-list validation is now separate from indexed stage selection. Replay preserves
+exact sequence/endpoints, unique source roots, full child/suffix identities, capacity,
+context and operation registration. The existing effect collector retains its
+per-stage wrapper; consumer report qualification replays once per list and then
+uses constant-work selectors, avoiding another whole scan for every observed flag.
 
-The in-place validation split passes all 14 list-effect groups, including existing
-corruption/stop checks and two new selector groups; Clippy and formatting pass
-(`/tmp/meowy-list-selection.log`, `/tmp/meowy-list-selection-lint.log`). Whole
-replay retains uniqueness, exact sequence/endpoints, suffix identities and operation
-registration. Indexed stage selection is bounded independently of list length.
+Full report qualification compares capacity/context/normal/control and every input
+root/plan, including unobserved suffixes. Projection/conversion/construction/result
+flags remain independent. Construction requires normal metadata and no stopped input;
+a projected Stopped input may retain normal metadata. Producers with construction
+edges require their registered owner even for projection-only reports. No weaker
+output/coercion registration rule is substituted.
 
-Validation split: `6694ada`. Full-report qualification now passes two new groups,
-all 63 consumer groups and Clippy (`/tmp/meowy-list-reports.log`,
-`/tmp/meowy-list-report-consumers.log`, `/tmp/meowy-list-report-lint.log`). Every
-reported root/plan, including unobserved suffixes, is checked before independent
-stage flags. The common-element/late-selector source has a genuine list-owned
-projection whose unchanged local read resolves to a same-owner initializer anchor.
-Streaming consumer links and adversarial coverage remain next.
+The consumer streams only observed projected inputs into the existing Uses map,
+retaining original Projection indices and source slot zero. An immutable record
+fitting multiple contexts can retain list-owned projection until a later selector
+chooses the list context. Real-source tests prove sparse indices 0/2/3 through
+same-owner local copies. Ordinary typed lists retain coercion-owned ports;
+parameters, changed narrowing and unknown sources remain opaque. Seeded stopped
+anchors remain structural evidence, not runtime completion. Work/map failures
+publish no partial links, and candidate/input payload is neither copied nor charged again.
 
-Report qualification: `d5e966b`. Streamed list consumers pass two new groups, all
-65 consumer groups, 80 list-related groups and Clippy (`/tmp/meowy-list-consumers.log`,
-`/tmp/meowy-list-all-consumers.log`, `/tmp/meowy-list-focused.log`,
-`/tmp/meowy-list-consumer-lint.log`). A real late-selector list preserves sparse
-projected indices 0/2/3 through immutable record copies. Ordinary typed lists retain
-their separate coercion ports; parameter-only sources remain opaque. Boundary
-tests now pass (`/tmp/meowy-list-limits.log`): four groups cover sparse plans,
-independent stages/registration, seeded stops and unvisited suffix faults, 13 late
-corruptions, duplicate visits and exact shared map/work limits at zero payload.
-Consumer integration: `c214833`; boundary tests: `5d908ad`. Three source cases pass
-rebuilt-compiler debug/release (`/tmp/meowy-list-source-final.log`). Metadata checks
-pass at 313 cases, 294 required and 19 unchanged pins (`/tmp/meowy-list-metadata.log`).
-All 310 prior records, 342 assets, 37 references/hashes and 33 proof obligations are
-preserved (`/tmp/meowy-list-preservation.log`). Full gates remain pending.
+| Reviewable slice | Commit |
+| --- | --- |
+| Separate whole-producer validation from stage selection | `6694ada` |
+| Qualify complete observed list reports | `d5e966b` |
+| Link contextual-list primary inputs to result slots | `c214833` |
+| Cover stopped plans, corruption and shared resources | `5d908ad` |
+| Pin late-selector source order, panic and width rejection | `0c48b3e` |
 
-### Dependency-ordered plan
+Ten new groups cover indexed selection, independent report stages, a genuine source
+join, 12 report faults, sparse plans, stopped suffixes, 13 late faults and exact
+resources. Focused checks and library Clippy pass (`/tmp/meowy-list-selection.log`,
+`/tmp/meowy-list-reports.log`, `/tmp/meowy-list-consumers.log`,
+`/tmp/meowy-list-limits.log`, `/tmp/meowy-list-consumer-lint.log`). Three required
+source cases pass rebuilt-compiler debug/release (`/tmp/meowy-list-source-final.log`).
+Metadata checks pass at 313 cases, 294 required and 19 unchanged pins
+(`/tmp/meowy-list-metadata.log`). All ten compiler checks pass on LLVM 23.1.1/Rust
+1.99.0: 2430 library/915 native tests, 32 tooling/30 harness groups, formatting, Clippy,
+build and conformance (`/tmp/meowy-list-gate.log`). All 294 required cases pass
+debug/release, with 19 unchanged pins and zero failures. Strict mode exits 1 only
+for those gaps (`/tmp/meowy-list-strict.log`). All four final documentation checks
+pass (`/tmp/meowy-list-docs.log`).
 
-1. Separate whole-producer validation from stage selection in `effects/lists.rs`,
-   preserving exact sequence/endpoints, unique input roots, child/source order,
-   stopped boundaries and existing operation registration. Keep this refactor
-   behavior-preserving with focused tests. The current per-stage path scans inputs
-   and builds a bounded uniqueness set; a new consumer must not repeat that work
-   for each part. Validate once per list when qualifying its consumer report.
-2. Qualify `Effect::List` headers and every `Observed.inputs` root/plan against
-   checked metadata, including unobserved suffix descriptors. Validate projection,
-   conversion, construction and result observations independently. Terminal
-   availability is `normal && no stopped input`, not `normal` alone; preserve the
-   existing operation-owner requirement whenever the descriptor has construction
-   edges, even for projection-only observations. Do not copy output's looser
-   projection-registration policy onto lists.
-3. Stream only observed projected inputs through `primary_slot`, keeping
-   `Projection { point: list_id, step: original_index } -> slot0` and shared map/work
-   bounds, without extra payload copies or new value-flow edges. Ordinary typed
-   lists already delegate primaries to Coercion effects; list-owned projections
-   occur in contextual `list_inputs` plans. Establish a positive source path before
-   claiming executable link coverage: current narrowed-parameter examples remain
-   opaque to source joins, and seeded anchors are structural evidence only.
-4. Add focused identity/plan/stopped-prefix/duplicate/budget regressions alongside
-   each implementation slice, then required source cases and compiler/strict/docs
-   gates. Preserve unknown result sources, independent owners and ordinary errors.
+All 310 prior case records, 342 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-list-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 
-Field-value joins remain a separate provenance design: aggregate slots in
-`results.rs` deliberately remain Unknown. Precise branch/overwrite joins, function
-returns, restart propagation, E225 enforcement and proof outcomes remain later work.
+### Next: composed-emission source-slot consumers
+
+1. Extract shared whole-emission report qualification from the existing checks in
+   `results/index.rs` and `effects/emissions.rs`. Preserve exact input/composed/
+   control/target/initialized metadata, EmitId source registry, aliases, composition
+   target counts/names, statement sites, lexical target ancestry and ordered edges.
+   Validate once per statement; do not repeat full target/name/ancestry work for
+   each target. Preserve current result-source behavior in this prerequisite.
+2. In `consumers.rs`, resolve each qualified composed input once through `slot_block`.
+   Stream only observed initialized targets into Uses as `Port::Emission(target.id)`
+   with source `Primary -> slot0` or `Field(i) -> slot(i+1)`. Validate source owner,
+   layout/count and field names before insertion. `Projection::Value` does not imply
+   primary extraction; absent/unknown sources remain unknown. Destination target
+   initialization does not require destination BlockResult, and statement completion
+   must not imply a target visit. Preserve existing shared map/work/payload accounting.
+3. Cover copies/groups, independent owners, named outer targets, stopped destination
+   tails, independent initialized/result flags, late corrupt targets/aliases/source
+   layouts and exact resource limits. Keep focused tests with implementation, then
+   add source order/error cases and run compiler/strict/documentation gates.
+
+Keep all `results::Sources` values unchanged: empty/multiple scalar candidate
+histories and aggregate Unknown slots are separate from these consumer identities.
+Field-value provenance, precise branch/overwrite joins, function returns, restart
+propagation, E225 enforcement and proof outcomes remain later work. Shared-reference
+load projections are not record-primary consumers and must not be treated as slot0.
 
 ## Documentation conventions and layout
 
@@ -3330,8 +3338,8 @@ above. Explicit group and observed non-projecting Forward consumer resolution ar
 implemented, including unchanged observed narrowing and bounded local eligibility.
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
-complete, including output-owned primary parts. Contextual-list primary consumers
-are next, after separating whole-producer validation from stage selection.
+complete, including output- and contextual-list-owned primary parts. Composed-emission
+source-slot consumers are next, after shared report qualification.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3911,7 +3919,9 @@ are next, after separating whole-producer validation from stage selection.
    (`8e5c5d1`) pass the gate. Coercion-owned primary consumers (`5001917`), boundary
    coverage (`0399df9`) and source cases (`9748410`) pass the gate. Output edge/report
    qualification (`0c5c184`, `1bf878c`), streamed links (`7ac15f3`), limits (`4509d0e`)
-   and source cases (`8e1269d`) are implemented. Next qualify contextual-list primary
+   and source cases (`8e1269d`) pass the gate. List validation/report qualification
+   (`6694ada`, `d5e966b`), contextual links (`c214833`), boundaries (`5d908ad`) and source
+   cases (`0c48b3e`) are implemented. Next qualify composed-emission source-slot
    consumers following the ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

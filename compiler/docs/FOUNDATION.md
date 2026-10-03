@@ -542,7 +542,28 @@ stopped prefixes, duplicate visits and late failures retain their existing seman
 Seeded stopped-record links establish structural coverage, not runtime completion.
 No projection implies output/terminal observation or successful I/O.
 
-The resolver reuses field and scalar/output primary slot links, preserving
+Contextual-list primary consumers retain original input indices and slot-zero links.
+Whole-producer replay preserves exact sequences/endpoints, input uniqueness and all
+checked suffix roots. Constant-work stage selectors then validate independent
+projection, conversion, construction and result observations. Full report qualification
+compares every root/plan, including unobserved inputs, with one replay per list in
+the consumer pass. It copies no input vectors or candidate payload.
+
+Construction availability requires normal metadata and no stopped input; a projected
+Stopped input can keep normal metadata while preventing construction and result.
+Whenever construction edges exist, their operation owner must remain registered,
+even for a projection-only observation. This list invariant is stronger than the
+coercion/output projection rule and is preserved.
+
+An immutable record can fit multiple list contexts until a later input chooses one.
+Those contextual projections now resolve through existing local-copy chains to the
+record's original primary slot, keeping scalar gaps and more than two projections.
+Ordinary typed lists retain their coercion-owned ports. Parameter and changed-narrowing
+sources remain opaque; stopped-anchor seeds provide structural evidence only.
+Streaming reuses the shared slot-use map and work limits, with atomic failures and
+unchanged payload. No values, branch choice, lifetime authority or proof result is inferred.
+
+The resolver reuses field and scalar/output/list primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child
 returns; observed extraction stages and block results still govern publication.
 No entry-to-normal shortcut, type/candidate copy or value/ownership inference is
