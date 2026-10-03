@@ -6,6 +6,9 @@ mod grouped;
 mod index;
 mod primary;
 
+#[cfg(test)]
+mod outputs;
+
 pub(crate) type Index = BTreeMap<PointId, (usize, hir::BlockId)>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -43,6 +46,25 @@ impl Checker {
         for (&id, (owner, effect)) in &reports.effects {
             if let Effect::Output(output) = effect {
                 self.validate_output_report(reports, id, *owner, output, span)?;
+                if !self.flow.spend(output.parts.len() * 2 + 1) {
+                    return Err(budget());
+                }
+                for (&part, observed) in &output.parts {
+                    if !observed.projection {
+                        continue;
+                    }
+                    let input = observed.input.ok_or_else(|| {
+                        Diagnostic::unsupported("proof output-effect identity mismatch", span)
+                    })?;
+                    if let Some(slot) = self.primary_slot(reports, input.point, *owner, span)? {
+                        let port = Port::Projection {
+                            point: id,
+                            step: part,
+                        };
+                        self.record_slot_use(&mut uses, port, (*owner, slot), limit, span)?;
+                    }
+                }
+                continue;
             }
             let mut slots = [None; 3];
             slots[0] = self

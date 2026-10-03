@@ -1659,6 +1659,14 @@ observations, selectors/inputs and terminal ownership, with one whole edge pass 
 output. Projection/output/prefix/terminal observations remain independent; malformed
 reports fail without mutation. Streaming projection links are the next slice.
 
+Report qualification: `1bf878c`. Streamed output consumers pass two new core groups,
+all 59 consumer groups, 29 output-related groups and Clippy
+(`/tmp/meowy-output-consumers.log`, `/tmp/meowy-output-all-consumers.log`,
+`/tmp/meowy-output-focused.log`, `/tmp/meowy-output-lint.log`). Original sparse part
+indices map to slot zero through qualified local copies, without another input
+collection or payload debit. Opaque sources and prior projections before a stopped
+part are preserved. Additional stage/corruption/budget tests and full gates follow.
+
 ### Dependency-ordered plan
 
 1. Extract bounded Uses insertion from `consumers.rs` as a behavior-preserving
