@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Local-read initializer forwarding passes the compiler and documentation gates.
+Updated: 2026-10-03. Coercion-owned primary consumers pass the compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1233,8 +1233,8 @@ validated. Operation/result flags alone cannot create a projection link, and a
 left projection may exist before a stopped RHS with no operation or result.
 Owning effects keep flags; result sources keep multiple/unknown candidate state.
 Reference loads, calls, primary-extracting/converting coercions, ascriptions and
-unclassified regions remain separate. Wrapper and immutable-read forwarding are
-described below. Ordinary scalar-context constructor errors are unchanged.
+unclassified regions remain opaque as forwarding sources. Wrapper and immutable-read
+forwarding are described below. Ordinary scalar-context constructor errors are unchanged.
 
 The operation/block/result maps, reverse index and extraction links share the map
 cap. Fixed-size consumer records consume no variable payload. Shared work charges
@@ -1291,8 +1291,9 @@ Resolved anchors reuse existing field and unary/binary primary slot links. Origi
 extraction ports, independent flags and candidate/unknown state remain unchanged.
 Stored Normal edges never establish completion, and no Entry-to-Normal shortcut is
 added. A left projection can remain observed before a stopped RHS without operation
-or result observations. Calls, coercions, ascriptions, shared-reference forwarding
-and unclassified regions remain outside these links; no value or proof is inferred.
+or result observations. Calls, ascriptions, shared-reference forwarding and
+unclassified regions remain outside these links. Later Forward and coercion-owned
+consumer support is described below; no value or proof is inferred.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -1559,7 +1560,7 @@ exclusive group/Forward/narrowing/anchor classifications and share the existing
 65,536-hop scratch and Flow limits. Consistent mixed initializer cycles fail.
 Owned field and observed binary-primary consumers preserve original ports and slot
 identities through immutable copy chains. Unary projections performed by expected
-coercions remain separate; no additional projection is inferred. Special storage,
+coercions now retain their own consumer ports below; no additional projection is inferred. Special storage,
 field values, calls, mutable/reference inputs and caller provenance stay opaque.
 
 | Reviewable slice | Commit |
@@ -1588,47 +1589,71 @@ All 299 prior case records, 331 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-read-preservation.log`). Structural links do not evaluate candidate
 values or proof outcomes. Unrelated `docs/programs/hey/` is preserved.
 
-## In progress: coercion-owned primary consumers
+## Coercion-owned primary consumers
 
-Resumed from `c10b693`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
-and commits. First add coercion-stage validation and primary-input selection with
-focused Forward/Convert and source-port regressions. Follow with separate stopped/
-corruption/resource tests, required source cases and evidence, and final guide/gates.
-Keep primary coercions opaque as value sources; retain observed projection-only
-evidence without requiring later operation/result stages or inventing completion.
+Observed coercion Projection ports now map step0 to the original result's slot0.
+The scalar primary-input collector revalidates each observed Projection, Operation
+and Normal stage through `coercion_effect_stage`, checking owner, input, kind,
+primary/control metadata and exact source edges. Only an observed projection yields
+an input; later stages cannot imply one. Existing slot resolution preserves original
+ports, field order, owner boundaries, unknown candidates and shared map/work limits.
 
-Core consumer integration passes 53 consumer groups, nine coercion-effect groups
-and library Clippy (`/tmp/meowy-coercion-consumers.log`,
-`/tmp/meowy-coercion-effects.log`, `/tmp/meowy-coercion-lint.log`). Three new groups
-cover exact Forward/Convert projection ports, independent owners, stage selection
-and opaque parameters/references/calls. Existing local-unary and typed-scalar
-expectations now retain coercion-owned slot-zero links. Implementation: `5001917`.
-Four boundary groups pass (`/tmp/meowy-coercion-limits.log`): seeded Stopped
-projection-only evidence, Convert registration rules, 18 late identity/stage faults,
-duplicate visits and exact map/work limits. Primary coercions remain opaque to
-value forwarding. Boundary tests: `0399df9`. Three source cases pass rebuilt-compiler
-debug/release (`/tmp/meowy-coercion-source-final.log`). Metadata checks pass at 306
-cases, 287 required and 19 unchanged pins (`/tmp/meowy-coercion-metadata.log`).
-All 303 prior records, 335 assets, 37 references/hashes and 33 proof obligations are
-preserved (`/tmp/meowy-coercion-preservation.log`). Full gates remain pending.
+Forward and Convert consumers now cover local unary and typed/nullable scalar
+contexts through checked initializer chains. A Convert projection alone requires
+no operation registry entry; observed Operation/Normal stages require the exact
+registered owner. Seeded Stopped projection-only evidence retains a link without
+operation/result observations or a runtime completion claim. Primary-extracting
+coercions remain opaque to value forwarding. No new map, collection order or
+variable payload is introduced; late invalid stages publish no partial links.
 
-### Dependency-ordered plan
+| Reviewable slice | Commit |
+| --- | --- |
+| Link observed coercion primary ports to result slots | `5001917` |
+| Cover stopped/registration/stage and shared-resource boundaries | `0399df9` |
+| Pin scalar copy order, stopped RHS and width rejection | `9748410` |
 
-1. Extend `effects/primary_sources.rs::primary_effect_inputs` for `Effect::Coercion`.
-   Revalidate each observed Projection(step0), Operation and Normal stage with
-   `coercion_effect_stage`, comparing input/kind/primary/control metadata. Expose
-   input zero only when the projection was observed; later stages cannot imply it.
-   Integrate with existing `slot_uses` and `primary_slot`, keeping the exact coercion
-   Projection port and slot zero. No new map or collection reorder is needed.
-2. Keep primary-extracting coercions opaque to value forwarding: do not broaden
-   `forward_coercion_input`. Projected Forward/Convert/Stopped are distinct observed
-   consumers. Convert Operation/Normal require registered operation ownership;
-   Projection alone does not. Stopped may retain projection-only structural evidence
-   without a result or value-completion claim. Include real local unary/typed-scalar
-   cases and seeded stopped-stage tests with the implementation.
-3. Add separate corruption/duplicate/capacity/work regressions as needed, source
-   order/stop/error cases and the compiler/strict/documentation gates. Preserve
-   ordinary diagnostics, unknown or multiple candidate sources and owner separation.
+Seven new groups cover source/owner identity, three-stage selection, opaque sources,
+seeded Stopped, Convert registration, 18 late corruptions, duplicate visits and exact
+map/work limits. Focused checks and library Clippy pass
+(`/tmp/meowy-coercion-consumers.log`, `/tmp/meowy-coercion-effects.log`,
+`/tmp/meowy-coercion-limits.log`, `/tmp/meowy-coercion-lint.log`). Three required
+source cases pass rebuilt-compiler debug/release (`/tmp/meowy-coercion-source-final.log`).
+Metadata checks pass at 306 cases, 287 required and 19 unchanged pins
+(`/tmp/meowy-coercion-metadata.log`). All ten compiler checks pass on LLVM 23.1.1/Rust
+1.99.0: 2409 library/915 native tests, 32 tooling/30 harness groups, formatting, Clippy,
+build and conformance (`/tmp/meowy-coercion-gate.log`). All 287 required cases pass
+debug/release, with 19 unchanged pins and zero failures. Strict mode exits 1 only for
+those gaps (`/tmp/meowy-coercion-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-coercion-docs.log`).
+
+All 303 prior case records, 335 source assets, 37 reference files/reviewed hashes,
+19 capability pins and 33 proof obligations are unchanged
+(`/tmp/meowy-coercion-preservation.log`). Structural projection-only evidence remains
+distinct from observable source execution. Unrelated `docs/programs/hey/` is preserved.
+
+### Next: output-owned primary consumers
+
+1. Extract bounded Uses insertion from `consumers.rs` as a behavior-preserving
+   prerequisite, retaining existing insertion behavior and map/work checks.
+   Keep the fixed two-input API for scalar producers; outputs need their original
+   arbitrary formatting-part indices, including gaps for literal parts.
+2. Qualify reports in `effects/outputs.rs`, invoked from `slot_uses` before adding
+   links. `output_effect_stage` validates headers, selectors and child identities
+   but currently does not recheck
+   exact Output edges. Add one bounded allocation-free whole-producer edge pass per
+   output, preserving Next/Returned routes and stopped suffixes. Check reported
+   owner/panic/control/total/stopped, each stored part's input and nonempty stage
+   flags, all observed Prefix/Projection/Output/terminal stages, and terminal
+   operation registration. Do not infer any unobserved projection/output/terminal stage.
+3. Stream only observed projected parts through `primary_slot` into the same Uses
+   scratch map as `Projection { point: output_id, step: original_part } -> slot0`.
+   Avoid another input Vec/map or payload debit and avoid rescanning all edges for
+   every part. Keep literal/scalar/call/reference/parameter sources separate and
+   preserve independent owners, original flags and unknown candidate state.
+4. Include sparse and more-than-two projections, stopped/projection-only stages,
+   duplicate visits, late corruption and exact capacity/work regressions, with
+   focused tests in each slice. Add print/panic source cases and run the full
+   compiler/strict/documentation gates. List-owned primary inputs can follow later.
 
 Field-value joins remain a separate provenance design: aggregate slots in
 `results.rs` deliberately remain Unknown. Precise branch/overwrite joins, function
@@ -3215,8 +3240,8 @@ subtraction retains its documented limits. Never operand contexts are repaired
 above. Explicit group and observed non-projecting Forward consumer resolution are
 implemented, including unchanged observed narrowing and bounded local eligibility.
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
-Validated local-read initializer forwarding is complete. Coercion-owned primary
-consumer links are next, preserving the value-forwarding boundary.
+Validated local-read forwarding and coercion-owned primary consumer links are
+complete. Output-owned primary consumers are next, after report/edge qualification.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3793,8 +3818,10 @@ consumer links are next, preserving the value-forwarding boundary.
    complete. Parameter/index collection (`d3b22ec`, `869e5c7`), boundary coverage
    (`a433f00`) and source cases (`2d460d2`) pass the gate. Collection budgets
    (`f83ba59`), read forwarding (`1308c62`), mixed bounds (`b2d0033`) and source cases
-   (`8e5c5d1`) are implemented. Next add coercion-owned primary consumers following
-   the ordered plan above.
+   (`8e5c5d1`) pass the gate. Coercion-owned primary consumers (`5001917`), boundary
+   coverage (`0399df9`) and source cases (`9748410`) are implemented. Next qualify
+   output reports/edges, then connect their observed primary parts following the
+   ordered plan above.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

@@ -380,8 +380,9 @@ Validated result consumers now have a bounded reverse index to exact BlockIds.
 Direct owned field Operation ports reference the checked field slot at index+1,
 with field counts, ordering, owners and availability revalidated. A field's normal
 flag describes checked result availability; the link does not claim a Normal visit.
-Observed unary/binary primary Projection ports reference slot0, keeping binary
-steps distinct. Every recorded projection/operation/result stage is validated;
+Observed unary, binary and coercion primary Projection ports reference slot0,
+keeping binary steps distinct and coercion step0 explicit. Every recorded
+projection/operation/result stage is validated;
 operation or result flags alone do not create a primary link.
 
 Slot links retain identities only. Owning effects keep their flags, and result
@@ -503,10 +504,24 @@ A read-to-initializer jump crosses statements, blocks and source spans within on
 owner. Wrapper containment checks do not apply across that lookup. Mixed cycles,
 producer conflicts and exhausted hop/work limits fail atomically. Owned field and
 observed binary-primary ports retain their exact existing slot identities through
-immutable copy chains. Unary projections already owned by expected-value coercions
-remain separate; the resolver does not invent a second projection.
+immutable copy chains. Unary projections already performed by expected-value
+coercions retain the coercion's own port; no second unary projection is invented.
 
-The resolver reuses existing field and unary/binary primary slot links, preserving
+Coercion-owned primary consumers revalidate each actually observed Projection,
+Operation and Normal stage against its checked producer. Input, kind, primary and
+control headers must agree, along with exact source identities and ordered edges.
+Only an observed projection selects the input and maps step0 to the original block's
+slot0. Later operation/result observations never imply a projection.
+
+Forward and Convert projections preserve local unary, typed scalar and nullable
+contexts. A Convert projection alone needs no operation registration; observing its
+Operation or Normal stage requires the registered owner. Stopped projection-only
+links have seeded structural coverage without asserting a completed runtime value.
+Primary-extracting coercions remain opaque as value-forwarding steps. The collector
+uses existing map/work bounds, retains one link per port, and copies no payload;
+invalid stages or late failures preserve the original reports and links.
+
+The resolver reuses field and unary/binary/coercion primary slot links, preserving
 their original ports and flags. Stored Normal edges do not establish that a child
 returns; observed extraction stages and block results still govern publication.
 No entry-to-normal shortcut, type/candidate copy or value/ownership inference is

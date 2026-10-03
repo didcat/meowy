@@ -7,28 +7,27 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Observed immutable local reads now forward through revalidated same-owner
-initializer identities. Owned fields and observed binary-primary projections retain
-exact result-slot links through copy chains, including cross-block lookups. Shared
-collection budgets, producer conflicts, mixed cycles and missing evidence remain
-bounded and atomic. Coercion-owned unary projections and field-value provenance
-remain separate. The
-[compiler handoff](compiler/STATUS.md#validated-local-read-initializer-forwarding)
-records the five implementation/test commits and next ordered plan.
+Observed coercion-owned primary projections now retain exact step-zero links to
+result slot zero, including local unary and typed/nullable scalar contexts. Each
+observed stage is revalidated independently; later stages never imply projection.
+Convert registration rules and projection-only Stopped evidence remain distinct.
+Primary-extracting coercions stay opaque to value forwarding. The
+[compiler handoff](compiler/STATUS.md#coercion-owned-primary-consumers) records
+the three implementation/test commits and next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2402 library/915 native tests
-and 62 Python groups (`/tmp/meowy-read-gate.log`). Conformance has 303 cases:
-284 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-read-strict.log`). All four
-final documentation checks pass (`/tmp/meowy-read-docs.log`). Prior fixtures,
-reference contracts, capability pins and proof obligations are preserved
-(`/tmp/meowy-read-preservation.log`). The
+All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2409 library/915 native tests
+and 62 Python groups (`/tmp/meowy-coercion-gate.log`). Conformance has 306 cases:
+287 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Strict mode exits 1 only for those gaps (`/tmp/meowy-coercion-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-coercion-docs.log`).
+Prior fixtures, reference contracts, capability pins and proof obligations are
+preserved (`/tmp/meowy-coercion-preservation.log`). The
 [coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
 33 proof obligations. Proof evaluation and full language/release qualification
 remain incomplete.
 
-Next, connect observed coercion-owned primary projections to slot zero using existing
-stage validation; primary-extracting coercions remain opaque to value forwarding.
+Next, qualify output reports and exact edges, then connect observed formatting
+primary parts with their original indices and shared work/map bounds.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
