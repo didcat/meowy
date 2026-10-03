@@ -153,3 +153,6 @@ mod forward;
 
 #[cfg(test)]
 mod narrowing;
+
+#[cfg(test)]
+mod narrow_limits;

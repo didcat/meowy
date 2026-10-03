@@ -1376,7 +1376,12 @@ The helper and resolver integration pass 41 consumer and two qualification group
 local-read roots traverse six wrappers but stop at Read; field wrappers stop at
 their Field operation and retain only existing extraction links. Success through
 all three wrapper kinds to a block anchor requires deliberately seeded evidence.
-Additional identity/budget regressions, source commits and full gates remain pending.
+Implementation: `a8442b3`. Four seeded mixed-chain and four helper groups pass
+(`/tmp/meowy-narrow-mixed.log`, `/tmp/meowy-narrow-qualifier-limits.log`), covering
+19 corruption variants, producer overlaps, cycles and exact hop/work limits without
+report or payload mutation. All four new source cases pass rebuilt-compiler
+debug/release (`/tmp/meowy-narrow-source-final.log`). Source commits and full gates
+remain pending.
 
 ### Dependency-ordered plan
 
