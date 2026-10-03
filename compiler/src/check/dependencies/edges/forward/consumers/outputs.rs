@@ -1,5 +1,7 @@
 use super::{tests::checked, *};
 
+mod limits;
+
 #[test]
 pub(crate) fn output_consumers_link_sparse_original_parts_through_local_copies() {
     let source = "d:@\"debug\";r:{->7;->tag:true};copy:((r));d.print(\"a{copy}b{1}c{((r))}d{({->9;->tag:false})}e\")";

@@ -1665,7 +1665,11 @@ all 59 consumer groups, 29 output-related groups and Clippy
 `/tmp/meowy-output-focused.log`, `/tmp/meowy-output-lint.log`). Original sparse part
 indices map to slot zero through qualified local copies, without another input
 collection or payload debit. Opaque sources and prior projections before a stopped
-part are preserved. Additional stage/corruption/budget tests and full gates follow.
+part are preserved. Consumer integration: `7ac15f3`. Four additional groups pass
+(`/tmp/meowy-output-limits.log`), covering sparse owners, projection-only and
+terminal/prefix-only observations, seeded stopped anchors, 18 late faults,
+duplicate visits and exact map/work limits at zero payload. Source commits and
+full gates remain pending.
 
 ### Dependency-ordered plan
 
