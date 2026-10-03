@@ -1567,8 +1567,11 @@ groups and Clippy (`/tmp/meowy-read-consumers.log`, `/tmp/meowy-read-qualifier.l
 `/tmp/meowy-read-entries.log`, `/tmp/meowy-read-index.log`, `/tmp/meowy-read-lint.log`).
 Owned fields and observed binary primary projections follow immutable copies to
 exact initializer blocks, including same-owner cross-block jumps. Unary projections
-owned by expected-value coercions remain separate. Mixed-read adversarial tests,
-source commits and full gates remain pending.
+owned by expected-value coercions remain separate. Implementation: `1308c62`.
+Four mixed-read adversarial groups now pass (`/tmp/meowy-read-mixed.log`), covering
+Read/anchor/wrapper overlap, consistent initializer cycles, exact nine/eight-hop
+and shared-work limits, missing evidence and payload/report atomicity. Source commits
+and full gates remain pending.
 
 ### Dependency-ordered plan
 

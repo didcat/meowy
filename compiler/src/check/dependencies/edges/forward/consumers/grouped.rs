@@ -163,3 +163,6 @@ mod narrowing;
 
 #[cfg(test)]
 mod narrow_limits;
+
+#[cfg(test)]
+mod read_limits;
