@@ -1443,7 +1443,24 @@ All 290 prior case records, 322 source assets, 37 reference files/reviewed hashe
 (`/tmp/meowy-local-preservation.log`). Source behavior and structural eligibility
 remain separate evidence. Unrelated `docs/programs/hey/` is preserved.
 
-### Next: exact Bind qualification before initializer indexing
+## In progress: exact Bind qualification
+
+Resumed from `88422dd`; preserve unrelated `docs/programs/hey/`. Root owns STATUS
+and commits. Add a narrow checked Bind qualifier and a validation-only entry-report
+pass with focused source-identity tests; then separate corruption/unknown-input/work
+coverage, required source cases and classified evidence, and final guide/gates.
+Preserve raw Storage reports and add no initializer index or read joins. A present
+Bind with absent input remains distinguishable from an unobserved/non-Bind producer.
+
+The qualifier and validation pass now preserve exact headers, canonical local/storage
+identities, checked sites and producer edges. Three focused groups pass, including
+matcher lifetime sites, stopped initializer/body separation and synthetic module
+spans (`/tmp/meowy-bind-core.log`). Existing 14 entry-report, four module-initializer
+and four raw Storage-effect groups pass (`/tmp/meowy-bind-entries.log`,
+`/tmp/meowy-bind-modules.log`, `/tmp/meowy-bind-effects.log`). Broader corruption,
+absent-input/work tests, source commits and final gates remain pending.
+
+### Dependency-ordered plan
 
 1. Add a narrow Bind qualifier using checked `dependencies/operations.rs` metadata.
    Current `Effect::Storage` reporting checks owner and copies the header; it does
