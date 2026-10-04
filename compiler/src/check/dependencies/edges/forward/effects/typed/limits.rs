@@ -136,7 +136,7 @@ pub(crate) fn typed_effects_preserve_partial_records_on_conflicts_and_limits() {
         .record_typed_effect(operation, &mut effects, 1, Span::default())
         .unwrap();
     let expected = effects.clone();
-    for fault in 0..6 {
+    for fault in 0..7 {
         let mut effects = expected.clone();
         let mut stage = result;
         match fault {
@@ -145,6 +145,7 @@ pub(crate) fn typed_effects_preserve_partial_records_on_conflicts_and_limits() {
             2 => stage.op = TypedKind::Ascription,
             3 => stage.normal = false,
             4 => stage.control = true,
+            6 => stage.changed = true,
             5 => {
                 effects.insert(id, (owner, Effect::Unknown));
             }

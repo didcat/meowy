@@ -13,6 +13,7 @@ pub(super) struct Stage {
     pub(super) owner: usize,
     pub(super) input: PointId,
     pub(super) op: TypedKind,
+    pub(super) changed: bool,
     pub(super) normal: bool,
     pub(super) control: bool,
     pub(super) kind: Kind,
@@ -22,6 +23,7 @@ pub(super) struct Stage {
 pub(crate) struct Observed {
     pub(crate) input: PointId,
     pub(crate) op: TypedKind,
+    pub(crate) changed: bool,
     pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) operation: bool,
@@ -29,6 +31,51 @@ pub(crate) struct Observed {
 }
 
 impl Checker {
+    pub(in super::super) fn unchanged_ascription_input(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<PointId>> {
+        let budget = || Diagnostic::unsupported("proof typed-effect budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof typed-effect identity mismatch", span);
+        if !self
+            .flow
+            .spend(reports.effects.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
+            return Err(budget());
+        }
+        let Some((reported_owner, Effect::Typed(observed))) = reports.effects.get(&id) else {
+            return Ok(None);
+        };
+        if !self
+            .flow
+            .spend(self.typed_ops.len().checked_ilog2().unwrap_or(0) as usize + 8)
+        {
+            return Err(budget());
+        }
+        let op = self.typed_ops.get(&id).ok_or_else(invalid)?;
+        if *reported_owner != owner
+            || op.owner != owner
+            || observed.input != op.input
+            || observed.op != op.kind
+            || observed.changed != op.changed
+            || observed.normal != op.normal
+            || observed.control != op.control
+            || (op.changed && (op.kind == TypedKind::Predicate || !op.normal))
+        {
+            return Err(invalid());
+        }
+        if op.kind != TypedKind::Ascription || op.changed || !op.normal || !observed.result {
+            return Ok(None);
+        }
+        let input = op.input;
+        self.typed_effect_stage(reports, owner, Port::Normal(id), span)?
+            .ok_or_else(invalid)?;
+        Ok(Some(input))
+    }
+
     pub(super) fn typed_effect_stage(
         &mut self,
         reports: &Reports,
@@ -65,6 +112,7 @@ impl Checker {
             Edge::new(Port::Operation(id), Port::Normal(id), Route::Next),
         ];
         if !op.normal
+            || (op.changed && op.kind == TypedKind::Predicate)
             || op.owner != owner
             || point.owner != owner
             || !point.complete
@@ -88,6 +136,7 @@ impl Checker {
             owner,
             input: op.input,
             op: op.kind,
+            changed: op.changed,
             normal: op.normal,
             control: op.control,
             kind,
@@ -109,7 +158,7 @@ impl Checker {
         {
             return Err(budget());
         }
-        if !stage.normal {
+        if !stage.normal || (stage.changed && stage.op == TypedKind::Predicate) {
             return Err(invalid());
         }
         if let Some((owner, effect)) = effects.get(&stage.point) {
@@ -119,6 +168,7 @@ impl Checker {
             if *owner != stage.owner
                 || prior.input != stage.input
                 || prior.op != stage.op
+                || prior.changed != stage.changed
                 || prior.normal != stage.normal
                 || prior.control != stage.control
             {
@@ -133,6 +183,7 @@ impl Checker {
                 Effect::Typed(Observed {
                     input: stage.input,
                     op: stage.op,
+                    changed: stage.changed,
                     normal: stage.normal,
                     control: stage.control,
                     operation: false,
@@ -158,3 +209,6 @@ mod limits;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod forward;

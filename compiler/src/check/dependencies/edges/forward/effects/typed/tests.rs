@@ -21,6 +21,7 @@ pub(crate) fn typed_effects_keep_predicates_and_erased_ascriptions_distinct() {
                 Effect::Typed(Observed {
                     input: op.input,
                     op: kind,
+                    changed: false,
                     normal: true,
                     control: false,
                     operation: true,
@@ -51,6 +52,7 @@ pub(crate) fn typed_effects_preserve_nested_branches_owners_and_mutable_guards()
         };
         assert_eq!(*owner, op.owner);
         assert_eq!(observed.op, op.kind);
+        assert_eq!(observed.changed, op.changed);
         assert_eq!(observed.input, op.input);
         assert_eq!(observed.control, op.control);
         assert!(observed.operation && observed.result && observed.normal);

@@ -1783,7 +1783,13 @@ operation/result edges even for erased ascriptions; those edges must stay intact
 The implementation follows the dependency-ordered commit plan below.
 Capture now retains the actual changed decision, rejects inconsistent replays and
 keeps predicate/stopped decisions false. All six `typed_stages` library tests pass
-(`/tmp/meowy-ascription-capture.log`); formatting passes. Report qualification is next. Preserve unrelated `docs/programs/hey/`.
+(`/tmp/meowy-ascription-capture.log`); formatting passes. Capture is committed as
+`beaade7`. Reports now carry the decision and the qualification helper checks all
+reported identities before selecting unchanged observed results. All 12 focused
+`effects::typed` library tests pass (`/tmp/meowy-ascription-reports.log`), including
+report corruption, independent visits, duplicate capacity and exact work limits.
+Consumer traversal is next and remains unchanged in this slice.
+Preserve unrelated `docs/programs/hey/`.
 
 1. In `expressions.rs` and `dependencies/typed.rs`, retain the existing
    `refinement.rs::coercion` changed decision for explicit ascriptions while preserving
