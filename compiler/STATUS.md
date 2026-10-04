@@ -1890,7 +1890,13 @@ All 11 candidate-input groups and all-target Clippy pass
 (`/tmp/meowy-candidate-inputs-boundaries.log`, `/tmp/meowy-candidate-inputs-boundaries-lint.log`).
 Coverage includes exact map/scratch/work boundaries, late identity failures,
 once-per-pass wide composition validation, discarded source shapes and independent
-target/statement observations. Required source coverage follows.
+target/statement observations. Boundary coverage is committed as `2f23847`.
+Three new required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-candidate-inputs-source.log`); catalog and coverage checks pass.
+All four default checks pass (`/tmp/meowy-candidate-inputs-source-docs.log`).
+The preservation audit confirms all 322 prior cases, 354 source assets, 37 reference
+contracts/reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-candidate-inputs-preservation.log`). The full compiler gate is next.
 
 Dependency-ordered commit plan:
 

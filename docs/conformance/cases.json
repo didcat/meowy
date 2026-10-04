@@ -3420,6 +3420,38 @@
         "code": "E302"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "candidate_input_order",
+      "phase": "run",
+      "source": "sources/candidate_input_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source true\nfirst\nsource tail\nnested tail\ndestination tail\n5\n10\ntrue\nsource false\nsecond\nsource tail\nnested tail\ndestination tail\n5\n20\nfalse\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "candidate_input_stopped",
+      "phase": "run",
+      "source": "sources/candidate_input_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nfield\nsource tail\ninitialized\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "candidate_input_mutability",
+      "phase": "check",
+      "source": "sources/candidate_input_mutability.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E206"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
     }
   ]
 }

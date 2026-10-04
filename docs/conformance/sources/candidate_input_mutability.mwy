@@ -1,0 +1,5 @@
+flag := false
+row : {
+    | flag | -> n := 1
+    | !flag | -> n : 2
+}

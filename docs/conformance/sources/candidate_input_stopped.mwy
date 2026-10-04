@@ -1,0 +1,14 @@
+d : @"debug"
+source : {
+    d.print("source")
+    -> n : { d.print("field"); -> 7 }
+    d.print("source tail")
+}
+copy : 'out {
+    {
+        'out -> source
+        d.print("initialized")
+        d.panic("stop")
+    }
+    d.print("unreached")
+}

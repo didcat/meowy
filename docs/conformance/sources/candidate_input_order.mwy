@@ -1,0 +1,26 @@
+d : @"debug"
+show <null> : (flag <boolean>) {
+    source : {
+        d.print("source {flag}")
+        | flag | -> n : { d.print("first"); -> 10 }
+        | !flag | -> n : { d.print("second"); -> 20 }
+        -> b : flag
+        -> 5
+        d.print("source tail")
+    }
+    copy : 'out {
+        { 'out -> source; d.print("nested tail") }
+        d.print("destination tail")
+    }
+    d.print(copy)
+    d.print(copy.n)
+    d.print(copy.b)
+}
+show(true)
+show(false)
+flag := false
+row : 'out {
+    | flag | { 'out -> n : "discarded"; d.panic("stop") }
+    -> n : 3
+}
+d.print(row.n)
