@@ -58,7 +58,7 @@ pub(crate) fn candidate_inputs_qualify_exact_direct_composed_and_independent_own
     }
     assert_eq!(
         ctx.parts,
-        MAX_EDGES - ctx.blocks.len() - ctx.emissions.len()
+        MAX_EDGES - ctx.blocks.len() - ctx.emissions.len() - ctx.sources.len()
     );
 }
 

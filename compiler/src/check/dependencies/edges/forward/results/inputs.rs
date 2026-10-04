@@ -1,8 +1,12 @@
 use super::*;
-use crate::check::dependencies::{edges::forward::effects::Effect, emissions::Projection};
+use crate::check::dependencies::{
+    edges::forward::{consumers::Slot, effects::Effect},
+    emissions::Projection,
+};
 use std::collections::BTreeSet;
 
 mod collection;
+mod sources;
 
 pub(crate) type Key = (hir::BlockId, usize, usize);
 pub(crate) type Inputs = BTreeMap<Key, (usize, Input)>;
@@ -12,6 +16,7 @@ pub(crate) struct Input {
     pub(crate) candidate: Candidate,
     pub(crate) point: PointId,
     pub(crate) projection: Projection,
+    pub(crate) source: Option<Slot>,
 }
 
 pub(super) struct Context<'a> {
@@ -19,6 +24,7 @@ pub(super) struct Context<'a> {
     pub(super) parts: usize,
     pub(super) blocks: BTreeSet<hir::BlockId>,
     pub(super) emissions: BTreeSet<PointId>,
+    pub(super) sources: BTreeMap<PointId, hir::BlockId>,
 }
 
 impl<'a> Context<'a> {
@@ -28,6 +34,7 @@ impl<'a> Context<'a> {
             parts: parts.min(MAX_EDGES),
             blocks: BTreeSet::new(),
             emissions: BTreeSet::new(),
+            sources: BTreeMap::new(),
         }
     }
 }
@@ -138,14 +145,14 @@ impl Checker {
         {
             return Err(invalid());
         }
-        Ok((
-            *owner,
-            Input {
-                candidate,
-                point: observed.input,
-                projection: target.projection,
-            },
-        ))
+        let mut input = Input {
+            candidate,
+            point: observed.input,
+            projection: target.projection,
+            source: None,
+        };
+        input.source = self.candidate_source_slot(ctx, *owner, &input, span)?;
+        Ok((*owner, input))
     }
 }
 

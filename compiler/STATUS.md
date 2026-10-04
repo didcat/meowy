@@ -1919,7 +1919,13 @@ chain/layout validation across one composed producer's candidates. The extracted
 `emission_source_block` keeps existing behavior and work accounting: all ten
 emission-consumer groups pass before/after
 (`/tmp/meowy-candidate-slots-before.log`, `/tmp/meowy-candidate-slots-validation.log`).
-Optional candidate source-slot reporting is next.
+The extraction is committed as `c489bd1`. Candidate descriptors now carry an optional
+source Slot, populated only after existing Emission-link owner/index and complete
+source-layout qualification. A per-pass source cache charges remaining payload;
+exact scratch tests include it. All 20 matching `candidate_` tests pass
+(`/tmp/meowy-candidate-slots-reports.log`). All 2476 library tests and all-target
+Clippy pass (`/tmp/meowy-candidate-slots-library.log`, `/tmp/meowy-candidate-slots-lint.log`).
+Independent sparse/corruption/resource tests follow.
 
 Dependency-ordered commit plan:
 

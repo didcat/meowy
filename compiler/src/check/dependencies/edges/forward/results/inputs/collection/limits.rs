@@ -20,6 +20,12 @@ pub(crate) fn candidate_inputs_share_exact_map_scratch_and_work_limits() {
             .values()
             .map(|(_, input)| input.candidate.statement)
             .collect::<BTreeSet<_>>()
+            .len()
+        + expected
+            .values()
+            .filter(|(_, input)| input.source.is_some())
+            .map(|(_, input)| input.candidate.statement)
+            .collect::<BTreeSet<_>>()
             .len();
     let before = format!("{reports:?}{:?}", checker.edge_counts());
     let work = checker.flow.work;
@@ -138,6 +144,13 @@ pub(crate) fn candidate_inputs_validate_wide_compositions_once_per_pass() {
             + reports
                 .candidate_inputs
                 .values()
+                .map(|(_, input)| input.candidate.statement)
+                .collect::<BTreeSet<_>>()
+                .len()
+            + reports
+                .candidate_inputs
+                .values()
+                .filter(|(_, input)| input.source.is_some())
                 .map(|(_, input)| input.candidate.statement)
                 .collect::<BTreeSet<_>>()
                 .len();
