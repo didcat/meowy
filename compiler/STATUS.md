@@ -1793,7 +1793,12 @@ includes unchanged observed ascriptions in producer-conflict and shared work/hop
 checks. All 82 matching consumer tests pass (`/tmp/meowy-ascription-consumers.log`),
 including new direct/grouped/local-copy fields, primaries, composition, independent
 owners and opaque boundaries. Adversarial cycle/limit coverage and source cases are
-next; the complete compiler gate has not run yet.
+next; the complete compiler gate has not run yet. Traversal is committed as
+`406d35f`. All eight ascription-consumer groups now pass, including consistent
+cycles, every producer overlap, late atomic failures, exact hop/work/map bounds,
+duplicate visits, Unknown slot values and multiple candidate histories
+(`/tmp/meowy-ascription-limits.log`). No focused test failures remain. Source
+conformance and the full compiler gate are next.
 Preserve unrelated `docs/programs/hey/`.
 
 1. Complete (`beaade7`): in `expressions.rs` and `dependencies/typed.rs`, retain the existing
