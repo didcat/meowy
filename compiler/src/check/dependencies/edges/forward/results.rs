@@ -5,7 +5,6 @@ use crate::{
 };
 
 mod index;
-#[cfg(test)]
 pub(super) mod inputs;
 mod validation;
 

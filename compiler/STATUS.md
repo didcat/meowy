@@ -1878,8 +1878,14 @@ validation caches. All three identity/owner/scratch groups pass
 (`/tmp/meowy-candidate-inputs-qualification.log`). Clippy identified the qualifier's
 unused production API before collection integration; this prerequisite module is
 compiled under `cfg(test)` until the next slice installs its real entry-report caller.
-No lint suppression is added. All-target Clippy passes
-(`/tmp/meowy-candidate-inputs-lint.log`); bounded collection is next.
+Qualification is committed as `4475569`; its Clippy check passes
+(`/tmp/meowy-candidate-inputs-lint.log`). Collection now installs the real entry-report
+caller and removes the test-only module gate. Combined map capacity bounds retained
+descriptors, while validation-cache IDs consume remaining payload. All five focused groups and all 2467 library tests pass
+(`/tmp/meowy-candidate-inputs-collection.log`, `/tmp/meowy-candidate-inputs-library.log`).
+The test-helper import is corrected; no test failures remain. All-target Clippy
+passes (`/tmp/meowy-candidate-inputs-collection-lint.log`). Adversarial collection
+limits are next.
 
 Dependency-ordered commit plan:
 

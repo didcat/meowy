@@ -18,6 +18,7 @@ pub(crate) struct Reports {
     pub(crate) results: super::results::Results,
     pub(crate) consumers: super::consumers::Index,
     pub(crate) slot_uses: super::consumers::Uses,
+    pub(crate) candidate_inputs: super::results::inputs::Inputs,
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
     pub(crate) condensed: super::calls::Condensed,
@@ -59,6 +60,7 @@ impl Checker {
             results: BTreeMap::new(),
             consumers: BTreeMap::new(),
             slot_uses: BTreeMap::new(),
+            candidate_inputs: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
             condensed: super::calls::Condensed::default(),
@@ -100,6 +102,7 @@ impl Checker {
         reports.eligible = self.eligible_locals(program, &reports, span)?;
         reports.initializers = self.binding_initializers(program, &reports, span)?;
         reports.slot_uses = self.slot_uses(&reports, span)?;
+        (reports.candidate_inputs, reports.parts) = self.candidate_inputs(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports

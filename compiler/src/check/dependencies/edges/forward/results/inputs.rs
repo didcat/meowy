@@ -2,7 +2,10 @@ use super::*;
 use crate::check::dependencies::{edges::forward::effects::Effect, emissions::Projection};
 use std::collections::BTreeSet;
 
+mod collection;
+
 pub(crate) type Key = (hir::BlockId, usize, usize);
+pub(crate) type Inputs = BTreeMap<Key, (usize, Input)>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct Input {
