@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Independent field result observations pass compiler and documentation gates.
+Updated: 2026-10-04. Result-candidate input qualification is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1862,27 +1862,30 @@ The preservation audit confirms all 319 prior case records, 351 source assets,
 Unrelated `docs/programs/hey/` is preserved. Proof evaluation and full release
 qualification remain incomplete.
 
-### Next: bounded result-candidate input qualification
+## Bounded result-candidate input qualification
 
-`results::Candidate` retains only EmitId, statement and target index. Before any
-field-value forwarding, qualify those candidates against their actual emission
-inputs. Result availability and an initialized target still do not select a runtime
-contributor; discarded candidates may differ from the completed slot shape.
+Investigation confirms candidate positions and emission projection descriptors
+already exist. The new report will key descriptors by original block/slot/candidate
+position, retaining the existing result map's empty/Unknown histories. A per-pass
+borrowed qualification context will cache validated block and emission IDs with
+bounded scratch/work charges, avoiding repeated wide-producer validation.
+No source traversal or candidate selection is added. Shared result-header validation
+preserves all 67 matching `result_` tests before/after extraction
+(`/tmp/meowy-candidate-inputs-before.log`, `/tmp/meowy-candidate-inputs-validation.log`).
+Exact candidate qualification is next.
 
-1. In `edges/forward/results/`, add a bounded qualifier for an existing immutable
-   scalar-slot candidate. Revalidate the result owner/block/slot, exact candidate
-   statement/target/EmitId, observed initialization, and the checked emission report.
-   Return the retained input PointId and Value/Primary/Field projection without
-   following it, cloning types or inferring source shape from the destination slot.
-2. Integrate qualified candidate-input descriptors as a separate bounded report
-   after existing result/consumer collection. Preserve original candidate positions,
-   empty histories and explicit Unknowns; reserve shared work/map/payload room before
-   publication and avoid rescanning a wide composed producer for every target.
-3. Cover direct versus composed sources, outer targets, independent function owners,
-   multiple/discarded candidates, corrupt identities and exact resource limits.
-   Add required source cases/classified evidence and run compiler, strict and final
-   documentation gates. Keep qualification, collection and additional scenarios
-   independently reviewable, with focused tests in each implementation slice.
+Dependency-ordered commit plan:
+
+1. Share result-header qualification with the consumer index, preserving existing
+   checks and evidence; run matching result/consumer regressions before/after.
+2. Add exact candidate-input qualification and bounded per-pass validation caches
+   in `results/inputs/`, with focused direct/composed/owner/identity regressions.
+3. Collect position-keyed descriptors after result/consumer collection, reserving
+   remaining combined map capacity and scratch payload before publication.
+   Preserve candidate order and existing empty/Unknown states; test integration.
+4. Add independent partial/discarded/corruption/limit and wide-producer regressions.
+5. Add required source cases and classified evidence; run compiler, strict and
+   final documentation gates, then document the next provenance prerequisite.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,

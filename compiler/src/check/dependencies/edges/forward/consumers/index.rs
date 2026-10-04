@@ -1,5 +1,4 @@
 use super::*;
-use crate::check::dependencies::bodies::Layout;
 
 impl Checker {
     pub(in super::super) fn result_consumers(
@@ -28,32 +27,7 @@ impl Checker {
         }
         let mut index = Index::new();
         for (&id, (owner, result)) in &reports.results {
-            if !self.flow.spend(
-                reports.blocks.len().checked_ilog2().unwrap_or(0) as usize
-                    + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
-                    + 5,
-            ) {
-                return Err(budget());
-            }
-            if !self.validate_block_effect(reports, *owner, Port::BlockResult(id), span)? {
-                return Err(invalid());
-            }
-            let body = self.bodies.get(&id).ok_or_else(invalid)?;
-            let (block_owner, block) = reports.blocks.get(&id).ok_or_else(invalid)?;
-            if *block_owner != *owner
-                || !block.result
-                || block.parent != body.parent
-                || block.span != body.span
-                || block.completion != body.completion
-                || result.consumer != body.parent
-                || !match (&body.layout, &result.slots) {
-                    (Layout::Unknown, None) => true,
-                    (Layout::Slots(layout), Some(slots)) => layout.len() == slots.len(),
-                    _ => false,
-                }
-            {
-                return Err(invalid());
-            }
+            self.validate_result_report(reports, id, *owner, result, span)?;
             let Some(consumer) = result.consumer else {
                 continue;
             };
