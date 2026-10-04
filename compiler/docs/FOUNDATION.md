@@ -379,7 +379,8 @@ publishes no partial source map or remaining-budget update.
 Validated result consumers now have a bounded reverse index to exact BlockIds.
 Direct owned field Operation ports reference the checked field slot at index+1,
 with field counts, ordering, owners and availability revalidated. A field's normal
-flag describes checked result availability; the link does not claim a Normal visit.
+flag describes checked result availability; operation/result flags independently
+record visits. Result-only field reports validate but add no Operation slot link.
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
 projection/operation/result stage is validated;
@@ -671,18 +672,26 @@ Repeated visits produce one record, and shared work/effect limits are checked be
 returning the collection. No aggregate type shape, pointee storage or value is copied
 or inferred. Implicit field/list loads and reborrows retain their separate boundaries;
 existing ownership/lifetime diagnostics and proof gates are unchanged.
-Runtime field reads now retain a Field effect with the exact receiver root, resolved
-field index, implicit shared-load choice and captured normal/control flags. The
-producer's field count bounds the selected index after HIR transfer. Capture validates
-completed producer/receiver points, parent/block/owner agreement, source span,
-operation registration and exact receiver/load/field/result edges. Repeated visits
-produce one record; failed identity or work/effect limits return no partial collection.
-Explicit dereferences remain separate effects, and reference-valued fields do not
-imply another pointee load. Never fields omit normal completion; stopped predecessors
-keep later field operations outside the report. Required/static fields and projected
-borrows keep their existing paths. These records describe the raw field read before
-narrowing, without copying aggregate types or inferring storage/value provenance,
-borrow authority, call termination or proof outcomes.
+Runtime field reads retain a Field effect with the exact receiver root, resolved
+field index, implicit shared-load choice and captured normal/control flags. Separate
+operation/result flags record independent Operation and Normal visits, including
+sparse result-only reports. A checked normal flag never substitutes for a visit.
+The producer's field count bounds the selected index after HIR transfer. Both stages
+validate completed producer/receiver points, parent/block/owner agreement, source
+span, operation registration and exact receiver/load/field/result edges. Result
+visits require checked normal availability; Never fields can retain an operation
+without a result. Shared-load Projection-only visits do not create Field reports.
+
+Repeated visits merge flags into one fixed-size record; conflicts and shared
+work/effect limits publish no partial collection and consume no variable payload.
+Consumers revalidate the complete header and flags, and only observed field
+operations can create slot links. A result-only report creates no operation link,
+and field results remain terminal in the source resolver. Explicit dereferences
+remain separate effects; reference-valued fields imply no additional pointee load.
+Stopped predecessors keep later field stages outside the report. Required/static
+fields and projected borrows keep their existing paths. These records describe the
+raw field read before narrowing, without copying aggregate types or inferring
+storage/value provenance, borrow authority, call termination or proof outcomes.
 Indexed-read reports retain exact receiver/position roots, capacity, optional
 initialized length, implicit-load/control flags and separate position/result
 completion decisions. Load, snapshot and read observations are aggregated separately

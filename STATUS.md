@@ -7,25 +7,24 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Unchanged explicit ascriptions now preserve source-slot identities through groups
-and immutable copies. Reports retain the actual checked changed decision and
-independent operation/result visits; predicates, widening ascriptions, stopped
-inputs and missing results stay opaque. Shared conflict/cycle/resource checks
-preserve owners, Unknown values and candidate histories. The
-[compiler handoff](compiler/STATUS.md#unchanged-explicit-ascription-consumers) records
-five implementation/test commits and the next ordered plan.
+Field reports now retain independent operation and result visits alongside checked
+normal availability. Both observations validate the original receiver, owner and
+edges; result-only reports create no field-operation slot links. Field results
+remain terminal in source resolution. The
+[compiler handoff](compiler/STATUS.md#independent-field-result-observations) records
+four implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2456 library/915 native tests and 62 Python groups
-(`/tmp/meowy-ascription-gate.log`). Conformance has 319 cases: 300 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-ascription-strict.log`). All four final documentation
-checks pass (`/tmp/meowy-ascription-docs.log`).
+All ten compiler checks pass: 2462 library/915 native tests and 62 Python groups
+(`/tmp/meowy-field-observations-gate.log`). Conformance has 322 cases: 303 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-field-observations-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-field-observations-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-ascription-preservation.log`). Proof evaluation and full
-language/release qualification remain incomplete.
+preserved (`/tmp/meowy-field-observations-preservation.log`). Proof evaluation and
+full language/release qualification remain incomplete.
 
-Next, retain independent field Operation/Normal observations before attempting
-field-value provenance. Unrelated `docs/programs/hey/` is preserved.
+Next, qualify exact result-candidate inputs before attempting field-value provenance.
+Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

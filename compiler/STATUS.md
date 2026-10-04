@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Independent field result observations are in progress.
+Updated: 2026-10-04. Independent field result observations pass compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1821,49 +1821,73 @@ Proof evaluation and full release qualification remain incomplete.
 
 ## Independent field result observations
 
-Investigation confirms `Effect::Field` is collected only at Operation ports; its
-`normal` flag describes checked availability. The current consumer already requires
-an Operation-only walk before creating a slot link. Preserve that boundary when
-Normal-only rows become representable. Aggregate result values remain Unknown.
-The existing `field_` library tests pass before edits
-(`/tmp/meowy-field-observations-before.log`). The extracted checked-source validator
-now returns the original descriptor after the same bounded checks; all 114 matching
-library tests also pass afterward (`/tmp/meowy-field-observations-validation.log`).
-The extraction is committed as `b395515`. Field reports now retain independent
-operation/result flags; both stages reuse exact checked-header/edge validation.
-Result-only consumer rows validate but create no operation slot link. All 116
-matching library tests pass (`/tmp/meowy-field-observations-reports.log`), including
-sparse visits and Never rejection. Observation collection is committed as `582a7f2`;
-all-target Clippy passes (`/tmp/meowy-field-observations-lint.log`). Adversarial tests
-now exercise both selectors for each existing identity fault, partial merge
-conflicts, exact sparse-result budgets, late failures and opaque field values.
-All 120 matching library tests and all-target Clippy pass
-(`/tmp/meowy-field-observations-limits.log`, `/tmp/meowy-field-observations-limits-lint.log`).
-Boundary coverage is committed as `da2b050`. Three new required source cases pass
-fresh-compiler debug/release (`/tmp/meowy-field-observations-source.log`), covering
-nested owned/shared fields, copy snapshots, later stopped operands and E302.
-All four default checks pass (`/tmp/meowy-field-observations-source-docs.log`).
+Field reports now retain independent Operation and Normal observations alongside
+checked normal availability. Both stages reuse bounded checked-header/edge
+validation, including exact receiver, field index, load choice, owner, control,
+point ancestry and operation registration. Never fields retain operations without
+results; shared-load projection-only visits remain separate. Duplicate visits merge
+flags; conflicts and shared work/map exhaustion publish no partial effect map.
+No variable payload or type shapes are copied.
+
+Field consumers qualify the complete header and flags but create a source-slot link
+only for an observed Operation. A result-only row creates no operation link. Fields
+remain terminal in mixed source resolution: observing a field result does not
+forward its receiver as the extracted value. Existing Unknown/candidate histories,
+borrow/lifetime rules, required/static reads and proof gates remain unchanged.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Separate checked field validation | `b395515` |
+| Retain independent operation/result flags and qualify consumers | `582a7f2` |
+| Cover sparse observations, identities and exact limits | `da2b050` |
+| Pin source behavior and classified evidence | `b9031c2` |
+
+All 114 matching library tests pass before/after the validation extraction
+(`/tmp/meowy-field-observations-before.log`, `/tmp/meowy-field-observations-validation.log`).
+All 120 matching tests pass with six new groups and expanded corruption/consumer
+coverage (`/tmp/meowy-field-observations-limits.log`). All-target Clippy passes
+(`/tmp/meowy-field-observations-limits-lint.log`). Three required source cases pass
+fresh-compiler debug/release (`/tmp/meowy-field-observations-source.log`). All four
+source-slice documentation checks pass (`/tmp/meowy-field-observations-source-docs.log`).
+
+All ten compiler checks pass: 2462 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-field-observations-gate.log`). All 303 required cases pass debug/release,
+with 19 unchanged pinned gaps and zero failures. Strict mode exits 1 only for those
+gaps (`/tmp/meowy-field-observations-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-field-observations-docs.log`). No test failures remain.
 The preservation audit confirms all 319 prior case records, 351 source assets,
 37 references/reviewed hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-field-observations-preservation.log`). The complete compiler gate is next.
+(`/tmp/meowy-field-observations-preservation.log`).
+Unrelated `docs/programs/hey/` is preserved. Proof evaluation and full release
+qualification remain incomplete.
 
-Dependency-ordered commit plan:
+### Next: bounded result-candidate input qualification
 
-1. Complete and validated: separate checked field-header/edge validation from
-   report construction in `effects/fields.rs`, preserving the interface and tests.
-2. Implemented and focused tests pass: retain independent Operation/Normal flags
-   in `effects.rs` and `effects/fields.rs`;
-   integrate qualification in `consumers/fields.rs` so result-only reports add no
-   operation slot link. Keep focused sparse/normal/Never tests with this slice.
-3. Add independent adversarial identity, duplicate/conflict, work/capacity and late
-   atomic-failure coverage, preserving loads and opaque field-result boundaries.
-4. Add required source cases and classified evidence; run compiler, strict and
-   final documentation gates, then document the next provenance prerequisite.
+`results::Candidate` retains only EmitId, statement and target index. Before any
+field-value forwarding, qualify those candidates against their actual emission
+inputs. Result availability and an initialized target still do not select a runtime
+contributor; discarded candidates may differ from the completed slot shape.
 
-Do not yet follow Field results in `consumers/grouped.rs` or choose a contributing
-emission. Candidate input qualification, aggregate field-value provenance, precise
-branch/overwrite joins, function returns, restart propagation, E225 enforcement and
-proof outcomes remain later work. Shared-reference loads gain no loan authority.
+1. In `edges/forward/results/`, add a bounded qualifier for an existing immutable
+   scalar-slot candidate. Revalidate the result owner/block/slot, exact candidate
+   statement/target/EmitId, observed initialization, and the checked emission report.
+   Return the retained input PointId and Value/Primary/Field projection without
+   following it, cloning types or inferring source shape from the destination slot.
+2. Integrate qualified candidate-input descriptors as a separate bounded report
+   after existing result/consumer collection. Preserve original candidate positions,
+   empty histories and explicit Unknowns; reserve shared work/map/payload room before
+   publication and avoid rescanning a wide composed producer for every target.
+3. Cover direct versus composed sources, outer targets, independent function owners,
+   multiple/discarded candidates, corrupt identities and exact resource limits.
+   Add required source cases/classified evidence and run compiler, strict and final
+   documentation gates. Keep qualification, collection and additional scenarios
+   independently reviewable, with focused tests in each implementation slice.
+
+Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
+Aggregate field-value provenance, precise branch/overwrite joins, function returns,
+restart propagation, E225 enforcement and proof outcomes remain later work.
+Shared-reference loads gain no loan authority.
 
 ## Documentation conventions and layout
 
@@ -3448,9 +3472,9 @@ implemented, including unchanged observed narrowing and bounded local eligibilit
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
 complete, including output- and contextual-list-owned primary parts and composed-emission
-source slots and unchanged observed ascriptions. Independent field Operation/Normal
-observations are next, following the ordered plan above; field-value provenance
-remains separate.
+source slots and unchanged observed ascriptions. Field Operation/Normal observations
+are now independent. Bounded result-candidate input qualification is next, following
+the ordered plan above; field-value provenance remains separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4036,8 +4060,10 @@ remains separate.
    consumers (`bcf8eb0`), boundaries (`2ec24cf`) and source cases (`b13d8fc`) pass the gate.
    Ascription capture (`beaade7`), report qualification (`af3641a`), consumer forwarding
    (`406d35f`), boundaries (`09a5498`) and source cases (`d4d105b`) pass the gate.
-   Next retain independent field Operation/Normal observations, following the ordered
-   plan above, before any field-value provenance work.
+   Field validation (`b395515`), independent observations (`582a7f2`), boundaries
+   (`da2b050`) and source cases (`b9031c2`) pass the gate. Next qualify exact
+   result-candidate inputs, following the ordered plan above, before field-value
+   provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
