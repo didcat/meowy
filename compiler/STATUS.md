@@ -1925,7 +1925,12 @@ source-layout qualification. A per-pass source cache charges remaining payload;
 exact scratch tests include it. All 20 matching `candidate_` tests pass
 (`/tmp/meowy-candidate-slots-reports.log`). All 2476 library tests and all-target
 Clippy pass (`/tmp/meowy-candidate-slots-library.log`, `/tmp/meowy-candidate-slots-lint.log`).
-Independent sparse/corruption/resource tests follow.
+The implementation is committed as `74671ed`. Independent tests now cover sparse
+initialization, inconsistent links, unobserved layout suffixes, Unknown/empty/multiple
+source histories and exact source-cache/deep-chain work. All 27 matching groups
+pass after correcting the empty-record fixture (`/tmp/meowy-candidate-slots-boundaries.log`).
+All-target Clippy also passes (`/tmp/meowy-candidate-slots-boundaries-lint.log`).
+No focused failures remain. Source conformance and the full compiler gate follow.
 
 Dependency-ordered commit plan:
 
