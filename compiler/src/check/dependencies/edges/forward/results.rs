@@ -5,6 +5,8 @@ use crate::{
 };
 
 mod index;
+#[cfg(test)]
+pub(super) mod inputs;
 mod validation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

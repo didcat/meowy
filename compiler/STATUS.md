@@ -1872,7 +1872,14 @@ bounded scratch/work charges, avoiding repeated wide-producer validation.
 No source traversal or candidate selection is added. Shared result-header validation
 preserves all 67 matching `result_` tests before/after extraction
 (`/tmp/meowy-candidate-inputs-before.log`, `/tmp/meowy-candidate-inputs-validation.log`).
-Exact candidate qualification is next.
+Shared qualification is committed as `98140f0`. Candidate qualification now retains
+exact input roots and Value/Primary/Field projections with per-pass block/emission
+validation caches. All three identity/owner/scratch groups pass
+(`/tmp/meowy-candidate-inputs-qualification.log`). Clippy identified the qualifier's
+unused production API before collection integration; this prerequisite module is
+compiled under `cfg(test)` until the next slice installs its real entry-report caller.
+No lint suppression is added. All-target Clippy passes
+(`/tmp/meowy-candidate-inputs-lint.log`); bounded collection is next.
 
 Dependency-ordered commit plan:
 
