@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Result-candidate inputs pass compiler and documentation gates.
+Updated: 2026-10-04. Composed candidate source-slot qualification is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1908,24 +1908,30 @@ capability pins and proof obligations are unchanged
 (`/tmp/meowy-candidate-inputs-preservation.log`). Unrelated `docs/programs/hey/` is
 preserved. Full proof evaluation and release qualification remain incomplete.
 
-### Next: composed candidate source-slot qualification
+## Composed candidate source-slot qualification
 
-The new descriptor retains a raw input and projection. Existing
-`slot_uses[Emission(EmitId)]` links may already identify a composed source slot;
-qualify that association before any candidate-source traversal.
+Investigation confirms `emission_slot_uses` already validates the resolved source
+block and complete count/name layout after emission-report qualification. Share
+that source validation before adding an optional Slot to candidate descriptors.
+Only existing Emission links may populate it; direct Value inputs and missing
+links remain separate. A bounded per-pass source cache must avoid repeated mixed
+chain/layout validation across one composed producer's candidates. The extracted
+`emission_source_block` keeps existing behavior and work accounting: all ten
+emission-consumer groups pass before/after
+(`/tmp/meowy-candidate-slots-before.log`, `/tmp/meowy-candidate-slots-validation.log`).
+Optional candidate source-slot reporting is next.
 
-1. In `consumers/emissions.rs`, extract reusable qualification of the composed
-   source block and its complete slot/name layout, preserving current publication
-   behavior. Keep this refactor separate and retain all emission-consumer tests.
-2. Extend candidate-input reporting with an optional qualified source-slot identity
-   for Primary/Field projections. Revalidate the existing Emission slot-use owner,
-   source block and index against the checked producer and candidate descriptor.
-   Missing links stay unknown; direct Value inputs never become slot-zero reads.
-   Qualify each composed source once per pass, preserving shared work/scratch/map
-   limits and original positions without copying candidate lists.
-3. Add direct/composed/opaque, partial observation, outer-owner, corruption and exact
-   resource regressions with the implementation. Add independent source cases and
-   classified evidence, then run compiler, strict and final documentation gates.
+Dependency-ordered commit plan:
+
+1. Extract reusable source-block/layout qualification in `consumers/emissions.rs`,
+   preserving existing publication behavior; run emission-consumer tests before/after.
+2. Add optional source-slot qualification to candidate reports, with a per-pass
+   composed-source cache and focused identity/owner/direct/opaque regressions.
+   Update exact scratch accounting alongside the implementation.
+3. Add independent sparse, discarded, corrupt-link/layout and exact resource tests;
+   verify once-per-pass source resolution for wide/deep compositions.
+4. Add required source cases and classified evidence, run compiler/strict/final
+   documentation gates, and record the next dependency-ordered handoff.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,

@@ -16,8 +16,42 @@ impl Checker {
         };
         let (id, owner) = site;
         self.validate_emission_report(reports, id, owner, observed, span)?;
-        let Some(composed) = &observed.composed else {
+        let Some(block) = self.emission_source_block(reports, owner, effect, span)? else {
             return Ok(());
+        };
+        let invalid = || Diagnostic::unsupported("proof emission-slot identity mismatch", span);
+        for (target, initialized) in observed.targets.iter().zip(&observed.initialized) {
+            if !initialized {
+                continue;
+            }
+            let index = match target.projection {
+                Projection::Primary => 0,
+                Projection::Field(index) => index + 1,
+                Projection::Value => return Err(invalid()),
+            };
+            self.record_slot_use(
+                uses,
+                Port::Emission(target.id),
+                (owner, Slot { block, index }),
+                limit,
+                span,
+            )?;
+        }
+        Ok(())
+    }
+
+    pub(in super::super) fn emission_source_block(
+        &mut self,
+        reports: &Reports,
+        owner: usize,
+        effect: &Effect,
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let Effect::Emission(observed) = effect else {
+            return Ok(None);
+        };
+        let Some(composed) = &observed.composed else {
+            return Ok(None);
         };
         let budget = || Diagnostic::unsupported("proof emission-slot budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof emission-slot identity mismatch", span);
@@ -25,10 +59,10 @@ impl Checker {
             return Err(budget());
         }
         if !observed.initialized.iter().any(|initialized| *initialized) {
-            return Ok(());
+            return Ok(None);
         }
         let Some(block) = self.slot_block(reports, observed.input, owner, span)? else {
-            return Ok(());
+            return Ok(None);
         };
         if !self
             .flow
@@ -38,7 +72,7 @@ impl Checker {
         }
         let body = &self.bodies[&block];
         let Layout::Slots(slots) = &body.layout else {
-            return Ok(());
+            return Ok(None);
         };
         if !self.flow.spend(slots.len() + 1) {
             return Err(budget());
@@ -59,24 +93,7 @@ impl Checker {
         {
             return Err(invalid());
         }
-        for (target, initialized) in observed.targets.iter().zip(&observed.initialized) {
-            if !initialized {
-                continue;
-            }
-            let index = match target.projection {
-                Projection::Primary => 0,
-                Projection::Field(index) => index + 1,
-                Projection::Value => return Err(invalid()),
-            };
-            self.record_slot_use(
-                uses,
-                Port::Emission(target.id),
-                (owner, Slot { block, index }),
-                limit,
-                span,
-            )?;
-        }
-        Ok(())
+        Ok(Some(block))
     }
 }
 
