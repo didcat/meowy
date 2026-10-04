@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Composed candidate source slots pass compiler and documentation gates.
+Updated: 2026-10-04. Bounded candidate-source traversal is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1952,26 +1952,33 @@ and proof obligations are unchanged (`/tmp/meowy-candidate-slots-preservation.lo
 Unrelated `docs/programs/hey/` is preserved. Proof evaluation and full release
 qualification remain incomplete.
 
-### Next: bounded candidate-source traversal
+## Bounded candidate-source traversal
 
-Qualified candidate inputs now distinguish direct PointId leaves, projected source
-Slots and unresolved projections. Add read-only traversal without selecting values
-or treating empty/Unknown histories as independence.
+Investigation confirms stored candidate inputs already provide exact direct,
+projected and unresolved boundaries. Traversal will use a borrowed graph view whose
+stored descriptors are requalified once with the existing per-pass context. The
+same iterative engine will serve one owner/Slot and a single entry-report forest;
+shared visited state avoids repeatedly walking each source chain from every root.
+No runtime values, type shapes or candidate lists will be copied or selected.
+Borrowed graph qualification now rechecks all original positions and rejects missing,
+extra or changed descriptors. Empty candidate lists still require immutable scalar
+slots. All four qualification groups and all-target Clippy pass
+(`/tmp/meowy-candidate-walk-qualification.log`, `/tmp/meowy-candidate-walk-qualification-lint.log`).
+Traversal/integration is next.
 
-1. In `results/inputs/`, qualify stored input descriptors against their original
-   block/slot/candidate positions and checked producers. Reuse per-pass qualification
-   contexts and verify owner, candidate identity, point, projection and optional Slot.
-   Keep direct Value leaves distinct from projected inputs without source links.
-2. Add a bounded iterative walk from an owner/Slot, retaining every candidate's
-   original position and qualified source edge. Keep Unknown, empty histories,
-   unresolved projections, direct points and repeated/cyclic slots explicit.
-   Follow only qualified source Slots; direct points remain terminal. Bound pending,
-   visited and output storage plus work before growth, and publish no partial walk
-   on invalid identities or exhausted resources. Do not infer execution order from IDs.
-3. Keep qualification and traversal independently reviewable with focused tests.
-   Cover shared sources versus cycles, independent owners, multiple/discarded
-   candidates and exact limits. Add required source cases/classified evidence, then
-   run compiler, strict and final documentation gates.
+Dependency-ordered commit plan:
+
+1. Add borrowed graph qualification in `results/inputs/graph`, verifying every
+   original position, stored descriptor and owner, with focused corruption tests.
+   Stage this prerequisite under `cfg(test)` until its production caller exists.
+2. Add the bounded iterative traversal and entry-report forest. Preserve candidate
+   positions, direct/unresolved leaves, Unknown/empty histories and shared/cyclic
+   slots. Bound aggregate pending/visited/output storage before growth and retain
+   ordinary typing, loan, proof and source-resolution boundaries.
+3. Add independent owner, sharing/cycle, corruption, deep-chain and exact-resource
+   regressions. Keep seeded graph evidence separate from checked source evidence.
+4. Add required source cases and classified evidence; run compiler, strict and final
+   documentation gates, then record the next dependency-ordered handoff.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
