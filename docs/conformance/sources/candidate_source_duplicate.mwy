@@ -1,0 +1,6 @@
+source : { -> n : 1 }
+copy : source~<(source<>)>
+row : {
+    -> ((copy))
+    -> n : 2
+}

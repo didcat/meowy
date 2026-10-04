@@ -1,0 +1,16 @@
+d : @"debug"
+source : {
+    -> z : { d.print("z"); -> 1 }
+    -> a : true
+    -> 7
+    d.print("source tail")
+}
+copy : { -> source; d.print("copy tail") }
+row : 'out {
+    {
+        'out -> ((copy))
+        d.print("initialized")
+        d.panic("stop")
+    }
+    d.print("unreached")
+}

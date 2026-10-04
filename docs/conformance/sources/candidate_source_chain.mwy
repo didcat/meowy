@@ -1,0 +1,25 @@
+d : @"debug"
+show <null> : (flag <boolean>) {
+    source : {
+        d.print("source {flag}")
+        -> 5
+        | flag | -> x : 1
+        | !flag | -> x : 2
+        -> z : { d.print("z"); -> 9 }
+        d.print("source tail")
+    }
+    copy <(source<>)> : ((source))~<(source<>)>
+    middle : { -> ((copy)); d.print("middle tail") }
+    row : 'out {
+        { 'out -> ((middle)); d.print("inner tail") }
+        d.print("outer tail")
+    }
+    d.print(row)
+    d.print(row.x)
+    d.print(row.z)
+}
+show(true)
+show(false)
+empty <{}> : {}
+copy <{}> : { -> empty; d.print("empty tail") }
+d.print(copy<{}>)

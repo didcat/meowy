@@ -3452,6 +3452,38 @@
         "code": "E206"
       },
       "reference": "../reference/values-and-blocks.md#mutability"
+    },
+    {
+      "id": "candidate_source_chain",
+      "phase": "run",
+      "source": "sources/candidate_source_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source true\nz\nsource tail\nmiddle tail\ninner tail\nouter tail\n5\n1\n9\nsource false\nz\nsource tail\nmiddle tail\ninner tail\nouter tail\n5\n2\n9\nempty tail\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "candidate_source_stopped",
+      "phase": "run",
+      "source": "sources/candidate_source_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "z\nsource tail\ncopy tail\ninitialized\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "candidate_source_duplicate",
+      "phase": "check",
+      "source": "sources/candidate_source_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

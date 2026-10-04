@@ -1930,7 +1930,13 @@ initialization, inconsistent links, unobserved layout suffixes, Unknown/empty/mu
 source histories and exact source-cache/deep-chain work. All 27 matching groups
 pass after correcting the empty-record fixture (`/tmp/meowy-candidate-slots-boundaries.log`).
 All-target Clippy also passes (`/tmp/meowy-candidate-slots-boundaries-lint.log`).
-No focused failures remain. Source conformance and the full compiler gate follow.
+No focused failures remain. Boundary coverage is committed as `590cb3e`. Three
+source fixtures pass fresh-compiler debug/release (`/tmp/meowy-candidate-slots-source.log`)
+after explicitly typing the empty-record destination. Catalog/coverage checks pass.
+All four default checks pass (`/tmp/meowy-candidate-slots-source-docs.log`).
+The preservation audit confirms 325 prior cases, 357 source assets, 37 reference
+contracts/reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-candidate-slots-preservation.log`). The full compiler gate follows.
 
 Dependency-ordered commit plan:
 
