@@ -369,6 +369,27 @@ mutable-alias histories, aggregates and unions remain unknown. Empty candidate s
 do not establish implicit null, initialization completeness or a selected value.
 These are structural links, with no value-domain, ownership or proof inference.
 
+Candidate-input reports now retain the original emission input PointId and its
+Value/Primary/Field projection, keyed by block, slot and candidate position. Each
+descriptor keeps the candidate's EmitId, statement, target index and owner. Checked
+result headers, immutable scalar slots, exact emission reports and observed target
+initialization are qualified before publication. Statement result and block normal
+visits are independent of target initialization and result availability.
+
+Empty and Unknown histories remain in the existing result map and produce no input
+descriptors. Multiple candidates keep separate original positions. Discarded-path
+inputs can differ from the completed slot's type; qualification never infers an
+input type from that slot or chooses a contributing candidate. This report does not
+follow source points, resolve projected source slots or forward field results.
+
+Within one immutable report pass, checked block/emission IDs are cached after
+validation, so a wide composed producer is not rescanned for every candidate.
+Cache entries charge remaining shared payload; fixed-size descriptors reserve the
+remaining combined effect/block/result/consumer/local/slot-link map capacity.
+All lookups and traversal charge shared work. No type trees, names or candidate
+vectors are copied. Late identity or budget failures publish no partial index or
+remaining-budget update.
+
 Operation, block and result records share the map limit. Temporary source-index
 rows/candidates, result-slot entries and copied candidates consume the remaining
 operation-report payload budget; index names are borrowed from validated reports.

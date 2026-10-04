@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Result-candidate input qualification is in progress.
+Updated: 2026-10-04. Result-candidate inputs pass compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1864,52 +1864,68 @@ qualification remain incomplete.
 
 ## Bounded result-candidate input qualification
 
-Investigation confirms candidate positions and emission projection descriptors
-already exist. The new report will key descriptors by original block/slot/candidate
-position, retaining the existing result map's empty/Unknown histories. A per-pass
-borrowed qualification context will cache validated block and emission IDs with
-bounded scratch/work charges, avoiding repeated wide-producer validation.
-No source traversal or candidate selection is added. Shared result-header validation
-preserves all 67 matching `result_` tests before/after extraction
+Candidate-input reports now retain exact emission input PointIds and checked
+Value/Primary/Field projections by original block/slot/candidate position. Each
+fixed-size descriptor keeps the EmitId, statement, target and owner. Qualification
+revalidates result headers, immutable scalar-slot identity, emission metadata and
+observed target initialization without choosing a candidate or inferring its type
+from the completed slot. Discarded-path source shapes remain unchanged.
+
+The existing result map keeps empty and Unknown histories; they produce no input
+descriptors. Multiple candidates retain separate positions. Statement-result and
+block-normal flags remain independent. Per-pass block/emission validation caches
+charge shared payload and avoid repeated wide-producer scans. Retained descriptors
+reserve remaining combined map capacity, and shared work bounds all lookups. Late
+failures publish no partial map or remaining-budget update. Source traversal,
+projected slot resolution, field-value forwarding and proof outcomes remain separate.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Share checked result-header qualification | `98140f0` |
+| Qualify exact candidate-input identities | `4475569` |
+| Collect bounded descriptors in entry reports | `71b1d6a` |
+| Cover discarded/partial sources and exact resource limits | `2f23847` |
+| Pin source behavior and classified evidence | `3afaa03` |
+
+All 67 matching result tests pass before/after header extraction
 (`/tmp/meowy-candidate-inputs-before.log`, `/tmp/meowy-candidate-inputs-validation.log`).
-Shared qualification is committed as `98140f0`. Candidate qualification now retains
-exact input roots and Value/Primary/Field projections with per-pass block/emission
-validation caches. All three identity/owner/scratch groups pass
-(`/tmp/meowy-candidate-inputs-qualification.log`). Clippy identified the qualifier's
-unused production API before collection integration; this prerequisite module is
-compiled under `cfg(test)` until the next slice installs its real entry-report caller.
-Qualification is committed as `4475569`; its Clippy check passes
-(`/tmp/meowy-candidate-inputs-lint.log`). Collection now installs the real entry-report
-caller and removes the test-only module gate. Combined map capacity bounds retained
-descriptors, while validation-cache IDs consume remaining payload. All five focused groups and all 2467 library tests pass
-(`/tmp/meowy-candidate-inputs-collection.log`, `/tmp/meowy-candidate-inputs-library.log`).
-The test-helper import is corrected; no test failures remain. All-target Clippy
-passes (`/tmp/meowy-candidate-inputs-collection-lint.log`). Adversarial collection
-limits and boundaries are now implemented. Integration is committed as `71b1d6a`.
-All 11 candidate-input groups and all-target Clippy pass
-(`/tmp/meowy-candidate-inputs-boundaries.log`, `/tmp/meowy-candidate-inputs-boundaries-lint.log`).
-Coverage includes exact map/scratch/work boundaries, late identity failures,
-once-per-pass wide composition validation, discarded source shapes and independent
-target/statement observations. Boundary coverage is committed as `2f23847`.
-Three new required source cases pass fresh-compiler debug/release
-(`/tmp/meowy-candidate-inputs-source.log`); catalog and coverage checks pass.
-All four default checks pass (`/tmp/meowy-candidate-inputs-source-docs.log`).
-The preservation audit confirms all 322 prior cases, 354 source assets, 37 reference
-contracts/reviewed hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-candidate-inputs-preservation.log`). The full compiler gate is next.
+All 2467 library tests pass after collection integration
+(`/tmp/meowy-candidate-inputs-library.log`). All 11 candidate-input groups and
+all-target Clippy pass after boundary coverage (`/tmp/meowy-candidate-inputs-boundaries.log`,
+`/tmp/meowy-candidate-inputs-boundaries-lint.log`). Three required source cases pass
+fresh-compiler debug/release (`/tmp/meowy-candidate-inputs-source.log`), and all four
+source-slice documentation checks pass (`/tmp/meowy-candidate-inputs-source-docs.log`).
 
-Dependency-ordered commit plan:
+All ten compiler checks pass: 2473 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-candidate-inputs-gate.log`). Conformance has 325 cases: 306 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-candidate-inputs-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-candidate-inputs-docs.log`). No test failures
+remain. The preservation audit confirms all 322 prior cases, 354 source assets,
+37 reference contracts/reviewed hashes,
+capability pins and proof obligations are unchanged
+(`/tmp/meowy-candidate-inputs-preservation.log`). Unrelated `docs/programs/hey/` is
+preserved. Full proof evaluation and release qualification remain incomplete.
 
-1. Share result-header qualification with the consumer index, preserving existing
-   checks and evidence; run matching result/consumer regressions before/after.
-2. Add exact candidate-input qualification and bounded per-pass validation caches
-   in `results/inputs/`, with focused direct/composed/owner/identity regressions.
-3. Collect position-keyed descriptors after result/consumer collection, reserving
-   remaining combined map capacity and scratch payload before publication.
-   Preserve candidate order and existing empty/Unknown states; test integration.
-4. Add independent partial/discarded/corruption/limit and wide-producer regressions.
-5. Add required source cases and classified evidence; run compiler, strict and
-   final documentation gates, then document the next provenance prerequisite.
+### Next: composed candidate source-slot qualification
+
+The new descriptor retains a raw input and projection. Existing
+`slot_uses[Emission(EmitId)]` links may already identify a composed source slot;
+qualify that association before any candidate-source traversal.
+
+1. In `consumers/emissions.rs`, extract reusable qualification of the composed
+   source block and its complete slot/name layout, preserving current publication
+   behavior. Keep this refactor separate and retain all emission-consumer tests.
+2. Extend candidate-input reporting with an optional qualified source-slot identity
+   for Primary/Field projections. Revalidate the existing Emission slot-use owner,
+   source block and index against the checked producer and candidate descriptor.
+   Missing links stay unknown; direct Value inputs never become slot-zero reads.
+   Qualify each composed source once per pass, preserving shared work/scratch/map
+   limits and original positions without copying candidate lists.
+3. Add direct/composed/opaque, partial observation, outer-owner, corruption and exact
+   resource regressions with the implementation. Add independent source cases and
+   classified evidence, then run compiler, strict and final documentation gates.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
@@ -3500,8 +3516,9 @@ Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
 complete, including output- and contextual-list-owned primary parts and composed-emission
 source slots and unchanged observed ascriptions. Field Operation/Normal observations
-are now independent. Bounded result-candidate input qualification is next, following
-the ordered plan above; field-value provenance remains separate.
+are now independent, and bounded result-candidate inputs are qualified. Composed
+candidate source-slot qualification is next, following the ordered plan above;
+field-value provenance remains separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4088,8 +4105,10 @@ the ordered plan above; field-value provenance remains separate.
    Ascription capture (`beaade7`), report qualification (`af3641a`), consumer forwarding
    (`406d35f`), boundaries (`09a5498`) and source cases (`d4d105b`) pass the gate.
    Field validation (`b395515`), independent observations (`582a7f2`), boundaries
-   (`da2b050`) and source cases (`b9031c2`) pass the gate. Next qualify exact
-   result-candidate inputs, following the ordered plan above, before field-value
+   (`da2b050`) and source cases (`b9031c2`) pass the gate. Candidate header sharing
+   (`98140f0`), input qualification (`4475569`), collection (`71b1d6a`), boundaries
+   (`2f23847`) and source cases (`3afaa03`) pass the gate. Next qualify composed
+   candidate source-slot links, following the ordered plan above, before field-value
    provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
