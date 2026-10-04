@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Unchanged explicit-ascription consumers pass compiler and documentation gates.
+Updated: 2026-10-04. Independent field result observations are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1819,24 +1819,29 @@ preservation audit confirms all 316 prior case records, 385 reference/source ass
 (`/tmp/meowy-ascription-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full release qualification remain incomplete.
 
-### Next: independent field result observations
+## Independent field result observations
 
-The next provenance prerequisite is explicit field-result observation. Current
-`Effect::Field` rows are collected only at Operation ports; their `normal` flag is
-checked availability, not an observed result. Aggregate result-slot values still
-remain Unknown, so following a field receiver cannot establish the field's value.
+Investigation confirms `Effect::Field` is collected only at Operation ports; its
+`normal` flag describes checked availability. The current consumer already requires
+an Operation-only walk before creating a slot link. Preserve that boundary when
+Normal-only rows become representable. Aggregate result values remain Unknown.
+The existing `field_` library tests pass before edits
+(`/tmp/meowy-field-observations-before.log`). The extracted checked-source validator
+now returns the original descriptor after the same bounded checks; all 114 matching
+library tests also pass afterward (`/tmp/meowy-field-observations-validation.log`).
+No observation behavior changed. Operation/Normal collection is next.
 
-1. In `effects/fields.rs`, separate checked field-header/edge validation from
-   collection while preserving the current interface and all field/consumer tests.
-   Keep this behavior-preserving prerequisite independently reviewable.
-2. In `effects.rs` and `effects/fields.rs`, retain independent field Operation and
-   Normal visits using existing checked identities. Preserve projection/load and
-   Never boundaries, duplicate merging and shared resource limits. Keep field
-   slot-use publication gated by an actual Operation observation; a result-only
-   row must not invent a field-operation slot link.
-3. Add adversarial sparse/result-only, owner/edge/registry, stopped and exact-budget
-   tests, then source cases and classified evidence. Run compiler, strict and final
-   documentation gates before recording the next provenance step.
+Dependency-ordered commit plan:
+
+1. Complete and validated: separate checked field-header/edge validation from
+   report construction in `effects/fields.rs`, preserving the interface and tests.
+2. Retain independent Operation/Normal flags in `effects.rs` and `effects/fields.rs`;
+   integrate qualification in `consumers/fields.rs` so result-only reports add no
+   operation slot link. Keep focused sparse/normal/Never tests with this slice.
+3. Add independent adversarial identity, duplicate/conflict, work/capacity and late
+   atomic-failure coverage, preserving loads and opaque field-result boundaries.
+4. Add required source cases and classified evidence; run compiler, strict and
+   final documentation gates, then document the next provenance prerequisite.
 
 Do not yet follow Field results in `consumers/grouped.rs` or choose a contributing
 emission. Candidate input qualification, aggregate field-value provenance, precise

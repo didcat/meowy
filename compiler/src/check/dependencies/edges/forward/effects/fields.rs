@@ -1,4 +1,5 @@
 use super::*;
+use crate::check::dependencies::Field;
 
 impl Checker {
     pub(in super::super) fn field_effect(
@@ -8,6 +9,23 @@ impl Checker {
         owner: usize,
         span: Span,
     ) -> Result<Effect> {
+        let field = self.checked_field_effect(reports, id, owner, span)?;
+        Ok(Effect::Field {
+            input: field.input,
+            index: field.index,
+            load: field.load,
+            normal: field.normal,
+            control: field.control,
+        })
+    }
+
+    pub(super) fn checked_field_effect(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<&Field> {
         let budget = || Diagnostic::unsupported("proof field-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof field-effect identity mismatch", span);
         if !self.flow.spend(
@@ -56,13 +74,7 @@ impl Checker {
         {
             return Err(invalid());
         }
-        Ok(Effect::Field {
-            input: field.input,
-            index: field.index,
-            load: field.load,
-            normal: field.normal,
-            control: field.control,
-        })
+        Ok(field)
     }
 }
 
