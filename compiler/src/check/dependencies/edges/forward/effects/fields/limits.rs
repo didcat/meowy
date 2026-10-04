@@ -3,11 +3,19 @@ use super::{super::tests::checked, *};
 #[test]
 pub(crate) fn field_effects_reject_invalid_bounds_roots_and_load_edges_atomically() {
     for source in ["r:{->n:1};x:r.n", "r:{->n:1};p:&r;x:p.n"] {
-        for fault in 0..26 {
+        for (result, fault) in [false, true]
+            .into_iter()
+            .flat_map(|result| (0..26).map(move |fault| (result, fault)))
+        {
             let (mut checker, mut reports) = checked(source, false);
             let (&id, field) = checker.fields.first_key_value().unwrap();
             let input = field.input;
             let op = field.edges.len() - 2;
+            reports.entries.get_mut(&field.owner).unwrap().1.ports = vec![if result {
+                Port::Normal(id)
+            } else {
+                Port::Operation(id)
+            }];
             let before = reports.effects.clone();
             match fault {
                 0 => checker.fields.get_mut(&id).unwrap().count = 0,
@@ -53,7 +61,7 @@ pub(crate) fn field_effects_reject_invalid_bounds_roots_and_load_edges_atomicall
                     .unwrap_err()
                     .code,
                 "B001",
-                "{source}, fault {fault}"
+                "{source}, fault {fault}, result {result}"
             );
             assert_eq!(reports.effects, before);
             assert_eq!(checker.fields, fields);

@@ -1833,7 +1833,13 @@ The extraction is committed as `b395515`. Field reports now retain independent
 operation/result flags; both stages reuse exact checked-header/edge validation.
 Result-only consumer rows validate but create no operation slot link. All 116
 matching library tests pass (`/tmp/meowy-field-observations-reports.log`), including
-sparse visits and Never rejection. Identity/resource adversarial coverage is next.
+sparse visits and Never rejection. Observation collection is committed as `582a7f2`;
+all-target Clippy passes (`/tmp/meowy-field-observations-lint.log`). Adversarial tests
+now exercise both selectors for each existing identity fault, partial merge
+conflicts, exact sparse-result budgets, late failures and opaque field values.
+All 120 matching library tests and all-target Clippy pass
+(`/tmp/meowy-field-observations-limits.log`, `/tmp/meowy-field-observations-limits-lint.log`).
+Required source coverage is next; the full compiler gate has not run yet.
 
 Dependency-ordered commit plan:
 

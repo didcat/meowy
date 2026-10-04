@@ -3,7 +3,7 @@ use crate::check::dependencies::edges::forward::results::Sources;
 
 #[test]
 pub(crate) fn field_slot_links_reject_headers_sources_and_selected_shape_atomically() {
-    for fault in 0..18 {
+    for fault in 0..20 {
         let (mut checker, mut reports) = checked("a:{->n:1}.n;b:{->n:2}.n");
         let (&id, field) = checker.fields.last_key_value().unwrap();
         let input = field.input;
@@ -71,6 +71,24 @@ pub(crate) fn field_slot_links_reject_headers_sources_and_selected_shape_atomica
                 *normal = false;
             }
             17 => reports.results.get_mut(&slot.block).unwrap().1.slots = None,
+            18 => {
+                let Effect::Field {
+                    operation, result, ..
+                } = &mut reports.effects.get_mut(&id).unwrap().1
+                else {
+                    panic!()
+                };
+                *operation = false;
+                *result = false;
+            }
+            19 => {
+                let Effect::Field { operation, .. } = &mut reports.effects.get_mut(&id).unwrap().1
+                else {
+                    panic!()
+                };
+                *operation = false;
+                reports.index.operations.remove(&id);
+            }
             _ => unreachable!(),
         }
         let effects = reports.effects.clone();
@@ -194,4 +212,43 @@ pub(crate) fn field_slot_links_accept_seeded_never_slots_without_result_claims()
         Effect::Field { normal: false, .. }
     ));
     assert!(!reports.entries[&owner].1.ports.contains(&Port::Normal(id)));
+}
+
+#[test]
+pub(crate) fn field_slot_links_keep_sparse_rows_and_field_result_values_separate() {
+    let (mut checker, mut reports) = checked("a:{->n:1}.n;b:{->n:2}.n");
+    let ids: Vec<_> = checker.fields.keys().copied().collect();
+    let expected = reports.slot_uses[&Port::Operation(ids[1])];
+    reports.entries.get_mut(&0).unwrap().1.ports =
+        vec![Port::Normal(ids[0]), Port::Operation(ids[1])];
+    reports.effects = checker
+        .operation_effects(&reports, Span::default())
+        .unwrap();
+    let uses = checker.slot_uses(&reports, Span::default()).unwrap();
+    assert_eq!(uses.len(), 1);
+    assert_eq!(uses[&Port::Operation(ids[1])], expected);
+    for source in [
+        "v:(({->inner:{->n:1}}).inner).n",
+        "v:(({->inner:{->n:1}}).inner~<{n<int32>}>).n",
+    ] {
+        let (mut checker, reports) = checked(source);
+        assert_eq!(reports.slot_uses.len(), 1);
+        let ids: Vec<_> = checker
+            .fields
+            .iter()
+            .map(|(&id, op)| (id, op.owner))
+            .collect();
+        for (id, owner) in ids {
+            assert!(matches!(
+                reports.effects[&id].1,
+                Effect::Field { result: true, .. }
+            ));
+            assert_eq!(
+                checker
+                    .grouped_consumer(&reports, id, owner, Span::default())
+                    .unwrap(),
+                None
+            );
+        }
+    }
 }

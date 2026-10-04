@@ -46,7 +46,7 @@ pub(crate) fn field_effects_preserve_call_roots_nested_fields_narrowing_and_owne
     for (&id, field) in &checker.fields {
         assert_eq!(reports.effects[&id].0, field.owner);
         assert!(
-            matches!(reports.effects[&id].1, Effect::Field { input, normal: true, .. } if input == field.input)
+            matches!(reports.effects[&id].1, Effect::Field { input, normal: true, operation: true, result: true, .. } if input == field.input)
         );
         assert!(checker.narrowings.values().any(|op| op.input == id));
     }
