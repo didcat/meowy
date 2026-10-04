@@ -1,11 +1,23 @@
 use super::*;
 
+mod walk;
+pub(crate) use walk::Walk;
+
 pub(crate) struct Graph<'a> {
     pub(super) results: &'a Results,
     pub(super) inputs: &'a Inputs,
 }
 
 impl Checker {
+    pub(in super::super::super) fn candidate_walk_report(
+        &mut self,
+        reports: &Reports,
+        span: Span,
+    ) -> Result<(Walk, usize)> {
+        let (graph, parts) = self.candidate_graph(reports, span)?;
+        graph.forest(&mut self.flow, span, parts)
+    }
+
     pub(in super::super::super) fn candidate_graph<'a>(
         &mut self,
         reports: &'a Reports,

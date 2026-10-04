@@ -1964,7 +1964,14 @@ Borrowed graph qualification now rechecks all original positions and rejects mis
 extra or changed descriptors. Empty candidate lists still require immutable scalar
 slots. All four qualification groups and all-target Clippy pass
 (`/tmp/meowy-candidate-walk-qualification.log`, `/tmp/meowy-candidate-walk-qualification-lint.log`).
-Traversal/integration is next.
+Qualification is committed as `322d4ed`. The iterative engine now streams original
+candidate positions, marks active-slot cycles separately from completed shared
+sources, and bounds output/visited/pending storage together. Entry reports collect
+one forest with shared visited state, and the prerequisite is enabled in production.
+All 33 matching tests and all-target Clippy pass
+(`/tmp/meowy-candidate-walk-engine.log`, `/tmp/meowy-candidate-walk-engine-lint.log`).
+All 2489 library tests also pass (`/tmp/meowy-candidate-walk-library.log`).
+Adversarial traversal limits and seeded graph coverage follow.
 
 Dependency-ordered commit plan:
 

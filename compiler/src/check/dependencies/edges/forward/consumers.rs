@@ -15,7 +15,7 @@ mod lists;
 
 pub(crate) type Index = BTreeMap<PointId, (usize, hir::BlockId)>;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct Slot {
     pub(crate) block: hir::BlockId,
     pub(crate) index: usize,

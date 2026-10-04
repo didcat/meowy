@@ -6,7 +6,6 @@ use crate::check::dependencies::{
 use std::collections::BTreeSet;
 
 mod collection;
-#[cfg(test)]
 pub(in super::super) mod graph;
 mod sources;
 
