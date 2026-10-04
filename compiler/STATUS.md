@@ -1885,7 +1885,12 @@ descriptors, while validation-cache IDs consume remaining payload. All five focu
 (`/tmp/meowy-candidate-inputs-collection.log`, `/tmp/meowy-candidate-inputs-library.log`).
 The test-helper import is corrected; no test failures remain. All-target Clippy
 passes (`/tmp/meowy-candidate-inputs-collection-lint.log`). Adversarial collection
-limits are next.
+limits and boundaries are now implemented. Integration is committed as `71b1d6a`.
+All 11 candidate-input groups and all-target Clippy pass
+(`/tmp/meowy-candidate-inputs-boundaries.log`, `/tmp/meowy-candidate-inputs-boundaries-lint.log`).
+Coverage includes exact map/scratch/work boundaries, late identity failures,
+once-per-pass wide composition validation, discarded source shapes and independent
+target/statement observations. Required source coverage follows.
 
 Dependency-ordered commit plan:
 
