@@ -36,7 +36,8 @@ impl Checker {
                     + self.coercions.len().checked_ilog2().unwrap_or(0) as usize
                     + self.narrowings.len().checked_ilog2().unwrap_or(0) as usize
                     + self.local_reads.len().checked_ilog2().unwrap_or(0) as usize
-                    + 8,
+                    + self.typed_ops.len().checked_ilog2().unwrap_or(0) as usize
+                    + 9,
             ) {
                 return Err(budget());
             }
@@ -52,7 +53,13 @@ impl Checker {
             let coercion = self.coercions.contains_key(&current);
             let narrowing = self.narrowings.contains_key(&current);
             let read = self.local_reads.contains_key(&current);
-            if usize::from(coercion) + usize::from(narrowing) + usize::from(read) > 1 {
+            let typed = self.typed_ops.contains_key(&current);
+            if usize::from(coercion)
+                + usize::from(narrowing)
+                + usize::from(read)
+                + usize::from(typed)
+                > 1
+            {
                 return Err(invalid());
             }
             if let Some(&(source_owner, _)) = reports.consumers.get(&current) {
@@ -60,6 +67,7 @@ impl Checker {
                     || coercion
                     || narrowing
                     || read
+                    || typed
                     || source_owner != owner
                     || point.kind != PointKind::Expr
                 {
@@ -69,7 +77,7 @@ impl Checker {
             }
             let block = point.block;
             let next = if let Some(group) = group {
-                if coercion || narrowing || read {
+                if coercion || narrowing || read || typed {
                     return Err(invalid());
                 }
                 if !self
@@ -115,6 +123,10 @@ impl Checker {
                 input
             } else if let Some(input) =
                 self.read_initializer_input(reports, current, owner, span)?
+            {
+                input
+            } else if let Some(input) =
+                self.unchanged_ascription_input(reports, current, owner, span)?
             {
                 input
             } else {
@@ -166,3 +178,6 @@ mod narrow_limits;
 
 #[cfg(test)]
 mod read_limits;
+
+#[cfg(test)]
+mod ascriptions;

@@ -1788,17 +1788,23 @@ keeps predicate/stopped decisions false. All six `typed_stages` library tests pa
 reported identities before selecting unchanged observed results. All 12 focused
 `effects::typed` library tests pass (`/tmp/meowy-ascription-reports.log`), including
 report corruption, independent visits, duplicate capacity and exact work limits.
-Consumer traversal is next and remains unchanged in this slice.
+Report qualification is committed as `af3641a`. Mixed consumer traversal now
+includes unchanged observed ascriptions in producer-conflict and shared work/hop
+checks. All 82 matching consumer tests pass (`/tmp/meowy-ascription-consumers.log`),
+including new direct/grouped/local-copy fields, primaries, composition, independent
+owners and opaque boundaries. Adversarial cycle/limit coverage and source cases are
+next; the complete compiler gate has not run yet.
 Preserve unrelated `docs/programs/hey/`.
 
-1. In `expressions.rs` and `dependencies/typed.rs`, retain the existing
+1. Complete (`beaade7`): in `expressions.rs` and `dependencies/typed.rs`, retain the existing
    `refinement.rs::coercion` changed decision for explicit ascriptions while preserving
    HIR and edge behavior. Capture the actual decision without cloning types or
    inferring transparency from TypedKind alone. Include focused capture regressions.
-2. In `effects/typed.rs`, carry and qualify that decision against the checked producer,
+2. Complete (`af3641a`): in `effects/typed.rs`, carry and qualify that decision against the checked producer,
    preserving exact input/owner/kind/normal/control and independent operation/result
    flags. Validate report corruption and resource limits separately from traversal.
-3. Extend `consumers/grouped.rs` through observed normal, unchanged Ascription results.
+3. Implemented and focused tests pass: extend `consumers/grouped.rs` through
+   observed normal, unchanged Ascription results.
    Include the producer in conflict/cycle/hop/work checks. Predicates, changed/widening
    coercions, stopped inputs and missing result observations stay opaque. Exercise
    direct/grouped/local-copy field, primary and composed-emission consumers and owners.
