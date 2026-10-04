@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Unchanged explicit-ascription consumers are in progress.
+Updated: 2026-10-04. Unchanged explicit-ascription consumers pass compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1775,58 +1775,73 @@ All 313 prior case records, 345 source assets, 37 reference contracts/reviewed h
 No compiler test failures remain. Proof evaluation and full release qualification
 remain incomplete.
 
-### Next: unchanged explicit-ascription consumers
+## Unchanged explicit-ascription consumers
 
-Investigation confirms `refinement.rs::coercion` already returns the exact changed
-decision, but `expressions.rs` discards it through `coerce`. Typed stages retain
-operation/result edges even for erased ascriptions; those edges must stay intact.
-The implementation follows the dependency-ordered commit plan below.
-Capture now retains the actual changed decision, rejects inconsistent replays and
-keeps predicate/stopped decisions false. All six `typed_stages` library tests pass
-(`/tmp/meowy-ascription-capture.log`); formatting passes. Capture is committed as
-`beaade7`. Reports now carry the decision and the qualification helper checks all
-reported identities before selecting unchanged observed results. All 12 focused
-`effects::typed` library tests pass (`/tmp/meowy-ascription-reports.log`), including
-report corruption, independent visits, duplicate capacity and exact work limits.
-Report qualification is committed as `af3641a`. Mixed consumer traversal now
-includes unchanged observed ascriptions in producer-conflict and shared work/hop
-checks. All 82 matching consumer tests pass (`/tmp/meowy-ascription-consumers.log`),
-including new direct/grouped/local-copy fields, primaries, composition, independent
-owners and opaque boundaries. Adversarial cycle/limit coverage and source cases are
-next; the complete compiler gate has not run yet. Traversal is committed as
-`406d35f`. All eight ascription-consumer groups now pass, including consistent
-cycles, every producer overlap, late atomic failures, exact hop/work/map bounds,
-duplicate visits, Unknown slot values and multiple candidate histories
-(`/tmp/meowy-ascription-limits.log`). No focused test failures remain. Source
-conformance and the full compiler gate are next. Boundary coverage is committed as
-`09a5498`; all-target Clippy passes (`/tmp/meowy-ascription-lint.log`). Three required
-source fixtures pass fresh-compiler debug/release (`/tmp/meowy-ascription-source.log`).
-All four documentation checks pass (`/tmp/meowy-ascription-source-docs.log`).
-The preservation audit confirms 316 prior cases, 385 reference/source assets,
+Checked ascriptions now retain the actual `refinement.rs::coercion` changed decision
+without copying types or changing HIR/edge behavior. Typed reports qualify exact
+input, owner, kind, changed, normal and control identities. Only unchanged normal
+Ascription results with an observed result forward their input; operation/result
+visits remain independent. Predicates, widening/changed forms, stopped inputs and
+missing results stay opaque.
+
+Mixed resolution shares the existing conflict/cycle/hop/work bounds. Direct,
+grouped and immutable-copy field, primary and composed-emission consumers retain
+original slots and independent owners. Unknown values, multiple candidate histories,
+reference loads, calls and field-result values retain their boundaries. Links do
+not infer runtime reachability, selected values, loan authority or proof outcomes.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Retain actual checked ascription decisions | `beaade7` |
+| Carry and qualify typed result reports | `af3641a` |
+| Resolve mixed consumers through unchanged ascriptions | `406d35f` |
+| Cover conflicts, cycles, late failures and exact resources | `09a5498` |
+| Pin source behavior and classified coverage | `d4d105b` |
+
+Thirteen new library groups cover capture, report qualification and consumer
+boundaries. All six capture, 12 typed-report and eight ascription-consumer groups
+pass; the wider matching consumer run passed 82 groups before the five additional
+boundary groups. Logs: `/tmp/meowy-ascription-capture.log`,
+`/tmp/meowy-ascription-reports.log`, `/tmp/meowy-ascription-consumers.log`,
+`/tmp/meowy-ascription-limits.log`. All-target Clippy passes
+(`/tmp/meowy-ascription-lint.log`). Three required source cases pass fresh-compiler
+debug/release (`/tmp/meowy-ascription-source.log`). All four source-slice documentation
+checks pass (`/tmp/meowy-ascription-source-docs.log`).
+
+All ten compiler checks pass: 2456 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-ascription-gate.log`). Conformance has 319 cases: 300 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-ascription-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-ascription-docs.log`). No test failures remain. The
+preservation audit confirms all 316 prior case records, 385 reference/source assets,
 37 reviewed hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-ascription-preservation.log`). Full compiler/strict gates and the final
-handoff are next.
-Preserve unrelated `docs/programs/hey/`.
+(`/tmp/meowy-ascription-preservation.log`). Unrelated `docs/programs/hey/` is preserved.
+Proof evaluation and full release qualification remain incomplete.
 
-1. Complete (`beaade7`): in `expressions.rs` and `dependencies/typed.rs`, retain the existing
-   `refinement.rs::coercion` changed decision for explicit ascriptions while preserving
-   HIR and edge behavior. Capture the actual decision without cloning types or
-   inferring transparency from TypedKind alone. Include focused capture regressions.
-2. Complete (`af3641a`): in `effects/typed.rs`, carry and qualify that decision against the checked producer,
-   preserving exact input/owner/kind/normal/control and independent operation/result
-   flags. Validate report corruption and resource limits separately from traversal.
-3. Implemented and focused tests pass: extend `consumers/grouped.rs` through
-   observed normal, unchanged Ascription results.
-   Include the producer in conflict/cycle/hop/work checks. Predicates, changed/widening
-   coercions, stopped inputs and missing result observations stay opaque. Exercise
-   direct/grouped/local-copy field, primary and composed-emission consumers and owners.
-4. Add independent adversarial boundaries and required source cases, review classified
-   evidence, then run compiler, strict and final documentation gates. Keep each slice
-   buildable and commit its focused regressions with implementation.
+### Next: independent field result observations
 
-Field-value provenance, precise branch/overwrite joins, function returns, restart
-propagation, E225 enforcement and proof outcomes remain later work. Shared-reference
-loads remain opaque and gain no slot-zero or loan authority.
+The next provenance prerequisite is explicit field-result observation. Current
+`Effect::Field` rows are collected only at Operation ports; their `normal` flag is
+checked availability, not an observed result. Aggregate result-slot values still
+remain Unknown, so following a field receiver cannot establish the field's value.
+
+1. In `effects/fields.rs`, separate checked field-header/edge validation from
+   collection while preserving the current interface and all field/consumer tests.
+   Keep this behavior-preserving prerequisite independently reviewable.
+2. In `effects.rs` and `effects/fields.rs`, retain independent field Operation and
+   Normal visits using existing checked identities. Preserve projection/load and
+   Never boundaries, duplicate merging and shared resource limits. Keep field
+   slot-use publication gated by an actual Operation observation; a result-only
+   row must not invent a field-operation slot link.
+3. Add adversarial sparse/result-only, owner/edge/registry, stopped and exact-budget
+   tests, then source cases and classified evidence. Run compiler, strict and final
+   documentation gates before recording the next provenance step.
+
+Do not yet follow Field results in `consumers/grouped.rs` or choose a contributing
+emission. Candidate input qualification, aggregate field-value provenance, precise
+branch/overwrite joins, function returns, restart propagation, E225 enforcement and
+proof outcomes remain later work. Shared-reference loads gain no loan authority.
 
 ## Documentation conventions and layout
 
@@ -3411,8 +3426,9 @@ implemented, including unchanged observed narrowing and bounded local eligibilit
 Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
 complete, including output- and contextual-list-owned primary parts and composed-emission
-source slots. Unchanged explicit-ascription capture, report qualification and forwarding
-are next, following the ordered plan above.
+source slots and unchanged observed ascriptions. Independent field Operation/Normal
+observations are next, following the ordered plan above; field-value provenance
+remains separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -3996,8 +4012,10 @@ are next, following the ordered plan above.
    (`6694ada`, `d5e966b`), contextual links (`c214833`), boundaries (`5d908ad`) and source
    cases (`0c48b3e`) pass the gate. Shared emission qualification (`2a2de97`), source-slot
    consumers (`bcf8eb0`), boundaries (`2ec24cf`) and source cases (`b13d8fc`) pass the gate.
-   Next retain and qualify unchanged explicit-ascription decisions before extending
-   the mixed consumer resolver, following the ordered plan above.
+   Ascription capture (`beaade7`), report qualification (`af3641a`), consumer forwarding
+   (`406d35f`), boundaries (`09a5498`) and source cases (`d4d105b`) pass the gate.
+   Next retain independent field Operation/Normal observations, following the ordered
+   plan above, before any field-value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

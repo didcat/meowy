@@ -1,34 +1,31 @@
 # meowy project status
 
-Updated: 2026-10-03. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-04. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
 ## Current compiler and coverage handoff
 
-Composed emissions now link initialized targets to their original primary/named
-source slots through qualified record copies. Complete report and source-layout
-checks include unobserved suffixes; each source resolves once. Target initialization
-remains independent of statement and destination completion. Candidate histories,
-Unknown values and direct-value boundaries are preserved. The
-[compiler handoff](compiler/STATUS.md#composed-emission-source-slot-consumers) records
-four implementation/test commits and the next ordered plan.
+Unchanged explicit ascriptions now preserve source-slot identities through groups
+and immutable copies. Reports retain the actual checked changed decision and
+independent operation/result visits; predicates, widening ascriptions, stopped
+inputs and missing results stay opaque. Shared conflict/cycle/resource checks
+preserve owners, Unknown values and candidate histories. The
+[compiler handoff](compiler/STATUS.md#unchanged-explicit-ascription-consumers) records
+five implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass on LLVM 23.1.1/Rust 1.99.0: 2443 library/915 native tests
-and 62 Python groups (`/tmp/meowy-emission-gate.log`). Conformance has 316 cases:
-297 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
-Strict mode exits 1 only for those gaps (`/tmp/meowy-emission-strict.log`).
-All four final documentation checks pass (`/tmp/meowy-emission-docs.log`).
+All ten compiler checks pass: 2456 library/915 native tests and 62 Python groups
+(`/tmp/meowy-ascription-gate.log`). Conformance has 319 cases: 300 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-ascription-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-ascription-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-emission-preservation.log`). The
-[coverage inventory](docs/conformance/COVERAGE.md) tracks 37 reference files and
-33 proof obligations. Proof evaluation and full language/release qualification
-remain incomplete.
+preserved (`/tmp/meowy-ascription-preservation.log`). Proof evaluation and full
+language/release qualification remain incomplete.
 
-Next, retain and qualify unchanged explicit-ascription decisions, then extend the
-bounded consumer resolver through observed ascription results.
-Unrelated `docs/programs/hey/` is preserved.
+Next, retain independent field Operation/Normal observations before attempting
+field-value provenance. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

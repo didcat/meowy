@@ -388,9 +388,9 @@ operation or result flags alone do not create a primary link.
 Slot links retain identities only. Owning effects keep their flags, and result
 sources keep unknown or multiple-candidate state without extra copies. Inputs must
 resolve to a validated block consumer, directly or through explicit group identities
-and qualified Forward/unchanged narrowing wrappers or immutable local reads.
-Field-result values, reference loads, calls, ascriptions and unclassified regions
-remain outside these links.
+and qualified Forward/unchanged narrowing/ascription wrappers or immutable local
+reads. Field-result values, reference loads, calls, changed ascriptions and
+unclassified regions remain outside these links.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
@@ -419,9 +419,18 @@ must match the producer, and unchanged wrappers cannot have an operation visit.
 Stage validation retains complete Expr children, equal spans, parent/block/owner
 identity and exact edges. Changed, nonnormal and unobserved narrowing stays opaque.
 
+Explicit ascriptions retain the actual changed decision from checked coercion,
+including erased HIR wrappers. An unchanged, normally available ascription with an
+observed result forwards its exact input after report/producer agreement and full
+stage validation. Operation and result visits remain independent; a result does not
+require an operation visit in the same report. Predicates, widening/changed forms,
+stopped operands and missing results remain opaque. Operand spans stay distinct
+from full suffix-expression spans. Direct, grouped and immutable-copy consumers
+retain original field, primary and composed-emission source slots and owners.
+
 Mixed chains retain one bounded visited set and shared work charges. Conflicting
-group/coercion/narrowing/read/direct-anchor classifications, corrupt identities and
-cycles fail.
+group/coercion/narrowing/read/ascription/direct-anchor classifications, corrupt
+identities and cycles fail.
 Group registry and mixed-chain scratch bounds are 65,536 entries. Missing result
 observations, Convert, projected Forward, Stopped, reborrows and shared-reference
 regions remain opaque. Qualification copies no types, candidates or payload.
@@ -784,8 +793,9 @@ inner call/branch identities. Shared reborrows, unchanged shared forwarding,
 required evaluation and uncaptured helpers remain separate. No target types or
 values are copied, and these flags infer no transfer, borrow authority or proof outcome.
 Predicate/ascription reports retain exact operand roots, checked operation kinds,
-normal/control flags and independent operation/result observations, including erased
-no-op ascriptions. Capture validates complete expression points, root spans,
+actual ascription changed decisions, normal/control flags and independent
+operation/result observations, including erased no-op ascriptions. Capture validates
+complete expression points, root spans,
 parent/block/owner agreement, supported operand kinds, exact original edges and
 registered operation owners. Operand spans remain distinct from the complete suffix
 expression. Stopped operands gain no observations; a stopped predecessor excludes
@@ -1089,7 +1099,8 @@ evidence that a runtime path is reached.
 The report is internal structural metadata, with no proof/data propagation,
 restart-header analysis or termination inference. Proof outcomes remain gated.
 Type predicates and explicit ascriptions retain exact operand roots and distinct
-operation/result stages, including no-op ascriptions whose HIR wrapper is erased.
+operation/result stages and the actual changed decision, including no-op ascriptions
+whose HIR wrapper is erased.
 Operand completion precedes result availability; never operands retain entry only.
 Target construction keeps its original compile-time order and error precedence,
 including target errors after a never operand. Required target reads are not
