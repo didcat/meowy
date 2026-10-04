@@ -1829,13 +1829,18 @@ The existing `field_` library tests pass before edits
 (`/tmp/meowy-field-observations-before.log`). The extracted checked-source validator
 now returns the original descriptor after the same bounded checks; all 114 matching
 library tests also pass afterward (`/tmp/meowy-field-observations-validation.log`).
-No observation behavior changed. Operation/Normal collection is next.
+The extraction is committed as `b395515`. Field reports now retain independent
+operation/result flags; both stages reuse exact checked-header/edge validation.
+Result-only consumer rows validate but create no operation slot link. All 116
+matching library tests pass (`/tmp/meowy-field-observations-reports.log`), including
+sparse visits and Never rejection. Identity/resource adversarial coverage is next.
 
 Dependency-ordered commit plan:
 
 1. Complete and validated: separate checked field-header/edge validation from
    report construction in `effects/fields.rs`, preserving the interface and tests.
-2. Retain independent Operation/Normal flags in `effects.rs` and `effects/fields.rs`;
+2. Implemented and focused tests pass: retain independent Operation/Normal flags
+   in `effects.rs` and `effects/fields.rs`;
    integrate qualification in `consumers/fields.rs` so result-only reports add no
    operation slot link. Keep focused sparse/normal/Never tests with this slice.
 3. Add independent adversarial identity, duplicate/conflict, work/capacity and late

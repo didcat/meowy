@@ -22,6 +22,8 @@ pub(crate) fn field_effects_preserve_indices_and_owned_shared_explicit_loads() {
                     load,
                     normal: true,
                     control: false,
+                    operation: true,
+                    result: true,
                 }
             )
         );
@@ -96,6 +98,8 @@ pub(crate) fn field_effects_preserve_never_stopped_required_and_static_boundarie
                     load,
                     normal: false,
                     control: false,
+                    operation: true,
+                    result: false,
                 }
             )
         );
@@ -140,4 +144,58 @@ pub(crate) fn field_effects_reject_out_of_range_indices_without_changing_reports
     assert_eq!(error.code, "B001");
     assert!(error.message.contains("field-effect identity"));
     assert_eq!(reports.effects, before);
+}
+
+#[test]
+pub(crate) fn field_effects_keep_sparse_operation_and_result_visits_independent() {
+    for source in ["r:{->n:1};x:r.n", "r:{->n:1};p:&r;x:p.n"] {
+        let (mut checker, mut reports) = checked(source, false);
+        let (&id, field) = checker.fields.first_key_value().unwrap();
+        let owner = field.owner;
+        for (ports, operation, result) in [
+            (vec![Port::Operation(id)], true, false),
+            (vec![Port::Normal(id)], false, true),
+            (
+                vec![Port::Normal(id), Port::Operation(id), Port::Normal(id)],
+                true,
+                true,
+            ),
+        ] {
+            reports.entries.get_mut(&owner).unwrap().1.ports = ports;
+            let effects = checker
+                .operation_effects(&reports, Span::default())
+                .unwrap();
+            assert_eq!(effects.len(), 1);
+            assert!(
+                matches!(effects[&id].1, Effect::Field { operation: seen, result: value, normal: true, .. } if seen == operation && value == result)
+            );
+        }
+        reports.entries.get_mut(&owner).unwrap().1.ports =
+            vec![Port::Entry(id), Port::Projection { point: id, step: 0 }];
+        assert!(
+            checker
+                .operation_effects(&reports, Span::default())
+                .unwrap()
+                .is_empty()
+        );
+    }
+}
+
+#[test]
+pub(crate) fn field_effects_reject_result_visits_for_never_fields() {
+    for source in [
+        "f<never>:(r<{n<never>}>){->r.n}",
+        "f<never>:(r<&{n<never>}>){->r.n}",
+    ] {
+        let (mut checker, mut reports) = checked(source, false);
+        let (&id, field) = checker.fields.first_key_value().unwrap();
+        let owner = field.owner;
+        reports.entries.get_mut(&owner).unwrap().1.ports = vec![Port::Normal(id)];
+        let before = reports.effects.clone();
+        let error = checker
+            .operation_effects(&reports, Span::default())
+            .unwrap_err();
+        assert!(error.message.contains("field-effect identity"));
+        assert_eq!(reports.effects, before);
+    }
 }

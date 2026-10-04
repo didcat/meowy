@@ -17,6 +17,7 @@ pub(crate) fn field_slot_links_reject_headers_sources_and_selected_shape_atomica
                     load,
                     normal,
                     control,
+                    ..
                 } = &mut reports.effects.get_mut(&id).unwrap().1
                 else {
                     panic!()
@@ -124,6 +125,14 @@ pub(crate) fn field_slot_links_follow_operation_visits_without_normal_inference(
     reports.effects = checker
         .operation_effects(&reports, Span::default())
         .unwrap();
+    assert!(matches!(
+        reports.effects[&id].1,
+        Effect::Field {
+            operation: true,
+            result: false,
+            ..
+        }
+    ));
     assert_eq!(
         checker.slot_uses(&reports, Span::default()).unwrap(),
         expected
@@ -132,6 +141,14 @@ pub(crate) fn field_slot_links_follow_operation_visits_without_normal_inference(
     reports.effects = checker
         .operation_effects(&reports, Span::default())
         .unwrap();
+    assert!(matches!(
+        reports.effects[&id].1,
+        Effect::Field {
+            operation: false,
+            result: true,
+            ..
+        }
+    ));
     assert!(
         checker
             .slot_uses(&reports, Span::default())

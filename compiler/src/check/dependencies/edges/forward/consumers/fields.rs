@@ -15,16 +15,15 @@ impl Checker {
             index,
             load,
             normal,
+            operation,
             ..
         } = effect
         else {
             return Ok(None);
         };
         let invalid = || Diagnostic::unsupported("proof field-slot identity mismatch", span);
-        if self.field_effect(reports, id, owner, span)? != *effect {
-            return Err(invalid());
-        }
-        if *load {
+        self.validate_field_report(reports, id, owner, effect, span)?;
+        if *load || !operation {
             return Ok(None);
         }
         let Some(block) = self.slot_block(reports, *input, owner, span)? else {
