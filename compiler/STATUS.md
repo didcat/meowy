@@ -1839,7 +1839,13 @@ now exercise both selectors for each existing identity fault, partial merge
 conflicts, exact sparse-result budgets, late failures and opaque field values.
 All 120 matching library tests and all-target Clippy pass
 (`/tmp/meowy-field-observations-limits.log`, `/tmp/meowy-field-observations-limits-lint.log`).
-Required source coverage is next; the full compiler gate has not run yet.
+Boundary coverage is committed as `da2b050`. Three new required source cases pass
+fresh-compiler debug/release (`/tmp/meowy-field-observations-source.log`), covering
+nested owned/shared fields, copy snapshots, later stopped operands and E302.
+All four default checks pass (`/tmp/meowy-field-observations-source-docs.log`).
+The preservation audit confirms all 319 prior case records, 351 source assets,
+37 references/reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-field-observations-preservation.log`). The complete compiler gate is next.
 
 Dependency-ordered commit plan:
 

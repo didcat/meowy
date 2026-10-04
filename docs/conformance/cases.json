@@ -3388,6 +3388,38 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "field_result_values",
+      "phase": "run",
+      "source": "sources/field_result_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "outer\ninner\ninner tail\nouter tail\n7\n7\n7\nfunction\n7\n1\n2\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "field_result_stopped_tail",
+      "phase": "run",
+      "source": "sources/field_result_stopped_tail.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nreceiver\nreceiver tail\nlater operand\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "field_result_nested_borrow",
+      "phase": "check",
+      "source": "sources/field_result_nested_borrow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

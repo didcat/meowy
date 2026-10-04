@@ -1,0 +1,12 @@
+d : @"debug"
+make <{n <int32>}> : () {
+    d.print("receiver")
+    -> n : 7
+    d.print("receiver tail")
+}
+d.print("before")
+value : make().n + {
+    d.print("later operand")
+    d.panic("stop")
+}
+d.print("unreached")

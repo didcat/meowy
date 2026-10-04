@@ -1,0 +1,5 @@
+row : { -> inner := { -> n := 1 } }
+view : &row
+before : view.inner
+row.inner.n = 2
+after : view.inner.n

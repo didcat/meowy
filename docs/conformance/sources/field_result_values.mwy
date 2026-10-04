@@ -1,0 +1,25 @@
+d : @"debug"
+outer : {
+    d.print("outer")
+    -> inner : {
+        d.print("inner")
+        -> n : 7
+        d.print("inner tail")
+    }
+    d.print("outer tail")
+}
+copy : ((outer.inner))~<{n <int32>}>
+d.print(copy.n)
+view : &outer
+d.print(view.inner.n)
+d.print((*view).inner.n)
+read <int32> : (row <&{inner <{n <int32>}>}>) {
+    d.print("function")
+    -> row.inner.n
+}
+d.print(read(&outer))
+owner : { -> inner := { -> n := 1 } }
+before : owner.inner
+owner.inner.n = 2
+d.print(before.n)
+d.print(owner.inner.n)
