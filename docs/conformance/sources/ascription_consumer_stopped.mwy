@@ -1,0 +1,8 @@
+d : @"debug"
+copy : ({
+    d.print("source")
+    -> n : 1
+    d.print("source tail")
+    d.panic("stop")
+}~<{n <int32>}>)
+d.print("unreached")

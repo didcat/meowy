@@ -1,0 +1,3 @@
+show <null> : (row <{n <int32>}><null>) {
+    copy : ((row))~<{n <int32>}>
+}

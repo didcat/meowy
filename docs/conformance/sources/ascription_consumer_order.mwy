@@ -1,0 +1,36 @@
+d : @"debug"
+d.print(({
+    d.print("direct")
+    -> n : 4
+    d.print("direct tail")
+}~<{n <int32>}>).n)
+source : {
+    d.print("source")
+    -> n : 8
+    -> 7
+    d.print("source tail")
+}
+copy <(source<>)> : ((source))~<(source<>)>
+row : {
+    -> ((copy))~<(source<>)>
+    d.print("destination tail")
+}
+d.print(row.n)
+d.print(-copy)
+d.print(copy)
+show <null> : (n <int32>) {
+    source : {
+        d.print("function source {n}")
+        -> next : n + 1
+        -> n
+        d.print("function tail {n}")
+    }
+    copy : ((source))~<(source<>)>
+    row : { -> copy~<(source<>)>; d.print("function destination {n}") }
+    d.print(row.next)
+    d.print(-copy)
+    d.print(copy)
+}
+show(2)
+show(3)
+d.print(row.n)

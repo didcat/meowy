@@ -1798,7 +1798,14 @@ next; the complete compiler gate has not run yet. Traversal is committed as
 cycles, every producer overlap, late atomic failures, exact hop/work/map bounds,
 duplicate visits, Unknown slot values and multiple candidate histories
 (`/tmp/meowy-ascription-limits.log`). No focused test failures remain. Source
-conformance and the full compiler gate are next.
+conformance and the full compiler gate are next. Boundary coverage is committed as
+`09a5498`; all-target Clippy passes (`/tmp/meowy-ascription-lint.log`). Three required
+source fixtures pass fresh-compiler debug/release (`/tmp/meowy-ascription-source.log`).
+All four documentation checks pass (`/tmp/meowy-ascription-source-docs.log`).
+The preservation audit confirms 316 prior cases, 385 reference/source assets,
+37 reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-ascription-preservation.log`). Full compiler/strict gates and the final
+handoff are next.
 Preserve unrelated `docs/programs/hey/`.
 
 1. Complete (`beaade7`): in `expressions.rs` and `dependencies/typed.rs`, retain the existing
