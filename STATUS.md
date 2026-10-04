@@ -7,24 +7,23 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Candidate-input reports now retain exact emission roots and Value/Primary/Field
-projections at their original block/slot/candidate positions. Bounded qualification
-preserves empty/Unknown histories and discarded-path source shapes. Checked
-producers validate once per pass; descriptors share map capacity and validation
-caches charge remaining payload. The
-[compiler handoff](compiler/STATUS.md#bounded-result-candidate-input-qualification)
-records five implementation/test commits and the next ordered plan.
+Composed candidate inputs now retain qualified source slots from existing Emission
+links. Owners, indices and complete source layouts are checked, including unobserved
+suffixes. A bounded cache resolves each composed source once. Missing links remain
+unknown, direct values retain their boundary, and source histories stay unchanged.
+The [compiler handoff](compiler/STATUS.md#composed-candidate-source-slot-qualification)
+records four implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2473 library/915 native tests and 62 Python groups
-(`/tmp/meowy-candidate-inputs-gate.log`). Conformance has 325 cases: 306 required
+All ten compiler checks pass: 2483 library/915 native tests and 62 Python groups
+(`/tmp/meowy-candidate-slots-gate.log`). Conformance has 328 cases: 309 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-candidate-inputs-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-candidate-inputs-docs.log`).
+exits 1 only for those gaps (`/tmp/meowy-candidate-slots-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-candidate-slots-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-candidate-inputs-preservation.log`). Proof evaluation and
+preserved (`/tmp/meowy-candidate-slots-preservation.log`). Proof evaluation and
 full language/release qualification remain incomplete.
 
-Next, qualify composed candidates against their existing source-slot links.
+Next, add bounded candidate-source traversal with explicit unresolved boundaries.
 Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

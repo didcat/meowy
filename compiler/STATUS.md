@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Composed candidate source-slot qualification is in progress.
+Updated: 2026-10-04. Composed candidate source slots pass compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1877,7 +1877,8 @@ block-normal flags remain independent. Per-pass block/emission validation caches
 charge shared payload and avoid repeated wide-producer scans. Retained descriptors
 reserve remaining combined map capacity, and shared work bounds all lookups. Late
 failures publish no partial map or remaining-budget update. Source traversal,
-projected slot resolution, field-value forwarding and proof outcomes remain separate.
+field-value forwarding and proof outcomes remain separate; projected source-slot
+qualification is recorded below.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -1910,45 +1911,67 @@ preserved. Full proof evaluation and release qualification remain incomplete.
 
 ## Composed candidate source-slot qualification
 
-Investigation confirms `emission_slot_uses` already validates the resolved source
-block and complete count/name layout after emission-report qualification. Share
-that source validation before adding an optional Slot to candidate descriptors.
-Only existing Emission links may populate it; direct Value inputs and missing
-links remain separate. A bounded per-pass source cache must avoid repeated mixed
-chain/layout validation across one composed producer's candidates. The extracted
-`emission_source_block` keeps existing behavior and work accounting: all ten
-emission-consumer groups pass before/after
+Candidate descriptors now retain an optional qualified source Slot for Primary/Field
+projections. Existing Emission-link owners and indices must match the checked
+candidate and producer; direct Value links are rejected and missing links stay
+unknown. Shared `emission_source_block` qualification resolves the original source
+and validates its complete count/name layout, including unobserved suffixes.
+
+A per-pass cache resolves each composed source once and charges remaining payload.
+The optional Slot adds no map entries or candidate copies. Exact combined map,
+scratch and work boundaries remain enforced; late failures publish no partial map.
+Original positions, independent target/result flags, discarded paths and source
+Unknown/empty/multiple histories are preserved. These associations do not select
+values, establish runtime reachability, forward fields or enable proof outcomes.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Share composed-emission source qualification | `c489bd1` |
+| Retain qualified candidate source slots | `74671ed` |
+| Cover sparse/corrupt sources and exact cache/work limits | `590cb3e` |
+| Pin source behavior and classified coverage | `e04ad8e` |
+
+All ten emission-consumer groups pass before/after extraction
 (`/tmp/meowy-candidate-slots-before.log`, `/tmp/meowy-candidate-slots-validation.log`).
-The extraction is committed as `c489bd1`. Candidate descriptors now carry an optional
-source Slot, populated only after existing Emission-link owner/index and complete
-source-layout qualification. A per-pass source cache charges remaining payload;
-exact scratch tests include it. All 20 matching `candidate_` tests pass
-(`/tmp/meowy-candidate-slots-reports.log`). All 2476 library tests and all-target
-Clippy pass (`/tmp/meowy-candidate-slots-library.log`, `/tmp/meowy-candidate-slots-lint.log`).
-The implementation is committed as `74671ed`. Independent tests now cover sparse
-initialization, inconsistent links, unobserved layout suffixes, Unknown/empty/multiple
-source histories and exact source-cache/deep-chain work. All 27 matching groups
-pass after correcting the empty-record fixture (`/tmp/meowy-candidate-slots-boundaries.log`).
-All-target Clippy also passes (`/tmp/meowy-candidate-slots-boundaries-lint.log`).
-No focused failures remain. Boundary coverage is committed as `590cb3e`. Three
-source fixtures pass fresh-compiler debug/release (`/tmp/meowy-candidate-slots-source.log`)
-after explicitly typing the empty-record destination. Catalog/coverage checks pass.
-All four default checks pass (`/tmp/meowy-candidate-slots-source-docs.log`).
-The preservation audit confirms 325 prior cases, 357 source assets, 37 reference
-contracts/reviewed hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-candidate-slots-preservation.log`). The full compiler gate follows.
+All 2476 library tests pass after implementation (`/tmp/meowy-candidate-slots-library.log`).
+Ten new source-slot groups plus the existing candidate regressions pass in the
+27-group focused run (`/tmp/meowy-candidate-slots-boundaries.log`); all-target Clippy
+passes (`/tmp/meowy-candidate-slots-boundaries-lint.log`). Three required source cases
+pass fresh-compiler debug/release (`/tmp/meowy-candidate-slots-source.log`). All four
+source-slice documentation checks pass (`/tmp/meowy-candidate-slots-source-docs.log`).
 
-Dependency-ordered commit plan:
+All ten compiler checks pass: 2483 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-candidate-slots-gate.log`). Conformance has 328 cases: 309 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-candidate-slots-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-candidate-slots-docs.log`). No test failures
+remain. The preservation audit confirms all 325 prior
+cases, 357 source assets, 37 reference contracts/reviewed hashes, capability pins
+and proof obligations are unchanged (`/tmp/meowy-candidate-slots-preservation.log`).
+Unrelated `docs/programs/hey/` is preserved. Proof evaluation and full release
+qualification remain incomplete.
 
-1. Extract reusable source-block/layout qualification in `consumers/emissions.rs`,
-   preserving existing publication behavior; run emission-consumer tests before/after.
-2. Add optional source-slot qualification to candidate reports, with a per-pass
-   composed-source cache and focused identity/owner/direct/opaque regressions.
-   Update exact scratch accounting alongside the implementation.
-3. Add independent sparse, discarded, corrupt-link/layout and exact resource tests;
-   verify once-per-pass source resolution for wide/deep compositions.
-4. Add required source cases and classified evidence, run compiler/strict/final
-   documentation gates, and record the next dependency-ordered handoff.
+### Next: bounded candidate-source traversal
+
+Qualified candidate inputs now distinguish direct PointId leaves, projected source
+Slots and unresolved projections. Add read-only traversal without selecting values
+or treating empty/Unknown histories as independence.
+
+1. In `results/inputs/`, qualify stored input descriptors against their original
+   block/slot/candidate positions and checked producers. Reuse per-pass qualification
+   contexts and verify owner, candidate identity, point, projection and optional Slot.
+   Keep direct Value leaves distinct from projected inputs without source links.
+2. Add a bounded iterative walk from an owner/Slot, retaining every candidate's
+   original position and qualified source edge. Keep Unknown, empty histories,
+   unresolved projections, direct points and repeated/cyclic slots explicit.
+   Follow only qualified source Slots; direct points remain terminal. Bound pending,
+   visited and output storage plus work before growth, and publish no partial walk
+   on invalid identities or exhausted resources. Do not infer execution order from IDs.
+3. Keep qualification and traversal independently reviewable with focused tests.
+   Cover shared sources versus cycles, independent owners, multiple/discarded
+   candidates and exact limits. Add required source cases/classified evidence, then
+   run compiler, strict and final documentation gates.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
@@ -3539,9 +3562,9 @@ Exact Bind qualification and bounded ordinary initializer indexing are complete.
 Validated local-read forwarding and coercion-owned primary consumer links are
 complete, including output- and contextual-list-owned primary parts and composed-emission
 source slots and unchanged observed ascriptions. Field Operation/Normal observations
-are now independent, and bounded result-candidate inputs are qualified. Composed
-candidate source-slot qualification is next, following the ordered plan above;
-field-value provenance remains separate.
+are now independent, and bounded result-candidate inputs retain qualified composed
+source slots. Bounded candidate-source traversal is next, following the ordered plan
+above; field-value provenance remains separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4130,9 +4153,10 @@ field-value provenance remains separate.
    Field validation (`b395515`), independent observations (`582a7f2`), boundaries
    (`da2b050`) and source cases (`b9031c2`) pass the gate. Candidate header sharing
    (`98140f0`), input qualification (`4475569`), collection (`71b1d6a`), boundaries
-   (`2f23847`) and source cases (`3afaa03`) pass the gate. Next qualify composed
-   candidate source-slot links, following the ordered plan above, before field-value
-   provenance work.
+   (`2f23847`) and source cases (`3afaa03`) pass the gate. Composed source sharing
+   (`c489bd1`), candidate slot qualification (`74671ed`), boundaries (`590cb3e`) and
+   source cases (`e04ad8e`) pass the gate. Next add bounded candidate-source
+   traversal, following the ordered plan above, before field-value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

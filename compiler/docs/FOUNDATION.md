@@ -380,7 +380,22 @@ Empty and Unknown histories remain in the existing result map and produce no inp
 descriptors. Multiple candidates keep separate original positions. Discarded-path
 inputs can differ from the completed slot's type; qualification never infers an
 input type from that slot or chooses a contributing candidate. This report does not
-follow source points, resolve projected source slots or forward field results.
+follow source points or forward field results.
+
+Composed candidate inputs additionally retain an optional qualified source Slot
+from an existing `Emission(EmitId)` slot-use link. Link owner and primary/field index
+must match the checked candidate and producer. Shared source qualification resolves
+the original block and validates its complete count/name layout, including target
+suffixes with no observation. A missing link remains unknown, while a link attached
+to a direct Value input is invalid; direct values never become slot-zero extraction.
+
+Each composed source is resolved once per pass and cached with a shared payload
+charge. Deep group/local/ascription chains are not replayed for every target. The
+optional Slot stays in the existing fixed-size descriptor and adds no candidate
+copies or map entries. Source slots retain their own Unknown, empty or multiple
+histories. Independent target/result flags and discarded destination paths remain
+separate; a source-slot association does not establish a selected value, runtime
+reachability, borrow authority or a proof result.
 
 Within one immutable report pass, checked block/emission IDs are cached after
 validation, so a wide composed producer is not rescanned for every candidate.
