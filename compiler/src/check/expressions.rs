@@ -435,23 +435,27 @@ impl Checker {
                         expr.span,
                     ));
                 }
-                if let Some(point) = self.point {
-                    self.typed_operation(point, input, *predicate, &value, expr.span)?;
-                }
-                if value.ty == Type::Never {
-                    return Ok(value);
-                }
-                if *predicate {
-                    return Ok(hir::Expr {
-                        kind: hir::ExprKind::TypeTest {
-                            value: Box::new(value),
-                            ty,
+                let (changed, value) = if value.ty == Type::Never {
+                    (false, value)
+                } else if *predicate {
+                    (
+                        false,
+                        hir::Expr {
+                            kind: hir::ExprKind::TypeTest {
+                                value: Box::new(value),
+                                ty,
+                            },
+                            ty: Type::Bool,
+                            span: expr.span,
                         },
-                        ty: Type::Bool,
-                        span: expr.span,
-                    });
+                    )
+                } else {
+                    Self::coercion(value, ty)
+                };
+                if let Some(point) = self.point {
+                    self.typed_operation(point, input, *predicate, changed, &value, expr.span)?;
                 }
-                return Ok(Self::coerce(value, ty));
+                return Ok(value);
             }
             ExprKind::Function { .. } => {
                 return Err(Diagnostic::unsupported(

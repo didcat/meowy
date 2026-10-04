@@ -20,6 +20,7 @@ pub(crate) struct Typed {
     pub(crate) owner: usize,
     pub(crate) input: hir::PointId,
     pub(crate) kind: Kind,
+    pub(crate) changed: bool,
     pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
@@ -32,6 +33,7 @@ impl Checker {
         id: hir::PointId,
         input: hir::PointId,
         predicate: bool,
+        changed: bool,
         value: &hir::Expr,
         span: Span,
     ) -> Result<()> {
@@ -44,7 +46,8 @@ impl Checker {
             return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
-        if point.kind != PointKind::Expr
+        if (changed && (predicate || value.ty == hir::Type::Never))
+            || point.kind != PointKind::Expr
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
             || !self.points.get(input).is_some_and(|child| {
@@ -74,6 +77,7 @@ impl Checker {
             owner: self.owner,
             input,
             kind,
+            changed,
             normal,
             control: self.control,
             span,

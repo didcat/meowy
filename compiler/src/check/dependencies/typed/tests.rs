@@ -126,12 +126,12 @@ pub(crate) fn typed_stages_publish_atomically_with_exact_identity_and_shared_bud
     let op = op.clone();
     let count = checker.typed_edges;
     checker
-        .typed_operation(id, op.input, false, value, op.span)
+        .typed_operation(id, op.input, false, false, value, op.span)
         .unwrap();
     assert_eq!(checker.typed_edges, count);
     assert!(
         checker
-            .typed_operation(id, op.input, true, value, op.span)
+            .typed_operation(id, op.input, true, false, value, op.span)
             .unwrap_err()
             .message
             .contains("identity")
@@ -147,7 +147,7 @@ pub(crate) fn typed_stages_publish_atomically_with_exact_identity_and_shared_bud
         }
         assert!(
             checker
-                .typed_operation(id, op.input, false, value, op.span)
+                .typed_operation(id, op.input, false, false, value, op.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -159,11 +159,66 @@ pub(crate) fn typed_stages_publish_atomically_with_exact_identity_and_shared_bud
     checker.field_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
-            .typed_operation(id, op.input, false, value, op.span)
+            .typed_operation(id, op.input, false, false, value, op.span)
             .unwrap_err()
             .message
             .contains("budget")
     );
     assert!(checker.typed_ops.is_empty());
     assert_eq!(checker.typed_edges, 0);
+}
+
+#[test]
+pub(crate) fn typed_stages_capture_actual_ascription_changes_without_rewriting_hir() {
+    for (source, changed) in [
+        ("v:7~<int32>", false),
+        ("v:{->n:1}~<{n<int32>}>", false),
+        ("r:{->n:1};v:((r))~<{n<int32>}>", false),
+        ("<U>:<int32><null>;v:7~<U>", true),
+        ("<U>:<{n<int32>}><null>;v:{->n:1}~<U>", true),
+        ("v:[1,2]~<int32[2]>", false),
+    ] {
+        crate::compile(source).unwrap();
+        let (checker, block) = check(source);
+        let op = checker.typed_ops.values().next().unwrap();
+        assert_eq!(op.kind, Kind::Ascription);
+        assert_eq!(op.changed, changed, "{source}");
+        assert!(op.normal);
+        let hir::Stmt::Bind { value, .. } = block.stmts.last().unwrap() else {
+            panic!()
+        };
+        assert_eq!(matches!(value.kind, hir::ExprKind::Coerce { .. }), changed);
+        assert_eq!(op.edges.len(), 3);
+    }
+    for source in ["v:7<int32>", "d:@\"debug\";v:d.panic(\"stop\")~<int32>"] {
+        let (checker, _) = check(source);
+        assert!(checker.typed_ops.values().all(|op| !op.changed));
+    }
+}
+
+#[test]
+pub(crate) fn typed_stages_reject_changed_replays_and_invalid_predicate_decisions() {
+    for source in ["v:7~<int32>", "v:7<int32>"] {
+        let (mut checker, block) = check(source);
+        let hir::Stmt::Bind { value, .. } = &block.stmts[0] else {
+            panic!()
+        };
+        let (&id, op) = checker.typed_ops.first_key_value().unwrap();
+        let op = op.clone();
+        let before = checker.typed_ops.clone();
+        let count = checker.typed_edges;
+        let error = checker
+            .typed_operation(
+                id,
+                op.input,
+                op.kind == Kind::Predicate,
+                true,
+                value,
+                op.span,
+            )
+            .unwrap_err();
+        assert!(error.message.contains("identity"));
+        assert_eq!(checker.typed_ops, before);
+        assert_eq!(checker.typed_edges, count);
+    }
 }

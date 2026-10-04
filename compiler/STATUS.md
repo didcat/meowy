@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-03. Composed-emission consumers pass compiler and documentation gates.
+Updated: 2026-10-04. Unchanged explicit-ascription consumers are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1776,6 +1776,14 @@ No compiler test failures remain. Proof evaluation and full release qualificatio
 remain incomplete.
 
 ### Next: unchanged explicit-ascription consumers
+
+Investigation confirms `refinement.rs::coercion` already returns the exact changed
+decision, but `expressions.rs` discards it through `coerce`. Typed stages retain
+operation/result edges even for erased ascriptions; those edges must stay intact.
+The implementation follows the dependency-ordered commit plan below.
+Capture now retains the actual changed decision, rejects inconsistent replays and
+keeps predicate/stopped decisions false. All six `typed_stages` library tests pass
+(`/tmp/meowy-ascription-capture.log`); formatting passes. Report qualification is next. Preserve unrelated `docs/programs/hey/`.
 
 1. In `expressions.rs` and `dependencies/typed.rs`, retain the existing
    `refinement.rs::coercion` changed decision for explicit ascriptions while preserving
