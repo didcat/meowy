@@ -2780,8 +2780,11 @@ commit `bf5b1d8`). Output consumers now fall back to the exact dispatch-primary
 qualifier only for observed scalar projections, preserving original part indices.
 All 683 forward-report tests pass (`/tmp/meowy-output-dispatch-consumers.log`),
 including owner/kind, sparse observations, stopped prefixes and opaque/inner-coercion
-boundaries. Late identity/cycle/limit
-coverage is next; no new generic value-forwarding path or language contract is needed.
+boundaries (integration commit `65a82d4`). Ten late shape/origin/owner/registration
+faults, duplicate visits, mixed initializer cycles, independent control and exact
+map/work boundaries pass all eight dispatch-output tests
+(`/tmp/meowy-output-dispatch-boundaries.log`). Required source
+cases are next; no new generic value-forwarding path or language contract is needed.
 
 `FormatInput` now stores the checked point, primary flag and optional source shape. Output
 consumers stream observed projected parts into `primary_slot` or the scalar dispatch
@@ -2801,8 +2804,8 @@ Dependency-ordered commit plan:
 3. Integration complete: qualify only observed scalar output-owned primary projections against exact
    dispatch result slots using the captured source kind. Retain the original part
    index in each Projection port and existing shared map/payload/work accounting.
-   List/emission rules and generic value forwarding are unchanged. Next add late
-   identity, cycle, control and resource-limit coverage in a separate slice.
+   List/emission rules and generic value forwarding are unchanged. Late identity,
+   cycle, control and resource-limit coverage is complete in a separate slice.
 4. Add required print/interpolation/panic-prefix source cases and classified evidence;
    run compiler, strict and documentation gates and refresh both handoffs.
 

@@ -1,5 +1,7 @@
 use super::*;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn dispatch_output_primaries_keep_original_parts_shapes_and_independent_owners() {
     for method in ["print", "panic"] {
