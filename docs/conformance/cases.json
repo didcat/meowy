@@ -4026,6 +4026,30 @@
         "code": "E305"
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_source_receiver_stop",
+      "phase": "run",
+      "source": "sources/dispatch_source_receiver_stop.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_source_body_stop",
+      "phase": "run",
+      "source": "sources/dispatch_source_body_stop.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nbody\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

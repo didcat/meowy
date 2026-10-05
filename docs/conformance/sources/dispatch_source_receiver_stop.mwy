@@ -1,0 +1,10 @@
+d : @"debug"
+stop <never> : () {
+    d.print("receiver")
+    d.panic("stop")
+}
+value : stop().{
+    d.print("unreachable body")
+    -> 1
+}
+d.print("unreachable")

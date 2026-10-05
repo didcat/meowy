@@ -2549,6 +2549,13 @@ cases now pass debug/release (`/tmp/meowy-dispatch-sources-source.log`). Classif
 evidence is updated and coverage regenerated; all four source-slice documentation
 checks pass (`/tmp/meowy-dispatch-sources-source-docs.log`). Stopped receiver/body
 source cases remain a separate slice.
+Core source slice: `6e23f08`. Both stopped receiver/body cases now also pass
+debug/release, with exact prefixes, P006 and exit 1; all five new cases pass
+(`/tmp/meowy-dispatch-sources-source.log`). The preservation audit retains 378 prior
+cases, 412 source assets, 37 references/hashes, capability pins and proof obligations
+(`/tmp/meowy-dispatch-sources-preservation.log`). All four final source-slice
+documentation checks pass (`/tmp/meowy-dispatch-sources-panic-docs.log`); the full
+compiler and strict gates remain.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent
