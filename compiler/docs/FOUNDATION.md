@@ -7,8 +7,10 @@ unmodeled members of the partial memory/strings/proof modules remain B001.
 
 The [`core.literal` intrinsic](NUMBERS.md) consumes numeric syntax through its
 resolved identity, including immutable aliases. Its operand bypasses numeric
-name lookup while retaining ordinary literal typing and range checks. The result
-is ordinary scalar HIR; no runtime callable or library allocation is introduced.
+name and numeric-root member lookup while retaining ordinary literal typing and
+range checks. `@"core".literal(10.4)` constructs a decimal even when `10` is bound.
+The result is ordinary scalar HIR; no runtime callable or library allocation is
+introduced.
 
 ## Proof revision metadata
 

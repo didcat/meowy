@@ -26,8 +26,9 @@ not rerun initialization or create another module-storage binding. Reading an
 exported Copy value retains normal value-copy semantics.
 
 [Numeric value exports](NUMBERS.md) retain the same visibility, initialization
-and facade rules. `module.1` and `module.1.0` select exact numeric export names;
-parenthesize a numeric module alias before member selection, as in `(1).field`.
+and facade rules. `module.1` selects export `1`; `module.1.0` then selects its field
+`0`. Export names cannot contain dots. Numeric module aliases use ordinary member
+selection, including `1.field` and `1.4`, without required grouping.
 
 ## Annotated function exports
 

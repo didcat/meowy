@@ -42,9 +42,11 @@ The checker does not execute them. This is a narrow effect check; source helper
 purity and transitive call analysis are not implemented by this slice.
 
 [Numeric bindings](NUMBERS.md) use the same lexical scopes, eligibility checks and
-fixed types in required evaluation. `core.literal(number)` supplies intrinsic
-numeric syntax when a spelling is shadowed; its literal evaluation keeps the
-existing logical charges and budgets.
+fixed types in required evaluation. `10.4` reads field `4` when `10` is bound;
+missing fields or invalid receivers remain errors. Only an unbound root allows
+decimal fallback, subject to existing required-evaluation limits.
+`core.literal(number)` bypasses both numeric-name and numeric-root member lookup;
+its literal evaluation keeps the existing logical charges and budgets.
 
 ## Type subtraction
 
