@@ -113,6 +113,10 @@ zero failures in both profiles (`/tmp/meowy-numeric-source-required.log`).
 Coverage hashes reviewed. All six documentation/editor checks also pass
 (`/tmp/meowy-numeric-editor.log`); editor changes remain a separate slice.
 
+Required contract: the preceding commit. Numeric declaration and callable heads now
+receive appropriate Vim/Neovim highlighting; ordinary uses retain lexical numeric
+colors. All six checks passed (`/tmp/meowy-numeric-editor.log`).
+
 Next steps: checked-link and module source cases, remaining docs and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification

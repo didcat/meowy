@@ -249,5 +249,15 @@ receiver_borrow : value.{ -> &$ }
 receiver_query : value.{ -> $<> }
 receiver_string : "$ stays literal; {$} is an expression"
 
+1 : @"core".literal(2)
+0x1 <uint8> : literal(1)
+1.0 := 2.5
+numeric_read : 1 + 0x1 + 1.0
+2 <int32> : (3 <int32>) { -> 3 }
+1e2 : () { -> 7 }
+numeric_call : 2(4)
+numeric_float_call : 1e2(4)
+numeric_string : "1 : literal(2)"
+
 #||| unclosed documentation
 ||# still unclosed documentation

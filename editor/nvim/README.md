@@ -172,3 +172,12 @@ assertions or editor errors.
 
 The bundle uses the standard [syntax runtime](https://neovim.io/doc/user/syntax/)
 and [filetype runtime](https://neovim.io/doc/user/filetype/) conventions.
+
+## Numeric value names
+
+Numeric declarations use Identifier highlighting; numeric function declarations
+and calls use Function highlighting. This includes hexadecimal, binary, separated,
+floating-point and exponent spellings. Other numeric occurrences retain Number
+or Float highlighting because the syntax runtime does not resolve lexical scope.
+`core.literal(...)` uses ordinary member/call highlighting. See the
+[numeric name contract](../../docs/reference/syntax.md#numeric-names-and-intrinsic-literals).
