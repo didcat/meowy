@@ -1,0 +1,21 @@
+d : @"debug"
+receiver <int32> : (n <int32>) { d.print("receiver"); -> n }
+
+show <null> : (flag <boolean>) {
+    value : receiver(3).{
+        d.print("body")
+        unused <never> : () { d.panic("unused") }
+        local : { -> $ }
+        nested : 4.{ d.print("nested"); -> $ }
+        | flag | -> local
+        | !flag | -> nested
+        d.print("tail")
+    }
+    copy <int32> : ((value~<int32>))
+    row : { -> copy; -> again : value }
+    d.print(row)
+    d.print(row.again)
+}
+
+show(true)
+show(false)

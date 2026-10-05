@@ -3996,6 +3996,36 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "dispatch_source_chain",
+      "phase": "run",
+      "source": "sources/dispatch_source_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nbody\nnested\ntail\n3\n3\nreceiver\nbody\nnested\ntail\n4\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_source_boundaries",
+      "phase": "run",
+      "source": "sources/dispatch_source_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\n3\n2\n2\n3\ntrue\n2\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_source_shared_write",
+      "phase": "check",
+      "source": "sources/dispatch_source_shared_write.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

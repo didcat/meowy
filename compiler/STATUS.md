@@ -2539,6 +2539,16 @@ covered. All 50 dispatch-focused tests pass
 (`/tmp/meowy-dispatch-sources-traversal-limits.log`); the complete forward-report
 family also passes (`/tmp/meowy-dispatch-sources-reports.log`). Source cases and
 final compiler/strict/documentation gates are next.
+Traversal limits: `c81709b`. The first new source case passes debug/release.
+The boundary fixture's E222 came from prefix `&owned.n`, which reads through a
+borrowed receiver; use the documented selected-field borrow `owned.&n`. The first
+rejection fixture hit the existing B001 shared-field assignment-path gap, so use
+supported scalar indirect assignment to test shared-receiver E305 instead. No
+capability exception, old fixture or old expectation changed. All three source
+cases now pass debug/release (`/tmp/meowy-dispatch-sources-source.log`). Classified
+evidence is updated and coverage regenerated; all four source-slice documentation
+checks pass (`/tmp/meowy-dispatch-sources-source-docs.log`). Stopped receiver/body
+source cases remain a separate slice.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent

@@ -1,0 +1,22 @@
+d : @"debug"
+empty : 3.{}
+absent <null> : { -> empty }
+d.print(absent<null>)
+
+owned : { -> n := 2 }
+value : owned.{ $.n = 3; -> $.n }
+copy : { -> value }
+d.print(copy)
+d.print(owned.n)
+shared : &owned
+read : shared.{ -> $.n }
+d.print(read)
+row : 3.{ -> n : $ }
+d.print(row.n)
+flag := false
+maybe : flag.{ | $ | -> 1 }
+d.print(maybe<null>)
+items : 2.{ -> [$, $] }
+d.print(items.size())
+view : (owned.&n).{ -> $ }
+d.print(*view)
