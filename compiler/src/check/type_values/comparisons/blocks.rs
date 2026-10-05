@@ -35,6 +35,8 @@ impl Checker {
     ) -> Result<Option<Type>> {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.form_work(expr, depth, count)?;
         if expected.is_some_and(|ty| !matches!(ty, Type::Int { .. })) {
             return Err(Self::error(
@@ -58,6 +60,7 @@ impl Checker {
             ExprKind::Unary { op, value } if matches!(op.as_str(), "-" | "~") => {
                 if op == "-"
                     && let ExprKind::Int(text) = &value.kind
+                    && self.numeric_name(value).is_none()
                 {
                     self.form_work(value, depth + 1, count)?;
                     return expected

@@ -8,16 +8,14 @@ impl Checker {
         if !self.required {
             return Ok(());
         }
+        let signed = matches!(&expr.kind, ExprKind::Unary { op, value }
+            if op == "-" && matches!(value.kind, ExprKind::Int(_)) && self.numeric_name(value).is_none());
         let Some(work) = &mut self.type_work else {
             return Ok(());
         };
         let steps = match &expr.kind {
             ExprKind::Int(_) | ExprKind::Name(_) | ExprKind::Field { .. } => 1,
-            ExprKind::Unary { op, value }
-                if op == "-" && matches!(value.kind, ExprKind::Int(_)) =>
-            {
-                2
-            }
+            ExprKind::Unary { op, .. } if op == "-" && signed => 2,
             ExprKind::Unary { op, .. } if matches!(op.as_str(), "-" | "~") => 1,
             ExprKind::Binary { op, .. }
                 if matches!(op.as_str(), "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^") =>
@@ -60,6 +58,8 @@ impl Checker {
     pub(crate) fn scalar_input(&mut self, expr: &ast::Expr) -> Result<()> {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| match &expr.kind {
             ExprKind::Int(_) => Ok(()),

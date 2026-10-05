@@ -43,6 +43,8 @@ impl Checker {
     ) -> Result<Type> {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.form_work(expr, depth, count)?;
         let ty = match &expr.kind {
             ExprKind::Int(text) => self.integer(text, false, expected, expr.span)?.ty,
@@ -66,6 +68,7 @@ impl Checker {
             ExprKind::Unary { op, value } if matches!(op.as_str(), "-" | "~") => {
                 if op == "-"
                     && let ExprKind::Int(text) = &value.kind
+                    && self.numeric_name(value).is_none()
                 {
                     self.form_work(value, depth + 1, count)?;
                     return self

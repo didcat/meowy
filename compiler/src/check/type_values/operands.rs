@@ -71,6 +71,8 @@ impl Checker {
     ) -> Result<hir::Expr> {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| match &expr.kind {
             ExprKind::Block(_) => {
@@ -101,7 +103,9 @@ impl Checker {
             }
             ExprKind::Unary { op, value }
                 if matches!(op.as_str(), "-" | "~")
-                    && !(op == "-" && matches!(value.kind, ExprKind::Int(_))) =>
+                    && !(op == "-"
+                        && matches!(value.kind, ExprKind::Int(_))
+                        && self.numeric_name(value).is_none()) =>
             {
                 self.charge_integer(expr)?;
                 let context = self.unary_context(op, value, expected)?;
