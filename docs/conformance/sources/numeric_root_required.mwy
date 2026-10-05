@@ -1,0 +1,18 @@
+debug : @"debug"
+10 : {
+    -> 4 <uint8> : 3
+    -> flag : true
+    -> 8 : { -> 9 <uint8> : 2 }
+}
+<Items> : {
+    flag : 10.flag
+    count : 10.4 + 10.8.9
+    -> <uint8[count]>
+}
+items <Items> : [1, 2, 3, 4, 5]
+debug.print(items.size())
+values : [10.4, 4]
+debug.print(values[1])
+<Byte> : 10.4<>
+byte <Byte> : 7
+debug.print(byte)

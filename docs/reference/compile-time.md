@@ -68,6 +68,9 @@ evaluable under these rules, without executing module initialization.
 
 Numeric spellings use ordinary lexical lookup in required expressions too.
 A numeric binding must satisfy the same eligibility rules as an identifier.
+A bound numeric root makes `10.4` a field read with the field's type, ancestor
+work and input eligibility. Missing or ineligible fields do not retry decimal
+construction. Undotted names remain distinct; dotted declaration names are invalid.
 [`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) constructs its
 numeric syntax operand without reading a same-spelled binding. Its literal and
 optional negation use ordinary literal evaluation charges, with no runtime call

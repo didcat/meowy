@@ -3778,6 +3778,26 @@
         "code": "E004"
       },
       "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_root_required",
+      "phase": "run",
+      "source": "sources/numeric_root_required.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "5\n3\n7\n"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "numeric_dotted_parameter",
+      "phase": "check",
+      "source": "sources/numeric_dotted_parameter.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E004"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
     }
   ]
 }

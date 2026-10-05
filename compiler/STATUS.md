@@ -113,8 +113,14 @@ of dotted names. The numeric facade source uses a numeric module alias and numer
 callable/member paths with the original ./facade.mwy import retained. Expected
 outputs pass in both profiles (/tmp/meowy-root-first-required-cases-fixed.log).
 
-Next: required/diagnostic reference details and additional source rejections,
-then teaching/compiler docs and final gates.
+Required-evaluation and diagnostic references now cover numeric field eligibility,
+ancestor work, fixed types and declaration/member errors. Required numeric paths,
+list context, type queries and dotted-parameter rejection have mandatory source
+cases. Conformance passes 340 required cases with 19 unchanged gaps and zero
+failures in both profiles (/tmp/meowy-root-first-required-cases-fixed.log).
+
+Next: missing/scalar member and dotted-emission source rejections, then remaining
+documentation commits and final compiler/editor gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

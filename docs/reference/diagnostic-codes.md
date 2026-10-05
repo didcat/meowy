@@ -152,7 +152,9 @@ See [types](types.md) and [values and blocks](values-and-blocks.md).
 an identifier, a grouped value or an arithmetic expression. Wrong intrinsic arity
 is `E212`; numeric token and representability errors remain `E001` and `E216`.
 A numeric binding follows ordinary duplicate-name (`E203`), fixed-type (`E207`)
-and write-permission (`E305`) rules.
+and write-permission (`E305`) rules. Dotted declaration names such as `10.4 : value`
+are `E004`. Once a numeric root is bound, missing members and invalid scalar
+receivers report the ordinary member error (`E201`), never decimal fallback.
 
 `E207` covers initialization as well as later assignment. Changing `"twenty"` to
 `20` is not a type conversion defined by the language. `E208` concerns a value
