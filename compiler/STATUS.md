@@ -2527,6 +2527,12 @@ Unknown history pass, together with all 2621 library tests
 (`/tmp/meowy-dispatch-sources-walk.log`). Original Value inputs and the ordinary
 candidate forest remain independent of expanded traversal. Descriptor corruption
 and aggregate budget/cycle tests are the next slices.
+Traversal slice: `d47b7b8`. Boundary/resource tests now cover 15 stored descriptor
+and origin faults, exact qualifier work, dispatch index/map/payload limits and
+late producer conflicts without partial publication. All 46 dispatch-focused tests
+pass (`/tmp/meowy-dispatch-sources-boundaries.log`). Formatting and whitespace
+checks pass. Remaining checks cover mixed traversal cycles/depth/work and source
+conformance before the final compiler gates.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent
