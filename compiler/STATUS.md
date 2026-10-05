@@ -2424,6 +2424,14 @@ checks pass. This is a behavior-preserving prerequisite commit, before scalar-on
 qualification, descriptor collection and forest integration. Unrelated
 `docs/programs/hey/` remains excluded.
 
+Shared qualification is committed as `7b48583`. The scalar-only qualifier and
+consumer/primary-slot descriptor are test-enabled until collection uses them.
+All three focused qualifier tests pass (`/tmp/meowy-scalar-blocks-qualifier.log`),
+covering scalar kinds, wrappers and independent owners while leaving record
+projections, unknown layouts, stopped results, calls and fields opaque.
+The next representation adds an optional block descriptor
+beside the existing field source in each Direct row, with exclusive alternatives.
+
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
 `results/inputs/direct.rs` currently stores only field-source descriptors. A direct
 Value candidate whose input resolves to a scalar block still lacks a block-source

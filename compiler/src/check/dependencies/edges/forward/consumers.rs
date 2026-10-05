@@ -10,6 +10,9 @@ mod index;
 mod primary;
 
 #[cfg(test)]
+pub(super) mod scalars;
+
+#[cfg(test)]
 mod outputs;
 
 #[cfg(test)]
