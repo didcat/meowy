@@ -55,9 +55,19 @@ impl Checker {
             ExprKind::TypeValue(_) | ExprKind::TypeQuery(_) => Ok(true),
             ExprKind::Group(value) => self.type_operand_form(value, depth + 1, count),
             ExprKind::Name(_) | ExprKind::Field { .. } => {
+                let number = self.numeric_receiver(expr)?;
                 let mut base = expr;
                 let mut depth = depth;
-                while let ExprKind::Field { value, .. } | ExprKind::Group(value) = &base.kind {
+                loop {
+                    if matches!(base.kind, ExprKind::Int(_) | ExprKind::Float(_))
+                        && let Some(number) = number.as_deref()
+                    {
+                        base = number;
+                    }
+                    let (ExprKind::Field { value, .. } | ExprKind::Group(value)) = &base.kind
+                    else {
+                        break;
+                    };
                     base = value;
                     depth += 1;
                     self.form_work(base, depth, count)?;

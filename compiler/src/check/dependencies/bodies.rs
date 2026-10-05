@@ -402,6 +402,8 @@ impl Checker {
             ast::ExprKind,
             check::{InputUse, Value},
         };
+        let number = self.numeric_expression(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         if self.value_name(expr).is_none() && !matches!(expr.kind, ExprKind::Field { .. }) {
             return Ok(());
         }
@@ -417,12 +419,19 @@ impl Checker {
         else {
             return Ok(());
         };
+        let number = self.numeric_receiver(expr)?;
         let mut base = expr;
-        while let ExprKind::Field { value, .. } | ExprKind::Group(value) = &base.kind {
+        loop {
+            match &base.kind {
+                ExprKind::Int(_) | ExprKind::Float(_) if number.is_some() => {
+                    base = number.as_deref().unwrap();
+                }
+                ExprKind::Field { value, .. } | ExprKind::Group(value) => base = value,
+                _ => break,
+            }
             if !self.flow.spend(1) {
                 return Err(Walk::budget(expr.span));
             }
-            base = value;
         }
         let Some(name) = self.value_name(base) else {
             return Ok(());

@@ -62,8 +62,13 @@ pass (/tmp/meowy-root-first-storage.log, /tmp/meowy-root-first-borrows.log).
 All six native numeric groups pass in debug/release, including root/fallback
 selection and direct/nested writes/borrows (/tmp/meowy-root-first-native.log).
 
-Next: commit required/list integration and checked-doc paths, then migrate only
-numeric fixtures invalidated by the agreed contract. Full gate remains pending.
+Storage integration is committed. Required fields now retain root lookup, ancestor
+charges, captured read identities and type-comparison traversal. All 196 type-value
+and 45 dependency-body groups pass (/tmp/meowy-root-first-types.log,
+/tmp/meowy-root-first-reads.log), including nested values, kind/width/mutability
+errors and equal logical cost for grouped and ungrouped paths.
+
+Next: list probes and checked-doc paths, then contract/source migration and gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

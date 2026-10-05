@@ -46,11 +46,17 @@ impl Source {
 
 impl Checker {
     pub(crate) fn charge_ancestors(&mut self, expr: &ast::Expr) -> Result<()> {
+        let number = self.numeric_receiver(expr)?;
         let ExprKind::Field { value, .. } = &expr.kind else {
             unreachable!()
         };
         let mut node = value.as_ref();
         loop {
+            if matches!(node.kind, ExprKind::Int(_) | ExprKind::Float(_))
+                && let Some(number) = number.as_deref()
+            {
+                node = number;
+            }
             if let ExprKind::Group(value) = &node.kind {
                 node = value;
                 continue;
@@ -64,10 +70,14 @@ impl Checker {
     }
 
     pub(crate) fn required_path(&mut self, expr: &ast::Expr) -> Result<(Source, Type, Vec<usize>)> {
+        let number = self.numeric_receiver(expr)?;
         let mut root = expr;
         let mut names = Vec::new();
         loop {
             match &root.kind {
+                ExprKind::Int(_) | ExprKind::Float(_) if number.is_some() => {
+                    root = number.as_deref().unwrap();
+                }
                 ExprKind::Field { value, name } => {
                     if names.len() == MAX_RECORD_DEPTH + 1 {
                         return Err(super::Work::budget(expr.span));

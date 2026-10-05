@@ -3,6 +3,58 @@ use crate::check::required::MAX_STEPS;
 use crate::check::type_values::integer_accounting::value;
 use crate::check::{Checker, Value};
 
+#[test]
+pub(crate) fn numeric_required_paths_keep_values_types_and_ancestor_costs() {
+    for source in [
+        "10:{->4:{->5<uint8>:3}};<T>:{n:10.4.5;-><int32[n]>};v<T>:[0,0,0]",
+        "10:{->4:{->5:true}};<T>:{flag:10.4.5;|flag|-><int32>;|!flag|-><boolean>};v<T>:7",
+        "10:{->4:{->5:3}};<T>:{part:10.4;-><int32[part.5]>};v<T>:[0,0,0]",
+        "<T>:{10:{->4:{->5:3}};n:10.4.5;-><int32[n]>};v<T>:[0,0,0]",
+        "10:{->4:{->5<uint8>:3}};<T>:{same:10.4.5<> == <uint8>;|same|-><int32>};v<T>:7",
+    ] {
+        crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+    }
+    for (source, code) in [
+        ("10:{->4:{->5:3}};<T>:{n:10.4.6;-><int32[n]>}", "E201"),
+        (
+            "10:{->4:{->5<uint8>:3}};<T>:{n<int32>:10.4.5;->n<>}",
+            "E207",
+        ),
+        ("10:{->4:{->5:=3}};<T>:{n:10.4.5;->n<>}", "E211"),
+    ] {
+        let errors = crate::compile(source).unwrap_err();
+        assert_eq!(errors[0].code, code, "{source}: {errors:?}");
+    }
+    let mut costs = Vec::new();
+    for source in ["10.4.5", "((10).4).5"] {
+        let mut checker = crate::check::inputs::tests::check("->10:{->4:{->5<uint8>:7}}");
+        let id = checker.module.inputs["10"].id;
+        checker
+            .declare(
+                "10",
+                Value::Local {
+                    id,
+                    ty: checker.locals[id].clone(),
+                    mutable: false,
+                    owner: 0,
+                    constant: None,
+                },
+                Span::new(0, 2),
+            )
+            .unwrap();
+        let expr = value(source);
+        let steps = checker
+            .required_root(expr.span, |checker| {
+                checker.scalar_input(&expr)?;
+                checker.integer_result(&expr, None)?;
+                Ok(checker.type_work.as_ref().unwrap().logical.steps)
+            })
+            .unwrap();
+        costs.push(steps);
+    }
+    assert_eq!(costs, [3, 3]);
+}
+
 pub(crate) fn checker(module: bool) -> Checker {
     let mut checker =
         crate::check::inputs::tests::check("->row:{->part:{->n<uint8>:7;->flag:true}}");
