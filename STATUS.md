@@ -22,28 +22,34 @@ non-migrated assets and capability/proof inventories are preserved.
 
 The [compiler handoff](compiler/STATUS.md#numeric-shadowing-implementation) records
 the exact six-asset contract migration, verification and individual commits.
-Unrelated docs/programs/hey/ remains excluded. The next compiler milestone remains
-observed Forward coercions for direct field sources; full release qualification
-and proof evaluation remain incomplete.
+Unrelated docs/programs/hey/ remains excluded. The current compiler handoff below
+records the next milestone; full release qualification and proof evaluation remain
+incomplete.
 
 ## Current compiler and coverage handoff
 
-Direct field-source resolution now follows explicit groups mixed with observed
-unchanged narrowing. Shared group validation preserves original candidate points,
-terminal fields, owners and both report paths under bounded work, hops and cache
-payload. The [compiler handoff](compiler/STATUS.md#direct-field-sources-through-explicit-groups)
-records five implementation/test commits and the next ordered plan.
+Direct field sources now traverse observed, non-projecting Forward coercions mixed
+with explicit groups and unchanged narrowing. Shared validation preserves original
+candidate points, terminal fields, owners and both forests under bounded work,
+hops and cache payload. Other coercions, ascriptions, initializer reads and loads
+remain opaque. The [compiler handoff](compiler/STATUS.md#direct-field-sources-through-observed-forward-coercions)
+records four implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2540 library/915 native tests and 62 Python groups
-(`/tmp/meowy-group-fields-gate.log`). Conformance has 343 cases: 324 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-group-fields-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-group-fields-docs.log`).
-Prior cases, reference contracts, capability pins and proof obligations are preserved
-(`/tmp/meowy-group-fields-preservation.log`). Proof evaluation and full
-language/release qualification remain incomplete.
+All eight focused groups and 558 forward-report tests pass. Four required source
+cases pass in debug/release, preserving typed composition/tail order, conversions,
+snapshots, stopped tails and ordinary initializer rejection. All ten compiler
+checks pass: 2575 library/921 native tests and 62 Python groups
+(`/tmp/meowy-forward-fields-gate.log`). Conformance has 366 cases: 347 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-forward-fields-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-forward-fields-docs.log`).
 
-Next, qualify direct field sources through observed Forward coercions.
+The preservation audit confirms 362 prior cases, 396 source assets, reference
+contracts/hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-forward-fields-preservation.log`). Proof evaluation and full language/
+release qualification remain incomplete.
+
+Next, qualify direct field sources through observed unchanged ascriptions.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

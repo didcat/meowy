@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Root-first numeric members pass compiler, documentation and editor gates.
+Updated: 2026-10-05. Direct field sources now follow qualified Forward coercions.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -76,8 +76,8 @@ budget diagnostic taking precedence over the existing exclusive-borrow error;
 | `346d7ff` | Teach root-first numeric member resolution |
 | `42f1426` | Document numeric member integration across compiler subsystems |
 
-Next: resume the existing direct-field-source plan through observed Forward
-coercions below. Full proof evaluation and v0.0.1 release qualification remain
+Next: follow the current direct-field-source handoff below. Full proof evaluation
+and v0.0.1 release qualification remain
 incomplete. Unrelated docs/programs/hey/ is preserved and excluded from commits.
 Nothing was pushed or published.
 
@@ -2221,9 +2221,9 @@ Collection, retained-descriptor qualification and the expanded forest preserve
 original candidate positions and points, terminal fields and source slots. The
 original candidate forest remains unchanged. Groups and narrowing share bounded
 hop/cycle state and work; field/root caches share payload across repeated lookups.
-Coercions, ascriptions, initializer reads, calls, reference loads and changed or
-unobserved narrowing remain opaque. No value, reachability or proof outcome is
-selected or inferred.
+This slice left coercions, ascriptions, initializer reads, calls, reference loads
+and changed/unobserved narrowing opaque. The Forward extension follows below.
+No value, reachability or proof outcome is selected or inferred.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -2259,59 +2259,73 @@ and proof obligations are unchanged (`/tmp/meowy-group-fields-preservation.log`)
 Unrelated `docs/programs/hey/` remains excluded. Proof evaluation and full
 language/release qualification remain incomplete.
 
-### Next: direct field sources through observed Forward coercions
+## Direct field sources through observed Forward coercions
 
-Active investigation: collection and retained-descriptor qualification already
-share `field_narrowing_source`; its producer, owner, body, cycle and hop checks
-also cover coercion points. `forward_coercion_input` already validates observed
-result headers and exact edges, so the first slice can reuse it directly.
-Two typed-source regressions fail on the prior resolver because typed candidates
-remain opaque (`/tmp/meowy-forward-fields-before.log`). The resolver now calls the
-shared Forward qualifier; typed opacity expectations move to positive coverage.
-All 2569 library tests pass (`/tmp/meowy-forward-fields-library.log`); formatting
-and whitespace checks pass. Typed primary/named candidates, independent owners,
-mixed group/coercion/narrowing chains and both forests retain their identities.
-Mutable-field provenance remains opaque at the existing boundary. Resolver slice:
-`ffa139f`. All five Forward-field groups now pass, including missing observations
-at every coercion, Convert/projected/Stopped and other opaque producers, and 25
-late corrupt-header/route/owner/conflicting-producer variants with and without
-stored field associations (`/tmp/meowy-forward-fields-boundaries.log`). Failures
-publish no partial source map or forest (`f781432`). All eight Forward-field
-groups pass after adding individually qualified coercion/group/narrowing cycles,
-exact mixed hop/work/cache budgets and Unknown/empty/multiple histories
-(`/tmp/meowy-forward-fields-limits.log`). All 558 forward-report tests pass
-(`/tmp/meowy-forward-fields-reports.log`); cycle/limit slice is `df5171e`.
-Four required typed field-source cases and their classified evidence are added;
-all pass fresh-compiler debug/release checks (`/tmp/meowy-forward-fields-source.log`).
-They preserve typed composition/tail order across owners, wrapper/snapshot behavior,
-P006 after emission and E207 for an unproven nullable initializer. All four default
-checks pass (`/tmp/meowy-forward-fields-source-docs.log`). The preservation audit
-confirms 362 prior case records, 396 source assets, 37 reference contracts/hashes,
-capability pins and proof obligations are unchanged
-(`/tmp/meowy-forward-fields-preservation.log`). Final compiler/strict gates remain.
-Preserve unrelated `docs/programs/hey/`.
+The direct-source resolver now reuses `forward_coercion_input` for observed,
+non-projecting Forward coercions mixed with groups and unchanged narrowing.
+Collection and retained-descriptor qualification use the same exact route checks.
+Original candidate points, terminal fields, source slots, owners and both forests
+remain distinct. Record consumers still stop at Field results; no values,
+reachability, loan authority or proof outcomes are inferred.
 
-Commit plan: resolver with focused integration tests; corruption/opacity/cycle
-boundaries; exact resource limits if needed as a separate reviewable slice;
-required source fixtures and classified evidence; final gates and handoff.
+Missing result observations, Convert/projected/Stopped coercions, ascriptions,
+initializer reads, calls, shared-reference loads and changed/unobserved narrowing
+remain opaque. Mixed wrappers share bounded hop/cycle state and work; repeated
+field/root lookups retain the same payload cache. Late corrupt headers, edges,
+owners or conflicting producers publish no partial report.
 
-1. Complete: in `consumers/field_results/lookup/narrowing.rs`, reuse
-   `forward_coercion_input` from `effects/coercions.rs` to follow observed,
-   non-projecting Forward coercions mixed with groups and unchanged narrowing.
-   Keep collection and stored-descriptor qualification on the same resolver;
-   preserve original Value points, terminal fields and the original forest.
-   Include focused typed/grouped candidate and expanded-forest regressions.
-2. Complete: opacity/header/route/owner boundaries, mixed cycles and exact shared
-   work/hop/cache limits. Ascriptions, initializer reads, calls and reference loads
-   remain opaque.
-3. Complete: required typed field-source cases and classified evidence preserve
-   reference contracts, earlier fixtures and pinned capability gaps.
-4. Run compiler, strict and final documentation gates and update this handoff.
+| Reviewable slice | Commit |
+| --- | --- |
+| Resolve typed sources with shared Forward validation | `ffa139f` |
+| Reject absent observations, opaque stages and corrupt routes | `f781432` |
+| Bound mixed cycles, work, hops and cache payload | `df5171e` |
+| Pin typed execution, stopped tails and initializer rejection | `ac14ed1` |
+
+Both new resolver regressions fail on the original code
+(`/tmp/meowy-forward-fields-before.log`). All eight Forward-field groups and all
+558 forward-report tests pass (`/tmp/meowy-forward-fields-limits.log`,
+`/tmp/meowy-forward-fields-reports.log`). Seeded cycles qualify each leg before
+rejecting the revisit; these and exact resource limits are structural evidence.
+Unknown, empty and multiple candidate histories remain intact.
+
+Four required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-forward-fields-source.log`). They pin typed composition/tail order
+across owners, conversions, primary extraction, mutable snapshots, shared loads,
+P006 after emission and E207 for an unproven nullable initializer. All four
+source-slice documentation checks pass (`/tmp/meowy-forward-fields-source-docs.log`).
+The preservation audit confirms 362 prior cases, 396 source assets, 37 reference
+contracts/reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-forward-fields-preservation.log`).
+
+All ten compiler checks pass: formatting, Clippy, 2575 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-forward-fields-gate.log`). Conformance has 366 cases: 347 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-forward-fields-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-forward-fields-docs.log`).
+No outstanding failures remain. Unrelated `docs/programs/hey/` is preserved.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: direct field sources through observed unchanged ascriptions
+
+Dependency-ordered commit plan:
+
+1. In `consumers/field_results/lookup/narrowing.rs`, reuse
+   `unchanged_ascription_input` from `effects/typed.rs` to qualify observed,
+   normal, unchanged ascriptions mixed with Forward/groups/narrowing. Preserve
+   original Value candidates and both report paths; include focused typed/grouped
+   source and expanded-forest regressions in this first commit.
+2. Separately cover absent results, predicates, changed/stopped ascriptions,
+   corrupt headers/routes, producer conflicts, mixed cycles, owners and exact
+   shared hop/work/cache limits. Keep initializer reads, calls and loads opaque.
+3. Add required source cases and classified evidence for ascription behavior,
+   including E208, without changing references or prior fixtures/capability pins.
+4. Run compiler, strict and final documentation gates and refresh both handoffs.
 
 Do not make Field results transparent in `consumers/grouped.rs` or select candidate
-values. Aggregate provenance, precise branch/overwrite joins, function returns,
-restart propagation, E225 enforcement and proof outcomes remain later work.
-Shared-reference loads gain no loan authority.
+values. Initializer forwarding, aggregate provenance, precise branch/overwrite
+joins, function returns, restart propagation, E225 enforcement and proof outcomes
+remain later work. Shared-reference loads gain no loan authority.
 
 ## Documentation conventions and layout
 
@@ -3900,9 +3914,10 @@ source slots and unchanged observed ascriptions. Field Operation/Normal observat
 are now independent, and bounded result-candidate inputs retain qualified composed
 source slots. Candidate traversal and observed field-result source links are
 implemented, including direct-input lookup through unchanged narrowing and a
-separate expanded field-source forest. Explicit-group direct-source resolution is
-complete. Observed non-projecting Forward coercions are next, following the ordered
-plan above; value selection and broader field-value provenance remain separate.
+separate expanded field-source forest. Explicit-group and observed non-projecting
+Forward direct-source resolution are complete. Observed unchanged ascriptions are
+next, following the ordered plan above; value selection and broader field-value
+provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4504,8 +4519,10 @@ plan above; value selection and broader field-value provenance remain separate.
    (`cc43868`) pass the compiler gate; strict results are recorded above.
    Shared group qualification (`39032ab`), direct resolution (`d75b744`), identity/
    cycle boundaries (`fa55889`), limits (`1790a65`) and source cases (`b2005f1`)
-   pass the compiler gate; strict/final docs are recorded above. Next qualify direct
-   field sources through observed non-projecting Forward coercions, following the
+   pass the compiler gate; strict/final docs are recorded above. Forward direct-source
+   resolution (`ffa139f`), boundaries (`f781432`), limits (`df5171e`) and source cases
+   (`ac14ed1`) are implemented; current gate results are recorded above. Next qualify
+   direct field sources through observed unchanged ascriptions, following the
    ordered plan, before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
