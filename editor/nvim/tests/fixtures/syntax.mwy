@@ -252,7 +252,11 @@ receiver_string : "$ stays literal; {$} is an expression"
 1 : @"core".literal(2)
 0x1 <uint8> : literal(1)
 1.0 := 2.5
+0b1 := 3
+1_000 : 4
+1e+2 <float32> : 5.0
 numeric_read : 1 + 0x1 + 1.0
+numeric_prefixes : 0b1 + 1_000 + 1e+2
 2 <int32> : (3 <int32>) { -> 3 }
 1e2 : () { -> 7 }
 numeric_call : 2(4)
