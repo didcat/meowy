@@ -2539,23 +2539,21 @@ dispatch capture, while report construction has already moved local types into
 HIR. Reuse the bounded `Completion` shape and retain it in dispatch observations;
 validate it independently of the body's completion. Receiver lookup will use a
 dedicated bounded local-to-producer index and checked lexical containment, without
-fabricating an ordinary statement or admitting receivers to initializer eligibility.
+fabricating an ordinary statement or admitting receivers to ordinary initializer forwarding.
 The current tree contains only unrelated `docs/programs/hey/`. Preservation baseline:
 `/tmp/meowy-receiver-sources-baseline.json` (383 cases and existing contract assets).
 
 Dependency-ordered commit plan:
 
-1. Build a bounded receiver-local-to-dispatch index from exact producer/local/body
-   identities, preserving independent owners, nested `$` and checked lexical
-   containment. No statement ID or ordinary initializer binding may be invented.
-2. Qualify scalar receiver reads only against matching read/storage metadata and
+1. Qualify scalar receiver reads only against matching read/storage metadata,
+   checked lexical containment through ordinary blocks to the nearest dispatch and
    an observed dispatch initialization. Preserve result/body-stop independence;
    absent initialization, references, aggregates, calls and reborrows stay opaque.
    Add exact identity, conflict, cycle and shared-budget regressions with each slice.
-3. Integrate source links using existing input roots, without replaying receiver
+2. Integrate source links using existing input roots, without replaying receiver
    evaluation or granting lifetime/loan authority. Keep ordinary read eligibility,
    original candidates and all Field/Block/Dispatch/composed identities intact.
-4. Add required source cases and classified evidence, then run compiler, strict
+3. Add required source cases and classified evidence, then run compiler, strict
    and final documentation gates and refresh both handoffs.
 
 Record-dispatch consumers, field transparency, aggregate value selection, precise
@@ -2566,9 +2564,14 @@ Receiver shape capture and exact observation/replay checks are implemented. All 
 dispatch-focused tests pass (`/tmp/meowy-receiver-sources-shape.log`), including
 scalar/reference/record/list/union/Never capture, independent stopped bodies and
 atomic rejection of changed shapes. No source forwarding is enabled yet.
-The receiver index will charge each fixed descriptor against the existing shared
+The receiver index charges each fixed descriptor against the existing shared
 payload remainder, alongside its own MAX_EDGES row cap; it does not add ordinary
 consumer or initializer rows. Later traversal retains that same payload budget.
+Its exact local/producer/body and checked HIR-shape identities pass focused tests,
+including independent/nested owners, stopped receivers, 13 identity faults and
+exact capacity/payload/work limits (`/tmp/meowy-receiver-sources-index.log`). Read
+scope qualification and forwarding are next. All 616 forward-report tests pass
+(`/tmp/meowy-receiver-sources-index-reports.log`).
 
 ## Documentation conventions and layout
 

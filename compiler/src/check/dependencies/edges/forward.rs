@@ -8,6 +8,7 @@ mod consumers;
 mod effects;
 mod entries;
 mod initializers;
+mod receivers;
 mod results;
 mod walk;
 
