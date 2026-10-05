@@ -103,3 +103,6 @@ mod limits;
 
 #[cfg(test)]
 mod groups;
+
+#[cfg(test)]
+mod group_faults;

@@ -2147,8 +2147,12 @@ with unchanged narrowing. Collection and expanded traversal retain original poin
 and terminal fields across owners. All three positive/opaque-route groups pass
 (`/tmp/meowy-group-fields-resolver.log`). All 2536 library tests and all-target
 Clippy pass (`/tmp/meowy-group-fields-library.log`,
-`/tmp/meowy-group-fields-lint.log`). Next cover mixed-chain corruption, cycles and
-exact resource limits (step 3).
+`/tmp/meowy-group-fields-lint.log`); committed as `d75b744`. Step 3 is split into
+identity/cycle regressions and exact resource-limit regressions to keep each slice
+independently reviewable. Both corruption/conflict and seeded cycle groups pass
+(`/tmp/meowy-group-fields-faults.log`). Cycle legs qualify individually and the
+resolver detects their revisit; collection can reject changed candidate ancestry
+earlier. No failures remain. Exact resource-limit regressions are next.
 Dependency-ordered commit plan:
 
 1. Extract the existing explicit-group child qualification from
@@ -2161,8 +2165,9 @@ Dependency-ordered commit plan:
    original direct points and terminal fields. Do not infer completion from a stored
    Normal edge or follow unregistered regions. Coercions, ascriptions, initializer
    reads, calls, reference loads and changed/unobserved narrowing remain opaque.
-3. Add focused mixed-chain corruption, cycle and exact shared hop/work/payload
-   regressions through direct-source qualification and expanded traversal.
+3. Add mixed-chain corruption/cycle regressions through collection, qualification
+   and expanded traversal, then commit exact shared hop/work/payload regressions
+   separately.
 4. Add required source cases and classified evidence, preserving prior cases and
    reference contracts.
 5. Run compiler, strict and final documentation gates and update this handoff.
