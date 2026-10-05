@@ -2054,8 +2054,8 @@ A separate position-keyed direct-source map retains each Value candidate's origi
 point and optional terminal field/source Slot. Collection follows field-result
 reporting, reserves remaining combined map capacity and preserves existing candidate
 inputs and forest visits. Unknown/empty/multiple histories stay intact. These links
-are not yet traversed by the original candidate forest and infer no selected value,
-runtime reachability, lifetime authority or proof outcome.
+feed the separate expanded forest below and infer no selected value, runtime
+reachability, lifetime authority or proof outcome.
 
 | Reviewable slice | Commit |
 | --- | --- |
@@ -2089,62 +2089,68 @@ qualification remain incomplete.
 
 ## Traversal through qualified direct field sources
 
-In progress. Inspection confirms that the existing graph borrows original results
-and inputs; direct-source lookup depends on Root markers in the original forest.
-The expanded graph will borrow both reports and use the same traversal engine with
-an explicit field edge. No original inputs or forest entries will be rewritten.
-The borrowed qualifier is implemented as a test-enabled prerequisite. Its three
-identity/cache/work regression groups pass (`/tmp/meowy-expanded-qualifier.log`).
-Qualifier committed as `2f043ea`. The shared traversal now has explicit field-edge
-visits with original candidate/input and terminal-field identities. Existing owner,
-cycle/sharing and pending/output/visited bounds cover both edge kinds. Checked
-source regressions cover mixed composition, sharing and Unknown/empty/discarded
-histories. All twelve original/expanded traversal groups pass
-(`/tmp/meowy-expanded-engine.log`); engine committed as `7972426`. Entry reports
-now collect a separately retained expanded forest after field/direct-source maps,
-consuming the same remaining payload through qualification and traversal. Original
-forest qualification inputs are unchanged. All 2529 library tests and all-target
-Clippy pass (`/tmp/meowy-expanded-library.log`,
-`/tmp/meowy-expanded-integration-lint.log`). Both focused integration groups pass
-with the final test budget reset (`/tmp/meowy-expanded-integration.log`); integrated
-as `4104d99`. Seeded boundary tests now cover self/mutual/branch cycles and diamonds
-across both edge kinds, 2048-slot depth, shared forest state, exact payload/work and
-late descriptor/owner faults. These are structural tests, not source-level cycle
-evidence. All four boundary groups pass (`/tmp/meowy-expanded-boundaries.log`),
-committed as `cfe9512`. Three required source cases now pin mixed field/composition
-order, mutable/empty histories, opaque wrappers/calls/shared reads and duplicate
-field E205. All three pass fresh-compiler debug/release
-(`/tmp/meowy-expanded-source.log`). Coverage is regenerated and all four source-slice
-documentation checks pass (`/tmp/meowy-expanded-source-docs.log`). The preservation
-audit confirms prior cases, fixtures, reference hashes, support pins and proof
-obligations are unchanged (`/tmp/meowy-expanded-preservation.log`). The compiler,
-strict and final documentation gates remain step 6.
+Entry reports now retain a separate expanded forest after field-result and
+direct-source collection. Its borrowed graph view requalifies every Value descriptor
+against the original candidate, point, owner and narrowing/field-result evidence,
+rejecting missing, extra or changed rows with shared per-pass caches.
 
-Dependency-ordered commit plan:
+Explicit Field visits retain original candidate positions and input descriptors,
+terminal fields and source slots. The original Value projections and qualification
+forest remain unchanged. Absent optional sources stay terminal. Composed and field
+edges share owner checks, active-cycle/completed-sharing state and bounded
+pending/visited/output storage and work. Unknown, empty, multiple and discarded
+histories remain distinct; no selected value, execution or proof outcome is inferred.
 
-The original forest must remain available for field-result qualification. Add a
-separate expanded traversal after direct-source collection, retaining the original
-candidate and forest reports as its qualification inputs.
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify retained direct-source graph descriptors | `2f043ea` |
+| Traverse explicit direct field edges | `7972426` |
+| Collect a separate expanded forest | `4104d99` |
+| Cover mixed cycles and exact resource limits | `cfe9512` |
+| Pin source behavior and classified coverage | `cc43868` |
 
-1. In `results/inputs/direct/`, qualify stored direct-source descriptors against
-   their original Value candidate, point, owner and narrowing/field-result evidence.
-   Reuse per-pass caches and reject missing, extra or changed retained descriptors.
-2. Extend the traversal engine with an explicit resolved-field edge for a qualified
-   direct source. Preserve its original candidate position, point and terminal field;
-   do not disguise Value as Primary/Field composition. Keep ordinary direct points
-   terminal when no optional source exists. Share the existing owner, cycle/sharing,
-   pending/visited/output and work bounds; retain Unknown/empty/multiple histories.
-3. Collect the expanded forest only after field results and direct sources, keeping
-   the original forest unchanged to avoid circular qualification. Qualifier, traversal
-   and integration must remain independently reviewable with focused regressions.
-4. Cover shared sources versus cycles, late corruption and exact traversal budgets
-   with focused structural regressions.
-5. Add required composed-plus-field source cases and classified coverage evidence.
-6. Run compiler, strict and final documentation gates; document the completed
-   traversal and leave the next ordered handoff.
+Three qualifier groups, twelve original/expanded traversal groups and four seeded
+boundary groups pass (`/tmp/meowy-expanded-qualifier.log`,
+`/tmp/meowy-expanded-engine.log`, `/tmp/meowy-expanded-boundaries.log`). All 2529
+library tests and all-target Clippy pass after integration, followed by both final
+focused integration groups (`/tmp/meowy-expanded-library.log`,
+`/tmp/meowy-expanded-integration-lint.log`, `/tmp/meowy-expanded-integration.log`).
+The cycles and 2048-slot chains are seeded structural evidence. Three required
+source cases pass fresh-compiler debug/release (`/tmp/meowy-expanded-source.log`);
+all four source-slice documentation checks pass (`/tmp/meowy-expanded-source-docs.log`).
 
-Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
-Aggregate field-value provenance, precise branch/overwrite joins, function returns,
+All ten compiler checks pass: 2533 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-expanded-gate.log`). Conformance has 340 cases: 321 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-expanded-strict.log`). All four final documentation
+checks pass (`/tmp/meowy-expanded-docs.log`). No test failures remain.
+The preservation audit confirms 337 prior cases,
+369 source assets, 37 reference contracts/reviewed hashes, capability pins and proof
+obligations are unchanged (`/tmp/meowy-expanded-preservation.log`). Unrelated
+`docs/programs/hey/` remains excluded. Proof evaluation and full language/release
+qualification remain incomplete.
+
+### Next: direct field sources through explicit groups
+
+1. Extract the existing explicit-group child qualification from
+   `consumers/grouped.rs` into a shared helper, preserving exact checked
+   point/child/span/body/owner and region-edge checks and resource accounting.
+   Keep this behavior-preserving prerequisite separate and run existing grouped
+   consumer regressions before committing.
+2. Extend direct-source resolution in `consumers/field_results/lookup/` through
+   qualified explicit groups mixed with observed unchanged narrowing. Preserve
+   original direct points and terminal fields. Do not infer completion from a stored
+   Normal edge or follow unregistered regions. Coercions, ascriptions, initializer
+   reads, calls, reference loads and changed/unobserved narrowing remain opaque.
+3. Cover mixed group/narrowing chains, independent owners, corruption, cycles and
+   exact shared hop/work/payload bounds through direct-source qualification and
+   expanded traversal. Keep original candidate inputs and the qualification forest
+   unchanged; add required source cases and classified evidence.
+4. Run compiler, strict and final documentation gates and update this handoff.
+
+Do not make Field results transparent in `consumers/grouped.rs` or select candidate
+values. Aggregate provenance, precise branch/overwrite joins, function returns,
 restart propagation, E225 enforcement and proof outcomes remain later work.
 Shared-reference loads gain no loan authority.
 
@@ -3734,9 +3740,10 @@ complete, including output- and contextual-list-owned primary parts and composed
 source slots and unchanged observed ascriptions. Field Operation/Normal observations
 are now independent, and bounded result-candidate inputs retain qualified composed
 source slots. Candidate traversal and observed field-result source links are
-implemented, including direct-input lookup through unchanged narrowing. Traversal
-through qualified direct field sources is next, following the ordered plan above;
-value selection and broader field-value provenance remain separate.
+implemented, including direct-input lookup through unchanged narrowing and a
+separate expanded field-source forest. Explicit-group direct-source resolution is
+next, following the ordered plan above; value selection and broader field-value
+provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4333,8 +4340,11 @@ value selection and broader field-value provenance remain separate.
    (`03e46c3`), boundaries (`1ff75ba`) and source cases (`9373325`) pass the gate.
    Stored lookup (`1cd353b`), narrowing resolution (`444a66a`), direct reports
    (`324fc89`), boundaries (`f4e12ff`) and source cases (`5f602e9`) pass the gate.
-   Next add separate traversal through qualified direct field sources, following
-   the ordered plan above, before wider value provenance work.
+   Direct-source graph qualification (`2f043ea`), explicit traversal (`7972426`),
+   expanded-forest integration (`4104d99`), boundaries (`cfe9512`) and source cases
+   (`cc43868`) pass the compiler gate; strict results are recorded above.
+   Next qualify direct field sources through explicit groups, following the ordered
+   plan above, before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

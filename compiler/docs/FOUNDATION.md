@@ -424,7 +424,8 @@ The report consumes remaining payload for retained visits and visited scratch af
 graph qualification. Invalid identities and exhausted resources publish no partial
 walk or remaining-budget update. Cycle and 2048-slot depth tests use seeded engine
 graphs; checked-source tests separately cover real composition and opaque leaves.
-Field-result forwarding, restart propagation and proof outcomes remain separate.
+Transparent record-consumer field forwarding, restart propagation and proof
+outcomes remain separate.
 
 Operation, block and result records share the map limit. Temporary source-index
 rows/candidates, result-slot entries and copied candidates consume the remaining
@@ -470,7 +471,25 @@ after field-result reporting and leave candidate inputs, composed sources and th
 original forest unchanged. Combined map capacity and qualification-cache payload
 bound publication; late failures return no partial map or remaining budget. Source
 histories keep Unknown, empty and multiple candidates without value selection.
-These optional links are not yet traversed by the original candidate forest.
+The original candidate forest remains an input to qualification and does not follow
+these optional links.
+
+A separate expanded forest is collected after the direct-source map. It first
+qualifies a borrowed view against every original Value candidate, point, owner and
+observed narrowing/field-result route. Missing, extra or changed descriptors are
+invalid. Qualification reuses bounded field/root caches and consumes the same
+remaining payload as traversal; no input or history vectors are copied.
+
+Resolved direct sources produce explicit Field visits retaining the original
+candidate position and input descriptor alongside the terminal field and source
+Slot. The Value projection stays intact. An absent optional source remains a direct
+terminal. Field and composed edges use the same iterative owner, active/completed,
+pending/visited/output and work checks. The expanded forest shares visited state
+across roots and retains Unknown, empty, multiple and discarded histories without
+selecting a value. Late failures publish no partial forest or remaining budget.
+Mixed cycles, diamonds and exact depth/resource bounds are seeded structural tests;
+source cases separately preserve evaluation/tail order, opacity boundaries and
+ordinary duplicate-field rejection. Proof evaluation remains unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
