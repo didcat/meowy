@@ -2329,8 +2329,16 @@ operation visit. Late errors publish no partial map or forest (`dec8a27`). All e
 ascribed-source groups pass, including individually qualified mixed cycles,
 exact hop/work/cache limits and Unknown/empty/multiple histories
 (`/tmp/meowy-ascribed-fields-limits.log`). All 566 forward-report tests pass
-(`/tmp/meowy-ascribed-fields-reports.log`). Source conformance and final gates are
-next. Unrelated `docs/programs/hey/` remains excluded.
+(`/tmp/meowy-ascribed-fields-reports.log`); the cycle/resource slice is `651ce9c`.
+Four new required source cases pass debug/release with the freshly built compiler
+(`/tmp/meowy-ascribed-fields-source.log`): nested typed/grouped ascriptions across
+owners, narrowing/snapshot/alias/call/empty boundaries, stopped P006 tails and E208.
+The preservation audit confirms 366 prior cases, 400 source assets, 37 reference
+contracts/hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-ascribed-fields-preservation.log`). Coverage is regenerated; all four
+source-slice documentation checks pass (`/tmp/meowy-ascribed-fields-source-docs.log`).
+Final compiler/strict gates remain.
+Unrelated `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
@@ -2343,7 +2351,7 @@ Dependency-ordered commit plan:
    corrupt headers/routes, producer conflicts, mixed cycles, owners and exact
    shared hop/work/cache limits. Keep initializer reads, calls and loads opaque.
    Opacity/identity and cycle/resource checks are separate reviewable slices.
-3. Add required source cases and classified evidence for ascription behavior,
+3. Complete: required source cases and classified evidence for ascription behavior,
    including E208, without changing references or prior fixtures/capability pins.
 4. Run compiler, strict and final documentation gates and refresh both handoffs.
 

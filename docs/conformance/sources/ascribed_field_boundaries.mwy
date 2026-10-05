@@ -1,0 +1,32 @@
+d : @"debug"
+<Choice> : <int32><null>
+
+mutable : { -> n := 2 }
+snapshot <int32> : { -> ((mutable.n~<int32>)) }
+mutable.n = 3
+d.print(snapshot)
+view : &mutable
+loaded <int32> : { -> ((view.n~<int32>)) }
+d.print(loaded)
+
+stable : { -> n : 5 }
+widened <Choice> : { -> ((stable.n~<Choice>)) }
+| widened <int32> | d.print(widened~<int32>)
+predicate : { -> ((stable.n<int32>)) }
+d.print(predicate)
+alias : stable.n
+copied <int32> : { -> ((alias~<int32>)) }
+d.print(copied)
+read <int32> : (row <{n <int32>}>) { -> row.n }
+called <int32> : { -> ((read(stable)~<int32>)) }
+d.print(called)
+
+nullable <{n <int32><null>}> : { -> n : 6 }
+| nullable.n <int32> | {
+    narrowed <int32> : { -> ((nullable.n~<int32>)) }
+    d.print(narrowed)
+}
+
+empty <{n <null>}> : {}
+absent <null> : { -> ((empty.n~<null>)) }
+d.print(absent<null>)

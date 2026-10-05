@@ -3870,6 +3870,48 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "ascribed_field_chain",
+      "phase": "run",
+      "source": "sources/ascribed_field_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nfirst tail\ncopy tail\nrow tail\n2\n2\nsource\nsource tail\nfirst tail\ncopy tail\nrow tail\n3\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "ascribed_field_boundaries",
+      "phase": "run",
+      "source": "sources/ascribed_field_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n3\n5\ntrue\n5\n5\n6\ntrue\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "ascribed_field_stopped",
+      "phase": "run",
+      "source": "sources/ascribed_field_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ninitialized\n7\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "ascribed_field_unproven",
+      "phase": "check",
+      "source": "sources/ascribed_field_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }
