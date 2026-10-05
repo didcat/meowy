@@ -28,30 +28,29 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Scalar dispatch receiver reads now follow captured inputs only after observed
-initialization and checked lexical scope. Receiver shapes and a bounded local index
-preserve exact producer identities after HIR transfer. Existing Field/Block/Dispatch
-sources and original candidate histories remain intact; ordinary initializer
-forwarding still excludes synthetic receivers. References, aggregates, calls and
-loads retain their existing boundaries. These are structural source links, with no
-new evaluation, lifetime or proof authority.
-The [compiler handoff](compiler/STATUS.md#scalar-dispatch-receiver-input-sources)
-records eight implementation/test commits and the next dependency-ordered plan.
+Scalar fields of record dispatch results now retain qualified source-slot links.
+Exact tagged result/body/layout identities remain separate from ordinary block
+consumers. Field Operation/Normal observations and dispatch initialization/result
+visits stay independent. Existing Field descriptors and candidate histories retain
+their identities; mutable histories remain Unknown, while shared loads and nonscalar
+fields remain opaque. These are structural links without new value or proof authority.
+The [compiler handoff](compiler/STATUS.md#record-dispatch-field-sources) records five
+implementation/test commits and the next dependency-ordered plan.
 
-All ten compiler checks pass: 2651 library/921 native tests and 62 Python groups
-(`/tmp/meowy-receiver-sources-gate.log`). Conformance has 386 cases: 367 required
+All ten compiler checks pass: 2663 library/921 native tests and 62 Python groups
+(`/tmp/meowy-record-dispatch-gate.log`). Conformance has 390 cases: 371 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-receiver-sources-strict.log`). Three new
-required cases preserve receiver input/tail order, nested scope, stopped-body P006
-and receiver-borrow escape E303. Seeded identity, cycle and resource-limit tests
-remain separate from language execution evidence.
+exits 1 only for those gaps (`/tmp/meowy-record-dispatch-strict.log`). Four new
+required cases preserve receiver/field/tail order, typed and composed records,
+mutable snapshots, shared reads, missing-field E201 and stopped-tail P006.
+Structural identity, cycle and resource-limit tests remain separate evidence.
 
-The preservation audit retains 383 prior cases, 456 tracked contract/source/pin
-files and all 37 reviewed reference hashes (`/tmp/meowy-receiver-sources-preservation.log`).
-All four final documentation checks pass (`/tmp/meowy-receiver-sources-docs.log`).
+The preservation audit retains 386 prior cases, 459 tracked contract/source/pin
+files and all 37 reviewed hashes (`/tmp/meowy-record-dispatch-preservation.log`).
+All four final documentation checks pass (`/tmp/meowy-record-dispatch-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, qualify record dispatch field sources through their own result origins.
+Next, qualify unary and binary primary projections from record dispatch results.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

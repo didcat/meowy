@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Initialized scalar dispatch receiver input sources are implemented.
+Updated: 2026-10-05. Scalar field sources from record dispatch results are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2587,60 +2587,86 @@ All four final documentation checks pass (`/tmp/meowy-receiver-sources-docs.log`
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Active: record dispatch field sources
+### Record dispatch field sources
 
-`field_slot` now has a dedicated record-dispatch fallback beside ordinary
-`slot_block`. Tagged dispatch origins remain distinct, and only scalar selected
-slots acquire the new associations. Record receivers remain opaque.
+`record_dispatch_body` qualifies record-valued dispatch results through the existing
+wrapper resolver, observed dispatch result and exact tagged result row. Full body,
+sequence, owner and layout checks are reused. Initialization/result observations
+remain independent; dispatches never become ordinary block consumers.
 
-Investigation confirms that tagged dispatch rows already retain full result layouts
-and bounded histories. A dedicated record qualifier can reuse dispatch result and
-row validation; only `field_slot` needs the fallback. Restrict the new path to scalar
-selected slots and retain mutable scalar histories as Unknown. Existing record
-receiver reads, shared loads and aggregate fields remain opaque. Baseline:
-`/tmp/meowy-record-dispatch-baseline.json` (386 cases and 459 tracked assets).
-The only pre-existing dirty path is unrelated `docs/programs/hey/`.
+`field_slot` now has a dedicated fallback for scalar fields of those records. It
+validates field count, named-slot offset and checked shape. Field Operation links
+require an observed operation; Normal source links additionally require checked
+availability and both field visits. Original Field descriptors/candidates and
+expanded visits keep the dispatch body's exact slot identity. Mutable scalar
+histories stay Unknown. Shared loads, calls, nonscalar fields and record-receiver
+inputs remain opaque on this path. No value, ownership or proof inference is added.
+
+Dispatch-mode input traversal rejects conflicting field metadata on intermediate
+reads/groups as well as terminal dispatches. Genuine field-valued inputs stay opaque.
+Existing operation/result map limits, root/field cache payload and work budgets are
+shared. Repeated lookup caches by exact field point, keeping separate field points
+that select the same slot distinct. Late failures publish no partial reports.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify exact record dispatch result bodies | `e0f7abf` |
+| Link scalar fields to dispatch result slots | `bd1a820` |
+| Reject conflicting/stale sources and initializer cycles | `eed5144` |
+| Bound operation/result reports and lookup caches | `ac6c779` |
+| Cover field order and source boundaries | `12af8c0` |
+
+All twelve focused record-dispatch tests pass (`/tmp/meowy-record-dispatch-limits.log`).
+Evidence includes twelve independent observation combinations, twelve origin/layout
+faults, thirteen selection/retained-link faults, three producer overlaps, mixed
+initializer cycles and exact map/cache/payload/hop/work boundaries. All 645 forward
+report tests pass within the complete compiler gate. Seeded metadata evidence remains
+distinct from source conformance.
+
+Four new required cases pass debug/release: receiver-once and field/tail order,
+typed copies, nested composition, scalar kinds/widths, mutable snapshots and shared
+reads; missing fields retain E201 and annotated stopped dispatch tails retain P006
+(`/tmp/meowy-record-dispatch-source.log`). The preservation audit retains 386 prior
+cases, 459 tracked contract/source/pin files and all 37 reviewed reference hashes
+(`/tmp/meowy-record-dispatch-preservation.log`). Capability pins and proof obligations
+are unchanged; unrelated `docs/programs/hey/` is preserved.
+
+All ten compiler checks pass: formatting, Clippy, 2663 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-record-dispatch-gate.log`). Conformance has 390 cases: 371 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-record-dispatch-strict.log`). All four
+source-slice documentation checks pass (`/tmp/meowy-record-dispatch-source-docs.log`).
+All four final documentation checks pass (`/tmp/meowy-record-dispatch-docs.log`).
+No outstanding failures remain. Proof evaluation and full language/release
+qualification remain incomplete.
+
+### Next: record dispatch arithmetic primary sources
+
+`primary_slot` still reaches ordinary block consumers only. Record dispatch fields
+now have a qualified route, but unary/binary Projection ports cannot link to the
+record's primary through it. Keep this extension separate from result-value inference
+and from coercion, output, list and composed-emission consumer rules.
 
 Dependency-ordered commit plan:
 
-1. Run the complete compiler and strict conformance gates, document record-dispatch
-   field qualification in FOUNDATION, then refresh both handoffs and run the final
-   documentation gate.
+1. Add a dedicated dispatch primary-slot qualifier beside `consumers/dispatch.rs`,
+   reusing `record_dispatch_body` and exact tagged layout identities. Require an
+   immutable unnamed scalar slot zero; test absent results, wrong owners/origins,
+   nonscalar primaries and exact work bounds without changing ordinary `primary_slot`.
+2. Integrate only observed unary primary Projection inputs in `consumers.rs`, after
+   existing `primary_effect_inputs` qualification. Preserve exact ports, scalar kinds,
+   owners and independent stage flags. Keep operation/result-only rows unlinked;
+   add focused valid/opaque/corrupt-state and bounded report tests with this slice.
+3. Extend binary primary Projection inputs in a separate slice, preserving both
+   operand positions, left-to-right boundaries and partial projection observations
+   before a stopped second operand. Do not generalize to other producer families.
+4. Add required arithmetic/ordering/rejection source cases and classified evidence,
+   then run compiler, strict and documentation gates and refresh both handoffs.
 
-Record-receiver input transparency, aggregate value selection, precise branch/write
-joins, function returns, restart propagation, E225 enforcement and proof outcomes
-remain separate.
-
-Record-dispatch qualification is implemented in `consumers/dispatch/records.rs`,
-reusing the existing dispatch result/body and tagged-row validation. All three
-focused tests pass (`/tmp/meowy-record-dispatch-qualifier.log`): wrappers, composed
-records and independent owners; initialization/result flag independence and absent/
-stopped results; 12 origin/owner/layout faults. Ordinary record/scalar consumer
-classification is unchanged.
-Field integration passes all 639 forward-report tests
-(`/tmp/meowy-record-dispatch-integration.log`). Exact named-slot offsets and owners
-now reach existing Field descriptors/visits while original candidates and composed
-histories remain intact. Tests cover twelve independent field/dispatch observation
-combinations, wrapped/composed inputs, Unknown mutable histories, and opaque loads,
-calls, nonscalar fields and record receivers. No new graph/report type was added.
-All 642 forward-report tests pass (`/tmp/meowy-record-dispatch-boundaries.log`).
-Thirteen selection/retained-link faults, three producer overlaps and a mixed
-initializer cycle fail without publishing changed reports. The overlap regression
-exposed conflicting field metadata on an intermediate read/group; dispatch-mode
-wrapper lookup now rejects it while keeping genuine field-valued inputs opaque.
-All twelve record-dispatch tests pass (`/tmp/meowy-record-dispatch-limits.log`).
-Exact operation-slot capacity/work tests require no payload; field-result collection
-shares map/root payload and work; repeated lookup caches by exact field point while
-preserving shared slot identity. Hop and one-unit-short payload/work failures leave
-stored reports and edge counters unchanged.
-Four new required source cases pass debug/release
-(`/tmp/meowy-record-dispatch-source.log`): receiver-once and field/tail order,
-typed copies, composed records, scalar kinds, mutable snapshots and shared reads;
-missing fields retain E201 and an annotated stopped dispatch tail retains P006.
-The list example uses the reference's one-based positions. All four source-slice
-documentation checks pass (`/tmp/meowy-record-dispatch-source-docs.log`). The audit
-preserves 386 prior cases, 459 tracked contract/source/pin files and all 37 reviewed
-hashes (`/tmp/meowy-record-dispatch-preservation.log`). Final gates and handoff remain.
+Other record-dispatch primary consumers, composed source propagation, record-receiver
+transparency, aggregate value selection, precise joins, function returns, restarts,
+E225 enforcement and proof outcomes remain separate.
 
 ## Documentation conventions and layout
 
@@ -4233,9 +4259,9 @@ separate expanded field-source forest. Explicit groups, observed non-projecting
 Forward coercions, normal unchanged ascriptions and eligible immutable local reads
 now qualify direct field sources. Distinct scalar-block descriptors and expanded
 visits are complete. Tagged dispatch histories and scalar dispatch visits are also
-complete. Initialized scalar receiver input sources are complete. Record dispatch
-field sources are next, following the ordered plan above; value selection and broader
-aggregate provenance remain separate.
+complete. Initialized scalar receiver inputs and record dispatch scalar field sources
+are complete. Record dispatch arithmetic primary sources are next, following the
+ordered plan above; value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4852,8 +4878,10 @@ aggregate provenance remain separate.
    (`c81709b`) and source cases (`6e23f08`, `32fadb7`) are complete. Scalar receiver
    capture/index/qualification (`7e39bae`, `5fe6db1`, `0c54a35`), scope boundaries
    (`13c3767`), integration (`5edabcf`), conflict/limit evidence (`e9bd825`, `fd6bdbc`)
-   and source cases (`1420c15`) are complete. Next qualify record dispatch field
-   sources through their distinct result origins before broader value provenance work.
+   and source cases (`1420c15`) are complete. Record dispatch qualification (`e0f7abf`),
+   field integration (`bd1a820`), conflicts (`eed5144`), limits (`ac6c779`) and source
+   cases (`12af8c0`) are complete. Next qualify record dispatch arithmetic primary
+   sources before extending other producer families or broader value provenance.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

@@ -451,7 +451,8 @@ Shared work accounts for validation, lookup and copying. Duplicate observations
 retain one source descriptor; any late failure preserves existing reports and
 publishes no partial source map or remaining-budget update.
 
-Validated result consumers now have a bounded reverse index to exact BlockIds.
+Validated ordinary block result consumers have a bounded reverse index to exact
+BlockIds.
 Direct owned field Operation ports reference the checked field slot at index+1,
 with field counts, ordering, owners and availability revalidated. A field's normal
 flag describes checked result availability; operation/result flags independently
@@ -461,6 +462,27 @@ They require checked normal availability, both operation/result observations and
 matching requalified Operation link. Missing links, operation-only/result-only rows,
 Never fields and implicit shared loads produce no association. Direct calls,
 reference loads and extracted field values retain their source-resolution limits.
+
+Scalar fields of record-valued dispatch results use a separate body qualifier.
+It resolves the exact dispatch through supported wrappers and requires an observed
+result, matching tagged result row and validated body/sequence/layout identities.
+The body must have a checked record shape. Initialization remains independent of
+result observation, and no ordinary block consumer is registered for the dispatch.
+
+Field-slot lookup checks the complete field count, selected named-slot offset and
+scalar shape. Its Operation link still requires an observed field operation; the
+Normal source link additionally requires checked availability and both field visits.
+Original Field descriptors, candidate positions and expanded visits retain the
+dispatch body's slot identity. Mutable scalar histories stay Unknown. Shared loads,
+calls, nonscalar selected slots and record-receiver inputs remain opaque. Ordinary
+block field lookup and record primary projection rules retain their existing scope.
+Conflicting field producers along dispatch input wrappers fail qualification.
+
+These links reuse the existing map limits, root/field cache payload and work budget.
+Repeated lookups share the exact field-point cache; two field points selecting one
+slot remain distinct. Invalid identities or exhausted limits publish no partial
+report. A field association neither selects a runtime value nor grants ownership,
+lifetime or proof authority.
 
 One lazy lookup indexes existing candidate-forest Root markers, validating owner,
 slot bounds and uniqueness. It is built only after the first eligible field link,
@@ -573,8 +595,10 @@ Dispatch source cases additionally pin receiver-once and tail order, nested `$`
 scope, owned/shared permissions, stopped receivers/bodies and shared-store E305.
 Receiver input cases also preserve typed copies, inherited and nested `$`, field/
 block/dispatch tail order, stopped-body P006 and receiver-borrow escape E303.
-Record-dispatch consumers, function returns and broader aggregate provenance remain
-separate. Proof evaluation remains unimplemented.
+Record-dispatch field cases also preserve field/tail order, typed copies, composed
+records, scalar widths/kinds, mutable snapshots, shared reads, missing-field E201
+and stopped-tail P006. Other record-dispatch consumers, function returns and broader
+aggregate provenance remain separate. Proof evaluation remains unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
@@ -588,6 +612,7 @@ and qualified Forward/unchanged narrowing/ascription wrappers or immutable local
 reads. Extracted Field values, reference loads, calls, changed ascriptions and
 unclassified regions remain outside this record-consumer resolution. The Normal
 field-result associations above are separate from transparent input forwarding.
+Record-dispatch primaries remain outside these projection links.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
