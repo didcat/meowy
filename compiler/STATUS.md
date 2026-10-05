@@ -85,8 +85,13 @@ Required literal slice: `a10c027`. Literal calls now retain contextual list
 inference and union selection, pure-probe intrinsic aliases, and ordinary list
 extent eligibility. All three literal groups pass (`/tmp/meowy-literal-lists.log`).
 
-Next steps: finish numeric type-query/pending identity boundaries, checked-doc
-links, source conformance and documentation/editor integration.
+Literal list slice: `439b435`. Numeric pending copies retain one query identity,
+and non-data type queries no longer fall back to the numeric default type.
+All six numeric groups pass (`/tmp/meowy-numeric-query.log`); proof outcomes
+remain gated exactly as for identifier bindings.
+
+Next steps: checked-documentation numeric links, source conformance, reference
+and teaching docs, editor highlighting and the complete compiler/editor gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

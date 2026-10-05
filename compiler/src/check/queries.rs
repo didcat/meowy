@@ -76,10 +76,12 @@ impl Checker {
     pub(crate) fn pending_form<'a>(&mut self, expr: &'a Expr) -> Result<Option<Pending<'a>>> {
         match &expr.kind {
             ExprKind::Group(value) => self.pending_form(value),
-            ExprKind::Name(_) => Ok(match self.symbol(expr)? {
-                Some(Value::Pending(id)) => Some(Pending::Copy(id)),
-                _ => None,
-            }),
+            ExprKind::Name(_) | ExprKind::Int(_) | ExprKind::Float(_) => {
+                Ok(match self.symbol(expr)? {
+                    Some(Value::Pending(id)) => Some(Pending::Copy(id)),
+                    _ => None,
+                })
+            }
             ExprKind::Call { callee, args } => {
                 let ExprKind::Specialize { value, types } = &callee.kind else {
                     return Ok(None);
@@ -178,7 +180,7 @@ impl Checker {
         while let ExprKind::Group(inner) = &value.kind {
             value = inner;
         }
-        Ok(matches!(&value.kind, ExprKind::Name(_))
+        Ok(self.value_name(value).is_some()
             && matches!(self.symbol(value)?, Some(Value::Pending(_))))
     }
 }

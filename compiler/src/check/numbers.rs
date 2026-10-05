@@ -139,3 +139,33 @@ mod lists {
         }
     }
 }
+
+#[cfg(test)]
+mod queries {
+    #[test]
+    pub(crate) fn numeric_pending_copies_keep_the_original_query_identity() {
+        let block =
+            crate::parser::parse(r#"p:@"proof";1:p.can_copy<int32>();copy:1;<Kind>:1<>"#).unwrap();
+        let mut checker = crate::check::Checker::new();
+        for stmt in &block.stmts {
+            checker.stmt(stmt).unwrap();
+        }
+        assert_eq!(checker.queries.len(), 1);
+        assert!(matches!(
+            checker.value("copy", block.span).unwrap(),
+            crate::check::Value::Pending(0)
+        ));
+    }
+
+    #[test]
+    pub(crate) fn numeric_nondata_queries_do_not_fall_back_to_literal_types() {
+        for (numeric, ordinary) in [
+            ("1:<uint8>;x:1<>", "n:<uint8>;x:n<>"),
+            ("1:(){->7};x:1<>", "n:(){->7};x:n<>"),
+        ] {
+            let a = crate::compile(numeric).unwrap_err();
+            let b = crate::compile(ordinary).unwrap_err();
+            assert_eq!((&a[0].code, &a[0].message), (&b[0].code, &b[0].message));
+        }
+    }
+}

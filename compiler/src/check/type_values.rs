@@ -95,6 +95,8 @@ impl Checker {
             ExprKind::TypeQuery(value) => {
                 let literal = self.literal_expression(value)?;
                 let value = literal.as_deref().unwrap_or(value);
+                let number = self.numeric_expression(value);
+                let value = number.as_deref().unwrap_or(value);
                 if let Some(ty) = self.hint(value) {
                     return Ok(ty);
                 }
