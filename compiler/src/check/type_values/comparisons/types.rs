@@ -43,6 +43,8 @@ impl Checker {
         depth: usize,
         count: &mut usize,
     ) -> Result<bool> {
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.form_work(expr, depth, count)?;
         match &expr.kind {
             ExprKind::Binary { op, left, right } if op == "!" => {
@@ -60,7 +62,7 @@ impl Checker {
                     depth += 1;
                     self.form_work(base, depth, count)?;
                 }
-                if !matches!(base.kind, ExprKind::Name(_) | ExprKind::Import(_)) {
+                if self.value_name(base).is_none() && !matches!(base.kind, ExprKind::Import(_)) {
                     return Ok(false);
                 }
                 let saved = std::mem::replace(&mut self.required, true);

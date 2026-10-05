@@ -79,7 +79,7 @@ impl Checker {
                 _ => break,
             }
         }
-        let ExprKind::Name(root_name) = &root.kind else {
+        let Some(root_name) = self.value_name(root) else {
             return Err(Diagnostic::unsupported(
                 "computed field roots outside named records",
                 expr.span,

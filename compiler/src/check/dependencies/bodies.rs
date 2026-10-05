@@ -402,7 +402,7 @@ impl Checker {
             ast::ExprKind,
             check::{InputUse, Value},
         };
-        if !matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. }) {
+        if self.value_name(expr).is_none() && !matches!(expr.kind, ExprKind::Field { .. }) {
             return Ok(());
         }
         let site = self.checked_site(expr.span)?;
@@ -424,7 +424,7 @@ impl Checker {
             }
             base = value;
         }
-        let ExprKind::Name(name) = &base.kind else {
+        let Some(name) = self.value_name(base) else {
             return Ok(());
         };
         let Some(Value::Local { id, .. } | Value::FileModule { id, .. }) = self

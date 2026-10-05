@@ -53,8 +53,12 @@ bindings before scalar validation and preserves signed shortcuts only for unboun
 literals. Focused accepted/rejected required cases pass
 (`/tmp/meowy-numeric-required.log`), including widths, extents and runtime inputs.
 
-Next steps: required records/type identities, list inference, then core.literal.
-These integrations remain unqualified. Update this handoff after each validated slice; commit explicit paths.
+Required scalar slice: `36c4347`. Required records, composition, type-value
+aliases/equality and field roots now use the same numeric lookup, including
+required-read tracking. All three focused numeric groups pass
+(`/tmp/meowy-numeric-identities.log`).
+
+Next steps: list inference and pending identity copies, then core.literal. Update this handoff after each validated slice; commit explicit paths.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

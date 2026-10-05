@@ -39,6 +39,8 @@ impl Checker {
     }
 
     pub(crate) fn required_record(&mut self, expr: &ast::Expr) -> Result<(Type, Record)> {
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| {
             if matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. }) {

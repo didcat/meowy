@@ -91,3 +91,21 @@ mod required {
         }
     }
 }
+
+#[cfg(test)]
+mod identities {
+    #[test]
+    pub(crate) fn numeric_required_records_and_type_values_follow_ordinary_lookup() {
+        for source in [
+            "1:<uint8>;<T>:1;v<T>:7",
+            "<T>:{1:<uint8>;same:1==<uint8>;->1};v<T>:7",
+            "<T>:{1:{->n:3};copy:1;-><int32[copy.n]>};v<T>:[0,0,0]",
+            "<T>:{1:{->n:3};copy<{n<int32>}>:{->1};-><int32[copy.n]>};v<T>:[0,0,0]",
+            "1:({->n:3});<T>:{n:(1).n;-><int32[n]>};v<T>:[0,0,0]",
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+        let source = "1:({->n:=3});<T>:{n:(1).n;->n<>}";
+        assert!(crate::compile(source).is_err());
+    }
+}
