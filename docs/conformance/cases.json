@@ -3828,6 +3828,48 @@
         "code": "E004"
       },
       "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "forward_field_chain",
+      "phase": "run",
+      "source": "sources/forward_field_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nfirst tail\ncopy tail\nrow tail\n2\n2\nsource\nsource tail\nfirst tail\ncopy tail\nrow tail\n3\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "forward_field_boundaries",
+      "phase": "run",
+      "source": "sources/forward_field_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n3\n4\n5\n5\n5\n5\n6\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "forward_field_stopped",
+      "phase": "run",
+      "source": "sources/forward_field_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ninitialized\n7\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "forward_field_unproven",
+      "phase": "check",
+      "source": "sources/forward_field_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

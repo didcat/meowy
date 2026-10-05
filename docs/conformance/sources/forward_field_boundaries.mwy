@@ -1,0 +1,31 @@
+d : @"debug"
+
+mutable : { -> n := 2 }
+snapshot <int32> : { -> ((mutable.n)) }
+mutable.n = 3
+d.print(snapshot)
+view : &mutable
+loaded <int32> : { -> ((view.n)) }
+d.print(loaded)
+
+aggregate : { -> n : { -> 4; -> tag : true } }
+projected <int32> : { -> ((aggregate.n)) }
+d.print(projected)
+
+stable : { -> n : 5 }
+converted <int32><null> : { -> ((stable.n)) }
+| converted <int32> | d.print(converted~<int32>)
+ascribed <int32> : { -> ((stable.n~<int32>)) }
+d.print(ascribed)
+alias : stable.n
+copied <int32> : { -> ((alias)) }
+d.print(copied)
+read <int32> : (row <{n <int32>}>) { -> row.n }
+called <int32> : { -> ((read(stable))) }
+d.print(called)
+
+nullable <{n <int32><null>}> : { -> n : 6 }
+| nullable.n <int32> | {
+    narrowed <int32> : { -> ((nullable.n)) }
+    d.print(narrowed)
+}

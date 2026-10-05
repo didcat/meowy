@@ -2280,7 +2280,15 @@ publish no partial source map or forest (`f781432`). All eight Forward-field
 groups pass after adding individually qualified coercion/group/narrowing cycles,
 exact mixed hop/work/cache budgets and Unknown/empty/multiple histories
 (`/tmp/meowy-forward-fields-limits.log`). All 558 forward-report tests pass
-(`/tmp/meowy-forward-fields-reports.log`); source fixtures and final gates remain.
+(`/tmp/meowy-forward-fields-reports.log`); cycle/limit slice is `df5171e`.
+Four required typed field-source cases and their classified evidence are added;
+all pass fresh-compiler debug/release checks (`/tmp/meowy-forward-fields-source.log`).
+They preserve typed composition/tail order across owners, wrapper/snapshot behavior,
+P006 after emission and E207 for an unproven nullable initializer. All four default
+checks pass (`/tmp/meowy-forward-fields-source-docs.log`). The preservation audit
+confirms 362 prior case records, 396 source assets, 37 reference contracts/hashes,
+capability pins and proof obligations are unchanged
+(`/tmp/meowy-forward-fields-preservation.log`). Final compiler/strict gates remain.
 Preserve unrelated `docs/programs/hey/`.
 
 Commit plan: resolver with focused integration tests; corruption/opacity/cycle
@@ -2296,7 +2304,7 @@ required source fixtures and classified evidence; final gates and handoff.
 2. Complete: opacity/header/route/owner boundaries, mixed cycles and exact shared
    work/hop/cache limits. Ascriptions, initializer reads, calls and reference loads
    remain opaque.
-3. Add required typed field-source cases and classified evidence while preserving
+3. Complete: required typed field-source cases and classified evidence preserve
    reference contracts, earlier fixtures and pinned capability gaps.
 4. Run compiler, strict and final documentation gates and update this handoff.
 
