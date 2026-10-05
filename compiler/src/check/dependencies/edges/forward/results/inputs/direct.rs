@@ -1,6 +1,9 @@
 use super::*;
 use crate::check::dependencies::{
-    edges::forward::consumers::field_results::lookup::{Lookup, narrowing::Source},
+    edges::forward::consumers::{
+        field_results::lookup::{Lookup, narrowing::Source},
+        scalars::Source as Block,
+    },
     grouped::MAX_GROUPS,
 };
 
@@ -8,6 +11,7 @@ use crate::check::dependencies::{
 pub(crate) struct Direct {
     pub(crate) point: PointId,
     pub(crate) source: Option<Source>,
+    pub(crate) block: Option<Block>,
 }
 
 pub(crate) type Directs = BTreeMap<Key, (usize, Direct)>;
@@ -60,20 +64,30 @@ impl Checker {
             {
                 return Err(budget());
             }
-            let source =
-                self.field_narrowing_source(&mut ctx, input.point, owner, span, MAX_GROUPS)?;
-            sources.insert(
-                key,
-                (
-                    owner,
-                    Direct {
-                        point: input.point,
-                        source,
-                    },
-                ),
-            );
+            let source = self.direct_source(&mut ctx, input.point, owner, span)?;
+            sources.insert(key, (owner, source));
         }
         Ok((sources, ctx.parts))
+    }
+
+    pub(super) fn direct_source(
+        &mut self,
+        ctx: &mut Lookup<'_>,
+        point: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Direct> {
+        let source = self.field_narrowing_source(ctx, point, owner, span, MAX_GROUPS)?;
+        let block = if source.is_none() {
+            self.scalar_block_source(ctx.reports, point, owner, span)?
+        } else {
+            None
+        };
+        Ok(Direct {
+            point,
+            source,
+            block,
+        })
     }
 }
 
@@ -82,3 +96,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod blocks;

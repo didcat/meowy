@@ -56,14 +56,7 @@ impl Checker {
             let &(stored_owner, direct) = reports.direct_sources.get(key).ok_or_else(invalid)?;
             if stored_owner != owner
                 || direct.point != input.point
-                || direct.source
-                    != self.field_narrowing_source(
-                        &mut ctx,
-                        input.point,
-                        owner,
-                        span,
-                        MAX_GROUPS,
-                    )?
+                || direct != self.direct_source(&mut ctx, input.point, owner, span)?
             {
                 return Err(invalid());
             }

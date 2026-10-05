@@ -2431,6 +2431,13 @@ covering scalar kinds, wrappers and independent owners while leaving record
 projections, unknown layouts, stopped results, calls and fields opaque.
 The next representation adds an optional block descriptor
 beside the existing field source in each Direct row, with exclusive alternatives.
+Qualifier: `15be758`. Collection now enables it in production and stores exact
+consumer/slot descriptors without copying histories. The same resolver requalifies
+stored field/block alternatives. All 2597 library tests pass
+(`/tmp/meowy-scalar-blocks-collection.log`), including ten stored-descriptor faults,
+owner separation and preserved original Value points. Formatting and whitespace
+checks pass. The expanded forest still treats these new descriptors as Value
+terminals until the separate traversal slice.
 
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
 `results/inputs/direct.rs` currently stores only field-source descriptors. A direct
