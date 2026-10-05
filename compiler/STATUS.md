@@ -2131,7 +2131,18 @@ obligations are unchanged (`/tmp/meowy-expanded-preservation.log`). Unrelated
 `docs/programs/hey/` remains excluded. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Next: direct field sources through explicit groups
+## Direct field sources through explicit groups
+
+In progress. Inspection found that group child validation is embedded in the
+record-consumer loop; direct field lookup currently stops at registered groups.
+Reuse that exact validation before extending the direct resolver. Preserve the
+original forest and keep the remaining wrapper boundaries unchanged.
+Existing grouped-consumer tests pass before extraction
+(`/tmp/meowy-group-fields-before.log`). The helper now contains the unchanged
+child/edge checks and work charge; callers retain producer/body/cycle validation.
+All 34 grouped-consumer tests also pass after extraction
+(`/tmp/meowy-group-fields-extract.log`). Next extend direct resolution (step 2).
+Dependency-ordered commit plan:
 
 1. Extract the existing explicit-group child qualification from
    `consumers/grouped.rs` into a shared helper, preserving exact checked
@@ -2143,11 +2154,11 @@ qualification remain incomplete.
    original direct points and terminal fields. Do not infer completion from a stored
    Normal edge or follow unregistered regions. Coercions, ascriptions, initializer
    reads, calls, reference loads and changed/unobserved narrowing remain opaque.
-3. Cover mixed group/narrowing chains, independent owners, corruption, cycles and
-   exact shared hop/work/payload bounds through direct-source qualification and
-   expanded traversal. Keep original candidate inputs and the qualification forest
-   unchanged; add required source cases and classified evidence.
-4. Run compiler, strict and final documentation gates and update this handoff.
+3. Add focused mixed-chain corruption, cycle and exact shared hop/work/payload
+   regressions through direct-source qualification and expanded traversal.
+4. Add required source cases and classified evidence, preserving prior cases and
+   reference contracts.
+5. Run compiler, strict and final documentation gates and update this handoff.
 
 Do not make Field results transparent in `consumers/grouped.rs` or select candidate
 values. Aggregate provenance, precise branch/overwrite joins, function returns,
