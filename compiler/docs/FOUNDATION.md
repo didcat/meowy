@@ -823,6 +823,24 @@ stopped prefixes, duplicate visits and late failures retain their existing seman
 Seeded stopped-record links establish structural coverage, not runtime completion.
 No projection implies output/terminal observation or successful I/O.
 
+Formatting capture now retains a shallow primary source shape before projection.
+Literal entries remain absent and non-primary inputs keep no source shape. Exact
+checked HIR shapes qualify registration/replay; stage selection, report merging and
+edge replay preserve shape presence and stopped boundaries, including checked suffixes.
+Scalar kinds retain width and signedness; union/Never descriptors keep their existing
+formatting and stopping rules without gaining dispatch-source links.
+
+An observed scalar output projection can link to a qualified dispatch result's
+immutable unnamed slot zero. The captured source kind must match that slot exactly.
+The link retains the original formatting part index and stays independent of prefix,
+output and terminal observations and dispatch initialization/result visits. Projection
+alone needs no terminal-operation registration. Mutable reads, parameters, calls and
+reference loads remain opaque; inner coercions keep their own projection ports.
+Shared map/work bounds apply without new payload. Source cases cover streamed
+receiver/body/tail order, copies across owners, scalar formatting, mutable snapshots,
+panic operands, stopped prefixes and ordinary errors in checked suffixes. Corruption,
+cycles and exact budget checks establish structural evidence only.
+
 Contextual-list primary consumers retain original input indices and slot-zero links.
 Whole-producer replay preserves exact sequences/endpoints, input uniqueness and all
 checked suffix roots. Constant-work stage selectors then validate independent

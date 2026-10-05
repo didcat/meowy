@@ -28,29 +28,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Coercion-owned scalar projections now link to record dispatch primaries using the
-source shape captured before conversion. Exact kind/width/signedness, producer/report
-headers and independent stage flags are requalified. Projected coercions remain
-opaque to generic value forwarding; nested element/operand coercions retain their
-own ports. Ordinary consumers and borrow/proof authority are unchanged.
-The [compiler handoff](compiler/STATUS.md#coercion-owned-dispatch-primary-sources)
-records the reviewed slices and the next dependency-ordered plan.
+Output-owned scalar projections now link to dispatch primaries using source shapes
+captured before formatting projection. Exact scalar kinds, owners and original part
+indices are preserved; prefix, projection, output, terminal and dispatch-result
+observations remain independent. Checked suffixes after stopped parts retain shape
+validation. Ordinary consumers and borrow/proof authority are unchanged.
+The [compiler handoff](compiler/STATUS.md#output-owned-dispatch-primary-sources)
+records the reviewed slices and next dependency-ordered plan.
 
-All ten compiler checks pass: 2697 library/921 native tests and 62 Python groups
-(`/tmp/meowy-coercion-dispatch-gate.log`). Conformance has 399 cases: 380 required
-passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-coercion-dispatch-strict.log`). Four new
-required cases preserve typed/nullable copies, receiver/tail order, scalar kinds,
-mutable snapshots, reference/list primaries, incompatible-target E207 and stopped
-sources P006. Structural evidence remains distinct from language execution.
+Four new required cases pass debug/release: interpolation and receiver/tail order
+across owners, scalar kinds, copies/mutable snapshots/shared reads, panic-message
+operands, stopped-prefix P006 and checked-suffix E201. Structural source links remain
+distinct from observable execution. All ten compiler checks pass: 2711 library/921
+native tests and 62 Python groups (`/tmp/meowy-output-dispatch-gate.log`). Conformance
+has 403 cases: 384 required passes, 19 unchanged pinned gaps and zero failures in
+debug/release. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-output-dispatch-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-output-dispatch-docs.log`).
 
-The audit retains 395 prior cases, 468 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-coercion-dispatch-preservation.log`). All four final
-documentation checks pass (`/tmp/meowy-coercion-dispatch-docs.log`). Proof evaluation,
-broader contextual record hinting and full language/release qualification remain
-incomplete.
+The audit preserves 399 prior cases, 472 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-output-dispatch-preservation.log`). All four source
+slice documentation checks pass (`/tmp/meowy-output-dispatch-source-docs.log`).
+Proof evaluation and full language/release qualification remain incomplete.
 
-Next, capture and qualify output-owned primary sources from dispatch results.
+Next, capture and qualify contextual-list-owned primary sources from dispatch results.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

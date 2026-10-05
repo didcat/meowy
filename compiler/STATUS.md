@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Coercion-owned dispatch primary sources are implemented.
+Updated: 2026-10-05. Output-owned dispatch primary sources are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2763,61 +2763,86 @@ All four final documentation checks pass (`/tmp/meowy-coercion-dispatch-docs.log
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Next: output-owned dispatch primary sources
+### Output-owned dispatch primary sources
 
-Active series: confirmed on `main` after `47f61a5`; the only pre-existing change
-is untracked `docs/programs/hey/`, excluded from this series. Capture now stores a
-shallow primary `Shape` before projection and validates exact checked HIR shape,
-primary presence and stopped/suffix agreement before registration or replay.
-Ten producer tests pass, including scalar kinds, unions, Never suffixes, formatting
-rejections, malformed shapes and exact work limits
-(`/tmp/meowy-output-dispatch-capture.log`, capture commit `053241c`). Report stages,
-aggregation and full edge replay now validate shape presence and stopped/suffix
-agreement; exact report equality includes the captured source. All 35 focused
-output tests pass (`/tmp/meowy-output-dispatch-reports.log`), including sparse
-stages, unobserved suffix validation, merge conflicts and exact work (report
-commit `bf5b1d8`). Output consumers now fall back to the exact dispatch-primary
-qualifier only for observed scalar projections, preserving original part indices.
-All 683 forward-report tests pass (`/tmp/meowy-output-dispatch-consumers.log`),
-including owner/kind, sparse observations, stopped prefixes and opaque/inner-coercion
-boundaries (integration commit `65a82d4`). Ten late shape/origin/owner/registration
+Formatting capture retains a shallow primary source shape before projection. Literal
+parts keep None entries, non-primary inputs retain no source shape, and exact checked
+HIR shapes qualify registration and replay. Bounded report stages, merging and edge
+replay validate shape presence and stopped/suffix agreement, including unobserved
+checked suffixes. Scalar kinds retain widths and signedness; union/Never sources keep
+their existing formatting/stopping behavior without gaining dispatch links.
+
+Only observed scalar projections can use the existing exact dispatch-primary qualifier
+for immutable unnamed slot zero. Links retain original formatting part indices, owners
+and independent prefix/projection/output/terminal and dispatch initialization/result
+observations. Projection-only reports need no terminal-operation registration. Inner
+coercions keep their own ports; ordinary consumers, list/emission paths and generic
+value forwarding are preserved. Mutable reads, parameters, calls and reference loads
+remain opaque. Shared map/work bounds apply without additional variable payload,
+value selection, evaluation edges, loan/lifetime authority or proof outcomes.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture formatting primary source shapes | `053241c` |
+| Requalify source shapes in output reports | `bf5b1d8` |
+| Link observed output projections to dispatch primaries | `65a82d4` |
+| Bound links and reject late shape/identity conflicts | `82659ca` |
+| Cover formatting, panic order and stopped suffixes | `7b71fd6` |
+
+Focused evidence includes ten producer tests, 35 output tests and eight dispatch-output
+tests. Sparse stages, source-result independence, ten late shape/origin/owner/registration
 faults, duplicate visits, mixed initializer cycles, independent control and exact
-map/work boundaries pass all eight dispatch-output tests
-(`/tmp/meowy-output-dispatch-boundaries.log`, commit `82659ca`). Four required
-source cases now cover formatting order/kinds/copies across owners, panic message
-operand order, a stopped dispatch prefix and checked-suffix E201. All four pass
-debug/release (`/tmp/meowy-output-dispatch-source.log`); the current compiler builds.
-Classified evidence is refreshed. All four default checks pass
-(`/tmp/meowy-output-dispatch-source-docs.log`). The audit preserves all 399 prior
-cases, 472 tracked contract/source/pin files and 37 reviewed hashes
-(`/tmp/meowy-output-dispatch-preservation.log`). The full compiler and strict gates
-remain next. No new generic
-value-forwarding path or language contract is needed.
+map/work boundaries preserve stored reports. All 687 forward-report tests pass in
+the complete compiler gate. Focused logs:
+`/tmp/meowy-output-dispatch-capture.log`, `/tmp/meowy-output-dispatch-reports.log`,
+`/tmp/meowy-output-dispatch-consumers.log`, `/tmp/meowy-output-dispatch-boundaries.log`.
 
-`FormatInput` now stores the checked point, primary flag and optional source shape. Output
-consumers stream observed projected parts into `primary_slot` or the scalar dispatch
-qualifier. Keep the original part indices and output-specific
-prefix/stopped/terminal rules; inner coercion ports are already handled separately.
+Four required source cases pass debug/release: receiver/body/tail and interpolation
+order across owners, scalar kinds, copies/mutable snapshots/shared reads, panic-message
+operands, stopped-prefix P006 and checked-suffix E201
+(`/tmp/meowy-output-dispatch-source.log`). The audit preserves all 399 prior cases,
+472 tracked contract/source/pin files and 37 reviewed hashes
+(`/tmp/meowy-output-dispatch-preservation.log`). No capability exception or proof
+obligation changed; unrelated `docs/programs/hey/` is preserved.
+
+All ten compiler checks pass: formatting, all-target Clippy, 2711 library/921 native
+tests, 62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-output-dispatch-gate.log`). Conformance has 403 cases: 384 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. All four
+source-slice documentation checks pass (`/tmp/meowy-output-dispatch-source-docs.log`).
+Strict mode exits 1 only for those unchanged gaps
+(`/tmp/meowy-output-dispatch-strict.log`). All four final guide/handoff documentation
+checks pass (`/tmp/meowy-output-dispatch-docs.log`). No outstanding failures remain.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: contextual-list dispatch primary sources
+
+`list_context.rs` selects candidates before `expected_plan` consumes each checked
+element and records its final `ListInput`. These plans currently retain point,
+primary and coercion kind; list-owned consumers only use ordinary `primary_slot`.
+Ordinary typed element coercions already retain their own dispatch-primary ports.
 
 Dependency-ordered commit plan:
 
-1. Complete: capture a bounded primary source shape for formatting inputs in
-   `check/expressions.rs::format_points` and `dependencies/outputs.rs`, before
-   `projected` replaces the checked value. Preserve literal None entries, exact input
-   IDs, part order, primary decisions and formatting/reborrow rejections. Include
-   capture/replay/shape/budget tests, splitting producer changes if necessary.
-2. Complete: propagate and requalify the shape in `effects/outputs.rs` and its validation/edge
-   replay helpers. Preserve sparse part reports, independent prefix/projection/output/
-   terminal flags, checked suffixes after a stop and fixed-size input descriptors.
-3. Integration complete: qualify only observed scalar output-owned primary projections against exact
-   dispatch result slots using the captured source kind. Retain the original part
-   index in each Projection port and existing shared map/payload/work accounting.
-   List/emission rules and generic value forwarding are unchanged. Late identity,
-   cycle, control and resource-limit coverage is complete in a separate slice.
-4. Source cases and classified evidence complete. Run compiler and strict gates,
-   update the guide and both handoffs, then run final documentation checks.
+1. Capture a bounded primary source shape before `expected_plan` in
+   `list_context.rs` and retain it only for actual primary projections in
+   `dependencies/lists/conversions.rs`. Preserve candidate selection, deferred
+   element order, normal/Stopped rules and exact replay. Include focused capture,
+   kind/shape, rejection and budget tests with the producer change.
+2. Carry and requalify shapes through `effects/lists.rs` and its report, validation
+   and qualification helpers. Preserve exact full root/plan vectors and checked
+   suffixes, independent projection/conversion/construction/result flags and the
+   list-specific construction registration rule. Bound copies and work before
+   publication; keep non-contextual and inner-coercion paths distinct.
+3. Link observed scalar list-owned projections to exact dispatch primary slots via
+   the captured source kind, retaining original element indices and shared limits.
+   Include owner/type/sparse/stopped regressions; split additional corruption,
+   cycle, control and exact map/payload/work coverage when independently reviewable.
+4. Add required contextual-list execution/rejection/stopped cases and classified
+   evidence. Preserve existing references and pins, run compiler/strict/documentation
+   gates, and refresh this handoff and the root tracker.
 
-List/composition dispatch consumers, contextual record-hint repair, record-receiver
+Composition dispatch consumers, contextual record-hint repair, record-receiver
 transparency, aggregate value selection, precise joins, function returns, restarts,
 E225 enforcement and proof outcomes remain separate.
 
@@ -4413,9 +4438,9 @@ Forward coercions, normal unchanged ascriptions and eligible immutable local rea
 now qualify direct field sources. Distinct scalar-block descriptors and expanded
 visits are complete. Tagged dispatch histories and scalar dispatch visits are also
 complete. Initialized scalar receiver inputs and record dispatch scalar field sources
-are complete. Record dispatch unary/binary and coercion-owned primary sources are
-complete. Output-owned dispatch primary sources are next, following the ordered plan
-above; value selection and broader aggregate provenance remain separate.
+are complete. Record dispatch unary/binary, coercion-owned and output-owned primary
+sources are complete. Contextual-list dispatch primary sources are next, following
+the ordered plan above; value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5036,11 +5061,14 @@ above; value selection and broader aggregate provenance remain separate.
    field integration (`bd1a820`), conflicts (`eed5144`), limits (`ac6c779`) and source
    cases (`12af8c0`) are complete. Dispatch primary qualification (`66228c3`), unary
    links (`8dd35df`), guarded receiver scope (`f06cfeb`), binary links (`35d46b4`),
-   boundaries (`731aa08`) and source cases (`57a3a4d`, `30d762a`) are complete. Next
-   qualify output-owned dispatch primary sources. Coercion capture (`b0153fd`), reports
+   boundaries (`731aa08`) and source cases (`57a3a4d`, `30d762a`) are complete.
+   Coercion capture (`b0153fd`), reports
    (`bd0312c`), dispatch integration (`68f229d`), boundaries (`cda72ce`) and source
-   cases (`4a9592a`) are complete; other producer families and broader value provenance
-   remain separate.
+   cases (`4a9592a`) are complete. Output shape capture (`053241c`), reports (`bf5b1d8`),
+   dispatch links (`65a82d4`), boundaries (`82659ca`) and source cases (`7b71fd6`)
+   are complete; final gate results are above. Next qualify contextual-list dispatch
+   primary sources; other producer families and broader value provenance remain
+   separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
