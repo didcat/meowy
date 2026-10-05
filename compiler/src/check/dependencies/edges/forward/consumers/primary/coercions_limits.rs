@@ -19,11 +19,13 @@ pub(crate) fn coercion_slots_keep_seeded_stopped_projection_at_a_real_record_anc
     assert_eq!(op.kind, CoercionKind::Forward);
     assert_eq!(op.edges.pop().unwrap().to, Port::Normal(id));
     op.kind = CoercionKind::Stopped;
+    op.source = Some(Shape::Never);
     checker.coercion_edges -= 1;
     let Effect::Coercion(op) = &mut reports.effects.get_mut(&id).unwrap().1 else {
         panic!()
     };
     op.op = CoercionKind::Stopped;
+    op.source = Some(Shape::Never);
     op.result = false;
     assert!(op.projected && !op.operation);
     assert!(!reports.index.operations.contains_key(&id));

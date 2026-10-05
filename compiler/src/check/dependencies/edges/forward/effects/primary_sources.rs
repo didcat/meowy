@@ -25,7 +25,7 @@ impl Checker {
                     if !seen {
                         continue;
                     }
-                    if !self.flow.spend(7) {
+                    if !self.flow.spend(8) {
                         return Err(budget());
                     }
                     let stage = self
@@ -34,6 +34,7 @@ impl Checker {
                     if op.input != stage.input
                         || op.op != stage.op
                         || op.primary != stage.primary
+                        || op.source != stage.source
                         || op.control != stage.control
                     {
                         return Err(invalid());

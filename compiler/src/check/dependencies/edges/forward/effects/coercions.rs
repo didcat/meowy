@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::CoercionKind;
+use crate::check::dependencies::{CoercionKind, bodies::completion::Shape};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
@@ -15,6 +15,7 @@ pub(super) struct Stage {
     pub(super) input: PointId,
     pub(super) op: CoercionKind,
     pub(super) primary: bool,
+    pub(super) source: Option<Shape>,
     pub(super) control: bool,
     pub(super) kind: Kind,
 }
@@ -24,6 +25,7 @@ pub(crate) struct Observed {
     pub(crate) input: PointId,
     pub(crate) op: CoercionKind,
     pub(crate) primary: bool,
+    pub(crate) source: Option<Shape>,
     pub(crate) control: bool,
     pub(crate) projected: bool,
     pub(crate) operation: bool,
@@ -51,7 +53,7 @@ impl Checker {
         };
         if !self
             .flow
-            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize + 7)
+            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize + 12)
         {
             return Err(budget());
         }
@@ -61,6 +63,8 @@ impl Checker {
             || observed.input != op.input
             || observed.op != op.kind
             || observed.primary != op.primary
+            || observed.source != op.source
+            || !op.kind.valid_source(op.primary, op.source)
             || observed.control != op.control
         {
             return Err(invalid());
@@ -102,11 +106,12 @@ impl Checker {
         let Some(op) = self.coercions.get(&id) else {
             return Ok(None);
         };
-        if !self.flow.spend(14) {
+        if !self.flow.spend(18) {
             return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
-        if op.owner != owner
+        if !op.kind.valid_source(op.primary, op.source)
+            || op.owner != owner
             || point.owner != owner
             || !point.complete
             || point.kind != PointKind::Expr
@@ -167,6 +172,7 @@ impl Checker {
             input: op.input,
             op: op.kind,
             primary: op.primary,
+            source: op.source,
             control: op.control,
             kind,
         }))
@@ -183,7 +189,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof coercion-effect identity mismatch", span);
         if !self
             .flow
-            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 9)
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 13)
         {
             return Err(budget());
         }
@@ -192,7 +198,7 @@ impl Checker {
             Kind::Operation => stage.op == CoercionKind::Convert,
             Kind::Result => stage.op != CoercionKind::Stopped,
         };
-        if !valid {
+        if !valid || !stage.op.valid_source(stage.primary, stage.source) {
             return Err(invalid());
         }
         if let Some((owner, effect)) = effects.get(&stage.point) {
@@ -203,6 +209,7 @@ impl Checker {
                 || prior.input != stage.input
                 || prior.op != stage.op
                 || prior.primary != stage.primary
+                || prior.source != stage.source
                 || prior.control != stage.control
             {
                 return Err(invalid());
@@ -217,6 +224,7 @@ impl Checker {
                     input: stage.input,
                     op: stage.op,
                     primary: stage.primary,
+                    source: stage.source,
                     control: stage.control,
                     projected: false,
                     operation: false,
@@ -246,3 +254,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod forward;
+
+#[cfg(test)]
+mod sources;

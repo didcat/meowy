@@ -2707,8 +2707,8 @@ qualification remain incomplete.
 
 ### Active: coercion-owned dispatch primary sources
 
-Coercion producers now capture the primary source shape before conversion; report
-propagation and dispatch consumers are next. Do not infer source shape from the
+Coercion producers and reports retain the primary source shape before conversion;
+dispatch consumer integration is next. Do not infer source shape from the
 converted target or final HIR type. Ordinary coercion-owned primary links and
 non-projecting wrapper forwarding remain unchanged.
 
@@ -2723,15 +2723,12 @@ ordering and required/reborrow paths. Baseline: `/tmp/meowy-coercion-dispatch-ba
 
 Dependency-ordered commit plan:
 
-1. Carry the source shape through coercion stages and observations in a separate
-   slice, checking exact producer/report identity without inferring additional visits.
-   Keep Forward, Convert and Stopped stage rules and other producer reports intact.
-2. Qualify only observed scalar primary Projection inputs of `Effect::Coercion`,
+1. Qualify only observed scalar primary Projection inputs of `Effect::Coercion`,
    reusing the captured source kind and `dispatch_primary_slot`. Preserve port step
    zero and separate projection/conversion/result flags. Projected coercions must
    remain opaque to generic wrapper/direct-value forwarding. Include focused valid,
    absent, corrupt, cycle and resource-limit tests with the integration.
-3. Add required source cases for typed copies, conversion and stopped inputs plus
+2. Add required source cases for typed copies, conversion and stopped inputs plus
    classified evidence; run compiler, strict and documentation gates and update both
    handoffs. Split further if capture/report changes exceed review thresholds.
 
@@ -2745,7 +2742,15 @@ source shape; primary/source presence and Never/Stopped agreement are validated
 before publication. All 51 coercion-focused tests pass
 (`/tmp/meowy-coercion-dispatch-capture.log`), including three new capture/type/replay/
 budget tests, whole-record conversion, reference/list primaries and required/reborrow
-boundaries. Reports do not carry the new shape yet; propagation is next.
+boundaries.
+Stages/observations now retain and compare the exact source shape; stage validation,
+merging, primary-input qualification and generic Forward lookup enforce its shape/
+kind contract without inferring visits. All 54 coercion-focused tests and 668 forward
+report tests pass (`/tmp/meowy-coercion-dispatch-reports.log`,
+`/tmp/meowy-coercion-dispatch-report-suite.log`). New evidence covers independent
+stages, twelve producer/report faults, atomic merge conflicts and exact work.
+The seeded stopped-projection regression now supplies Never in both capture and
+observation, preserving its ordinary record-anchor and stage expectations.
 
 ## Documentation conventions and layout
 
