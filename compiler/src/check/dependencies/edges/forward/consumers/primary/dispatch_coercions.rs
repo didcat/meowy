@@ -147,8 +147,15 @@ pub(crate) fn dispatch_coercion_primaries_keep_nonscalar_stopped_and_other_produ
 pub(crate) fn dispatch_coercion_primaries_keep_nested_list_coercions_owned_by_their_own_ports() {
     let (checker, reports) =
         checked("r:3.{->$;->tag:true};xs<int32[1]>:[r];d:@\"debug\";d.print(r);out:{->r}");
-    assert_eq!(reports.slot_uses.len(), 1);
-    let (&port, _) = reports.slot_uses.first_key_value().unwrap();
+    assert_eq!(reports.slot_uses.len(), 2);
+    let (&port, _) = reports
+        .slot_uses
+        .iter()
+        .find(|(port, _)| {
+            matches!(port, Port::Projection { point, .. }
+            if matches!(reports.effects[point].1, Effect::Coercion(_)))
+        })
+        .unwrap();
     let Port::Projection { point, step: 0 } = port else {
         panic!()
     };

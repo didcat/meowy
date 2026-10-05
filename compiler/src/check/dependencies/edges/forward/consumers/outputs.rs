@@ -1,5 +1,6 @@
 use super::{tests::checked, *};
 
+mod dispatch;
 mod limits;
 
 #[test]

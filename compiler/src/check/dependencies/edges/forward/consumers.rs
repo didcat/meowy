@@ -78,7 +78,16 @@ impl Checker {
                     let input = observed.input.ok_or_else(|| {
                         Diagnostic::unsupported("proof output-effect identity mismatch", span)
                     })?;
-                    if let Some(slot) = self.primary_slot(reports, input.point, *owner, span)? {
+                    let slot = if let Some(slot) =
+                        self.primary_slot(reports, input.point, *owner, span)?
+                    {
+                        Some(slot)
+                    } else if let Some(Shape::Scalar(ty)) = input.source {
+                        self.dispatch_primary_slot(reports, input.point, *owner, ty, span)?
+                    } else {
+                        None
+                    };
+                    if let Some(slot) = slot {
                         let port = Port::Projection {
                             point: id,
                             step: part,

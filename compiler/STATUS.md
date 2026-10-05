@@ -2775,13 +2775,17 @@ rejections, malformed shapes and exact work limits
 aggregation and full edge replay now validate shape presence and stopped/suffix
 agreement; exact report equality includes the captured source. All 35 focused
 output tests pass (`/tmp/meowy-output-dispatch-reports.log`), including sparse
-stages, unobserved suffix validation, merge conflicts and exact work. Dispatch
-consumer integration remains next; no new generic
-value-forwarding path or language contract is needed.
+stages, unobserved suffix validation, merge conflicts and exact work (report
+commit `bf5b1d8`). Output consumers now fall back to the exact dispatch-primary
+qualifier only for observed scalar projections, preserving original part indices.
+All 683 forward-report tests pass (`/tmp/meowy-output-dispatch-consumers.log`),
+including owner/kind, sparse observations, stopped prefixes and opaque/inner-coercion
+boundaries. Late identity/cycle/limit
+coverage is next; no new generic value-forwarding path or language contract is needed.
 
 `FormatInput` now stores the checked point, primary flag and optional source shape. Output
-consumers stream observed projected parts into `primary_slot`, so direct dispatch
-results remain outside that path. Keep the original part indices and output-specific
+consumers stream observed projected parts into `primary_slot` or the scalar dispatch
+qualifier. Keep the original part indices and output-specific
 prefix/stopped/terminal rules; inner coercion ports are already handled separately.
 
 Dependency-ordered commit plan:
@@ -2794,11 +2798,10 @@ Dependency-ordered commit plan:
 2. Complete: propagate and requalify the shape in `effects/outputs.rs` and its validation/edge
    replay helpers. Preserve sparse part reports, independent prefix/projection/output/
    terminal flags, checked suffixes after a stop and fixed-size input descriptors.
-3. Qualify only observed scalar output-owned primary projections against exact
+3. Integration complete: qualify only observed scalar output-owned primary projections against exact
    dispatch result slots using the captured source kind. Retain the original part
    index in each Projection port and existing shared map/payload/work accounting.
-   Keep list/emission rules and generic value forwarding unchanged. Commit integration
-   with focused ownership and sparse/stopped tests, then independently useful late
+   List/emission rules and generic value forwarding are unchanged. Next add late
    identity, cycle, control and resource-limit coverage in a separate slice.
 4. Add required print/interpolation/panic-prefix source cases and classified evidence;
    run compiler, strict and documentation gates and refresh both handoffs.
