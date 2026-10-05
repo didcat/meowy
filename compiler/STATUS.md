@@ -2783,8 +2783,16 @@ including owner/kind, sparse observations, stopped prefixes and opaque/inner-coe
 boundaries (integration commit `65a82d4`). Ten late shape/origin/owner/registration
 faults, duplicate visits, mixed initializer cycles, independent control and exact
 map/work boundaries pass all eight dispatch-output tests
-(`/tmp/meowy-output-dispatch-boundaries.log`). Required source
-cases are next; no new generic value-forwarding path or language contract is needed.
+(`/tmp/meowy-output-dispatch-boundaries.log`, commit `82659ca`). Four required
+source cases now cover formatting order/kinds/copies across owners, panic message
+operand order, a stopped dispatch prefix and checked-suffix E201. All four pass
+debug/release (`/tmp/meowy-output-dispatch-source.log`); the current compiler builds.
+Classified evidence is refreshed. All four default checks pass
+(`/tmp/meowy-output-dispatch-source-docs.log`). The audit preserves all 399 prior
+cases, 472 tracked contract/source/pin files and 37 reviewed hashes
+(`/tmp/meowy-output-dispatch-preservation.log`). The full compiler and strict gates
+remain next. No new generic
+value-forwarding path or language contract is needed.
 
 `FormatInput` now stores the checked point, primary flag and optional source shape. Output
 consumers stream observed projected parts into `primary_slot` or the scalar dispatch
@@ -2806,8 +2814,8 @@ Dependency-ordered commit plan:
    index in each Projection port and existing shared map/payload/work accounting.
    List/emission rules and generic value forwarding are unchanged. Late identity,
    cycle, control and resource-limit coverage is complete in a separate slice.
-4. Add required print/interpolation/panic-prefix source cases and classified evidence;
-   run compiler, strict and documentation gates and refresh both handoffs.
+4. Source cases and classified evidence complete. Run compiler and strict gates,
+   update the guide and both handoffs, then run final documentation checks.
 
 List/composition dispatch consumers, contextual record-hint repair, record-receiver
 transparency, aggregate value selection, precise joins, function returns, restarts,

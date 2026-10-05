@@ -1,0 +1,12 @@
+d : @"debug"
+d.panic("message {(3.{
+    d.print("message body")
+    -> $
+    -> tag : true
+    d.print("message tail")
+})}|{(4.{
+    d.print("second body")
+    -> $
+    -> tag : false
+    d.print("second tail")
+})} end")

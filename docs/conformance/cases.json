@@ -4220,6 +4220,50 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "output_dispatch_order",
+      "phase": "run",
+      "source": "sources/output_dispatch_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 3\nbody\ntail\nvalues 3|1|3\ntrue\ndirect receiver 4\ndirect body\ndirect tail\n4 done\nreceiver 5\nbody\ntail\nvalues 5|1|5\ntrue\ndirect receiver 6\ndirect body\ndirect tail\n6 done\nkinds 255|1.5|true|cat|null\nsnapshot 3/4\n255\n"
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_dispatch_panic",
+      "phase": "run",
+      "source": "sources/output_dispatch_panic.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "message body\nmessage tail\nsecond body\nsecond tail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_dispatch_stopped",
+      "phase": "run",
+      "source": "sources/output_dispatch_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "ready body\nready tail\nprefix 3|stopping body\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "output_dispatch_checked_tail",
+      "phase": "check",
+      "source": "sources/output_dispatch_checked_tail.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
     }
   ]
 }

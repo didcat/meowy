@@ -1,0 +1,37 @@
+d : @"debug"
+receiver <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+
+show <null> : (n <int32>) {
+    row : receiver(n).{
+        d.print("body")
+        -> $
+        -> tag : true
+        d.print("tail")
+    }
+    copy : ((row))
+    d.print("values {copy}|{1}|{row}")
+    d.print(row.tag)
+    d.print("direct {(receiver(n + 1).{
+        d.print("direct body")
+        -> $
+        -> tag : false
+        d.print("direct tail")
+    })} done")
+}
+
+show(3)
+show(5)
+small <uint8> : 255
+number <float32> : 1.5
+byte : small.{ -> $; -> tag : true }
+decimal : number.{ -> $; -> tag : true }
+truth : true.{ -> $; -> tag : true }
+text : "cat".{ -> $; -> tag : true }
+empty : 3.{ -> tag : true }
+d.print("kinds {byte}|{decimal}|{truth}|{text}|{empty}")
+mutable := 3.{ -> $; -> tag : true }
+snapshot : mutable
+mutable = 4.{ -> $; -> tag : true }
+d.print("snapshot {snapshot}/{mutable}")
+view : &byte
+d.print(*view)
