@@ -58,7 +58,14 @@ aliases/equality and field roots now use the same numeric lookup, including
 required-read tracking. All three focused numeric groups pass
 (`/tmp/meowy-numeric-identities.log`).
 
-Next steps: list inference and pending identity copies, then core.literal. Update this handoff after each validated slice; commit explicit paths.
+Required identity slice: `f8ee8f2`. Numeric list elements now preserve typed
+inference, candidate probes, isolated probe environments and element storage.
+All four numeric checker groups pass (`/tmp/meowy-numeric-lists.log`).
+
+Next steps: add an explicit intrinsic-literal marker to numeric AST payloads,
+then core.literal expansion, identity-copy integration and source conformance.
+This representation prerequisite keeps escaped literals from being shadowed again
+when they pass through required evaluation and contextual list probes. Update this handoff after each validated slice; commit explicit paths.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

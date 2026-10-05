@@ -109,3 +109,28 @@ mod identities {
         assert!(crate::compile(source).is_err());
     }
 }
+
+#[cfg(test)]
+mod lists {
+    #[test]
+    pub(crate) fn numeric_list_inputs_keep_their_bound_type_and_storage() {
+        for source in [
+            "1<uint8>:2;v:[1,3];x<uint8>:v[01]",
+            "1<uint8>:2;v:[3,1];x<uint8>:v[01]",
+            "1<uint8>:2;v<uint8[2]><uint16[2]>:[1,3]",
+            "1<float32>:2.5;v:[1,3.5];x<float32>:v[01]",
+            "1:=7;v:[1,2];1=8;x:v[01]",
+            "1:({->n<uint8>:2});v:[1,{->n<uint8>:3}]",
+            "1<int32[2]>:=[7,8];r:&(1[01]);x:*r",
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+        for (source, code) in [
+            ("1<int32>:2;v<uint8[2]>:[1,3]", "E207"),
+            ("1<uint8>:2;v<int32[2]>:[-1,3]", "E222"),
+        ] {
+            let errors = crate::compile(source).unwrap_err();
+            assert_eq!(errors[0].code, code, "{source}: {errors:?}");
+        }
+    }
+}

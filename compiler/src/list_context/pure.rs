@@ -147,7 +147,11 @@ impl Checker {
                     }
                     bytes
                 }
-                ExprKind::Int(text) | ExprKind::Float(text) => text.len(),
+                ExprKind::Int(text) | ExprKind::Float(text)
+                    if self.numeric_name(value).is_none() && !emitted.contains(text.as_str()) =>
+                {
+                    text.len()
+                }
                 ExprKind::String(parts) => {
                     let mut bytes = parts.len();
                     for part in parts {
@@ -190,7 +194,7 @@ impl Checker {
                     pending.push(left);
                     0
                 }
-                ExprKind::Name(name) => {
+                ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name) => {
                     if aggregate {
                         if !self.flow.spend(name.len() + 1) {
                             return Err(Diagnostic::unsupported(

@@ -146,6 +146,8 @@ impl Checker {
     }
 
     pub(crate) fn scalar_literal(&self, expr: &ast::Expr) -> bool {
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         match &expr.kind {
             ExprKind::Int(_) | ExprKind::Float(_) => true,
             ExprKind::String(parts) => parts
@@ -154,6 +156,7 @@ impl Checker {
             ExprKind::Group(value) => self.scalar_literal(value),
             ExprKind::Unary { op, value } if op == "-" => {
                 matches!(value.kind, ExprKind::Int(_) | ExprKind::Float(_))
+                    && self.numeric_name(value).is_none()
             }
             ExprKind::Name(name) => self
                 .scopes
@@ -290,6 +293,8 @@ impl Checker {
     }
 
     pub(crate) fn literal_default(&self, value: &ast::Expr) -> Option<Type> {
+        let number = self.numeric_expression(value);
+        let value = number.as_ref().unwrap_or(value);
         match &value.kind {
             ExprKind::Int(_) => Some(Type::Int {
                 bits: 32,
@@ -531,10 +536,12 @@ impl Checker {
             form = value;
         }
         let hint = self.hint(value);
-        let place = matches!(
-            form.kind,
-            ExprKind::Name(_) | ExprKind::Field { .. } | ExprKind::Index { .. }
-        ) || matches!(&form.kind, ExprKind::Unary { op, .. } if op == "*");
+        let place = self.numeric_name(form).is_some()
+            || matches!(
+                form.kind,
+                ExprKind::Name(_) | ExprKind::Field { .. } | ExprKind::Index { .. }
+            )
+            || matches!(&form.kind, ExprKind::Unary { op, .. } if op == "*");
         let (point, value) = if place && !matches!(hint, Some(Type::Reference(_) | Type::Never)) {
             self.borrowed_point(value, value.span)?
         } else {

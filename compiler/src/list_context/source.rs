@@ -20,7 +20,7 @@ impl Checker {
                 ));
             }
             match &value.kind {
-                ExprKind::Name(name) => {
+                ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name) => {
                     if !self.flow.spend(names.len().saturating_mul(name.len() + 1)) {
                         return Err(Diagnostic::unsupported(
                             "record probe scope budget exhausted",
@@ -31,7 +31,6 @@ impl Checker {
                         return Ok(true);
                     }
                 }
-                ExprKind::Int(_) | ExprKind::Float(_) => {}
                 ExprKind::String(parts)
                     if parts
                         .iter()
@@ -100,6 +99,8 @@ impl Checker {
     }
 
     pub(crate) fn list_independent(&mut self, value: &ast::Expr) -> bool {
+        let number = self.numeric_expression(value);
+        let value = number.as_ref().unwrap_or(value);
         match &value.kind {
             ExprKind::Name(_)
             | ExprKind::Call { .. }
@@ -123,7 +124,7 @@ impl Checker {
         value: &ast::Expr,
     ) -> (Option<&'a Type>, usize) {
         match &value.kind {
-            ExprKind::Name(name) => (
+            ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name) => (
                 match Self::list_symbol(scopes, name) {
                     Some(Value::Local { ty, .. }) => Some(ty),
                     _ => None,
@@ -131,7 +132,9 @@ impl Checker {
                 1,
             ),
             ExprKind::Call { callee, .. } => {
-                let ExprKind::Name(name) = &callee.kind else {
+                let (ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name)) =
+                    &callee.kind
+                else {
                     return (None, 1);
                 };
                 (
@@ -200,6 +203,8 @@ impl Checker {
         expected: &Type,
         reach: Guard,
     ) -> Result<Fit> {
+        let number = self.numeric_expression(value);
+        let value = number.as_ref().unwrap_or(value);
         crate::borrow_contract::type_weight(expected, &mut self.flow, value.span)?;
         if !self
             .flow
@@ -213,11 +218,17 @@ impl Checker {
         let scalar = match &value.kind {
             ExprKind::Int(text) => Some(self.integer(text, false, Some(expected), value.span)),
             ExprKind::Float(text) => Some(Self::floating(text, Some(expected), value.span)),
-            ExprKind::Unary { op, value: inner } if op == "-" => match &inner.kind {
-                ExprKind::Int(text) => Some(self.integer(text, true, Some(expected), value.span)),
-                ExprKind::Float(text) => Some(Self::floating(text, Some(expected), value.span)),
-                _ => None,
-            },
+            ExprKind::Unary { op, value: inner }
+                if op == "-" && self.numeric_name(inner).is_none() =>
+            {
+                match &inner.kind {
+                    ExprKind::Int(text) => {
+                        Some(self.integer(text, true, Some(expected), value.span))
+                    }
+                    ExprKind::Float(text) => Some(Self::floating(text, Some(expected), value.span)),
+                    _ => None,
+                }
+            }
             ExprKind::String(parts)
                 if parts
                     .iter()
