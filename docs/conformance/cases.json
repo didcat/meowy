@@ -3684,6 +3684,16 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "numeric_doc_links",
+      "phase": "run",
+      "source": "sources/numeric_doc_links.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n8\n9\n"
+      },
+      "reference": "../reference/documentation.md#semantic-links"
     }
   ]
 }

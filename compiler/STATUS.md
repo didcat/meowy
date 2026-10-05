@@ -117,7 +117,11 @@ Required contract: the preceding commit. Numeric declaration and callable heads 
 receive appropriate Vim/Neovim highlighting; ordinary uses retain lexical numeric
 colors. All six checks passed (`/tmp/meowy-numeric-editor.log`).
 
-Next steps: checked-link and module source cases, remaining docs and final gates.
+Editor slice: `2ceded0`. Numeric checked links now have a required executable
+source fixture and an updated documentation reference. All 330 required cases
+pass with 19 unchanged gaps (`/tmp/meowy-numeric-source-links.log`).
+
+Next steps: module source integration, rejection cases, remaining docs and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

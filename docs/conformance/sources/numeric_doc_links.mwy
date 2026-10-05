@@ -1,0 +1,14 @@
+#!| Numeric links: [[1]], [[1.0]], [[(2).1.0]]. |!#
+debug : @"debug"
+#| Integer name. |#
+1 : 7
+#| Floating spelling. |#
+1.0 : 8
+#| Numeric fields. |#
+2 : {
+    #| Exact field spelling. |#
+    -> 1.0 : 9
+}
+debug.print(1)
+debug.print(1.0)
+debug.print((2).1.0)

@@ -130,11 +130,17 @@ preconditions or new type annotations.
 ## Semantic links
 
 `[[name]]` links a value declaration; `[[<Type>]]` links a type declaration.
-Qualified identifier paths are allowed, such as `[[json.decode]]` and
+Qualified paths are allowed, such as `[[json.decode]]` and
 `[[<json.Document>]]`. `[[target|label]]` supplies display text without changing
 the target. Labels are text, not nested expressions or links.
 
-Targets are identifier/member paths, optionally enclosed in type brackets, not
+Value targets also accept exact numeric names: `[[1]]`, `[[1.0]]` and
+`[[record.1.0]]`. The last selects the single numeric field `1.0`. Group numeric
+receivers as in source, for example `[[(1).field]]`. An unbound number is not a
+declaration link; it reports `E802`. Numeric declarations, parameters and fields
+accept documentation attachments normally. Type links retain identifier paths.
+
+Targets are name/member paths, optionally enclosed in type brackets, not
 arbitrary expressions, calls or type-helper evaluation. A generic declaration is
 linked without instantiating it. Resolution uses the documented declaration's
 lexical environment and its declared parameters/generic binders, never function-body
