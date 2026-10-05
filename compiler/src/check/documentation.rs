@@ -156,7 +156,9 @@ impl Checker {
                 .and_then(|start| model.starts.get(start))
                 .copied());
         }
-        let mut parts = target.split('.');
+        let names = crate::documentation::value_path(target)
+            .ok_or_else(|| Diagnostic::new("E802", "invalid documentation value path", span))?;
+        let mut parts = names.iter().map(String::as_str);
         let name = parts.next().unwrap_or_default();
         let scope = self
             .scopes

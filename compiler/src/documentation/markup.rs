@@ -3,6 +3,37 @@ use crate::{ast::Span, diagnostic::Diagnostic};
 use pulldown_cmark::{CodeBlockKind, Event, Parser, Tag, TagEnd};
 use std::ops::Range;
 
+pub(crate) fn value_path(target: &str) -> Option<Vec<String>> {
+    use crate::ast::{ExprKind, StmtKind};
+    if target.len() > 1024 || target.contains(['#', ';', '\n', '\r']) {
+        return None;
+    }
+    let parsed = crate::parser::parse_documented(target).ok()?;
+    let [stmt] = parsed.block.stmts.as_slice() else {
+        return None;
+    };
+    let StmtKind::Expr(expr) = &stmt.kind else {
+        return None;
+    };
+    let mut expr = expr;
+    let mut names = Vec::new();
+    loop {
+        match &expr.kind {
+            ExprKind::Field { value, name } => {
+                names.push(name.clone());
+                expr = value;
+            }
+            ExprKind::Group(value) => expr = value,
+            _ => {
+                names.push(expr.spelling()?.into());
+                break;
+            }
+        }
+    }
+    names.reverse();
+    Some(names)
+}
+
 #[derive(Clone, Debug)]
 pub(crate) struct Link {
     pub(crate) target: String,
@@ -161,19 +192,23 @@ pub(crate) fn analyze(entry: &mut Entry) -> Result<()> {
             .strip_prefix('<')
             .and_then(|text| text.strip_suffix('>'))
             .unwrap_or(target);
-        let valid = !name.is_empty()
-            && name.split('.').all(|part| {
-                let mut bytes = part.bytes();
-                bytes
-                    .next()
-                    .is_some_and(|byte| byte.is_ascii_alphabetic() || byte == b'_')
-                    && bytes.all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
-            });
+        let valid = if !target.starts_with('<') {
+            value_path(target).is_some()
+        } else {
+            !name.is_empty()
+                && name.split('.').all(|part| {
+                    let mut bytes = part.bytes();
+                    bytes
+                        .next()
+                        .is_some_and(|byte| byte.is_ascii_alphabetic() || byte == b'_')
+                        && bytes.all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
+                })
+        };
         let span = at(entry, start..end + 2);
         if !valid || target.len() > 1024 || label.contains(['\n', '\r', '[', ']', '|']) {
             return Err(Diagnostic::new(
                 "E802",
-                "documentation links require an identifier path and a plain label",
+                "documentation links require a name path and a plain label",
                 span,
             ));
         }

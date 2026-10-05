@@ -90,8 +90,12 @@ and non-data type queries no longer fall back to the numeric default type.
 All six numeric groups pass (`/tmp/meowy-numeric-query.log`); proof outcomes
 remain gated exactly as for identifier bindings.
 
-Next steps: checked-documentation numeric links, source conformance, reference
-and teaching docs, editor highlighting and the complete compiler/editor gate.
+Query boundary slice: `31c1cb9`. Checked-documentation value paths now follow
+the source parser, retaining numeric spelling, grouping and field boundaries.
+All 15 documentation groups pass (`/tmp/meowy-numeric-doc-links.log`).
+
+Next steps: source conformance and reference/teaching documentation, editor
+highlighting and the complete compiler/editor gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

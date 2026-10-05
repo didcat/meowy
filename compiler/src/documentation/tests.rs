@@ -255,3 +255,33 @@ pub(crate) fn documentation_retains_explicit_type_call_fields_and_computed_bindi
         .unwrap();
     assert_eq!(model.entries[field.parent.unwrap()].name, "result");
 }
+
+#[test]
+pub(crate) fn numeric_documentation_names_keep_spelling_and_member_boundaries() {
+    let source = r#"#!| [[1]], [[1.0]], [[(2).1.0]], [[f]]. |!#
+#| Integer. |#
+1:7
+#| Decimal. |#
+1.0:8
+#| Record. |#
+2:{#| Field. |#->1.0:9}
+#| Parameter [[0x1]]. |#
+f<int32>:(#| Input. |#0x1<int32>){->0x1}"#;
+    let (_, model) = checked(source, true).unwrap();
+    let model = model.unwrap();
+    model.require_public().unwrap();
+    let links = &model.entries[0].links;
+    let names: Vec<_> = links
+        .iter()
+        .map(|link| model.entries[link.resolved.unwrap()].name.as_str())
+        .collect();
+    assert_eq!(names, ["1", "1.0", "1.0", "f"]);
+    for target in ["1+2", "1()", "1;", "12cat", "-1", "1.0.missing", "<1>"] {
+        let source = format!("#!| [[{target}]] |!#\n1:7");
+        assert_eq!(
+            checked(&source, true).unwrap_err()[0].code,
+            "E802",
+            "{target}"
+        );
+    }
+}

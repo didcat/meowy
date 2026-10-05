@@ -5,7 +5,7 @@ mod render;
 
 use crate::{diagnostic::Diagnostic, hir, parser};
 pub(crate) use command::execute;
-pub(crate) use markup::{Example, ExampleMode, Link};
+pub(crate) use markup::{Example, ExampleMode, Link, value_path};
 pub(crate) use model::{Entry, Kind, Model};
 
 pub(crate) type Result<T> = std::result::Result<T, Diagnostic>;
