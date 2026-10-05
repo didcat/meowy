@@ -2271,24 +2271,27 @@ shared Forward qualifier; typed opacity expectations move to positive coverage.
 All 2569 library tests pass (`/tmp/meowy-forward-fields-library.log`); formatting
 and whitespace checks pass. Typed primary/named candidates, independent owners,
 mixed group/coercion/narrowing chains and both forests retain their identities.
-Mutable-field provenance remains opaque at the existing boundary. Next validate
-missing observations, non-forwarding stages, corruption and exact resource limits.
+Mutable-field provenance remains opaque at the existing boundary. Resolver slice:
+`ffa139f`. All five Forward-field groups now pass, including missing observations
+at every coercion, Convert/projected/Stopped and other opaque producers, and 25
+late corrupt-header/route/owner/conflicting-producer variants with and without
+stored field associations (`/tmp/meowy-forward-fields-boundaries.log`). Failures
+publish no partial source map or forest. Mixed cycles and exact limits are next.
 Preserve unrelated `docs/programs/hey/`.
 
 Commit plan: resolver with focused integration tests; corruption/opacity/cycle
 boundaries; exact resource limits if needed as a separate reviewable slice;
 required source fixtures and classified evidence; final gates and handoff.
 
-1. In `consumers/field_results/lookup/narrowing.rs`, reuse
+1. Complete: in `consumers/field_results/lookup/narrowing.rs`, reuse
    `forward_coercion_input` from `effects/coercions.rs` to follow observed,
    non-projecting Forward coercions mixed with groups and unchanged narrowing.
    Keep collection and stored-descriptor qualification on the same resolver;
    preserve original Value points, terminal fields and the original forest.
    Include focused typed/grouped candidate and expanded-forest regressions.
-2. In a separate boundary slice, cover absent result observations, Convert,
-   primary-extracting and Stopped coercions, corrupt headers/routes, producer
-   conflicts, mixed cycles, owners and exact shared work/hop/cache limits.
-   Keep ascriptions, initializer reads, calls and reference loads opaque.
+2. Opacity/header/route/owner boundaries are complete. In the next slice, cover
+   mixed cycles and exact shared work/hop/cache limits. Keep ascriptions,
+   initializer reads, calls and reference loads opaque.
 3. Add required typed field-source cases and classified evidence while preserving
    reference contracts, earlier fixtures and pinned capability gaps.
 4. Run compiler, strict and final documentation gates and update this handoff.
