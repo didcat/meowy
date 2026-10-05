@@ -2,7 +2,7 @@ use super::{effects::Effect, entries::Reports, *};
 use crate::{check::dependencies::bodies::Layout, hir};
 
 mod emissions;
-mod field_results;
+pub(super) mod field_results;
 mod fields;
 mod grouped;
 mod index;

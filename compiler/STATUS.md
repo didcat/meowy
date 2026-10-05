@@ -2052,7 +2052,13 @@ exact point/owner/body and producer identities, follows only observed unchanged
 normal narrowing, and uses the existing mixed-chain hop cap. It preserves the
 terminal field identity without copying wrapper paths. Both focused resolver groups
 and all-target Clippy pass (`/tmp/meowy-field-narrowing-resolver.log`,
-`/tmp/meowy-field-narrowing-resolver-lint.log`). Production collection follows.
+`/tmp/meowy-field-narrowing-resolver-lint.log`). Resolution is committed as `444a66a`.
+Production collection now follows field-result reporting, requalifies candidate
+inputs and retains optional direct sources separately. Original candidate/forest
+reports remain unchanged. Both direct-source groups, all 2515 library tests and
+all-target Clippy pass (`/tmp/meowy-field-narrowing-direct.log`,
+`/tmp/meowy-field-narrowing-library.log`, `/tmp/meowy-field-narrowing-direct-lint.log`).
+Adversarial limits and corruption coverage follows.
 
 Dependency-ordered commit plan:
 

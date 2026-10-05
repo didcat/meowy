@@ -1,7 +1,6 @@
 use super::*;
 
 mod collection;
-#[cfg(test)]
 pub(in super::super) mod lookup;
 
 impl Checker {
