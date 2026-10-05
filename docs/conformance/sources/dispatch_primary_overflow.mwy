@@ -1,0 +1,14 @@
+d : @"debug"
+
+negate <null> : (n <int8>) {
+    value : -(n.{
+        d.print("receiver")
+        -> $
+        -> tag : true
+        d.print("tail")
+    })
+    d.print(value)
+}
+
+negate(-128)
+d.print("unreachable")

@@ -1,0 +1,10 @@
+d : @"debug"
+stop <never> : () { d.print("right"); d.panic("stopped operand") }
+
+value : 3.{
+    d.print("left")
+    -> $
+    -> tag : true
+    d.print("left tail")
+} + stop()
+d.print("unreachable")

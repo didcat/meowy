@@ -2659,8 +2659,8 @@ consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
 
 Dependency-ordered commit plan:
 
-1. Pin stopped-operand and checked-overflow behavior in a separate source slice,
-   then run compiler, strict and documentation gates and refresh both handoffs.
+1. Run compiler and strict conformance gates, document the completed primary routes
+   and guarded receiver fix, refresh both handoffs, and run final documentation checks.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
 transparency, aggregate value selection, precise joins, function returns, restarts,
@@ -2703,7 +2703,14 @@ unsigned negation. The order case explicitly ascribes its right dispatch's recor
 type: the unannotated form hits the existing scalar-context named-field E207 boundary.
 Broader contextual record-hint repair remains separate; no exception or old fixture
 was changed. All four source-slice documentation checks pass
-(`/tmp/meowy-dispatch-primary-source-docs.log`). Stopped/overflow cases and full gates remain.
+(`/tmp/meowy-dispatch-primary-source-docs.log`).
+The two additional required panic cases pass debug/release
+(`/tmp/meowy-dispatch-primary-panics.log`): left receiver/tail completion before a
+stopped right operand (P006), and checked int8 primary negation after its dispatch
+tail (P002). All four panic-slice documentation checks pass
+(`/tmp/meowy-dispatch-primary-panic-docs.log`). The audit preserves 390 prior cases,
+463 tracked contract/source/pin files and 37 reviewed reference hashes
+(`/tmp/meowy-dispatch-primary-preservation.log`). Full gates and final handoff remain.
 
 ## Documentation conventions and layout
 
