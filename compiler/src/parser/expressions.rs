@@ -93,7 +93,7 @@ impl Parser {
                     } else if self.at("&") || self.at("&!") || self.at("*") {
                         let op = self.bump().text;
                         self.newlines();
-                        let name = self.name()?.text;
+                        let name = self.value_name()?.text;
                         let field = Expr {
                             kind: ExprKind::Field {
                                 value: Box::new(left),
@@ -108,7 +108,7 @@ impl Parser {
                     } else {
                         ExprKind::Field {
                             value: Box::new(left),
-                            name: self.name()?.text,
+                            name: self.value_name()?.text,
                         }
                     };
                     left = Expr {
@@ -410,7 +410,7 @@ impl Parser {
         let mut params = Vec::new();
         if !self.at(")") {
             loop {
-                let name = match self.name() {
+                let name = match self.value_name() {
                     Ok(name) => name,
                     Err(_) => {
                         self.pos = save;

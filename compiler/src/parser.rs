@@ -181,6 +181,21 @@ impl Parser {
         }
     }
 
+    pub(crate) fn at_value_name(&self) -> bool {
+        matches!(
+            self.token().kind,
+            TokenKind::Name | TokenKind::Int | TokenKind::Float
+        )
+    }
+
+    pub(crate) fn value_name(&mut self) -> ParseResult<Token> {
+        if self.at_value_name() {
+            Ok(self.bump())
+        } else {
+            self.name()
+        }
+    }
+
     pub(crate) fn newlines(&mut self) {
         while self.token().kind == TokenKind::Newline {
             self.bump();

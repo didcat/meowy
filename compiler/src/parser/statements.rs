@@ -98,7 +98,7 @@ impl Parser {
             }
         } else {
             let save = self.pos;
-            let forward = if self.token().kind == TokenKind::Name {
+            let forward = if self.at_value_name() {
                 let name = self.bump().text;
                 match self.type_union() {
                     Ok(ty) if self.terminator() && matches!(ty.kind, TypeKind::Function { .. }) => {
@@ -160,7 +160,7 @@ impl Parser {
     }
 
     pub(crate) fn binding_head(&mut self) -> ParseResult<Option<(String, Option<TypeExpr>, bool)>> {
-        if self.token().kind != TokenKind::Name {
+        if !self.at_value_name() {
             return Ok(None);
         }
         let save = self.pos;

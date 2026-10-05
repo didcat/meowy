@@ -144,7 +144,7 @@ impl Parser {
                     }
                     primary = Some(Box::new(self.type_union()?));
                 } else {
-                    let name = self.name()?.text;
+                    let name = self.value_name()?.text;
                     self.newlines();
                     let ty = self.type_union()?;
                     let mutable = self.take(":=");

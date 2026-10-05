@@ -5,6 +5,41 @@ Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
+## Numeric shadowing implementation
+
+Active user request: implement numeric value bindings and update every affected
+language, compiler and editor document. Exact numeric spellings resolve lexically;
+`1`, `01`, `0x1` and `1.0` remain distinct. Declared values keep ordinary types,
+mutability, lifetime and scope rules. Unbound numbers retain literal defaults.
+The explicit escape is `@"core".literal(0x1)`, replacing the proposed numbered
+core members. Its resolved intrinsic identity accepts numeric syntax without
+looking up the operand; aliases retain that identity. Signs remain operators.
+
+Dependency-ordered commit plan:
+
+1. Parse numeric value declarations, parameters and members with focused parser
+   regressions; preserve numeric token validation and type-name grammar.
+2. Resolve numeric reads, writes and borrows through ordinary lexical values,
+   including signed-literal boundaries, with checker/native regressions.
+3. Integrate required evaluation and contextual list inference, preserving
+   fixed binding types and existing budget/eligibility gates.
+4. Add the core literal intrinsic, aliases, numeric argument validation and
+   contextual typing with runtime/required regressions.
+5. Publish the contract and required source conformance cases; refresh reviewed
+   coverage hashes and retain all existing capability exceptions.
+6. Update editor highlighting, teaching/compiler docs and project handoff; run
+   the full compiler/editor verification gate and inspect each staged slice.
+
+Investigation: numeric tokens currently become Int/Float AST leaves and bypass
+lookup. Existing checker symbol resolution, literal typing and intrinsic-call
+expansion are the integration points. Parser support is complete: all 34 parser tests pass
+(`/tmp/meowy-numeric-parser.log`). Numeric AST leaves retain spelling until lookup.
+Unrelated `docs/programs/hey/` stays excluded. The unfinished direct field-source
+Forward coercion work below remains the next existing compiler milestone.
+
+Next steps: implement lexical numeric resolution and focused checker/native
+checks, then required/list integration. Update this handoff after each validated slice; commit explicit paths.
+
 ## LLVM 23 and Rust 1.99 host qualification
 
 The bootstrap now pins LLVM/Clang/LLD/ar 23.1.1 and Rust 1.99.0. Target lookup passes

@@ -5,6 +5,14 @@ Updated: 2026-10-04. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
+## Active numeric shadowing work
+
+Numeric value bindings and the explicit `@"core".literal(number)` escape are being
+implemented. Exact spellings shadow independently; ordinary binding types and
+scope rules remain in force. The ordered implementation, conformance and editor
+commit plan is in [compiler/STATUS.md](compiler/STATUS.md#numeric-shadowing-implementation).
+No validation is claimed yet. Unrelated `docs/programs/hey/` remains excluded.
+
 ## Current compiler and coverage handoff
 
 Direct field-source resolution now follows explicit groups mixed with observed
