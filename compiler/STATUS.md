@@ -2506,6 +2506,13 @@ result and target visits. All 2614 library tests pass
 (`/tmp/meowy-dispatch-sources-collection.log`); formatting and whitespace checks pass.
 Existing candidate rows remain intact while dispatch bodies add their own roots.
 Scalar dispatch consumers remain opaque until the subsequent integration slices.
+Collection slice: `2020bdd`. Wrapper traversal now shares one bounded loop with
+distinct ordinary-block and dispatch terminal modes. Ordinary consumers never
+classify a dispatch as a block; dispatch lookup stops at blocks, fields, calls and
+changed or ineligible wrappers. Existing consumer checks passed before the change;
+all 143 consumer tests pass (`/tmp/meowy-dispatch-sources-wrappers.log`), including
+the new owner/wrapper regressions. Formatting and whitespace checks pass. Scalar
+dispatch descriptors can now use that separate terminal mode.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent

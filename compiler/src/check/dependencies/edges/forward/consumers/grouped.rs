@@ -23,6 +23,29 @@ impl Checker {
         span: Span,
         limit: usize,
     ) -> Result<Option<PointId>> {
+        self.grouped_source_limited(reports, input, owner, span, limit, false)
+    }
+
+    #[cfg(test)]
+    pub(super) fn dispatch_consumer(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<PointId>> {
+        self.grouped_source_limited(reports, input, owner, span, MAX_GROUPS, true)
+    }
+
+    pub(self) fn grouped_source_limited(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        span: Span,
+        limit: usize,
+        dispatch: bool,
+    ) -> Result<Option<PointId>> {
         let budget = || Diagnostic::unsupported("proof group-consumer budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof group-consumer identity mismatch", span);
         if self.group_inputs.len() > MAX_GROUPS || !self.flow.spend(1) {
@@ -56,6 +79,29 @@ impl Checker {
             let narrowing = self.narrowings.contains_key(&current);
             let read = self.local_reads.contains_key(&current);
             let typed = self.typed_ops.contains_key(&current);
+            if dispatch {
+                if !self.flow.spend(
+                    self.dispatch_ops.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.fields.len().checked_ilog2().unwrap_or(0) as usize
+                        + 2,
+                ) {
+                    return Err(budget());
+                }
+                if self.dispatch_ops.contains_key(&current) {
+                    if group.is_some()
+                        || coercion
+                        || narrowing
+                        || read
+                        || typed
+                        || self.fields.contains_key(&current)
+                        || reports.consumers.contains_key(&current)
+                        || point.kind != PointKind::Expr
+                    {
+                        return Err(invalid());
+                    }
+                    return Ok(Some(current));
+                }
+            }
             if usize::from(coercion)
                 + usize::from(narrowing)
                 + usize::from(read)
@@ -75,7 +121,7 @@ impl Checker {
                 {
                     return Err(invalid());
                 }
-                return Ok(Some(current));
+                return Ok((!dispatch).then_some(current));
             }
             let block = point.block;
             let next = if let Some(group) = group {
@@ -148,6 +194,9 @@ mod narrow_limits;
 
 #[cfg(test)]
 mod read_limits;
+
+#[cfg(test)]
+mod dispatch;
 
 #[cfg(test)]
 mod ascriptions;
