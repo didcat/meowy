@@ -1,174 +1,88 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Narrowed field-source lookup passes compiler and documentation gates.
+Updated: 2026-10-05. Numeric shadowing passes compiler, documentation and editor gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
 ## Numeric shadowing implementation
 
-Active user request: implement numeric value bindings and update every affected
-language, compiler and editor document. Exact numeric spellings resolve lexically;
-`1`, `01`, `0x1` and `1.0` remain distinct. Declared values keep ordinary types,
-mutability, lifetime and scope rules. Unbound numbers retain literal defaults.
-The explicit escape is `@"core".literal(0x1)`, replacing the proposed numbered
-core members. Its resolved intrinsic identity accepts numeric syntax without
-looking up the operand; aliases retain that identity. Signs remain operators.
+Complete. Numeric value names use exact lexical spelling in bindings, parameters,
+functions, fields and file exports. Unbound numbers retain literal construction;
+`1`, `01`, `0x1` and `1.0` remain distinct. Bound values keep ordinary fixed types,
+mutability, borrowing, ownership, narrowing and scope rules.
 
-Dependency-ordered commit plan:
+`@"core".literal(number)` constructs intrinsic numeric syntax through resolved
+identity, including immutable aliases. It accepts one numeric token or its direct
+unary negation, bypasses operand lookup and preserves contextual literal typing.
+Numeric type names, numeric labels and digit-leading malformed tokens remain
+outside the grammar. Existing capture, required-float, callable-storage and proof
+outcome restrictions remain unchanged. No runtime intrinsic call is introduced.
 
-1. Parse numeric value declarations, parameters and members with focused parser
-   regressions; preserve numeric token validation and type-name grammar.
-2. Resolve numeric reads and signed-literal boundaries, then numeric storage,
-   writes and borrows in a separate commit, each with checker/native regressions.
-3. Integrate required evaluation and contextual list inference, preserving
-   fixed binding types and existing budget/eligibility gates.
-4. Add the core literal intrinsic, aliases, numeric argument validation and
-   contextual typing with runtime/required regressions.
-5. Publish the contract and required source conformance cases; refresh reviewed
-   coverage hashes and retain all existing capability exceptions.
-6. Update editor highlighting, teaching/compiler docs and project handoff; run
-   the full compiler/editor verification gate and inspect each staged slice.
+Required evaluation, list inference/extents, module facades, checked documentation
+links and Vim/Neovim highlighting are integrated. The language reference, first
+tour, design notes and [compiler guide](docs/NUMBERS.md) describe the final rules.
+Editor tests include decimal, binary, hexadecimal, separated and exponent names;
+ordinary uses retain lexical numeric highlighting because syntax does not resolve
+scope. The editor change is in `2ceded0`, with additional spelling coverage below.
 
-Investigation: numeric tokens currently become Int/Float AST leaves and bypass
-lookup. Existing checker symbol resolution, literal typing and intrinsic-call
-expansion are the integration points. Parser support is complete: all 34 parser tests pass
-(`/tmp/meowy-numeric-parser.log`). Numeric AST leaves retain spelling until lookup.
-Unrelated `docs/programs/hey/` stays excluded. The unfinished direct field-source
-Forward coercion work below remains the next existing compiler milestone.
+Validation:
 
-Parser slice: `ccebefc`. Numeric reads now resolve existing lexical bindings before
-literal construction; functions/module aliases and fixed binding widths retain
-ordinary rules. Focused checker cases and debug/release native output pass
-(`/tmp/meowy-numeric-reads.log`). Numeric member access uses grouping, e.g.
-`(1).field`, because existing malformed-number token rules remain unchanged.
+- All 12 checks in `python3 -B tools/verify.py --compiler --editor both` pass:
+  2555 library tests, 918 native tests and 62 Python groups; formatting, Clippy,
+  compiler build, metadata/coverage, schemas and Vim/Neovim pass too.
+  Log: `/tmp/meowy-numeric-final-gate-2.log`.
+- Source conformance: 355 cases, 336 required passes, 19 unchanged pinned gaps,
+  zero failures in debug/release. Twelve new required cases cover numeric lookup,
+  escape, storage, required values, checked links, facades and rejection behavior.
+  Strict mode exits 1 only for the known gaps (`/tmp/meowy-numeric-strict.log`).
+- Final additional editor spelling tests and all six documentation/editor checks
+  pass (`/tmp/meowy-numeric-editor-final.log`). Final handoff documentation passes
+  all four default checks (`/tmp/meowy-numeric-handoff-docs.log`).
+- All original 343 catalog cases, 375 source assets, capability pins and proof
+  obligations are preserved (`/tmp/meowy-numeric-preservation.log`). Changed
+  reference hashes/evidence were reviewed and the coverage report regenerated.
 
-Read resolution: `ca66e6d`. Numeric storage now preserves mutable writes, shared
-and exclusive borrows, field/index paths and narrowing. Focused checker rejection
-cases and both native groups pass in debug/release
-(`/tmp/meowy-numeric-storage.log`).
+No outstanding feature failures remain. Boxed numeric adapters preserve existing
+deep-probe stack limits. The helper and all 14 callers in `abad72b` needed one
+atomic return-type change, exceeding the file-count guideline while remaining a
+small behavior-preserving prerequisite. Literal identity probes defer unresolved
+calls to the original context; the full gate confirms the prior extent diagnostics.
 
-Storage slice: `2a6a88a`. Required integer/boolean evaluation now resolves numeric
-bindings before scalar validation and preserves signed shortcuts only for unbound
-literals. Focused accepted/rejected required cases pass
-(`/tmp/meowy-numeric-required.log`), including widths, extents and runtime inputs.
+### Numeric shadowing commits
 
-Required scalar slice: `36c4347`. Required records, composition, type-value
-aliases/equality and field roots now use the same numeric lookup, including
-required-read tracking. All three focused numeric groups pass
-(`/tmp/meowy-numeric-identities.log`).
+| Commit | Reviewable slice |
+| --- | --- |
+| `ccebefc` | Parse numeric value names |
+| `ca66e6d` | Resolve numeric spellings through lexical bindings |
+| `2a6a88a` | Preserve numeric binding storage and borrow rules |
+| `36c4347` | Resolve numeric bindings during required scalar evaluation |
+| `f8ee8f2` | Preserve numeric identities in required records and types |
+| `53dc30f` | Retain numeric binding types during list inference |
+| `abad72b` | Bound numeric lookup adapter stack use |
+| `ad796f5` | Retain explicit literal identity in numeric syntax |
+| `183e41a` | Add the core numeric literal intrinsic |
+| `a10c027` | Preserve intrinsic literals during required evaluation |
+| `439b435` | Keep escaped literals contextual in lists and extents |
+| `31c1cb9` | Preserve numeric query identities and nondata boundaries |
+| `64d585c` | Resolve numeric names in checked documentation links |
+| `a0cfb29` | Specify numeric shadowing and intrinsic literal access |
+| `3b3ce22` | Document numeric binding types and storage semantics |
+| `06f0902` | Cover required numeric lookup and literal diagnostics |
+| `2ceded0` | Highlight numeric declarations and callable names |
+| `610bfec` | Document and exercise numeric declaration links |
+| `ce4b0ab` | Qualify numeric exports through file facades |
+| `8772860` | Validate escaped numeric kinds in required boolean forms |
+| `5ac6e9f` | Pin numeric binding and literal rejection diagnostics |
+| `f3049b4` | Teach numeric names and explicit literal access |
+| `1876333` | Preserve context diagnostics during literal identity probing |
+| `c41fb19` | Document numeric lookup across compiler subsystems |
+| `04b6fcf` | Cover numeric variable spellings in editor highlighting |
 
-Required identity slice: `f8ee8f2`. Numeric list elements now preserve typed
-inference, candidate probes, isolated probe environments and element storage.
-All four numeric checker groups pass (`/tmp/meowy-numeric-lists.log`).
-
-Stack adapter: `abad72b`. Optional numeric rewrites are boxed so deep existing
-candidate probes stay within the default stack. The linked signature change
-required the helper and all 14 caller files in one buildable commit.
-Numeric AST payloads now retain an explicit literal marker alongside spelling;
-source tokens remain lookup-enabled. All 2547 library tests pass with a fresh
-TMPDIR (`/tmp/meowy-numeric-payload-clean.log`). One prior run encountered an
-existing test-directory collision after the aborted stack run; the focused
-recheck and full clean-directory run both passed.
-
-Literal representation: `ad796f5`. core.literal now resolves through the Core
-module and ordinary immutable aliases; it accepts one numeric token or its direct
-unary negation, marks the operand intrinsic and preserves contextual widths.
-Arity/syntax/range rejections and three debug/release native groups pass
-(`/tmp/meowy-core-literal.log`).
-
-Core literal slice: `183e41a`. Required integer construction, comparisons, block
-operands and type queries now preserve escaped numeric identity across repeated
-checking. Both focused literal groups pass (`/tmp/meowy-literal-required.log`).
-
-Required literal slice: `a10c027`. Literal calls now retain contextual list
-inference and union selection, pure-probe intrinsic aliases, and ordinary list
-extent eligibility. All three literal groups pass (`/tmp/meowy-literal-lists.log`).
-
-Literal list slice: `439b435`. Numeric pending copies retain one query identity,
-and non-data type queries no longer fall back to the numeric default type.
-All six numeric groups pass (`/tmp/meowy-numeric-query.log`); proof outcomes
-remain gated exactly as for identifier bindings.
-
-Query boundary slice: `31c1cb9`. Checked-documentation value paths now follow
-the source parser, retaining numeric spelling, grouping and field boundaries.
-All 15 documentation groups pass (`/tmp/meowy-numeric-doc-links.log`).
-
-Checked-doc links: `64d585c`. Syntax and core references now specify exact-spelling
-lookup, fixed binding types and the literal syntax escape. Two new required source
-cases pass; conformance is 326 passed, 19 unchanged gaps, zero failures in both
-profiles (`/tmp/meowy-numeric-source-core.log`). Reviewed syntax/core inventory
-hashes and evidence are refreshed; all four documentation checks pass
-(`/tmp/meowy-numeric-contract-docs.log`). Proof obligations are unchanged.
-
-Core contract: `a0cfb29`. Types, values and collections now explain fixed numeric
-binding types and storage/index lookup. The numeric storage source case passes;
-conformance is 327 passed, 19 unchanged gaps, zero failures in both profiles
-(`/tmp/meowy-numeric-source-storage.log`). Corresponding coverage hashes reviewed.
-
-Storage contract: `3b3ce22`. Required evaluation and diagnostic references now
-cover numeric lookup and syntax-only literal construction. Required execution
-and fixed-type rejection cases pass: 329 required passes, 19 unchanged gaps and
-zero failures in both profiles (`/tmp/meowy-numeric-source-required.log`).
-Coverage hashes reviewed. All six documentation/editor checks also pass
-(`/tmp/meowy-numeric-editor.log`); editor changes remain a separate slice.
-
-Required contract: the preceding commit. Numeric declaration and callable heads now
-receive appropriate Vim/Neovim highlighting; ordinary uses retain lexical numeric
-colors. All six checks passed (`/tmp/meowy-numeric-editor.log`).
-
-Editor slice: `2ceded0`. Numeric checked links now have a required executable
-source fixture and an updated documentation reference. All 330 required cases
-pass with 19 unchanged gaps (`/tmp/meowy-numeric-source-links.log`).
-
-Checked-link contract: `610bfec`. Numeric scalar and function exports now have
-required multi-file facade coverage; module semantics explicitly retain numeric
-names. Conformance is 331 passed, 19 unchanged gaps, zero failures in both profiles
-(`/tmp/meowy-numeric-source-modules.log`). The module coverage hash is reviewed.
-
-Module contract: `ce4b0ab`. Numeric duplicate/write/borrow/arity rejection sources
-pass: 335 required passes, 19 unchanged gaps, zero failures in both profiles
-(`/tmp/meowy-numeric-source-errors.log`). The reference anchor correction was
-validated by regenerated coverage and all six doc/editor checks
-(`/tmp/meowy-numeric-final-docs.log`).
-
-The final audit found required boolean form validation missing literal expansion.
-The focused fix preserves E222 for numeric operands even in skipped arms; all
-four literal groups pass (`/tmp/meowy-literal-boolean-forms.log`).
-
-Boolean form fix: `8772860`. Five required rejection sources cover duplicate
-numeric names, immutable writes, borrow conflicts, intrinsic arity and skipped
-numeric boolean operands. Conformance is 336 passed, 19 unchanged gaps and zero
-failures in both profiles (`/tmp/meowy-numeric-source-errors-final.log`).
-All 343 previous cases, 375 source assets, capability pins and proof obligations
-are preserved (`/tmp/meowy-numeric-preservation.log`).
-
-The root introduction, first tour and design notes now teach numeric spelling
-lookup and literal escape. Their local links passed the six documentation/editor
-checks in `/tmp/meowy-numeric-final-docs.log`.
-
-Final gate passed formatting and all-target Clippy but found an existing extent
-boundary regression: eager literal probing changed B001 to E201 for an unresolved
-call in an ordinary extent. Literal identity probing now defers failed lookup to
-the original context. The gate failure remains in `/tmp/meowy-numeric-final-gate.log`.
-
-Five literal groups and all six existing extent-root groups now pass
-(`/tmp/meowy-literal-lookup.log`). Literal probing uses existing non-evaluating
-symbol hints; unknown calls retain their original context diagnostics.
-
-The compiler numeric-name guide and foundation, required-evaluation, module and
-implementation-plan documentation are complete. Their local links and all
-six doc/editor checks pass (`/tmp/meowy-numeric-final-docs.log`). The root tracker
-records compiler, documentation and editor scope separately from release status.
-
-All 12 final compiler/editor checks pass (`/tmp/meowy-numeric-final-gate-2.log`):
-2555 library tests, 918 native tests, 62 Python groups and 336 required conformance
-passes with 19 unchanged gaps. Strict mode exits 1 only for those gaps
-(`/tmp/meowy-numeric-strict.log`). Additional Vim/Neovim coverage explicitly checks
-binary, digit-separated and signed-exponent variable declarations; all six editor
-and documentation checks pass (`/tmp/meowy-numeric-editor-final.log`).
-
-Next step: replace this active plan with the completed handoff and commit ledger.
+Next: resume the existing direct-field-source plan through observed Forward
+coercions below. Full proof evaluation and v0.0.1 release qualification remain
+incomplete. Unrelated `docs/programs/hey/` is preserved and excluded from commits.
+Nothing was pushed or published.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
