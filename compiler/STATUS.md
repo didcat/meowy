@@ -2382,7 +2382,12 @@ now covers 42 read/Bind/registry/parent/site/conflicting-producer faults with an
 without field associations; all six local-source groups pass
 (`/tmp/meowy-local-fields-faults.log`). Collection and stored-report qualification
 reject every corruption without publishing partial results. Mixed cycles and
-shared resource limits are next. Unrelated `docs/programs/hey/` remains excluded.
+shared resource tests pass: qualified initializer-jump cycles, a mixed 16-local
+chain with exact hop/work/cache boundaries and preserved source histories. All
+nine local-source groups pass (`/tmp/meowy-local-fields-limits.log`), as do all
+575 forward-report tests (`/tmp/meowy-local-fields-reports.log`). Identity slice:
+`9e9125d`. Source conformance and final gates remain. Unrelated
+`docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
@@ -2392,7 +2397,7 @@ Dependency-ordered commit plan:
    and stored-descriptor qualification on the same resolver. Include grouped,
    typed/ascribed chains across lexical blocks and independent owners, retaining
    original Value candidates, terminal fields and both forests.
-2. Separately cover missing observations/eligibility/initializers, mutable locals,
+2. Complete: cover missing observations/eligibility/initializers, mutable locals,
    parameters, emitted aliases, dispatch receivers, temporary cells, storage
    mismatches, corrupt Bind/read metadata, cycles and exact shared budgets. Keep
    calls and reference loads opaque; no lifetime or loan authority is added.
