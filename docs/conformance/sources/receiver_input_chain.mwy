@@ -1,0 +1,28 @@
+d : @"debug"
+
+show <int32> : (n <int32>) {
+    row : {
+        d.print("row")
+        -> n : n
+        d.print("row tail")
+    }
+    field : row.n.{
+        d.print("field")
+        alias <int32> : (($~<int32>))
+        inherited : { d.print("inherited"); -> alias; d.print($) }
+        nested : $.{ d.print("nested"); -> $; d.print("nested tail") }
+        -> inherited
+        d.print(nested)
+    }
+    block : {
+        d.print("block")
+        -> field
+        d.print("block tail")
+    }.{ -> $ }
+    dispatch : block.{ d.print("dispatch"); -> $ }.{ -> $ }
+    -> dispatch
+    d.print("function tail")
+}
+
+d.print(show(7))
+d.print(show(8))

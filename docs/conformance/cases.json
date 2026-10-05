@@ -4050,6 +4050,38 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_input_chain",
+      "phase": "run",
+      "source": "sources/receiver_input_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "row\nrow tail\nfield\ninherited\n7\nnested\nnested tail\n7\nblock\nblock tail\ndispatch\nfunction tail\n7\nrow\nrow tail\nfield\ninherited\n8\nnested\nnested tail\n8\nblock\nblock tail\ndispatch\nfunction tail\n8\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_input_body_stop",
+      "phase": "run",
+      "source": "sources/receiver_input_body_stop.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "row\nrow tail\nnested\n6\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_input_borrow_escape",
+      "phase": "check",
+      "source": "sources/receiver_input_borrow_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

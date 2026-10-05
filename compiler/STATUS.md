@@ -2544,8 +2544,9 @@ The current tree contains only unrelated `docs/programs/hey/`. Preservation base
 
 Dependency-ordered commit plan:
 
-1. Add required source cases and classified evidence, then run compiler, strict
-   and final documentation gates and refresh both handoffs.
+1. Run compiler and strict conformance gates, document the completed scalar
+   receiver route in FOUNDATION, then refresh both handoffs and run the final
+   documentation gate. Next work remains a separate dependency-ordered slice.
 
 Record-dispatch consumers, field transparency, aggregate value selection, precise
 branch/overwrite joins, function returns, restart propagation, E225 enforcement
@@ -2591,8 +2592,16 @@ All 630 forward-report tests pass (`/tmp/meowy-receiver-sources-conflict-reports
 All ten receiver-consumer tests pass (`/tmp/meowy-receiver-sources-limits.log`).
 Exact field cache/payload/hop/work boundaries retain one charge across repeated
 receiver reads; block wrapper lookup consumes work without new payload. Independent
-read and dispatch control marks retain identical source descriptors. Implementation
-and bounded structural evidence are complete; source cases and final gates remain.
+read and dispatch control marks retain identical source descriptors.
+Three new required cases pass debug/release (`/tmp/meowy-receiver-sources-source.log`):
+field/block/dispatch receiver input chains retain single evaluation, nested/inherited
+`$`, typed copies and tail order across function calls; stopped bodies retain P006;
+receiver-borrow escape remains E303. Structural metadata evidence remains separately
+classified. All four source-slice documentation checks pass
+(`/tmp/meowy-receiver-sources-source-docs.log`). The preservation audit retains 383
+prior cases, 456 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-sources-preservation.log`). Final compiler/strict gates and
+the completed documentation handoff remain.
 
 ## Documentation conventions and layout
 

@@ -1,0 +1,10 @@
+d : @"debug"
+row : { d.print("row"); -> n : 6; d.print("row tail") }
+value : row.n.{
+    nested : { d.print("nested"); -> $ }
+    d.print(nested)
+    -> nested
+    d.print("stop")
+    d.panic("receiver body stopped")
+}
+d.print("unreachable")
