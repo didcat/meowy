@@ -632,9 +632,10 @@ Empty and multiple histories keep their meaning, and arithmetic result values re
 opaque. Full-record equality adds no primary projection; nonscalar primaries, calls,
 reference loads and mutable reads retain their existing boundaries.
 
-Coercion, output, list and composed-emission consumers retain their ordinary block
-paths. Projected coercions do not become transparent wrappers. Source cases preserve
-receiver/tail order, scalar kinds and bare arithmetic results, guarded `$` scopes,
+Output, list and composed-emission consumers retain their ordinary block paths;
+coercion-owned dispatch links are described below. Projected coercions do not become
+transparent wrappers. Source cases preserve receiver/tail order, scalar kinds and
+bare arithmetic results, guarded `$` scopes,
 unsigned-negation E222, stopped-right-operand P006 and checked primary-negation P002.
 The order case explicitly ascribes the right dispatch's record type: an unannotated
 right dispatch can receive a scalar construction hint and reject named fields with
@@ -765,10 +766,25 @@ immutable copy chains. Unary projections already performed by expected-value
 coercions retain the coercion's own port; no second unary projection is invented.
 
 Coercion-owned primary consumers revalidate each actually observed Projection,
-Operation and Normal stage against its checked producer. Input, kind, primary and
-control headers must agree, along with exact source identities and ordered edges.
+Operation and Normal stage against its checked producer. Input, kind, primary,
+source shape and control headers must agree, along with exact identities and edges.
 Only an observed projection selects the input and maps step0 to the original block's
 slot0. Later operation/result observations never imply a projection.
+
+Before expected-value conversion consumes the checked value, capture classifies its
+record primary with the existing shallow Shape representation. The plan retains that
+shape only when it actually projects a primary; other paths keep None. Projected
+Never agrees with Stopped, while scalar, reference, list and union sources retain
+their original kind independently of the converted target. Capture/replay, stage
+validation, report merging and input lookup all requalify this contract. The fixed
+descriptor copies no type tree or runtime value and adds no variable payload.
+
+Observed scalar coercion projections can also link to a qualified dispatch result's
+slot zero. The captured source kind must match the exact scalar layout, including
+width and signedness. Conversion and result flags remain independent of projection,
+as do dispatch initialization/result visits. Source shape alone establishes no visit.
+Nonscalar/stopped primaries, parameters, calls and reference loads retain their source
+limits. Ordinary block primary lookup is unchanged.
 
 Forward and Convert projections preserve local unary, typed scalar and nullable
 contexts. A Convert projection alone needs no operation registration; observing its
@@ -777,6 +793,14 @@ links have seeded structural coverage without asserting a completed runtime valu
 Primary-extracting coercions remain opaque as value-forwarding steps. The collector
 uses existing map/work bounds, retains one link per port, and copies no payload;
 invalid stages or late failures preserve the original reports and links.
+
+An ordinary typed list element may contain a standalone coercion; its source link
+belongs to the coercion's Projection port. It does not create a list-owned projection.
+The same separation applies when an operand coercion precedes a unary or binary
+operation. Direct-value/Forward traversal still stops at projected coercions.
+Source cases preserve typed and nullable copies, receiver/tail order across owners,
+scalar kinds, mutable snapshots, reference/list primaries, incompatible-target E207
+and stopped-source P006. These links grant no lifetime, loan or proof authority.
 
 Output-owned primary consumers retain each formatting part's original index,
 including gaps for literals and scalar inputs. Sparse observed reports independently
@@ -1036,8 +1060,9 @@ projected borrows and outer expected conversions remain separate. These records
 replay no receiver effects, copy no types and infer no narrowed value, same-value
 identity, successful execution or proof outcome. Mutable guards, invalidation,
 ascription and borrow diagnostics retain their ordinary checking rules.
-Coercion reports retain exact raw sources, Forward/Convert/Stopped decisions,
-primary/control flags and independent projection/conversion/result observations.
+Coercion reports retain exact raw roots, pre-conversion primary source shapes,
+Forward/Convert/Stopped decisions, primary/control flags and independent
+projection/conversion/result observations.
 Capture validates completed roots, matching spans, parent/block/owner agreement,
 supported expression/short-circuit source kinds, selectors and exact original edges.
 Forwarding adds no operation; direct stops add no observations, while a projected

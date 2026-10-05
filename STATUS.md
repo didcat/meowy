@@ -28,29 +28,29 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Observed unary and binary projections now link to scalar primaries of record
-dispatch results, matching exact scalar kinds, widths, signedness and operand ports.
-Projection and producer initialization/result observations remain independent;
-arithmetic result values remain opaque. A guarded `$` scope rejection is fixed by
-validating matcher-arm ancestry against checked branch edges and statement sites.
-The [compiler handoff](compiler/STATUS.md#record-dispatch-arithmetic-primary-sources)
+Coercion-owned scalar projections now link to record dispatch primaries using the
+source shape captured before conversion. Exact kind/width/signedness, producer/report
+headers and independent stage flags are requalified. Projected coercions remain
+opaque to generic value forwarding; nested element/operand coercions retain their
+own ports. Ordinary consumers and borrow/proof authority are unchanged.
+The [compiler handoff](compiler/STATUS.md#coercion-owned-dispatch-primary-sources)
 records the reviewed slices and the next dependency-ordered plan.
 
-All ten compiler checks pass: 2683 library/921 native tests and 62 Python groups
-(`/tmp/meowy-dispatch-primary-gate.log`). Conformance has 395 cases: 376 required
+All ten compiler checks pass: 2697 library/921 native tests and 62 Python groups
+(`/tmp/meowy-coercion-dispatch-gate.log`). Conformance has 399 cases: 380 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-dispatch-primary-strict.log`). Five new
-required cases preserve receiver/tail order, guarded receiver scope, scalar kinds,
-equality domains, unsigned-negation E222, stopped operands P006 and overflow P002.
-The order case uses explicit right-hand record typing; broader contextual record
-hinting remains a separate limitation. Structural tests do not establish proof results.
+exits 1 only for those gaps (`/tmp/meowy-coercion-dispatch-strict.log`). Four new
+required cases preserve typed/nullable copies, receiver/tail order, scalar kinds,
+mutable snapshots, reference/list primaries, incompatible-target E207 and stopped
+sources P006. Structural evidence remains distinct from language execution.
 
-The audit retains 390 prior cases, 463 tracked contract/source/pin files and all
-37 reviewed reference hashes (`/tmp/meowy-dispatch-primary-preservation.log`).
-All four final documentation checks pass (`/tmp/meowy-dispatch-primary-docs.log`).
-Proof evaluation and full language/release qualification remain incomplete.
+The audit retains 395 prior cases, 468 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-coercion-dispatch-preservation.log`). All four final
+documentation checks pass (`/tmp/meowy-coercion-dispatch-docs.log`). Proof evaluation,
+broader contextual record hinting and full language/release qualification remain
+incomplete.
 
-Next, capture and qualify coercion-owned primary sources from dispatch results.
+Next, capture and qualify output-owned primary sources from dispatch results.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain
