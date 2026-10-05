@@ -44,6 +44,32 @@ Annotations can be inferred: `count := 0` infers `<int32>`. Inference chooses a
 type at the binding's declaration; reassignment does not change it. A string
 cannot later become an integer merely because its binding is mutable.
 
+## Numeric spellings can be names
+
+Numbers normally construct their own values. Like other value names, their
+spellings can also be bound in a scope:
+
+```meowy
+literal : @"core".literal
+
+{
+    1 : literal(2)
+    doubled : 1 + 1
+    original : literal(1)
+}
+```
+
+`doubled` is `4`, while `original` is `1`. Leaving the block restores the outer
+meaning of `1`. Lookup uses spelling: shadowing `1` leaves `01` and `0x1` alone.
+The same rule applies to floating-point spellings.
+
+A numeric binding still has one fixed type. `1 <uint8> : literal(1)` creates a
+`uint8` binding; reading it later does not change its width. The intrinsic
+`literal(1)` creates a fresh contextual literal instead. It accepts numeric
+syntax, including `literal(-128)`, rather than an expression such as
+`literal(1 + 2)`. The [reference](../reference/syntax.md#numeric-names-and-intrinsic-literals)
+covers numeric fields, parameters and mutable bindings.
+
 ## Blocks build values
 
 ```meowy

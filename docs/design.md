@@ -17,8 +17,13 @@ The grammar has no reserved keywords. Punctuation supplies structure; names
 refer to ordinary values, type values, or scoped operations. `true`, `false`,
 `null`, and primitive types come from a small predefined environment. `$` denotes
 the nearest dispatch receiver; `self` is an ordinary name. Ordinary names support
-lexical shadowing and aliasing; only a nested dispatch introduces another `$`. Compiler knowledge follows an intrinsic's identity,
-not the letters in its name.
+lexical shadowing and aliasing. Numeric spellings participate in value lookup too:
+an unbound token constructs its literal, while `@"core".literal(number)` explicitly
+requests intrinsic numeric syntax. Exact spellings remain independent, and numeric
+bindings keep ordinary fixed types. See the
+[numeric name contract](reference/syntax.md#numeric-names-and-intrinsic-literals).
+Only a nested dispatch introduces another `$`. Compiler knowledge follows an
+intrinsic's identity, not the letters in its name.
 
 Lower-level features follow that rule too: `&!` marks an exclusive borrow,
 `!{ ... }` marks a caller-proven safety boundary, and constraints appear after

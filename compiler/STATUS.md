@@ -143,7 +143,11 @@ failures in both profiles (`/tmp/meowy-numeric-source-errors-final.log`).
 All 343 previous cases, 375 source assets, capability pins and proof obligations
 are preserved (`/tmp/meowy-numeric-preservation.log`).
 
-Next steps: commit remaining docs; final compiler/editor gate is running in
+The root introduction, first tour and design notes now teach numeric spelling
+lookup and literal escape. Their local links passed the six documentation/editor
+checks in `/tmp/meowy-numeric-final-docs.log`.
+
+Next steps: commit compiler integration documentation; the final gate is running in
 `/tmp/meowy-numeric-final-gate.log`, then run strict gap accounting and finalize.
 
 ## LLVM 23 and Rust 1.99 host qualification
