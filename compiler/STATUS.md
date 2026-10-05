@@ -108,8 +108,13 @@ members from contextual literals and dotted assignment from invalid declarations
 All six documentation/editor checks pass (/tmp/meowy-root-first-reference-checks.log).
 The owning inventory hashes were reviewed and coverage regenerated.
 
-Next: module/documentation/required references, added rejection and required-field
-source cases, then teaching/compiler docs and final gates.
+Module and checked-documentation references now describe member chains instead
+of dotted names. The numeric facade source uses a numeric module alias and numeric
+callable/member paths with the original ./facade.mwy import retained. Expected
+outputs pass in both profiles (/tmp/meowy-root-first-required-cases-fixed.log).
+
+Next: required/diagnostic reference details and additional source rejections,
+then teaching/compiler docs and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

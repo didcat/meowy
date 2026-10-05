@@ -7,7 +7,9 @@
 A file is a module body. Ordinary bindings are private; named emissions export
 values or types. A file's primary emission is its primary exported value.
 Numeric value exports use the same visibility, type and initialization rules:
-`-> 1 <uint8> : 7` is selected as `module.1`, and a `1.0` export as `module.1.0`.
+`-> 1 <uint8> : 7` is selected as `module.1`, and an undotted `1e0` export as
+`module.1e0`. A dotted export name is invalid; `module.1.0` traverses two fields.
+A numeric module alias uses the same root-first lookup, for example `10.4`.
 Re-exporting retains the original value or callable identity. Numeric value names
 do not introduce numeric names in the separate type namespace.
 
