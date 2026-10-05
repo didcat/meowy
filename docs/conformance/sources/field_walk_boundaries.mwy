@@ -1,0 +1,26 @@
+d : @"debug"
+
+unknown : {
+    -> {
+        -> n := 1
+        n = 2
+        d.print("mutable tail")
+    }.n
+}
+d.print(unknown)
+
+empty <{n <null>}> : {}
+absent : { -> empty.n }
+d.print(absent <null>)
+
+source : { -> n : 4 }
+grouped : { -> (source.n) }
+typed <int32> : { -> source.n }
+view : &source
+borrowed : { -> view.n }
+read <int32> : (record <{n <int32>}>) { -> record.n }
+called : { -> read(source) }
+d.print(grouped)
+d.print(typed)
+d.print(borrowed)
+d.print(called)

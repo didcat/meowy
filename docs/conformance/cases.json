@@ -3574,6 +3574,36 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "field_walk_composed",
+      "phase": "run",
+      "source": "sources/field_walk_composed.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "base\nbase tail\nmiddle tail\ncopy tail\nrow tail\n2\n2\nbase\nbase tail\nmiddle tail\ncopy tail\nrow tail\n3\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "field_walk_boundaries",
+      "phase": "run",
+      "source": "sources/field_walk_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "mutable tail\n2\ntrue\n4\n4\n4\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "field_walk_duplicate",
+      "phase": "check",
+      "source": "sources/field_walk_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

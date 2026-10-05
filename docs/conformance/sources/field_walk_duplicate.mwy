@@ -1,0 +1,7 @@
+source : { -> n : 1 }
+first : { -> n : source.n }
+copy : { -> first }
+duplicate : {
+    -> copy
+    -> n : source.n
+}

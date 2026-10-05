@@ -1,0 +1,28 @@
+d : @"debug"
+
+show <null> : (flag <boolean>) {
+    base : {
+        d.print("base")
+        | flag | -> n : 2
+        | !flag | -> n : 3
+        d.print("base tail")
+    }
+    middle : {
+        -> n : base.n
+        d.print("middle tail")
+    }
+    copy : {
+        -> middle
+        d.print("copy tail")
+    }
+    row : {
+        -> copy.n
+        -> sibling : base.n
+        d.print("row tail")
+    }
+    d.print(row)
+    d.print(row.sibling)
+}
+
+show(true)
+show(false)

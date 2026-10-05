@@ -2110,8 +2110,15 @@ with the final test budget reset (`/tmp/meowy-expanded-integration.log`); integr
 as `4104d99`. Seeded boundary tests now cover self/mutual/branch cycles and diamonds
 across both edge kinds, 2048-slot depth, shared forest state, exact payload/work and
 late descriptor/owner faults. These are structural tests, not source-level cycle
-evidence. All four boundary groups pass (`/tmp/meowy-expanded-boundaries.log`).
-Next add required source cases and classify their coverage (step 5).
+evidence. All four boundary groups pass (`/tmp/meowy-expanded-boundaries.log`),
+committed as `cfe9512`. Three required source cases now pin mixed field/composition
+order, mutable/empty histories, opaque wrappers/calls/shared reads and duplicate
+field E205. All three pass fresh-compiler debug/release
+(`/tmp/meowy-expanded-source.log`). Coverage is regenerated and all four source-slice
+documentation checks pass (`/tmp/meowy-expanded-source-docs.log`). The preservation
+audit confirms prior cases, fixtures, reference hashes, support pins and proof
+obligations are unchanged (`/tmp/meowy-expanded-preservation.log`). The compiler,
+strict and final documentation gates remain step 6.
 
 Dependency-ordered commit plan:
 
