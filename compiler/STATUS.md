@@ -2723,9 +2723,8 @@ ordering and required/reborrow paths. Baseline: `/tmp/meowy-coercion-dispatch-ba
 
 Dependency-ordered commit plan:
 
-1. Add required source cases for typed copies, conversion and stopped inputs plus
-   classified evidence; run compiler, strict and documentation gates and update both
-   handoffs. Split further if capture/report changes exceed review thresholds.
+1. Run compiler and strict conformance gates, document source-shape capture and
+   coercion-owned dispatch links, then refresh both handoffs and run final docs checks.
 
 Output/list/composition dispatch consumers, contextual record-hint repair,
 record-receiver transparency, aggregate value selection, precise joins, function
@@ -2756,7 +2755,14 @@ All eight dispatch-coercion tests pass (`/tmp/meowy-coercion-dispatch-boundaries
 Eight late type/origin/registration faults, exact shared map/work limits, wrapped
 initializer cycles and independent producer/consumer control marks preserve stored
 reports and edge counters. All-target Clippy also passes
-(`/tmp/meowy-coercion-dispatch-lint.log`). Source conformance and final gates remain.
+(`/tmp/meowy-coercion-dispatch-lint.log`).
+Four new required cases pass debug/release (`/tmp/meowy-coercion-dispatch-source.log`):
+receiver/tail order, typed copies and nullable conversion across owners, scalar
+kinds/widths, mutable snapshots, reference/list primaries, E207 and stopped-source
+P006. All four source-slice documentation checks pass
+(`/tmp/meowy-coercion-dispatch-source-docs.log`). The audit retains 395 prior cases,
+468 tracked contract/source/pin files and 37 reviewed hashes
+(`/tmp/meowy-coercion-dispatch-preservation.log`). Full gates and final handoff remain.
 
 ## Documentation conventions and layout
 

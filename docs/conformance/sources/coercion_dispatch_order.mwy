@@ -1,0 +1,25 @@
+d : @"debug"
+receiver <int32> : (n <int32>) { d.print("receiver"); -> n }
+
+show <int32> : (n <int32>) {
+    row : receiver(n).{
+        d.print("body")
+        -> $
+        -> tag : true
+        d.print("tail")
+    }
+    copy <int32> : ((row))
+    maybe <int32><null> : row
+    d.print(copy)
+    | maybe<int32> | d.print(maybe)
+    negative : -row
+    d.print(negative)
+    items <int32[1]> : [row]
+    d.print(items[1])
+    d.print(row.tag)
+    -> row
+    d.print("function tail")
+}
+
+d.print(show(3))
+d.print(show(5))

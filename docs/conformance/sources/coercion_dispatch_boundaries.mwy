@@ -1,0 +1,32 @@
+d : @"debug"
+small <uint8> : 7
+row : small.{ -> $; -> tag : true }
+copy <uint8> : row
+maybe <uint8><null> : row
+d.print(copy)
+| maybe<uint8> | d.print(maybe)
+truth : true.{ -> $; -> tag : true }
+flag <boolean> : truth
+d.print(flag)
+text : "cat".{ -> $; -> tag : true }
+name <string> : text
+d.print(name)
+number <float32> : 1.5
+decimal : number.{ -> $; -> tag : true }
+value <float32> : decimal
+d.print(value)
+empty : 3.{ -> tag : true }
+nil <null> : empty
+d.print(nil == null)
+mutable := 3.{ -> $; -> tag : true }
+snapshot <int32> : mutable
+mutable = 4.{ -> $; -> tag : true }
+d.print(snapshot)
+d.print(mutable)
+n : 9
+view : 3.{ -> &n; -> tag : true }
+ref <&int32> : view
+d.print(*ref)
+list : 5.{ -> [$]; -> tag : true }
+items <int32[1]> : list
+d.print(items[1])

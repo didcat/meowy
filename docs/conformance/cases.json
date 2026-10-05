@@ -4178,6 +4178,48 @@
         "exit": 1
       },
       "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "coercion_dispatch_order",
+      "phase": "run",
+      "source": "sources/coercion_dispatch_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nbody\ntail\n3\n3\n-3\n3\ntrue\nfunction tail\n3\nreceiver\nbody\ntail\n5\n5\n-5\n5\ntrue\nfunction tail\n5\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "coercion_dispatch_boundaries",
+      "phase": "run",
+      "source": "sources/coercion_dispatch_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n7\ntrue\ncat\n1.5\ntrue\n3\n4\n9\n5\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "coercion_dispatch_wrong_type",
+      "phase": "check",
+      "source": "sources/coercion_dispatch_wrong_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "coercion_dispatch_stopped",
+      "phase": "run",
+      "source": "sources/coercion_dispatch_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "body\ntail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

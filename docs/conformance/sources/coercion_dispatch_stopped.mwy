@@ -1,0 +1,10 @@
+d : @"debug"
+row <{ -> <int32>; tag <boolean> }> : 3.{
+    d.print("body")
+    -> $
+    -> tag : true
+    d.print("tail")
+    d.panic("stopped dispatch")
+}
+copy <int32><null> : row
+d.print("unreachable")
