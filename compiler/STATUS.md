@@ -2411,6 +2411,19 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: direct scalar block result sources
 
+Active investigation: consumer indexing already retains completed scalar blocks,
+but `primary_slot` intentionally requires a record and direct descriptors retain
+only terminal fields. Reuse the existing block qualification while preserving that
+record-only API. Share its exact checks before adding scalar qualification; keep
+representation, collection and forest integration reviewable independently.
+The existing consumer tests pass before extraction
+(`/tmp/meowy-scalar-blocks-before.log`). `consumers/blocks.rs` now separates wrapper
+resolution from unchanged terminal block qualification. All 135 consumer tests
+pass before/after (`/tmp/meowy-scalar-blocks-shared.log`); formatting and whitespace
+checks pass. This is a behavior-preserving prerequisite commit, before scalar-only
+qualification, descriptor collection and forest integration. Unrelated
+`docs/programs/hey/` remains excluded.
+
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
 `results/inputs/direct.rs` currently stores only field-source descriptors. A direct
 Value candidate whose input resolves to a scalar block still lacks a block-source
