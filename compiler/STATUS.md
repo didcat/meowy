@@ -2659,8 +2659,8 @@ consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
 
 Dependency-ordered commit plan:
 
-1. Add focused binary conflict/cycle/map/work regressions before source conformance.
-2. Add required arithmetic/ordering/rejection source cases and classified evidence,
+1. Add required normal/guarded/rejection source cases and classified evidence.
+2. Pin stopped-operand and checked-overflow behavior in a separate source slice,
    then run compiler, strict and documentation gates and refresh both handoffs.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
@@ -2693,6 +2693,10 @@ retain a left projection before a stopped right operand. Twenty independent stag
 source-result combinations, empty/multiple histories and opaque full-record equality,
 references, calls and mutable reads are covered. Arithmetic results remain opaque.
 A required guarded-source run case will accompany arithmetic conformance cases.
+All eight binary-focused tests pass (`/tmp/meowy-dispatch-primary-boundaries.log`).
+Eight late operand/type/plan/source faults, wrapped initializer cycles, independent
+consumer/dispatch control marks and exact map/shared-work limits preserve report
+atomicity. Implementation and structural checks are complete; source runs remain.
 
 ## Documentation conventions and layout
 
