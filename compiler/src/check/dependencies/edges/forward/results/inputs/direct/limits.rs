@@ -3,7 +3,7 @@ use crate::check::dependencies::edges::forward::results::inputs::graph::Visit;
 
 #[test]
 pub(crate) fn direct_sources_share_exact_map_cache_payload_and_work_limits() {
-    let (mut checker, reports) = checked("r:{->n:1};a:{->r.n};b:{->r.n};c:{->r}");
+    let (mut checker, reports) = checked("r:{->n:1};a:{->((r.n))};b:{->(r.n)};c:{->r}");
     let expected = &reports.direct_sources;
     let base = reports.effects.len()
         + reports.blocks.len()

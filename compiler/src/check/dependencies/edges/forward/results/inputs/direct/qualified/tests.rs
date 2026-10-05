@@ -117,7 +117,7 @@ pub(crate) fn direct_graph_rejects_missing_extra_changed_and_unqualified_descrip
 
 #[test]
 pub(crate) fn direct_graph_charges_shared_qualification_caches_and_exact_work() {
-    let (mut checker, reports) = checked("r:{->n:1};a:{->r.n};b:{->r.n};c:{->r}");
+    let (mut checker, reports) = checked("r:{->n:1};a:{->((r.n))};b:{->(r.n)};c:{->r}");
     let work = checker.flow.work;
     let (_, left) = checker
         .direct_graph(&reports, Span::default(), MAX_EDGES)

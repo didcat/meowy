@@ -74,7 +74,7 @@ pub(crate) fn expanded_forest_retains_original_reports_opaque_inputs_and_indepen
 
 #[test]
 pub(crate) fn expanded_forest_shares_qualification_traversal_payload_and_work_atomically() {
-    let (mut checker, mut reports) = checked("r:{->n:1};a:{->r.n};b:{->r.n}");
+    let (mut checker, mut reports) = checked("r:{->n:1};a:{->((r.n))};b:{->(r.n)}");
     let (_, left) = checker
         .direct_graph(&reports, Span::default(), MAX_EDGES)
         .unwrap();

@@ -2152,7 +2152,12 @@ identity/cycle regressions and exact resource-limit regressions to keep each sli
 independently reviewable. Both corruption/conflict and seeded cycle groups pass
 (`/tmp/meowy-group-fields-faults.log`). Cycle legs qualify individually and the
 resolver detects their revisit; collection can reject changed candidate ancestry
-earlier. No failures remain. Exact resource-limit regressions are next.
+earlier; committed as `fa55889`. New resource tests cover combined group/narrowing
+hops, shared field/root cache payload, repeat lookups, exact work and the registry
+cap. Existing exact collection/graph/forest tests now exercise grouped sources.
+All seven grouped-source groups and all ten direct-report groups pass
+(`/tmp/meowy-group-fields-limits.log`, `/tmp/meowy-group-fields-reports.log`).
+Next add required source cases and classified evidence (step 4).
 Dependency-ordered commit plan:
 
 1. Extract the existing explicit-group child qualification from
