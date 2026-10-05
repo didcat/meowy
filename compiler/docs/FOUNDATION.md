@@ -465,19 +465,19 @@ the producer, Operation source link and forest root. A borrowed per-pass context
 caches validated fields and roots, charging remaining payload before growth. Missing
 associations stay opaque; cached lookups retain owner/slot agreement checks.
 
-A separate direct-input resolver follows observed, normal, unchanged narrowing and
-explicitly registered groups, including observed non-projecting Forward coercions
-between them. It validates point/body/owner identity and rejects conflicting
-producers and cycles. Group child/span/body/owner and exact region-edge checks
-share the record-consumer validator. Coercions reuse the exact observed-header and
-edge validator, requiring result observation at every hop. The record consumer's
-field boundary is unchanged. Unregistered regions stay opaque, and stored Normal
-edges do not invent observed completion or a field-source association.
+A separate direct-input resolver follows explicitly registered groups, observed
+non-projecting Forward coercions, normal unchanged narrowing and normal unchanged
+ascriptions. It validates point/body/owner identity and rejects conflicting
+producers and cycles. Groups, coercions and ascriptions share their existing
+validators. Ascriptions require exact operation registration and observed results;
+an operation visit is independent. Missing results never create a source link.
+The record consumer's field boundary is unchanged. Unregistered regions stay
+opaque, and stored Normal edges do not invent completion or a source association.
 
-Groups, Forward coercions and narrowing share a 65,536-hop scratch bound; group
-registry size and shared work are also bounded. Field/root lookup caches retain
-their shared payload charges, including repeated lookups. Changed or unobserved
-narrowing, absent coercion results, Convert/projected/Stopped coercions, ascriptions,
+These wrappers share a 65,536-hop scratch bound; group registry size and shared
+work are also bounded. Field/root lookup caches retain their shared payload
+charges, including repeated lookups. Changed/unobserved narrowing, absent results,
+Convert/projected/Stopped coercions, predicates, changed/stopped ascriptions,
 ordinary reads, calls and reference loads remain boundaries. Original input and
 terminal field IDs retain the exact qualified route; no type shapes are copied.
 
@@ -492,9 +492,10 @@ these optional links.
 
 A separate expanded forest is collected after the direct-source map. It first
 qualifies a borrowed view against every original Value candidate, point, owner and
-qualified group/Forward/narrowing/field-result route. Missing, extra or changed
-descriptors are invalid. Qualification reuses bounded field/root caches and consumes
-the same remaining payload as traversal; no input or history vectors are copied.
+qualified group/Forward/narrowing/ascription/field-result route. Missing, extra or
+changed descriptors are invalid. Qualification reuses bounded field/root caches and
+consumes the same remaining payload as traversal; no input or history vectors
+are copied.
 
 Resolved direct sources produce explicit Field visits retaining the original
 candidate position and input descriptor alongside the terminal field and source
@@ -503,12 +504,13 @@ terminal. Field and composed edges use the same iterative owner, active/complete
 pending/visited/output and work checks. The expanded forest shares visited state
 across roots and retains Unknown, empty, multiple and discarded histories without
 selecting a value. Late failures publish no partial forest or remaining budget.
-Mixed cycles, diamonds and exact depth/resource bounds are seeded structural tests;
-source cases separately preserve typed field/composition and tail order across
-owners, conversions, primary extraction, mutable snapshots, shared loads, stopped
-tails and ordinary initializer/duplicate-field rejection. Those cases do not
-establish proof outcomes or make opaque producers transparent. Proof evaluation
-remains unimplemented.
+Control marks, mixed cycles, diamonds and exact depth/resource bounds are seeded
+structural tests; source cases separately preserve typed and ascribed field
+composition and tail order across owners, conversions, primary extraction,
+mutable snapshots, shared loads, empty results, stopped tails and ordinary
+initializer, ascription and duplicate-field rejection. Those cases do not establish
+proof outcomes or make opaque producers transparent. Proof evaluation remains
+unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded

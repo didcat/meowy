@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Direct field sources now follow qualified Forward coercions.
+Updated: 2026-10-05. Direct field sources now follow qualified unchanged ascriptions.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2268,9 +2268,10 @@ Original candidate points, terminal fields, source slots, owners and both forest
 remain distinct. Record consumers still stop at Field results; no values,
 reachability, loan authority or proof outcomes are inferred.
 
-Missing result observations, Convert/projected/Stopped coercions, ascriptions,
+This slice left missing results, Convert/projected/Stopped coercions, ascriptions,
 initializer reads, calls, shared-reference loads and changed/unobserved narrowing
-remain opaque. Mixed wrappers share bounded hop/cycle state and work; repeated
+opaque; the ascription extension follows below. Mixed wrappers share bounded
+hop/cycle state and work; repeated
 field/root lookups retain the same payload cache. Late corrupt headers, edges,
 owners or conflicting producers publish no partial report.
 
@@ -2306,59 +2307,77 @@ final documentation checks pass (`/tmp/meowy-forward-fields-docs.log`).
 No outstanding failures remain. Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: direct field sources through observed unchanged ascriptions
+## Direct field sources through unchanged ascriptions
 
-Active investigation: both report paths already share `field_narrowing_source`.
-The existing `unchanged_ascription_input` validates observed headers, normal and
-unchanged Ascription kind, operation registration and exact edges. Reuse that
-qualifier without weakening any producer/body/owner/cycle checks. Existing tests
-that deliberately stop at unchanged ascriptions need corresponding expectation
-updates; changed ascriptions and other opaque sources must retain coverage.
-Both new integration regressions fail on the old resolver
-(`/tmp/meowy-ascribed-fields-before.log`). The resolver now uses the shared helper;
-changed-ascription fixtures retain the existing opacity tests. All 2577 library
-tests pass (`/tmp/meowy-ascribed-fields-library.log`), including plain/grouped/typed
-routes across owners and independent candidate histories. Both proof-control mark
-states use explicit seeded metadata; runtime branching alone does not set that
-mark. Formatting and whitespace checks pass; resolver slice is `206176d`.
-Boundary tests now cover independent operation/result visits, opaque predicates,
-changed/stopped ascriptions, other wrappers and 27 late identity/conflict faults;
-all five ascribed-source groups pass (`/tmp/meowy-ascribed-fields-boundaries.log`).
-Observed results still require exact operation registration even without an
-operation visit. Late errors publish no partial map or forest (`dec8a27`). All eight
-ascribed-source groups pass, including individually qualified mixed cycles,
-exact hop/work/cache limits and Unknown/empty/multiple histories
-(`/tmp/meowy-ascribed-fields-limits.log`). All 566 forward-report tests pass
-(`/tmp/meowy-ascribed-fields-reports.log`); the cycle/resource slice is `651ce9c`.
-Four new required source cases pass debug/release with the freshly built compiler
+The shared direct-source resolver now follows observed, normal, unchanged
+ascriptions through `unchanged_ascription_input`. Exact captured/report headers,
+operation registration and edges remain required even without an operation visit.
+Collection and retained-descriptor qualification share the same route. Original
+candidate points, terminal fields, source slots, owners and both forests retain
+their identities. Record consumers still stop at Field results.
+
+Groups, Forward coercions, unchanged narrowing and ascriptions share bounded
+hop/cycle state, work and field/root caches. Missing results, predicates,
+changed/stopped ascriptions, projecting/converting/stopped coercions, initializer
+reads, calls, shared loads and changed/unobserved narrowing remain opaque.
+No runtime value, reachability, loan authority or proof outcome is inferred.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify unchanged ascription sources and integrate both reports | `206176d` |
+| Reject absent results, opaque producers and corrupt metadata | `dec8a27` |
+| Bound mixed cycles, work, hops and cache payload | `651ce9c` |
+| Pin ascribed execution, stopped tails and E208 rejection | `90d031a` |
+
+Both new integration regressions fail on the prior resolver
+(`/tmp/meowy-ascribed-fields-before.log`). All eight ascribed-source groups and
+566 forward-report tests pass (`/tmp/meowy-ascribed-fields-limits.log`,
+`/tmp/meowy-ascribed-fields-reports.log`). Sparse operation/result observations,
+27 late identity/conflict variants, independently qualified cycle legs and exact
+budgets remain structural evidence. Proof-control marks are seeded independently
+from runtime branches. Unknown, empty and multiple histories remain unchanged.
+
+Four required source cases pass fresh-compiler debug/release
 (`/tmp/meowy-ascribed-fields-source.log`): nested typed/grouped ascriptions across
-owners, narrowing/snapshot/alias/call/empty boundaries, stopped P006 tails and E208.
-The preservation audit confirms 366 prior cases, 400 source assets, 37 reference
-contracts/hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-ascribed-fields-preservation.log`). Coverage is regenerated; all four
-source-slice documentation checks pass (`/tmp/meowy-ascribed-fields-source-docs.log`).
-Final compiler/strict gates remain.
-Unrelated `docs/programs/hey/` remains excluded.
+owners, union widening, guarded narrowing, mutable snapshots, shared reads,
+local aliases, calls, empty results, stopped P006 tails and E208 rejection.
+All four source-slice documentation checks pass
+(`/tmp/meowy-ascribed-fields-source-docs.log`). The preservation audit confirms
+366 prior cases, 400 source assets, 37 reference contracts/reviewed hashes,
+capability pins and proof obligations are unchanged
+(`/tmp/meowy-ascribed-fields-preservation.log`).
+
+All ten compiler checks pass: formatting, Clippy, 2583 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-ascribed-fields-gate.log`). Conformance has 370 cases: 351 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-ascribed-fields-strict.log`). All four
+final documentation checks pass (`/tmp/meowy-ascribed-fields-docs.log`).
+No outstanding failures remain. Unrelated `docs/programs/hey/` is preserved.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: direct field sources through immutable local initializers
 
 Dependency-ordered commit plan:
 
-1. Complete: in `consumers/field_results/lookup/narrowing.rs`, reuse
-   `unchanged_ascription_input` from `effects/typed.rs` to qualify observed,
-   normal, unchanged ascriptions mixed with Forward/groups/narrowing. Preserve
-   original Value candidates and both report paths; include focused typed/grouped
-   source and expanded-forest regressions in this first commit.
-2. Complete: cover absent results, predicates, changed/stopped ascriptions,
-   corrupt headers/routes, producer conflicts, mixed cycles, owners and exact
-   shared hop/work/cache limits. Keep initializer reads, calls and loads opaque.
-   Opacity/identity and cycle/resource checks are separate reviewable slices.
-3. Complete: required source cases and classified evidence for ascription behavior,
-   including E208, without changing references or prior fixtures/capability pins.
+1. In `consumers/field_results/lookup/narrowing.rs`, reuse `read_initializer_input`
+   from `effects/reads/initializers.rs` for observed normal reads with existing
+   immutable-local eligibility and exact Bind/input identities. Keep collection
+   and stored-descriptor qualification on the same resolver. Include grouped,
+   typed/ascribed chains across lexical blocks and independent owners, retaining
+   original Value candidates, terminal fields and both forests.
+2. Separately cover missing observations/eligibility/initializers, mutable locals,
+   parameters, emitted aliases, dispatch receivers, temporary cells, storage
+   mismatches, corrupt Bind/read metadata, cycles and exact shared budgets. Keep
+   calls and reference loads opaque; no lifetime or loan authority is added.
+3. Add required source cases and classified evidence while preserving references,
+   all prior fixtures and capability pins. Distinguish immutable copying from
+   runtime value selection and source histories from overwrite/branch analysis.
 4. Run compiler, strict and final documentation gates and refresh both handoffs.
 
 Do not make Field results transparent in `consumers/grouped.rs` or select candidate
-values. Initializer forwarding, aggregate provenance, precise branch/overwrite
-joins, function returns, restart propagation, E225 enforcement and proof outcomes
-remain later work. Shared-reference loads gain no loan authority.
+values. Aggregate provenance, precise branch/overwrite joins, function returns,
+restart propagation, E225 enforcement and proof outcomes remain later work.
 
 ## Documentation conventions and layout
 
@@ -3947,10 +3966,10 @@ source slots and unchanged observed ascriptions. Field Operation/Normal observat
 are now independent, and bounded result-candidate inputs retain qualified composed
 source slots. Candidate traversal and observed field-result source links are
 implemented, including direct-input lookup through unchanged narrowing and a
-separate expanded field-source forest. Explicit-group and observed non-projecting
-Forward direct-source resolution are complete. Observed unchanged ascriptions are
-next, following the ordered plan above; value selection and broader field-value
-provenance remain separate.
+separate expanded field-source forest. Explicit groups, observed non-projecting
+Forward coercions and normal unchanged ascriptions now qualify direct field sources.
+Immutable local initializer forwarding is next, following the ordered plan above;
+value selection and broader field-value provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4554,9 +4573,11 @@ provenance remain separate.
    cycle boundaries (`fa55889`), limits (`1790a65`) and source cases (`b2005f1`)
    pass the compiler gate; strict/final docs are recorded above. Forward direct-source
    resolution (`ffa139f`), boundaries (`f781432`), limits (`df5171e`) and source cases
-   (`ac14ed1`) are implemented; current gate results are recorded above. Next qualify
-   direct field sources through observed unchanged ascriptions, following the
-   ordered plan, before wider value provenance work.
+   (`ac14ed1`) pass the compiler gate. Unchanged-ascription sources (`206176d`),
+   boundaries (`dec8a27`), limits (`651ce9c`) and source cases (`90d031a`) are complete;
+   current gate results are recorded above. Next qualify immutable local initializer
+   forwarding for direct field sources, following the ordered plan, before wider
+   value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
