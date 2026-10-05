@@ -89,6 +89,10 @@ impl Checker {
                 ));
             }
             let bytes = match &value.kind {
+                ExprKind::Call { callee, .. } if self.literal_expression(value)?.is_some() => {
+                    pending.push(callee);
+                    value.span.end.saturating_sub(value.span.start)
+                }
                 ExprKind::Call { callee, .. } | ExprKind::Dispatch { callee, .. } => {
                     let Some((_, args)) = self.bits_arguments(value)? else {
                         return Ok(None);
@@ -98,12 +102,19 @@ impl Checker {
                     0
                 }
                 ExprKind::Field { value: base, name }
-                    if matches!(self.symbol(value)?, Some(Value::Foundation(Item::Bits(_)))) =>
+                    if matches!(
+                        self.symbol(value)?,
+                        Some(Value::Foundation(Item::Bits(_) | Item::Literal))
+                    ) =>
                 {
                     pending.push(base);
                     name.len()
                 }
-                ExprKind::Import(name) if Module::resolve(name) == Some(Module::Bits) => name.len(),
+                ExprKind::Import(name)
+                    if matches!(Module::resolve(name), Some(Module::Core | Module::Bits)) =>
+                {
+                    name.len()
+                }
                 ExprKind::List(values) if aggregate => {
                     for value in values {
                         if pending.len() == MAX_SCALAR_NODES || !self.flow.spend(1) {
@@ -224,12 +235,13 @@ impl Checker {
                     let Some(symbol) = Self::list_symbol(&self.scopes, name) else {
                         return Ok(None);
                     };
-                    let bits = matches!(
+                    let intrinsic = matches!(
                         symbol,
-                        Value::Module(Module::Bits) | Value::Foundation(Item::Bits(_))
+                        Value::Module(Module::Core | Module::Bits)
+                            | Value::Foundation(Item::Bits(_) | Item::Literal)
                     );
                     let constant = match symbol {
-                        _ if bits => None,
+                        _ if intrinsic => None,
                         Value::Constant(value) => Some(value),
                         Value::Local {
                             ty,
@@ -267,7 +279,7 @@ impl Checker {
                         ));
                     }
                     let symbol = match symbol {
-                        _ if bits => symbol.clone(),
+                        _ if intrinsic => symbol.clone(),
                         Value::Local { ty, .. } => {
                             let id = scalar.checker.locals.len();
                             scalar.checker.locals.push(ty.clone());
@@ -281,7 +293,7 @@ impl Checker {
                         }
                         _ => Value::Constant(constant.expect("compiler constant").clone()),
                     };
-                    scalar.unknown |= constant.is_none() && !bits;
+                    scalar.unknown |= constant.is_none() && !intrinsic;
                     scalar.checker.scopes[0].values.insert(name.into(), symbol);
                     bytes
                 }

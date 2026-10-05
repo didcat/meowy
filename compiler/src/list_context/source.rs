@@ -19,6 +19,12 @@ impl Checker {
                     value.span,
                 ));
             }
+            if self.literal_expression(value)?.is_some()
+                && let ExprKind::Call { callee, .. } = &value.kind
+            {
+                pending.push(callee);
+                continue;
+            }
             match &value.kind {
                 _ if value.spelling().is_some() => {
                     let name = value.spelling().unwrap();
@@ -202,6 +208,8 @@ impl Checker {
         expected: &Type,
         reach: Guard,
     ) -> Result<Fit> {
+        let literal = self.literal_expression(value)?;
+        let value = literal.as_deref().unwrap_or(value);
         let number = self.numeric_expression(value);
         let value = number.as_deref().unwrap_or(value);
         crate::borrow_contract::type_weight(expected, &mut self.flow, value.span)?;

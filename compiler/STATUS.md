@@ -81,8 +81,12 @@ Core literal slice: `183e41a`. Required integer construction, comparisons, block
 operands and type queries now preserve escaped numeric identity across repeated
 checking. Both focused literal groups pass (`/tmp/meowy-literal-required.log`).
 
-Next steps: literal list/extent inference, pending identity copies, conformance
-and documentation/editor integration. No runtime dispatch is added for literal syntax.
+Required literal slice: `a10c027`. Literal calls now retain contextual list
+inference and union selection, pure-probe intrinsic aliases, and ordinary list
+extent eligibility. All three literal groups pass (`/tmp/meowy-literal-lists.log`).
+
+Next steps: finish numeric type-query/pending identity boundaries, checked-doc
+links, source conformance and documentation/editor integration.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

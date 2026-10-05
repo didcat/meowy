@@ -15,20 +15,22 @@ pub(crate) struct Fact {
 }
 
 impl Checker {
-    pub(crate) fn extent_form(expr: &ast::Expr) -> bool {
-        match &expr.kind {
+    pub(crate) fn extent_form(&mut self, expr: &ast::Expr) -> Result<bool> {
+        let literal = self.literal_expression(expr)?;
+        let expr = literal.as_deref().unwrap_or(expr);
+        Ok(match &expr.kind {
             ExprKind::Int(_) | ExprKind::Float(_) | ExprKind::String(_) | ExprKind::Name(_) => true,
-            ExprKind::Group(value) | ExprKind::Unary { value, .. } => Self::extent_form(value),
+            ExprKind::Group(value) | ExprKind::Unary { value, .. } => self.extent_form(value)?,
             ExprKind::Binary { left, right, .. } => {
-                Self::extent_form(left) && Self::extent_form(right)
+                self.extent_form(left)? && self.extent_form(right)?
             }
             _ => false,
-        }
+        })
     }
 
     pub(crate) fn list_extent(&mut self, expr: &ast::Expr) -> Result<usize> {
         if !self.proven_inputs() {
-            if !Self::extent_form(expr) {
+            if !self.extent_form(expr)? {
                 return Err(Diagnostic::unsupported(
                     "required evaluation of list extent expressions",
                     expr.span,
@@ -145,7 +147,9 @@ impl Checker {
         Ok(ty)
     }
 
-    pub(crate) fn scalar_literal(&self, expr: &ast::Expr) -> bool {
+    pub(crate) fn scalar_literal(&mut self, expr: &ast::Expr) -> bool {
+        let literal = self.literal_expression(expr).ok().flatten();
+        let expr = literal.as_deref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
         let expr = number.as_deref().unwrap_or(expr);
         match &expr.kind {
@@ -292,7 +296,9 @@ impl Checker {
         })
     }
 
-    pub(crate) fn literal_default(&self, value: &ast::Expr) -> Option<Type> {
+    pub(crate) fn literal_default(&mut self, value: &ast::Expr) -> Option<Type> {
+        let literal = self.literal_expression(value).ok().flatten();
+        let value = literal.as_deref().unwrap_or(value);
         let number = self.numeric_expression(value);
         let value = number.as_deref().unwrap_or(value);
         match &value.kind {

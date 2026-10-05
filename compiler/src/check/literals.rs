@@ -108,3 +108,20 @@ mod required {
         }
     }
 }
+
+#[cfg(test)]
+mod lists {
+    #[test]
+    pub(crate) fn literal_calls_keep_contextual_list_and_extent_rules() {
+        for source in [
+            r#"lit:@"core".literal;1:true;x<uint8>:3;v:[lit(1),x];n<uint8>:v[01]"#,
+            r#"lit:@"core".literal;1:true;v<uint8[01]><uint16[01]>:[lit(256)]"#,
+            r#"lit:@"core".literal;128:7;v<int8[01]><uint8[01]>:[lit(-128)]"#,
+            r#"lit:@"core".literal;1:true;v<int32[lit(1)]>:[7]"#,
+            r#"lit:@"core".literal;1:true;v<uint8[01]><uint16[01]>:[lit(255)+lit(1)]"#,
+            r#"lit:@"core".literal;1:true;v<float32[01]><int32[01]>:[lit(1.5)]"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+    }
+}
