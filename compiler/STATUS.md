@@ -2643,9 +2643,9 @@ qualification remain incomplete.
 
 ### Active: record dispatch arithmetic primary sources
 
-`primary_slot` still reaches ordinary block consumers only. Record dispatch fields
-now have a qualified route, but unary/binary Projection ports cannot link to the
-record's primary through it. Keep this extension separate from result-value inference
+`primary_slot` still reaches ordinary block consumers only. Unary Projection ports
+now have a dedicated dispatch-primary fallback; binary integration is next.
+Keep this extension separate from result-value inference
 and from coercion, output, list and composed-emission consumer rules.
 
 Investigation confirms `primary_effect_inputs` already requalifies observed unary/
@@ -2659,14 +2659,10 @@ consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
 
 Dependency-ordered commit plan:
 
-1. Integrate only observed unary primary Projection inputs in `consumers.rs`, after
-   existing `primary_effect_inputs` qualification. Preserve exact ports, scalar kinds,
-   owners and independent stage flags. Keep operation/result-only rows unlinked;
-   add focused valid/opaque/corrupt-state and bounded report tests with this slice.
-2. Extend binary primary Projection inputs in a separate slice, preserving both
+1. Extend binary primary Projection inputs in a separate slice, preserving both
    operand positions, left-to-right boundaries and partial projection observations
    before a stopped second operand. Do not generalize to other producer families.
-3. Add required arithmetic/ordering/rejection source cases and classified evidence,
+2. Add required arithmetic/ordering/rejection source cases and classified evidence,
    then run compiler, strict and documentation gates and refresh both handoffs.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
@@ -2678,7 +2674,13 @@ and an immutable unnamed scalar slot zero matching the requested kind. All four
 focused tests pass (`/tmp/meowy-dispatch-primary-qualifier.log`): scalar kinds and
 independent owners, result/initialization independence, missing and nonscalar sources,
 seven type/origin/slot faults, and exact shared work with zero additional payload.
-Ordinary `primary_slot` remains unchanged; consumer integration is next.
+Ordinary `primary_slot` remains unchanged.
+All five unary-consumer tests and 654 forward-report tests pass
+(`/tmp/meowy-dispatch-primary-unary.log`, `/tmp/meowy-dispatch-primary-unary-reports.log`).
+Unary Projection ports retain exact owners/types through groups and inline dispatch
+records. Projection/result/initialization independence, six consumer/source faults
+and exact combined map/work limits are covered. Coercion-owned primary extraction,
+output/list/emission rules and arithmetic result values remain opaque on the new path.
 
 ## Documentation conventions and layout
 

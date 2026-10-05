@@ -108,9 +108,15 @@ impl Checker {
                 .enumerate()
             {
                 if let Some(input) = input {
-                    slots[step + 1] = self
-                        .primary_slot(reports, input, *owner, span)?
-                        .map(|slot| (Port::Projection { point: id, step }, slot));
+                    let slot =
+                        if let Some(slot) = self.primary_slot(reports, input, *owner, span)? {
+                            Some(slot)
+                        } else if let Effect::Unary(op) = effect {
+                            self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
+                        } else {
+                            None
+                        };
+                    slots[step + 1] = slot.map(|slot| (Port::Projection { point: id, step }, slot));
                 }
             }
             for (port, slot) in slots.into_iter().flatten() {
