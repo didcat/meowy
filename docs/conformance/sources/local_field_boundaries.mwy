@@ -1,0 +1,35 @@
+d : @"debug"
+
+record : { -> n := 2 }
+n : record.n
+copy : n
+record.n = 3
+snapshot : { -> copy }
+d.print(snapshot)
+d.print(record.n)
+
+mutable := copy
+held : mutable
+mutable = 4
+d.print(held)
+read <int32> : (input <int32>) { local : input; -> local }
+d.print(read(5))
+receiver : copy.{ -> $ }
+d.print(receiver)
+view : &copy
+loaded : *view
+indirect : { -> loaded }
+d.print(indirect)
+temporary : *(&(copy + 0))
+d.print(temporary)
+
+empty <{n <null>}> : {}
+absent <null> : empty.n
+row <null> : { -> absent }
+d.print(row<null>)
+nullable <{n <int32><null>}> : { -> n : 6 }
+item : nullable.n
+| item <int32> | {
+    narrowed : { -> item }
+    d.print(narrowed)
+}

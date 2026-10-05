@@ -2386,7 +2386,14 @@ shared resource tests pass: qualified initializer-jump cycles, a mixed 16-local
 chain with exact hop/work/cache boundaries and preserved source histories. All
 nine local-source groups pass (`/tmp/meowy-local-fields-limits.log`), as do all
 575 forward-report tests (`/tmp/meowy-local-fields-reports.log`). Identity slice:
-`9e9125d`. Source conformance and final gates remain. Unrelated
+`9e9125d`; cycle/resource slice: `ee389a5`. Four required source cases pass fresh
+debug/release checks (`/tmp/meowy-local-fields-source.log`), preserving copy/tail
+order across owners, snapshot/special-cell/load/empty boundaries, P006 and E305.
+The preservation audit retains 370 prior cases, 404 source assets, 37 reference
+contracts/hashes, capability pins and proof obligations
+(`/tmp/meowy-local-fields-preservation.log`). Coverage is regenerated; all four
+source-slice documentation checks pass (`/tmp/meowy-local-fields-source-docs.log`).
+Final compiler/strict gates remain. Unrelated
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
@@ -2401,7 +2408,7 @@ Dependency-ordered commit plan:
    parameters, emitted aliases, dispatch receivers, temporary cells, storage
    mismatches, corrupt Bind/read metadata, cycles and exact shared budgets. Keep
    calls and reference loads opaque; no lifetime or loan authority is added.
-3. Add required source cases and classified evidence while preserving references,
+3. Complete: required source cases and classified evidence preserve references,
    all prior fixtures and capability pins. Distinguish immutable copying from
    runtime value selection and source histories from overwrite/branch analysis.
 4. Run compiler, strict and final documentation gates and refresh both handoffs.

@@ -1,0 +1,32 @@
+d : @"debug"
+
+show <null> : (flag <boolean>) {
+    base : {
+        d.print("source")
+        | flag | -> n : 2
+        | !flag | -> n : 3
+        d.print("source tail")
+    }
+    first <int32> : ((base.n~<int32>))
+    d.print("copied")
+    result : {
+        copy <int32> : ((first))
+        row : {
+            -> value <int32> : ((copy~<int32>))
+            -> echo <int32> : ((first))
+            d.print("row tail")
+        }
+        -> ((row))
+        d.print("result tail")
+    }
+    d.print(result.value)
+    d.print(result.echo)
+}
+
+show(true)
+show(false)
+solo : { -> n : 7 }
+n : solo.n
+copy : n
+own <int32> : { -> ((copy)) }
+d.print(own)

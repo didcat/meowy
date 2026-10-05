@@ -1,0 +1,15 @@
+d : @"debug"
+base : {
+    d.print("source")
+    -> n : 7
+    d.print("source tail")
+}
+n <int32> : ((base.n))
+copy : n
+row : {
+    -> value <int32> : ((copy~<int32>))
+    d.print("initialized")
+    d.print(value)
+    d.panic("stop")
+}
+d.print("unreachable")

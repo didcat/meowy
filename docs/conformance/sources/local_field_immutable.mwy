@@ -1,0 +1,4 @@
+record : { -> n : 1 }
+n <int32> : ((record.n))
+copy : n
+n = 2

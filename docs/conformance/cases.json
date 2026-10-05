@@ -3912,6 +3912,48 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "local_field_chain",
+      "phase": "run",
+      "source": "sources/local_field_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ncopied\nrow tail\nresult tail\n2\n2\nsource\nsource tail\ncopied\nrow tail\nresult tail\n3\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "local_field_boundaries",
+      "phase": "run",
+      "source": "sources/local_field_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n3\n2\n5\n2\n2\n2\ntrue\n6\n"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
+    },
+    {
+      "id": "local_field_stopped",
+      "phase": "run",
+      "source": "sources/local_field_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ninitialized\n7\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "local_field_immutable",
+      "phase": "check",
+      "source": "sources/local_field_immutable.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
     }
   ]
 }
