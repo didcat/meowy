@@ -28,31 +28,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Direct field sources now traverse eligible immutable local initializers mixed
-with groups, Forward coercions and unchanged narrowing/ascriptions. Shared read
-and Bind validation preserves exact storage, owner/site/parent identities, original
-candidate/read points, terminal fields and both forests. Initializers can cross
-lexical blocks without replay or new evaluation edges. Mutable/special cells,
-missing evidence, calls and reference loads remain opaque.
-The [compiler handoff](compiler/STATUS.md#direct-field-sources-through-immutable-local-initializers)
-records five implementation/test commits and the next ordered plan.
+Direct scalar block sources now retain exact consumer/primary-slot descriptors
+alongside field sources. Shared qualification requires observed results, checked
+normal completion and scalar-only layouts. Expanded forests emit explicit Block
+visits with shared field/composition cycle and resource checks. Original Value
+points, owners, source histories and the original candidate forest remain intact.
+The [compiler handoff](compiler/STATUS.md#direct-scalar-block-result-sources)
+records seven implementation/test commits and the next ordered plan.
 
-All nine focused groups and 575 forward-report tests pass. Four required source
-cases pass debug/release, preserving copy/tail order, snapshots, special-cell/load
-boundaries, empty results, stopped tails and E305 rejection. All ten compiler checks
-pass: 2592 library/921 native tests and 62 Python groups
-(`/tmp/meowy-local-fields-gate.log`). Conformance has 374 cases: 355 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-local-fields-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-local-fields-docs.log`).
+All 591 forward-report tests and four new required debug/release source cases pass.
+All ten compiler checks pass: 2608 library/921 native tests and 62 Python groups
+(`/tmp/meowy-scalar-blocks-gate.log`). Conformance has 378 cases: 359 required passes,
+19 unchanged pinned gaps and zero failures. Strict mode exits 1 only for those gaps
+(`/tmp/meowy-scalar-blocks-strict.log`). All four final documentation checks pass
+(`/tmp/meowy-scalar-blocks-docs.log`). Internal cycles, corruption and resource limits
+are structural evidence;
+source cases separately pin scalar kinds, copy/tail order, stopped inputs and E205.
 
-The preservation audit retains 370 prior cases, 404 source assets, reference
+The preservation audit retains 374 prior cases, 408 source assets, reference
 contracts/hashes, capability pins and proof obligations
-(`/tmp/meowy-local-fields-preservation.log`). Proof evaluation and full language/
+(`/tmp/meowy-scalar-blocks-preservation.log`). Proof evaluation and full language/
 release qualification remain incomplete.
 
-Next, qualify direct scalar block result sources with separate descriptors and
-expanded-forest visits. Unrelated `docs/programs/hey/` remains excluded from commits.
+Next, qualify dispatch result sources using their distinct producer and body
+metadata. Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain
 

@@ -492,25 +492,36 @@ Original input and terminal field IDs retain the exact qualified route;
 no type shapes are copied.
 
 Direct-source reports retain each original Value candidate's point and optional
-field/source Slot at its existing block/slot/candidate position. They are collected
-after field-result reporting and leave candidate inputs, composed sources and the
+field or scalar-block descriptor at its existing block/slot/candidate position.
+Field and block alternatives are exclusive. They are collected after field-result
+reporting and leave candidate inputs, composed sources and the
 original forest unchanged. Combined map capacity and qualification-cache payload
 bound publication; late failures return no partial map or remaining budget. Source
 histories keep Unknown, empty and multiple candidates without value selection.
 The original candidate forest remains an input to qualification and does not follow
 these optional links.
 
+Scalar-block descriptors retain the terminal consumer and primary slot 0. Shared
+block qualification requires an observed result, checked normal completion and
+exact owner, parent, sequence, endpoint and layout identities. The layout must
+contain only one immutable unnamed scalar primary matching the body's result
+shape. The ordinary record-primary projection API remains separate. A result visit
+does not invent a normal visit. Missing consumer associations stay opaque;
+contradictory retained observations fail. Record, union, list and reference results,
+dispatches, calls and shared loads do not become scalar-block sources.
+
 A separate expanded forest is collected after the direct-source map. It first
 qualifies a borrowed view against every original Value candidate, point, owner and
-qualified wrapper/initializer/field-result route. Missing, extra or changed
-descriptors are invalid. Qualification reuses bounded field/root caches and consumes
+qualified wrapper/initializer/field-result or scalar-block route. Missing, extra or
+changed descriptors are invalid. Qualification reuses bounded field/root caches and consumes
 the same remaining payload as traversal; no input or history vectors are copied.
 
-Resolved direct sources produce explicit Field visits retaining the original
-candidate position and input descriptor alongside the terminal field and source
-Slot. The Value projection stays intact. An absent optional source remains a direct
-terminal. Field and composed edges use the same iterative owner, active/completed,
-pending/visited/output and work checks. The expanded forest shares visited state
+Resolved direct sources produce explicit Field or Block visits retaining the
+original candidate position and input descriptor alongside the terminal field or
+block consumer and source Slot. The Value projection stays intact. An absent
+optional source remains a direct terminal. Field, block and composed edges use the
+same iterative owner, active/completed, pending/visited/output and work checks.
+The expanded forest shares visited state
 across roots and retains Unknown, empty, multiple and discarded histories without
 selecting a value. Late failures publish no partial forest or remaining budget.
 Control marks, mixed initializer cycles, diamonds and exact depth/resource bounds
@@ -518,10 +529,12 @@ are seeded structural tests; source cases separately preserve typed and ascribed
 field copies, composition and tail order across owners, conversions, primary
 extraction, mutable snapshots, shared loads, empty results, stopped tails and ordinary
 initializer, ascription, immutable-assignment and duplicate-field rejection.
+Scalar-block cases also preserve empty results, scalar kinds and widths, nested
+copies and stopped inputs. Seeded 2048-slot chains, mixed cycles and exact live
+storage/work limits qualify the traversal engine separately from source behavior.
 Those cases do not establish proof outcomes or make opaque producers transparent.
-Proof evaluation remains unimplemented. Direct scalar block Value candidates still
-lack block-source links; these require separate descriptors and qualification from
-the field-source reports.
+Dispatch result sources, function returns and broader aggregate provenance remain
+separate. Proof evaluation remains unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded

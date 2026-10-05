@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Direct field sources now follow eligible immutable local reads.
+Updated: 2026-10-05. Direct scalar block sources now qualify and traverse explicitly.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2409,85 +2409,89 @@ documentation checks pass (`/tmp/meowy-local-fields-docs.log`).
 No outstanding failures remain. Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: direct scalar block result sources
+## Direct scalar block result sources
 
-Active investigation: consumer indexing already retains completed scalar blocks,
-but `primary_slot` intentionally requires a record and direct descriptors retain
-only terminal fields. Reuse the existing block qualification while preserving that
-record-only API. Share its exact checks before adding scalar qualification; keep
-representation, collection and forest integration reviewable independently.
-The existing consumer tests pass before extraction
-(`/tmp/meowy-scalar-blocks-before.log`). `consumers/blocks.rs` now separates wrapper
-resolution from unchanged terminal block qualification. All 135 consumer tests
-pass before/after (`/tmp/meowy-scalar-blocks-shared.log`); formatting and whitespace
-checks pass. This is a behavior-preserving prerequisite commit, before scalar-only
-qualification, descriptor collection and forest integration. Unrelated
-`docs/programs/hey/` remains excluded.
+Ordinary scalar blocks now have distinct direct-source descriptors containing the
+exact terminal consumer and primary slot 0. Shared block validation requires an
+observed result, checked normal completion, exact owner/parent/sequence/endpoints
+and one immutable unnamed scalar slot matching the body. The record-only primary
+projection API is unchanged. Groups, unchanged narrowing/ascriptions, Forward
+coercions and eligible local reads retain their existing boundaries.
 
-Shared qualification is committed as `7b48583`. The scalar-only qualifier and
-consumer/primary-slot descriptor are test-enabled until collection uses them.
-All three focused qualifier tests pass (`/tmp/meowy-scalar-blocks-qualifier.log`),
-covering scalar kinds, wrappers and independent owners while leaving record
-projections, unknown layouts, stopped results, calls and fields opaque.
-The next representation adds an optional block descriptor
-beside the existing field source in each Direct row, with exclusive alternatives.
-Qualifier: `15be758`. Collection now enables it in production and stores exact
-consumer/slot descriptors without copying histories. The same resolver requalifies
-stored field/block alternatives. All 2597 library tests pass
-(`/tmp/meowy-scalar-blocks-collection.log`), including ten stored-descriptor faults,
-owner separation and preserved original Value points. Formatting and whitespace
-checks pass. The expanded forest still treats these new descriptors as Value
-terminals until the separate traversal slice. Descriptor collection: `19e33be`.
-The expanded forest now records explicit Block visits and shares Field/composed
-traversal state and limits. It rejects conflicting alternatives and non-primary
-block slots. Mixed-chain, empty/multiple/shared and seeded Unknown-history tests
-pass, together with all 2600 library tests (`/tmp/meowy-scalar-blocks-walk.log`).
-The original candidate forest stays intact. Remaining slices cover producer/report
-corruption, exact collection/traversal budgets, mixed cycles and source conformance.
-Traversal is committed as `0efa670`. Producer/report boundary tests now cover
-23 terminal/route/layout/conflict faults, independent normal/result observations,
-missing consumer associations and exact qualifier work. All three groups pass
-(`/tmp/meowy-scalar-blocks-boundaries.log`). Missing associations remain opaque;
-stale or contradictory retained observations fail atomically. Exact map/forest
-budgets and mixed-cycle traversal tests are next.
-Boundary slice: `7405868`. Resource tests now cover shared Field/Block map and
-qualification budgets, iterative 2048-slot depth, exact peak storage/work, mixed
-Block/Field/composition cycles and eight late traversal faults. All 81 block-focused
-tests and all 591 forward-report tests pass (`/tmp/meowy-scalar-blocks-limits.log`,
-`/tmp/meowy-scalar-blocks-reports.log`). Source conformance and final gates remain.
+Direct rows retain original Value points and exclusive field/block alternatives;
+collection and stored-descriptor qualification use the same resolver. No Field ID
+is fabricated for a block. The original candidate forest remains unchanged; the
+expanded forest records explicit Block visits and shares Field/composition owner,
+cycle, visited-state and resource checks. Unknown, empty and multiple histories
+remain intact. Missing associations stay opaque, while inconsistent retained
+observations fail atomically. Result visits do not invent normal visits or runtime
+reachability. No value, ownership authority or proof outcome is inferred.
 
-`results/inputs/sources.rs` qualifies composed Primary/Field candidates;
-`results/inputs/direct.rs` now stores distinct field/block descriptors. Keep this
-separate from field transparency and aggregate provenance. Resource slice:
-`7173551`. Four required cases pass fresh-compiler debug/release
-(`/tmp/meowy-scalar-blocks-source.log`): scalar kinds/widths, wrapped copy/tail order,
-existing opaque-producer behavior, stopped P006 inputs and E205. The preservation
-audit retains 374 prior cases, 408 source assets, 37 references/reviewed hashes,
-capability pins and proof obligations (`/tmp/meowy-scalar-blocks-preservation.log`).
-Coverage is regenerated; all four source-slice documentation checks pass
-(`/tmp/meowy-scalar-blocks-source-docs.log`). Final compiler/strict checks and the
-completed handoff remain.
+| Reviewable slice | Commit |
+| --- | --- |
+| Share terminal block qualification without changing behavior | `7b48583` |
+| Qualify scalar-only results with exact consumer/slot identities | `15be758` |
+| Collect and requalify distinct direct block descriptors | `19e33be` |
+| Traverse explicit block sources alongside field/composed edges | `0efa670` |
+| Reject corrupt producers, layouts and observations | `7405868` |
+| Bound shared map/qualification/traversal resources and mixed cycles | `7173551` |
+| Pin scalar execution, stopped inputs and duplicate emissions | `7c52bb1` |
+
+All 135 consumer tests pass before/after extraction
+(`/tmp/meowy-scalar-blocks-before.log`, `/tmp/meowy-scalar-blocks-shared.log`).
+Qualifier, collection and traversal tests pass; all 81 block-focused tests and
+591 forward-report tests pass (`/tmp/meowy-scalar-blocks-limits.log`,
+`/tmp/meowy-scalar-blocks-reports.log`). Structural evidence includes ten stored
+row faults, 23 producer/route/layout faults, sparse observations, mixed cycles,
+eight late traversal faults, iterative 2048-slot depth and exact map/cache/live
+storage/work budgets. Seeded graphs are not observable language conformance.
+
+Four required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-scalar-blocks-source.log`), preserving scalar kinds/widths, empty
+results, copy/tail order across owners, wrapped nested blocks, existing mutable/
+call/load/record/union behavior, stopped P006 inputs and E205. All four source-slice
+documentation checks pass (`/tmp/meowy-scalar-blocks-source-docs.log`). The
+preservation audit retains 374 prior cases, 408 source assets, 37 reference
+contracts/reviewed hashes, capability pins and proof obligations
+(`/tmp/meowy-scalar-blocks-preservation.log`).
+
+All ten compiler checks pass: formatting, Clippy, 2608 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-scalar-blocks-gate.log`). Conformance has 378 cases: 359 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-scalar-blocks-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-scalar-blocks-docs.log`). No outstanding
+failures remain. Unrelated `docs/programs/hey/` is preserved.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: dispatch result-source qualification
+
+`blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
+`Effect::Dispatch` already retains input/local/body identity and independent
+initialization/result observations, but its body has no result-source association.
+Do not route it through ordinary block completion or synthesize missing endpoints.
 
 Dependency-ordered commit plan:
 
-1. Complete: share bounded consumer/result/body qualification from `consumers.rs::slot_block`
-   for scalar-only block results. Require an observed normal BlockResult, exact
-   consumer/owner/body identity and a layout containing only the scalar primary.
-   Cover grouped/typed/ascribed/local-read roots and missing/stopped/record layouts.
-2. Complete: add a distinct direct block-source descriptor and bounded collection/stored
-   qualification in `results/inputs/direct*`. Preserve original Value points,
-   candidate positions and all field-source reports; never fabricate a Field ID.
-3. Complete: integrate explicit block-source visits into the expanded forest in a separate
-   slice. Share existing root/slot, owner, cycle and payload/work bounds; retain the
-   original candidate forest and Unknown/empty/multiple histories unchanged.
-4. Complete: add corruption, mixed field/block cycles, exact resource-boundary tests and
-   required source cases with classified evidence. Keep unobserved completion,
-   unknown layouts, calls and reference loads opaque; no source value is selected.
-5. Run compiler, strict and final documentation gates and refresh both handoffs.
+1. In `effects/dispatch.rs` and its focused modules, qualify retained dispatch
+   report headers/result observations against the existing producer validator and
+   checked body completion/layout. Preserve the leading synthetic receiver entry,
+   exact prefix order, stopped receiver/body boundaries and independent owners.
+   Add focused normal, empty, stopped and corrupt-metadata tests.
+2. Add bounded dispatch-body result-slot indexing as a separate slice, reusing
+   exact EmitIds and existing layouts. Keep ordinary block and dispatch producer
+   identities explicit; preserve Unknown/empty/multiple histories, result-only
+   observations and fixed receiver permissions. No successful check implies a result.
+3. Only after those prerequisites pass, add distinct scalar dispatch source
+   descriptors and stored-report qualification, followed by expanded-forest
+   integration in its own commit. Share aggregate capacity/work/cycle bounds and
+   preserve all existing Field/Block/composed visits and the original forest.
+4. Add source conformance and classified evidence, then run compiler, strict and
+   final documentation gates and refresh both handoffs.
 
-Do not make Field results transparent in `consumers/grouped.rs`. Broader aggregate
-provenance, precise branch/overwrite joins, function returns, restart propagation,
-E225 enforcement and proof outcomes remain later work.
+Keep synthetic receiver forwarding, field transparency, aggregate value
+selection, precise overwrite/branch joins, function returns, restart propagation,
+E225 enforcement and proof outcomes separate. No source link grants loan authority.
 
 ## Documentation conventions and layout
 
@@ -4078,9 +4082,9 @@ source slots. Candidate traversal and observed field-result source links are
 implemented, including direct-input lookup through unchanged narrowing and a
 separate expanded field-source forest. Explicit groups, observed non-projecting
 Forward coercions, normal unchanged ascriptions and eligible immutable local reads
-now qualify direct field sources. Direct scalar block sources are next, following
-the ordered plan above; value selection and broader aggregate provenance remain
-separate.
+now qualify direct field sources. Distinct scalar-block descriptors and expanded
+visits are complete. Dispatch result-source qualification is next, following the
+ordered plan above; value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4688,8 +4692,11 @@ separate.
    boundaries (`dec8a27`), limits (`651ce9c`) and source cases (`90d031a`) are complete;
    current gate results are recorded above. Immutable local forwarding (`20c2772`),
    eligibility (`389a7a9`), identity checks (`9e9125d`), limits (`ee389a5`) and source
-   cases (`4714018`) are implemented. Next qualify direct scalar block sources,
-   following the ordered plan, before wider value provenance work.
+   cases (`4714018`) pass the compiler gate. Shared block qualification (`7b48583`),
+   scalar qualification (`15be758`), descriptors (`19e33be`), traversal (`0efa670`),
+   boundaries (`7405868`), limits (`7173551`) and source cases (`7c52bb1`) are complete;
+   current gate results are above. Next qualify dispatch result sources using their
+   own producer identities before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
