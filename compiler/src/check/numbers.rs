@@ -6,10 +6,13 @@ impl Checker {
         let (ExprKind::Int(name) | ExprKind::Float(name)) = &expr.kind else {
             return None;
         };
+        if name.literal {
+            return None;
+        }
         self.scopes
             .iter()
             .rev()
-            .any(|scope| scope.values.contains_key(name))
+            .any(|scope| scope.values.contains_key(name.as_str()))
             .then_some(name)
     }
 

@@ -62,19 +62,18 @@ Required identity slice: `f8ee8f2`. Numeric list elements now preserve typed
 inference, candidate probes, isolated probe environments and element storage.
 All four numeric checker groups pass (`/tmp/meowy-numeric-lists.log`).
 
-Full library probing exposed a stack overflow in the existing 64-term/64-candidate
-budget test. Boxing the optional rewritten expression fixes the focused case
-without changing the limit or test thread stack. This prerequisite signature
-change touches the helper and its 14 call-site files atomically (plus STATUS),
-so it exceeds the file-count guideline despite only changing adapter ownership.
-The numeric AST payload change is kept in a separate following slice.
+Stack adapter: `abad72b`. Optional numeric rewrites are boxed so deep existing
+candidate probes stay within the default stack. The linked signature change
+required the helper and all 14 caller files in one buildable commit.
+Numeric AST payloads now retain an explicit literal marker alongside spelling;
+source tokens remain lookup-enabled. All 2547 library tests pass with a fresh
+TMPDIR (`/tmp/meowy-numeric-payload-clean.log`). One prior run encountered an
+existing test-directory collision after the aborted stack run; the focused
+recheck and full clean-directory run both passed.
 
-All 2547 library tests now pass (`/tmp/meowy-numeric-boxed.log`).
-
-Next steps: add an explicit intrinsic-literal marker to numeric AST payloads,
-then core.literal expansion, identity-copy integration and source conformance.
-This representation prerequisite keeps escaped literals from being shadowed again
-when they pass through required evaluation and contextual list probes. Update this handoff after each validated slice; commit explicit paths.
+Next steps: core.literal expansion, required/list integration, pending identity
+copies, source conformance and documentation/editor updates. The literal marker
+prevents escaped numbers from being looked up again by nested checking paths.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

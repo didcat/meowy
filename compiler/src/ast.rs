@@ -63,10 +63,55 @@ pub struct Expr {
     pub span: Span,
 }
 
+impl Expr {
+    pub fn spelling(&self) -> Option<&str> {
+        match &self.kind {
+            ExprKind::Name(name) => Some(name),
+            ExprKind::Int(number) | ExprKind::Float(number) if !number.literal => Some(number),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Number {
+    pub text: String,
+    pub literal: bool,
+}
+
+impl Number {
+    pub fn as_str(&self) -> &str {
+        &self.text
+    }
+}
+
+impl std::ops::Deref for Number {
+    type Target = str;
+
+    fn deref(&self) -> &str {
+        &self.text
+    }
+}
+
+impl From<String> for Number {
+    fn from(text: String) -> Self {
+        Self {
+            text,
+            literal: false,
+        }
+    }
+}
+
+impl From<&str> for Number {
+    fn from(text: &str) -> Self {
+        text.to_owned().into()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum ExprKind {
-    Int(String),
-    Float(String),
+    Int(Number),
+    Float(Number),
     String(Vec<StringPart>),
     Name(String),
     Import(String),

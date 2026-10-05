@@ -8,7 +8,7 @@ pub(crate) fn numeric_value_names_preserve_their_spelling_and_token_kind() {
             StmtKind::Bind { name: actual, mutable: true, .. } if actual == name));
         assert!(matches!(&block.stmts[1].kind,
             StmtKind::Assign { target, .. }
-                if matches!(&target.kind, ExprKind::Int(actual) | ExprKind::Float(actual) if actual == name)));
+                if matches!(&target.kind, ExprKind::Int(actual) | ExprKind::Float(actual) if actual.text == name)));
         assert!(matches!(&block.stmts[2].kind,
             StmtKind::Emit { name: Some(actual), .. } if actual == name));
     }

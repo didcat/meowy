@@ -148,7 +148,9 @@ impl Checker {
                     bytes
                 }
                 ExprKind::Int(text) | ExprKind::Float(text)
-                    if self.numeric_name(value).is_none() && !emitted.contains(text.as_str()) =>
+                    if text.literal
+                        || self.numeric_name(value).is_none()
+                            && !emitted.contains(text.as_str()) =>
                 {
                     text.len()
                 }
@@ -194,7 +196,8 @@ impl Checker {
                     pending.push(left);
                     0
                 }
-                ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name) => {
+                _ if value.spelling().is_some() => {
+                    let name = value.spelling().unwrap();
                     if aggregate {
                         if !self.flow.spend(name.len() + 1) {
                             return Err(Diagnostic::unsupported(
@@ -202,7 +205,7 @@ impl Checker {
                                 value.span,
                             ));
                         }
-                        used.insert(name.as_str());
+                        used.insert(name);
                     }
                     if scalar.checker.scopes[0].values.contains_key(name) {
                         continue;
@@ -279,7 +282,7 @@ impl Checker {
                         _ => Value::Constant(constant.expect("compiler constant").clone()),
                     };
                     scalar.unknown |= constant.is_none() && !bits;
-                    scalar.checker.scopes[0].values.insert(name.clone(), symbol);
+                    scalar.checker.scopes[0].values.insert(name.into(), symbol);
                     bytes
                 }
                 _ => return Ok(None),

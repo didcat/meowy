@@ -249,8 +249,8 @@ impl Parser {
         let token = self.bump();
         let start = token.span.start;
         let kind = match token.kind {
-            TokenKind::Int => ExprKind::Int(token.text),
-            TokenKind::Float => ExprKind::Float(token.text),
+            TokenKind::Int => ExprKind::Int(token.text.into()),
+            TokenKind::Float => ExprKind::Float(token.text.into()),
             TokenKind::String => ExprKind::String(self.string_parts(&token)?),
             TokenKind::Name => ExprKind::Name(token.text),
             _ => match token.text.as_str() {

@@ -2,7 +2,8 @@ use super::*;
 
 pub(crate) fn tree(expr: &Expr) -> String {
     match &expr.kind {
-        ExprKind::Name(name) | ExprKind::Int(name) => name.clone(),
+        ExprKind::Name(name) => name.clone(),
+        ExprKind::Int(number) => number.text.clone(),
         ExprKind::Unary { op, value } => format!("({op} {})", tree(value)),
         ExprKind::Group(value) => format!("(group {})", tree(value)),
         ExprKind::Field { value, name } => format!("(field {} {name})", tree(value)),

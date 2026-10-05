@@ -20,14 +20,15 @@ impl Checker {
                 ));
             }
             match &value.kind {
-                ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name) => {
+                _ if value.spelling().is_some() => {
+                    let name = value.spelling().unwrap();
                     if !self.flow.spend(names.len().saturating_mul(name.len() + 1)) {
                         return Err(Diagnostic::unsupported(
                             "record probe scope budget exhausted",
                             value.span,
                         ));
                     }
-                    if names.contains(&name.as_str()) {
+                    if names.contains(&name) {
                         return Ok(true);
                     }
                 }
@@ -124,17 +125,15 @@ impl Checker {
         value: &ast::Expr,
     ) -> (Option<&'a Type>, usize) {
         match &value.kind {
-            ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name) => (
-                match Self::list_symbol(scopes, name) {
+            _ if value.spelling().is_some() => (
+                match Self::list_symbol(scopes, value.spelling().unwrap()) {
                     Some(Value::Local { ty, .. }) => Some(ty),
                     _ => None,
                 },
                 1,
             ),
             ExprKind::Call { callee, .. } => {
-                let (ExprKind::Name(name) | ExprKind::Int(name) | ExprKind::Float(name)) =
-                    &callee.kind
-                else {
+                let Some(name) = callee.spelling() else {
                     return (None, 1);
                 };
                 (
