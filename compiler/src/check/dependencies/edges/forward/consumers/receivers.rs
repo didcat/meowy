@@ -5,6 +5,7 @@ use crate::check::dependencies::{
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod limits;
 
 #[test]
 pub(crate) fn receiver_sources_link_scalar_aliases_inside_ordinary_nested_blocks() {
