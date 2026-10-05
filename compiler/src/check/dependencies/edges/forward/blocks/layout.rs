@@ -4,7 +4,7 @@ use crate::check::dependencies::bodies::{
 };
 
 impl Checker {
-    pub(super) fn validate_result_layout(
+    pub(in super::super) fn validate_result_layout(
         &mut self,
         id: crate::hir::BlockId,
         span: Span,

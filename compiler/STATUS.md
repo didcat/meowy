@@ -2466,6 +2466,27 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: dispatch result-source qualification
 
+Active investigation: dispatch validation preserves receiver/prefix edges but
+does not yet qualify retained report headers plus complete body layout/sequence.
+Ordinary result indexing currently reads only `reports.blocks`. Add an explicit
+dispatch origin to result rows and keep their consumer out of the ordinary block
+index; reuse bounded history construction without forging Block observations.
+Plan separate report qualification, history/origin prerequisites, dispatch result
+collection, wrapper resolution, scalar descriptors and forest integration, then
+boundary/source checks and final gates. No new checks have run yet. Preserve
+unrelated `docs/programs/hey/`.
+
+Dispatch report qualification is test-enabled while its consumer is built. It
+checks observed headers, the existing dispatch producer, every stored statement
+and sequence edge, and shared completion/layout rules. The first compile exposed
+the layout validator's block-only visibility; widen it only to the forward-report
+module for reuse. The first two groups pass. A boundary review also requires the
+dispatch expression's enclosing owner and valid body/span containment; those
+checks and three additional corrupt-container/duplicate-statement cases are added.
+All 14 dispatch-effect tests pass (`/tmp/meowy-dispatch-sources-qualifier.log`),
+including 19 corruption variants. Formatting and whitespace checks pass. Next
+share history construction and add explicit result origins before collection.
+
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent
 initialization/result observations, but its body has no result-source association.
