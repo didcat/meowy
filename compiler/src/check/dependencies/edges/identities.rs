@@ -38,7 +38,7 @@ impl BindingIdentity {
             )
             | Value::Print
             | Value::Panic
-            | Value::Foundation(Item::StringCopy | Item::CanCopy | Item::Bits(_)) => {
+            | Value::Foundation(Item::Literal | Item::StringCopy | Item::CanCopy | Item::Bits(_)) => {
                 Some(Self::Foundation)
             }
             _ => None,

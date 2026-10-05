@@ -71,9 +71,14 @@ TMPDIR (`/tmp/meowy-numeric-payload-clean.log`). One prior run encountered an
 existing test-directory collision after the aborted stack run; the focused
 recheck and full clean-directory run both passed.
 
-Next steps: core.literal expansion, required/list integration, pending identity
-copies, source conformance and documentation/editor updates. The literal marker
-prevents escaped numbers from being looked up again by nested checking paths.
+Literal representation: `ad796f5`. core.literal now resolves through the Core
+module and ordinary immutable aliases; it accepts one numeric token or its direct
+unary negation, marks the operand intrinsic and preserves contextual widths.
+Arity/syntax/range rejections and three debug/release native groups pass
+(`/tmp/meowy-core-literal.log`).
+
+Next steps: required/list integration, pending identity copies, source conformance
+and documentation/editor updates. No runtime dispatch is added for literal syntax.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

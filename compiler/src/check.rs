@@ -8,6 +8,7 @@ mod expressions;
 mod functions;
 mod indexed;
 mod inputs;
+mod literals;
 mod mutation;
 mod names;
 mod numbers;

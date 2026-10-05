@@ -75,6 +75,7 @@ impl Descriptor {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Item {
+    Literal,
     Type(FoundationType),
     Heap,
     StringCopy,
@@ -115,6 +116,7 @@ impl Module {
 
     pub(crate) fn item(self, name: &str) -> Option<Item> {
         match (self, name) {
+            (Self::Core, "literal") => Some(Item::Literal),
             (Self::Bits, "and") => Some(Item::Bits(BitOp::And)),
             (Self::Bits, "or") => Some(Item::Bits(BitOp::Or)),
             (Self::Bits, "xor") => Some(Item::Bits(BitOp::Xor)),
@@ -135,6 +137,7 @@ impl Module {
 impl Item {
     pub(crate) fn name(self) -> &'static str {
         match self {
+            Self::Literal => "core.literal",
             Self::Type(ty) => ty.name(),
             Self::Heap => "memory.heap",
             Self::StringCopy => "strings.copy",

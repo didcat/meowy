@@ -48,3 +48,27 @@ d.print(f(4))
     )
     .runs(b"7\n9\n11\n14\n15\n");
 }
+
+#[test]
+pub(crate) fn core_literal_bypasses_shadowing_with_contextual_numeric_types() {
+    Case::new(
+        r#"
+d:@"debug"
+c:@"core"
+lit:c.literal
+1:lit(2)
+0x1:true
+128:7
+d.print(1+1)
+d.print(lit(1))
+d.print(c.literal(0x1))
+x<int8>:lit(-128)
+y<uint64>:lit(18446744073709551615)
+f<float32>:lit(1.5)
+d.print(x)
+d.print(y)
+d.print(f)
+"#,
+    )
+    .runs(b"4\n1\n1\n-128\n18446744073709551615\n1.5\n");
+}
