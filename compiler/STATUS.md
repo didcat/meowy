@@ -2545,12 +2545,10 @@ The current tree contains only unrelated `docs/programs/hey/`. Preservation base
 
 Dependency-ordered commit plan:
 
-1. Finish receiver qualification boundary evidence: nearest-dispatch scope,
-   independent owners, exact parent-hop/work limits and iterative cycle rejection.
-2. Integrate source links using existing input roots, without replaying receiver
+1. Integrate source links using existing input roots, without replaying receiver
    evaluation or granting lifetime/loan authority. Keep ordinary read eligibility,
    original candidates and all Field/Block/Dispatch/composed identities intact.
-3. Add required source cases and classified evidence, then run compiler, strict
+2. Add required source cases and classified evidence, then run compiler, strict
    and final documentation gates and refresh both handoffs.
 
 Record-dispatch consumers, field transparency, aggregate value selection, precise
@@ -2575,7 +2573,10 @@ ordinary blocks to the nearest dispatch. Result observation remains independent;
 stopped bodies can retain earlier receiver inputs. All four qualifier tests pass,
 including nine identity/parent-chain faults, nested input receivers and opaque
 reference/aggregate/unobserved reads (`/tmp/meowy-receiver-sources-qualifier.log`).
-Source walkers do not use this new qualifier yet.
+All seven qualifier/boundary tests pass
+(`/tmp/meowy-receiver-sources-boundaries.log`): nearest-dispatch identity and five
+cross-scope faults, exact hop/shared-work limits and iterative 2048-point ancestry
+with late-cycle rejection. Source walkers do not use this new qualifier yet.
 
 ## Documentation conventions and layout
 
