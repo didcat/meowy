@@ -36,7 +36,7 @@ pub(crate) fn expanded_forest_retains_original_reports_opaque_inputs_and_indepen
             .iter()
             .filter(|visit| matches!(visit, Visit::Field(_, _, _)))
             .count(),
-        3
+        4
     );
     assert_eq!(
         expanded

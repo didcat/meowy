@@ -2261,6 +2261,24 @@ language/release qualification remain incomplete.
 
 ### Next: direct field sources through observed Forward coercions
 
+Active investigation: collection and retained-descriptor qualification already
+share `field_narrowing_source`; its producer, owner, body, cycle and hop checks
+also cover coercion points. `forward_coercion_input` already validates observed
+result headers and exact edges, so the first slice can reuse it directly.
+Two typed-source regressions fail on the prior resolver because typed candidates
+remain opaque (`/tmp/meowy-forward-fields-before.log`). The resolver now calls the
+shared Forward qualifier; typed opacity expectations move to positive coverage.
+All 2569 library tests pass (`/tmp/meowy-forward-fields-library.log`); formatting
+and whitespace checks pass. Typed primary/named candidates, independent owners,
+mixed group/coercion/narrowing chains and both forests retain their identities.
+Mutable-field provenance remains opaque at the existing boundary. Next validate
+missing observations, non-forwarding stages, corruption and exact resource limits.
+Preserve unrelated `docs/programs/hey/`.
+
+Commit plan: resolver with focused integration tests; corruption/opacity/cycle
+boundaries; exact resource limits if needed as a separate reviewable slice;
+required source fixtures and classified evidence; final gates and handoff.
+
 1. In `consumers/field_results/lookup/narrowing.rs`, reuse
    `forward_coercion_input` from `effects/coercions.rs` to follow observed,
    non-projecting Forward coercions mixed with groups and unchanged narrowing.

@@ -80,6 +80,10 @@ impl Checker {
             let next = if let Some(&group) = self.group_inputs.get(&current) {
                 self.qualified_group_input(current, owner, group, span)?
             } else if let Some(input) =
+                self.forward_coercion_input(reports, current, owner, span)?
+            {
+                input
+            } else if let Some(input) =
                 self.unchanged_narrowing_input(reports, current, owner, span)?
             {
                 input
@@ -109,3 +113,6 @@ mod group_faults;
 
 #[cfg(test)]
 mod group_limits;
+
+#[cfg(test)]
+mod forward;
