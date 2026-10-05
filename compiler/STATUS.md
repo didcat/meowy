@@ -147,8 +147,17 @@ The root introduction, first tour and design notes now teach numeric spelling
 lookup and literal escape. Their local links passed the six documentation/editor
 checks in `/tmp/meowy-numeric-final-docs.log`.
 
-Next steps: commit compiler integration documentation; the final gate is running in
-`/tmp/meowy-numeric-final-gate.log`, then run strict gap accounting and finalize.
+Final gate passed formatting and all-target Clippy but found an existing extent
+boundary regression: eager literal probing changed B001 to E201 for an unresolved
+call in an ordinary extent. Literal identity probing now defers failed lookup to
+the original context. The gate failure remains in `/tmp/meowy-numeric-final-gate.log`.
+
+Five literal groups and all six existing extent-root groups now pass
+(`/tmp/meowy-literal-lookup.log`). Literal probing uses existing non-evaluating
+symbol hints; unknown calls retain their original context diagnostics.
+
+Next steps: commit compiler docs, rerun the complete compiler/editor gate, then
+strict gap accounting and final handoff.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

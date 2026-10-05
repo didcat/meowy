@@ -14,7 +14,10 @@ impl Checker {
         let ExprKind::Call { callee, args } = &expr.kind else {
             return Ok(None);
         };
-        if !matches!(self.symbol(callee)?, Some(Value::Foundation(Item::Literal))) {
+        if !matches!(
+            self.hint_symbol(callee),
+            Some(Value::Foundation(Item::Literal))
+        ) {
             return Ok(None);
         }
         let [arg] = args.as_slice() else {
@@ -134,6 +137,21 @@ mod rejected {
             let source = format!(r#"literal:@"core".literal;<T>:{{flag:{expression};->flag<>}}"#);
             let errors = crate::compile(&source).unwrap_err();
             assert_eq!(errors[0].code, "E222", "{source}: {errors:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod lookup {
+    #[test]
+    pub(crate) fn literal_probes_defer_unresolved_calls_to_the_original_context() {
+        for (source, code) in [
+            (r#"x:missing(1)"#, "E201"),
+            (r#"x<int32[missing(1)]>:[]"#, "B001"),
+            (r#"c:@"core";x<int32[c.literal(missing)]>:[]"#, "E207"),
+        ] {
+            let errors = crate::compile(source).unwrap_err();
+            assert_eq!(errors[0].code, code, "{source}: {errors:?}");
         }
     }
 }
