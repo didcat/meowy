@@ -4082,6 +4082,48 @@
         "code": "E303"
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_dispatch_field_chain",
+      "phase": "run",
+      "source": "sources/record_dispatch_field_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\ndispatch\nfield\ndispatch tail\ncopy tail\n4\n5\ncomposed tail\n4\nreceiver\ndispatch\nfield\ndispatch tail\ncopy tail\n7\n8\ncomposed tail\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_dispatch_field_boundaries",
+      "phase": "run",
+      "source": "sources/record_dispatch_field_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\ntrue\n1.5\ncat\ntrue\n2\n3\n255\n3\n8\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_dispatch_field_missing",
+      "phase": "check",
+      "source": "sources/record_dispatch_field_missing.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_dispatch_field_stopped",
+      "phase": "run",
+      "source": "sources/record_dispatch_field_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "dispatch\ntail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

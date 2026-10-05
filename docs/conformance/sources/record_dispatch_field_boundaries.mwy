@@ -1,0 +1,25 @@
+d : @"debug"
+row : 1.{
+    -> byte <uint8> : 255
+    -> flag : true
+    -> fraction <float32> : 1.5
+    -> text : "cat"
+    -> empty : null
+    -> nested : { -> n : 2 }
+    -> values : [3, 4]
+}
+d.print(row.byte)
+d.print(row.flag)
+d.print(row.fraction)
+d.print(row.text)
+d.print(row.empty == null)
+d.print(row.nested.n)
+d.print(row.values[1])
+view : &row
+d.print(view.byte)
+owned : 3.{ -> n := $ }
+snapshot : owned.n
+owned.n = 8
+d.print(snapshot)
+d.print(owned.n)
+d.print(2.{ -> n := $ }.n)

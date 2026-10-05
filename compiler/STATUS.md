@@ -2603,9 +2603,9 @@ The only pre-existing dirty path is unrelated `docs/programs/hey/`.
 
 Dependency-ordered commit plan:
 
-1. Add required source cases for field selection/order and relevant rejections,
-   classify structural evidence, run compiler/strict/documentation gates and refresh
-   both handoffs.
+1. Run the complete compiler and strict conformance gates, document record-dispatch
+   field qualification in FOUNDATION, then refresh both handoffs and run the final
+   documentation gate.
 
 Record-receiver input transparency, aggregate value selection, precise branch/write
 joins, function returns, restart propagation, E225 enforcement and proof outcomes
@@ -2632,8 +2632,15 @@ All twelve record-dispatch tests pass (`/tmp/meowy-record-dispatch-limits.log`).
 Exact operation-slot capacity/work tests require no payload; field-result collection
 shares map/root payload and work; repeated lookup caches by exact field point while
 preserving shared slot identity. Hop and one-unit-short payload/work failures leave
-stored reports and edge counters unchanged. Implementation and structural evidence
-are complete; source cases and final gates remain.
+stored reports and edge counters unchanged.
+Four new required source cases pass debug/release
+(`/tmp/meowy-record-dispatch-source.log`): receiver-once and field/tail order,
+typed copies, composed records, scalar kinds, mutable snapshots and shared reads;
+missing fields retain E201 and an annotated stopped dispatch tail retains P006.
+The list example uses the reference's one-based positions. All four source-slice
+documentation checks pass (`/tmp/meowy-record-dispatch-source-docs.log`). The audit
+preserves 386 prior cases, 459 tracked contract/source/pin files and all 37 reviewed
+hashes (`/tmp/meowy-record-dispatch-preservation.log`). Final gates and handoff remain.
 
 ## Documentation conventions and layout
 

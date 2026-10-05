@@ -1,0 +1,8 @@
+d : @"debug"
+row <{ n <int32> }> : 3.{
+    d.print("dispatch")
+    -> n : $
+    d.print("tail")
+    d.panic("dispatch stopped")
+}
+d.print(row.n)

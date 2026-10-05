@@ -1,0 +1,20 @@
+d : @"debug"
+receiver <int32> : (n <int32>) { d.print("receiver"); -> n }
+
+show <null> : (n <int32>) {
+    row : receiver(n).{
+        d.print("dispatch")
+        -> z : $
+        -> a : { d.print("field"); -> $ + 1 }
+        d.print("dispatch tail")
+    }
+    copy <{ a <int32>; z <int32> }> : ((row~<{ a <int32>; z <int32> }>))
+    result : { -> copy.z; -> again : copy.a; d.print("copy tail") }
+    d.print(result)
+    d.print(result.again)
+    nested : n.{ -> { -> n : $ }; d.print("composed tail") }
+    d.print(nested.n)
+}
+
+show(4)
+show(7)
