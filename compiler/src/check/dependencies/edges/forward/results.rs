@@ -4,6 +4,7 @@ use crate::{
     hir,
 };
 
+mod dispatch;
 mod index;
 pub(super) mod inputs;
 mod slots;
@@ -56,7 +57,9 @@ impl Checker {
         if !self.flow.spend(reports.blocks.len() + 1) {
             return Err(budget());
         }
-        let index = self.result_source_index(reports, &mut parts, span)?;
+        let dispatches = self.dispatch_result_index(reports, &mut parts, limit, span)?;
+        let index =
+            self.result_source_index_with_dispatch(reports, &dispatches, &mut parts, span)?;
         let mut results = Results::new();
         for (&id, (owner, observed)) in &reports.blocks {
             if !observed.result {
@@ -89,6 +92,35 @@ impl Checker {
                     Observed {
                         consumer: body.parent,
                         dispatch: None,
+                        slots,
+                    },
+                ),
+            );
+        }
+        for (id, (owner, dispatch)) in dispatches {
+            if results.len() >= limit
+                || !self
+                    .flow
+                    .spend(results.len().checked_ilog2().unwrap_or(0) as usize + 3)
+            {
+                return Err(budget());
+            }
+            let (slots, left) = slots::collect(
+                &self.bodies[&id].layout,
+                &index,
+                id,
+                &mut self.flow,
+                parts,
+                span,
+            )?;
+            parts = left;
+            results.insert(
+                id,
+                (
+                    owner,
+                    Observed {
+                        consumer: None,
+                        dispatch: Some(dispatch),
                         slots,
                     },
                 ),

@@ -2498,6 +2498,14 @@ protocol. All 72 result tests pass (`/tmp/meowy-dispatch-sources-origins.log`),
 including twelve wrong/ambiguous/missing-observation variants. Formatting and
 whitespace checks pass. Production collection still publishes only ordinary rows
 in this slice; dispatch indexing is next.
+Origin slice: `a7a0289`. Collection now builds a bounded, payload-charged dispatch
+body index, reuses the emission/history builder and publishes tagged result rows.
+Ordinary block observations/consumer membership stay separate. New tests cover
+exact EmitIds, owners, mutable/empty/unknown layouts and independent receiver,
+result and target visits. All 2614 library tests pass
+(`/tmp/meowy-dispatch-sources-collection.log`); formatting and whitespace checks pass.
+Existing candidate rows remain intact while dispatch bodies add their own roots.
+Scalar dispatch consumers remain opaque until the subsequent integration slices.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent
