@@ -25,7 +25,7 @@ pub(crate) fn value_path(target: &str) -> Option<Vec<String>> {
             }
             ExprKind::Group(value) => expr = value,
             _ => {
-                names.push(expr.spelling()?.into());
+                names.extend(expr.spelling()?.split('.').rev().map(str::to_owned));
                 break;
             }
         }

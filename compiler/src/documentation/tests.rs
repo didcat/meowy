@@ -258,13 +258,13 @@ pub(crate) fn documentation_retains_explicit_type_call_fields_and_computed_bindi
 
 #[test]
 pub(crate) fn numeric_documentation_names_keep_spelling_and_member_boundaries() {
-    let source = r#"#!| [[1]], [[1.0]], [[(2).1.0]], [[f]]. |!#
+    let source = r#"#!| [[1]], [[1e0]], [[10.4]], [[f]]. |!#
 #| Integer. |#
 1:7
 #| Decimal. |#
-1.0:8
+1e0:8
 #| Record. |#
-2:{#| Field. |#->1.0:9}
+10:{#| Field. |#->4:9}
 #| Parameter [[0x1]]. |#
 f<int32>:(#| Input. |#0x1<int32>){->0x1}"#;
     let (_, model) = checked(source, true).unwrap();
@@ -275,9 +275,32 @@ f<int32>:(#| Input. |#0x1<int32>){->0x1}"#;
         .iter()
         .map(|link| model.entries[link.resolved.unwrap()].name.as_str())
         .collect();
-    assert_eq!(names, ["1", "1.0", "1.0", "f"]);
+    assert_eq!(names, ["1", "1e0", "4", "f"]);
     for target in ["1+2", "1()", "1;", "12cat", "-1", "1.0.missing", "<1>"] {
         let source = format!("#!| [[{target}]] |!#\n1:7");
+        assert_eq!(
+            checked(&source, true).unwrap_err()[0].code,
+            "E802",
+            "{target}"
+        );
+    }
+}
+
+#[test]
+pub(crate) fn numeric_documentation_paths_follow_members_without_literal_fallback() {
+    let source = r#"#!| [[10.4.5]] and [[10.name]]. |!#
+#| Root. |#
+10:{#| First. |#->4:{#| Leaf. |#->5:7};#| Text. |#->name:8}"#;
+    let (_, model) = checked(source, true).unwrap();
+    let model = model.unwrap();
+    let names: Vec<_> = model.entries[0]
+        .links
+        .iter()
+        .map(|link| model.entries[link.resolved.unwrap()].name.as_str())
+        .collect();
+    assert_eq!(names, ["5", "name"]);
+    for target in ["10.6", "11.4", "10.4.6"] {
+        let source = format!("#!| [[{target}]] |!#\n10:{{->4:{{->5:7}}}}");
         assert_eq!(
             checked(&source, true).unwrap_err()[0].code,
             "E802",

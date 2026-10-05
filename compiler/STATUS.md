@@ -74,7 +74,12 @@ All 17 list-context groups pass. Independent review found no actionable checker
 defects and reran all 25 numeric groups successfully. No new required operations
 or capability exceptions were introduced.
 
-Next: checked-doc/editor commits, canonical references/source migration and gate.
+Checked documentation now splits dotted numeric targets into member components;
+actual roots and members must resolve, with no link-to-literal fallback. All 16
+documentation groups pass (/tmp/meowy-root-first-doc-links.log). Old dotted-name
+documentation fixtures were migrated explicitly to undotted names/member paths.
+
+Next: editor commit, canonical references/source migration and full gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
