@@ -413,6 +413,9 @@ impl Checker {
     }
 
     pub(crate) fn symbol(&mut self, expr: &ast::Expr) -> Result<Option<Value>> {
+        if let Some(name) = self.numeric_name(expr) {
+            return self.value(name, expr.span).map(Some);
+        }
         match &expr.kind {
             ExprKind::Name(name) => Ok(Some(self.value(name, expr.span)?)),
             ExprKind::Group(value) => self.symbol(value),

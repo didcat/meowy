@@ -155,6 +155,8 @@ impl Checker {
     ) -> Result<hir::Expr> {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         self.charge_integer(expr)?;
         let (kind, ty) = match &expr.kind {
             ExprKind::Int(text) => {
@@ -316,6 +318,7 @@ impl Checker {
             ExprKind::Unary { op, value } => {
                 if op == "-"
                     && let ExprKind::Int(text) = &value.kind
+                    && self.numeric_name(value).is_none()
                 {
                     let value = self.integer(text, true, expected, expr.span)?;
                     return self.scalar_leaf(value);
@@ -517,7 +520,9 @@ impl Checker {
         while let ExprKind::Group(value) | ExprKind::Field { value, .. } = &base.kind {
             base = value;
         }
-        if matches!(base.kind, ExprKind::Name(_) | ExprKind::Import(_)) {
+        if matches!(base.kind, ExprKind::Name(_) | ExprKind::Import(_))
+            || self.numeric_name(base).is_some()
+        {
             self.symbol(expr).ok().flatten()
         } else {
             None
@@ -527,6 +532,8 @@ impl Checker {
     pub(crate) fn hint(&mut self, expr: &ast::Expr) -> Option<Type> {
         let bits = self.bits_expression(expr).ok().flatten();
         let expr = bits.as_ref().unwrap_or(expr);
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         if matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. })
             && matches!(
                 self.hint_symbol(expr),
@@ -601,7 +608,7 @@ impl Checker {
                 }
             }
             ExprKind::Call { callee, .. } => {
-                if let ExprKind::Name(name) = &callee.kind {
+                if let Some(name) = self.value_name(callee) {
                     match self.value(name, expr.span).ok()? {
                         Value::Function { result, .. } => result,
                         _ => None,

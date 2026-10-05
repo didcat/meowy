@@ -19,8 +19,8 @@ Dependency-ordered commit plan:
 
 1. Parse numeric value declarations, parameters and members with focused parser
    regressions; preserve numeric token validation and type-name grammar.
-2. Resolve numeric reads, writes and borrows through ordinary lexical values,
-   including signed-literal boundaries, with checker/native regressions.
+2. Resolve numeric reads and signed-literal boundaries, then numeric storage,
+   writes and borrows in a separate commit, each with checker/native regressions.
 3. Integrate required evaluation and contextual list inference, preserving
    fixed binding types and existing budget/eligibility gates.
 4. Add the core literal intrinsic, aliases, numeric argument validation and
@@ -37,8 +37,14 @@ expansion are the integration points. Parser support is complete: all 34 parser 
 Unrelated `docs/programs/hey/` stays excluded. The unfinished direct field-source
 Forward coercion work below remains the next existing compiler milestone.
 
-Next steps: implement lexical numeric resolution and focused checker/native
-checks, then required/list integration. Update this handoff after each validated slice; commit explicit paths.
+Parser slice: `ccebefc`. Numeric reads now resolve existing lexical bindings before
+literal construction; functions/module aliases and fixed binding widths retain
+ordinary rules. Focused checker cases and debug/release native output pass
+(`/tmp/meowy-numeric-reads.log`). Numeric member access uses grouping, e.g.
+`(1).field`, because existing malformed-number token rules remain unchanged.
+
+Next steps: connect numeric storage, mutation, borrowing and narrowing, then
+required/list integration. Existing required/list paths are not qualified yet. Update this handoff after each validated slice; commit explicit paths.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
