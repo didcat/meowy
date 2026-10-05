@@ -438,6 +438,20 @@ Direct owned field Operation ports reference the checked field slot at index+1,
 with field counts, ordering, owners and availability revalidated. A field's normal
 flag describes checked result availability; operation/result flags independently
 record visits. Result-only field reports validate but add no Operation slot link.
+Observed owned field results now have separate Normal-port source-slot associations.
+They require checked normal availability, both operation/result observations and a
+matching requalified Operation link. Missing links, operation-only/result-only rows,
+Never fields and implicit shared loads produce no association. Direct calls,
+reference loads and extracted field values retain their source-resolution limits.
+
+One lazy lookup indexes existing candidate-forest Root markers, validating owner,
+slot bounds and uniqueness. It is built only after the first eligible field link,
+charges remaining payload, and avoids rerunning a walk per field. The retained
+Normal-port map reserves the remaining combined map capacity and all lookups charge
+shared work. Late identity or capacity failures publish no partial map or budget.
+The source slot retains its Unknown, empty or multiple-candidate history; this link
+does not choose a value, establish reachability or make Field results transparent.
+
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
 projection/operation/result stage is validated;
@@ -447,8 +461,9 @@ Slot links retain identities only. Owning effects keep their flags, and result
 sources keep unknown or multiple-candidate state without extra copies. Inputs must
 resolve to a validated block consumer, directly or through explicit group identities
 and qualified Forward/unchanged narrowing/ascription wrappers or immutable local
-reads. Field-result values, reference loads, calls, changed ascriptions and
-unclassified regions remain outside these links.
+reads. Extracted Field values, reference loads, calls, changed ascriptions and
+unclassified regions remain outside this record-consumer resolution. The Normal
+field-result associations above are separate from transparent input forwarding.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size

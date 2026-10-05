@@ -7,23 +7,23 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Candidate-source traversal now requalifies stored descriptors and follows source
-slots with bounded iterative state. Direct/unresolved leaves, Unknown/empty histories,
-shared sources and active cycles remain distinct. One entry-report forest shares
-visited state across known owner/Slot roots. The
-[compiler handoff](compiler/STATUS.md#bounded-candidate-source-traversal) records
-four implementation/test commits and the next ordered plan.
+Observed owned field results now link to qualified source slots. Both operation and
+result observations are required, along with normal availability and the existing
+Operation link. A lazy bounded lookup reuses candidate-forest roots. Missing, sparse
+and shared-load boundaries stay opaque; source histories remain unchanged. The
+[compiler handoff](compiler/STATUS.md#observed-field-result-source-links) records four
+implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2496 library/915 native tests and 62 Python groups
-(`/tmp/meowy-candidate-walk-gate.log`). Conformance has 331 cases: 312 required
+All ten compiler checks pass: 2508 library/915 native tests and 62 Python groups
+(`/tmp/meowy-field-result-links-gate.log`). Conformance has 334 cases: 315 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-candidate-walk-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-candidate-walk-docs.log`).
+exits 1 only for those gaps (`/tmp/meowy-field-result-links-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-field-result-links-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-candidate-walk-preservation.log`). Proof evaluation and
+preserved (`/tmp/meowy-field-result-links-preservation.log`). Proof evaluation and
 full language/release qualification remain incomplete.
 
-Next, link observed field results to qualified source slots.
+Next, qualify field-result lookup through unchanged narrowing.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

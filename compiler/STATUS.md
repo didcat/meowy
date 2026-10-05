@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Observed field-result source links are in progress.
+Updated: 2026-10-04. Observed field-result source links pass compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1997,44 +1997,66 @@ remains excluded. Proof evaluation and full release qualification remain incompl
 
 ## Observed field-result source links
 
-Investigation confirms `validate_field_report` checks independent result/operation
-flags, while `field_slot` requalifies the owned Operation source slot. The new
-association will require both visits, normal availability and the matching existing
-Operation link. Missing links, result-only rows, Never fields and implicit shared
-loads remain opaque. Qualification does not make Field results transparent wrappers.
-All five focused groups and all-target Clippy pass (`/tmp/meowy-field-result-links-qualification.log`,
-`/tmp/meowy-field-result-links-qualification-lint.log`). Nested-read coverage checks
-one qualified Unknown slot and one opaque extracted-value read. Qualification is
-committed as `aeefeed`. Collection now installs Normal-port links
-only after matching a lazily indexed forest root, with aggregate map room and payload
-charges. The prerequisite is enabled in production. All ten matching tests, all
-2504 library tests and all-target Clippy pass (`/tmp/meowy-field-result-links-collection.log`,
-`/tmp/meowy-field-result-links-library.log`, `/tmp/meowy-field-result-links-collection-lint.log`).
-Collection is committed as `03e46c3`. Independent tests now cover exact map/root
-scratch/work limits, malformed headers and roots, late failures, Never result claims,
-load opacity and duplicate visits without rebuilding the forest. All 14 matching
-field-result groups and all-target Clippy pass
-(`/tmp/meowy-field-result-links-boundaries.log`, `/tmp/meowy-field-result-links-boundaries-lint.log`).
-Boundary coverage is committed as `1ff75ba`. Three required source cases pass
-fresh-compiler debug/release (`/tmp/meowy-field-result-links-source.log`); catalog
-and coverage checks pass. All four default checks pass
-(`/tmp/meowy-field-result-links-source-docs.log`). The preservation audit confirms
-331 prior cases, 363 source assets, 37 reference contracts/reviewed hashes, capability
+Observed owned field results now retain Normal(PointId)-to-source-Slot associations.
+Qualification requires checked normal availability, independent operation/result
+visits and a matching requalified Operation link. Missing links, sparse visits,
+Never fields, shared loads and unresolved receivers remain opaque. Nested aggregate
+reads can retain an Unknown slot without forwarding the extracted field value.
+
+Collection indexes existing candidate-forest Root markers once, only when the first
+eligible link needs them. Owner, slot bounds and duplicate roots are checked; no
+walk is rerun per field. Root scratch consumes remaining payload and associations
+reserve remaining combined map capacity. Shared work bounds validation/lookups;
+late failures publish no partial map or remaining-budget update. Unknown, empty and
+multiple histories remain intact, with no candidate selection or lifetime authority.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify observed field-result source slots | `aeefeed` |
+| Collect bounded links to candidate forest roots | `03e46c3` |
+| Cover root/header/link identities and exact limits | `1ff75ba` |
+| Pin source behavior and classified evidence | `9373325` |
+
+All five qualification groups pass (`/tmp/meowy-field-result-links-qualification.log`).
+All 2504 library tests pass after collection (`/tmp/meowy-field-result-links-library.log`).
+All 14 matching field-result groups and all-target Clippy pass after boundary
+coverage (`/tmp/meowy-field-result-links-boundaries.log`,
+`/tmp/meowy-field-result-links-boundaries-lint.log`). Three required source cases pass
+fresh-compiler debug/release (`/tmp/meowy-field-result-links-source.log`). All four
+source-slice documentation checks pass (`/tmp/meowy-field-result-links-source-docs.log`).
+
+All ten compiler checks pass: 2508 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-field-result-links-gate.log`). Conformance has 334 cases: 315 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-field-result-links-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-field-result-links-docs.log`). No test failures
+remain. The preservation audit confirms all 331 prior
+cases, 363 source assets, 37 reference contracts/reviewed hashes, capability
 pins and proof obligations are unchanged (`/tmp/meowy-field-result-links-preservation.log`).
-The full compiler gate follows.
+Only unrelated `docs/programs/hey/` remains excluded. Proof evaluation and full
+release qualification remain incomplete.
 
-Dependency-ordered commit plan:
+### Next: field-result lookup through unchanged narrowing
 
-1. Add focused field-result qualification under `consumers/field_results`, preserving
-   source/owner/index checks and sparse/load/normal boundaries. Stage this prerequisite
-   under `cfg(test)` until collection supplies its production caller.
-2. Collect bounded Normal(PointId)-to-source-Slot links after candidate reports.
-   Build one lazy, payload-bounded lookup of existing forest roots; validate membership
-   without rerunning walks per field. Reserve remaining combined map/work capacity.
-3. Add independent corrupt-header/link/root, late failure, exact budget and
-   Unknown/empty/multiple-history regressions alongside appropriate source cases.
-4. Update classified evidence, run compiler/strict/final documentation gates and
-   leave a dependency-ordered handoff. Preserve `docs/programs/hey/`.
+Normal field associations now exist, but direct candidate inputs commonly point to
+the field's ordinary narrowing wrapper. Add bounded source lookup without changing
+the record-consumer resolver or selecting candidate values.
+
+1. In `consumers/field_results/`, qualify reads of stored Normal-port associations
+   against the field producer, original Operation link and forest root. Reuse one
+   bounded qualification context for repeated lookups; missing associations stay
+   opaque and corrupted retained associations fail atomically.
+2. Add a bounded direct-input lookup that follows observed, normal, unchanged
+   narrowing to a qualified field-result slot. Retain the original candidate input
+   and exact wrapper identities; bound cycles, hops and work. Changed/unobserved
+   narrowing, calls, dereferences and other wrappers remain explicit boundaries.
+3. Integrate optional resolved direct-input sources after field-result collection,
+   avoiding a dependency cycle with the original candidate forest. Preserve owner
+   and candidate positions and Unknown/empty/multiple histories. Keep representation,
+   lookup and collection slices independently reviewable with focused regressions.
+4. Add adversarial corruption/limits and required source cases/classified evidence,
+   then run compiler, strict and final documentation gates before widening traversal.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
@@ -3626,9 +3648,9 @@ Validated local-read forwarding and coercion-owned primary consumer links are
 complete, including output- and contextual-list-owned primary parts and composed-emission
 source slots and unchanged observed ascriptions. Field Operation/Normal observations
 are now independent, and bounded result-candidate inputs retain qualified composed
-source slots. Bounded candidate-source traversal is implemented. Observed field-result
-source links are next, following the ordered plan above; field-value provenance
-remains separate.
+source slots. Candidate traversal and observed field-result source links are
+implemented. Lookup through unchanged narrowing is next, following the ordered plan
+above; value selection and broader field-value provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4221,8 +4243,10 @@ remains separate.
    (`c489bd1`), candidate slot qualification (`74671ed`), boundaries (`590cb3e`) and
    source cases (`e04ad8e`) pass the gate. Stored graph qualification (`322d4ed`),
    traversal/forest integration (`b3a6516`), boundaries (`60fd5e0`) and source cases
-   (`01baf4a`) pass the gate. Next link observed field results to qualified source
-   slots, following the ordered plan above, before field-value provenance work.
+   (`01baf4a`) pass the gate. Field-result qualification (`aeefeed`), collection
+   (`03e46c3`), boundaries (`1ff75ba`) and source cases (`9373325`) pass the gate.
+   Next qualify stored field-result associations and direct inputs through unchanged
+   narrowing, following the ordered plan above, before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
