@@ -2320,8 +2320,14 @@ changed-ascription fixtures retain the existing opacity tests. All 2577 library
 tests pass (`/tmp/meowy-ascribed-fields-library.log`), including plain/grouped/typed
 routes across owners and independent candidate histories. Both proof-control mark
 states use explicit seeded metadata; runtime branching alone does not set that
-mark. Formatting and whitespace checks pass. Boundary and limit slices are next;
-unrelated `docs/programs/hey/` remains excluded.
+mark. Formatting and whitespace checks pass; resolver slice is `206176d`.
+Boundary tests now cover independent operation/result visits, opaque predicates,
+changed/stopped ascriptions, other wrappers and 27 late identity/conflict faults;
+all five ascribed-source groups pass (`/tmp/meowy-ascribed-fields-boundaries.log`).
+Observed results still require exact operation registration even without an
+operation visit. Late errors publish no partial map or forest. Cycle/resource
+tests are next. Unrelated
+`docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 

@@ -129,3 +129,6 @@ mod forward_limits;
 
 #[cfg(test)]
 mod ascriptions;
+
+#[cfg(test)]
+mod ascription_boundaries;
