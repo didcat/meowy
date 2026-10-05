@@ -1,0 +1,24 @@
+d : @"debug"
+
+mutable : { -> n := 2 }
+snapshot : { -> ((mutable.n)) }
+mutable.n = 3
+d.print(snapshot)
+view : &mutable
+loaded : { -> ((view.n)) }
+d.print(loaded)
+
+nullable <{n <int32><null>}> : { -> n : 4 }
+| nullable.n <int32> | {
+    narrowed : { -> ((nullable.n)) }
+    d.print(narrowed)
+}
+
+stable : { -> n : 7 }
+ascribed : { -> ((stable.n~<int32>)) }
+typed <int32> : { -> ((stable.n)) }
+read <int32> : (record <{n <int32>}>) { -> record.n }
+called : { -> ((read(stable))) }
+d.print(ascribed)
+d.print(typed)
+d.print(called)

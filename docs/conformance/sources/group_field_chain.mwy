@@ -1,0 +1,31 @@
+d : @"debug"
+
+show <null> : (flag <boolean>) {
+    base : {
+        d.print("source")
+        | flag | -> n : 2
+        | !flag | -> n : 3
+        d.print("source tail")
+    }
+    first : {
+        -> n : ((base.n))
+        d.print("first tail")
+    }
+    copy : {
+        -> ((first))
+        d.print("copy tail")
+    }
+    row : {
+        -> ((copy.n))
+        -> echo : ((base.n))
+        d.print("row tail")
+    }
+    d.print(row)
+    d.print(row.echo)
+}
+
+show(true)
+show(false)
+solo : { -> n : 7 }
+own : { -> ((solo.n)) }
+d.print(own)

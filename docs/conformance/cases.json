@@ -3604,6 +3604,36 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "group_field_chain",
+      "phase": "run",
+      "source": "sources/group_field_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nfirst tail\ncopy tail\nrow tail\n2\n2\nsource\nsource tail\nfirst tail\ncopy tail\nrow tail\n3\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "group_field_boundaries",
+      "phase": "run",
+      "source": "sources/group_field_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "2\n3\n4\n7\n7\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "group_field_unproven",
+      "phase": "check",
+      "source": "sources/group_field_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

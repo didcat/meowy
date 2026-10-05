@@ -1,0 +1,3 @@
+read <int32> : (record <{n <int32><null>}>) {
+    -> ((record.n))~<int32>
+}

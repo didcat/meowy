@@ -2157,7 +2157,14 @@ hops, shared field/root cache payload, repeat lookups, exact work and the regist
 cap. Existing exact collection/graph/forest tests now exercise grouped sources.
 All seven grouped-source groups and all ten direct-report groups pass
 (`/tmp/meowy-group-fields-limits.log`, `/tmp/meowy-group-fields-reports.log`).
-Next add required source cases and classified evidence (step 4).
+Resource tests committed as `1790a65`. Three new required source cases pin grouped
+field/composition order across owners, mutable snapshots, shared loads, guarded
+narrowing and E208. All three pass fresh-compiler debug/release
+(`/tmp/meowy-group-fields-source.log`). Coverage is regenerated and all four
+source-slice documentation checks pass (`/tmp/meowy-group-fields-source-docs.log`).
+The preservation audit confirms prior cases/assets, reference hashes, support pins
+and proof obligations are unchanged (`/tmp/meowy-group-fields-preservation.log`).
+The full compiler, strict and final documentation gates remain (step 5).
 Dependency-ordered commit plan:
 
 1. Extract the existing explicit-group child qualification from
