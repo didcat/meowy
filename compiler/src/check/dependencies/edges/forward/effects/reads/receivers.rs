@@ -55,6 +55,32 @@ impl Checker {
         let Some(&(indexed, dispatch)) = reports.receivers.get(local) else {
             return Ok(None);
         };
+        let work = [
+            self.fields.len(),
+            self.group_inputs.len(),
+            self.coercions.len(),
+            self.narrowings.len(),
+            self.typed_ops.len(),
+            self.dispatch_ops.len(),
+            reports.consumers.len(),
+        ]
+        .into_iter()
+        .fold(7, |work, len| {
+            work + len.checked_ilog2().unwrap_or(0) as usize
+        });
+        if !self.flow.spend(work) {
+            return Err(budget());
+        }
+        if self.fields.contains_key(&id)
+            || self.group_inputs.contains_key(&id)
+            || self.coercions.contains_key(&id)
+            || self.narrowings.contains_key(&id)
+            || self.typed_ops.contains_key(&id)
+            || self.dispatch_ops.contains_key(&id)
+            || reports.consumers.contains_key(&id)
+        {
+            return Err(invalid());
+        }
         let op = self.dispatch_ops.get(&dispatch).ok_or_else(invalid)?;
         if indexed != owner
             || op.owner != owner

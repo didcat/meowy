@@ -4,6 +4,8 @@ use crate::check::dependencies::{
 };
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn receiver_sources_link_scalar_aliases_inside_ordinary_nested_blocks() {
     let (mut checker, reports) = checked("r:{->n:1};n:r.n;s:n.{inner:{->(($))}}");

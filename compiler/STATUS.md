@@ -2544,8 +2544,8 @@ The current tree contains only unrelated `docs/programs/hey/`. Preservation base
 
 Dependency-ordered commit plan:
 
-1. Complete integrated conflict, mixed-cycle and exact hop/payload/work boundary
-   evidence for receiver forwarding and stored direct-source requalification.
+1. Complete integrated exact hop/payload/work boundary evidence for receiver
+   forwarding, preserving shared caches and independent control flags.
 2. Add required source cases and classified evidence, then run compiler, strict
    and final documentation gates and refresh both handoffs.
 
@@ -2583,6 +2583,13 @@ Calls, dereferences, arithmetic, aggregate/union/reference receivers remain opaq
 One previous scalar-receiver opacity regression is now positive; record-receiver
 field transparency remains explicitly excluded. Read/control and runtime ownership
 semantics are unchanged; no receiver evaluation is replayed.
+Integrated fault tests exposed a receiver read/field producer overlap accepted by
+the block-source path. The dedicated qualifier now rejects conflicting producer
+families before forwarding; both source walkers reject the reproduction.
+Three boundary tests pass (`/tmp/meowy-receiver-sources-conflicts.log`), including
+five stale/missing-evidence faults and a mixed receiver/ordinary-initializer cycle.
+Reports and edge counters remain unchanged on failed requalification.
+All 630 forward-report tests pass (`/tmp/meowy-receiver-sources-conflict-reports.log`).
 
 ## Documentation conventions and layout
 
