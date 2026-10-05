@@ -1,0 +1,45 @@
+d : @"debug"
+mark <int32> : (n <int32>) { d.print(n); -> n }
+
+show <null> : (n <int32>) {
+    negative : -(mark(n).{
+        d.print("unary")
+        -> $
+        -> tag : true
+        d.print("unary tail")
+    })
+    d.print(negative)
+    sum : mark(n).{
+        d.print("left")
+        -> $
+        -> tag : true
+        d.print("left tail")
+    } + (mark(n + 1).{
+        d.print("right")
+        -> $
+        -> tag : false
+        d.print("right tail")
+    }~<{ -> <int32>; tag <boolean> }>)
+    d.print(sum)
+    d.print(sum<int32>)
+    a : n.{ -> $; -> tag : true }
+    b : n.{ -> $; -> tag : false }
+    d.print(a == b)
+    d.print(a == n)
+    d.print(a >= n)
+}
+
+show(3)
+show(4)
+small <int8> : 7
+d.print(-(small.{ -> $; -> tag : true }))
+d.print(!(true.{ -> $; -> tag : true }))
+number <float32> : 1.5
+d.print(-(number.{ -> $; -> tag : true }))
+text : "cat".{ -> $; -> tag : true }
+d.print(text < "dog")
+empty : 3.{ -> tag : true }
+d.print(empty == null)
+tiny <uint8> : 7
+box : tiny.{ -> $; -> tag : true }
+d.print(box + 1)

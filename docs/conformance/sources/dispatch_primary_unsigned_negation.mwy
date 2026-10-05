@@ -1,0 +1,2 @@
+n <uint8> : 7
+value : -(n.{ -> $; -> tag : true })

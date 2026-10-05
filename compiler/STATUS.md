@@ -2659,8 +2659,7 @@ consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
 
 Dependency-ordered commit plan:
 
-1. Add required normal/guarded/rejection source cases and classified evidence.
-2. Pin stopped-operand and checked-overflow behavior in a separate source slice,
+1. Pin stopped-operand and checked-overflow behavior in a separate source slice,
    then run compiler, strict and documentation gates and refresh both handoffs.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
@@ -2696,7 +2695,15 @@ A required guarded-source run case will accompany arithmetic conformance cases.
 All eight binary-focused tests pass (`/tmp/meowy-dispatch-primary-boundaries.log`).
 Eight late operand/type/plan/source faults, wrapped initializer cycles, independent
 consumer/dispatch control marks and exact map/shared-work limits preserve report
-atomicity. Implementation and structural checks are complete; source runs remain.
+atomicity.
+Three new required cases pass debug/release (`/tmp/meowy-dispatch-primary-source.log`):
+unary/binary receiver and tail order, scalar kinds/widths, bare arithmetic results,
+aggregate-versus-scalar equality, guarded receiver scopes across owners and E222 for
+unsigned negation. The order case explicitly ascribes its right dispatch's record
+type: the unannotated form hits the existing scalar-context named-field E207 boundary.
+Broader contextual record-hint repair remains separate; no exception or old fixture
+was changed. All four source-slice documentation checks pass
+(`/tmp/meowy-dispatch-primary-source-docs.log`). Stopped/overflow cases and full gates remain.
 
 ## Documentation conventions and layout
 

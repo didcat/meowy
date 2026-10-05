@@ -1,0 +1,17 @@
+d : @"debug"
+
+select <int32> : (flag <boolean>, n <int32>) {
+    row : n.{
+        | flag | -> $
+        | !flag | -> $ + 1
+        -> tag : true
+        d.print("guard tail")
+    }
+    -> row + 1
+}
+
+d.print(select(true, 3))
+d.print(select(false, 3))
+flag := true
+row : 5.{ | flag | -> $; | !flag | -> 0; -> tag : true }
+d.print(row + 1)

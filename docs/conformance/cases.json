@@ -4124,6 +4124,36 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_primary_order",
+      "phase": "run",
+      "source": "sources/dispatch_primary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\nunary\nunary tail\n-3\n3\nleft\nleft tail\n4\nright\nright tail\n7\ntrue\nfalse\ntrue\ntrue\n4\nunary\nunary tail\n-4\n4\nleft\nleft tail\n5\nright\nright tail\n9\ntrue\nfalse\ntrue\ntrue\n-7\nfalse\n-1.5\ntrue\ntrue\n8\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "dispatch_primary_guarded",
+      "phase": "run",
+      "source": "sources/dispatch_primary_guarded.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "guard tail\n4\nguard tail\n5\n6\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "dispatch_primary_unsigned_negation",
+      "phase": "check",
+      "source": "sources/dispatch_primary_unsigned_negation.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
     }
   ]
 }
