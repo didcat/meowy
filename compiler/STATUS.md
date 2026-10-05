@@ -2106,8 +2106,12 @@ consuming the same remaining payload through qualification and traversal. Origin
 forest qualification inputs are unchanged. All 2529 library tests and all-target
 Clippy pass (`/tmp/meowy-expanded-library.log`,
 `/tmp/meowy-expanded-integration-lint.log`). Both focused integration groups pass
-with the final test budget reset (`/tmp/meowy-expanded-integration.log`). Next
-cover seeded cycles and exact traversal limits (step 4).
+with the final test budget reset (`/tmp/meowy-expanded-integration.log`); integrated
+as `4104d99`. Seeded boundary tests now cover self/mutual/branch cycles and diamonds
+across both edge kinds, 2048-slot depth, shared forest state, exact payload/work and
+late descriptor/owner faults. These are structural tests, not source-level cycle
+evidence. All four boundary groups pass (`/tmp/meowy-expanded-boundaries.log`).
+Next add required source cases and classify their coverage (step 5).
 
 Dependency-ordered commit plan:
 
