@@ -92,3 +92,19 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod required {
+    #[test]
+    pub(crate) fn literal_syntax_preserves_required_values_and_queries() {
+        for source in [
+            r#"c:@"core";1:true;<T>:{n:c.literal(1);-><int32[n]>};v<T>:[7]"#,
+            r#"lit:@"core".literal;<T>:{128:true;n<int8>:lit(-128);flag:n<lit(0);->n<>};v<T>:-7"#,
+            r#"lit:@"core".literal;<T>:{1:2;n:({->lit(1)})+lit(2);-><int32[n]>};v<T>:[0,0,0]"#,
+            r#"1:true;<T>:@"core".literal(1)<>;v<T>:7"#,
+            r#"lit:@"core".literal;<T>:{1:true;n:lit(1);copy:n;->copy<>};v<T>:7"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+    }
+}

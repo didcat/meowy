@@ -56,8 +56,8 @@ impl Checker {
     }
 
     pub(crate) fn scalar_input(&mut self, expr: &ast::Expr) -> Result<()> {
-        let bits = self.bits_expression(expr)?;
-        let expr = bits.as_ref().unwrap_or(expr);
+        let expanded = self.expanded_expression(expr)?;
+        let expr = expanded.as_deref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
         let expr = number.as_deref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;

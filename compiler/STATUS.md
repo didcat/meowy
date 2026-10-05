@@ -77,8 +77,12 @@ unary negation, marks the operand intrinsic and preserves contextual widths.
 Arity/syntax/range rejections and three debug/release native groups pass
 (`/tmp/meowy-core-literal.log`).
 
-Next steps: required/list integration, pending identity copies, source conformance
-and documentation/editor updates. No runtime dispatch is added for literal syntax.
+Core literal slice: `183e41a`. Required integer construction, comparisons, block
+operands and type queries now preserve escaped numeric identity across repeated
+checking. Both focused literal groups pass (`/tmp/meowy-literal-required.log`).
+
+Next steps: literal list/extent inference, pending identity copies, conformance
+and documentation/editor integration. No runtime dispatch is added for literal syntax.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

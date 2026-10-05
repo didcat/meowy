@@ -93,6 +93,8 @@ impl Checker {
                 self.literal_type(spec, ty.span)
             }
             ExprKind::TypeQuery(value) => {
+                let literal = self.literal_expression(value)?;
+                let value = literal.as_deref().unwrap_or(value);
                 if let Some(ty) = self.hint(value) {
                     return Ok(ty);
                 }
@@ -234,8 +236,8 @@ impl Checker {
         expr: &ast::Expr,
         annotation: Option<&ast::TypeExpr>,
     ) -> Result<Value> {
-        let bits = self.bits_expression(expr)?;
-        let expr = bits.as_ref().unwrap_or(expr);
+        let expanded = self.expanded_expression(expr)?;
+        let expr = expanded.as_deref().unwrap_or(expr);
         if let Some(annotation) = annotation
             && self.meta_annotation(annotation)?
         {
