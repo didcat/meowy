@@ -43,8 +43,13 @@ ordinary rules. Focused checker cases and debug/release native output pass
 (`/tmp/meowy-numeric-reads.log`). Numeric member access uses grouping, e.g.
 `(1).field`, because existing malformed-number token rules remain unchanged.
 
-Next steps: connect numeric storage, mutation, borrowing and narrowing, then
-required/list integration. Existing required/list paths are not qualified yet. Update this handoff after each validated slice; commit explicit paths.
+Read resolution: `ca66e6d`. Numeric storage now preserves mutable writes, shared
+and exclusive borrows, field/index paths and narrowing. Focused checker rejection
+cases and both native groups pass in debug/release
+(`/tmp/meowy-numeric-storage.log`).
+
+Next steps: required scalar/aggregate evaluation and list inference, then the
+core literal intrinsic. These integrations remain unqualified. Update this handoff after each validated slice; commit explicit paths.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

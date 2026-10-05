@@ -59,7 +59,7 @@ impl Checker {
                 _ => break,
             }
         }
-        let ExprKind::Name(name) = &root.kind else {
+        let Some(name) = self.value_name(root) else {
             return Err(Diagnostic::unsupported(
                 "assignment path outside ordinary local storage",
                 target.span,

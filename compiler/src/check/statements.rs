@@ -278,7 +278,7 @@ impl Checker {
                 if matches!(form.kind, ExprKind::Index { .. } | ExprKind::Field { .. }) {
                     return Ok(vec![self.write_path(target, value)?]);
                 }
-                let ExprKind::Name(name) = &target.kind else {
+                let Some(name) = self.value_name(target) else {
                     return Err(Diagnostic::unsupported(
                         "assignment through fields or references",
                         target.span,

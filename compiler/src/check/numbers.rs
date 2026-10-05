@@ -43,11 +43,19 @@ mod tests {
             "1<(int32)->int32>;1<int32>:(2<int32>){->1(2)}",
             "128<int8>:7;x<int8>:-128",
             "x<int8>:-128",
+            "1<(int32)->int32>;1<int32>:(2<int32>)'done{|2==0|{'done->0;'done.leave()};->1(2-01)}",
+            "1:=2;r:&1;x:*r;1=3;q:&!1;*q=4",
+            "1:({->n:=7});(1).n=8;r:(1).&n;x:*r",
+            "1<int32[2]>:=[7,8];1[01]=9",
+            "1<null><int32>:=null;|1<int32>|x:1~<int32>",
         ] {
             crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
         }
         for (source, code) in [
             ("1:2;1:3", "E203"),
+            ("1:2;1=3", "E305"),
+            ("1:2;r:&!1", "E305"),
+            ("1:=2;r:&1;1=3;x:*r", "E302"),
             ("1<uint8>:2;x<int32>:1", "E207"),
             ("1<uint8>:2;x:-1", "E222"),
             ("1:true;x:1+2", "E222"),

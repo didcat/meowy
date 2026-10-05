@@ -195,7 +195,7 @@ impl Checker {
                 _ => break,
             }
         }
-        let ExprKind::Name(name) = &root.kind else {
+        let Some(name) = self.value_name(root) else {
             return Err(Diagnostic::unsupported(
                 "exclusive borrowing outside ordinary named storage",
                 span,
@@ -369,7 +369,7 @@ impl Checker {
                     _ => break,
                 }
             }
-            if matches!(root.kind, ExprKind::Name(_) | ExprKind::Import(_))
+            if (self.value_name(root).is_some() || matches!(root.kind, ExprKind::Import(_)))
                 && matches!(self.symbol(root)?, Some(Value::FileModule { .. }))
             {
                 return Err(Diagnostic::unsupported(
@@ -580,6 +580,8 @@ impl Checker {
     }
 
     pub(self) fn address_storage(&self, expr: &ast::Expr) -> Result<(hir::Place, Type)> {
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         match &expr.kind {
             ExprKind::Group(value) => self.address_storage(value),
             ExprKind::Name(name) => {
@@ -629,6 +631,8 @@ impl Checker {
     }
 
     pub(crate) fn ast_place(&self, expr: &ast::Expr) -> Option<Place> {
+        let number = self.numeric_expression(expr);
+        let expr = number.as_ref().unwrap_or(expr);
         match &expr.kind {
             ExprKind::Name(name) => match self.value(name, expr.span).ok()? {
                 Value::Local { id, .. } => Some((id, Vec::new())),
