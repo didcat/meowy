@@ -452,6 +452,26 @@ shared work. Late identity or capacity failures publish no partial map or budget
 The source slot retains its Unknown, empty or multiple-candidate history; this link
 does not choose a value, establish reachability or make Field results transparent.
 
+Stored field-result lookups now requalify the retained Normal association against
+the producer, Operation source link and forest root. A borrowed per-pass context
+caches validated fields and roots, charging remaining payload before growth. Missing
+associations stay opaque; cached lookups retain owner/slot agreement checks.
+
+A separate direct-input resolver follows only observed, normal, unchanged narrowing.
+It validates point/body/owner identity and rejects conflicting producers and cycles.
+The 65,536-hop scratch bound and shared work budget precede growth. Changed or
+unobserved narrowing, groups, coercions, ascriptions, ordinary reads, calls and
+reference loads remain boundaries. Original input and terminal field IDs retain
+the exact route through the existing narrowing reports; no type shapes are copied.
+
+Direct-source reports retain each original Value candidate's point and optional
+field/source Slot at its existing block/slot/candidate position. They are collected
+after field-result reporting and leave candidate inputs, composed sources and the
+original forest unchanged. Combined map capacity and qualification-cache payload
+bound publication; late failures return no partial map or remaining budget. Source
+histories keep Unknown, empty and multiple candidates without value selection.
+These optional links are not yet traversed by the original candidate forest.
+
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
 projection/operation/result stage is validated;

@@ -7,23 +7,23 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Observed owned field results now link to qualified source slots. Both operation and
-result observations are required, along with normal availability and the existing
-Operation link. A lazy bounded lookup reuses candidate-forest roots. Missing, sparse
-and shared-load boundaries stay opaque; source histories remain unchanged. The
-[compiler handoff](compiler/STATUS.md#observed-field-result-source-links) records four
-implementation/test commits and the next ordered plan.
+Direct candidate sources now optionally resolve observed unchanged narrowing to
+qualified field-result slots. Shared lookup caches preserve original points, terminal
+fields, owners and candidate positions under bounded work/payload/map limits. Other
+wrappers remain opaque, and the original candidate forest stays unchanged. The
+[compiler handoff](compiler/STATUS.md#field-result-lookup-through-unchanged-narrowing)
+records five implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2508 library/915 native tests and 62 Python groups
-(`/tmp/meowy-field-result-links-gate.log`). Conformance has 334 cases: 315 required
+All ten compiler checks pass: 2521 library/915 native tests and 62 Python groups
+(`/tmp/meowy-field-narrowing-gate.log`). Conformance has 337 cases: 318 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-field-result-links-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-field-result-links-docs.log`).
+exits 1 only for those gaps (`/tmp/meowy-field-narrowing-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-field-narrowing-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-field-result-links-preservation.log`). Proof evaluation and
+preserved (`/tmp/meowy-field-narrowing-preservation.log`). Proof evaluation and
 full language/release qualification remain incomplete.
 
-Next, qualify field-result lookup through unchanged narrowing.
+Next, add separate traversal through qualified direct field sources.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

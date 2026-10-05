@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Field-result lookup through unchanged narrowing is in progress.
+Updated: 2026-10-04. Narrowed field-source lookup passes compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2039,51 +2039,74 @@ release qualification remain incomplete.
 
 ## Field-result lookup through unchanged narrowing
 
-Investigation confirms existing `field_result_slot` and `field_result_roots` can
-qualify retained Normal-port associations, and `unchanged_narrowing_input` already
-validates observed unchanged results. Reuse those authorities without extending
-`grouped_consumer`. Keep resolved direct candidates separate from the original
-forest to avoid a dependency cycle. The lookup context now requalifies retained
-associations and caches checked fields and forest roots within the remaining payload.
-All three focused lookup groups pass (`/tmp/meowy-field-narrowing-lookup.log`);
-all-target Clippy passes (`/tmp/meowy-field-narrowing-lookup-lint.log`).
-Stored lookup is committed as `1cd353b`. Narrowing-only resolution now validates
-exact point/owner/body and producer identities, follows only observed unchanged
-normal narrowing, and uses the existing mixed-chain hop cap. It preserves the
-terminal field identity without copying wrapper paths. Both focused resolver groups
-and all-target Clippy pass (`/tmp/meowy-field-narrowing-resolver.log`,
-`/tmp/meowy-field-narrowing-resolver-lint.log`). Resolution is committed as `444a66a`.
-Production collection now follows field-result reporting, requalifies candidate
-inputs and retains optional direct sources separately. Original candidate/forest
-reports remain unchanged. Both direct-source groups, all 2515 library tests and
-all-target Clippy pass (`/tmp/meowy-field-narrowing-direct.log`,
-`/tmp/meowy-field-narrowing-library.log`, `/tmp/meowy-field-narrowing-direct-lint.log`).
-Integration is committed as `324fc89`. New tests cover producer conflicts, an
-individually valid seeded narrowing cycle, exact hop/work/cache/map limits, late
-faults and Unknown/empty/multiple histories. All five narrowing groups, five
-direct-source groups and all-target Clippy pass
-(`/tmp/meowy-field-narrowing-boundaries.log`, `/tmp/meowy-field-narrowing-direct-limits.log`,
-`/tmp/meowy-field-narrowing-boundaries-lint.log`). Boundary coverage is committed as
-`f4e12ff`. Three required source cases pass fresh-compiler debug/release
-(`/tmp/meowy-field-narrowing-source.log`); catalog/coverage checks pass.
-All four default checks pass (`/tmp/meowy-field-narrowing-source-docs.log`). The
-preservation audit confirms 334 prior cases, 366 source assets, 37 reference
-contracts/reviewed hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-field-narrowing-preservation.log`). The full compiler gate follows.
+Stored Normal-port field associations now have bounded read qualification against
+the checked producer, original Operation link and forest root. A borrowed per-pass
+context caches validated fields and roots with shared payload/work charges. Missing
+associations remain opaque and corrupt retained identities fail atomically.
 
-Dependency-ordered commit plan:
+Direct-input lookup follows only observed, normal, unchanged narrowing, preserving
+exact point/body/owner identities and rejecting producer conflicts and cycles. The
+65,536-hop scratch cap is separate from cache payload; all lookups share work limits.
+Changed/unobserved narrowing, groups, coercions, ascriptions, reads, calls and reference
+loads remain explicit boundaries. The original record-consumer resolver is unchanged.
 
-1. Add a borrowed field-result lookup context with bounded shared root/association
-   caches and stored-link corruption tests. Stage unused prerequisites under
-   `cfg(test)` until the production collector is installed.
-2. Add narrowing-only direct-input resolution with exact point/owner identities,
-   conflict/cycle/hop/work bounds, and explicit boundaries for all other producers.
-3. Collect optional direct-candidate sources after field-result collection, retaining
-   original input, terminal field, owner and candidate positions. Reserve remaining
-   combined map capacity and cache payload without altering prior reports.
-4. Add independent resource, corruption and boundary regressions, then required
-   source cases/classified evidence. Run compiler, strict and final documentation
-   gates and leave a dependency-ordered handoff. Preserve `docs/programs/hey/`.
+A separate position-keyed direct-source map retains each Value candidate's original
+point and optional terminal field/source Slot. Collection follows field-result
+reporting, reserves remaining combined map capacity and preserves existing candidate
+inputs and forest visits. Unknown/empty/multiple histories stay intact. These links
+are not yet traversed by the original candidate forest and infer no selected value,
+runtime reachability, lifetime authority or proof outcome.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify cached stored field-result lookups | `1cd353b` |
+| Resolve sources through unchanged narrowing | `444a66a` |
+| Collect optional direct-candidate sources | `324fc89` |
+| Cover conflicts, cycles, late faults and exact limits | `f4e12ff` |
+| Pin source behavior and classified coverage | `5f602e9` |
+
+All three lookup groups and both initial resolver groups pass
+(`/tmp/meowy-field-narrowing-lookup.log`, `/tmp/meowy-field-narrowing-resolver.log`).
+All 2515 library tests pass after integration (`/tmp/meowy-field-narrowing-library.log`).
+All five narrowing groups, five direct-source groups and all-target Clippy pass after
+boundary coverage (`/tmp/meowy-field-narrowing-boundaries.log`,
+`/tmp/meowy-field-narrowing-direct-limits.log`, `/tmp/meowy-field-narrowing-boundaries-lint.log`).
+The cycle is seeded structural evidence. Three required source cases pass fresh-compiler
+debug/release (`/tmp/meowy-field-narrowing-source.log`); all four source-slice
+documentation checks pass (`/tmp/meowy-field-narrowing-source-docs.log`).
+
+All ten compiler checks pass: 2521 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-field-narrowing-gate.log`). Conformance has 337 cases: 318 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-field-narrowing-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-field-narrowing-docs.log`). No test failures
+remain. The preservation audit confirms 334 prior cases,
+366 source assets, 37 reference contracts/reviewed hashes, capability pins and
+proof obligations are unchanged (`/tmp/meowy-field-narrowing-preservation.log`).
+Unrelated `docs/programs/hey/` remains excluded. Proof evaluation and full release
+qualification remain incomplete.
+
+### Next: traversal through qualified direct field sources
+
+The original forest must remain available for field-result qualification. Add a
+separate expanded traversal after direct-source collection, retaining the original
+candidate and forest reports as its qualification inputs.
+
+1. In `results/inputs/direct/`, qualify stored direct-source descriptors against
+   their original Value candidate, point, owner and narrowing/field-result evidence.
+   Reuse per-pass caches and reject missing, extra or changed retained descriptors.
+2. Extend the traversal engine with an explicit resolved-field edge for a qualified
+   direct source. Preserve its original candidate position, point and terminal field;
+   do not disguise Value as Primary/Field composition. Keep ordinary direct points
+   terminal when no optional source exists. Share the existing owner, cycle/sharing,
+   pending/visited/output and work bounds; retain Unknown/empty/multiple histories.
+3. Collect the expanded forest only after field results and direct sources, keeping
+   the original forest unchanged to avoid circular qualification. Qualifier, traversal
+   and integration must remain independently reviewable with focused regressions.
+4. Cover composed-plus-field paths, shared sources versus cycles, opaque wrappers,
+   independent owners, corruption and exact budgets. Add required source cases and
+   classified evidence, then run compiler, strict and final documentation gates.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
@@ -3676,8 +3699,9 @@ complete, including output- and contextual-list-owned primary parts and composed
 source slots and unchanged observed ascriptions. Field Operation/Normal observations
 are now independent, and bounded result-candidate inputs retain qualified composed
 source slots. Candidate traversal and observed field-result source links are
-implemented. Lookup through unchanged narrowing is next, following the ordered plan
-above; value selection and broader field-value provenance remain separate.
+implemented, including direct-input lookup through unchanged narrowing. Traversal
+through qualified direct field sources is next, following the ordered plan above;
+value selection and broader field-value provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4272,8 +4296,10 @@ above; value selection and broader field-value provenance remain separate.
    traversal/forest integration (`b3a6516`), boundaries (`60fd5e0`) and source cases
    (`01baf4a`) pass the gate. Field-result qualification (`aeefeed`), collection
    (`03e46c3`), boundaries (`1ff75ba`) and source cases (`9373325`) pass the gate.
-   Next qualify stored field-result associations and direct inputs through unchanged
-   narrowing, following the ordered plan above, before wider value provenance work.
+   Stored lookup (`1cd353b`), narrowing resolution (`444a66a`), direct reports
+   (`324fc89`), boundaries (`f4e12ff`) and source cases (`5f602e9`) pass the gate.
+   Next add separate traversal through qualified direct field sources, following
+   the ordered plan above, before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
