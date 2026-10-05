@@ -76,7 +76,9 @@ Two already typed arithmetic operands must have the same numeric type.
 A [numeric binding](syntax.md#numeric-names-and-intrinsic-literals) is already
 typed too. After `1 <uint8> : @"core".literal(1)`, reading `1` produces `uint8`;
 assigning it to `int32` is `E207`. Use `core.literal(1)` to request a fresh literal
-with contextual typing. Alternate spellings are independent lexical names.
+with contextual typing. Undotted alternate spellings are independent lexical names. A numeric member
+expression such as `10.4` keeps the selected field's type when `10` is bound;
+an incompatible field never becomes a decimal to satisfy an annotation.
 
 Unions accept any of their members. A descriptor-compatible concrete error may
 be passed as `<error>` without allocation. An error retaining arbitrary inline

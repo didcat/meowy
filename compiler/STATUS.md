@@ -103,8 +103,13 @@ rejection. Two new required cases pass: 338 required passes, 19 unchanged gaps,
 zero failures in both profiles (/tmp/meowy-root-first-contract.log). Owning hashes
 and coverage were reviewed and regenerated; old expectation records are unchanged.
 
-Next: remaining reference integration and rejection/required-member cases, then
-teaching/compiler doc commits and final gates.
+Type, collection and mutability references now distinguish selected numeric
+members from contextual literals and dotted assignment from invalid declarations.
+All six documentation/editor checks pass (/tmp/meowy-root-first-reference-checks.log).
+The owning inventory hashes were reviewed and coverage regenerated.
+
+Next: module/documentation/required references, added rejection and required-field
+source cases, then teaching/compiler docs and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

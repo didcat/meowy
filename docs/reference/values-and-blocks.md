@@ -152,6 +152,9 @@ disappearing as an incidental consequence of a pipeline.
 same rules: `1 := 7` creates mutable storage, `1 = 8` writes it, and `&1` borrows
 that storage. An unbound numeric token still denotes a literal temporary. Numeric
 named emissions and fields retain ordinary initialization and field permissions.
+A bound numeric root makes `10.4 = value` an ordinary field assignment, requiring
+a mutable field `4`. `10.4 : value` cannot declare a dotted name; emit `-> 4` from
+the block bound to `10` instead.
 
 Bindings and fields are separate replacement boundaries. `:` prevents replacing
 that slot; `:=` permits replacement. An immutable binding can own mutable fields:

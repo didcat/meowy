@@ -57,7 +57,10 @@ with an allocator when runtime growth is required.
 Numeric spellings in capacities, indices and elements use ordinary lexical
 lookup. A shadowed number is an already typed value during list inference;
 [`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) remains a
-contextual literal. Shadowing `1` can therefore change what `items[1]` selects;
+contextual literal. A decimal-shaped token with a bound root is a field read,
+not an untyped list element: `10.4` retains field `4`'s checked type. Missing or
+incompatible fields do not retry literal inference. Shadowing `1` can therefore
+change what `items[1]` selects;
 `items[core.literal(1)]` selects the intrinsic first position. String keys in
 named lists retain their existing rules.
 
