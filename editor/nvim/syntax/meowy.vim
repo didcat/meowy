@@ -9,7 +9,7 @@ syntax case match
 
 " Explicit clusters keep task/comparison operators out of type arguments while
 " allowing full expressions, including nested strings, inside interpolation.
-syntax cluster meowyCode contains=meowyIdentifier,meowyReceiver,meowyBuiltinValue,meowyBinding,meowyCall,meowyNumber,meowyFloat,meowyOperator,meowyAscription,meowyEmit,meowyTaskOperator,meowyBorrow,meowyUnchecked,meowyDispatch,meowyScope,meowyTaskGroup,meowyPunctuation,meowyBlock,meowyParen,meowyList,meowyType,meowyString,meowyImport,meowyComment,meowyDocComment,meowyModuleDoc
+syntax cluster meowyCode contains=meowyIdentifier,meowyReceiver,meowyBuiltinValue,meowyBinding,meowyCall,meowyFunction,meowyNumber,meowyFloat,meowyOperator,meowyAscription,meowyEmit,meowyTaskOperator,meowyBorrow,meowyUnchecked,meowyDispatch,meowyScope,meowyTaskGroup,meowyPunctuation,meowyBlock,meowyParen,meowyList,meowyType,meowyString,meowyImport,meowyComment,meowyDocComment,meowyModuleDoc
 syntax cluster meowyTypeBody contains=meowyTypeName,meowyTypeArguments,meowyTypeRecord,meowyTypeParameters,meowyTypeExtent,meowyTypeOperator,meowyTypePunctuation,meowyNumber,meowyString,meowyComment,meowyDocComment,meowyModuleDoc
 
 syntax match meowyIdentifier /\<[A-Za-z_][A-Za-z0-9_]*\>/
@@ -22,6 +22,17 @@ syntax match meowyBinding /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*:\%(:\)\@!/
 syntax match meowyCall /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*(/
 syntax match meowyCall /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*<[^"#{};|=]\+>\s*(/
 syntax match meowyCall /\%(\.\_s*(\_s*\%([A-Za-z_][A-Za-z0-9_]*\_s*\.\_s*\)*\)\@<=[A-Za-z_][A-Za-z0-9_]*\ze\_s*[,)]/
+
+let s:text = '"\%(\\.\|\_[^"\\]\)*"'
+let s:type = '<\%(->\|' . s:text . '\|\_[^<>#"]\)*>'
+let s:params = '(\%(' . s:text . '\|\_[^()#"]\)*)'
+for s:depth in range(1, 7)
+  let s:type = '<\%(->\|' . s:text . '\|\_[^<>#"]\|' . s:type . '\)*>'
+  let s:params = '(\%(' . s:text . '\|\_[^()#"]\|' . s:params . '\)*)'
+endfor
+let s:head = '\%((\_s*\%()\|[A-Za-z_][A-Za-z0-9_]*\_s*<\)\)\@=' . s:params
+execute 'syntax match meowyFunction /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\_s*\%(' . s:type . '\_s*\)*:\_s*' . s:head . '\_s*\%(''[A-Za-z_][A-Za-z0-9_]*\_s*\)\?!\?\_s*{/'
+unlet s:text s:type s:params s:depth s:head
 
 syntax match meowyOperator /[-+*\/%=<>!&|:]/
 syntax match meowyOperator /:=\|==\|!=\|<=\|>=\|&&\|||/
@@ -83,6 +94,7 @@ highlight default link meowyReceiver Identifier
 highlight default link meowyBuiltinValue Constant
 highlight default link meowyBinding Identifier
 highlight default link meowyCall Function
+highlight default link meowyFunction Function
 highlight default link meowyNumber Number
 highlight default link meowyFloat Float
 highlight default link meowyOperator Operator

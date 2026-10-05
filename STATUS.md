@@ -23,8 +23,8 @@ Prior fixtures, reference contracts, capability pins and proof obligations are
 preserved (`/tmp/meowy-candidate-walk-preservation.log`). Proof evaluation and
 full language/release qualification remain incomplete.
 
-Next, link observed field results to qualified source slots. Concurrent editor work
-and unrelated `docs/programs/hey/` remain preserved outside the compiler series.
+Next, link observed field results to qualified source slots.
+Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain
 
@@ -82,6 +82,15 @@ All 12 checks in `python3 -B tools/verify.py --compiler --editor both` passed:
 schemas. Log: `/tmp/meowy-dollar-receiver-gate.log`. Native receiver tests run in
 debug/release. The full composition project retains its pre-existing bootstrap
 manifest/module-composition limitations. Restart/proof work remains the next task.
+
+## Editor function declaration highlighting
+
+Function declaration names now use Function highlighting, including inferred,
+annotated/generic and multiline headers. Grouped values, aliases, comments and
+strings keep their prior groups. All six checks in
+`python3 -B tools/verify.py --editor both` pass
+(`/tmp/meowy-function-highlight-commit.log`).
+This validates editor syntax and repository checks; compiler execution is separate.
 
 ## Editor task and dispatch highlighting
 

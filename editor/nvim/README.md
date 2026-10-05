@@ -69,6 +69,8 @@ when the client omits that capability.
 
 The highlighter handles:
 
+- Function declaration names, including inferred results, annotated/generic headers,
+  multiline parameters, named scopes, and unchecked bodies.
 - Nested generic types, record types, function signatures, constrained binders,
   multiple parameters and arguments, union alternatives, type subtraction, and
   type queries, ordinary type predicates (`value<T>`) and explicit proven
@@ -149,6 +151,8 @@ binary `%` remains an operator and `&name` remains a borrow. It does not type-ch
 expressions or resolve aliases. Incomplete or ambiguous
 annotations may stay plain until enough punctuation has been entered. The
 [language reference](../../docs/reference/syntax.md) defines their meaning.
+Function-name detection recognizes complete headers with up to eight nested type
+or parameter-parenthesis levels; comment-interrupted headers may stay plain.
 
 ## Checks
 

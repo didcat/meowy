@@ -56,6 +56,26 @@ call s:At('negative : -42', '-', 'meowyOperator')
 call s:At('21.(double)', '.', 'meowyDispatch')
 call s:At('21.(double)', 'double', 'meowyCall')
 
+for s:pair in [
+      \ ['div : () {', 'div'],
+      \ ['compact:(){}', 'compact'],
+      \ ['sum : (left <int32>, right <int32>) { -> left + right }', 'sum'],
+      \ ['named_function : () ''again { ''again.leave() }', 'named_function'],
+      \ ['unchecked_function : () !{}', 'unchecked_function'],
+      \ ['multiline_function :', 'multiline_function'],
+      \ ['record_factory <{ n <int32>; callback <(int32) -> int32> }> : () {}', 'record_factory'],
+      \ ['read_word <uint32> : (address <*uint32>) !{', 'read_word'],
+      \ ['pick<:K,:V><V>:(key<K>,value<V>){->value}', 'pick'],
+      \ ['apply<:F:core.Call<(int32)->int32>&core.Pure><int32>:(f<&F>,x<int32>){->f(x)}', 'apply']]
+  call s:At(s:pair[0], s:pair[1], 'meowyFunction')
+endfor
+for s:line in ['grouped_number : (7)', 'grouped_value : (value)', 'grouped_predicate : (value<int32>)', 'grouped_block : ({ -> 1 })', 'unfinished_function : ()', 'function_alias : div', 'called : div()']
+  call s:At(s:line, split(s:line)[0], 'meowyBinding')
+endfor
+call s:At('typed_group <int32> : (value)', 'typed_group', 'meowyIdentifier')
+call s:At('called : div()', 'div', 'meowyCall')
+call s:At('function_text : "pretend : () {}"', 'pretend', 'meowyString')
+call s:At('# pretend : () {} #', 'pretend', 'meowyComment')
 call s:At('read_word <uint32> : (address <*uint32>) !{', '!', 'meowyUnchecked')
 call s:At('    -> memory.read<uint32>(address)', '->', 'meowyEmit')
 call s:At('    -> memory.read<uint32>(address)', 'read', 'meowyCall')

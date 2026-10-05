@@ -27,6 +27,31 @@ exponent : 1.0e-3
 negative : -42
 21.(double)
 
+div : () {
+}
+compact:(){}
+sum : (left <int32>, right <int32>) { -> left + right }
+named_function : () 'again { 'again.leave() }
+unchecked_function : () !{}
+multiline_function :
+(
+    value <int32>,
+    callback <(int32) -> int32>
+) {
+    -> callback(value)
+}
+record_factory <{ n <int32>; callback <(int32) -> int32> }> : () {}
+grouped_number : (7)
+grouped_value : (value)
+grouped_predicate : (value<int32>)
+grouped_block : ({ -> 1 })
+typed_group <int32> : (value)
+unfinished_function : ()
+function_alias : div
+called : div()
+function_text : "pretend : () {}"
+# pretend : () {} #
+
 read_word <uint32> : (address <*uint32>) !{
     -> memory.read<uint32>(address)
 }
