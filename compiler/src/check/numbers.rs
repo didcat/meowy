@@ -1,5 +1,6 @@
-use super::{Checker, Scope};
+use super::{Checker, Result, Scope};
 use crate::ast::{Expr, ExprKind, Span};
+use crate::diagnostic::Diagnostic;
 
 impl Checker {
     pub(crate) fn numeric_name<'a>(&self, expr: &'a Expr) -> Option<&'a str> {
@@ -18,6 +19,22 @@ impl Checker {
 
     pub(crate) fn numeric_expression(&self, expr: &Expr) -> Option<Box<Expr>> {
         Self::numeric_form(&self.scopes, expr)
+    }
+
+    pub(crate) fn numeric_receiver(&self, expr: &Expr) -> Result<Option<Box<Expr>>> {
+        let mut root = expr;
+        for _ in 0..=crate::list::MAX_WRITE_PATH {
+            match &root.kind {
+                ExprKind::Group(value)
+                | ExprKind::Field { value, .. }
+                | ExprKind::Index { value, .. } => root = value,
+                _ => return Ok(self.numeric_expression(root)),
+            }
+        }
+        Err(Diagnostic::unsupported(
+            "numeric receiver path budget exhausted",
+            expr.span,
+        ))
     }
 
     pub(crate) fn numeric_form(scopes: &[Scope], expr: &Expr) -> Option<Box<Expr>> {
@@ -66,6 +83,32 @@ impl Checker {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    pub(crate) fn numeric_fields_preserve_storage_and_borrow_permissions() {
+        for source in [
+            "10:{->4:=7};10.4=8;x:10.4",
+            "10:{->4:{->5:=7}};10.4.5=8;x:10.4.5",
+            "10:{->4:=7};r:&(10.4);x:*r;10.4=8",
+            "10:{->4:=7};r:&!(10.4);*r=8;x:10.4",
+            "10:{->4:{->5:=7}};r:&!(10.4.5);*r=8",
+            "10:{->4<int32[2]>:=[7,8]};10.4[1]=9;r:&!(10.4[2]);*r=11",
+            "row:{->4:{->5:7}};10:&row;r:&(10.4.5);x:*r",
+            "row:{->10:{->4:=7}};row.10.4=8;r:&!(row.10.4);*r=9",
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+        for (source, code) in [
+            ("10:{->4:7};10.4=8", "E305"),
+            ("10:{->4:7};r:&!(10.4)", "E305"),
+            ("10:{->4:=7};r:&(10.4);10.4=8;x:*r", "E302"),
+            ("10:{->4:=7};10.5=8", "E201"),
+            ("10:{->4:=7};r:&!(10.5)", "E201"),
+        ] {
+            let errors = crate::compile(source).unwrap_err();
+            assert_eq!(errors[0].code, code, "{source}: {errors:?}");
+        }
+    }
+
     #[test]
     pub(crate) fn numeric_fields_follow_bound_roots_and_literal_escape() {
         for source in [

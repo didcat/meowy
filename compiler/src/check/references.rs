@@ -171,6 +171,7 @@ impl Checker {
         span: Span,
         indexed: bool,
     ) -> Result<(hir::Place, Type, bool)> {
+        let number = self.numeric_receiver(expr)?;
         let mut root = expr;
         let mut steps = Vec::new();
         loop {
@@ -181,6 +182,9 @@ impl Checker {
                 ));
             }
             match &root.kind {
+                ExprKind::Int(_) | ExprKind::Float(_) if number.is_some() => {
+                    root = number.as_deref().unwrap();
+                }
                 ExprKind::Group(value) => root = value,
                 ExprKind::Field { value, name } => {
                     if steps.len() == crate::list::MAX_WRITE_PATH {
@@ -301,15 +305,27 @@ impl Checker {
         ))
     }
 
-    pub(crate) fn address_root<'a>(expr: &'a ast::Expr, fields: &mut Vec<String>) -> &'a ast::Expr {
-        match &expr.kind {
-            ExprKind::Group(value) => Self::address_root(value, fields),
-            ExprKind::Field { value, name } => {
-                let root = Self::address_root(value, fields);
-                fields.push(name.clone());
-                root
+    pub(crate) fn address_root<'a>(
+        expr: &'a ast::Expr,
+        number: Option<&'a ast::Expr>,
+        fields: &mut Vec<String>,
+    ) -> &'a ast::Expr {
+        let mut root = expr;
+        loop {
+            match &root.kind {
+                ExprKind::Int(_) | ExprKind::Float(_) if number.is_some() => {
+                    root = number.unwrap();
+                }
+                ExprKind::Group(value) => root = value,
+                ExprKind::Field { value, name } => {
+                    fields.push(name.clone());
+                    root = value;
+                }
+                _ => {
+                    fields.reverse();
+                    return root;
+                }
             }
-            _ => expr,
         }
     }
 
@@ -353,6 +369,7 @@ impl Checker {
     }
 
     pub(crate) fn borrowed(&mut self, expr: &ast::Expr, span: Span) -> Result<hir::Expr> {
+        let number = self.numeric_receiver(expr)?;
         if !self.imports.is_empty() {
             let mut root = expr;
             loop {
@@ -363,6 +380,9 @@ impl Checker {
                     ));
                 }
                 match &root.kind {
+                    ExprKind::Int(_) | ExprKind::Float(_) if number.is_some() => {
+                        root = number.as_deref().unwrap();
+                    }
                     ExprKind::Group(value)
                     | ExprKind::Field { value, .. }
                     | ExprKind::Index { value, .. } => root = value,
@@ -401,7 +421,7 @@ impl Checker {
             Err(error) => error,
         };
         let mut names = Vec::new();
-        let root = Self::address_root(expr, &mut names);
+        let root = Self::address_root(expr, number.as_deref(), &mut names);
         if names.is_empty() {
             match &root.kind {
                 ExprKind::Unary { op, value } if op == "*" => {

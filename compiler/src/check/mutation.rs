@@ -35,6 +35,7 @@ impl Checker {
         target: &ast::Expr,
         value: &ast::Expr,
     ) -> Result<hir::Stmt> {
+        let number = self.numeric_receiver(target)?;
         let mut root = target;
         let mut steps = Vec::new();
         loop {
@@ -45,6 +46,9 @@ impl Checker {
                 ));
             }
             match &root.kind {
+                ExprKind::Int(_) | ExprKind::Float(_) if number.is_some() => {
+                    root = number.as_deref().unwrap();
+                }
                 ExprKind::Group(value) => root = value,
                 ExprKind::Field { value, .. } | ExprKind::Index { value, .. } => {
                     if steps.len() == crate::list::MAX_WRITE_PATH {

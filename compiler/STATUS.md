@@ -55,9 +55,15 @@ ordinary field expression only when its root is bound. Symbol/hint resolution,
 exact root spans, missing/scalar/private fields, lexical shadowing, type queries
 and literal escape pass all seven focused numeric checker groups.
 
-Next: storage/required/list receiver integration. Old numeric fixtures using
-dotted declarations are intentionally pending contract migration; the complete
-compiler gate remains pending.
+Core lookup committed as 0c29da3. Storage adapters retain only the terminal
+numeric receiver expansion, preserving suffix fields/indices, original spans,
+borrow modes, mutability and normal errors. Eight numeric and 14 reference groups
+pass (/tmp/meowy-root-first-storage.log, /tmp/meowy-root-first-borrows.log).
+All six native numeric groups pass in debug/release, including root/fallback
+selection and direct/nested writes/borrows (/tmp/meowy-root-first-native.log).
+
+Next: commit required/list integration and checked-doc paths, then migrate only
+numeric fixtures invalidated by the agreed contract. Full gate remains pending.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

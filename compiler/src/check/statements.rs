@@ -228,6 +228,8 @@ impl Checker {
                 while let ExprKind::Group(value) = &form.kind {
                     form = value;
                 }
+                let number = self.numeric_expression(form);
+                let form = number.as_deref().unwrap_or(form);
                 if let ExprKind::Unary { op, value: pointer } = &form.kind
                     && op == "*"
                 {
