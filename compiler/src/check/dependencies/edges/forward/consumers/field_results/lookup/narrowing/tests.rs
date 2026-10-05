@@ -41,7 +41,7 @@ pub(crate) fn field_narrowing_follows_only_unchanged_observed_field_wrappers() {
 #[test]
 pub(crate) fn field_narrowing_keeps_changed_unobserved_and_other_producers_opaque() {
     for source in [
-        "r:{->n:1};x:r.n~<int32>",
+        "<U>:<int32><null>;r:{->n:1};x:r.n~<U>",
         "f<int32>:(){->1};x:f()",
         "r:{->n:1};p:&r;x:p.n",
     ] {

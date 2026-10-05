@@ -115,7 +115,7 @@ pub(crate) fn grouped_field_sources_require_explicit_groups_and_observed_termina
 #[test]
 pub(crate) fn grouped_field_sources_preserve_other_wrapper_and_logical_boundaries() {
     for source in [
-        "r:{->n:1};s:{->((r.n~<int32>))}",
+        "<U>:<int32><null>;r:{->n:1};s:{->((r.n~<U>))}",
         "r:{->n:1};p:&r;s:{->((p.n))}",
         "f<int32>:(){->1};s:{->((f()))}",
         "r:{->n:1};n:r.n;s:{->((n))}",

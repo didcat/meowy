@@ -87,6 +87,10 @@ impl Checker {
                 self.unchanged_narrowing_input(reports, current, owner, span)?
             {
                 input
+            } else if let Some(input) =
+                self.unchanged_ascription_input(reports, current, owner, span)?
+            {
+                input
             } else {
                 return Ok(None);
             };
@@ -122,3 +126,6 @@ mod forward_boundaries;
 
 #[cfg(test)]
 mod forward_limits;
+
+#[cfg(test)]
+mod ascriptions;

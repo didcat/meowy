@@ -2308,9 +2308,24 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: direct field sources through observed unchanged ascriptions
 
+Active investigation: both report paths already share `field_narrowing_source`.
+The existing `unchanged_ascription_input` validates observed headers, normal and
+unchanged Ascription kind, operation registration and exact edges. Reuse that
+qualifier without weakening any producer/body/owner/cycle checks. Existing tests
+that deliberately stop at unchanged ascriptions need corresponding expectation
+updates; changed ascriptions and other opaque sources must retain coverage.
+Both new integration regressions fail on the old resolver
+(`/tmp/meowy-ascribed-fields-before.log`). The resolver now uses the shared helper;
+changed-ascription fixtures retain the existing opacity tests. All 2577 library
+tests pass (`/tmp/meowy-ascribed-fields-library.log`), including plain/grouped/typed
+routes across owners and independent candidate histories. Both proof-control mark
+states use explicit seeded metadata; runtime branching alone does not set that
+mark. Formatting and whitespace checks pass. Boundary and limit slices are next;
+unrelated `docs/programs/hey/` remains excluded.
+
 Dependency-ordered commit plan:
 
-1. In `consumers/field_results/lookup/narrowing.rs`, reuse
+1. Complete: in `consumers/field_results/lookup/narrowing.rs`, reuse
    `unchanged_ascription_input` from `effects/typed.rs` to qualify observed,
    normal, unchanged ascriptions mixed with Forward/groups/narrowing. Preserve
    original Value candidates and both report paths; include focused typed/grouped
@@ -2318,6 +2333,7 @@ Dependency-ordered commit plan:
 2. Separately cover absent results, predicates, changed/stopped ascriptions,
    corrupt headers/routes, producer conflicts, mixed cycles, owners and exact
    shared hop/work/cache limits. Keep initializer reads, calls and loads opaque.
+   Split opacity/identity checks from cycles/resource checks if needed for review.
 3. Add required source cases and classified evidence for ascription behavior,
    including E208, without changing references or prior fixtures/capability pins.
 4. Run compiler, strict and final documentation gates and refresh both handoffs.
