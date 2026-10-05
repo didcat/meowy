@@ -7,24 +7,24 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-Composed candidate inputs now retain qualified source slots from existing Emission
-links. Owners, indices and complete source layouts are checked, including unobserved
-suffixes. A bounded cache resolves each composed source once. Missing links remain
-unknown, direct values retain their boundary, and source histories stay unchanged.
-The [compiler handoff](compiler/STATUS.md#composed-candidate-source-slot-qualification)
-records four implementation/test commits and the next ordered plan.
+Candidate-source traversal now requalifies stored descriptors and follows source
+slots with bounded iterative state. Direct/unresolved leaves, Unknown/empty histories,
+shared sources and active cycles remain distinct. One entry-report forest shares
+visited state across known owner/Slot roots. The
+[compiler handoff](compiler/STATUS.md#bounded-candidate-source-traversal) records
+four implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2483 library/915 native tests and 62 Python groups
-(`/tmp/meowy-candidate-slots-gate.log`). Conformance has 328 cases: 309 required
+All ten compiler checks pass: 2496 library/915 native tests and 62 Python groups
+(`/tmp/meowy-candidate-walk-gate.log`). Conformance has 331 cases: 312 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-candidate-slots-strict.log`). All four final
-documentation checks pass (`/tmp/meowy-candidate-slots-docs.log`).
+exits 1 only for those gaps (`/tmp/meowy-candidate-walk-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-candidate-walk-docs.log`).
 Prior fixtures, reference contracts, capability pins and proof obligations are
-preserved (`/tmp/meowy-candidate-slots-preservation.log`). Proof evaluation and
+preserved (`/tmp/meowy-candidate-walk-preservation.log`). Proof evaluation and
 full language/release qualification remain incomplete.
 
-Next, add bounded candidate-source traversal with explicit unresolved boundaries.
-Unrelated `docs/programs/hey/` is preserved.
+Next, link observed field results to qualified source slots. Concurrent editor work
+and unrelated `docs/programs/hey/` remain preserved outside the compiler series.
 
 ## Host toolchain
 

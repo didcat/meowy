@@ -405,6 +405,27 @@ All lookups and traversal charge shared work. No type trees, names or candidate
 vectors are copied. Late identity or budget failures publish no partial index or
 remaining-budget update.
 
+Candidate-source traversal first qualifies a borrowed graph view against every
+stored input's original position, owner and complete checked descriptor. Missing,
+extra or changed rows are invalid; even empty candidate lists require immutable
+scalar slots. The graph view copies no result or candidate vectors.
+
+An iterative walk starts from a known owner/Slot, retains every candidate position,
+and follows only qualified source Slots. Direct points and unresolved projections
+remain distinct terminals. Unknown and empty histories remain explicit boundaries.
+An active-slot revisit records a cycle; a completed-slot revisit records sharing.
+These markers neither select a value nor establish runtime execution or termination.
+
+Entry reports retain one forest over their known result slots, sharing visited state
+across roots so each slot expands once. Owners remain separate and layouts without
+known slots produce no invented roots. Output, visited and pending storage share a
+bounded allowance checked before every growth; lookups also charge shared work.
+The report consumes remaining payload for retained visits and visited scratch after
+graph qualification. Invalid identities and exhausted resources publish no partial
+walk or remaining-budget update. Cycle and 2048-slot depth tests use seeded engine
+graphs; checked-source tests separately cover real composition and opaque leaves.
+Field-result forwarding, restart propagation and proof outcomes remain separate.
+
 Operation, block and result records share the map limit. Temporary source-index
 rows/candidates, result-slot entries and copied candidates consume the remaining
 operation-report payload budget; index names are borrowed from validated reports.

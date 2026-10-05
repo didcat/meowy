@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Bounded candidate-source traversal is in progress.
+Updated: 2026-10-04. Bounded candidate-source traversal passes compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1954,51 +1954,67 @@ qualification remain incomplete.
 
 ## Bounded candidate-source traversal
 
-Investigation confirms stored candidate inputs already provide exact direct,
-projected and unresolved boundaries. Traversal will use a borrowed graph view whose
-stored descriptors are requalified once with the existing per-pass context. The
-same iterative engine will serve one owner/Slot and a single entry-report forest;
-shared visited state avoids repeatedly walking each source chain from every root.
-No runtime values, type shapes or candidate lists will be copied or selected.
-Borrowed graph qualification now rechecks all original positions and rejects missing,
-extra or changed descriptors. Empty candidate lists still require immutable scalar
-slots. All four qualification groups and all-target Clippy pass
-(`/tmp/meowy-candidate-walk-qualification.log`, `/tmp/meowy-candidate-walk-qualification-lint.log`).
-Qualification is committed as `322d4ed`. The iterative engine now streams original
-candidate positions, marks active-slot cycles separately from completed shared
-sources, and bounds output/visited/pending storage together. Entry reports collect
-one forest with shared visited state, and the prerequisite is enabled in production.
-All 33 matching tests and all-target Clippy pass
-(`/tmp/meowy-candidate-walk-engine.log`, `/tmp/meowy-candidate-walk-engine-lint.log`).
-All 2489 library tests also pass (`/tmp/meowy-candidate-walk-library.log`).
-Traversal/integration is committed as `b3a6516`. Seeded engine tests now cover
-sharing versus self/mutual cycles, continuation after a cycle, a 2048-slot chain,
-aggregate peak storage, exact work and late malformed targets. These are structural
-engine fixtures; checked-source traversal evidence remains separate. All nine walk
-groups pass, including the corrected named-field source selection
-(`/tmp/meowy-candidate-walk-boundaries.log`); all-target Clippy passes
-(`/tmp/meowy-candidate-walk-boundaries-lint.log`). Boundary coverage is committed as
-`60fd5e0`. Three required source cases pass fresh-compiler debug/release
-(`/tmp/meowy-candidate-walk-source.log`); catalog and coverage checks pass.
-All four default checks pass (`/tmp/meowy-candidate-walk-source-docs.log`). The
-preservation audit confirms 328 prior cases, 360 source assets, 37 reference
-contracts/reviewed hashes, capability pins and proof obligations are unchanged
-(`/tmp/meowy-candidate-walk-preservation.log`). The full compiler gate follows.
-Concurrent editor/root-tracker changes remain outside this compiler series.
+Stored candidate inputs now form a borrowed graph view after complete position,
+owner and descriptor qualification. Missing, extra or changed rows fail; empty
+candidate lists still require immutable scalar slots. No type shapes, runtime
+values or candidate vectors are copied or selected.
 
-Dependency-ordered commit plan:
+The iterative engine follows qualified source Slots and retains each original
+candidate position. Direct points, unresolved projections, Unknown/empty histories,
+completed shared sources and active cycles have distinct visits. Entry reports
+retain one forest over known owner/Slot roots with shared visited state, avoiding
+repeated expansion of source chains. Layouts without known slots gain no roots.
+Aggregate output/visited/pending storage is bounded before growth, with shared work
+charges and remaining-payload accounting. Failures publish no partial walk.
 
-1. Add borrowed graph qualification in `results/inputs/graph`, verifying every
-   original position, stored descriptor and owner, with focused corruption tests.
-   Stage this prerequisite under `cfg(test)` until its production caller exists.
-2. Add the bounded iterative traversal and entry-report forest. Preserve candidate
-   positions, direct/unresolved leaves, Unknown/empty histories and shared/cyclic
-   slots. Bound aggregate pending/visited/output storage before growth and retain
-   ordinary typing, loan, proof and source-resolution boundaries.
-3. Add independent owner, sharing/cycle, corruption, deep-chain and exact-resource
-   regressions. Keep seeded graph evidence separate from checked source evidence.
-4. Add required source cases and classified evidence; run compiler, strict and final
-   documentation gates, then record the next dependency-ordered handoff.
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify stored candidate graph descriptors | `322d4ed` |
+| Add iterative traversal and the entry-report forest | `b3a6516` |
+| Cover sharing/cycles, deep chains and exact limits | `60fd5e0` |
+| Pin source behavior and classified evidence | `01baf4a` |
+
+All four graph-qualification groups pass (`/tmp/meowy-candidate-walk-qualification.log`).
+All 2489 library tests pass after integration (`/tmp/meowy-candidate-walk-library.log`).
+All nine walk groups and all-target Clippy pass after boundary coverage
+(`/tmp/meowy-candidate-walk-boundaries.log`, `/tmp/meowy-candidate-walk-boundaries-lint.log`).
+Cycles, malformed engine graphs and the 2048-slot chain are seeded structural
+fixtures; checked-source sharing/discarded-input tests are separate. Three required
+source cases pass fresh-compiler debug/release (`/tmp/meowy-candidate-walk-source.log`).
+All four source-slice documentation checks pass (`/tmp/meowy-candidate-walk-source-docs.log`).
+
+All ten compiler checks pass: 2496 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-candidate-walk-gate.log`). Conformance has 331 cases: 312 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-candidate-walk-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-candidate-walk-docs.log`). No test failures
+remain. The preservation audit confirms 328 prior cases,
+360 source assets, 37 reference contracts/reviewed hashes, capability pins and
+proof obligations are unchanged (`/tmp/meowy-candidate-walk-preservation.log`).
+Concurrent editor changes, their root-tracker note, `nvim.log` and `docs/programs/hey/`
+are preserved outside this compiler series. Proof evaluation and full release
+qualification remain incomplete.
+
+### Next: observed field-result source links
+
+Candidate walks identify structural source histories, while field effects already
+retain independent Operation/Normal visits. Link an observed field result to its
+qualified existing source slot without making Field results transparent wrappers.
+
+1. In `consumers/`, qualify an observed owned field result using
+   `validate_field_report` and existing Operation slot-use qualification. Require
+   checked normal availability, the actual result observation and a matching
+   operation/source-slot link; preserve owner/index identities. Missing links,
+   result-only rows and shared-reference loads remain opaque.
+2. Collect bounded Normal(PointId)-to-source-Slot associations after current report
+   construction. Reuse the candidate forest's roots instead of running a walk per
+   field. Reserve shared map/work capacity and retain explicit Unknown/empty/multiple
+   source histories without choosing candidates or copying their lists.
+3. Keep qualification and collection independently reviewable with focused tests.
+   Cover sparse operations/results, Never and load boundaries, nested/function
+   owners, corrupted links and exact budgets. Add required source cases/classified
+   evidence, then run compiler, strict and final documentation gates.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
@@ -3590,8 +3606,9 @@ Validated local-read forwarding and coercion-owned primary consumer links are
 complete, including output- and contextual-list-owned primary parts and composed-emission
 source slots and unchanged observed ascriptions. Field Operation/Normal observations
 are now independent, and bounded result-candidate inputs retain qualified composed
-source slots. Bounded candidate-source traversal is next, following the ordered plan
-above; field-value provenance remains separate.
+source slots. Bounded candidate-source traversal is implemented. Observed field-result
+source links are next, following the ordered plan above; field-value provenance
+remains separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4182,8 +4199,10 @@ above; field-value provenance remains separate.
    (`98140f0`), input qualification (`4475569`), collection (`71b1d6a`), boundaries
    (`2f23847`) and source cases (`3afaa03`) pass the gate. Composed source sharing
    (`c489bd1`), candidate slot qualification (`74671ed`), boundaries (`590cb3e`) and
-   source cases (`e04ad8e`) pass the gate. Next add bounded candidate-source
-   traversal, following the ordered plan above, before field-value provenance work.
+   source cases (`e04ad8e`) pass the gate. Stored graph qualification (`322d4ed`),
+   traversal/forest integration (`b3a6516`), boundaries (`60fd5e0`) and source cases
+   (`01baf4a`) pass the gate. Next link observed field results to qualified source
+   slots, following the ordered plan above, before field-value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
