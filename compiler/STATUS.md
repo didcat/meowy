@@ -2358,9 +2358,25 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: direct field sources through immutable local initializers
 
+Active investigation: the shared resolver already validates every visited point's
+owner/body and producer identity. `read_initializer_input` requalifies observed
+reads, existing eligibility, special-cell exclusions and exact Bind/input metadata.
+Initializer roots can cross lexical blocks without changing owner; they are not
+children of the read. Reuse this association without inventing evaluation edges or
+replaying initializers. Existing immutable-read opacity expectations need positive
+coverage while mutable reads retain their boundary. Both new regressions fail on
+the old resolver (`/tmp/meowy-local-fields-before.log`). The resolver now calls the
+shared read qualifier; mutable-read fixtures preserve the old opacity checks.
+All 2585 library tests pass (`/tmp/meowy-local-fields-library.log`), including
+typed/grouped/ascribed chains across lexical blocks and independent owners,
+distinct read points sharing one terminal field, unchanged original forests and
+unchanged evaluation edges. Formatting and whitespace checks pass. Opacity/identity
+and cycle/resource tests are the next separate slices. Unrelated
+`docs/programs/hey/` remains excluded.
+
 Dependency-ordered commit plan:
 
-1. In `consumers/field_results/lookup/narrowing.rs`, reuse `read_initializer_input`
+1. Complete: in `consumers/field_results/lookup/narrowing.rs`, reuse `read_initializer_input`
    from `effects/reads/initializers.rs` for observed normal reads with existing
    immutable-local eligibility and exact Bind/input identities. Keep collection
    and stored-descriptor qualification on the same resolver. Include grouped,

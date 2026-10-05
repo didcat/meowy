@@ -69,7 +69,7 @@ pub(crate) fn ascribed_field_sources_preserve_predicate_changed_stopped_and_othe
         "r:{->n:1};s:{->((r.n<int32>))}",
         "<U>:<int32><null>;r:{->n:1};s:{->((r.n~<U>))}",
         "d:@\"debug\";s<int32>:{->((d.panic(\"stop\")~<int32>))}",
-        "r:{->n:1};n:r.n;s<int32>:{->((n~<int32>))}",
+        "r:{->n:1};n:=r.n;s<int32>:{->((n~<int32>))}",
         "f<int32>:(){->1};s<int32>:{->((f()~<int32>))}",
         "r:{->n:1};p:&r;s<int32>:{->((p.n~<int32>))}",
         "r:{->n:1};p:&r;s<int32>:{->(((*p).n~<int32>))}",

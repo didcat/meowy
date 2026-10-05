@@ -64,7 +64,7 @@ pub(crate) fn forward_field_sources_keep_conversion_projection_stops_and_other_w
         "r:{->n:{->1;->tag:true}};s<int32>:{->((r.n))}",
         "d:@\"debug\";s<int32>:{->((d.panic(\"stop\")))}",
         "<U>:<int32><null>;r:{->n:1};s<U>:{->((r.n~<U>))}",
-        "r:{->n:1};n:r.n;s<int32>:{->((n))}",
+        "r:{->n:1};n:=r.n;s<int32>:{->((n))}",
         "f<int32>:(){->1};s<int32>:{->((f()))}",
         "r:{->n:1};p:&r;s<int32>:{->((p.n))}",
         "r:{->n:1};p:&r;s<int32>:{->(((*p).n))}",

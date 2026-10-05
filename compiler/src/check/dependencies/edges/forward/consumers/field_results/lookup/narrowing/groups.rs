@@ -118,7 +118,7 @@ pub(crate) fn grouped_field_sources_preserve_other_wrapper_and_logical_boundarie
         "<U>:<int32><null>;r:{->n:1};s:{->((r.n~<U>))}",
         "r:{->n:1};p:&r;s:{->((p.n))}",
         "f<int32>:(){->1};s:{->((f()))}",
-        "r:{->n:1};n:r.n;s:{->((n))}",
+        "r:{->n:1};n:=r.n;s:{->((n))}",
         "r<{n<int32><null>}>:{->n:1};|r.n<int32>|s:{->((r.n))}",
         "s:{->((false&&true))}",
         "s:{->((true||false))}",

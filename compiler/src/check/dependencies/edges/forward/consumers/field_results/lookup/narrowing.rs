@@ -91,6 +91,10 @@ impl Checker {
                 self.unchanged_ascription_input(reports, current, owner, span)?
             {
                 input
+            } else if let Some(input) =
+                self.read_initializer_input(reports, current, owner, span)?
+            {
+                input
             } else {
                 return Ok(None);
             };
@@ -135,3 +139,6 @@ mod ascription_boundaries;
 
 #[cfg(test)]
 mod ascription_limits;
+
+#[cfg(test)]
+mod reads;
