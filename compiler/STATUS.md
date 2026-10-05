@@ -2486,6 +2486,11 @@ checks and three additional corrupt-container/duplicate-statement cases are adde
 All 14 dispatch-effect tests pass (`/tmp/meowy-dispatch-sources-qualifier.log`),
 including 19 corruption variants. Formatting and whitespace checks pass. Next
 share history construction and add explicit result origins before collection.
+Qualifier slice: `c6956d1`. Slot-history materialization is extracted unchanged
+into `results/slots.rs`, retaining exact candidate/mutability decisions, payload
+charges and work. All 70 result tests pass before/after extraction
+(`/tmp/meowy-dispatch-sources-history-before.log`, `/tmp/meowy-dispatch-sources-history.log`).
+Formatting and whitespace checks pass; explicit origin tagging is next.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent

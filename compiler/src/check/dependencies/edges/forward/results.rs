@@ -6,6 +6,7 @@ use crate::{
 
 mod index;
 pub(super) mod inputs;
+mod slots;
 mod validation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -77,38 +78,9 @@ impl Checker {
             {
                 return Err(budget());
             }
-            let slots = match &body.layout {
-                Layout::Stopped => return Err(invalid()),
-                Layout::Unknown => None,
-                Layout::Slots(slots) => {
-                    parts = parts.checked_sub(slots.len()).ok_or_else(budget)?;
-                    let mut sources = Vec::with_capacity(slots.len());
-                    for slot in slots {
-                        if !self.flow.spend(
-                            (slot.field.as_ref().map_or(0, String::len) + 1)
-                                * (index.len().checked_ilog2().unwrap_or(0) as usize + 3),
-                        ) {
-                            return Err(budget());
-                        }
-                        let row = index.get(&(id, slot.field.as_deref()));
-                        let source = if slot.mutable
-                            || !matches!(slot.shape, Shape::Scalar(_))
-                            || row.is_some_and(|row| row.mutable)
-                        {
-                            Sources::Unknown
-                        } else {
-                            let values = row.map_or(&[][..], |row| row.values.as_slice());
-                            parts = parts.checked_sub(values.len()).ok_or_else(budget)?;
-                            if !self.flow.spend(values.len() + 1) {
-                                return Err(budget());
-                            }
-                            Sources::Candidates(values.to_vec())
-                        };
-                        sources.push(source);
-                    }
-                    Some(sources)
-                }
-            };
+            let (slots, left) =
+                slots::collect(&body.layout, &index, id, &mut self.flow, parts, span)?;
+            parts = left;
             results.insert(
                 id,
                 (
