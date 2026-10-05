@@ -3798,6 +3798,36 @@
         "code": "E004"
       },
       "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_root_missing",
+      "phase": "check",
+      "source": "sources/numeric_root_missing.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_root_scalar",
+      "phase": "check",
+      "source": "sources/numeric_root_scalar.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_dotted_emission",
+      "phase": "check",
+      "source": "sources/numeric_dotted_emission.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E004"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
     }
   ]
 }

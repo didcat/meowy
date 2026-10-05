@@ -119,8 +119,17 @@ list context, type queries and dotted-parameter rejection have mandatory source
 cases. Conformance passes 340 required cases with 19 unchanged gaps and zero
 failures in both profiles (/tmp/meowy-root-first-required-cases-fixed.log).
 
-Next: missing/scalar member and dotted-emission source rejections, then remaining
-documentation commits and final compiler/editor gates.
+Seven new required cases now pin root/member selection, decimal escape/fallback,
+required field values, missing/scalar roots, and dotted binding/parameter/emission
+rejection. All 362 cases yield 343 required passes, 19 unchanged gaps and no
+failures in both profiles (/tmp/meowy-root-first-source-final.log).
+All prior 355 expectation records remain unchanged; exactly the six authorized
+numeric assets were migrated and the other 383 old assets/pins/proof obligations
+are preserved (/tmp/meowy-root-first-preservation.log).
+
+All 12 final compiler/editor checks pass (/tmp/meowy-root-first-final-gate.log).
+Next: commit reviewed teaching/compiler docs, run strict gap accounting and
+replace this working plan with the final handoff.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
