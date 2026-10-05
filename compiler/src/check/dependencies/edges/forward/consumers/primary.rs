@@ -46,3 +46,6 @@ mod coercions_limits;
 
 #[cfg(test)]
 mod dispatch_unary;
+
+#[cfg(test)]
+mod dispatch_binary;

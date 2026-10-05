@@ -1,5 +1,8 @@
 use super::{effects::Effect, entries::Reports, *};
-use crate::{check::dependencies::bodies::Layout, hir};
+use crate::{
+    check::dependencies::{BinaryClass, bodies::Layout},
+    hir,
+};
 
 mod blocks;
 pub(super) mod dispatch;
@@ -113,6 +116,10 @@ impl Checker {
                             Some(slot)
                         } else if let Effect::Unary(op) = effect {
                             self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
+                        } else if let Effect::Binary(op) = effect
+                            && let BinaryClass::Scalar(ty) = op.types.inputs[step]
+                        {
+                            self.dispatch_primary_slot(reports, input, *owner, ty, span)?
                         } else {
                             None
                         };

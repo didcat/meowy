@@ -2643,8 +2643,8 @@ qualification remain incomplete.
 
 ### Active: record dispatch arithmetic primary sources
 
-`primary_slot` still reaches ordinary block consumers only. Unary Projection ports
-now have a dedicated dispatch-primary fallback; binary integration is next.
+`primary_slot` still reaches ordinary block consumers only. Unary and binary
+Projection ports now have a dedicated dispatch-primary fallback.
 Keep this extension separate from result-value inference
 and from coercion, output, list and composed-emission consumer rules.
 
@@ -2659,11 +2659,8 @@ consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
 
 Dependency-ordered commit plan:
 
-1. Finish binary primary Projection integration in a separate slice, preserving both
-   operand positions, left-to-right boundaries and partial projection observations
-   before a stopped second operand. Do not generalize to other producer families.
-2. Add focused binary conflict/cycle/map/work regressions before source conformance.
-3. Add required arithmetic/ordering/rejection source cases and classified evidence,
+1. Add focused binary conflict/cycle/map/work regressions before source conformance.
+2. Add required arithmetic/ordering/rejection source cases and classified evidence,
    then run compiler, strict and documentation gates and refresh both handoffs.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
@@ -2689,9 +2686,13 @@ the exact registered True edge, condition identity and checked statement site;
 ordinary parent containment and owner/body/cycle checks remain intact. All ten
 receiver qualifier tests pass (`/tmp/meowy-dispatch-primary-scope.log`), including
 three source forms, ten corrupt branch/site faults and exact guarded hop/work limits.
-All four binary-focused tests now pass (`/tmp/meowy-dispatch-primary-binary.log`);
-binary edits remain a separate pending slice. A required guarded-source run case
-will accompany the planned arithmetic conformance cases.
+All four binary-focused tests and 661 forward-report tests pass
+(`/tmp/meowy-dispatch-primary-binary.log`, `/tmp/meowy-dispatch-primary-binary-reports.log`).
+Binary links match each operand's scalar kind, preserve step 0/1 separately and
+retain a left projection before a stopped right operand. Twenty independent stage/
+source-result combinations, empty/multiple histories and opaque full-record equality,
+references, calls and mutable reads are covered. Arithmetic results remain opaque.
+A required guarded-source run case will accompany arithmetic conformance cases.
 
 ## Documentation conventions and layout
 
