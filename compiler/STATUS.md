@@ -79,7 +79,13 @@ actual roots and members must resolve, with no link-to-literal fallback. All 16
 documentation groups pass (/tmp/meowy-root-first-doc-links.log). Old dotted-name
 documentation fixtures were migrated explicitly to undotted names/member paths.
 
-Next: editor commit, canonical references/source migration and full gate.
+Vim/Neovim no longer mark dotted tokens or their suffixes as declaration names.
+Undotted binary/hex/separated/exponent names remain highlighted. Both editor suites
+pass, including dotted invalid declarations, functions, calls and member chains.
+The syntax runtime keeps ambiguous reads lexical rather than claiming scope lookup.
+
+Next: canonical reference/source migration and full gate; broad library check is
+running in /tmp/meowy-root-first-lib.log.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

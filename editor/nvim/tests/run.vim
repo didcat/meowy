@@ -121,7 +121,8 @@ endfor
 call s:At('1 : @"core".literal(2)', '1 :', 'meowyBinding')
 call s:At('1 : @"core".literal(2)', '2)', 'meowyNumber')
 call s:At('0x1 <uint8> : literal(1)', '0x1', 'meowyBinding')
-call s:At('1.0 := 2.5', '1.0', 'meowyBinding')
+call s:At('1.0 := 2.5', '1.0', 'meowyFloat')
+call s:At('1.0 := 2.5', '0 :=', 'meowyFloat')
 call s:At('1.0 := 2.5', '2.5', 'meowyFloat')
 call s:At('0b1 := 3', '0b1', 'meowyBinding')
 call s:At('1_000 : 4', '1_000', 'meowyBinding')
@@ -136,6 +137,27 @@ call s:At('1e2 : () { -> 7 }', '1e2', 'meowyFunction')
 call s:At('numeric_call : 2(4)', '2(', 'meowyCall')
 call s:At('numeric_float_call : 1e2(4)', '1e2(', 'meowyCall')
 call s:At('numeric_string : "1 : literal(2)"', '1 :', 'meowyString')
+for s:pair in [
+      \ ['10.4 : "invalid"', '10.4'],
+      \ ['1.0e+2 : 3', '1.0e+2'],
+      \ ['1.0e-2 <float32> : 3', '1.0e-2'],
+      \ ['10.4 : () { -> "invalid" }', '10.4'],
+      \ ['1.0e+2 : () { -> "invalid" }', '1.0e+2'],
+      \ ['numeric_dotted_call : 10.4()', '10.4'],
+      \ ['numeric_dotted_generic_call : 1.0e+2<int32>()', '1.0e+2']]
+  for s:offset in range(strlen(s:pair[1]))
+    call s:At(s:pair[0], s:pair[1], 'meowyFloat', s:offset)
+  endfor
+endfor
+call s:At('numeric_member : 10.4', '10.4', 'meowyFloat')
+call s:At('numeric_chain : 10.4.5', '10.4', 'meowyFloat')
+call s:At('numeric_chain : 10.4.5', '.5', 'meowyDispatch')
+call s:At('numeric_chain : 10.4.5', '5', 'meowyNumber')
+call s:At('numeric_named_member : 10.4.value()', '10.4', 'meowyFloat')
+call s:At('numeric_named_member : 10.4.value()', '.value', 'meowyDispatch')
+call s:At('numeric_named_member : 10.4.value()', 'value', 'meowyCall')
+call s:At('numeric_intrinsic : @"core".literal(10.4)', 'literal', 'meowyCall')
+call s:At('numeric_intrinsic : @"core".literal(10.4)', '10.4', 'meowyFloat')
 call s:At('rows <uint8[16]> : []', '16', 'meowyNumber')
 call s:At('view <uint8[]> : rows.slice()', '[]', 'meowyTypeDelimiter')
 call s:At('<Theme> : <"dark"><"light">', 'dark', 'meowyString')

@@ -177,7 +177,11 @@ and [filetype runtime](https://neovim.io/doc/user/filetype/) conventions.
 
 Numeric declarations use Identifier highlighting; numeric function declarations
 and calls use Function highlighting. This includes hexadecimal, binary, separated,
-floating-point and exponent spellings. Other numeric occurrences retain Number
-or Float highlighting because the syntax runtime does not resolve lexical scope.
-`core.literal(...)` uses ordinary member/call highlighting. See the
+and undotted exponent spellings. Dotted spellings cannot be declaration names and
+retain Float highlighting, including invalid declaration and function headers.
+An expression such as `10.4` selects field `4` when `10` is bound and otherwise
+denotes a decimal. Its highlighting stays Float because the syntax runtime does
+not resolve lexical scope. Other numeric occurrences retain Number or Float
+highlighting. `@"core".literal(10.4)` always denotes the decimal and uses ordinary
+member/call highlighting. See the
 [numeric name contract](../../docs/reference/syntax.md#numeric-names-and-intrinsic-literals).

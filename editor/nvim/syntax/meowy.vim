@@ -43,8 +43,9 @@ syntax match meowyFloat /\<\d\%(_\?\d\)*\.\d\%(_\?\d\)*\%([eE][+-]\?\d\%(_\?\d\)
 syntax match meowyFloat /\<\d\%(_\?\d\)*[eE][+-]\?\d\%(_\?\d\)*\>/
 
 let s:digits = '\d\%(_\?\d\)*'
-let s:number = '\%(0[xX][0-9A-Fa-f]\%(_\?[0-9A-Fa-f]\)*\|0[bB][01]\%(_\?[01]\)*\|' . s:digits . '\%(\.' . s:digits . '\)\?\%([eE][+-]\?' . s:digits . '\)\?\)'
+let s:number = '\%(0[xX][0-9A-Fa-f]\%(_\?[0-9A-Fa-f]\)*\|0[bB][01]\%(_\?[01]\)*\|' . s:digits . '\%([eE][+-]\?' . s:digits . '\)\?\)'
 let s:name = '\%([A-Za-z_][A-Za-z0-9_]*\|' . s:number . '\)'
+let s:start = '\%(\.\|[eE][+-]\)\@<!\<'
 let s:text = '"\%(\\.\|\_[^"\\]\)*"'
 let s:type = '<\%(->\|' . s:text . '\|\_[^<>#"]\)*>'
 let s:params = '(\%(' . s:text . '\|\_[^()#"]\)*)'
@@ -52,12 +53,12 @@ for s:depth in range(1, 7)
   let s:type = '<\%(->\|' . s:text . '\|\_[^<>#"]\|' . s:type . '\)*>'
   let s:params = '(\%(' . s:text . '\|\_[^()#"]\|' . s:params . '\)*)'
 endfor
-execute 'syntax match meowyBinding /\<' . s:number . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\%(:\)\@!/'
-execute 'syntax match meowyCall /\<' . s:number . '\>\ze\s*(/'
-execute 'syntax match meowyCall /\<' . s:number . '\>\ze\s*<[^"#{};|=]\+>\s*(/'
+execute 'syntax match meowyBinding /' . s:start . s:number . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\%(:\)\@!/'
+execute 'syntax match meowyCall /' . s:start . s:number . '\>\ze\s*(/'
+execute 'syntax match meowyCall /' . s:start . s:number . '\>\ze\s*<[^"#{};|=]\+>\s*(/'
 let s:head = '\%((\_s*\%()\|' . s:name . '\_s*<\)\)\@=' . s:params
-execute 'syntax match meowyFunction /\<' . s:name . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\_s*' . s:head . '\_s*\%(''[A-Za-z_][A-Za-z0-9_]*\_s*\)\?!\?\_s*{/'
-unlet s:text s:type s:params s:depth s:head s:digits s:number s:name
+execute 'syntax match meowyFunction /' . s:start . s:name . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\_s*' . s:head . '\_s*\%(''[A-Za-z_][A-Za-z0-9_]*\_s*\)\?!\?\_s*{/'
+unlet s:text s:type s:params s:depth s:head s:digits s:number s:name s:start
 
 syntax region meowyBlock matchgroup=meowyDelimiter start=/{/ end=/}/ transparent fold contains=@meowyCode
 syntax region meowyParen matchgroup=meowyDelimiter start=/(/ end=/)/ transparent contains=@meowyCode

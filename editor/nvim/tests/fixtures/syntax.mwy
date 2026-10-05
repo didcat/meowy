@@ -262,6 +262,17 @@ numeric_prefixes : 0b1 + 1_000 + 1e+2
 numeric_call : 2(4)
 numeric_float_call : 1e2(4)
 numeric_string : "1 : literal(2)"
+10.4 : "invalid"
+1.0e+2 : 3
+1.0e-2 <float32> : 3
+10.4 : () { -> "invalid" }
+1.0e+2 : () { -> "invalid" }
+numeric_dotted_call : 10.4()
+numeric_dotted_generic_call : 1.0e+2<int32>()
+numeric_member : 10.4
+numeric_chain : 10.4.5
+numeric_named_member : 10.4.value()
+numeric_intrinsic : @"core".literal(10.4)
 
 #||| unclosed documentation
 ||# still unclosed documentation
