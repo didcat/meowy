@@ -3708,6 +3708,56 @@
         "stdout": "7\n8.5\n9\n"
       },
       "reference": "../reference/modules-and-ffi.md#files-and-exports"
+    },
+    {
+      "id": "numeric_duplicate",
+      "phase": "check",
+      "source": "sources/numeric_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E203"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_immutable",
+      "phase": "check",
+      "source": "sources/numeric_immutable.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E305"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
+    },
+    {
+      "id": "numeric_borrow_conflict",
+      "phase": "check",
+      "source": "sources/numeric_borrow_conflict.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "numeric_literal_arity",
+      "phase": "check",
+      "source": "sources/numeric_literal_arity.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-numeric-literals"
+    },
+    {
+      "id": "numeric_literal_boolean",
+      "phase": "check",
+      "source": "sources/numeric_literal_boolean.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/compile-time.md#required-evaluation-and-staging"
     }
   ]
 }

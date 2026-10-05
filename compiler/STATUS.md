@@ -136,7 +136,15 @@ The final audit found required boolean form validation missing literal expansion
 The focused fix preserves E222 for numeric operands even in skipped arms; all
 four literal groups pass (`/tmp/meowy-literal-boolean-forms.log`).
 
-Next steps: commit source rejection evidence and remaining docs, then final gates.
+Boolean form fix: `8772860`. Five required rejection sources cover duplicate
+numeric names, immutable writes, borrow conflicts, intrinsic arity and skipped
+numeric boolean operands. Conformance is 336 passed, 19 unchanged gaps and zero
+failures in both profiles (`/tmp/meowy-numeric-source-errors-final.log`).
+All 343 previous cases, 375 source assets, capability pins and proof obligations
+are preserved (`/tmp/meowy-numeric-preservation.log`).
+
+Next steps: commit remaining docs; final compiler/editor gate is running in
+`/tmp/meowy-numeric-final-gate.log`, then run strict gap accounting and finalize.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

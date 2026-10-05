@@ -1,0 +1,5 @@
+literal : @"core".literal
+<T> : {
+    flag : false && literal(1)
+    -> flag<>
+}
