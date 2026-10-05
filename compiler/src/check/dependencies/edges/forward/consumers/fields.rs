@@ -26,9 +26,14 @@ impl Checker {
         if *load || !operation {
             return Ok(None);
         }
-        let Some(block) = self.slot_block(reports, *input, owner, span)? else {
-            return Ok(None);
-        };
+        let (block, dispatch) =
+            if let Some(block) = self.slot_block(reports, *input, owner, span)? {
+                (block, false)
+            } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
+                (block, true)
+            } else {
+                return Ok(None);
+            };
         if !self.flow.spend(
             self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                 + self.fields.len().checked_ilog2().unwrap_or(0) as usize
@@ -54,9 +59,15 @@ impl Checker {
         {
             return Err(invalid());
         }
+        if dispatch && !matches!(selected.shape, Shape::Scalar(_)) {
+            return Ok(None);
+        }
         Ok(Some(Slot { block, index: slot }))
     }
 }
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod dispatch;

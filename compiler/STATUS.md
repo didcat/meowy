@@ -2589,9 +2589,9 @@ qualification remain incomplete.
 
 ### Active: record dispatch field sources
 
-`field_slot` still reaches only ordinary record blocks through `slot_block`.
-Keep ordinary block/dispatch origins distinct; the existing tagged dispatch result
-rows can support a dedicated field consumer without making record receivers transparent.
+`field_slot` now has a dedicated record-dispatch fallback beside ordinary
+`slot_block`. Tagged dispatch origins remain distinct, and only scalar selected
+slots acquire the new associations. Record receivers remain opaque.
 
 Investigation confirms that tagged dispatch rows already retain full result layouts
 and bounded histories. A dedicated record qualifier can reuse dispatch result and
@@ -2603,15 +2603,11 @@ The only pre-existing dirty path is unrelated `docs/programs/hey/`.
 
 Dependency-ordered commit plan:
 
-1. Integrate the qualified dispatch body into `consumers/fields.rs` field-slot mapping,
-   retaining exact field count, named-slot offset and checked scalar shape. Preserve
-   Field Operation/Normal independence, original candidates and all existing source
-   descriptor identities. Add focused field-link and expanded-traversal tests.
-2. Verify wrapped inputs, malformed descriptors and cycles with a focused fault
+1. Verify wrapped inputs, malformed descriptors and cycles with a focused fault
    slice, then pin shared map/cache/work limits in a separate boundary slice.
    Shared loads, mutable/Unknown histories and opaque receiver inputs must
    keep their current boundaries; never infer runtime values from structural links.
-3. Add required source cases for field selection/order and relevant rejections,
+2. Add required source cases for field selection/order and relevant rejections,
    classify structural evidence, run compiler/strict/documentation gates and refresh
    both handoffs.
 
@@ -2624,7 +2620,13 @@ reusing the existing dispatch result/body and tagged-row validation. All three
 focused tests pass (`/tmp/meowy-record-dispatch-qualifier.log`): wrappers, composed
 records and independent owners; initialization/result flag independence and absent/
 stopped results; 12 origin/owner/layout faults. Ordinary record/scalar consumer
-classification is unchanged. Field integration is next.
+classification is unchanged.
+Field integration passes all 639 forward-report tests
+(`/tmp/meowy-record-dispatch-integration.log`). Exact named-slot offsets and owners
+now reach existing Field descriptors/visits while original candidates and composed
+histories remain intact. Tests cover twelve independent field/dispatch observation
+combinations, wrapped/composed inputs, Unknown mutable histories, and opaque loads,
+calls, nonscalar fields and record receivers. No new graph/report type was added.
 
 ## Documentation conventions and layout
 
