@@ -160,7 +160,7 @@ impl Checker {
             ExprKind::Group(value) => self.scalar_literal(value),
             ExprKind::Unary { op, value } if op == "-" => {
                 matches!(value.kind, ExprKind::Int(_) | ExprKind::Float(_))
-                    && self.numeric_name(value).is_none()
+                    && self.numeric_expression(value).is_none()
             }
             ExprKind::Name(name) => self
                 .scopes
@@ -542,7 +542,7 @@ impl Checker {
             form = value;
         }
         let hint = self.hint(value);
-        let place = self.numeric_name(form).is_some()
+        let place = self.numeric_expression(form).is_some()
             || matches!(
                 form.kind,
                 ExprKind::Name(_) | ExprKind::Field { .. } | ExprKind::Index { .. }

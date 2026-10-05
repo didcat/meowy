@@ -68,7 +68,13 @@ and 45 dependency-body groups pass (/tmp/meowy-root-first-types.log,
 /tmp/meowy-root-first-reads.log), including nested values, kind/width/mutability
 errors and equal logical cost for grouped and ungrouped paths.
 
-Next: list probes and checked-doc paths, then contract/source migration and gates.
+List probes now resolve numeric fields against their captured scopes and track
+live/emitted roots instead of treating bound dotted tokens as pure literals.
+All 17 list-context groups pass. Independent review found no actionable checker
+defects and reran all 25 numeric groups successfully. No new required operations
+or capability exceptions were introduced.
+
+Next: checked-doc/editor commits, canonical references/source migration and gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

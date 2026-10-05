@@ -28,6 +28,11 @@ impl Checker {
             match &value.kind {
                 _ if value.spelling().is_some() => {
                     let name = value.spelling().unwrap();
+                    let name = if matches!(value.kind, ExprKind::Float(_)) {
+                        name.split_once('.').map_or(name, |(root, _)| root)
+                    } else {
+                        name
+                    };
                     if !self.flow.spend(names.len().saturating_mul(name.len() + 1)) {
                         return Err(Diagnostic::unsupported(
                             "record probe scope budget exhausted",
@@ -38,6 +43,7 @@ impl Checker {
                         return Ok(true);
                     }
                 }
+                ExprKind::Import(_) => {}
                 ExprKind::String(parts)
                     if parts
                         .iter()
@@ -130,6 +136,8 @@ impl Checker {
         scopes: &'a [Scope],
         value: &ast::Expr,
     ) -> (Option<&'a Type>, usize) {
+        let number = Self::numeric_form(scopes, value);
+        let value = number.as_deref().unwrap_or(value);
         match &value.kind {
             _ if value.spelling().is_some() => (
                 match Self::list_symbol(scopes, value.spelling().unwrap()) {
@@ -226,7 +234,7 @@ impl Checker {
             ExprKind::Int(text) => Some(self.integer(text, false, Some(expected), value.span)),
             ExprKind::Float(text) => Some(Self::floating(text, Some(expected), value.span)),
             ExprKind::Unary { op, value: inner }
-                if op == "-" && self.numeric_name(inner).is_none() =>
+                if op == "-" && self.numeric_expression(inner).is_none() =>
             {
                 match &inner.kind {
                     ExprKind::Int(text) => {

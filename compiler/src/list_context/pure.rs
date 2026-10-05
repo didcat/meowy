@@ -158,6 +158,16 @@ impl Checker {
                     }
                     bytes
                 }
+                ExprKind::Float(text) if !text.literal && text.contains('.') => {
+                    let (name, _) = text.split_once('.').unwrap();
+                    if self.numeric_expression(value).is_some() || emitted.contains(name) {
+                        return Ok(None);
+                    }
+                    if aggregate {
+                        used.insert(name);
+                    }
+                    text.len()
+                }
                 ExprKind::Int(text) | ExprKind::Float(text)
                     if text.literal
                         || self.numeric_name(value).is_none()
