@@ -22,6 +22,9 @@ broader accounting remains open.
 public input lifetimes through immutable values, mutable handles/tagged records,
 field writes, shared-reference members, restart headers and shared snapshots. Owning-string
 storage and constructors remain gated.
+[Numeric value names](docs/NUMBERS.md) follow exact lexical lookup in ordinary
+and required expressions. `@"core".literal(number)` bypasses numeric shadowing
+while preserving literal typing; numeric bindings retain fixed types.
 Read [STATUS.md](STATUS.md) for gaps, validation evidence, and the next work,
 and [AGENTS.md](AGENTS.md) before changing the implementation.
 

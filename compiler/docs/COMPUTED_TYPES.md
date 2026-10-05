@@ -41,6 +41,11 @@ including calls through resolved aliases and calls after a primary emission.
 The checker does not execute them. This is a narrow effect check; source helper
 purity and transitive call analysis are not implemented by this slice.
 
+[Numeric bindings](NUMBERS.md) use the same lexical scopes, eligibility checks and
+fixed types in required evaluation. `core.literal(number)` supplies intrinsic
+numeric syntax when a spelling is shadowed; its literal evaluation keeps the
+existing logical charges and budgets.
+
 ## Type subtraction
 
 The suffix `!<U>` removes supported concrete alternatives from a compile-time type:

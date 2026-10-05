@@ -5,6 +5,11 @@ explicit module identities through ordinary lexical lookup. Local names do not
 create intrinsics. Module, item and type aliases preserve the resolved identity;
 unmodeled members of the partial memory/strings/proof modules remain B001.
 
+The [`core.literal` intrinsic](NUMBERS.md) consumes numeric syntax through its
+resolved identity, including immutable aliases. Its operand bypasses numeric
+name lookup while retaining ordinary literal typing and range checks. The result
+is ordinary scalar HIR; no runtime callable or library allocation is introduced.
+
 ## Proof revision metadata
 
 `proof.revision` is the static `uint32` constant `1`. Module/member aliases preserve

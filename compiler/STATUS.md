@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Narrowed field-source lookup passes compiler and documentation gates.
+Updated: 2026-10-05. Narrowed field-source lookup passes compiler and documentation gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -156,8 +156,13 @@ Five literal groups and all six existing extent-root groups now pass
 (`/tmp/meowy-literal-lookup.log`). Literal probing uses existing non-evaluating
 symbol hints; unknown calls retain their original context diagnostics.
 
-Next steps: commit compiler docs, rerun the complete compiler/editor gate, then
-strict gap accounting and final handoff.
+The compiler numeric-name guide and foundation, required-evaluation, module and
+implementation-plan documentation are complete. Their local links and all
+six doc/editor checks pass (`/tmp/meowy-numeric-final-docs.log`). The root tracker
+records compiler, documentation and editor scope separately from release status.
+
+Next steps: finish `/tmp/meowy-numeric-final-gate-2.log`, run strict gap accounting
+and preservation verification, and replace this active plan with the final handoff.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

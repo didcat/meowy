@@ -1,17 +1,24 @@
 # meowy project status
 
-Updated: 2026-10-04. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-05. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
-## Active numeric shadowing work
+## Numeric shadowing
 
-Numeric value bindings and the explicit `@"core".literal(number)` escape are being
-implemented. Exact spellings shadow independently; ordinary binding types and
-scope rules remain in force. The ordered implementation, conformance and editor
-commit plan is in [compiler/STATUS.md](compiler/STATUS.md#numeric-shadowing-implementation).
-No validation is claimed yet. Unrelated `docs/programs/hey/` remains excluded.
+Numeric value bindings and `@"core".literal(number)` are implemented across
+ordinary/required checking, storage, contextual lists, file exports and checked
+documentation. Exact spellings shadow independently; bindings retain ordinary
+types and scope rules. The reference, first tour, compiler documentation and
+Vim/Neovim highlighting are updated.
+
+Source conformance has 336 required passes and 19 unchanged gaps in both profiles.
+All original cases/assets and capability/proof inventories are preserved.
+The final compiler/editor gate is running after a diagnostic-order correction;
+see [compiler/STATUS.md](compiler/STATUS.md#numeric-shadowing-implementation).
+Unrelated `docs/programs/hey/` remains excluded. The next compiler milestone
+remains direct field sources through observed Forward coercions.
 
 ## Current compiler and coverage handoff
 

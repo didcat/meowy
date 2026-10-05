@@ -22,6 +22,12 @@ identifier, not a compatibility or scheduling promise. The scope above is the
 current named implementation target; it is not a meaning assigned to every `0.0`
 version, nor a requirement to wait for `v1.0.0`.
 
+The bootstrap now implements [numeric value names and `core.literal`](compiler/docs/NUMBERS.md)
+through ordinary lexical resolution and intrinsic numeric syntax. Source cases,
+required evaluation, module facades, checked documentation and editor support are
+tracked in the [compiler handoff](compiler/STATUS.md#numeric-shadowing-implementation).
+The remaining implementation and release gates below still apply.
+
 ## The language split
 
 | Part                           | Language                                                        | Responsibility                                                                                                   |
