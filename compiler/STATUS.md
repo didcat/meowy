@@ -2371,8 +2371,13 @@ All 2585 library tests pass (`/tmp/meowy-local-fields-library.log`), including
 typed/grouped/ascribed chains across lexical blocks and independent owners,
 distinct read points sharing one terminal field, unchanged original forests and
 unchanged evaluation edges. Formatting and whitespace checks pass. Opacity/identity
-and cycle/resource tests are the next separate slices. Unrelated
-`docs/programs/hey/` remains excluded.
+and cycle/resource tests are the next separate slices. Resolver: `20c2772`.
+All five local-source groups pass (`/tmp/meowy-local-fields-boundaries.log`),
+covering missing evidence, consistent stopped/empty initializers, special-cell
+exclusions and independent read/Bind control marks. Stale stored descriptors are
+rejected; recollection retains an explicit unresolved Value candidate.
+Keep corrupt read/Bind metadata tests in their own slice so the expanded boundary
+coverage remains reviewable. Unrelated `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
