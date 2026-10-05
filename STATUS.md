@@ -5,24 +5,16 @@ Updated: 2026-10-05. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
-## Numeric shadowing
+## Numeric shadowing revision
 
-Numeric value bindings and `@"core".literal(number)` are implemented across
-ordinary/required checking, storage, contextual lists, file exports and checked
-documentation. Exact spellings shadow independently; bindings retain ordinary
-types and scope rules. The reference, first tour, compiler documentation and
-Vim/Neovim highlighting are updated.
+The numeric member rule is being revised: bound roots select members (`10.4`),
+unbound roots retain decimal fallback, and dotted declarations are errors.
+`core.literal` remains the unconditional numeric escape. Ordinary field visibility
+and undotted numeric bindings remain unchanged.
 
-All 12 compiler/editor checks pass: 2555 library tests, 918 native tests and
-62 Python groups (`/tmp/meowy-numeric-final-gate-2.log`). Source conformance has
-336 required passes, 19 unchanged gaps and zero failures in debug/release.
-Strict mode reports only those gaps (`/tmp/meowy-numeric-strict.log`). The final
-six doc/editor checks, including additional numeric-variable highlighting cases,
-pass (`/tmp/meowy-numeric-editor-final.log`). Original cases/assets and capability/
-proof inventories are preserved. The [compiler handoff](compiler/STATUS.md#numeric-shadowing-implementation)
-records implementation boundaries and the individual reviewable commits.
-Unrelated `docs/programs/hey/` remains excluded. The next compiler milestone
-remains direct field sources through observed Forward coercions.
+The [compiler handoff](compiler/STATUS.md#numeric-shadowing-implementation) records
+ordered slices and current verification. Compiler/docs/editor qualification for
+this revision is pending. Unrelated docs/programs/hey/ remains excluded.
 
 ## Current compiler and coverage handoff
 

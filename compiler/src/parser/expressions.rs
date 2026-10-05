@@ -90,26 +90,15 @@ impl Parser {
                             value: Box::new(left),
                             block,
                         }
-                    } else if self.at("&") || self.at("&!") || self.at("*") {
-                        let op = self.bump().text;
-                        self.newlines();
-                        let name = self.value_name()?.text;
-                        let field = Expr {
-                            kind: ExprKind::Field {
-                                value: Box::new(left),
-                                name,
-                            },
-                            span: Span::new(start, self.end()),
-                        };
-                        ExprKind::Unary {
-                            op,
-                            value: Box::new(field),
-                        }
                     } else {
-                        ExprKind::Field {
-                            value: Box::new(left),
-                            name: self.value_name()?.text,
-                        }
+                        let op = if self.at("&") || self.at("&!") || self.at("*") {
+                            let op = self.bump().text;
+                            self.newlines();
+                            Some(op)
+                        } else {
+                            None
+                        };
+                        self.field(left, op)?.kind
                     };
                     left = Expr {
                         kind,
@@ -243,6 +232,37 @@ impl Parser {
             };
         }
         Ok(left)
+    }
+
+    pub(crate) fn field(&mut self, mut value: Expr, mut op: Option<String>) -> ParseResult<Expr> {
+        let token = if self.token().kind == TokenKind::Float {
+            self.bump()
+        } else {
+            self.value_name()?
+        };
+        let mut end = token.span.start;
+        for name in token.text.split('.') {
+            end += name.len();
+            let span = Span::new(value.span.start, end);
+            value = Expr {
+                kind: ExprKind::Field {
+                    value: Box::new(value),
+                    name: name.to_owned(),
+                },
+                span,
+            };
+            if let Some(op) = op.take() {
+                value = Expr {
+                    kind: ExprKind::Unary {
+                        op,
+                        value: Box::new(value),
+                    },
+                    span,
+                };
+            }
+            end += 1;
+        }
+        Ok(value)
     }
 
     pub(crate) fn prefix(&mut self, min: u8, multiline: bool) -> ParseResult<Expr> {

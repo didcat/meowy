@@ -7,82 +7,52 @@ records the plan. Keep this handoff current; Git holds history. Do not recreate 
 
 ## Numeric shadowing implementation
 
-Complete. Numeric value names use exact lexical spelling in bindings, parameters,
-functions, fields and file exports. Unbound numbers retain literal construction;
-`1`, `01`, `0x1` and `1.0` remain distinct. Bound values keep ordinary fixed types,
-mutability, borrowing, ownership, narrowing and scope rules.
+Active revision: dotted numeric spellings are expressions, never declaration
+names. If the numeric root is already bound, `10.4` selects field `4` and a missing
+member or invalid receiver is an error. If the root is unbound, decimal literal
+rules apply. `core.literal(10.4)` always constructs the decimal. Dotted bindings,
+parameters, functions and named fields are E004. Undotted numeric spellings,
+including exponents, remain names. Ordinary `->` visibility is unchanged.
 
-`@"core".literal(number)` constructs intrinsic numeric syntax through resolved
-identity, including immutable aliases. It accepts one numeric token or its direct
-unary negation, bypasses operand lookup and preserves contextual literal typing.
-Numeric type names, numeric labels and digit-leading malformed tokens remain
-outside the grammar. Existing capture, required-float, callable-storage and proof
-outcome restrictions remain unchanged. No runtime intrinsic call is introduced.
+Dependency-ordered commit plan:
 
-Required evaluation, list inference/extents, module facades, checked documentation
-links and Vim/Neovim highlighting are integrated. The language reference, first
-tour, design notes and [compiler guide](docs/NUMBERS.md) describe the final rules.
-Editor tests include decimal, binary, hexadecimal, separated and exponent names;
-ordinary uses retain lexical numeric highlighting because syntax does not resolve
-scope. The editor change is in `2ceded0`, with additional spelling coverage below.
+1. Lexer/parser: preserve decimal candidates, parse explicit numeric member
+   chains and reject dotted declaration names. Keep raw numeric token validation
+   and span/depth bounds; include focused frontend regressions.
+2. Checker: resolve bound numeric roots through ordinary field machinery, then
+   integrate receiver paths, required evaluation and list probes in reviewable
+   slices with focused regressions. Explicit literals never perform root lookup.
+3. Migrate only the prior numeric fixtures whose dotted-name contracts changed;
+   add required source cases for lookup, fallback, missing fields and rejection.
+   Update all owning references, reviewed coverage hashes and unchanged proof pins.
+4. Update checked-documentation paths, teaching/compiler docs and Vim/Neovim
+   highlighting. Commit independently verified slices and run the final compiler/
+   editor gate, strict gap accounting and a scoped preservation audit.
 
-Validation:
+Delegation: parser worker owns frontend files; editor worker owns editor/nvim;
+checker worker will own semantic changes. Root alone writes STATUS, documentation,
+native/source integration and commits. Unrelated docs/programs/hey/ stays excluded.
+The existing Forward-coercion field-source milestone remains paused for this request.
 
-- All 12 checks in `python3 -B tools/verify.py --compiler --editor both` pass:
-  2555 library tests, 918 native tests and 62 Python groups; formatting, Clippy,
-  compiler build, metadata/coverage, schemas and Vim/Neovim pass too.
-  Log: `/tmp/meowy-numeric-final-gate-2.log`.
-- Source conformance: 355 cases, 336 required passes, 19 unchanged pinned gaps,
-  zero failures in debug/release. Twelve new required cases cover numeric lookup,
-  escape, storage, required values, checked links, facades and rejection behavior.
-  Strict mode exits 1 only for the known gaps (`/tmp/meowy-numeric-strict.log`).
-- Final additional editor spelling tests and all six documentation/editor checks
-  pass (`/tmp/meowy-numeric-editor-final.log`). Final handoff documentation passes
-  all four default checks (`/tmp/meowy-numeric-handoff-docs.log`).
-- All original 343 catalog cases, 375 source assets, capability pins and proof
-  obligations are preserved (`/tmp/meowy-numeric-preservation.log`). Changed
-  reference hashes/evidence were reviewed and the coverage report regenerated.
+Baseline: 2555 library/918 native tests; 336 required conformance passes and 19
+pinned gaps. The prior numeric series is in Git through 96910ee. Its former dotted
+name acceptance and grouping requirement are superseded by this authorized rule.
 
-No outstanding feature failures remain. Boxed numeric adapters preserve existing
-deep-probe stack limits. The helper and all 14 callers in `abad72b` needed one
-atomic return-type change, exceeding the file-count guideline while remaining a
-small behavior-preserving prerequisite. Literal identity probes defer unresolved
-calls to the original context; the full gate confirms the prior extent diagnostics.
+Investigation: decimal tokens can remain Float AST candidates; the checker needs
+root-aware normalization, including flattened receiver paths and isolated list
+probes. Explicit member tokens need parser splitting (row.1.0 means fields 1 then
+0). The editor worker reports both editor suites passed; frontend/checker work is
+not yet validated. No complete new gate is claimed.
 
-### Numeric shadowing commits
+Frontend complete: all 37 parser and 5 lexer tests pass. Dotted declarations
+reject E004; explicit member tokens split into fields, while expression decimals
+remain Float candidates for checker lookup. Source spans, member-borrow precedence
+and depth limits pass. Dots now delimit ordinary members (`10.name`, `row.1.0`);
+`10.` is incomplete syntax (E004), and `10._2` is a member expression.
 
-| Commit | Reviewable slice |
-| --- | --- |
-| `ccebefc` | Parse numeric value names |
-| `ca66e6d` | Resolve numeric spellings through lexical bindings |
-| `2a6a88a` | Preserve numeric binding storage and borrow rules |
-| `36c4347` | Resolve numeric bindings during required scalar evaluation |
-| `f8ee8f2` | Preserve numeric identities in required records and types |
-| `53dc30f` | Retain numeric binding types during list inference |
-| `abad72b` | Bound numeric lookup adapter stack use |
-| `ad796f5` | Retain explicit literal identity in numeric syntax |
-| `183e41a` | Add the core numeric literal intrinsic |
-| `a10c027` | Preserve intrinsic literals during required evaluation |
-| `439b435` | Keep escaped literals contextual in lists and extents |
-| `31c1cb9` | Preserve numeric query identities and nondata boundaries |
-| `64d585c` | Resolve numeric names in checked documentation links |
-| `a0cfb29` | Specify numeric shadowing and intrinsic literal access |
-| `3b3ce22` | Document numeric binding types and storage semantics |
-| `06f0902` | Cover required numeric lookup and literal diagnostics |
-| `2ceded0` | Highlight numeric declarations and callable names |
-| `610bfec` | Document and exercise numeric declaration links |
-| `ce4b0ab` | Qualify numeric exports through file facades |
-| `8772860` | Validate escaped numeric kinds in required boolean forms |
-| `5ac6e9f` | Pin numeric binding and literal rejection diagnostics |
-| `f3049b4` | Teach numeric names and explicit literal access |
-| `1876333` | Preserve context diagnostics during literal identity probing |
-| `c41fb19` | Document numeric lookup across compiler subsystems |
-| `04b6fcf` | Cover numeric variable spellings in editor highlighting |
-
-Next: resume the existing direct-field-source plan through observed Forward
-coercions below. Full proof evaluation and v0.0.1 release qualification remain
-incomplete. Unrelated `docs/programs/hey/` is preserved and excluded from commits.
-Nothing was pushed or published.
+Next: commit core checker lookup, then storage/required/list paths. Old numeric
+fixtures using dotted declaration names are intentionally pending migration to
+the revised contract; no whole-compiler gate is claimed yet.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

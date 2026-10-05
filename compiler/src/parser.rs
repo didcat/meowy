@@ -185,7 +185,7 @@ impl Parser {
         matches!(
             self.token().kind,
             TokenKind::Name | TokenKind::Int | TokenKind::Float
-        )
+        ) && !self.token().text.contains('.')
     }
 
     pub(crate) fn value_name(&mut self) -> ParseResult<Token> {

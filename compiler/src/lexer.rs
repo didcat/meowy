@@ -68,21 +68,13 @@ pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
                 TokenKind::Name
             }
             b'0'..=b'9' => {
-                let radix = bytes.get(pos) == Some(&b'0')
-                    && matches!(bytes.get(pos + 1), Some(b'x' | b'X' | b'b' | b'B'));
-                pos += 1;
-                while pos < bytes.len() {
-                    let byte = bytes[pos];
-                    if byte.is_ascii_alphanumeric()
-                        || byte == b'_'
-                        || (byte == b'.' && !matches!(bytes.get(pos + 1), Some(b'(' | b'{')))
-                        || (!radix
-                            && matches!(byte, b'+' | b'-')
-                            && matches!(bytes.get(pos - 1), Some(b'e' | b'E')))
-                    {
-                        pos += 1;
-                    } else {
-                        break;
+                pos = scan_number(source, start);
+                if bytes.get(pos) == Some(&b'.')
+                    && bytes.get(pos + 1).is_some_and(u8::is_ascii_digit)
+                {
+                    let end = scan_number(source, pos + 1);
+                    if number_kind(&source[start..end]) == Some(TokenKind::Float) {
+                        pos = end;
                     }
                 }
                 match number_kind(&source[start..pos]) {
@@ -145,6 +137,23 @@ pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
     } else {
         Err(errors)
     }
+}
+
+pub(crate) fn scan_number(source: &str, start: usize) -> usize {
+    let bytes = source.as_bytes();
+    let radix = bytes.get(start) == Some(&b'0')
+        && matches!(bytes.get(start + 1), Some(b'x' | b'X' | b'b' | b'B'));
+    let mut pos = start + 1;
+    while pos < bytes.len()
+        && (bytes[pos].is_ascii_alphanumeric()
+            || bytes[pos] == b'_'
+            || (!radix
+                && matches!(bytes[pos], b'+' | b'-')
+                && matches!(bytes.get(pos - 1), Some(b'e' | b'E'))))
+    {
+        pos += 1;
+    }
+    pos
 }
 
 pub(crate) fn scan_string(
@@ -326,10 +335,35 @@ mod tests {
         ] {
             assert!(lex(text).is_ok(), "{text}");
         }
-        for text in ["1.", "1__0", "0x_ff", "0b102", "12cat", "1e+", "1._2", "0x"] {
+        for text in ["1__0", "0x_ff", "0b102", "12cat", "1e+", "0x"] {
             assert_eq!(lex(text).unwrap_err()[0].code, "E001", "{text}");
         }
         assert_eq!(lex("1.(f)").unwrap()[0].text, "1");
+    }
+
+    #[test]
+    pub(crate) fn numeric_member_dots_preserve_number_tokens_and_source_spans() {
+        for (source, expected) in [
+            ("10.4.5", vec!["10.4", ".", "5"]),
+            ("10.name", vec!["10", ".", "name"]),
+            ("10._2", vec!["10", ".", "_2"]),
+            ("0x1.0x2", vec!["0x1", ".", "0x2"]),
+            ("1.0x2", vec!["1", ".", "0x2"]),
+            ("1e2.4e-2", vec!["1e2", ".", "4e-2"]),
+            ("10.4e-2.field", vec!["10.4e-2", ".", "field"]),
+            ("10.", vec!["10", "."]),
+        ] {
+            let tokens = lex(source).unwrap();
+            let actual: Vec<_> = tokens
+                .iter()
+                .filter(|token| token.kind != TokenKind::Eof)
+                .map(|token| token.text.as_str())
+                .collect();
+            assert_eq!(actual, expected, "{source}");
+            for token in tokens {
+                assert_eq!(&source[token.span.start..token.span.end], token.text);
+            }
+        }
     }
 
     #[test]
