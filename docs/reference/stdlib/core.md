@@ -27,8 +27,10 @@ See [callable environments](../types.md#callable-environments) for source exampl
 
 `core.literal(number)` constructs the intrinsic number even when its spelling
 has a local binding. Core exposes this intrinsic instead of an enumerated set of
-numeric members such as `core.1`. Ordinary unshadowed numeric tokens already
-construct their intrinsic values; no prelude declarations are needed.
+numeric members such as `core.1`. Unbound undotted numbers and decimals with
+unbound numeric roots already construct intrinsic values; no prelude declarations
+are needed. With `10` bound, `core.literal(10.4)` bypasses member lookup and still
+constructs the decimal. Dotted spellings cannot be declaration names.
 
 ```meowy
 core : @"core"

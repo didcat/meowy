@@ -97,7 +97,14 @@ all 355 existing cases run with 336 required passes, 19 unchanged gaps and zero
 failures in debug/release (/tmp/meowy-root-first-migrated-conformance.log).
 The explicit asset allowlist is /tmp/meowy-root-first-migrated-assets.json.
 
-Next: publish the revised references and new required cases; run the full gate.
+Syntax/core references now specify root-first member lookup, no retry after a
+bound-root failure, exact member spellings, ordinary grouping and dotted-name
+rejection. Two new required cases pass: 338 required passes, 19 unchanged gaps,
+zero failures in both profiles (/tmp/meowy-root-first-contract.log). Owning hashes
+and coverage were reviewed and regenerated; old expectation records are unchanged.
+
+Next: remaining reference integration and rejection/required-member cases, then
+teaching/compiler doc commits and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

@@ -1,0 +1,16 @@
+debug : @"debug"
+10 : {
+    -> 4 : { -> "4" }
+    -> 04 : "leading"
+    -> name : 7
+    -> 8 : { -> 9 : 12 }
+}
+debug.print(10.4)
+debug.print(10.04)
+debug.print(10.name)
+debug.print(10.8.9)
+debug.print(11.4)
+debug.print(11)
+debug.print(@"core".literal(10.4))
+{ 10 : { -> 4 : 13 }; debug.print(10.4) }
+debug.print(10.4)

@@ -3758,6 +3758,26 @@
         "code": "E222"
       },
       "reference": "../reference/compile-time.md#required-evaluation-and-staging"
+    },
+    {
+      "id": "numeric_root_lookup",
+      "phase": "run",
+      "source": "sources/numeric_root_lookup.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "4\nleading\n7\n12\n11.4\n11\n10.4\n13\n4\n"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_dotted_declaration",
+      "phase": "check",
+      "source": "sources/numeric_dotted_declaration.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E004"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
     }
   ]
 }

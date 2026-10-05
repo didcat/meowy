@@ -4,7 +4,7 @@
 
 Source files use UTF-8 and the `.mwy` extension. Names are case-sensitive. The
 portable identifier set is ASCII letters, digits, and `_`, with a letter or `_`
-first. Value names may also use a complete numeric token, as described below.
+first. Value names may also use a complete undotted numeric token, as described below.
 Type names and scope labels retain the identifier rule. Non-ASCII text remains
 valid in strings and comments. Type aliases conventionally start with an uppercase letter.
 
@@ -58,41 +58,52 @@ actually contains that intrinsic value.
 
 ## Numeric names and intrinsic literals
 
-A valid integer or floating-point token can name an ordinary value binding,
-parameter or named emission. Numeric spellings resolve to the nearest lexical
-value binding; without one, they construct the intrinsic numeric literal.
-Lookup uses the exact spelling: `1`, `01`, `0x1`, `0X1`, `0b1`, `1.0` and `1e0`
-are independent names. Separators are significant too: `1_000` and `1000` differ.
-A leading `-` remains an operator and is never part of a binding name.
+An undotted numeric token can name an ordinary value binding, parameter, function
+or named emission. Integers and undotted exponents are allowed. Lookup uses exact
+spelling: `1`, `01`, `0x1`, `0X1`, `0b1` and `1e0` are independent names, as are
+`1_000` and `1000`. A leading `-` is an operator, never part of a binding name.
+Dotted declaration names such as `10.4 : "4"` or `-> 10.4 : value` are syntax
+errors (`E004`), regardless of which names are already bound.
+
+In a decimal-shaped expression such as `10.4`, resolve the numeric root `10`
+first. If it is bound, select member `4` through ordinary field rules. A missing
+member, private member or unsuitable receiver is an error; lookup never retries
+the decimal interpretation. Only an unbound root permits the intrinsic decimal.
+Member names retain their spelling too: `10.04` selects `04`, not `4`.
 
 ```meowy
-core : @"core"
-
-{
-    1 : core.literal(2)
-    sum : 1 + 1
-    original : core.literal(1)
+10 : {
+    -> 4 : { -> "4" }
 }
+
+@"debug".print(10.4)
+@"debug".print(11.4)
+@"debug".print(11)
+@"debug".print(@"core".literal(10.4))
 ```
 
-Here `sum` is `4` and `original` is `1`. Outside the block, `1` keeps its outer
-meaning. A declaration's initializer uses the enclosing bindings before the new
-value is introduced; `1 : 1` therefore copies the preceding meaning. Function
-self names and forward groups retain their ordinary reservation rules.
+These print `4`, `11.4`, `11` and `10.4`. `10.5` would be a missing-member error.
+The explicit intrinsic escape bypasses root lookup even when `10` is bound.
+Undotted unbound numeric spellings retain ordinary literal construction.
 
-Numeric bindings obey the same type, mutability, borrowing, duplicate-declaration
-and scope rules as identifier bindings. They can hold any value. For example,
-`1 <uint8> : core.literal(1)` fixes the binding to `uint8`; later reads do not
-receive a different contextual width. Numeric value bindings do not introduce
-numeric type names or scope labels. List capacities, indices, interpolation and
-required expressions perform the same value lookup.
+Numeric bindings keep ordinary fixed types, mutability, borrowing, duplicate-name
+and scope rules. They can hold any value. `1 <uint8> : @"core".literal(1)` creates
+a `uint8` binding; later reads do not receive a different contextual width.
+Initializers use preceding bindings before introducing the new name. Function
+self names and forward groups retain their ordinary reservation rules. Numeric
+value names do not introduce numeric type names or scope labels. Required values,
+list capacities, indices and interpolation use the same root lookup.
 
-[`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) bypasses numeric
-lookup for its single syntax operand, including through an alias of the intrinsic.
-Use `core.literal(-128)` for an intrinsic signed literal. Numeric fields use
-ordinary member selection, such as `row.1` or `row.1.0` (the latter selects the
-single floating spelling `1.0`). Group a numeric receiver before member access:
-`(1).field`. Existing token rules still reject `1.field` as a malformed number.
+Dots after an explicit receiver always select separate members. `row.1.0` selects
+`1`, then `0`; `10.4.5` continues through the result of `10.4`. Numeric receivers
+also support ordinary named members, as in `10.name`. Parentheses remain ordinary
+grouping: `(10).4` is valid but not required for a bound root. Fields still need
+`->` to be exposed outside their block.
+
+[`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) accepts one
+numeric token, optionally directly negated, including through an alias of the
+intrinsic. Use `core.literal(-128)` for an intrinsic signed literal. Grouping or
+member syntax inside the argument is not a numeric token.
 
 ## Literals, values, and comments
 
@@ -120,7 +131,8 @@ that documentation opener was not intended. `##` remains an empty ordinary comme
 inside a string and is retained. There is no implicit indentation stripping.
 String literals contain UTF-8 bytes and need not be NUL-terminated.
 
-Unshadowed numeric tokens and `core.literal(...)` construct intrinsic literals.
+Unbound undotted numeric tokens, decimal tokens with unbound roots, and
+`core.literal(...)` construct intrinsic literals.
 Integer literals are checked against their expected type; unconstrained integers
 default to `<int32>` and unconstrained decimals to `<float64>`. A default that
 cannot represent a literal is a diagnostic, not an automatic promotion. Negative
@@ -131,7 +143,9 @@ base. Decimal leading zeroes are decimal, not octal. Hexadecimal prefixes are
 `0x`/`0X`, binary prefixes `0b`/`0B`; each needs a digit. Decimal floats have
 digits on both sides of `.` and/or an `e`/`E` exponent with optional sign and at
 least one decimal digit. `1.`, `.5`, `1__0`, and `0x_ff` are not numeric literals;
-there are no numeric suffixes. A digit-starting malformed number such as `12cat`
+there are no numeric suffixes. A trailing member dot such as `1.` is incomplete
+syntax (`E004`); `1._2` selects the ordinary member `_2`. A digit-starting
+malformed numeric component such as `12cat`
 is one invalid token, not a number followed by a name. `1.(f)` is instead an
 integer followed by dispatch. Float literals round once to the expected binary
 precision, ties to even; overflow to infinity is `E216`, and underflow to a
