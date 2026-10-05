@@ -36,6 +36,7 @@ pub(super) fn seed(links: &[Vec<Option<usize>>]) -> (Results, Inputs) {
                 0,
                 Observed {
                     consumer: None,
+                    dispatch: None,
                     slots: Some(vec![Sources::Candidates(values)]),
                 },
             ),

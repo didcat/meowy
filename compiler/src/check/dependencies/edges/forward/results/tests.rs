@@ -55,6 +55,7 @@ pub(crate) fn result_sources_preserve_unknown_slots_and_stopped_results() {
         reports.results[&root].1,
         Observed {
             consumer: None,
+            dispatch: None,
             slots: None
         }
     );

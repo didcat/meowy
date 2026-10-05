@@ -25,6 +25,7 @@ pub(crate) enum Sources {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Observed {
     pub(crate) consumer: Option<PointId>,
+    pub(crate) dispatch: Option<PointId>,
     pub(crate) slots: Option<Vec<Sources>>,
 }
 
@@ -87,6 +88,7 @@ impl Checker {
                     *owner,
                     Observed {
                         consumer: body.parent,
+                        dispatch: None,
                         slots,
                     },
                 ),
@@ -101,3 +103,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod origins;

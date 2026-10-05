@@ -95,6 +95,7 @@ pub(crate) fn result_sources_charge_unique_descriptors_and_skip_unknown_layout_p
                     1,
                     Observed {
                         consumer: None,
+                        dispatch: None,
                         slots: None
                     }
                 )

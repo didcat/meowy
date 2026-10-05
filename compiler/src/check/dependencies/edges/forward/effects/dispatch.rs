@@ -4,7 +4,6 @@ use crate::check::dependencies::{SequenceSource, bodies::Fact};
 mod report;
 pub(crate) use report::Observed;
 
-#[cfg(test)]
 mod results;
 
 impl Checker {

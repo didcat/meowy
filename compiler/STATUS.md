@@ -2491,6 +2491,13 @@ into `results/slots.rs`, retaining exact candidate/mutability decisions, payload
 charges and work. All 70 result tests pass before/after extraction
 (`/tmp/meowy-dispatch-sources-history-before.log`, `/tmp/meowy-dispatch-sources-history.log`).
 Formatting and whitespace checks pass; explicit origin tagging is next.
+History extraction: `2a29342`. Result rows now have an explicit optional dispatch
+origin, mutually exclusive with ordinary consumers. Seeded dispatch rows validate
+through the producer-specific result qualifier; ordinary rows retain their old
+protocol. All 72 result tests pass (`/tmp/meowy-dispatch-sources-origins.log`),
+including twelve wrong/ambiguous/missing-observation variants. Formatting and
+whitespace checks pass. Production collection still publishes only ordinary rows
+in this slice; dispatch indexing is next.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent
