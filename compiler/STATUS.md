@@ -2010,7 +2010,12 @@ only after matching a lazily indexed forest root, with aggregate map room and pa
 charges. The prerequisite is enabled in production. All ten matching tests, all
 2504 library tests and all-target Clippy pass (`/tmp/meowy-field-result-links-collection.log`,
 `/tmp/meowy-field-result-links-library.log`, `/tmp/meowy-field-result-links-collection-lint.log`).
-Independent corruption and budget coverage follows.
+Collection is committed as `03e46c3`. Independent tests now cover exact map/root
+scratch/work limits, malformed headers and roots, late failures, Never result claims,
+load opacity and duplicate visits without rebuilding the forest. All 14 matching
+field-result groups and all-target Clippy pass
+(`/tmp/meowy-field-result-links-boundaries.log`, `/tmp/meowy-field-result-links-boundaries-lint.log`).
+Source conformance is next.
 
 Dependency-ordered commit plan:
 
