@@ -1,0 +1,2 @@
+1 <uint8> : @"core".literal(1)
+value <int32> : 1

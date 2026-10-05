@@ -1,0 +1,18 @@
+debug : @"debug"
+literal : @"core".literal
+1 : true
+<Items> : {
+    2 <uint8> : literal(3)
+    count <uint8> : 2 + literal(1)
+    -> <uint8[count]>
+}
+values <Items> : [literal(1), 2, 3, 4]
+debug.print(values.size())
+debug.print(values[literal(1)])
+<Byte> : {
+    128 <int8> : 7
+    value : -128
+    -> value<>
+}
+minimum <Byte> : literal(-128)
+debug.print(minimum)

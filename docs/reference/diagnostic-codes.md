@@ -148,6 +148,12 @@ See [types](types.md) and [values and blocks](values-and-blocks.md).
 | `E224` | Compile-time proof expectation failed                   | Show the assertion and original observation, required outcome and actual Always/Never/Indeterminable result; strengthen ordinary evidence or correct the expectation.                         |
 | `E225` | Proof query has a forbidden backward dependency         | Show the dependency from a proof answer into another observation, its availability, type formation, specialization, or ownership acceptance; remove the cycle or use ordinary declared facts. |
 
+`E207` also rejects a non-numeric syntax operand to `core.literal`, including
+an identifier, a grouped value or an arithmetic expression. Wrong intrinsic arity
+is `E212`; numeric token and representability errors remain `E001` and `E216`.
+A numeric binding follows ordinary duplicate-name (`E203`), fixed-type (`E207`)
+and write-permission (`E305`) rules.
+
 `E207` covers initialization as well as later assignment. Changing `"twenty"` to
 `20` is not a type conversion defined by the language. `E208` concerns a value
 ascription; assigning a still-nullable value into a narrower binding is `E207`.

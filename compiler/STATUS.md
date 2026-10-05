@@ -106,8 +106,14 @@ binding types and storage/index lookup. The numeric storage source case passes;
 conformance is 327 passed, 19 unchanged gaps, zero failures in both profiles
 (`/tmp/meowy-numeric-source-storage.log`). Corresponding coverage hashes reviewed.
 
-Next steps: required and documentation-link source cases, module integration,
-teaching/compiler docs, editor highlighting and the full final gate.
+Storage contract: `3b3ce22`. Required evaluation and diagnostic references now
+cover numeric lookup and syntax-only literal construction. Required execution
+and fixed-type rejection cases pass: 329 required passes, 19 unchanged gaps and
+zero failures in both profiles (`/tmp/meowy-numeric-source-required.log`).
+Coverage hashes reviewed. All six documentation/editor checks also pass
+(`/tmp/meowy-numeric-editor.log`); editor changes remain a separate slice.
+
+Next steps: checked-link and module source cases, remaining docs and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

@@ -66,6 +66,14 @@ environment queries and application initializers are not compile-time inputs.
 An immutable module binding is eligible only if its initializer is transitively
 evaluable under these rules, without executing module initialization.
 
+Numeric spellings use ordinary lexical lookup in required expressions too.
+A numeric binding must satisfy the same eligibility rules as an identifier.
+[`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) constructs its
+numeric syntax operand without reading a same-spelled binding. Its literal and
+optional negation use ordinary literal evaluation charges, with no runtime call
+or evaluation of an arbitrary argument expression. Aliasing the intrinsic retains
+this rule; aliasing its result creates an ordinarily typed value.
+
 A pure ordinary function called at runtime remains a runtime operation. Optimizer
 folding does not make a runtime-dependent type legal. Type queries inspect types
 without evaluating operands. Target queries and pointer-width arithmetic use the
