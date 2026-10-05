@@ -458,12 +458,18 @@ the producer, Operation source link and forest root. A borrowed per-pass context
 caches validated fields and roots, charging remaining payload before growth. Missing
 associations stay opaque; cached lookups retain owner/slot agreement checks.
 
-A separate direct-input resolver follows only observed, normal, unchanged narrowing.
-It validates point/body/owner identity and rejects conflicting producers and cycles.
-The 65,536-hop scratch bound and shared work budget precede growth. Changed or
-unobserved narrowing, groups, coercions, ascriptions, ordinary reads, calls and
-reference loads remain boundaries. Original input and terminal field IDs retain
-the exact route through the existing narrowing reports; no type shapes are copied.
+A separate direct-input resolver follows observed, normal, unchanged narrowing and
+explicitly registered groups. It validates point/body/owner identity and rejects
+conflicting producers and cycles. Group child/span/body/owner and exact region-edge
+checks share the record-consumer validator without changing that consumer's field
+boundary. Unregistered regions stay opaque, and stored Normal edges do not invent
+observed completion or a field-source association.
+
+Groups and narrowing share a 65,536-hop scratch bound; group registry size and shared
+work are also bounded. Field/root lookup caches retain their shared payload charges,
+including repeated lookups. Changed or unobserved narrowing, coercions, ascriptions,
+ordinary reads, calls and reference loads remain boundaries. Original input and
+terminal field IDs retain the exact qualified route; no type shapes are copied.
 
 Direct-source reports retain each original Value candidate's point and optional
 field/source Slot at its existing block/slot/candidate position. They are collected
@@ -476,8 +482,8 @@ these optional links.
 
 A separate expanded forest is collected after the direct-source map. It first
 qualifies a borrowed view against every original Value candidate, point, owner and
-observed narrowing/field-result route. Missing, extra or changed descriptors are
-invalid. Qualification reuses bounded field/root caches and consumes the same
+qualified group/narrowing/field-result route. Missing, extra or changed descriptors
+are invalid. Qualification reuses bounded field/root caches and consumes the same
 remaining payload as traversal; no input or history vectors are copied.
 
 Resolved direct sources produce explicit Field visits retaining the original

@@ -2044,10 +2044,11 @@ the checked producer, original Operation link and forest root. A borrowed per-pa
 context caches validated fields and roots with shared payload/work charges. Missing
 associations remain opaque and corrupt retained identities fail atomically.
 
-Direct-input lookup follows only observed, normal, unchanged narrowing, preserving
-exact point/body/owner identities and rejecting producer conflicts and cycles. The
-65,536-hop scratch cap is separate from cache payload; all lookups share work limits.
-Changed/unobserved narrowing, groups, coercions, ascriptions, reads, calls and reference
+Direct-input lookup follows observed, normal, unchanged narrowing, with explicit
+group forwarding described below. It preserves point/body/owner identities and
+rejects producer conflicts and cycles. The 65,536-hop scratch cap is separate from
+cache payload; all lookups share work limits.
+Changed/unobserved narrowing, coercions, ascriptions, reads, calls and reference
 loads remain explicit boundaries. The original record-consumer resolver is unchanged.
 
 A separate position-keyed direct-source map retains each Value candidate's original
@@ -2133,56 +2134,70 @@ qualification remain incomplete.
 
 ## Direct field sources through explicit groups
 
-In progress. Inspection found that group child validation is embedded in the
-record-consumer loop; direct field lookup currently stops at registered groups.
-Reuse that exact validation before extending the direct resolver. Preserve the
-original forest and keep the remaining wrapper boundaries unchanged.
-Existing grouped-consumer tests pass before extraction
-(`/tmp/meowy-group-fields-before.log`). The helper now contains the unchanged
-child/edge checks and work charge; callers retain producer/body/cycle validation.
-All 34 grouped-consumer tests also pass after extraction
-(`/tmp/meowy-group-fields-extract.log`); committed as `39032ab`. The direct resolver
-now follows explicit groups through that helper and shares its hop/cycle bounds
-with unchanged narrowing. Collection and expanded traversal retain original points
-and terminal fields across owners. All three positive/opaque-route groups pass
-(`/tmp/meowy-group-fields-resolver.log`). All 2536 library tests and all-target
-Clippy pass (`/tmp/meowy-group-fields-library.log`,
-`/tmp/meowy-group-fields-lint.log`); committed as `d75b744`. Step 3 is split into
-identity/cycle regressions and exact resource-limit regressions to keep each slice
-independently reviewable. Both corruption/conflict and seeded cycle groups pass
-(`/tmp/meowy-group-fields-faults.log`). Cycle legs qualify individually and the
-resolver detects their revisit; collection can reject changed candidate ancestry
-earlier; committed as `fa55889`. New resource tests cover combined group/narrowing
-hops, shared field/root cache payload, repeat lookups, exact work and the registry
-cap. Existing exact collection/graph/forest tests now exercise grouped sources.
-All seven grouped-source groups and all ten direct-report groups pass
-(`/tmp/meowy-group-fields-limits.log`, `/tmp/meowy-group-fields-reports.log`).
-Resource tests committed as `1790a65`. Three new required source cases pin grouped
-field/composition order across owners, mutable snapshots, shared loads, guarded
-narrowing and E208. All three pass fresh-compiler debug/release
-(`/tmp/meowy-group-fields-source.log`). Coverage is regenerated and all four
-source-slice documentation checks pass (`/tmp/meowy-group-fields-source-docs.log`).
-The preservation audit confirms prior cases/assets, reference hashes, support pins
-and proof obligations are unchanged (`/tmp/meowy-group-fields-preservation.log`).
-The full compiler, strict and final documentation gates remain (step 5).
-Dependency-ordered commit plan:
+Direct field-source resolution now traverses explicitly registered groups mixed
+with observed unchanged narrowing. A shared helper preserves the record-consumer
+child/span/body/owner and exact region-edge checks and work charge. Both callers
+retain producer, point, body and cycle validation; record consumers still stop at
+Field results. Unmarked regions and stored Normal edges cannot invent a source
+association or completion.
 
-1. Extract the existing explicit-group child qualification from
-   `consumers/grouped.rs` into a shared helper, preserving exact checked
-   point/child/span/body/owner and region-edge checks and resource accounting.
-   Keep this behavior-preserving prerequisite separate and run existing grouped
-   consumer regressions before committing.
-2. Extend direct-source resolution in `consumers/field_results/lookup/` through
-   qualified explicit groups mixed with observed unchanged narrowing. Preserve
-   original direct points and terminal fields. Do not infer completion from a stored
-   Normal edge or follow unregistered regions. Coercions, ascriptions, initializer
-   reads, calls, reference loads and changed/unobserved narrowing remain opaque.
-3. Add mixed-chain corruption/cycle regressions through collection, qualification
-   and expanded traversal, then commit exact shared hop/work/payload regressions
-   separately.
-4. Add required source cases and classified evidence, preserving prior cases and
-   reference contracts.
-5. Run compiler, strict and final documentation gates and update this handoff.
+Collection, retained-descriptor qualification and the expanded forest preserve
+original candidate positions and points, terminal fields and source slots. The
+original candidate forest remains unchanged. Groups and narrowing share bounded
+hop/cycle state and work; field/root caches share payload across repeated lookups.
+Coercions, ascriptions, initializer reads, calls, reference loads and changed or
+unobserved narrowing remain opaque. No value, reachability or proof outcome is
+selected or inferred.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Share explicit group child qualification | `39032ab` |
+| Resolve grouped direct field sources | `d75b744` |
+| Reject corrupt and cyclic grouped routes | `fa55889` |
+| Bound grouped lookup and report resources | `1790a65` |
+| Pin source behavior and classified coverage | `b2005f1` |
+
+All 34 grouped-consumer tests pass before and after extraction
+(`/tmp/meowy-group-fields-before.log`, `/tmp/meowy-group-fields-extract.log`). The
+three initial resolver groups pass (`/tmp/meowy-group-fields-resolver.log`), and
+all 2536 library tests and all-target Clippy pass after integration
+(`/tmp/meowy-group-fields-library.log`, `/tmp/meowy-group-fields-lint.log`).
+Both corruption/cycle groups, all seven grouped-source groups and all ten direct-report
+groups pass (`/tmp/meowy-group-fields-faults.log`, `/tmp/meowy-group-fields-limits.log`,
+`/tmp/meowy-group-fields-reports.log`). Seeded cycle legs qualify individually before
+the resolver rejects the revisit; collection may reject altered candidate ancestry
+earlier. Those cycles and registry limits are structural evidence only.
+Three required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-group-fields-source.log`); all four source-slice documentation checks
+pass (`/tmp/meowy-group-fields-source-docs.log`).
+
+All ten compiler checks pass: 2540 library/915 native tests, 32 tooling/30 harness
+groups, formatting, Clippy, build, metadata and conformance
+(`/tmp/meowy-group-fields-gate.log`). Conformance has 343 cases: 324 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-group-fields-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-group-fields-docs.log`). No test failures
+remain. The preservation audit confirms 340 prior cases, 372 source assets,
+37 reference contracts/reviewed hashes, capability pins
+and proof obligations are unchanged (`/tmp/meowy-group-fields-preservation.log`).
+Unrelated `docs/programs/hey/` remains excluded. Proof evaluation and full
+language/release qualification remain incomplete.
+
+### Next: direct field sources through observed Forward coercions
+
+1. In `consumers/field_results/lookup/narrowing.rs`, reuse
+   `forward_coercion_input` from `effects/coercions.rs` to follow observed,
+   non-projecting Forward coercions mixed with groups and unchanged narrowing.
+   Keep collection and stored-descriptor qualification on the same resolver;
+   preserve original Value points, terminal fields and the original forest.
+   Include focused typed/grouped candidate and expanded-forest regressions.
+2. In a separate boundary slice, cover absent result observations, Convert,
+   primary-extracting and Stopped coercions, corrupt headers/routes, producer
+   conflicts, mixed cycles, owners and exact shared work/hop/cache limits.
+   Keep ascriptions, initializer reads, calls and reference loads opaque.
+3. Add required typed field-source cases and classified evidence while preserving
+   reference contracts, earlier fixtures and pinned capability gaps.
+4. Run compiler, strict and final documentation gates and update this handoff.
 
 Do not make Field results transparent in `consumers/grouped.rs` or select candidate
 values. Aggregate provenance, precise branch/overwrite joins, function returns,
@@ -3777,8 +3792,8 @@ are now independent, and bounded result-candidate inputs retain qualified compos
 source slots. Candidate traversal and observed field-result source links are
 implemented, including direct-input lookup through unchanged narrowing and a
 separate expanded field-source forest. Explicit-group direct-source resolution is
-next, following the ordered plan above; value selection and broader field-value
-provenance remain separate.
+complete. Observed non-projecting Forward coercions are next, following the ordered
+plan above; value selection and broader field-value provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4378,8 +4393,11 @@ provenance remain separate.
    Direct-source graph qualification (`2f043ea`), explicit traversal (`7972426`),
    expanded-forest integration (`4104d99`), boundaries (`cfe9512`) and source cases
    (`cc43868`) pass the compiler gate; strict results are recorded above.
-   Next qualify direct field sources through explicit groups, following the ordered
-   plan above, before wider value provenance work.
+   Shared group qualification (`39032ab`), direct resolution (`d75b744`), identity/
+   cycle boundaries (`fa55889`), limits (`1790a65`) and source cases (`b2005f1`)
+   pass the compiler gate; strict/final docs are recorded above. Next qualify direct
+   field sources through observed non-projecting Forward coercions, following the
+   ordered plan, before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

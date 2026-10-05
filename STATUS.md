@@ -7,22 +7,22 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 
 ## Current compiler and coverage handoff
 
-A separate expanded candidate forest now follows qualified direct field sources
-alongside composed sources. Exact candidate/point/owner identities and original
-reports are preserved; cycles, sharing and Unknown/empty histories retain bounded
-structural meaning. The [compiler handoff](compiler/STATUS.md#traversal-through-qualified-direct-field-sources)
+Direct field-source resolution now follows explicit groups mixed with observed
+unchanged narrowing. Shared group validation preserves original candidate points,
+terminal fields, owners and both report paths under bounded work, hops and cache
+payload. The [compiler handoff](compiler/STATUS.md#direct-field-sources-through-explicit-groups)
 records five implementation/test commits and the next ordered plan.
 
-All ten compiler checks pass: 2533 library/915 native tests and 62 Python groups
-(`/tmp/meowy-expanded-gate.log`). Conformance has 340 cases: 321 required passes,
+All ten compiler checks pass: 2540 library/915 native tests and 62 Python groups
+(`/tmp/meowy-group-fields-gate.log`). Conformance has 343 cases: 324 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
-only for those gaps (`/tmp/meowy-expanded-strict.log`). All four final documentation
-checks pass (`/tmp/meowy-expanded-docs.log`).
+only for those gaps (`/tmp/meowy-group-fields-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-group-fields-docs.log`).
 Prior cases, reference contracts, capability pins and proof obligations are preserved
-(`/tmp/meowy-expanded-preservation.log`). Proof evaluation and full language/release
-qualification remain incomplete.
+(`/tmp/meowy-group-fields-preservation.log`). Proof evaluation and full
+language/release qualification remain incomplete.
 
-Next, qualify direct field sources through explicit groups.
+Next, qualify direct field sources through observed Forward coercions.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain
