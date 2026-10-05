@@ -1,143 +1,85 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Numeric shadowing passes compiler, documentation and editor gates.
+Updated: 2026-10-05. Root-first numeric members pass compiler, documentation and editor gates.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
 
 ## Numeric shadowing implementation
 
-Active revision: dotted numeric spellings are expressions, never declaration
-names. If the numeric root is already bound, `10.4` selects field `4` and a missing
-member or invalid receiver is an error. If the root is unbound, decimal literal
-rules apply. `core.literal(10.4)` always constructs the decimal. Dotted bindings,
-parameters, functions and named fields are E004. Undotted numeric spellings,
-including exponents, remain names. Ordinary `->` visibility is unchanged.
+Complete. Dotted spellings are expressions, never declaration names. A bound
+numeric root makes `10.4` select member `4`; missing/private members and scalar
+receivers report ordinary errors without retrying a decimal. An unbound root
+retains decimal construction. `@"core".literal(10.4)` always requests the decimal.
+Bindings, parameters, functions and fields reject dotted names with E004.
+Undotted numeric spellings, including exponents, remain exact lexical names.
 
-Dependency-ordered commit plan:
+`10.name`, `10.4.5` and `row.1.0` use ordinary member paths. Parentheses remain
+ordinary grouping, and `->` still exposes fields. Field types, mutation, borrowing,
+required-input eligibility, module identities and name visibility are preserved.
+The lexer retains decimal candidates without consulting scope; the checker adapts
+bound roots through existing field machinery. Bounded receiver discovery only
+materializes the numeric root expansion, preserving suffixes and context errors.
+Isolated list probes use captured scopes and account for live/emitted roots.
 
-1. Lexer/parser: preserve decimal candidates, parse explicit numeric member
-   chains and reject dotted declaration names. Keep raw numeric token validation
-   and span/depth bounds; include focused frontend regressions.
-2. Checker: resolve bound numeric roots through ordinary field machinery, then
-   integrate receiver paths, required evaluation and list probes in reviewable
-   slices with focused regressions. Explicit literals never perform root lookup.
-3. Migrate only the prior numeric fixtures whose dotted-name contracts changed;
-   add required source cases for lookup, fallback, missing fields and rejection.
-   Update all owning references, reviewed coverage hashes and unchanged proof pins.
-4. Update checked-documentation paths, teaching/compiler docs and Vim/Neovim
-   highlighting. Commit independently verified slices and run the final compiler/
-   editor gate, strict gap accounting and a scoped preservation audit.
+The [guide](docs/NUMBERS.md), references, teaching docs, module/required guides and
+Vim/Neovim support now follow this rule. Checked documentation resolves numeric
+member paths and never links an unbound decimal. Editor declaration/function
+highlighting excludes dotted names; ambiguous reads remain lexical Float colors.
+Existing bootstrap capture, required-float, callable-storage and proof limits
+remain unchanged. No runtime numeric lookup or intrinsic call was introduced.
 
-Delegation: parser worker owns frontend files; editor worker owns editor/nvim;
-checker worker will own semantic changes. Root alone writes STATUS, documentation,
-native/source integration and commits. Unrelated docs/programs/hey/ stays excluded.
-The existing Forward-coercion field-source milestone remains paused for this request.
+Validation:
 
-Baseline: 2555 library/918 native tests; 336 required conformance passes and 19
-pinned gaps. The prior numeric series is in Git through 96910ee. Its former dotted
-name acceptance and grouping requirement are superseded by this authorized rule.
+- All 12 checks in `python3 -B tools/verify.py --compiler --editor both` pass:
+  2567 library tests, 921 native tests, 62 Python groups, formatting, all-target
+  Clippy, build, schemas, reference inventory, source conformance and both editors.
+  Log: `/tmp/meowy-root-first-final-gate.log`.
+- Source conformance: 362 total cases, 343 required passes, 19 unchanged pinned
+  gaps and zero failures in debug/release. Seven new cases cover root lookup,
+  escape/fallback, required fields, missing/scalar roots and dotted declarations.
+  Strict mode exits 1 only for known gaps (`/tmp/meowy-root-first-strict.log`).
+- Ten extracted guide/example checks pass in debug/release with exact expected
+  output (`/tmp/meowy-root-first-doc-examples.log`). Independent checker review
+  found no remaining actionable issues; numeric and existing path-budget tests pass.
+- All 355 prior expectation records remain intact. Exactly six prior numeric
+  assets were migrated because dotted names became invalid: numeric_names,
+  numeric_storage, numeric_doc_links and numeric_exports main/values/facade.
+  Their expected outputs remain unchanged; the original facade import is retained.
+  The other 383 old assets, capability pins and proof obligations are unchanged
+  (`/tmp/meowy-root-first-preservation.log`). Owning reference hashes/evidence
+  were reviewed and the coverage report regenerated. Final handoff documentation
+  passes all four default checks (/tmp/meowy-root-first-handoff-docs.log).
 
-Investigation: decimal tokens can remain Float AST candidates; the checker needs
-root-aware normalization, including flattened receiver paths and isolated list
-probes. Explicit member tokens need parser splitting (row.1.0 means fields 1 then
-0). The editor worker reports both editor suites passed; frontend/checker work is
-not yet validated. No complete new gate is claimed.
+No outstanding failures remain. The first broad library pass caught a receiver
+budget diagnostic taking precedence over the existing exclusive-borrow error;
+1854203 preserves the original context/span without changing bounds or tests.
 
-Frontend complete: all 37 parser and 5 lexer tests pass. Dotted declarations
-reject E004; explicit member tokens split into fields, while expression decimals
-remain Float candidates for checker lookup. Source spans, member-borrow precedence
-and depth limits pass. Dots now delimit ordinary members (`10.name`, `row.1.0`);
-`10.` is incomplete syntax (E004), and `10._2` is a member expression.
+### Numeric member commits
 
-Frontend committed as 676e3d7. Core lookup now adapts a decimal candidate to an
-ordinary field expression only when its root is bound. Symbol/hint resolution,
-exact root spans, missing/scalar/private fields, lexical shadowing, type queries
-and literal escape pass all seven focused numeric checker groups.
+| Commit | Reviewable slice |
+| --- | --- |
+| `676e3d7` | Parse numeric member paths and reject dotted declarations |
+| `0c29da3` | Resolve bound numeric roots before decimal fallback |
+| `2b0148c` | Preserve storage and borrows through numeric member paths |
+| `d21acc5` | Retain numeric field paths in required evaluation |
+| `d2e22de` | Resolve numeric field candidates in captured list scopes |
+| `a36211c` | Resolve checked numeric links as member paths |
+| `7833c94` | Restrict editor name highlighting to undotted numeric spellings |
+| `1854203` | Preserve exclusive borrow limit diagnostics during numeric lookup |
+| `b3c0ca0` | Migrate numeric fixtures to undotted declaration names |
+| `1b50ca7` | Specify numeric member lookup and dotted declaration rejection |
+| `37275f4` | Document numeric member typing and mutable paths |
+| `3735235` | Specify numeric paths in modules and documentation links |
+| `6685770` | Cover required numeric members and dotted parameter errors |
+| `fb765c0` | Pin numeric member failures without decimal fallback |
+| `346d7ff` | Teach root-first numeric member resolution |
+| `42f1426` | Document numeric member integration across compiler subsystems |
 
-Core lookup committed as 0c29da3. Storage adapters retain only the terminal
-numeric receiver expansion, preserving suffix fields/indices, original spans,
-borrow modes, mutability and normal errors. Eight numeric and 14 reference groups
-pass (/tmp/meowy-root-first-storage.log, /tmp/meowy-root-first-borrows.log).
-All six native numeric groups pass in debug/release, including root/fallback
-selection and direct/nested writes/borrows (/tmp/meowy-root-first-native.log).
-
-Storage integration is committed. Required fields now retain root lookup, ancestor
-charges, captured read identities and type-comparison traversal. All 196 type-value
-and 45 dependency-body groups pass (/tmp/meowy-root-first-types.log,
-/tmp/meowy-root-first-reads.log), including nested values, kind/width/mutability
-errors and equal logical cost for grouped and ungrouped paths.
-
-List probes now resolve numeric fields against their captured scopes and track
-live/emitted roots instead of treating bound dotted tokens as pure literals.
-All 17 list-context groups pass. Independent review found no actionable checker
-defects and reran all 25 numeric groups successfully. No new required operations
-or capability exceptions were introduced.
-
-Checked documentation now splits dotted numeric targets into member components;
-actual roots and members must resolve, with no link-to-literal fallback. All 16
-documentation groups pass (/tmp/meowy-root-first-doc-links.log). Old dotted-name
-documentation fixtures were migrated explicitly to undotted names/member paths.
-
-Vim/Neovim no longer mark dotted tokens or their suffixes as declaration names.
-Undotted binary/hex/separated/exponent names remain highlighted. Both editor suites
-pass, including dotted invalid declarations, functions, calls and member chains.
-The syntax runtime keeps ambiguous reads lexical rather than claiming scope lookup.
-
-Broad validation found one preserved-diagnostic regression: receiver discovery
-reported its generic limit before the exclusive-borrow path limit. The narrow
-context mapping retains the old diagnostic/span without weakening the bound or
-changing its test. All 2567 library tests now pass
-(/tmp/meowy-root-first-lib-repaired.log); the specific regression also passes.
-
-Six prior numeric source assets are intentionally migrated away from dotted
-declaration names: numeric_names, numeric_storage, numeric_doc_links and the three
-numeric_exports module files. Their original expected outcomes remain unchanged;
-all 355 existing cases run with 336 required passes, 19 unchanged gaps and zero
-failures in debug/release (/tmp/meowy-root-first-migrated-conformance.log).
-The explicit asset allowlist is /tmp/meowy-root-first-migrated-assets.json.
-
-Syntax/core references now specify root-first member lookup, no retry after a
-bound-root failure, exact member spellings, ordinary grouping and dotted-name
-rejection. Two new required cases pass: 338 required passes, 19 unchanged gaps,
-zero failures in both profiles (/tmp/meowy-root-first-contract.log). Owning hashes
-and coverage were reviewed and regenerated; old expectation records are unchanged.
-
-Type, collection and mutability references now distinguish selected numeric
-members from contextual literals and dotted assignment from invalid declarations.
-All six documentation/editor checks pass (/tmp/meowy-root-first-reference-checks.log).
-The owning inventory hashes were reviewed and coverage regenerated.
-
-Module and checked-documentation references now describe member chains instead
-of dotted names. The numeric facade source uses a numeric module alias and numeric
-callable/member paths with the original ./facade.mwy import retained. Expected
-outputs pass in both profiles (/tmp/meowy-root-first-required-cases-fixed.log).
-
-Required-evaluation and diagnostic references now cover numeric field eligibility,
-ancestor work, fixed types and declaration/member errors. Required numeric paths,
-list context, type queries and dotted-parameter rejection have mandatory source
-cases. Conformance passes 340 required cases with 19 unchanged gaps and zero
-failures in both profiles (/tmp/meowy-root-first-required-cases-fixed.log).
-
-Seven new required cases now pin root/member selection, decimal escape/fallback,
-required field values, missing/scalar roots, and dotted binding/parameter/emission
-rejection. All 362 cases yield 343 required passes, 19 unchanged gaps and no
-failures in both profiles (/tmp/meowy-root-first-source-final.log).
-All prior 355 expectation records remain unchanged; exactly the six authorized
-numeric assets were migrated and the other 383 old assets/pins/proof obligations
-are preserved (/tmp/meowy-root-first-preservation.log).
-
-All 12 final compiler/editor checks pass (/tmp/meowy-root-first-final-gate.log).
-Teaching and entry-point docs now describe root-first paths, undotted names,
-ordinary grouping and mandatory field emission. Ten extracted documentation
-checks pass in debug/release (/tmp/meowy-root-first-doc-examples.log); member
-examples produce the exact expected strings. Local links also pass.
-
-Detailed numeric, module, foundation and required-evaluation guides now match
-the implemented paths, literal marker, captured scopes and lexical editor limits.
-No numeric runtime lookup was added. Documentation examples and local links pass.
-
-Next: strict conformance gap accounting and final handoff/doc verification.
+Next: resume the existing direct-field-source plan through observed Forward
+coercions below. Full proof evaluation and v0.0.1 release qualification remain
+incomplete. Unrelated docs/programs/hey/ is preserved and excluded from commits.
+Nothing was pushed or published.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

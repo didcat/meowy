@@ -5,16 +5,26 @@ Updated: 2026-10-05. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
-## Numeric shadowing revision
+## Numeric member lookup
 
-The numeric member rule is being revised: bound roots select members (`10.4`),
-unbound roots retain decimal fallback, and dotted declarations are errors.
-`core.literal` remains the unconditional numeric escape. Ordinary field visibility
-and undotted numeric bindings remain unchanged.
+Numeric lookup now follows the agreed root-first rule: `10.4` selects a member
+when `10` is bound; only an unbound root permits decimal fallback. Missing members
+are errors, dotted declarations are rejected, and `core.literal` always escapes
+lookup. Grouping and `->` visibility keep their ordinary meanings.
+
+Compiler, required/list paths, modules, checked documentation and Vim/Neovim are
+updated. All 12 compiler/editor checks pass: 2567 library tests, 921 native tests
+and 62 Python groups (`/tmp/meowy-root-first-final-gate.log`). Source conformance
+has 343 required passes, 19 unchanged gaps and zero failures in debug/release;
+strict mode reports only those gaps (`/tmp/meowy-root-first-strict.log`). Ten
+extracted documentation checks pass in both profiles. Prior expected outcomes,
+non-migrated assets and capability/proof inventories are preserved.
 
 The [compiler handoff](compiler/STATUS.md#numeric-shadowing-implementation) records
-ordered slices and current verification. Compiler/docs/editor qualification for
-this revision is pending. Unrelated docs/programs/hey/ remains excluded.
+the exact six-asset contract migration, verification and individual commits.
+Unrelated docs/programs/hey/ remains excluded. The next compiler milestone remains
+observed Forward coercions for direct field sources; full release qualification
+and proof evaluation remain incomplete.
 
 ## Current compiler and coverage handoff
 
