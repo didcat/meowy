@@ -2545,11 +2545,8 @@ The current tree contains only unrelated `docs/programs/hey/`. Preservation base
 
 Dependency-ordered commit plan:
 
-1. Qualify scalar receiver reads only against matching read/storage metadata,
-   checked lexical containment through ordinary blocks to the nearest dispatch and
-   an observed dispatch initialization. Preserve result/body-stop independence;
-   absent initialization, references, aggregates, calls and reborrows stay opaque.
-   Add exact identity, conflict, cycle and shared-budget regressions with each slice.
+1. Finish receiver qualification boundary evidence: nearest-dispatch scope,
+   independent owners, exact parent-hop/work limits and iterative cycle rejection.
 2. Integrate source links using existing input roots, without replaying receiver
    evaluation or granting lifetime/loan authority. Keep ordinary read eligibility,
    original candidates and all Field/Block/Dispatch/composed identities intact.
@@ -2569,9 +2566,16 @@ payload remainder, alongside its own MAX_EDGES row cap; it does not add ordinary
 consumer or initializer rows. Later traversal retains that same payload budget.
 Its exact local/producer/body and checked HIR-shape identities pass focused tests,
 including independent/nested owners, stopped receivers, 13 identity faults and
-exact capacity/payload/work limits (`/tmp/meowy-receiver-sources-index.log`). Read
-scope qualification and forwarding are next. All 616 forward-report tests pass
+exact capacity/payload/work limits (`/tmp/meowy-receiver-sources-index.log`).
+All 616 forward-report tests pass
 (`/tmp/meowy-receiver-sources-index-reports.log`).
+The dedicated scalar read qualifier now requires an observed initialization,
+matching read/storage/receiver headers and checked point/body ancestry through
+ordinary blocks to the nearest dispatch. Result observation remains independent;
+stopped bodies can retain earlier receiver inputs. All four qualifier tests pass,
+including nine identity/parent-chain faults, nested input receivers and opaque
+reference/aggregate/unobserved reads (`/tmp/meowy-receiver-sources-qualifier.log`).
+Source walkers do not use this new qualifier yet.
 
 ## Documentation conventions and layout
 

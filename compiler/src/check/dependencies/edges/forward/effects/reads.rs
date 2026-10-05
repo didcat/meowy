@@ -1,6 +1,7 @@
 use super::*;
 
 mod initializers;
+mod receivers;
 
 impl Checker {
     pub(super) fn read_effect(
