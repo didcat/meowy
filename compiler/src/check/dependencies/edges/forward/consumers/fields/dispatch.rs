@@ -2,6 +2,8 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::edges::forward::results::{Sources, inputs::graph::Visit};
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn record_dispatch_fields_preserve_slots_owners_and_expanded_field_visits() {
     let source = "r:3.{->z:$;->a:4};copy:((r~<{z<int32>;a<int32>}>));out:{->copy.z;->again:r.a};f<int32>:(){r:4.{->{->n:$}};->r.n}";

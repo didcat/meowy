@@ -86,19 +86,32 @@ impl Checker {
                 ) {
                     return Err(budget());
                 }
+                let field = self.fields.contains_key(&current);
                 if self.dispatch_ops.contains_key(&current) {
                     if group.is_some()
                         || coercion
                         || narrowing
                         || read
                         || typed
-                        || self.fields.contains_key(&current)
+                        || field
                         || reports.consumers.contains_key(&current)
                         || point.kind != PointKind::Expr
                     {
                         return Err(invalid());
                     }
                     return Ok(Some(current));
+                }
+                if field {
+                    if group.is_some()
+                        || coercion
+                        || narrowing
+                        || read
+                        || typed
+                        || reports.consumers.contains_key(&current)
+                    {
+                        return Err(invalid());
+                    }
+                    return Ok(None);
                 }
             }
             if usize::from(coercion)
