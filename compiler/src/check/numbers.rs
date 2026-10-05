@@ -1,12 +1,12 @@
-use super::Checker;
-use crate::ast::{Expr, ExprKind};
+use super::{Checker, Scope};
+use crate::ast::{Expr, ExprKind, Span};
 
 impl Checker {
     pub(crate) fn numeric_name<'a>(&self, expr: &'a Expr) -> Option<&'a str> {
         let (ExprKind::Int(name) | ExprKind::Float(name)) = &expr.kind else {
             return None;
         };
-        if name.literal {
+        if name.literal || name.contains('.') {
             return None;
         }
         self.scopes
@@ -17,12 +17,42 @@ impl Checker {
     }
 
     pub(crate) fn numeric_expression(&self, expr: &Expr) -> Option<Box<Expr>> {
-        self.numeric_name(expr).map(|name| {
-            Box::new(Expr {
-                kind: ExprKind::Name(name.into()),
+        Self::numeric_form(&self.scopes, expr)
+    }
+
+    pub(crate) fn numeric_form(scopes: &[Scope], expr: &Expr) -> Option<Box<Expr>> {
+        let (ExprKind::Int(number) | ExprKind::Float(number)) = &expr.kind else {
+            return None;
+        };
+        if number.literal {
+            return None;
+        }
+        let (name, field) = number
+            .split_once('.')
+            .map_or((number.as_str(), None), |(name, field)| (name, Some(field)));
+        if !scopes
+            .iter()
+            .rev()
+            .any(|scope| scope.values.contains_key(name))
+        {
+            return None;
+        }
+        let mut value = Box::new(Expr {
+            kind: ExprKind::Name(name.into()),
+            span: Span::new(expr.span.start, expr.span.start + name.len()),
+        });
+        if let Some(name) = field {
+            value = Box::new(Expr {
+                kind: ExprKind::Field {
+                    value,
+                    name: name.into(),
+                },
                 span: expr.span,
-            })
-        })
+            });
+        } else {
+            value.span = expr.span;
+        }
+        Some(value)
     }
 
     pub(crate) fn value_name<'a>(&self, expr: &'a Expr) -> Option<&'a str> {
@@ -37,10 +67,37 @@ impl Checker {
 #[cfg(test)]
 mod tests {
     #[test]
+    pub(crate) fn numeric_fields_follow_bound_roots_and_literal_escape() {
+        for source in [
+            r#"10:{->4:{->"4"}};x<string>:10.4"#,
+            "10:{->4:{->5<uint8>:7}};x<uint8>:10.4.5",
+            "10:{->4e2<uint8>:7};x<uint8>:10.4e2",
+            "x<float64>:11.4;y<int32>:11",
+            "10:{->4<uint8>:7};x<uint8>:10.4;y:10.4+1;<T>:10.4<>;z<T>:8",
+            "x:10.4;{10:{->4:true};y<boolean>:10.4};z<float64>:10.4",
+            r#"10:{->4:true};x<float32>:@"core".literal(10.4)"#,
+            r#"10:{->4:true};literal:@"core".literal;x<float32>:literal(10.4)"#,
+        ] {
+            crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        }
+        for (source, code) in [
+            ("10:{->4:7};x:10.5", "E201"),
+            ("10:7;x:10.4", "E201"),
+            ("10:{4:7};x:10.4", "E201"),
+            ("10:{->4:7};{10:false;x:10.4}", "E201"),
+            ("10:{->4<uint8>:7};x<int32>:10.4", "E207"),
+            ("10:{->4:7};f:(){->10.4}", "B001"),
+        ] {
+            let errors = crate::compile(source).unwrap_err();
+            assert_eq!(errors[0].code, code, "{source}: {errors:?}");
+        }
+    }
+
+    #[test]
     pub(crate) fn numeric_bindings_keep_types_scope_and_intrinsic_boundaries() {
         for source in [
             "1:2;x:1+1;{1:3;y:1};z:1",
-            "1:1;01:2;0x1:3;0b1:4;1.0:5.0;1e0:6.0",
+            "1:1;01:2;0x1:3;0b1:4;1e0:6.0",
             "1<uint8>:2;x<uint8>:1;y:1+3",
             "1:true;|1|x:7",
             "1:@\"debug\";(1).print(7)",

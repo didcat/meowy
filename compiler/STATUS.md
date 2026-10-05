@@ -50,9 +50,14 @@ remain Float candidates for checker lookup. Source spans, member-borrow preceden
 and depth limits pass. Dots now delimit ordinary members (`10.name`, `row.1.0`);
 `10.` is incomplete syntax (E004), and `10._2` is a member expression.
 
-Next: commit core checker lookup, then storage/required/list paths. Old numeric
-fixtures using dotted declaration names are intentionally pending migration to
-the revised contract; no whole-compiler gate is claimed yet.
+Frontend committed as 676e3d7. Core lookup now adapts a decimal candidate to an
+ordinary field expression only when its root is bound. Symbol/hint resolution,
+exact root spans, missing/scalar/private fields, lexical shadowing, type queries
+and literal escape pass all seven focused numeric checker groups.
+
+Next: storage/required/list receiver integration. Old numeric fixtures using
+dotted declarations are intentionally pending contract migration; the complete
+compiler gate remains pending.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

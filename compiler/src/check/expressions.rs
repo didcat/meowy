@@ -521,7 +521,7 @@ impl Checker {
             base = value;
         }
         if matches!(base.kind, ExprKind::Name(_) | ExprKind::Import(_))
-            || self.numeric_name(base).is_some()
+            || self.numeric_expression(base).is_some()
         {
             self.symbol(expr).ok().flatten()
         } else {
