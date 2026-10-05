@@ -2001,11 +2001,16 @@ Investigation confirms `validate_field_report` checks independent result/operati
 flags, while `field_slot` requalifies the owned Operation source slot. The new
 association will require both visits, normal availability and the matching existing
 Operation link. Missing links, result-only rows, Never fields and implicit shared
-loads remain opaque. Qualification does not make Field results transparent wrappers. All five focused
-groups and all-target Clippy pass (`/tmp/meowy-field-result-links-qualification.log`,
+loads remain opaque. Qualification does not make Field results transparent wrappers.
+All five focused groups and all-target Clippy pass (`/tmp/meowy-field-result-links-qualification.log`,
 `/tmp/meowy-field-result-links-qualification-lint.log`). Nested-read coverage checks
-one qualified Unknown slot and one opaque extracted-value read. Collection and
-forest-root membership are next.
+one qualified Unknown slot and one opaque extracted-value read. Qualification is
+committed as `aeefeed`. Collection now installs Normal-port links
+only after matching a lazily indexed forest root, with aggregate map room and payload
+charges. The prerequisite is enabled in production. All ten matching tests, all
+2504 library tests and all-target Clippy pass (`/tmp/meowy-field-result-links-collection.log`,
+`/tmp/meowy-field-result-links-library.log`, `/tmp/meowy-field-result-links-collection-lint.log`).
+Independent corruption and budget coverage follows.
 
 Dependency-ordered commit plan:
 

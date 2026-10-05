@@ -1,5 +1,7 @@
 use super::*;
 
+mod collection;
+
 impl Checker {
     pub(super) fn field_result_slot(
         &mut self,

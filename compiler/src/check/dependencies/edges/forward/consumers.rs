@@ -2,7 +2,6 @@ use super::{effects::Effect, entries::Reports, *};
 use crate::{check::dependencies::bodies::Layout, hir};
 
 mod emissions;
-#[cfg(test)]
 mod field_results;
 mod fields;
 mod grouped;

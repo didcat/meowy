@@ -1,7 +1,7 @@
 use super::*;
 
 mod walk;
-pub(crate) use walk::Walk;
+pub(crate) use walk::{Visit, Walk};
 
 pub(crate) struct Graph<'a> {
     pub(super) results: &'a Results,

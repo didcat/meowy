@@ -20,6 +20,7 @@ pub(crate) struct Reports {
     pub(crate) slot_uses: super::consumers::Uses,
     pub(crate) candidate_inputs: super::results::inputs::Inputs,
     pub(crate) candidate_walk: super::results::inputs::graph::Walk,
+    pub(crate) field_results: super::consumers::Uses,
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
     pub(crate) condensed: super::calls::Condensed,
@@ -63,6 +64,7 @@ impl Checker {
             slot_uses: BTreeMap::new(),
             candidate_inputs: BTreeMap::new(),
             candidate_walk: super::results::inputs::graph::Walk::default(),
+            field_results: BTreeMap::new(),
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
             condensed: super::calls::Condensed::default(),
@@ -106,6 +108,7 @@ impl Checker {
         reports.slot_uses = self.slot_uses(&reports, span)?;
         (reports.candidate_inputs, reports.parts) = self.candidate_inputs(&reports, span)?;
         (reports.candidate_walk, reports.parts) = self.candidate_walk_report(&reports, span)?;
+        (reports.field_results, reports.parts) = self.field_results(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports
