@@ -90,7 +90,14 @@ context mapping retains the old diagnostic/span without weakening the bound or
 changing its test. All 2567 library tests now pass
 (/tmp/meowy-root-first-lib-repaired.log); the specific regression also passes.
 
-Next: canonical reference/source migration and full compiler/editor gate.
+Six prior numeric source assets are intentionally migrated away from dotted
+declaration names: numeric_names, numeric_storage, numeric_doc_links and the three
+numeric_exports module files. Their original expected outcomes remain unchanged;
+all 355 existing cases run with 336 required passes, 19 unchanged gaps and zero
+failures in debug/release (/tmp/meowy-root-first-migrated-conformance.log).
+The explicit asset allowlist is /tmp/meowy-root-first-migrated-assets.json.
+
+Next: publish the revised references and new required cases; run the full gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

@@ -10,8 +10,8 @@ debug.print(0x1)
 0x1 : true
 debug.print(0x1)
 debug.print(literal(0x1))
-1.0 : 2.5
-debug.print(1.0)
+1e0 : 2.5
+debug.print(1e0)
 small <uint8> : literal(1)
 minimum <int8> : literal(-128)
 wide <uint64> : literal(18446744073709551615)
