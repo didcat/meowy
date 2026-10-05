@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::bodies::completion::Shape;
 
+mod primary;
 mod records;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -2641,32 +2641,44 @@ All four final documentation checks pass (`/tmp/meowy-record-dispatch-docs.log`)
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Next: record dispatch arithmetic primary sources
+### Active: record dispatch arithmetic primary sources
 
 `primary_slot` still reaches ordinary block consumers only. Record dispatch fields
 now have a qualified route, but unary/binary Projection ports cannot link to the
 record's primary through it. Keep this extension separate from result-value inference
 and from coercion, output, list and composed-emission consumer rules.
 
+Investigation confirms `primary_effect_inputs` already requalifies observed unary/
+binary stages and returns only explicitly projected inputs. The dedicated dispatch
+slot-zero qualifier will also match the projected scalar kind (including width and
+signedness) against the checked primary layout. Unary inline projections and
+coercion-owned projections are distinct; preserve that split and the existing
+consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
+(390 cases, 463 tracked contract/source/pin files). Only unrelated
+`docs/programs/hey/` is initially dirty.
+
 Dependency-ordered commit plan:
 
-1. Add a dedicated dispatch primary-slot qualifier beside `consumers/dispatch.rs`,
-   reusing `record_dispatch_body` and exact tagged layout identities. Require an
-   immutable unnamed scalar slot zero; test absent results, wrong owners/origins,
-   nonscalar primaries and exact work bounds without changing ordinary `primary_slot`.
-2. Integrate only observed unary primary Projection inputs in `consumers.rs`, after
+1. Integrate only observed unary primary Projection inputs in `consumers.rs`, after
    existing `primary_effect_inputs` qualification. Preserve exact ports, scalar kinds,
    owners and independent stage flags. Keep operation/result-only rows unlinked;
    add focused valid/opaque/corrupt-state and bounded report tests with this slice.
-3. Extend binary primary Projection inputs in a separate slice, preserving both
+2. Extend binary primary Projection inputs in a separate slice, preserving both
    operand positions, left-to-right boundaries and partial projection observations
    before a stopped second operand. Do not generalize to other producer families.
-4. Add required arithmetic/ordering/rejection source cases and classified evidence,
+3. Add required arithmetic/ordering/rejection source cases and classified evidence,
    then run compiler, strict and documentation gates and refresh both handoffs.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
 transparency, aggregate value selection, precise joins, function returns, restarts,
 E225 enforcement and proof outcomes remain separate.
+
+`dispatch_primary_slot` is implemented using exact record-dispatch qualification
+and an immutable unnamed scalar slot zero matching the requested kind. All four
+focused tests pass (`/tmp/meowy-dispatch-primary-qualifier.log`): scalar kinds and
+independent owners, result/initialization independence, missing and nonscalar sources,
+seven type/origin/slot faults, and exact shared work with zero additional payload.
+Ordinary `primary_slot` remains unchanged; consumer integration is next.
 
 ## Documentation conventions and layout
 
