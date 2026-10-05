@@ -465,21 +465,31 @@ the producer, Operation source link and forest root. A borrowed per-pass context
 caches validated fields and roots, charging remaining payload before growth. Missing
 associations stay opaque; cached lookups retain owner/slot agreement checks.
 
-A separate direct-input resolver follows explicitly registered groups, observed
-non-projecting Forward coercions, normal unchanged narrowing and normal unchanged
-ascriptions. It validates point/body/owner identity and rejects conflicting
-producers and cycles. Groups, coercions and ascriptions share their existing
-validators. Ascriptions require exact operation registration and observed results;
-an operation visit is independent. Missing results never create a source link.
+A separate direct-input resolver follows explicitly registered groups, eligible
+immutable local initializer reads, observed non-projecting Forward coercions,
+normal unchanged narrowing and normal unchanged ascriptions. It validates
+point/body/owner identity and rejects conflicting producers and cycles. Groups,
+coercions and ascriptions share their existing validators. Ascriptions require
+exact operation registration and observed results; an operation visit is
+independent. Missing results never create a source link.
 The record consumer's field boundary is unchanged. Unregistered regions stay
 opaque, and stored Normal edges do not invent completion or a source association.
 
-These wrappers share a 65,536-hop scratch bound; group registry size and shared
-work are also bounded. Field/root lookup caches retain their shared payload
-charges, including repeated lookups. Changed/unobserved narrowing, absent results,
-Convert/projected/Stopped coercions, predicates, changed/stopped ascriptions,
-ordinary reads, calls and reference loads remain boundaries. Original input and
-terminal field IDs retain the exact qualified route; no type shapes are copied.
+Read forwarding reuses the existing eligibility, canonical-storage and special-cell
+checks. Observed read headers and exact Bind/input, owner, site and parent identities
+are requalified. An initializer may belong to an outer lexical block in the same
+owner; it is not a child of the read. These links retain the original read point
+and initializer field without replaying initialization or adding evaluation edges.
+Read and Bind control marks remain independent.
+
+Wrappers and initializer jumps share a 65,536-hop scratch bound; group registry
+size and shared work are also bounded. Field/root lookup caches retain their shared
+payload charges across repeated reads of one field. Changed/unobserved narrowing, absent
+results, Convert/projected/Stopped coercions, predicates, changed/stopped ascriptions,
+mutable locals, parameters, emitted aliases, dispatch receivers, temporary cells,
+missing initializer evidence, calls and reference loads remain boundaries.
+Original input and terminal field IDs retain the exact qualified route;
+no type shapes are copied.
 
 Direct-source reports retain each original Value candidate's point and optional
 field/source Slot at its existing block/slot/candidate position. They are collected
@@ -492,10 +502,9 @@ these optional links.
 
 A separate expanded forest is collected after the direct-source map. It first
 qualifies a borrowed view against every original Value candidate, point, owner and
-qualified group/Forward/narrowing/ascription/field-result route. Missing, extra or
-changed descriptors are invalid. Qualification reuses bounded field/root caches and
-consumes the same remaining payload as traversal; no input or history vectors
-are copied.
+qualified wrapper/initializer/field-result route. Missing, extra or changed
+descriptors are invalid. Qualification reuses bounded field/root caches and consumes
+the same remaining payload as traversal; no input or history vectors are copied.
 
 Resolved direct sources produce explicit Field visits retaining the original
 candidate position and input descriptor alongside the terminal field and source
@@ -504,13 +513,15 @@ terminal. Field and composed edges use the same iterative owner, active/complete
 pending/visited/output and work checks. The expanded forest shares visited state
 across roots and retains Unknown, empty, multiple and discarded histories without
 selecting a value. Late failures publish no partial forest or remaining budget.
-Control marks, mixed cycles, diamonds and exact depth/resource bounds are seeded
-structural tests; source cases separately preserve typed and ascribed field
-composition and tail order across owners, conversions, primary extraction,
-mutable snapshots, shared loads, empty results, stopped tails and ordinary
-initializer, ascription and duplicate-field rejection. Those cases do not establish
-proof outcomes or make opaque producers transparent. Proof evaluation remains
-unimplemented.
+Control marks, mixed initializer cycles, diamonds and exact depth/resource bounds
+are seeded structural tests; source cases separately preserve typed and ascribed
+field copies, composition and tail order across owners, conversions, primary
+extraction, mutable snapshots, shared loads, empty results, stopped tails and ordinary
+initializer, ascription, immutable-assignment and duplicate-field rejection.
+Those cases do not establish proof outcomes or make opaque producers transparent.
+Proof evaluation remains unimplemented. Direct scalar block Value candidates still
+lack block-source links; these require separate descriptors and qualification from
+the field-source reports.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded

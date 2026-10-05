@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Direct field sources now follow qualified unchanged ascriptions.
+Updated: 2026-10-05. Direct field sources now follow eligible immutable local reads.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2318,8 +2318,9 @@ their identities. Record consumers still stop at Field results.
 
 Groups, Forward coercions, unchanged narrowing and ascriptions share bounded
 hop/cycle state, work and field/root caches. Missing results, predicates,
-changed/stopped ascriptions, projecting/converting/stopped coercions, initializer
-reads, calls, shared loads and changed/unobserved narrowing remain opaque.
+changed/stopped ascriptions, projecting/converting/stopped coercions, calls, shared
+loads and changed/unobserved narrowing remain opaque. This slice left initializer
+reads opaque; their extension follows below.
 No runtime value, reachability, loan authority or proof outcome is inferred.
 
 | Reviewable slice | Commit |
@@ -2356,66 +2357,85 @@ final documentation checks pass (`/tmp/meowy-ascribed-fields-docs.log`).
 No outstanding failures remain. Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: direct field sources through immutable local initializers
+## Direct field sources through immutable local initializers
 
-Active investigation: the shared resolver already validates every visited point's
-owner/body and producer identity. `read_initializer_input` requalifies observed
-reads, existing eligibility, special-cell exclusions and exact Bind/input metadata.
-Initializer roots can cross lexical blocks without changing owner; they are not
-children of the read. Reuse this association without inventing evaluation edges or
-replaying initializers. Existing immutable-read opacity expectations need positive
-coverage while mutable reads retain their boundary. Both new regressions fail on
-the old resolver (`/tmp/meowy-local-fields-before.log`). The resolver now calls the
-shared read qualifier; mutable-read fixtures preserve the old opacity checks.
-All 2585 library tests pass (`/tmp/meowy-local-fields-library.log`), including
-typed/grouped/ascribed chains across lexical blocks and independent owners,
-distinct read points sharing one terminal field, unchanged original forests and
-unchanged evaluation edges. Formatting and whitespace checks pass. Opacity/identity
-and cycle/resource tests are the next separate slices. Resolver: `20c2772`.
-All five local-source groups pass (`/tmp/meowy-local-fields-boundaries.log`),
-covering missing evidence, consistent stopped/empty initializers, special-cell
-exclusions and independent read/Bind control marks. Stale stored descriptors are
-rejected; recollection retains an explicit unresolved Value candidate.
-Keep corrupt read/Bind metadata tests in their own slice so the expanded boundary
-coverage remains reviewable. Opacity/control slice: `389a7a9`. The identity suite
-now covers 42 read/Bind/registry/parent/site/conflicting-producer faults with and
-without field associations; all six local-source groups pass
-(`/tmp/meowy-local-fields-faults.log`). Collection and stored-report qualification
-reject every corruption without publishing partial results. Mixed cycles and
-shared resource tests pass: qualified initializer-jump cycles, a mixed 16-local
-chain with exact hop/work/cache boundaries and preserved source histories. All
-nine local-source groups pass (`/tmp/meowy-local-fields-limits.log`), as do all
-575 forward-report tests (`/tmp/meowy-local-fields-reports.log`). Identity slice:
-`9e9125d`; cycle/resource slice: `ee389a5`. Four required source cases pass fresh
-debug/release checks (`/tmp/meowy-local-fields-source.log`), preserving copy/tail
-order across owners, snapshot/special-cell/load/empty boundaries, P006 and E305.
-The preservation audit retains 370 prior cases, 404 source assets, 37 reference
-contracts/hashes, capability pins and proof obligations
-(`/tmp/meowy-local-fields-preservation.log`). Coverage is regenerated; all four
-source-slice documentation checks pass (`/tmp/meowy-local-fields-source-docs.log`).
-Final compiler/strict gates remain. Unrelated
-`docs/programs/hey/` remains excluded.
+The shared direct-source resolver now follows eligible immutable local reads using
+`read_initializer_input`. It requalifies observed read headers, canonical storage,
+exact Bind/input identities, owner/site/parent metadata and special-cell exclusions.
+Initializers may cross lexical blocks within one owner; their roots remain children
+of their binding, not of the read. No initializer is replayed and no evaluation edge
+is added. Original Value candidates, read points, terminal fields, source slots and
+both forests remain distinct. Record consumers still stop at Field results.
+
+Read and Bind control marks are independent. Mutable locals, parameters, emitted
+aliases, dispatch receivers, temporary cells, missing or stopped evidence, calls,
+reference loads and changed/stopped wrappers remain opaque. Initializer jumps
+share existing hop/cycle/work bounds and field/root caches. Unknown, empty and
+multiple source histories stay intact without value selection, reachability,
+loan authority or proof outcomes.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Resolve eligible local reads across bindings and lexical blocks | `20c2772` |
+| Preserve eligibility, missing evidence and special-cell boundaries | `389a7a9` |
+| Reject corrupt read/Bind/registry identities and producer conflicts | `9e9125d` |
+| Bound initializer cycles, mixed hops, work and cache payload | `ee389a5` |
+| Pin copy execution, stopped tails and immutable-assignment rejection | `4714018` |
+
+Both integration regressions fail on the prior resolver
+(`/tmp/meowy-local-fields-before.log`). All nine local-source groups and 575
+forward-report tests pass (`/tmp/meowy-local-fields-limits.log`,
+`/tmp/meowy-local-fields-reports.log`). Structural evidence covers absent/stopped
+reads, missing/empty initializers, special-cell markers, independent control flags,
+42 corruption variants with/without field associations, individually qualified
+initializer cycles and exact resource limits on a mixed 16-local chain. Repeated
+reads share the terminal field cache while retaining distinct candidate points.
+
+Four required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-local-fields-source.log`): copy/tail order across owners and scopes,
+mutable snapshots, parameter/receiver boundaries, shared/temporary loads, guarded
+narrowing, empty results, P006 after initialization and E305 for immutable assignment.
+All four source-slice documentation checks pass
+(`/tmp/meowy-local-fields-source-docs.log`). The preservation audit retains 370
+prior cases, 404 source assets, 37 reference contracts/reviewed hashes, capability
+pins and proof obligations (`/tmp/meowy-local-fields-preservation.log`).
+
+All ten compiler checks pass: formatting, Clippy, 2592 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-local-fields-gate.log`). Conformance has 374 cases: 355 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those gaps (`/tmp/meowy-local-fields-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-local-fields-docs.log`).
+No outstanding failures remain. Unrelated `docs/programs/hey/` is preserved.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: direct scalar block result sources
+
+`results/inputs/sources.rs` qualifies composed Primary/Field candidates;
+`results/inputs/direct.rs` currently stores only field-source descriptors. A direct
+Value candidate whose input resolves to a scalar block still lacks a block-source
+association. Keep this separate from field transparency and aggregate provenance.
 
 Dependency-ordered commit plan:
 
-1. Complete: in `consumers/field_results/lookup/narrowing.rs`, reuse `read_initializer_input`
-   from `effects/reads/initializers.rs` for observed normal reads with existing
-   immutable-local eligibility and exact Bind/input identities. Keep collection
-   and stored-descriptor qualification on the same resolver. Include grouped,
-   typed/ascribed chains across lexical blocks and independent owners, retaining
-   original Value candidates, terminal fields and both forests.
-2. Complete: cover missing observations/eligibility/initializers, mutable locals,
-   parameters, emitted aliases, dispatch receivers, temporary cells, storage
-   mismatches, corrupt Bind/read metadata, cycles and exact shared budgets. Keep
-   calls and reference loads opaque; no lifetime or loan authority is added.
-3. Complete: required source cases and classified evidence preserve references,
-   all prior fixtures and capability pins. Distinguish immutable copying from
-   runtime value selection and source histories from overwrite/branch analysis.
-4. Run compiler, strict and final documentation gates and refresh both handoffs.
+1. Share bounded consumer/result/body qualification from `consumers.rs::slot_block`
+   for scalar-only block results. Require an observed normal BlockResult, exact
+   consumer/owner/body identity and a layout containing only the scalar primary.
+   Cover grouped/typed/ascribed/local-read roots and missing/stopped/record layouts.
+2. Add a distinct direct block-source descriptor and bounded collection/stored
+   qualification in `results/inputs/direct*`. Preserve original Value points,
+   candidate positions and all field-source reports; never fabricate a Field ID.
+3. Integrate explicit block-source visits into the expanded forest in a separate
+   slice. Share existing root/slot, owner, cycle and payload/work bounds; retain the
+   original candidate forest and Unknown/empty/multiple histories unchanged.
+4. Add corruption, mixed field/block cycles, exact resource-boundary tests and
+   required source cases with classified evidence. Keep unobserved completion,
+   unknown layouts, calls and reference loads opaque; no source value is selected.
+5. Run compiler, strict and final documentation gates and refresh both handoffs.
 
-Do not make Field results transparent in `consumers/grouped.rs` or select candidate
-values. Aggregate provenance, precise branch/overwrite joins, function returns,
-restart propagation, E225 enforcement and proof outcomes remain later work.
+Do not make Field results transparent in `consumers/grouped.rs`. Broader aggregate
+provenance, precise branch/overwrite joins, function returns, restart propagation,
+E225 enforcement and proof outcomes remain later work.
 
 ## Documentation conventions and layout
 
@@ -4005,9 +4025,10 @@ are now independent, and bounded result-candidate inputs retain qualified compos
 source slots. Candidate traversal and observed field-result source links are
 implemented, including direct-input lookup through unchanged narrowing and a
 separate expanded field-source forest. Explicit groups, observed non-projecting
-Forward coercions and normal unchanged ascriptions now qualify direct field sources.
-Immutable local initializer forwarding is next, following the ordered plan above;
-value selection and broader field-value provenance remain separate.
+Forward coercions, normal unchanged ascriptions and eligible immutable local reads
+now qualify direct field sources. Direct scalar block sources are next, following
+the ordered plan above; value selection and broader aggregate provenance remain
+separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4613,9 +4634,10 @@ value selection and broader field-value provenance remain separate.
    resolution (`ffa139f`), boundaries (`f781432`), limits (`df5171e`) and source cases
    (`ac14ed1`) pass the compiler gate. Unchanged-ascription sources (`206176d`),
    boundaries (`dec8a27`), limits (`651ce9c`) and source cases (`90d031a`) are complete;
-   current gate results are recorded above. Next qualify immutable local initializer
-   forwarding for direct field sources, following the ordered plan, before wider
-   value provenance work.
+   current gate results are recorded above. Immutable local forwarding (`20c2772`),
+   eligibility (`389a7a9`), identity checks (`9e9125d`), limits (`ee389a5`) and source
+   cases (`4714018`) are implemented. Next qualify direct scalar block sources,
+   following the ordered plan, before wider value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
