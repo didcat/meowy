@@ -1,0 +1,16 @@
+d : @"debug"
+record : { -> n : 4 }
+grouped : { -> (record.n) }
+ascribed : { -> record.n~<int32> }
+typed <int32> : { -> record.n }
+d.print(grouped)
+d.print(ascribed)
+d.print(typed)
+nullable <{n <int32><null>}> : { -> n : 4 }
+| nullable.n <int32> | {
+    narrowed : { -> nullable.n }
+    d.print(narrowed)
+}
+view : &record
+borrowed : { -> view.n }
+d.print(borrowed)

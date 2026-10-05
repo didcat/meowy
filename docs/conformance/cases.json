@@ -3544,6 +3544,36 @@
         "code": "E303"
       },
       "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "field_narrowing_emissions",
+      "phase": "run",
+      "source": "sources/field_narrowing_emissions.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "record 2\nrecord tail 2\nrow tail 2\n2\n2\nrecord 3\nrecord tail 3\nrow tail 3\n3\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "field_narrowing_boundaries",
+      "phase": "run",
+      "source": "sources/field_narrowing_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "4\n4\n4\n4\n4\n"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "field_narrowing_unproven",
+      "phase": "check",
+      "source": "sources/field_narrowing_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }

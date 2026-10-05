@@ -1,0 +1,17 @@
+d : @"debug"
+show <null> : (n <int32>) {
+    record : {
+        d.print("record {n}")
+        -> value : n
+        d.print("record tail {n}")
+    }
+    row : {
+        -> record.value
+        -> copy : record.value
+        d.print("row tail {n}")
+    }
+    d.print(row)
+    d.print(row.copy)
+}
+show(2)
+show(3)

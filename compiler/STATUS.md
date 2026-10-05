@@ -2063,7 +2063,13 @@ individually valid seeded narrowing cycle, exact hop/work/cache/map limits, late
 faults and Unknown/empty/multiple histories. All five narrowing groups, five
 direct-source groups and all-target Clippy pass
 (`/tmp/meowy-field-narrowing-boundaries.log`, `/tmp/meowy-field-narrowing-direct-limits.log`,
-`/tmp/meowy-field-narrowing-boundaries-lint.log`). Source conformance follows.
+`/tmp/meowy-field-narrowing-boundaries-lint.log`). Boundary coverage is committed as
+`f4e12ff`. Three required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-field-narrowing-source.log`); catalog/coverage checks pass.
+All four default checks pass (`/tmp/meowy-field-narrowing-source-docs.log`). The
+preservation audit confirms 334 prior cases, 366 source assets, 37 reference
+contracts/reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-field-narrowing-preservation.log`). The full compiler gate follows.
 
 Dependency-ordered commit plan:
 
