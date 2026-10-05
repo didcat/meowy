@@ -1,6 +1,8 @@
 use super::*;
 
 mod collection;
+#[cfg(test)]
+pub(in super::super) mod lookup;
 
 impl Checker {
     pub(super) fn field_result_slot(

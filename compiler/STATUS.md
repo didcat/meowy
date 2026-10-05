@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Observed field-result source links pass compiler and documentation gates.
+Updated: 2026-10-04. Field-result lookup through unchanged narrowing is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2037,26 +2037,31 @@ pins and proof obligations are unchanged (`/tmp/meowy-field-result-links-preserv
 Only unrelated `docs/programs/hey/` remains excluded. Proof evaluation and full
 release qualification remain incomplete.
 
-### Next: field-result lookup through unchanged narrowing
+## Field-result lookup through unchanged narrowing
 
-Normal field associations now exist, but direct candidate inputs commonly point to
-the field's ordinary narrowing wrapper. Add bounded source lookup without changing
-the record-consumer resolver or selecting candidate values.
+Investigation confirms existing `field_result_slot` and `field_result_roots` can
+qualify retained Normal-port associations, and `unchanged_narrowing_input` already
+validates observed unchanged results. Reuse those authorities without extending
+`grouped_consumer`. Keep resolved direct candidates separate from the original
+forest to avoid a dependency cycle. The lookup context now requalifies retained
+associations and caches checked fields and forest roots within the remaining payload.
+All three focused lookup groups pass (`/tmp/meowy-field-narrowing-lookup.log`);
+all-target Clippy passes (`/tmp/meowy-field-narrowing-lookup-lint.log`).
+Narrowing-only resolution is next.
 
-1. In `consumers/field_results/`, qualify reads of stored Normal-port associations
-   against the field producer, original Operation link and forest root. Reuse one
-   bounded qualification context for repeated lookups; missing associations stay
-   opaque and corrupted retained associations fail atomically.
-2. Add a bounded direct-input lookup that follows observed, normal, unchanged
-   narrowing to a qualified field-result slot. Retain the original candidate input
-   and exact wrapper identities; bound cycles, hops and work. Changed/unobserved
-   narrowing, calls, dereferences and other wrappers remain explicit boundaries.
-3. Integrate optional resolved direct-input sources after field-result collection,
-   avoiding a dependency cycle with the original candidate forest. Preserve owner
-   and candidate positions and Unknown/empty/multiple histories. Keep representation,
-   lookup and collection slices independently reviewable with focused regressions.
-4. Add adversarial corruption/limits and required source cases/classified evidence,
-   then run compiler, strict and final documentation gates before widening traversal.
+Dependency-ordered commit plan:
+
+1. Add a borrowed field-result lookup context with bounded shared root/association
+   caches and stored-link corruption tests. Stage unused prerequisites under
+   `cfg(test)` until the production collector is installed.
+2. Add narrowing-only direct-input resolution with exact point/owner identities,
+   conflict/cycle/hop/work bounds, and explicit boundaries for all other producers.
+3. Collect optional direct-candidate sources after field-result collection, retaining
+   original input, terminal field, owner and candidate positions. Reserve remaining
+   combined map capacity and cache payload without altering prior reports.
+4. Add independent resource, corruption and boundary regressions, then required
+   source cases/classified evidence. Run compiler, strict and final documentation
+   gates and leave a dependency-ordered handoff. Preserve `docs/programs/hey/`.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
