@@ -28,6 +28,7 @@ impl Checker {
             || observed.input != op.input
             || observed.local != op.local
             || observed.block != op.block
+            || observed.receiver != op.receiver
             || observed.normal != op.normal
             || observed.control != op.control
         {

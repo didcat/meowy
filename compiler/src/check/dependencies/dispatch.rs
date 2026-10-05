@@ -1,5 +1,6 @@
 use super::{
     PointKind, SequenceSource,
+    bodies::{Completion, completion::Shape},
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -15,6 +16,7 @@ pub(crate) struct Dispatch {
     pub(crate) input: hir::PointId,
     pub(crate) local: hir::LocalId,
     pub(crate) block: hir::BlockId,
+    pub(crate) receiver: Shape,
     pub(crate) input_normal: bool,
     pub(crate) normal: bool,
     pub(crate) control: bool,
@@ -139,6 +141,7 @@ impl Checker {
             input,
             local,
             block: body.id,
+            receiver: Completion::of(&value.ty).result,
             input_normal,
             normal,
             control: self.control,

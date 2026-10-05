@@ -5,6 +5,7 @@ pub(crate) struct Observed {
     pub(crate) input: PointId,
     pub(crate) local: crate::hir::LocalId,
     pub(crate) block: crate::hir::BlockId,
+    pub(crate) receiver: crate::check::dependencies::bodies::completion::Shape,
     pub(crate) normal: bool,
     pub(crate) control: bool,
     pub(crate) initialized: bool,
@@ -45,6 +46,7 @@ impl Checker {
                 || prior.input != op.input
                 || prior.local != op.local
                 || prior.block != op.block
+                || prior.receiver != op.receiver
                 || prior.normal != op.normal
                 || prior.control != op.control
             {
@@ -60,6 +62,7 @@ impl Checker {
                     input: op.input,
                     local: op.local,
                     block: op.block,
+                    receiver: op.receiver,
                     normal: op.normal,
                     control: op.control,
                     initialized: false,

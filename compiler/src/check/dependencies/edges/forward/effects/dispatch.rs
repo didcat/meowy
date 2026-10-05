@@ -1,5 +1,8 @@
 use super::*;
-use crate::check::dependencies::{SequenceSource, bodies::Fact};
+use crate::check::dependencies::{
+    SequenceSource,
+    bodies::{Completion, Fact},
+};
 
 mod report;
 pub(crate) use report::Observed;
@@ -53,6 +56,11 @@ impl Checker {
         let sequence = self.sequences.get(&key).ok_or_else(invalid)?;
         let ends = self.endpoints.get(&key).ok_or_else(invalid)?;
         if !op.input_normal
+            || !(Completion {
+                normal: op.input_normal,
+                result: op.receiver,
+            })
+            .valid()
             || (!op.normal && port == Port::Normal(id))
             || op.owner != owner
             || point.owner != owner

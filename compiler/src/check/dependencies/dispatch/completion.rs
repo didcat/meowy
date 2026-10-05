@@ -65,12 +65,14 @@ pub(crate) fn dispatch_completion_preserves_partial_composition_and_replay_ident
         .dispatch_operation(id, op.input, op.local, body, op.span)
         .unwrap();
     assert_eq!(checker.dispatch_ops[&id], op);
-    for fault in 0..2 {
+    for fault in 0..3 {
         let prior = checker.dispatch_ops.get_mut(&id).unwrap();
         if fault == 0 {
             prior.input_normal = false;
-        } else {
+        } else if fault == 1 {
             prior.normal = false;
+        } else {
+            prior.receiver = Shape::Other;
         }
         let before = checker.dispatch_ops[&id].clone();
         assert!(
@@ -83,5 +85,55 @@ pub(crate) fn dispatch_completion_preserves_partial_composition_and_replay_ident
         assert_eq!(checker.dispatch_ops[&id], before);
         assert_eq!(checker.dispatch_edges, count);
         checker.dispatch_ops.insert(id, op.clone());
+    }
+}
+
+#[test]
+pub(crate) fn dispatch_receiver_shape_is_shallow_and_independent_of_body_results() {
+    use crate::check::dependencies::ScalarKind;
+    for (source, shape, normal) in [
+        (
+            "v:3.{->false}",
+            Shape::Scalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
+            true,
+        ),
+        ("v:true.{->3}", Shape::Scalar(ScalarKind::Bool), true),
+        ("v:\"x\".{->3}", Shape::Scalar(ScalarKind::String), true),
+        ("v:null.{->3}", Shape::Scalar(ScalarKind::Null), true),
+        (
+            "n:1;v:(&n).{->3}",
+            Shape::Reference(hir::ReferenceMode::Shared),
+            true,
+        ),
+        ("v:{->n:1}.{->3}", Shape::Record { fields: 1 }, true),
+        ("v:[1,2].{->3}", Shape::List { capacity: 2 }, true),
+        (
+            "n<int32><null>:1;v:n.{->3}",
+            Shape::Union { members: 2 },
+            true,
+        ),
+        (
+            "d:@\"debug\";stop<never>:(){d.panic(\"stop\")};v:stop().{}",
+            Shape::Never,
+            false,
+        ),
+        (
+            "d:@\"debug\";v:3.{d.panic(\"stop\")}",
+            Shape::Scalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
+            false,
+        ),
+    ] {
+        crate::compile(source).unwrap_or_else(|errors| panic!("{source}: {errors:?}"));
+        let (checker, _) = check(source);
+        let op = checker.dispatch_ops.values().next().unwrap();
+        assert_eq!(op.receiver, shape, "{source}");
+        assert_eq!(op.input_normal, shape != Shape::Never);
+        assert_eq!(op.normal, normal);
     }
 }

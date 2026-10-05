@@ -1,6 +1,49 @@
 use super::{super::tests::checked, *};
 
 #[test]
+pub(crate) fn dispatch_effects_reject_changed_or_invalid_receiver_shapes_atomically() {
+    use crate::check::dependencies::{ScalarKind, bodies::completion::Shape};
+    for shape in [
+        Shape::Other,
+        Shape::Never,
+        Shape::Scalar(ScalarKind::Int {
+            bits: 7,
+            signed: true,
+        }),
+    ] {
+        let (mut checker, reports) = checked("v:3.{->$}", false);
+        let id = *checker.dispatch_ops.keys().next().unwrap();
+        let before = reports.effects.clone();
+        checker.dispatch_ops.get_mut(&id).unwrap().receiver = shape;
+        assert!(
+            checker
+                .dispatch_result_body(&reports, id, 0, Span::default())
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+        let mut effects = before.clone();
+        assert!(
+            checker
+                .record_dispatch_effect(0, Port::Operation(id), &mut effects, 100, Span::default())
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+        assert_eq!(effects, before);
+        if shape != Shape::Other {
+            assert!(
+                checker
+                    .validate_dispatch_effect(&reports, 0, Port::Operation(id), Span::default())
+                    .unwrap_err()
+                    .message
+                    .contains("identity")
+            );
+        }
+    }
+}
+
+#[test]
 pub(crate) fn dispatch_effects_keep_receiver_binding_body_and_independent_visits() {
     for source in [
         "v:3.{->$}",
@@ -21,6 +64,7 @@ pub(crate) fn dispatch_effects_keep_receiver_binding_body_and_independent_visits
                     input: op.input,
                     local: op.local,
                     block: op.block,
+                    receiver: op.receiver,
                     normal: true,
                     control: false,
                     initialized: true,

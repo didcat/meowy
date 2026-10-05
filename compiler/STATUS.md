@@ -2528,34 +2528,47 @@ documentation checks pass (`/tmp/meowy-dispatch-sources-docs.log`). No outstandi
 failures remain. Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: scalar dispatch receiver input sources
+### Active: scalar dispatch receiver input sources
 
 Dispatch result slots can now link to their consumers, but `$` reads remain explicit
 opaque leaves. `read_initializer_input` correctly excludes synthetic receivers;
 keep that exclusion and use a producer-specific path for any future forwarding.
 
+Investigation confirms that the synthetic Bind's checked type is available at
+dispatch capture, while report construction has already moved local types into
+HIR. Reuse the bounded `Completion` shape and retain it in dispatch observations;
+validate it independently of the body's completion. Receiver lookup will use a
+dedicated bounded local-to-producer index and checked lexical containment, without
+fabricating an ordinary statement or admitting receivers to initializer eligibility.
+The current tree contains only unrelated `docs/programs/hey/`. Preservation baseline:
+`/tmp/meowy-receiver-sources-baseline.json` (383 cases and existing contract assets).
+
 Dependency-ordered commit plan:
 
-1. In `dependencies/dispatch.rs`, capture a bounded shallow receiver shape from
-   the checked synthetic Bind value before local types move into HIR. Preserve
-   input/body completion independently and existing edge order; add scalar,
-   reference/aggregate, stopped and replay-identity tests with the capture change.
-2. Build a bounded receiver-local-to-dispatch index from exact producer/local/body
+1. Build a bounded receiver-local-to-dispatch index from exact producer/local/body
    identities, preserving independent owners, nested `$` and checked lexical
    containment. No statement ID or ordinary initializer binding may be invented.
-3. Qualify scalar receiver reads only against matching read/storage metadata and
+2. Qualify scalar receiver reads only against matching read/storage metadata and
    an observed dispatch initialization. Preserve result/body-stop independence;
    absent initialization, references, aggregates, calls and reborrows stay opaque.
    Add exact identity, conflict, cycle and shared-budget regressions with each slice.
-4. Integrate source links using existing input roots, without replaying receiver
+3. Integrate source links using existing input roots, without replaying receiver
    evaluation or granting lifetime/loan authority. Keep ordinary read eligibility,
    original candidates and all Field/Block/Dispatch/composed identities intact.
-5. Add required source cases and classified evidence, then run compiler, strict
+4. Add required source cases and classified evidence, then run compiler, strict
    and final documentation gates and refresh both handoffs.
 
 Record-dispatch consumers, field transparency, aggregate value selection, precise
 branch/overwrite joins, function returns, restart propagation, E225 enforcement
 and proof outcomes remain separate.
+
+Receiver shape capture and exact observation/replay checks are implemented. All 55
+dispatch-focused tests pass (`/tmp/meowy-receiver-sources-shape.log`), including
+scalar/reference/record/list/union/Never capture, independent stopped bodies and
+atomic rejection of changed shapes. No source forwarding is enabled yet.
+The receiver index will charge each fixed descriptor against the existing shared
+payload remainder, alongside its own MAX_EDGES row cap; it does not add ordinary
+consumer or initializer rows. Later traversal retains that same payload budget.
 
 ## Documentation conventions and layout
 
