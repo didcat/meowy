@@ -2325,9 +2325,12 @@ Boundary tests now cover independent operation/result visits, opaque predicates,
 changed/stopped ascriptions, other wrappers and 27 late identity/conflict faults;
 all five ascribed-source groups pass (`/tmp/meowy-ascribed-fields-boundaries.log`).
 Observed results still require exact operation registration even without an
-operation visit. Late errors publish no partial map or forest. Cycle/resource
-tests are next. Unrelated
-`docs/programs/hey/` remains excluded.
+operation visit. Late errors publish no partial map or forest (`dec8a27`). All eight
+ascribed-source groups pass, including individually qualified mixed cycles,
+exact hop/work/cache limits and Unknown/empty/multiple histories
+(`/tmp/meowy-ascribed-fields-limits.log`). All 566 forward-report tests pass
+(`/tmp/meowy-ascribed-fields-reports.log`). Source conformance and final gates are
+next. Unrelated `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
@@ -2336,10 +2339,10 @@ Dependency-ordered commit plan:
    normal, unchanged ascriptions mixed with Forward/groups/narrowing. Preserve
    original Value candidates and both report paths; include focused typed/grouped
    source and expanded-forest regressions in this first commit.
-2. Separately cover absent results, predicates, changed/stopped ascriptions,
+2. Complete: cover absent results, predicates, changed/stopped ascriptions,
    corrupt headers/routes, producer conflicts, mixed cycles, owners and exact
    shared hop/work/cache limits. Keep initializer reads, calls and loads opaque.
-   Split opacity/identity checks from cycles/resource checks if needed for review.
+   Opacity/identity and cycle/resource checks are separate reviewable slices.
 3. Add required source cases and classified evidence for ascription behavior,
    including E208, without changing references or prior fixtures/capability pins.
 4. Run compiler, strict and final documentation gates and refresh both handoffs.

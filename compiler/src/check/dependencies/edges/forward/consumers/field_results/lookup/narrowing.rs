@@ -132,3 +132,6 @@ mod ascriptions;
 
 #[cfg(test)]
 mod ascription_boundaries;
+
+#[cfg(test)]
+mod ascription_limits;
