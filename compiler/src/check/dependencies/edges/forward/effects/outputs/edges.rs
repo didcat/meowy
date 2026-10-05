@@ -19,7 +19,7 @@ impl Checker {
         let limit = crate::check::dependencies::sequences::MAX_ITEMS;
         if op.parts.len() > limit
             || op.edges.len() > limit * 3 + 2
-            || !self.flow.spend(op.parts.len() * 8 + op.edges.len() + 10)
+            || !self.flow.spend(op.parts.len() * 11 + op.edges.len() + 10)
         {
             return Err(budget());
         }
@@ -35,8 +35,10 @@ impl Checker {
         {
             return Err(invalid());
         }
-        for input in op.parts.iter().flatten() {
-            if input.point == id
+        for (part, input) in op.parts.iter().enumerate() {
+            let Some(input) = input else { continue };
+            if !input.valid_source(part, op.stopped)
+                || input.point == id
                 || !self.points.get(input.point).is_some_and(|child| {
                     child.complete
                         && child.owner == owner

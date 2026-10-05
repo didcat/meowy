@@ -78,12 +78,14 @@ pub(crate) fn output_slots_require_projection_visits_and_keep_stopped_anchors() 
     checker.output_edges -= op.edges.len() - end;
     op.edges.truncate(end);
     op.stopped = Some(0);
+    op.parts[0].as_mut().unwrap().source = Some(Shape::Never);
     let Effect::Output(op) = &mut reports.effects.get_mut(&id).unwrap().1 else {
         panic!()
     };
     op.stopped = Some(0);
     op.terminal = false;
     op.parts.get_mut(&0).unwrap().output = false;
+    op.parts.get_mut(&0).unwrap().input.as_mut().unwrap().source = Some(Shape::Never);
     reports.index.operations.remove(&id);
     assert_eq!(checker.slot_uses(&reports, Span::default()).unwrap(), prior);
     let (_, reports) =

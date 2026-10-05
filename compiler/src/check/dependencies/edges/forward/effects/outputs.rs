@@ -60,7 +60,7 @@ impl Checker {
         let budget = || Diagnostic::unsupported("proof output-effect budget exhausted", span);
         if !self
             .flow
-            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 6)
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 9)
         {
             return Err(budget());
         }
@@ -69,6 +69,11 @@ impl Checker {
             Kind::Part { part, input } => Some((part, input)),
             _ => None,
         };
+        if let Some((part, Some(input))) = part
+            && !input.valid_source(part, stage.stopped)
+        {
+            return Err(invalid());
+        }
         let mut fresh = part.is_some();
         if let Some((owner, effect)) = effects.get(&stage.point) {
             let Effect::Output(output) = effect else {
@@ -165,7 +170,7 @@ impl Checker {
         };
         if !self
             .flow
-            .spend(self.outputs.len().checked_ilog2().unwrap_or(0) as usize + 10)
+            .spend(self.outputs.len().checked_ilog2().unwrap_or(0) as usize + 13)
         {
             return Err(budget());
         }
@@ -206,20 +211,22 @@ impl Checker {
             _ => return Err(invalid()),
         };
         let input = match kind {
-            Kind::Projection { input, .. }
+            Kind::Projection { part, input }
             | Kind::Part {
-                input: Some(input), ..
-            } => Some(input),
+                part,
+                input: Some(input),
+            } => Some((part, input)),
             _ => None,
         };
-        if let Some(input) = input
-            && !self.points.get(input.point).is_some_and(|child| {
-                child.complete
-                    && child.owner == owner
-                    && child.parent == Some(id)
-                    && child.block == point.block
-                    && matches!(child.kind, PointKind::Expr | PointKind::And | PointKind::Or)
-            })
+        if let Some((part, input)) = input
+            && (!input.valid_source(part, op.stopped)
+                || !self.points.get(input.point).is_some_and(|child| {
+                    child.complete
+                        && child.owner == owner
+                        && child.parent == Some(id)
+                        && child.block == point.block
+                        && matches!(child.kind, PointKind::Expr | PointKind::And | PointKind::Or)
+                }))
         {
             return Err(invalid());
         }
@@ -240,3 +247,6 @@ mod tests;
 
 #[cfg(test)]
 mod reports;
+
+#[cfg(test)]
+mod sources;

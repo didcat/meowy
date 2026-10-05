@@ -2771,7 +2771,12 @@ shallow primary `Shape` before projection and validates exact checked HIR shape,
 primary presence and stopped/suffix agreement before registration or replay.
 Ten producer tests pass, including scalar kinds, unions, Never suffixes, formatting
 rejections, malformed shapes and exact work limits
-(`/tmp/meowy-output-dispatch-capture.log`). Report qualification is next; no new
+(`/tmp/meowy-output-dispatch-capture.log`, capture commit `053241c`). Report stages,
+aggregation and full edge replay now validate shape presence and stopped/suffix
+agreement; exact report equality includes the captured source. All 35 focused
+output tests pass (`/tmp/meowy-output-dispatch-reports.log`), including sparse
+stages, unobserved suffix validation, merge conflicts and exact work. Dispatch
+consumer integration remains next; no new generic
 value-forwarding path or language contract is needed.
 
 `FormatInput` now stores the checked point, primary flag and optional source shape. Output
@@ -2786,14 +2791,15 @@ Dependency-ordered commit plan:
    `projected` replaces the checked value. Preserve literal None entries, exact input
    IDs, part order, primary decisions and formatting/reborrow rejections. Include
    capture/replay/shape/budget tests, splitting producer changes if necessary.
-2. Propagate and requalify the shape in `effects/outputs.rs` and its validation/edge
+2. Complete: propagate and requalify the shape in `effects/outputs.rs` and its validation/edge
    replay helpers. Preserve sparse part reports, independent prefix/projection/output/
    terminal flags, checked suffixes after a stop and fixed-size input descriptors.
 3. Qualify only observed scalar output-owned primary projections against exact
    dispatch result slots using the captured source kind. Retain the original part
    index in each Projection port and existing shared map/payload/work accounting.
-   Keep list/emission rules and generic value forwarding unchanged; add focused
-   ownership, sparse/stopped, identity, cycle and resource-limit tests with integration.
+   Keep list/emission rules and generic value forwarding unchanged. Commit integration
+   with focused ownership and sparse/stopped tests, then independently useful late
+   identity, cycle, control and resource-limit coverage in a separate slice.
 4. Add required print/interpolation/panic-prefix source cases and classified evidence;
    run compiler, strict and documentation gates and refresh both handoffs.
 
