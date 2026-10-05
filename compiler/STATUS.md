@@ -2587,32 +2587,44 @@ All four final documentation checks pass (`/tmp/meowy-receiver-sources-docs.log`
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Next: record dispatch field sources
+### Active: record dispatch field sources
 
 `field_slot` still reaches only ordinary record blocks through `slot_block`.
 Keep ordinary block/dispatch origins distinct; the existing tagged dispatch result
 rows can support a dedicated field consumer without making record receivers transparent.
 
+Investigation confirms that tagged dispatch rows already retain full result layouts
+and bounded histories. A dedicated record qualifier can reuse dispatch result and
+row validation; only `field_slot` needs the fallback. Restrict the new path to scalar
+selected slots and retain mutable scalar histories as Unknown. Existing record
+receiver reads, shared loads and aggregate fields remain opaque. Baseline:
+`/tmp/meowy-record-dispatch-baseline.json` (386 cases and 459 tracked assets).
+The only pre-existing dirty path is unrelated `docs/programs/hey/`.
+
 Dependency-ordered commit plan:
 
-1. Add producer-specific record-dispatch qualification beside `consumers/dispatch.rs`,
-   reusing `dispatch_result_body` and exact tagged result/layout identities. Keep
-   initialization/result observations independent and ordinary `slot_block` unchanged.
-   Include valid record, absent result, wrong owner/origin and stopped-body tests.
-2. Integrate the qualified dispatch body into `consumers/fields.rs` field-slot mapping,
+1. Integrate the qualified dispatch body into `consumers/fields.rs` field-slot mapping,
    retaining exact field count, named-slot offset and checked scalar shape. Preserve
    Field Operation/Normal independence, original candidates and all existing source
    descriptor identities. Add focused field-link and expanded-traversal tests.
-3. Verify wrapped inputs, malformed descriptors, cycles and shared map/cache/work
-   limits. Shared loads, mutable/Unknown histories and opaque receiver inputs must
+2. Verify wrapped inputs, malformed descriptors and cycles with a focused fault
+   slice, then pin shared map/cache/work limits in a separate boundary slice.
+   Shared loads, mutable/Unknown histories and opaque receiver inputs must
    keep their current boundaries; never infer runtime values from structural links.
-4. Add required source cases for field selection/order and relevant rejections,
+3. Add required source cases for field selection/order and relevant rejections,
    classify structural evidence, run compiler/strict/documentation gates and refresh
    both handoffs.
 
 Record-receiver input transparency, aggregate value selection, precise branch/write
 joins, function returns, restart propagation, E225 enforcement and proof outcomes
 remain separate.
+
+Record-dispatch qualification is implemented in `consumers/dispatch/records.rs`,
+reusing the existing dispatch result/body and tagged-row validation. All three
+focused tests pass (`/tmp/meowy-record-dispatch-qualifier.log`): wrappers, composed
+records and independent owners; initialization/result flag independence and absent/
+stopped results; 12 origin/owner/layout faults. Ordinary record/scalar consumer
+classification is unchanged. Field integration is next.
 
 ## Documentation conventions and layout
 

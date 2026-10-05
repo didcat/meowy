@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::bodies::completion::Shape;
 
+mod records;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct Source {
     pub(crate) point: PointId,
