@@ -171,7 +171,9 @@ impl Checker {
         span: Span,
         indexed: bool,
     ) -> Result<(hir::Place, Type, bool)> {
-        let number = self.numeric_receiver(expr)?;
+        let number = self
+            .numeric_receiver(expr)
+            .map_err(|_| Diagnostic::unsupported("exclusive borrow path budget exhausted", span))?;
         let mut root = expr;
         let mut steps = Vec::new();
         loop {

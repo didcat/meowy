@@ -84,8 +84,13 @@ Undotted binary/hex/separated/exponent names remain highlighted. Both editor sui
 pass, including dotted invalid declarations, functions, calls and member chains.
 The syntax runtime keeps ambiguous reads lexical rather than claiming scope lookup.
 
-Next: canonical reference/source migration and full gate; broad library check is
-running in /tmp/meowy-root-first-lib.log.
+Broad validation found one preserved-diagnostic regression: receiver discovery
+reported its generic limit before the exclusive-borrow path limit. The narrow
+context mapping retains the old diagnostic/span without weakening the bound or
+changing its test. All 2567 library tests now pass
+(/tmp/meowy-root-first-lib-repaired.log); the specific regression also passes.
+
+Next: canonical reference/source migration and full compiler/editor gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
