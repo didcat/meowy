@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-04. Bounded candidate-source traversal passes compiler and documentation gates.
+Updated: 2026-10-04. Observed field-result source links are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -1992,29 +1992,33 @@ documentation checks pass (`/tmp/meowy-candidate-walk-docs.log`). No test failur
 remain. The preservation audit confirms 328 prior cases,
 360 source assets, 37 reference contracts/reviewed hashes, capability pins and
 proof obligations are unchanged (`/tmp/meowy-candidate-walk-preservation.log`).
-Concurrent editor changes, their root-tracker note, `nvim.log` and `docs/programs/hey/`
-are preserved outside this compiler series. Proof evaluation and full release
-qualification remain incomplete.
+The editor follow-up is separately committed as `d124403`; `docs/programs/hey/`
+remains excluded. Proof evaluation and full release qualification remain incomplete.
 
-### Next: observed field-result source links
+## Observed field-result source links
 
-Candidate walks identify structural source histories, while field effects already
-retain independent Operation/Normal visits. Link an observed field result to its
-qualified existing source slot without making Field results transparent wrappers.
+Investigation confirms `validate_field_report` checks independent result/operation
+flags, while `field_slot` requalifies the owned Operation source slot. The new
+association will require both visits, normal availability and the matching existing
+Operation link. Missing links, result-only rows, Never fields and implicit shared
+loads remain opaque. Qualification does not make Field results transparent wrappers. All five focused
+groups and all-target Clippy pass (`/tmp/meowy-field-result-links-qualification.log`,
+`/tmp/meowy-field-result-links-qualification-lint.log`). Nested-read coverage checks
+one qualified Unknown slot and one opaque extracted-value read. Collection and
+forest-root membership are next.
 
-1. In `consumers/`, qualify an observed owned field result using
-   `validate_field_report` and existing Operation slot-use qualification. Require
-   checked normal availability, the actual result observation and a matching
-   operation/source-slot link; preserve owner/index identities. Missing links,
-   result-only rows and shared-reference loads remain opaque.
-2. Collect bounded Normal(PointId)-to-source-Slot associations after current report
-   construction. Reuse the candidate forest's roots instead of running a walk per
-   field. Reserve shared map/work capacity and retain explicit Unknown/empty/multiple
-   source histories without choosing candidates or copying their lists.
-3. Keep qualification and collection independently reviewable with focused tests.
-   Cover sparse operations/results, Never and load boundaries, nested/function
-   owners, corrupted links and exact budgets. Add required source cases/classified
-   evidence, then run compiler, strict and final documentation gates.
+Dependency-ordered commit plan:
+
+1. Add focused field-result qualification under `consumers/field_results`, preserving
+   source/owner/index checks and sparse/load/normal boundaries. Stage this prerequisite
+   under `cfg(test)` until collection supplies its production caller.
+2. Collect bounded Normal(PointId)-to-source-Slot links after candidate reports.
+   Build one lazy, payload-bounded lookup of existing forest roots; validate membership
+   without rerunning walks per field. Reserve remaining combined map/work capacity.
+3. Add independent corrupt-header/link/root, late failure, exact budget and
+   Unknown/empty/multiple-history regressions alongside appropriate source cases.
+4. Update classified evidence, run compiler/strict/final documentation gates and
+   leave a dependency-ordered handoff. Preserve `docs/programs/hey/`.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
