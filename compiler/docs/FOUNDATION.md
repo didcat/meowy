@@ -492,14 +492,32 @@ owner; it is not a child of the read. These links retain the original read point
 and initializer field without replaying initialization or adding evaluation edges.
 Read and Bind control marks remain independent.
 
-Wrappers and initializer jumps share a 65,536-hop scratch bound; group registry
-size and shared work are also bounded. Field/root lookup caches retain their shared
+Scalar `$` reads use a dedicated receiver index and initialization qualifier.
+The index retains each checked receiver local, owner and dispatch point, with its
+shallow captured shape checked against the transferred HIR type. It includes stopped
+and unobserved producers without inventing observations or ordinary Bind statements.
+Each fixed index row consumes shared payload room and the index has a bounded row
+count. Ordinary initializer forwarding continues to exclude synthetic receivers.
+
+A source link requires matching observed read/storage and dispatch headers, a scalar
+receiver shape, and an observed initialization. Checked point and body ancestry must
+reach the same nearest dispatch within one owner. Ordinary nested blocks inherit `$`;
+nested dispatch bodies introduce their own receiver. The nested dispatch's input
+still uses the enclosing scope. Parent cycles, conflicting producers and stale
+identities fail qualification. Result observations do not imply initialization,
+and a stopped body can retain sources for earlier receiver reads. Scope traversal
+is iterative, with its own 65,536-point bound and the shared work budget.
+
+Wrappers, initializer jumps and scalar receiver input jumps share a 65,536-hop
+scratch bound; group registry size and shared work are also bounded. Field/root
+lookup caches retain their shared
 payload charges across repeated reads of one field. Changed/unobserved narrowing, absent
 results, Convert/projected/Stopped coercions, predicates, changed/stopped ascriptions,
-mutable locals, parameters, emitted aliases, dispatch receivers, temporary cells,
+mutable locals, parameters, emitted aliases, nonscalar receivers, temporary cells,
 missing initializer evidence, calls and reference loads remain boundaries.
 Original input and terminal field IDs retain the exact qualified route;
-no type shapes are copied.
+no deep type shapes are copied. Receiver links reuse the existing captured input
+without evaluating it again, extending a lifetime or granting loan authority.
 
 Direct-source reports retain each original Value candidate's point and optional
 field, scalar-block or scalar-dispatch descriptor at its existing block/slot/candidate
@@ -529,7 +547,7 @@ no initialization or result observation is inferred from the other.
 
 A separate expanded forest is collected after the direct-source map. It first
 qualifies a borrowed view against every original Value candidate, point, owner and
-qualified wrapper/initializer/field-result, scalar-block or scalar-dispatch route.
+qualified wrapper/initializer/receiver/field-result, scalar-block or scalar-dispatch route.
 Missing, extra or changed descriptors are invalid. Qualification reuses bounded
 field/root caches and consumes the same remaining payload as traversal; no input
 or history vectors are copied.
@@ -553,9 +571,10 @@ storage/work limits qualify the traversal engine separately from source behavior
 Those cases do not establish proof outcomes or make opaque producers transparent.
 Dispatch source cases additionally pin receiver-once and tail order, nested `$`
 scope, owned/shared permissions, stopped receivers/bodies and shared-store E305.
-Synthetic receiver input forwarding, record-dispatch consumers, function returns
-and broader aggregate provenance remain separate. Proof evaluation remains
-unimplemented.
+Receiver input cases also preserve typed copies, inherited and nested `$`, field/
+block/dispatch tail order, stopped-body P006 and receiver-borrow escape E303.
+Record-dispatch consumers, function returns and broader aggregate provenance remain
+separate. Proof evaluation remains unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
@@ -1312,9 +1331,11 @@ Partial mode, expected slots and caller-specific error order remain unchanged;
 the ordinary caller's early exclusive-receiver gate is not imposed here.
 
 Dispatch reports now retain independent receiver-initialization and result visits,
-with the exact input point, receiver local, body, checked body completion and control.
-Receiver completion is captured separately before HIR transfer. Stopped receivers
-produce no dispatch observation; stopped bodies can retain initialization alone.
+with the exact input point, receiver local and shallow shape, body, checked body
+completion and control. Receiver completion and shape are captured separately from
+the body's result before HIR transfer and participate in exact replay/observation
+identity. Stopped receivers produce no dispatch observation; stopped bodies can
+retain initialization alone.
 The body keeps its own effects, and conditional receiver calls keep their return edges.
 An observation does not prove reachability or copy/move authority.
 

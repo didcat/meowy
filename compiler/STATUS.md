@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Dispatch result origins, histories and scalar source visits are implemented.
+Updated: 2026-10-05. Initialized scalar dispatch receiver input sources are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2528,80 +2528,91 @@ documentation checks pass (`/tmp/meowy-dispatch-sources-docs.log`). No outstandi
 failures remain. Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Active: scalar dispatch receiver input sources
+### Scalar dispatch receiver input sources
 
-Scalar `$` reads now follow the captured input through a dedicated initialized
-receiver path. `read_initializer_input` still excludes synthetic receivers.
+Scalar `$` reads now follow captured receiver inputs through a dedicated initialized
+receiver path. Checked receiver shapes are shallow and independent of body result
+shapes; exact replay and observed headers retain them after local types move to HIR.
+A bounded local-to-dispatch index validates local/producer/body and HIR identities,
+including nested/independent owners and stopped producers. Each fixed index row
+consumes shared payload room. No ordinary initializer or statement is invented.
 
-Investigation confirms that the synthetic Bind's checked type is available at
-dispatch capture, while report construction has already moved local types into
-HIR. Reuse the bounded `Completion` shape and retain it in dispatch observations;
-validate it independently of the body's completion. Receiver lookup will use a
-dedicated bounded local-to-producer index and checked lexical containment, without
-fabricating an ordinary statement or admitting receivers to ordinary initializer forwarding.
-The current tree contains only unrelated `docs/programs/hey/`. Preservation baseline:
-`/tmp/meowy-receiver-sources-baseline.json` (383 cases and existing contract assets).
+`read_receiver_input` requalifies observed read/storage and dispatch headers, requires
+scalar shape and observed initialization, and checks point/body ancestry to the
+nearest dispatch. Ordinary nested blocks inherit `$`; nested dispatch inputs retain
+the enclosing receiver, while their bodies use the new one. Initialization and result
+visits stay independent, so earlier receiver reads survive a stopped body. Parent
+cycles, conflicting producers and stale evidence fail atomically. Ordinary initializer
+forwarding still excludes synthetic receivers; references, aggregates, calls and
+loads retain their opacity.
+
+Both grouped and field-source walkers reuse existing input roots. Field/Block/
+Dispatch descriptors, composed edges and original candidates retain their identities;
+expanded traversal shares existing cycle, cache, payload, hop and work limits.
+Read/dispatch control marks remain independent. No receiver evaluation is replayed,
+no lifetime or loan authority changes, and no runtime value or proof outcome is inferred.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture checked receiver shapes and replay identity | `7e39bae` |
+| Index exact receiver local/producer/body identities | `5fe6db1` |
+| Qualify initialized scalar receiver reads | `0c54a35` |
+| Bound lexical scope and initialization lookup | `13c3767` |
+| Follow receiver inputs in existing source walkers | `5edabcf` |
+| Reject conflicting and stale receiver source links | `e9bd825` |
+| Pin traversal budgets, cache reuse and control independence | `fd6bdbc` |
+| Cover receiver source order and lifetime boundaries | `1420c15` |
+
+Focused evidence covers 13 index faults, nine qualifier faults, five scope faults,
+five stale-source faults, producer overlap, mixed receiver/initializer cycles,
+iterative 2048-point ancestry and exact capacity/payload/hop/work limits. All ten
+receiver-consumer tests pass (`/tmp/meowy-receiver-sources-limits.log`). Structural
+metadata evidence remains separate from observable language conformance.
+
+Three new required cases pass debug/release: field/block/dispatch input chains
+retain single evaluation, nested/inherited `$`, typed copies and tail order across
+function calls; stopped bodies retain P006 and receiver-borrow escape retains E303
+(`/tmp/meowy-receiver-sources-source.log`). The audit preserves 383 prior cases,
+456 tracked contract/source/pin files and all 37 reviewed reference hashes
+(`/tmp/meowy-receiver-sources-preservation.log`). Unrelated `docs/programs/hey/`
+is preserved. No capability exception or reference outcome changed.
+
+All ten compiler checks pass: formatting, Clippy, 2651 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-receiver-sources-gate.log`). Conformance has 386 cases: 367 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-receiver-sources-strict.log`). All four
+source-slice documentation checks pass (`/tmp/meowy-receiver-sources-source-docs.log`).
+All four final documentation checks pass (`/tmp/meowy-receiver-sources-docs.log`).
+No outstanding failures remain. Proof evaluation and full language/release
+qualification remain incomplete.
+
+### Next: record dispatch field sources
+
+`field_slot` still reaches only ordinary record blocks through `slot_block`.
+Keep ordinary block/dispatch origins distinct; the existing tagged dispatch result
+rows can support a dedicated field consumer without making record receivers transparent.
 
 Dependency-ordered commit plan:
 
-1. Run compiler and strict conformance gates, document the completed scalar
-   receiver route in FOUNDATION, then refresh both handoffs and run the final
-   documentation gate. Next work remains a separate dependency-ordered slice.
+1. Add producer-specific record-dispatch qualification beside `consumers/dispatch.rs`,
+   reusing `dispatch_result_body` and exact tagged result/layout identities. Keep
+   initialization/result observations independent and ordinary `slot_block` unchanged.
+   Include valid record, absent result, wrong owner/origin and stopped-body tests.
+2. Integrate the qualified dispatch body into `consumers/fields.rs` field-slot mapping,
+   retaining exact field count, named-slot offset and checked scalar shape. Preserve
+   Field Operation/Normal independence, original candidates and all existing source
+   descriptor identities. Add focused field-link and expanded-traversal tests.
+3. Verify wrapped inputs, malformed descriptors, cycles and shared map/cache/work
+   limits. Shared loads, mutable/Unknown histories and opaque receiver inputs must
+   keep their current boundaries; never infer runtime values from structural links.
+4. Add required source cases for field selection/order and relevant rejections,
+   classify structural evidence, run compiler/strict/documentation gates and refresh
+   both handoffs.
 
-Record-dispatch consumers, field transparency, aggregate value selection, precise
-branch/overwrite joins, function returns, restart propagation, E225 enforcement
-and proof outcomes remain separate.
-
-Receiver shape capture and exact observation/replay checks are implemented. All 55
-dispatch-focused tests pass (`/tmp/meowy-receiver-sources-shape.log`), including
-scalar/reference/record/list/union/Never capture, independent stopped bodies and
-atomic rejection of changed shapes.
-The receiver index charges each fixed descriptor against the existing shared
-payload remainder, alongside its own MAX_EDGES row cap; it does not add ordinary
-consumer or initializer rows. Later traversal retains that same payload budget.
-Its exact local/producer/body and checked HIR-shape identities pass focused tests,
-including independent/nested owners, stopped receivers, 13 identity faults and
-exact capacity/payload/work limits (`/tmp/meowy-receiver-sources-index.log`).
-All 616 forward-report tests pass
-(`/tmp/meowy-receiver-sources-index-reports.log`).
-The dedicated scalar read qualifier now requires an observed initialization,
-matching read/storage/receiver headers and checked point/body ancestry through
-ordinary blocks to the nearest dispatch. Result observation remains independent;
-stopped bodies can retain earlier receiver inputs. All four qualifier tests pass,
-including nine identity/parent-chain faults, nested input receivers and opaque
-reference/aggregate/unobserved reads (`/tmp/meowy-receiver-sources-qualifier.log`).
-All seven qualifier/boundary tests pass
-(`/tmp/meowy-receiver-sources-boundaries.log`): nearest-dispatch identity and five
-cross-scope faults, exact hop/shared-work limits and iterative 2048-point ancestry
-with late-cycle rejection.
-Both grouped and field-source walkers now use the scalar receiver qualifier.
-All 627 forward-report tests pass (`/tmp/meowy-receiver-sources-integration.log`).
-Field/Block/Dispatch identities and original candidate leaves are retained across
-receiver aliases and nested blocks; expanded reports reuse existing source links.
-Calls, dereferences, arithmetic, aggregate/union/reference receivers remain opaque.
-One previous scalar-receiver opacity regression is now positive; record-receiver
-field transparency remains explicitly excluded. Read/control and runtime ownership
-semantics are unchanged; no receiver evaluation is replayed.
-Integrated fault tests exposed a receiver read/field producer overlap accepted by
-the block-source path. The dedicated qualifier now rejects conflicting producer
-families before forwarding; both source walkers reject the reproduction.
-Three boundary tests pass (`/tmp/meowy-receiver-sources-conflicts.log`), including
-five stale/missing-evidence faults and a mixed receiver/ordinary-initializer cycle.
-Reports and edge counters remain unchanged on failed requalification.
-All 630 forward-report tests pass (`/tmp/meowy-receiver-sources-conflict-reports.log`).
-All ten receiver-consumer tests pass (`/tmp/meowy-receiver-sources-limits.log`).
-Exact field cache/payload/hop/work boundaries retain one charge across repeated
-receiver reads; block wrapper lookup consumes work without new payload. Independent
-read and dispatch control marks retain identical source descriptors.
-Three new required cases pass debug/release (`/tmp/meowy-receiver-sources-source.log`):
-field/block/dispatch receiver input chains retain single evaluation, nested/inherited
-`$`, typed copies and tail order across function calls; stopped bodies retain P006;
-receiver-borrow escape remains E303. Structural metadata evidence remains separately
-classified. All four source-slice documentation checks pass
-(`/tmp/meowy-receiver-sources-source-docs.log`). The preservation audit retains 383
-prior cases, 456 tracked contract/source/pin files and all 37 reviewed hashes
-(`/tmp/meowy-receiver-sources-preservation.log`). Final compiler/strict gates and
-the completed documentation handoff remain.
+Record-receiver input transparency, aggregate value selection, precise branch/write
+joins, function returns, restart propagation, E225 enforcement and proof outcomes
+remain separate.
 
 ## Documentation conventions and layout
 
@@ -4194,8 +4205,9 @@ separate expanded field-source forest. Explicit groups, observed non-projecting
 Forward coercions, normal unchanged ascriptions and eligible immutable local reads
 now qualify direct field sources. Distinct scalar-block descriptors and expanded
 visits are complete. Tagged dispatch histories and scalar dispatch visits are also
-complete. Scalar receiver input sources are next, following the ordered plan above;
-value selection and broader aggregate provenance remain separate.
+complete. Initialized scalar receiver input sources are complete. Record dispatch
+field sources are next, following the ordered plan above; value selection and broader
+aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4809,9 +4821,11 @@ value selection and broader aggregate provenance remain separate.
    current gate results are above. Dispatch qualification (`c6956d1`), shared histories
    (`2a29342`), origins (`a7a0289`), indexing (`2020bdd`), wrapper resolution (`9c671bf`),
    descriptors (`381f32e`), traversal (`d47b7b8`), boundaries (`08185b5`), limits
-   (`c81709b`) and source cases (`6e23f08`, `32fadb7`) are complete. Next qualify scalar
-   receiver input sources through their own initialization evidence before broader
-   value provenance work.
+   (`c81709b`) and source cases (`6e23f08`, `32fadb7`) are complete. Scalar receiver
+   capture/index/qualification (`7e39bae`, `5fe6db1`, `0c54a35`), scope boundaries
+   (`13c3767`), integration (`5edabcf`), conflict/limit evidence (`e9bd825`, `fd6bdbc`)
+   and source cases (`1420c15`) are complete. Next qualify record dispatch field
+   sources through their distinct result origins before broader value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
