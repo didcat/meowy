@@ -529,6 +529,10 @@ still uses the enclosing scope. Parent cycles, conflicting producers and stale
 identities fail qualification. Result observations do not imply initialization,
 and a stopped body can retain sources for earlier receiver reads. Scope traversal
 is iterative, with its own 65,536-point bound and the shared work budget.
+Matcher points carry condition spans, while their taken arms have separate spans.
+Receiver scope validates a Match/Then transition against its registered True edge,
+condition identity and checked statement site. Ordinary parents retain span
+containment checks. This qualifies lexical metadata without evaluating the guard.
 
 Wrappers, initializer jumps and scalar receiver input jumps share a 65,536-hop
 scratch bound; group registry size and shared work are also bounded. Field/root
@@ -612,7 +616,29 @@ and qualified Forward/unchanged narrowing/ascription wrappers or immutable local
 reads. Extracted Field values, reference loads, calls, changed ascriptions and
 unclassified regions remain outside this record-consumer resolution. The Normal
 field-result associations above are separate from transparent input forwarding.
-Record-dispatch primaries remain outside these projection links.
+Unary and binary consumers additionally qualify scalar primaries of record dispatch
+results through a dedicated slot-zero path. It requires an observed dispatch result,
+exact tagged body/layout identities, and an immutable unnamed scalar primary matching
+the projected operand's kind, width and signedness. Ordinary `primary_slot` remains
+separate. Each owning effect is requalified before its explicit projection inputs
+are considered; operation/result visits alone add no link.
+
+Unary projections use step zero. Binary projections preserve both operand positions
+and compare the source shape against each operand type, including comparisons whose
+result type is boolean. Each source result and projection observation is independent;
+a left projection can survive a stopped right operand without claiming operation or
+result availability. Dispatch initialization is not inferred from its result visit.
+Empty and multiple histories keep their meaning, and arithmetic result values remain
+opaque. Full-record equality adds no primary projection; nonscalar primaries, calls,
+reference loads and mutable reads retain their existing boundaries.
+
+Coercion, output, list and composed-emission consumers retain their ordinary block
+paths. Projected coercions do not become transparent wrappers. Source cases preserve
+receiver/tail order, scalar kinds and bare arithmetic results, guarded `$` scopes,
+unsigned-negation E222, stopped-right-operand P006 and checked primary-negation P002.
+The order case explicitly ascribes the right dispatch's record type: an unannotated
+right dispatch can receive a scalar construction hint and reject named fields with
+E207. Contextual record-hint repair remains separate from source qualification.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size

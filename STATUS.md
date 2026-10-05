@@ -28,29 +28,29 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Scalar fields of record dispatch results now retain qualified source-slot links.
-Exact tagged result/body/layout identities remain separate from ordinary block
-consumers. Field Operation/Normal observations and dispatch initialization/result
-visits stay independent. Existing Field descriptors and candidate histories retain
-their identities; mutable histories remain Unknown, while shared loads and nonscalar
-fields remain opaque. These are structural links without new value or proof authority.
-The [compiler handoff](compiler/STATUS.md#record-dispatch-field-sources) records five
-implementation/test commits and the next dependency-ordered plan.
+Observed unary and binary projections now link to scalar primaries of record
+dispatch results, matching exact scalar kinds, widths, signedness and operand ports.
+Projection and producer initialization/result observations remain independent;
+arithmetic result values remain opaque. A guarded `$` scope rejection is fixed by
+validating matcher-arm ancestry against checked branch edges and statement sites.
+The [compiler handoff](compiler/STATUS.md#record-dispatch-arithmetic-primary-sources)
+records the reviewed slices and the next dependency-ordered plan.
 
-All ten compiler checks pass: 2663 library/921 native tests and 62 Python groups
-(`/tmp/meowy-record-dispatch-gate.log`). Conformance has 390 cases: 371 required
+All ten compiler checks pass: 2683 library/921 native tests and 62 Python groups
+(`/tmp/meowy-dispatch-primary-gate.log`). Conformance has 395 cases: 376 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
-exits 1 only for those gaps (`/tmp/meowy-record-dispatch-strict.log`). Four new
-required cases preserve receiver/field/tail order, typed and composed records,
-mutable snapshots, shared reads, missing-field E201 and stopped-tail P006.
-Structural identity, cycle and resource-limit tests remain separate evidence.
+exits 1 only for those gaps (`/tmp/meowy-dispatch-primary-strict.log`). Five new
+required cases preserve receiver/tail order, guarded receiver scope, scalar kinds,
+equality domains, unsigned-negation E222, stopped operands P006 and overflow P002.
+The order case uses explicit right-hand record typing; broader contextual record
+hinting remains a separate limitation. Structural tests do not establish proof results.
 
-The preservation audit retains 386 prior cases, 459 tracked contract/source/pin
-files and all 37 reviewed hashes (`/tmp/meowy-record-dispatch-preservation.log`).
-All four final documentation checks pass (`/tmp/meowy-record-dispatch-docs.log`).
+The audit retains 390 prior cases, 463 tracked contract/source/pin files and all
+37 reviewed reference hashes (`/tmp/meowy-dispatch-primary-preservation.log`).
+All four final documentation checks pass (`/tmp/meowy-dispatch-primary-docs.log`).
 Proof evaluation and full language/release qualification remain incomplete.
 
-Next, qualify unary and binary primary projections from record dispatch results.
+Next, capture and qualify coercion-owned primary sources from dispatch results.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

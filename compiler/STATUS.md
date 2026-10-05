@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Scalar field sources from record dispatch results are implemented.
+Updated: 2026-10-05. Record dispatch arithmetic primary sources are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2641,80 +2641,98 @@ All four final documentation checks pass (`/tmp/meowy-record-dispatch-docs.log`)
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Active: record dispatch arithmetic primary sources
+### Record dispatch arithmetic primary sources
 
-`primary_slot` still reaches ordinary block consumers only. Unary and binary
-Projection ports now have a dedicated dispatch-primary fallback.
-Keep this extension separate from result-value inference
-and from coercion, output, list and composed-emission consumer rules.
+`dispatch_primary_slot` qualifies immutable unnamed scalar slot zero through exact
+record-dispatch result/body/layout identities, matching the projected operand's kind,
+width and signedness. Ordinary `primary_slot` remains separate. Unary and binary
+consumers use the new fallback only after `primary_effect_inputs` requalifies their
+observed stages and returns explicitly projected inputs.
 
-Investigation confirms `primary_effect_inputs` already requalifies observed unary/
-binary stages and returns only explicitly projected inputs. The dedicated dispatch
-slot-zero qualifier will also match the projected scalar kind (including width and
-signedness) against the checked primary layout. Unary inline projections and
-coercion-owned projections are distinct; preserve that split and the existing
-consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
-(390 cases, 463 tracked contract/source/pin files). Only unrelated
-`docs/programs/hey/` is initially dirty.
+Unary ports retain step zero; binary ports retain each operand position and compare
+against operand types, including boolean-result comparisons. Projection, operation,
+result and dispatch initialization/result observations remain independent. A left
+projection survives a stopped right operand without claiming completion. Empty and
+multiple histories retain their meaning. Full-record equality, nonscalar primaries,
+references, calls, mutable reads and arithmetic result values remain opaque. No
+additional payload, evaluation edges, lifetime authority or proof outcomes are added.
+Coercion/output/list/composed-emission consumers keep their existing paths.
+
+A guarded `$` regression was fixed separately: matcher points carry condition spans,
+so receiver scope checks their Then transition against the registered True edge,
+condition identity and checked statement site. Ordinary parent containment and all
+owner/body/cycle/hop/work checks remain intact. This validates lexical structure
+without evaluating guards or widening receiver permissions.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify scalar dispatch primary slots and exact kinds | `66228c3` |
+| Link observed unary projections | `8dd35df` |
+| Preserve receiver scope across checked matcher arms | `f06cfeb` |
+| Link binary operand projections independently | `35d46b4` |
+| Bound binary links, cycles, conflicts and control marks | `731aa08` |
+| Cover arithmetic order, guarded scope and E222 | `57a3a4d` |
+| Pin stopped operands and checked overflow | `30d762a` |
+| Keep explicit test visibility compatible with Clippy | `55033e0` |
+
+Focused evidence covers four slot-qualifier tests, five unary tests, eight binary
+tests and ten receiver-scope tests. Seven slot/type faults, six unary faults, eight
+binary faults and ten guard/site faults are rejected atomically. Twenty independent
+binary stage/source-result combinations, exact map/hop/work boundaries and mixed
+initializer cycles preserve all stored reports. All 665 forward-report tests pass
+inside the complete compiler gate; seeded metadata evidence is separate from runtime
+language conformance.
+
+Five new required cases pass debug/release: receiver/tail order, scalar kinds/widths,
+bare arithmetic results, full-record versus scalar equality, guarded receivers across
+owners, unsigned-negation E222, stopped-right-operand P006 and checked int8 primary
+negation P002 (`/tmp/meowy-dispatch-primary-source.log`,
+`/tmp/meowy-dispatch-primary-panics.log`). The order case explicitly ascribes the
+right dispatch's record type; the unannotated form hits the existing scalar-context
+named-field E207 boundary. Broader contextual record-hint repair remains separate.
+
+The audit preserves 390 prior cases, 463 tracked contract/source/pin files, proof
+obligations and all 37 reviewed reference hashes
+(`/tmp/meowy-dispatch-primary-preservation.log`). No capability exception changed;
+unrelated `docs/programs/hey/` is preserved.
+All ten compiler checks pass: formatting, Clippy, 2683 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-dispatch-primary-gate.log`). Conformance has 395 cases: 376 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-dispatch-primary-strict.log`). All four
+source-slice documentation checks pass (`/tmp/meowy-dispatch-primary-panic-docs.log`).
+All four final documentation checks pass (`/tmp/meowy-dispatch-primary-docs.log`).
+No outstanding failures remain. Proof evaluation and full language/release
+qualification remain incomplete.
+
+### Next: coercion-owned dispatch primary sources
+
+`Effect::Coercion` can report a primary Projection, but its producer/report records
+have only the primary flag and Forward/Convert/Stopped kind, with no captured source
+shape. Do not infer that shape from the converted target or final HIR type. Ordinary
+coercion-owned primary links and non-projecting wrapper forwarding remain unchanged.
 
 Dependency-ordered commit plan:
 
-1. Run compiler and strict conformance gates, document the completed primary routes
-   and guarded receiver fix, refresh both handoffs, and run final documentation checks.
+1. In `check/expressions.rs` and `dependencies/coercions.rs`, capture a bounded shallow
+   primary source shape before `expected_plan` consumes/converts the checked value.
+   Preserve exact primary decisions, kind, roots, spans and edges, including Never
+   and non-primary paths. Add focused capture/replay/budget tests with this slice.
+2. Carry the source shape through coercion stages and observations in a separate
+   slice, checking exact producer/report identity without inferring additional visits.
+   Keep Forward, Convert and Stopped stage rules and other producer reports intact.
+3. Qualify only observed scalar primary Projection inputs of `Effect::Coercion`,
+   reusing the captured source kind and `dispatch_primary_slot`. Preserve port step
+   zero and separate projection/conversion/result flags. Projected coercions must
+   remain opaque to generic wrapper/direct-value forwarding. Include focused valid,
+   absent, corrupt, cycle and resource-limit tests with the integration.
+4. Add required source cases for typed copies, conversion and stopped inputs plus
+   classified evidence; run compiler, strict and documentation gates and update both
+   handoffs. Split further if capture/report changes exceed review thresholds.
 
-Other record-dispatch primary consumers, composed source propagation, record-receiver
-transparency, aggregate value selection, precise joins, function returns, restarts,
-E225 enforcement and proof outcomes remain separate.
-
-`dispatch_primary_slot` is implemented using exact record-dispatch qualification
-and an immutable unnamed scalar slot zero matching the requested kind. All four
-focused tests pass (`/tmp/meowy-dispatch-primary-qualifier.log`): scalar kinds and
-independent owners, result/initialization independence, missing and nonscalar sources,
-seven type/origin/slot faults, and exact shared work with zero additional payload.
-Ordinary `primary_slot` remains unchanged.
-All five unary-consumer tests and 654 forward-report tests pass
-(`/tmp/meowy-dispatch-primary-unary.log`, `/tmp/meowy-dispatch-primary-unary-reports.log`).
-Unary Projection ports retain exact owners/types through groups and inline dispatch
-records. Projection/result/initialization independence, six consumer/source faults
-and exact combined map/work limits are covered. Coercion-owned primary extraction,
-output/list/emission rules and arithmetic result values remain opaque on the new path.
-Binary integration exposed an existing guarded-receiver regression, reproduced by
-a standalone dispatch without arithmetic. Match points cover condition spans;
-Then arms have separate spans. Receiver scope now validates that transition against
-the exact registered True edge, condition identity and checked statement site;
-ordinary parent containment and owner/body/cycle checks remain intact. All ten
-receiver qualifier tests pass (`/tmp/meowy-dispatch-primary-scope.log`), including
-three source forms, ten corrupt branch/site faults and exact guarded hop/work limits.
-All four binary-focused tests and 661 forward-report tests pass
-(`/tmp/meowy-dispatch-primary-binary.log`, `/tmp/meowy-dispatch-primary-binary-reports.log`).
-Binary links match each operand's scalar kind, preserve step 0/1 separately and
-retain a left projection before a stopped right operand. Twenty independent stage/
-source-result combinations, empty/multiple histories and opaque full-record equality,
-references, calls and mutable reads are covered. Arithmetic results remain opaque.
-A required guarded-source run case will accompany arithmetic conformance cases.
-All eight binary-focused tests pass (`/tmp/meowy-dispatch-primary-boundaries.log`).
-Eight late operand/type/plan/source faults, wrapped initializer cycles, independent
-consumer/dispatch control marks and exact map/shared-work limits preserve report
-atomicity.
-Three new required cases pass debug/release (`/tmp/meowy-dispatch-primary-source.log`):
-unary/binary receiver and tail order, scalar kinds/widths, bare arithmetic results,
-aggregate-versus-scalar equality, guarded receiver scopes across owners and E222 for
-unsigned negation. The order case explicitly ascribes its right dispatch's record
-type: the unannotated form hits the existing scalar-context named-field E207 boundary.
-Broader contextual record-hint repair remains separate; no exception or old fixture
-was changed. All four source-slice documentation checks pass
-(`/tmp/meowy-dispatch-primary-source-docs.log`).
-The two additional required panic cases pass debug/release
-(`/tmp/meowy-dispatch-primary-panics.log`): left receiver/tail completion before a
-stopped right operand (P006), and checked int8 primary negation after its dispatch
-tail (P002). All four panic-slice documentation checks pass
-(`/tmp/meowy-dispatch-primary-panic-docs.log`). The audit preserves 390 prior cases,
-463 tracked contract/source/pin files and 37 reviewed reference hashes
-(`/tmp/meowy-dispatch-primary-preservation.log`). Strict mode reports 376 passes,
-19 unchanged gaps and zero failures (`/tmp/meowy-dispatch-primary-strict.log`).
-All-target Clippy passes after two test constants adopt explicit `pub(super)`
-visibility (`/tmp/meowy-dispatch-primary-lint.log`). The full gate rerun and final
-documentation handoff remain.
+Output/list/composition dispatch consumers, contextual record-hint repair,
+record-receiver transparency, aggregate value selection, precise joins, function
+returns, restarts, E225 enforcement and proof outcomes remain separate.
 
 ## Documentation conventions and layout
 
@@ -4308,8 +4326,9 @@ Forward coercions, normal unchanged ascriptions and eligible immutable local rea
 now qualify direct field sources. Distinct scalar-block descriptors and expanded
 visits are complete. Tagged dispatch histories and scalar dispatch visits are also
 complete. Initialized scalar receiver inputs and record dispatch scalar field sources
-are complete. Record dispatch arithmetic primary sources are next, following the
-ordered plan above; value selection and broader aggregate provenance remain separate.
+are complete. Record dispatch unary/binary primary sources are complete. Coercion-owned
+dispatch primary sources are next, following the ordered plan above; value selection
+and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4928,8 +4947,11 @@ ordered plan above; value selection and broader aggregate provenance remain sepa
    (`13c3767`), integration (`5edabcf`), conflict/limit evidence (`e9bd825`, `fd6bdbc`)
    and source cases (`1420c15`) are complete. Record dispatch qualification (`e0f7abf`),
    field integration (`bd1a820`), conflicts (`eed5144`), limits (`ac6c779`) and source
-   cases (`12af8c0`) are complete. Next qualify record dispatch arithmetic primary
-   sources before extending other producer families or broader value provenance.
+   cases (`12af8c0`) are complete. Dispatch primary qualification (`66228c3`), unary
+   links (`8dd35df`), guarded receiver scope (`f06cfeb`), binary links (`35d46b4`),
+   boundaries (`731aa08`) and source cases (`57a3a4d`, `30d762a`) are complete. Next
+   capture coercion-owned primary source shapes and qualify dispatch primary links
+   before extending other producer families or broader value provenance.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
