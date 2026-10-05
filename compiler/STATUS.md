@@ -2095,8 +2095,13 @@ The expanded graph will borrow both reports and use the same traversal engine wi
 an explicit field edge. No original inputs or forest entries will be rewritten.
 The borrowed qualifier is implemented as a test-enabled prerequisite. Its three
 identity/cache/work regression groups pass (`/tmp/meowy-expanded-qualifier.log`).
-No failures remain. Next extend the shared traversal engine (step 2); production
-integration remains step 3.
+Qualifier committed as `2f043ea`. The shared traversal now has explicit field-edge
+visits with original candidate/input and terminal-field identities. Existing owner,
+cycle/sharing and pending/output/visited bounds cover both edge kinds. Checked
+source regressions cover mixed composition, sharing and Unknown/empty/discarded
+histories. All twelve original/expanded traversal groups pass
+(`/tmp/meowy-expanded-engine.log`). Next integrate the expanded forest after
+direct-source collection (step 3).
 
 Dependency-ordered commit plan:
 

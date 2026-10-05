@@ -1,4 +1,6 @@
+use super::super::direct::Directs;
 use super::*;
+use crate::check::dependencies::edges::forward::consumers::field_results::lookup::narrowing::Source;
 use crate::flow::Flow;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -16,6 +18,7 @@ pub(crate) enum Visit {
     Shared(Root),
     Cycle(Root),
     Value(Key, Input),
+    Field(Key, Input, Source),
     Projection(Key, Input),
     Unresolved(Key, Input),
 }
@@ -68,6 +71,16 @@ impl Graph<'_> {
         span: Span,
         items: usize,
     ) -> Result<(Walk, usize)> {
+        self.forest_sources(None, flow, span, items)
+    }
+
+    pub(in super::super) fn forest_sources(
+        &self,
+        sources: Option<&Directs>,
+        flow: &mut Flow,
+        span: Span,
+        items: usize,
+    ) -> Result<(Walk, usize)> {
         let roots = self.results.iter().flat_map(|(&block, (owner, result))| {
             result
                 .slots
@@ -79,12 +92,24 @@ impl Graph<'_> {
                     slot: Slot { block, index },
                 })
         });
-        self.walk_roots(roots, flow, span, items)
+        self.walk_sources(roots, sources, flow, span, items)
     }
 
+    #[cfg(test)]
     pub(super) fn walk_roots(
         &self,
         roots: impl Iterator<Item = Root>,
+        flow: &mut Flow,
+        span: Span,
+        items: usize,
+    ) -> Result<(Walk, usize)> {
+        self.walk_sources(roots, None, flow, span, items)
+    }
+
+    pub(super) fn walk_sources(
+        &self,
+        roots: impl Iterator<Item = Root>,
+        sources: Option<&Directs>,
         flow: &mut Flow,
         span: Span,
         items: usize,
@@ -170,7 +195,33 @@ impl Graph<'_> {
                         state.push(Frame::Next(root, position + 1), span)?;
                         match (input.projection, input.source) {
                             (Projection::Value, None) => {
-                                state.visit(Visit::Value(key, input), span)?
+                                let source = if let Some(sources) = sources {
+                                    if !flow.spend(
+                                        sources.len().checked_ilog2().unwrap_or(0) as usize + 3,
+                                    ) {
+                                        return Err(budget());
+                                    }
+                                    let &(stored_owner, direct) =
+                                        sources.get(&key).ok_or_else(invalid)?;
+                                    if stored_owner != owner || direct.point != input.point {
+                                        return Err(invalid());
+                                    }
+                                    direct.source
+                                } else {
+                                    None
+                                };
+                                if let Some(source) = source {
+                                    state.visit(Visit::Field(key, input, source), span)?;
+                                    state.push(
+                                        Frame::Enter(Root {
+                                            owner,
+                                            slot: source.slot,
+                                        }),
+                                        span,
+                                    )?;
+                                } else {
+                                    state.visit(Visit::Value(key, input), span)?;
+                                }
                             }
                             (Projection::Value, Some(_)) => return Err(invalid()),
                             (_, Some(slot)) => {
@@ -196,3 +247,6 @@ mod seeded;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod fields;
