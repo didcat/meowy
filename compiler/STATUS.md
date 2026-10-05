@@ -2765,14 +2765,23 @@ qualification remain incomplete.
 
 ### Next: output-owned dispatch primary sources
 
-`FormatInput` currently stores only the checked point and primary flag. Output
+Active series: confirmed on `main` after `47f61a5`; the only pre-existing change
+is untracked `docs/programs/hey/`, excluded from this series. Capture now stores a
+shallow primary `Shape` before projection and validates exact checked HIR shape,
+primary presence and stopped/suffix agreement before registration or replay.
+Ten producer tests pass, including scalar kinds, unions, Never suffixes, formatting
+rejections, malformed shapes and exact work limits
+(`/tmp/meowy-output-dispatch-capture.log`). Report qualification is next; no new
+value-forwarding path or language contract is needed.
+
+`FormatInput` now stores the checked point, primary flag and optional source shape. Output
 consumers stream observed projected parts into `primary_slot`, so direct dispatch
 results remain outside that path. Keep the original part indices and output-specific
 prefix/stopped/terminal rules; inner coercion ports are already handled separately.
 
 Dependency-ordered commit plan:
 
-1. Capture a bounded primary source shape for formatting inputs in
+1. Complete: capture a bounded primary source shape for formatting inputs in
    `check/expressions.rs::format_points` and `dependencies/outputs.rs`, before
    `projected` replaces the checked value. Preserve literal None entries, exact input
    IDs, part order, primary decisions and formatting/reborrow rejections. Include

@@ -1,5 +1,6 @@
 use super::{
     PointKind,
+    bodies::{Completion, completion::Shape},
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -13,6 +14,31 @@ use crate::{
 pub(crate) struct Input {
     pub(crate) point: hir::PointId,
     pub(crate) primary: bool,
+    pub(crate) source: Option<Shape>,
+}
+
+impl Input {
+    pub(crate) fn valid_source(self, part: usize, stopped: Option<usize>) -> bool {
+        if !self.primary {
+            return self.source.is_none();
+        }
+        let Some(source) = self.source else {
+            return false;
+        };
+        matches!(
+            source,
+            Shape::Scalar(_) | Shape::Union { .. } | Shape::Never
+        ) && (Completion {
+            normal: source != Shape::Never,
+            result: source,
+        })
+        .valid()
+            && if source == Shape::Never {
+                stopped.is_some_and(|stop| stop <= part)
+            } else {
+                stopped != Some(part)
+            }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -39,7 +65,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof output-operation identity mismatch", span);
         if points.len() > super::sequences::MAX_ITEMS
             || !self.flow.spend(
-                points.len() * (points.len().checked_ilog2().unwrap_or(0) as usize + 3)
+                points.len() * (points.len().checked_ilog2().unwrap_or(0) as usize + 6)
                     + self.outputs.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + 4,
             )
@@ -54,10 +80,12 @@ impl Checker {
         {
             return Err(invalid());
         }
+        let stopped = parts.iter().position(|part| part.ty == hir::Type::Never);
         let mut seen = std::collections::BTreeSet::new();
-        for (child, part) in points.iter().zip(parts) {
+        for (index, (child, part)) in points.iter().zip(parts).enumerate() {
             if let Some(child) = child {
-                if !seen.insert(child.point)
+                if !child.valid_source(index, stopped)
+                    || !seen.insert(child.point)
                     || !self.points.get(child.point).is_some_and(|child| {
                         child.parent == Some(id)
                             && child.owner == self.owner
@@ -72,7 +100,9 @@ impl Checker {
                     return Err(invalid());
                 }
                 if child.primary
-                    && !matches!(&part.kind, hir::ExprKind::Primary(value) if matches!(value.ty, hir::Type::Record { .. }))
+                    && (!matches!(&part.kind, hir::ExprKind::Primary(value)
+                        if super::Coercion::primary_source(&value.ty) == child.source)
+                        || child.source != Some(Completion::of(&part.ty).result))
                 {
                     return Err(invalid());
                 }
@@ -81,7 +111,6 @@ impl Checker {
                 return Err(invalid());
             }
         }
-        let stopped = parts.iter().position(|part| part.ty == hir::Type::Never);
         let mut edges = Vec::new();
         let (mut from, mut route) = (Port::Entry(id), Route::Next);
         if panic {
@@ -148,3 +177,6 @@ mod tests;
 
 #[cfg(test)]
 mod primary;
+
+#[cfg(test)]
+mod sources;

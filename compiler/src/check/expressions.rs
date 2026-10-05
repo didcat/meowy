@@ -666,6 +666,7 @@ impl Checker {
             ExprKind::Group(value) => self.format_points(value, parts, points)?,
             _ => {
                 let (point, value) = self.expr_point(expr, None)?;
+                let source = Coercion::primary_source(&value.ty);
                 let (primary, value) = Self::projected(value);
                 if value.ty.has_reference() {
                     return Err(Diagnostic::unsupported(
@@ -680,7 +681,11 @@ impl Checker {
                     ));
                 }
                 parts.push(value);
-                points.push(Some(FormatInput { point, primary }));
+                points.push(Some(FormatInput {
+                    point,
+                    primary,
+                    source,
+                }));
             }
         }
         Ok(())
