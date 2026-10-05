@@ -3954,6 +3954,48 @@
         "code": "E305"
       },
       "reference": "../reference/values-and-blocks.md#mutability"
+    },
+    {
+      "id": "scalar_block_chain",
+      "phase": "run",
+      "source": "sources/scalar_block_chain.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "start\nvalue tail\nrow tail\ncopy tail\n2\n2\nstart\nvalue tail\nrow tail\ncopy tail\n3\n3\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "scalar_block_boundaries",
+      "phase": "run",
+      "source": "sources/scalar_block_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\ntrue\n255\n1.5\ncat\n4\n7\n9\n8\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#the-shape-of-a-block-value"
+    },
+    {
+      "id": "scalar_block_stopped",
+      "phase": "run",
+      "source": "sources/scalar_block_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "good\ngood tail\n1\nstop input\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "scalar_block_duplicate",
+      "phase": "check",
+      "source": "sources/scalar_block_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

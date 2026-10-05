@@ -2457,23 +2457,30 @@ tests and all 591 forward-report tests pass (`/tmp/meowy-scalar-blocks-limits.lo
 `/tmp/meowy-scalar-blocks-reports.log`). Source conformance and final gates remain.
 
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
-`results/inputs/direct.rs` currently stores only field-source descriptors. A direct
-Value candidate whose input resolves to a scalar block still lacks a block-source
-association. Keep this separate from field transparency and aggregate provenance.
+`results/inputs/direct.rs` now stores distinct field/block descriptors. Keep this
+separate from field transparency and aggregate provenance. Resource slice:
+`7173551`. Four required cases pass fresh-compiler debug/release
+(`/tmp/meowy-scalar-blocks-source.log`): scalar kinds/widths, wrapped copy/tail order,
+existing opaque-producer behavior, stopped P006 inputs and E205. The preservation
+audit retains 374 prior cases, 408 source assets, 37 references/reviewed hashes,
+capability pins and proof obligations (`/tmp/meowy-scalar-blocks-preservation.log`).
+Coverage is regenerated; all four source-slice documentation checks pass
+(`/tmp/meowy-scalar-blocks-source-docs.log`). Final compiler/strict checks and the
+completed handoff remain.
 
 Dependency-ordered commit plan:
 
-1. Share bounded consumer/result/body qualification from `consumers.rs::slot_block`
+1. Complete: share bounded consumer/result/body qualification from `consumers.rs::slot_block`
    for scalar-only block results. Require an observed normal BlockResult, exact
    consumer/owner/body identity and a layout containing only the scalar primary.
    Cover grouped/typed/ascribed/local-read roots and missing/stopped/record layouts.
-2. Add a distinct direct block-source descriptor and bounded collection/stored
+2. Complete: add a distinct direct block-source descriptor and bounded collection/stored
    qualification in `results/inputs/direct*`. Preserve original Value points,
    candidate positions and all field-source reports; never fabricate a Field ID.
-3. Integrate explicit block-source visits into the expanded forest in a separate
+3. Complete: integrate explicit block-source visits into the expanded forest in a separate
    slice. Share existing root/slot, owner, cycle and payload/work bounds; retain the
    original candidate forest and Unknown/empty/multiple histories unchanged.
-4. Add corruption, mixed field/block cycles, exact resource-boundary tests and
+4. Complete: add corruption, mixed field/block cycles, exact resource-boundary tests and
    required source cases with classified evidence. Keep unobserved completion,
    unknown layouts, calls and reference loads opaque; no source value is selected.
 5. Run compiler, strict and final documentation gates and refresh both handoffs.

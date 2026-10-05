@@ -1,0 +1,28 @@
+d : @"debug"
+
+show <null> : (flag <boolean>) {
+    value : {
+        d.print("start")
+        | flag | -> 2
+        | !flag | -> 3
+        d.print("value tail")
+    }
+    alias <int32> : ((value~<int32>))
+    row : {
+        -> number : ((alias))
+        -> echo : value
+        d.print("row tail")
+    }
+    copied : {
+        -> row
+        d.print("copy tail")
+    }
+    d.print(copied.number)
+    d.print(copied.echo)
+}
+
+show(true)
+show(false)
+scalar : { -> 7 }
+nested <int32> : { -> (({ -> scalar })) }
+d.print(nested)

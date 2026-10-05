@@ -1,0 +1,15 @@
+d : @"debug"
+good : {
+    d.print("good")
+    -> 1
+    d.print("good tail")
+}
+ready <int32> : { -> ((good)) }
+d.print(ready)
+stopped <int32> : {
+    -> ({
+        d.print("stop input")
+        d.panic("stop")
+    })
+}
+d.print("unreachable")

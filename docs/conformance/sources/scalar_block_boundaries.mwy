@@ -1,0 +1,37 @@
+d : @"debug"
+empty : {}
+absent <null> : { -> empty }
+d.print(absent<null>)
+truth : { -> true }
+twin : { -> truth }
+d.print(twin)
+byte <uint8> : { -> 255 }
+small <uint8> : { -> ((byte)) }
+d.print(small)
+decimal : { -> 1.5 }
+number : { -> decimal }
+d.print(number)
+text : { -> "cat" }
+word : { -> text }
+d.print(word)
+
+record : { -> 4; -> tag : true }
+projected <int32> : record
+boxed : { -> projected }
+d.print(boxed)
+mutable := 7
+held : { -> mutable }
+mutable = 8
+taken : { -> held }
+d.print(taken)
+make <int32> : () { -> 9 }
+value : { -> make() }
+called : { -> value }
+d.print(called)
+view : &mutable
+loaded : { -> *view }
+copied : { -> loaded }
+d.print(copied)
+flag := false
+maybe <int32><null> : { | flag | -> 1 }
+d.print(maybe<null>)
