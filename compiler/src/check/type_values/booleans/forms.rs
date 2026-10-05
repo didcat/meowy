@@ -26,6 +26,8 @@ impl Checker {
         depth: usize,
         count: &mut usize,
     ) -> Result<Type> {
+        let literal = self.literal_expression(expr)?;
+        let expr = literal.as_deref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
         let expr = number.as_deref().unwrap_or(expr);
         self.form_work(expr, depth, count)?;

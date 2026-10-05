@@ -125,3 +125,15 @@ mod lists {
         }
     }
 }
+
+#[cfg(test)]
+mod rejected {
+    #[test]
+    pub(crate) fn required_boolean_forms_check_literal_kinds_even_when_skipped() {
+        for expression in ["!literal(1)", "false&&literal(1)", "true||literal(1.5)"] {
+            let source = format!(r#"literal:@"core".literal;<T>:{{flag:{expression};->flag<>}}"#);
+            let errors = crate::compile(&source).unwrap_err();
+            assert_eq!(errors[0].code, "E222", "{source}: {errors:?}");
+        }
+    }
+}

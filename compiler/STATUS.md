@@ -126,7 +126,17 @@ required multi-file facade coverage; module semantics explicitly retain numeric
 names. Conformance is 331 passed, 19 unchanged gaps, zero failures in both profiles
 (`/tmp/meowy-numeric-source-modules.log`). The module coverage hash is reviewed.
 
-Next steps: rejection cases, remaining docs and final gates.
+Module contract: `ce4b0ab`. Numeric duplicate/write/borrow/arity rejection sources
+pass: 335 required passes, 19 unchanged gaps, zero failures in both profiles
+(`/tmp/meowy-numeric-source-errors.log`). The reference anchor correction was
+validated by regenerated coverage and all six doc/editor checks
+(`/tmp/meowy-numeric-final-docs.log`).
+
+The final audit found required boolean form validation missing literal expansion.
+The focused fix preserves E222 for numeric operands even in skipped arms; all
+four literal groups pass (`/tmp/meowy-literal-boolean-forms.log`).
+
+Next steps: commit source rejection evidence and remaining docs, then final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
