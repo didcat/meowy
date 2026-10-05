@@ -363,11 +363,21 @@ bytes, with total caps of 262,144 slots and 262,144 name bytes. Checks precede c
 duplicate capture does not charge those persistent totals again.
 
 Result-source reports attach observed initialization candidates to immutable scalar
-slots after a BlockResult visit. Each candidate retains the exact EmitId, emission
-statement and target index, preserving primary/field composition projections.
+slots after ordinary BlockResult or validated dispatch-result observations. Each
+candidate retains the exact EmitId, emission statement and target index, preserving
+primary/field composition projections.
 Joins use checked block and field identities, including named outer targets;
 program/function roots gain no caller link. Ordinary consumers retain their
 validated block-expression endpoint.
+
+Dispatch rows retain an explicit dispatch origin instead of an ordinary consumer.
+They require matching report/producer headers, checked normal completion and body
+layout, the original synthetic receiver prefix and every stored sequence site/edge.
+The enclosing owner and body/span containment are checked too. A bounded transient
+dispatch index charges payload before growth; ordinary and dispatch rows reuse the
+same emission/history construction. Dispatch bodies add their own candidate roots
+without becoming ordinary block observations or consumers. Receiver initialization,
+dispatch result and emission-target visits remain independent.
 
 Target-initialization flags are independent of emission-statement completion.
 Candidates can include discarded paths whose value shape differs from the completed
@@ -492,8 +502,8 @@ Original input and terminal field IDs retain the exact qualified route;
 no type shapes are copied.
 
 Direct-source reports retain each original Value candidate's point and optional
-field or scalar-block descriptor at its existing block/slot/candidate position.
-Field and block alternatives are exclusive. They are collected after field-result
+field, scalar-block or scalar-dispatch descriptor at its existing block/slot/candidate
+position. These alternatives are exclusive. They are collected after field-result
 reporting and leave candidate inputs, composed sources and the
 original forest unchanged. Combined map capacity and qualification-cache payload
 bound publication; late failures return no partial map or remaining budget. Source
@@ -510,16 +520,24 @@ does not invent a normal visit. Missing consumer associations stay opaque;
 contradictory retained observations fail. Record, union, list and reference results,
 dispatches, calls and shared loads do not become scalar-block sources.
 
+Scalar dispatch descriptors use a separate terminal mode through the same bounded
+wrapper traversal. They retain the exact dispatch point and primary slot 0 only
+after producer-specific result qualification and a matching tagged result row.
+Record, union, list and reference dispatch results remain outside this scalar
+consumer path. Synthetic receiver reads stay outside ordinary initializer forwarding;
+no initialization or result observation is inferred from the other.
+
 A separate expanded forest is collected after the direct-source map. It first
 qualifies a borrowed view against every original Value candidate, point, owner and
-qualified wrapper/initializer/field-result or scalar-block route. Missing, extra or
-changed descriptors are invalid. Qualification reuses bounded field/root caches and consumes
-the same remaining payload as traversal; no input or history vectors are copied.
+qualified wrapper/initializer/field-result, scalar-block or scalar-dispatch route.
+Missing, extra or changed descriptors are invalid. Qualification reuses bounded
+field/root caches and consumes the same remaining payload as traversal; no input
+or history vectors are copied.
 
-Resolved direct sources produce explicit Field or Block visits retaining the
-original candidate position and input descriptor alongside the terminal field or
-block consumer and source Slot. The Value projection stays intact. An absent
-optional source remains a direct terminal. Field, block and composed edges use the
+Resolved direct sources produce explicit Field, Block or Dispatch visits retaining
+the original candidate position and input descriptor alongside the terminal producer
+and source Slot. The Value projection stays intact. An absent optional source
+remains a direct terminal. Field, block, dispatch and composed edges use the
 same iterative owner, active/completed, pending/visited/output and work checks.
 The expanded forest shares visited state
 across roots and retains Unknown, empty, multiple and discarded histories without
@@ -533,8 +551,11 @@ Scalar-block cases also preserve empty results, scalar kinds and widths, nested
 copies and stopped inputs. Seeded 2048-slot chains, mixed cycles and exact live
 storage/work limits qualify the traversal engine separately from source behavior.
 Those cases do not establish proof outcomes or make opaque producers transparent.
-Dispatch result sources, function returns and broader aggregate provenance remain
-separate. Proof evaluation remains unimplemented.
+Dispatch source cases additionally pin receiver-once and tail order, nested `$`
+scope, owned/shared permissions, stopped receivers/bodies and shared-store E305.
+Synthetic receiver input forwarding, record-dispatch consumers, function returns
+and broader aggregate provenance remain separate. Proof evaluation remains
+unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,
 keeping binary steps distinct and coercion step0 explicit. Every recorded
@@ -1306,6 +1327,11 @@ Each record has fixed-size metadata and shares work/map limits with other effect
 Receiver values and body statements are not copied. Duplicate visits merge flags;
 conflicts or exhaustion publish no partial collection. Ordinary/composed checking,
 receiver immutability, loans, lifetimes and proof-outcome gates remain unchanged.
+
+Result-source publication adds full stored-statement/sequence, enclosing-owner,
+span, completion and layout checks before indexing dispatch body slots. It keeps
+ordinary block observations separate and preserves result-only observations without
+inventing an initialization visit. Stopped receivers or bodies publish no result row.
 
 Record-context equality retains both exact composed operand roots for ordered
 sequencing, including scalar-primary comparisons. Existing hinting, contextual

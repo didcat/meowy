@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Direct scalar block sources now qualify and traverse explicitly.
+Updated: 2026-10-05. Dispatch result origins, histories and scalar source visits are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2464,125 +2464,98 @@ documentation checks pass (`/tmp/meowy-scalar-blocks-docs.log`). No outstanding
 failures remain. Unrelated `docs/programs/hey/` is preserved.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: dispatch result-source qualification
+## Dispatch result-source qualification
 
-Active investigation: dispatch validation preserves receiver/prefix edges but
-does not yet qualify retained report headers plus complete body layout/sequence.
-Ordinary result indexing currently reads only `reports.blocks`. Add an explicit
-dispatch origin to result rows and keep their consumer out of the ordinary block
-index; reuse bounded history construction without forging Block observations.
-Plan separate report qualification, history/origin prerequisites, dispatch result
-collection, wrapper resolution, scalar descriptors and forest integration, then
-boundary/source checks and final gates. No new checks have run yet. Preserve
-unrelated `docs/programs/hey/`.
+Dispatch results now have explicit producer origins on shared result rows, with
+ordinary consumers left empty. Qualification checks captured/report headers,
+independent initialization/result observations, enclosing owner and body/span
+containment, the original synthetic receiver prefix, every stored statement/site
+and sequence edge, normal completion and bounded layouts. Ordinary Block observations
+remain separate; no endpoint or source statement is fabricated.
 
-Dispatch report qualification is test-enabled while its consumer is built. It
-checks observed headers, the existing dispatch producer, every stored statement
-and sequence edge, and shared completion/layout rules. The first compile exposed
-the layout validator's block-only visibility; widen it only to the forward-report
-module for reuse. The first two groups pass. A boundary review also requires the
-dispatch expression's enclosing owner and valid body/span containment; those
-checks and three additional corrupt-container/duplicate-statement cases are added.
-All 14 dispatch-effect tests pass (`/tmp/meowy-dispatch-sources-qualifier.log`),
-including 19 corruption variants. Formatting and whitespace checks pass. Next
-share history construction and add explicit result origins before collection.
-Qualifier slice: `c6956d1`. Slot-history materialization is extracted unchanged
-into `results/slots.rs`, retaining exact candidate/mutability decisions, payload
-charges and work. All 70 result tests pass before/after extraction
-(`/tmp/meowy-dispatch-sources-history-before.log`, `/tmp/meowy-dispatch-sources-history.log`).
-Formatting and whitespace checks pass; explicit origin tagging is next.
-History extraction: `2a29342`. Result rows now have an explicit optional dispatch
-origin, mutually exclusive with ordinary consumers. Seeded dispatch rows validate
-through the producer-specific result qualifier; ordinary rows retain their old
-protocol. All 72 result tests pass (`/tmp/meowy-dispatch-sources-origins.log`),
-including twelve wrong/ambiguous/missing-observation variants. Formatting and
-whitespace checks pass. Production collection still publishes only ordinary rows
-in this slice; dispatch indexing is next.
-Origin slice: `a7a0289`. Collection now builds a bounded, payload-charged dispatch
-body index, reuses the emission/history builder and publishes tagged result rows.
-Ordinary block observations/consumer membership stay separate. New tests cover
-exact EmitIds, owners, mutable/empty/unknown layouts and independent receiver,
-result and target visits. All 2614 library tests pass
-(`/tmp/meowy-dispatch-sources-collection.log`); formatting and whitespace checks pass.
-Existing candidate rows remain intact while dispatch bodies add their own roots.
-Scalar dispatch consumers remain opaque until the subsequent integration slices.
-Collection slice: `2020bdd`. Wrapper traversal now shares one bounded loop with
-distinct ordinary-block and dispatch terminal modes. Ordinary consumers never
-classify a dispatch as a block; dispatch lookup stops at blocks, fields, calls and
-changed or ineligible wrappers. Existing consumer checks passed before the change;
-all 143 consumer tests pass (`/tmp/meowy-dispatch-sources-wrappers.log`), including
-the new owner/wrapper regressions. Formatting and whitespace checks pass. Scalar
-dispatch descriptors can now use that separate terminal mode.
-Wrapper slice: `9c671bf`. Direct rows now have a distinct scalar dispatch
-descriptor, qualified against the tagged result row and checked scalar layout.
-Producer exclusivity includes dispatches before field/block resolution. New
-owner/identity/opaque-layout tests pass, together with all 2618 library tests
-(`/tmp/meowy-dispatch-sources-descriptors.log`). Formatting and whitespace checks
-pass. Traversal still leaves dispatch descriptors as Value terminals until its
-own slice; all field/block reports retain their existing identities.
-Descriptor slice: `381f32e`. The expanded forest now records explicit Dispatch
-visits with three-way source exclusivity and primary-slot checks. Mixed real
-field/block/dispatch/composition paths, empty/multiple/shared histories and seeded
-Unknown history pass, together with all 2621 library tests
-(`/tmp/meowy-dispatch-sources-walk.log`). Original Value inputs and the ordinary
-candidate forest remain independent of expanded traversal. Descriptor corruption
-and aggregate budget/cycle tests are the next slices.
-Traversal slice: `d47b7b8`. Boundary/resource tests now cover 15 stored descriptor
-and origin faults, exact qualifier work, dispatch index/map/payload limits and
-late producer conflicts without partial publication. All 46 dispatch-focused tests
-pass (`/tmp/meowy-dispatch-sources-boundaries.log`). Formatting and whitespace
-checks pass. Remaining checks cover mixed traversal cycles/depth/work and source
-conformance before the final compiler gates.
-Boundary slice: `08185b5`. Exact wrapper hops/work, mixed four-family cycles,
-iterative 2048-slot depth, peak traversal payload and late graph faults are now
-covered. All 50 dispatch-focused tests pass
-(`/tmp/meowy-dispatch-sources-traversal-limits.log`); the complete forward-report
-family also passes (`/tmp/meowy-dispatch-sources-reports.log`). Source cases and
-final compiler/strict/documentation gates are next.
-Traversal limits: `c81709b`. The first new source case passes debug/release.
-The boundary fixture's E222 came from prefix `&owned.n`, which reads through a
-borrowed receiver; use the documented selected-field borrow `owned.&n`. The first
-rejection fixture hit the existing B001 shared-field assignment-path gap, so use
-supported scalar indirect assignment to test shared-receiver E305 instead. No
-capability exception, old fixture or old expectation changed. All three source
-cases now pass debug/release (`/tmp/meowy-dispatch-sources-source.log`). Classified
-evidence is updated and coverage regenerated; all four source-slice documentation
-checks pass (`/tmp/meowy-dispatch-sources-source-docs.log`). Stopped receiver/body
-source cases remain a separate slice.
-Core source slice: `6e23f08`. Both stopped receiver/body cases now also pass
-debug/release, with exact prefixes, P006 and exit 1; all five new cases pass
-(`/tmp/meowy-dispatch-sources-source.log`). The preservation audit retains 378 prior
-cases, 412 source assets, 37 references/hashes, capability pins and proof obligations
-(`/tmp/meowy-dispatch-sources-preservation.log`). All four final source-slice
-documentation checks pass (`/tmp/meowy-dispatch-sources-panic-docs.log`); the full
-compiler and strict gates remain.
+A bounded dispatch-body index charges transient payload before publication. Both
+producer families reuse exact EmitIds, target initialization flags and slot-history
+construction. Mutable, aggregate and unknown slots stay Unknown; empty and multiple
+histories retain their meaning. Stopped receivers/bodies publish no result row.
+Dispatch bodies add distinct roots to the candidate inventory without changing
+existing ordinary rows or the candidate forest's traversal rules.
 
-`blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
-`Effect::Dispatch` already retains input/local/body identity and independent
-initialization/result observations, but its body has no result-source association.
-Do not route it through ordinary block completion or synthesize missing endpoints.
+The shared wrapper resolver has separate ordinary-block and dispatch terminal
+modes. Scalar dispatch descriptors retain the original Value point, exact dispatch
+point and primary slot. Field/Block/Dispatch alternatives are exclusive; stored rows
+are requalified before expanded traversal. Explicit Dispatch visits share owner,
+cycle, visited-state, payload and work bounds with Field/Block/composed visits.
+No runtime value, reachability, loan authority or proof outcome is inferred.
+Receiver reads remain excluded from ordinary initializer forwarding.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Qualify observed dispatch result bodies and layouts | `c6956d1` |
+| Share bounded slot-history construction without changing behavior | `2a29342` |
+| Distinguish dispatch origins from ordinary consumers | `a7a0289` |
+| Collect bounded dispatch result-slot histories | `2020bdd` |
+| Resolve wrapped dispatch inputs separately from blocks | `9c671bf` |
+| Retain qualified scalar dispatch source descriptors | `381f32e` |
+| Traverse explicit dispatch result sources | `d47b7b8` |
+| Bound descriptor/origin identity and result indexing | `08185b5` |
+| Bound mixed dispatch traversal and wrapper hops | `c81709b` |
+| Pin receiver order, nested scopes and permissions | `6e23f08` |
+| Pin stopped receiver/body behavior | `32fadb7` |
+
+All 70 result tests pass before/after history extraction. Qualifier, origin,
+collection, wrapper and descriptor checks pass. All 50 dispatch-focused tests and
+612 forward-report tests pass (`/tmp/meowy-dispatch-sources-traversal-limits.log`,
+`/tmp/meowy-dispatch-sources-reports.log`). Structural evidence covers 19 body/report
+faults, 12 origin faults, 15 descriptor faults, sparse observations, exact index/map/
+payload/work bounds, mixed four-family cycles and iterative 2048-slot traversal.
+Seeded graph properties remain separate from observable language conformance.
+
+Five new required cases pass debug/release (`/tmp/meowy-dispatch-sources-source.log`):
+receiver-once/tail order, nested `$`, unused Never helpers, owned/shared permissions,
+empty/nonscalar results, scalar shared-store E305 and separate receiver/body P006
+stops. E305 uses supported scalar indirection; shared-field assignment paths retain
+their existing B001 limitation. All four source-slice documentation checks pass
+(`/tmp/meowy-dispatch-sources-panic-docs.log`). The preservation audit retains 378
+prior cases, 412 source assets, 37 references/reviewed hashes, capability pins and
+proof obligations (`/tmp/meowy-dispatch-sources-preservation.log`).
+
+All ten compiler checks pass: formatting, Clippy, 2629 library/921 native tests,
+62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-dispatch-sources-gate.log`). Conformance has 383 cases: 364 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode
+exits 1 only for those gaps (`/tmp/meowy-dispatch-sources-strict.log`). All four final
+documentation checks pass (`/tmp/meowy-dispatch-sources-docs.log`). No outstanding
+failures remain. Unrelated `docs/programs/hey/` is preserved.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: scalar dispatch receiver input sources
+
+Dispatch result slots can now link to their consumers, but `$` reads remain explicit
+opaque leaves. `read_initializer_input` correctly excludes synthetic receivers;
+keep that exclusion and use a producer-specific path for any future forwarding.
 
 Dependency-ordered commit plan:
 
-1. In `effects/dispatch.rs` and its focused modules, qualify retained dispatch
-   report headers/result observations against the existing producer validator and
-   checked body completion/layout. Preserve the leading synthetic receiver entry,
-   exact prefix order, stopped receiver/body boundaries and independent owners.
-   Add focused normal, empty, stopped and corrupt-metadata tests.
-2. Add bounded dispatch-body result-slot indexing as a separate slice, reusing
-   exact EmitIds and existing layouts. Keep ordinary block and dispatch producer
-   identities explicit; preserve Unknown/empty/multiple histories, result-only
-   observations and fixed receiver permissions. No successful check implies a result.
-3. Only after those prerequisites pass, add distinct scalar dispatch source
-   descriptors and stored-report qualification, followed by expanded-forest
-   integration in its own commit. Share aggregate capacity/work/cycle bounds and
-   preserve all existing Field/Block/composed visits and the original forest.
-4. Add source conformance and classified evidence, then run compiler, strict and
-   final documentation gates and refresh both handoffs.
+1. In `dependencies/dispatch.rs`, capture a bounded shallow receiver shape from
+   the checked synthetic Bind value before local types move into HIR. Preserve
+   input/body completion independently and existing edge order; add scalar,
+   reference/aggregate, stopped and replay-identity tests with the capture change.
+2. Build a bounded receiver-local-to-dispatch index from exact producer/local/body
+   identities, preserving independent owners, nested `$` and checked lexical
+   containment. No statement ID or ordinary initializer binding may be invented.
+3. Qualify scalar receiver reads only against matching read/storage metadata and
+   an observed dispatch initialization. Preserve result/body-stop independence;
+   absent initialization, references, aggregates, calls and reborrows stay opaque.
+   Add exact identity, conflict, cycle and shared-budget regressions with each slice.
+4. Integrate source links using existing input roots, without replaying receiver
+   evaluation or granting lifetime/loan authority. Keep ordinary read eligibility,
+   original candidates and all Field/Block/Dispatch/composed identities intact.
+5. Add required source cases and classified evidence, then run compiler, strict
+   and final documentation gates and refresh both handoffs.
 
-Keep synthetic receiver forwarding, field transparency, aggregate value
-selection, precise overwrite/branch joins, function returns, restart propagation,
-E225 enforcement and proof outcomes separate. No source link grants loan authority.
+Record-dispatch consumers, field transparency, aggregate value selection, precise
+branch/overwrite joins, function returns, restart propagation, E225 enforcement
+and proof outcomes remain separate.
 
 ## Documentation conventions and layout
 
@@ -4174,8 +4147,9 @@ implemented, including direct-input lookup through unchanged narrowing and a
 separate expanded field-source forest. Explicit groups, observed non-projecting
 Forward coercions, normal unchanged ascriptions and eligible immutable local reads
 now qualify direct field sources. Distinct scalar-block descriptors and expanded
-visits are complete. Dispatch result-source qualification is next, following the
-ordered plan above; value selection and broader aggregate provenance remain separate.
+visits are complete. Tagged dispatch histories and scalar dispatch visits are also
+complete. Scalar receiver input sources are next, following the ordered plan above;
+value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -4786,8 +4760,12 @@ ordered plan above; value selection and broader aggregate provenance remain sepa
    cases (`4714018`) pass the compiler gate. Shared block qualification (`7b48583`),
    scalar qualification (`15be758`), descriptors (`19e33be`), traversal (`0efa670`),
    boundaries (`7405868`), limits (`7173551`) and source cases (`7c52bb1`) are complete;
-   current gate results are above. Next qualify dispatch result sources using their
-   own producer identities before wider value provenance work.
+   current gate results are above. Dispatch qualification (`c6956d1`), shared histories
+   (`2a29342`), origins (`a7a0289`), indexing (`2020bdd`), wrapper resolution (`9c671bf`),
+   descriptors (`381f32e`), traversal (`d47b7b8`), boundaries (`08185b5`), limits
+   (`c81709b`) and source cases (`6e23f08`, `32fadb7`) are complete. Next qualify scalar
+   receiver input sources through their own initialization evidence before broader
+   value provenance work.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
