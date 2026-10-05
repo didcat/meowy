@@ -1971,7 +1971,14 @@ one forest with shared visited state, and the prerequisite is enabled in product
 All 33 matching tests and all-target Clippy pass
 (`/tmp/meowy-candidate-walk-engine.log`, `/tmp/meowy-candidate-walk-engine-lint.log`).
 All 2489 library tests also pass (`/tmp/meowy-candidate-walk-library.log`).
-Adversarial traversal limits and seeded graph coverage follow.
+Traversal/integration is committed as `b3a6516`. Seeded engine tests now cover
+sharing versus self/mutual cycles, continuation after a cycle, a 2048-slot chain,
+aggregate peak storage, exact work and late malformed targets. These are structural
+engine fixtures; checked-source traversal evidence remains separate. All nine walk
+groups pass, including the corrected named-field source selection
+(`/tmp/meowy-candidate-walk-boundaries.log`); all-target Clippy passes
+(`/tmp/meowy-candidate-walk-boundaries-lint.log`). Source conformance is next.
+Concurrent editor/root-tracker changes remain outside this compiler series.
 
 Dependency-ordered commit plan:
 

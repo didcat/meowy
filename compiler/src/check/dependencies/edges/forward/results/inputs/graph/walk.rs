@@ -190,3 +190,9 @@ impl Graph<'_> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod seeded;
+
+#[cfg(test)]
+mod limits;
