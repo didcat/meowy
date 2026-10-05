@@ -2444,6 +2444,12 @@ block slots. Mixed-chain, empty/multiple/shared and seeded Unknown-history tests
 pass, together with all 2600 library tests (`/tmp/meowy-scalar-blocks-walk.log`).
 The original candidate forest stays intact. Remaining slices cover producer/report
 corruption, exact collection/traversal budgets, mixed cycles and source conformance.
+Traversal is committed as `0efa670`. Producer/report boundary tests now cover
+23 terminal/route/layout/conflict faults, independent normal/result observations,
+missing consumer associations and exact qualifier work. All three groups pass
+(`/tmp/meowy-scalar-blocks-boundaries.log`). Missing associations remain opaque;
+stale or contradictory retained observations fail atomically. Exact map/forest
+budgets and mixed-cycle traversal tests are next.
 
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
 `results/inputs/direct.rs` currently stores only field-source descriptors. A direct
