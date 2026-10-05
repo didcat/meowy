@@ -148,6 +148,11 @@ disappearing as an incidental consequence of a pipeline.
 
 ## Mutability
 
+[Numeric value names](syntax.md#numeric-names-and-intrinsic-literals) obey these
+same rules: `1 := 7` creates mutable storage, `1 = 8` writes it, and `&1` borrows
+that storage. An unbound numeric token still denotes a literal temporary. Numeric
+named emissions and fields retain ordinary initialization and field permissions.
+
 Bindings and fields are separate replacement boundaries. `:` prevents replacing
 that slot; `:=` permits replacement. An immutable binding can own mutable fields:
 

@@ -101,8 +101,13 @@ profiles (`/tmp/meowy-numeric-source-core.log`). Reviewed syntax/core inventory
 hashes and evidence are refreshed; all four documentation checks pass
 (`/tmp/meowy-numeric-contract-docs.log`). Proof obligations are unchanged.
 
-Next steps: storage/required/documentation-link source cases and cross-reference
-updates, teaching/compiler docs, editor highlighting and the full final gate.
+Core contract: `a0cfb29`. Types, values and collections now explain fixed numeric
+binding types and storage/index lookup. The numeric storage source case passes;
+conformance is 327 passed, 19 unchanged gaps, zero failures in both profiles
+(`/tmp/meowy-numeric-source-storage.log`). Corresponding coverage hashes reviewed.
+
+Next steps: required and documentation-link source cases, module integration,
+teaching/compiler docs, editor highlighting and the full final gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

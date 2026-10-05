@@ -1,0 +1,17 @@
+debug : @"debug"
+1 := 7
+view : &1
+debug.print(*view)
+1 = 8
+{ write : &!1; *write = 9 }
+debug.print(1)
+2 : { -> 1.0 := 10 }
+(2).1.0 = 11
+debug.print((2).1.0)
+3 <int32[02]> := [12, 13]
+3[01] = 14
+debug.print(3[01])
+4 <uint8> : 15
+items : [4, 16]
+debug.print(items[01])
+debug.print(items[02])

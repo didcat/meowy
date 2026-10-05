@@ -1857,7 +1857,7 @@
       "source": "sources/scalar_leaf_contexts.mwy",
       "expected": {
         "accepted": true,
-        "stdout": "-128\n-9223372036854775808\n255\n18446744073709551615\n10\ntrue\ntrue\ntrue\n\u00e9\u0000\ud83d\ude42\n"
+        "stdout": "-128\n-9223372036854775808\n255\n18446744073709551615\n10\ntrue\ntrue\ntrue\né\u0000🙂\n"
       },
       "reference": "../reference/syntax.md#literals-values-and-comments"
     },
@@ -3654,6 +3654,16 @@
         "code": "E207"
       },
       "reference": "../reference/stdlib/core.md#intrinsic-numeric-literals"
+    },
+    {
+      "id": "numeric_storage",
+      "phase": "run",
+      "source": "sources/numeric_storage.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n9\n11\n14\n15\n16\n"
+      },
+      "reference": "../reference/values-and-blocks.md#mutability"
     }
   ]
 }

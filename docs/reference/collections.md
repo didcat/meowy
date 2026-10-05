@@ -54,6 +54,13 @@ element. An error must not silently consume the caller's resource.
 An inline capacity cannot become dynamic after an assignment. Construct a vector
 with an allocator when runtime growth is required.
 
+Numeric spellings in capacities, indices and elements use ordinary lexical
+lookup. A shadowed number is an already typed value during list inference;
+[`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) remains a
+contextual literal. Shadowing `1` can therefore change what `items[1]` selects;
+`items[core.literal(1)]` selects the intrinsic first position. String keys in
+named lists retain their existing rules.
+
 ## Indexing, mutation, and removal
 
 `list[index]` performs a bounds check and panics if the position is invalid. A

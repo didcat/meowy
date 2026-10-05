@@ -73,6 +73,11 @@ signedness change, integer-width change, floating/integer conversion, or dynamic
 boxing. Untyped numeric literals may be checked against the other operand's type.
 Two already typed arithmetic operands must have the same numeric type.
 
+A [numeric binding](syntax.md#numeric-names-and-intrinsic-literals) is already
+typed too. After `1 <uint8> : @"core".literal(1)`, reading `1` produces `uint8`;
+assigning it to `int32` is `E207`. Use `core.literal(1)` to request a fresh literal
+with contextual typing. Alternate spellings are independent lexical names.
+
 Unions accept any of their members. A descriptor-compatible concrete error may
 be passed as `<error>` without allocation. An error retaining arbitrary inline
 owners must stay concrete or have its payload explicitly boxed before erasure.
