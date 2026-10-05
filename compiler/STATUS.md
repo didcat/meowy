@@ -2520,6 +2520,13 @@ owner/identity/opaque-layout tests pass, together with all 2618 library tests
 (`/tmp/meowy-dispatch-sources-descriptors.log`). Formatting and whitespace checks
 pass. Traversal still leaves dispatch descriptors as Value terminals until its
 own slice; all field/block reports retain their existing identities.
+Descriptor slice: `381f32e`. The expanded forest now records explicit Dispatch
+visits with three-way source exclusivity and primary-slot checks. Mixed real
+field/block/dispatch/composition paths, empty/multiple/shared histories and seeded
+Unknown history pass, together with all 2621 library tests
+(`/tmp/meowy-dispatch-sources-walk.log`). Original Value inputs and the ordinary
+candidate forest remain independent of expanded traversal. Descriptor corruption
+and aggregate budget/cycle tests are the next slices.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent

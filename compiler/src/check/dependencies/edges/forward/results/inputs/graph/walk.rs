@@ -1,7 +1,8 @@
 use super::super::direct::Directs;
 use super::*;
 use crate::check::dependencies::edges::forward::consumers::{
-    field_results::lookup::narrowing::Source, scalars::Source as Block,
+    dispatch::Source as Dispatch, field_results::lookup::narrowing::Source,
+    scalars::Source as Block,
 };
 use crate::flow::Flow;
 
@@ -22,6 +23,7 @@ pub(crate) enum Visit {
     Value(Key, Input),
     Field(Key, Input, Source),
     Block(Key, Input, Block),
+    Dispatch(Key, Input, Dispatch),
     Projection(Key, Input),
     Unresolved(Key, Input),
 }
@@ -200,7 +202,7 @@ impl Graph<'_> {
                             (Projection::Value, None) => {
                                 let source = if let Some(sources) = sources {
                                     if !flow.spend(
-                                        sources.len().checked_ilog2().unwrap_or(0) as usize + 4,
+                                        sources.len().checked_ilog2().unwrap_or(0) as usize + 5,
                                     ) {
                                         return Err(budget());
                                     }
@@ -209,18 +211,21 @@ impl Graph<'_> {
                                     if stored_owner != owner || direct.point != input.point {
                                         return Err(invalid());
                                     }
-                                    (direct.source, direct.block)
+                                    (direct.source, direct.block, direct.dispatch)
                                 } else {
-                                    (None, None)
+                                    (None, None, None)
                                 };
                                 let (visit, slot) = match source {
-                                    (Some(source), None) => {
+                                    (Some(source), None, None) => {
                                         (Visit::Field(key, input, source), Some(source.slot))
                                     }
-                                    (None, Some(source)) if source.slot.index == 0 => {
+                                    (None, Some(source), None) if source.slot.index == 0 => {
                                         (Visit::Block(key, input, source), Some(source.slot))
                                     }
-                                    (None, None) => (Visit::Value(key, input), None),
+                                    (None, None, Some(source)) if source.slot.index == 0 => {
+                                        (Visit::Dispatch(key, input, source), Some(source.slot))
+                                    }
+                                    (None, None, None) => (Visit::Value(key, input), None),
                                     _ => return Err(invalid()),
                                 };
                                 state.visit(visit, span)?;
@@ -267,3 +272,6 @@ mod blocks;
 
 #[cfg(test)]
 mod block_limits;
+
+#[cfg(test)]
+mod dispatch;

@@ -38,7 +38,7 @@ pub(crate) fn scalar_dispatch_sources_preserve_points_owners_and_distinct_produc
             reports
                 .expanded_walk
                 .visits
-                .contains(&Visit::Value(key, input))
+                .contains(&Visit::Dispatch(key, input, source))
         );
         owners.insert(owner);
     }
