@@ -2100,8 +2100,14 @@ visits with original candidate/input and terminal-field identities. Existing own
 cycle/sharing and pending/output/visited bounds cover both edge kinds. Checked
 source regressions cover mixed composition, sharing and Unknown/empty/discarded
 histories. All twelve original/expanded traversal groups pass
-(`/tmp/meowy-expanded-engine.log`). Next integrate the expanded forest after
-direct-source collection (step 3).
+(`/tmp/meowy-expanded-engine.log`); engine committed as `7972426`. Entry reports
+now collect a separately retained expanded forest after field/direct-source maps,
+consuming the same remaining payload through qualification and traversal. Original
+forest qualification inputs are unchanged. All 2529 library tests and all-target
+Clippy pass (`/tmp/meowy-expanded-library.log`,
+`/tmp/meowy-expanded-integration-lint.log`). Both focused integration groups pass
+with the final test budget reset (`/tmp/meowy-expanded-integration.log`). Next
+cover seeded cycles and exact traversal limits (step 4).
 
 Dependency-ordered commit plan:
 

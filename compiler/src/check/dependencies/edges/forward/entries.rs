@@ -22,6 +22,7 @@ pub(crate) struct Reports {
     pub(crate) candidate_walk: super::results::inputs::graph::Walk,
     pub(crate) field_results: super::consumers::Uses,
     pub(crate) direct_sources: super::results::inputs::direct::Directs,
+    pub(crate) expanded_walk: super::results::inputs::graph::Walk,
     pub(crate) calls: super::calls::CallGraph,
     pub(crate) groups: super::calls::Components,
     pub(crate) condensed: super::calls::Condensed,
@@ -67,6 +68,7 @@ impl Checker {
             candidate_walk: super::results::inputs::graph::Walk::default(),
             field_results: BTreeMap::new(),
             direct_sources: BTreeMap::new(),
+            expanded_walk: super::results::inputs::graph::Walk::default(),
             calls: super::calls::CallGraph::default(),
             groups: super::calls::Components::default(),
             condensed: super::calls::Condensed::default(),
@@ -112,6 +114,7 @@ impl Checker {
         (reports.candidate_walk, reports.parts) = self.candidate_walk_report(&reports, span)?;
         (reports.field_results, reports.parts) = self.field_results(&reports, span)?;
         (reports.direct_sources, reports.parts) = self.direct_sources(&reports, span)?;
+        (reports.expanded_walk, reports.parts) = self.direct_walk_report(&reports, span)?;
         reports.calls = self.call_graph(&reports, span)?;
         reports.groups = reports.calls.components(&mut self.flow, span)?;
         reports.condensed = reports

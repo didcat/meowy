@@ -1,4 +1,4 @@
-use super::super::graph::Graph;
+use super::super::graph::{Graph, Walk};
 use super::*;
 
 pub(crate) struct Expanded<'a> {
@@ -7,6 +7,25 @@ pub(crate) struct Expanded<'a> {
 }
 
 impl Checker {
+    pub(in super::super::super::super) fn direct_walk_report(
+        &mut self,
+        reports: &Reports,
+        span: Span,
+    ) -> Result<(Walk, usize)> {
+        self.direct_walk_limited(reports, span, reports.parts)
+    }
+
+    pub(super) fn direct_walk_limited(
+        &mut self,
+        reports: &Reports,
+        span: Span,
+        parts: usize,
+    ) -> Result<(Walk, usize)> {
+        let (view, parts) = self.direct_graph(reports, span, parts)?;
+        view.graph
+            .forest_sources(Some(view.sources), &mut self.flow, span, parts)
+    }
+
     pub(in super::super::super::super) fn direct_graph<'a>(
         &mut self,
         reports: &'a Reports,
@@ -65,3 +84,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod forest;

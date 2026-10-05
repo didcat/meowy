@@ -12,7 +12,6 @@ pub(crate) struct Direct {
 
 pub(crate) type Directs = BTreeMap<Key, (usize, Direct)>;
 
-#[cfg(test)]
 mod qualified;
 
 impl Checker {
