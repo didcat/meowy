@@ -2533,6 +2533,12 @@ late producer conflicts without partial publication. All 46 dispatch-focused tes
 pass (`/tmp/meowy-dispatch-sources-boundaries.log`). Formatting and whitespace
 checks pass. Remaining checks cover mixed traversal cycles/depth/work and source
 conformance before the final compiler gates.
+Boundary slice: `08185b5`. Exact wrapper hops/work, mixed four-family cycles,
+iterative 2048-slot depth, peak traversal payload and late graph faults are now
+covered. All 50 dispatch-focused tests pass
+(`/tmp/meowy-dispatch-sources-traversal-limits.log`); the complete forward-report
+family also passes (`/tmp/meowy-dispatch-sources-reports.log`). Source cases and
+final compiler/strict/documentation gates are next.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent
