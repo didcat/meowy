@@ -100,7 +100,7 @@ impl Checker {
 
     pub(crate) fn list_independent(&mut self, value: &ast::Expr) -> bool {
         let number = self.numeric_expression(value);
-        let value = number.as_ref().unwrap_or(value);
+        let value = number.as_deref().unwrap_or(value);
         match &value.kind {
             ExprKind::Name(_)
             | ExprKind::Call { .. }
@@ -204,7 +204,7 @@ impl Checker {
         reach: Guard,
     ) -> Result<Fit> {
         let number = self.numeric_expression(value);
-        let value = number.as_ref().unwrap_or(value);
+        let value = number.as_deref().unwrap_or(value);
         crate::borrow_contract::type_weight(expected, &mut self.flow, value.span)?;
         if !self
             .flow

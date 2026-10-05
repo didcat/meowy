@@ -581,7 +581,7 @@ impl Checker {
 
     pub(self) fn address_storage(&self, expr: &ast::Expr) -> Result<(hir::Place, Type)> {
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         match &expr.kind {
             ExprKind::Group(value) => self.address_storage(value),
             ExprKind::Name(name) => {
@@ -632,7 +632,7 @@ impl Checker {
 
     pub(crate) fn ast_place(&self, expr: &ast::Expr) -> Option<Place> {
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         match &expr.kind {
             ExprKind::Name(name) => match self.value(name, expr.span).ok()? {
                 Value::Local { id, .. } => Some((id, Vec::new())),

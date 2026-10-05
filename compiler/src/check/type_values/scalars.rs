@@ -59,7 +59,7 @@ impl Checker {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         self.type_work.as_mut().unwrap().enter(expr.span)?;
         let result = (|| match &expr.kind {
             ExprKind::Int(_) => Ok(()),

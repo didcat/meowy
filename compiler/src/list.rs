@@ -147,7 +147,7 @@ impl Checker {
 
     pub(crate) fn scalar_literal(&self, expr: &ast::Expr) -> bool {
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         match &expr.kind {
             ExprKind::Int(_) | ExprKind::Float(_) => true,
             ExprKind::String(parts) => parts
@@ -294,7 +294,7 @@ impl Checker {
 
     pub(crate) fn literal_default(&self, value: &ast::Expr) -> Option<Type> {
         let number = self.numeric_expression(value);
-        let value = number.as_ref().unwrap_or(value);
+        let value = number.as_deref().unwrap_or(value);
         match &value.kind {
             ExprKind::Int(_) => Some(Type::Int {
                 bits: 32,

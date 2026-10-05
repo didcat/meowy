@@ -156,7 +156,7 @@ impl Checker {
         let bits = self.bits_expression(expr)?;
         let expr = bits.as_ref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         self.charge_integer(expr)?;
         let (kind, ty) = match &expr.kind {
             ExprKind::Int(text) => {
@@ -533,7 +533,7 @@ impl Checker {
         let bits = self.bits_expression(expr).ok().flatten();
         let expr = bits.as_ref().unwrap_or(expr);
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         if matches!(expr.kind, ExprKind::Name(_) | ExprKind::Field { .. })
             && matches!(
                 self.hint_symbol(expr),

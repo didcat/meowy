@@ -44,7 +44,7 @@ impl Checker {
         count: &mut usize,
     ) -> Result<bool> {
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         self.form_work(expr, depth, count)?;
         match &expr.kind {
             ExprKind::Binary { op, left, right } if op == "!" => {

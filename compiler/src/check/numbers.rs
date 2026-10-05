@@ -13,10 +13,12 @@ impl Checker {
             .then_some(name)
     }
 
-    pub(crate) fn numeric_expression(&self, expr: &Expr) -> Option<Expr> {
-        self.numeric_name(expr).map(|name| Expr {
-            kind: ExprKind::Name(name.into()),
-            span: expr.span,
+    pub(crate) fn numeric_expression(&self, expr: &Expr) -> Option<Box<Expr>> {
+        self.numeric_name(expr).map(|name| {
+            Box::new(Expr {
+                kind: ExprKind::Name(name.into()),
+                span: expr.span,
+            })
         })
     }
 

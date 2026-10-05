@@ -80,7 +80,7 @@ impl Checker {
 
     pub(crate) fn type_value_inner(&mut self, expr: &ast::Expr) -> Result<Type> {
         let number = self.numeric_expression(expr);
-        let expr = number.as_ref().unwrap_or(expr);
+        let expr = number.as_deref().unwrap_or(expr);
         if !transparent_type(expr) && !matches!(expr.kind, ExprKind::Block(_)) {
             self.type_work.as_mut().unwrap().logical.charge(1, 0)?;
         }
@@ -246,7 +246,7 @@ impl Checker {
             form = value;
         }
         let number = self.numeric_expression(form);
-        let form = number.as_ref().unwrap_or(form);
+        let form = number.as_deref().unwrap_or(form);
         if matches!(form.kind, ExprKind::Block(_))
             && let Some(annotation) = annotation
         {

@@ -15,7 +15,7 @@ impl Checker {
             form = value;
         }
         let number = self.numeric_expression(form);
-        let form = number.as_ref().unwrap_or(form);
+        let form = number.as_deref().unwrap_or(form);
         let value = if matches!(form.kind, ExprKind::Block(_)) {
             self.partial_record(expr, output.ty.as_ref().unwrap())?
         } else {

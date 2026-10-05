@@ -62,6 +62,15 @@ Required identity slice: `f8ee8f2`. Numeric list elements now preserve typed
 inference, candidate probes, isolated probe environments and element storage.
 All four numeric checker groups pass (`/tmp/meowy-numeric-lists.log`).
 
+Full library probing exposed a stack overflow in the existing 64-term/64-candidate
+budget test. Boxing the optional rewritten expression fixes the focused case
+without changing the limit or test thread stack. This prerequisite signature
+change touches the helper and its 14 call-site files atomically (plus STATUS),
+so it exceeds the file-count guideline despite only changing adapter ownership.
+The numeric AST payload change is kept in a separate following slice.
+
+All 2547 library tests now pass (`/tmp/meowy-numeric-boxed.log`).
+
 Next steps: add an explicit intrinsic-literal marker to numeric AST payloads,
 then core.literal expansion, identity-copy integration and source conformance.
 This representation prerequisite keeps escaped literals from being shadowed again
