@@ -3,6 +3,7 @@ use crate::check::dependencies::edges::forward::results::{Sources, inputs::graph
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod limits;
 
 #[test]
 pub(crate) fn record_dispatch_fields_preserve_slots_owners_and_expanded_field_visits() {

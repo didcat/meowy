@@ -2603,11 +2603,7 @@ The only pre-existing dirty path is unrelated `docs/programs/hey/`.
 
 Dependency-ordered commit plan:
 
-1. Pin shared map/cache/work limits for record-dispatch field association and
-   source lookup in a focused boundary slice.
-   Shared loads, mutable/Unknown histories and opaque receiver inputs must
-   keep their current boundaries; never infer runtime values from structural links.
-2. Add required source cases for field selection/order and relevant rejections,
+1. Add required source cases for field selection/order and relevant rejections,
    classify structural evidence, run compiler/strict/documentation gates and refresh
    both handoffs.
 
@@ -2632,6 +2628,12 @@ Thirteen selection/retained-link faults, three producer overlaps and a mixed
 initializer cycle fail without publishing changed reports. The overlap regression
 exposed conflicting field metadata on an intermediate read/group; dispatch-mode
 wrapper lookup now rejects it while keeping genuine field-valued inputs opaque.
+All twelve record-dispatch tests pass (`/tmp/meowy-record-dispatch-limits.log`).
+Exact operation-slot capacity/work tests require no payload; field-result collection
+shares map/root payload and work; repeated lookup caches by exact field point while
+preserving shared slot identity. Hop and one-unit-short payload/work failures leave
+stored reports and edge counters unchanged. Implementation and structural evidence
+are complete; source cases and final gates remain.
 
 ## Documentation conventions and layout
 
