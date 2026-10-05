@@ -1,6 +1,9 @@
 use super::{effects::Effect, entries::Reports, *};
 use crate::{
-    check::dependencies::{BinaryClass, bodies::Layout},
+    check::dependencies::{
+        BinaryClass,
+        bodies::{Layout, completion::Shape},
+    },
     hir,
 };
 
@@ -118,6 +121,10 @@ impl Checker {
                             self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
                         } else if let Effect::Binary(op) = effect
                             && let BinaryClass::Scalar(ty) = op.types.inputs[step]
+                        {
+                            self.dispatch_primary_slot(reports, input, *owner, ty, span)?
+                        } else if let Effect::Coercion(op) = effect
+                            && let Some(Shape::Scalar(ty)) = op.source
                         {
                             self.dispatch_primary_slot(reports, input, *owner, ty, span)?
                         } else {

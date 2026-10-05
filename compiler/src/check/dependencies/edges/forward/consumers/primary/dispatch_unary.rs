@@ -78,8 +78,6 @@ pub(crate) fn dispatch_unary_primaries_require_projection_and_dispatch_result_in
 #[test]
 pub(crate) fn dispatch_unary_primaries_keep_other_producers_and_arithmetic_results_opaque() {
     for source in [
-        "r:3.{->$;->tag:true};x:-r",
-        "r:3.{->$;->tag:true};x<int32>:r;xs<int32[1]>:[r];d:@\"debug\";d.print(r);out:{->r}",
         "r:3.{->$;->tag:true};p:&r;x:-(*p)",
         "f<{-><int32>;tag<boolean>}>:(){->3;->tag:true};x:-f()",
     ] {

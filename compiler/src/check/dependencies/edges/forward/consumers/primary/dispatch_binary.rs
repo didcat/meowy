@@ -40,7 +40,10 @@ pub(crate) fn dispatch_binary_primaries_preserve_operand_positions_types_and_own
             }
         }
         assert!(count > 0);
-        assert_eq!(count, reports.slot_uses.len());
+        assert_eq!(count, reports.slot_uses.keys().filter(|port| matches!(port,
+            Port::Projection { point, .. } if matches!(reports.effects[point].1, Effect::Binary(_)))).count());
+        assert!(reports.slot_uses.keys().all(|port| matches!(port,
+            Port::Projection { point, .. } if matches!(reports.effects[point].1, Effect::Binary(_) | Effect::Coercion(_)))));
         let before = format!("{reports:?}{:?}", checker.edge_counts());
         assert_eq!(
             checker.slot_uses(&reports, Span::default()).unwrap(),

@@ -49,3 +49,6 @@ mod dispatch_unary;
 
 #[cfg(test)]
 mod dispatch_binary;
+
+#[cfg(test)]
+mod dispatch_coercions;

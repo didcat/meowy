@@ -2707,8 +2707,8 @@ qualification remain incomplete.
 
 ### Active: coercion-owned dispatch primary sources
 
-Coercion producers and reports retain the primary source shape before conversion;
-dispatch consumer integration is next. Do not infer source shape from the
+Coercion producers/reports retain the primary source shape before conversion, and
+observed scalar projections now link to dispatch slot zero. Do not infer source shape from the
 converted target or final HIR type. Ordinary coercion-owned primary links and
 non-projecting wrapper forwarding remain unchanged.
 
@@ -2723,11 +2723,8 @@ ordering and required/reborrow paths. Baseline: `/tmp/meowy-coercion-dispatch-ba
 
 Dependency-ordered commit plan:
 
-1. Qualify only observed scalar primary Projection inputs of `Effect::Coercion`,
-   reusing the captured source kind and `dispatch_primary_slot`. Preserve port step
-   zero and separate projection/conversion/result flags. Projected coercions must
-   remain opaque to generic wrapper/direct-value forwarding. Include focused valid,
-   absent, corrupt, cycle and resource-limit tests with the integration.
+1. Add focused integration fault, cycle, control and exact map/work regressions.
+   Keep projected coercions opaque to generic wrapper/direct-value forwarding.
 2. Add required source cases for typed copies, conversion and stopped inputs plus
    classified evidence; run compiler, strict and documentation gates and update both
    handoffs. Split further if capture/report changes exceed review thresholds.
@@ -2751,6 +2748,12 @@ report tests pass (`/tmp/meowy-coercion-dispatch-reports.log`,
 stages, twelve producer/report faults, atomic merge conflicts and exact work.
 The seeded stopped-projection regression now supplies Never in both capture and
 observation, preserving its ordinary record-anchor and stage expectations.
+Integration passes all 672 forward-report tests (`/tmp/meowy-coercion-dispatch-integration.log`).
+Four new consumer tests retain source kinds, exact ports/owners, independent stage
+and dispatch flags, projection-only conversion without operation registration, and
+opaque nonscalar/stopped/indirect inputs. A list element's separate coercion now
+owns its new link; the list's own projection port remains unlinked. Earlier arithmetic
+tests now count their own ports separately from these newly supported coercions.
 
 ## Documentation conventions and layout
 
