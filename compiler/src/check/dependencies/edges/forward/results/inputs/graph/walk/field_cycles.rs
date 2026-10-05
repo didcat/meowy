@@ -19,6 +19,7 @@ pub(super) fn seed(links: &[Vec<Option<usize>>]) -> (Results, Inputs, Directs) {
                         point: input.point,
                         source,
                         block: None,
+                        dispatch: None,
                     },
                 ),
             )

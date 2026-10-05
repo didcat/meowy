@@ -2513,6 +2513,13 @@ changed or ineligible wrappers. Existing consumer checks passed before the chang
 all 143 consumer tests pass (`/tmp/meowy-dispatch-sources-wrappers.log`), including
 the new owner/wrapper regressions. Formatting and whitespace checks pass. Scalar
 dispatch descriptors can now use that separate terminal mode.
+Wrapper slice: `9c671bf`. Direct rows now have a distinct scalar dispatch
+descriptor, qualified against the tagged result row and checked scalar layout.
+Producer exclusivity includes dispatches before field/block resolution. New
+owner/identity/opaque-layout tests pass, together with all 2618 library tests
+(`/tmp/meowy-dispatch-sources-descriptors.log`). Formatting and whitespace checks
+pass. Traversal still leaves dispatch descriptors as Value terminals until its
+own slice; all field/block reports retain their existing identities.
 
 `blocks.rs::validate_block_effect` deliberately excludes dispatch bodies.
 `Effect::Dispatch` already retains input/local/body identity and independent

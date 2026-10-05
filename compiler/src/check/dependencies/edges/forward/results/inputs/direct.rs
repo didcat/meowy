@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::{
     edges::forward::consumers::{
+        dispatch::Source as Dispatch,
         field_results::lookup::{Lookup, narrowing::Source},
         scalars::Source as Block,
     },
@@ -12,6 +13,7 @@ pub(crate) struct Direct {
     pub(crate) point: PointId,
     pub(crate) source: Option<Source>,
     pub(crate) block: Option<Block>,
+    pub(crate) dispatch: Option<Dispatch>,
 }
 
 pub(crate) type Directs = BTreeMap<Key, (usize, Direct)>;
@@ -83,10 +85,16 @@ impl Checker {
         } else {
             None
         };
+        let dispatch = if source.is_none() && block.is_none() {
+            self.scalar_dispatch_source(ctx.reports, point, owner, span)?
+        } else {
+            None
+        };
         Ok(Direct {
             point,
             source,
             block,
+            dispatch,
         })
     }
 }

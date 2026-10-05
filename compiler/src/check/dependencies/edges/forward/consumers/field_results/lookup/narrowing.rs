@@ -33,6 +33,7 @@ impl Checker {
                 self.coercions.len(),
                 self.local_reads.len(),
                 self.typed_ops.len(),
+                self.dispatch_ops.len(),
                 reports.consumers.len(),
                 self.bodies.len(),
             ]
@@ -66,6 +67,7 @@ impl Checker {
                 self.coercions.contains_key(&current),
                 self.local_reads.contains_key(&current),
                 self.typed_ops.contains_key(&current),
+                self.dispatch_ops.contains_key(&current),
                 reports.consumers.contains_key(&current),
             ];
             if producers.into_iter().filter(|present| *present).count() > 1 {

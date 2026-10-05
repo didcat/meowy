@@ -26,7 +26,6 @@ impl Checker {
         self.grouped_source_limited(reports, input, owner, span, limit, false)
     }
 
-    #[cfg(test)]
     pub(super) fn dispatch_consumer(
         &mut self,
         reports: &Reports,
