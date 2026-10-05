@@ -2087,7 +2087,18 @@ proof obligations are unchanged (`/tmp/meowy-field-narrowing-preservation.log`).
 Unrelated `docs/programs/hey/` remains excluded. Proof evaluation and full release
 qualification remain incomplete.
 
-### Next: traversal through qualified direct field sources
+## Traversal through qualified direct field sources
+
+In progress. Inspection confirms that the existing graph borrows original results
+and inputs; direct-source lookup depends on Root markers in the original forest.
+The expanded graph will borrow both reports and use the same traversal engine with
+an explicit field edge. No original inputs or forest entries will be rewritten.
+The borrowed qualifier is implemented as a test-enabled prerequisite. Its three
+identity/cache/work regression groups pass (`/tmp/meowy-expanded-qualifier.log`).
+No failures remain. Next extend the shared traversal engine (step 2); production
+integration remains step 3.
+
+Dependency-ordered commit plan:
 
 The original forest must remain available for field-result qualification. Add a
 separate expanded traversal after direct-source collection, retaining the original
@@ -2104,9 +2115,11 @@ candidate and forest reports as its qualification inputs.
 3. Collect the expanded forest only after field results and direct sources, keeping
    the original forest unchanged to avoid circular qualification. Qualifier, traversal
    and integration must remain independently reviewable with focused regressions.
-4. Cover composed-plus-field paths, shared sources versus cycles, opaque wrappers,
-   independent owners, corruption and exact budgets. Add required source cases and
-   classified evidence, then run compiler, strict and final documentation gates.
+4. Cover shared sources versus cycles, late corruption and exact traversal budgets
+   with focused structural regressions.
+5. Add required composed-plus-field source cases and classified coverage evidence.
+6. Run compiler, strict and final documentation gates; document the completed
+   traversal and leave the next ordered handoff.
 
 Do not follow Field results in `consumers/grouped.rs` or select candidate values yet.
 Aggregate field-value provenance, precise branch/overwrite joins, function returns,
