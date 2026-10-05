@@ -128,8 +128,12 @@ numeric assets were migrated and the other 383 old assets/pins/proof obligations
 are preserved (/tmp/meowy-root-first-preservation.log).
 
 All 12 final compiler/editor checks pass (/tmp/meowy-root-first-final-gate.log).
-Next: commit reviewed teaching/compiler docs, run strict gap accounting and
-replace this working plan with the final handoff.
+Teaching and entry-point docs now describe root-first paths, undotted names,
+ordinary grouping and mandatory field emission. Ten extracted documentation
+checks pass in debug/release (/tmp/meowy-root-first-doc-examples.log); member
+examples produce the exact expected strings. Local links also pass.
+
+Next: commit detailed compiler guides, run strict gap accounting and finalize.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

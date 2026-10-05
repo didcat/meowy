@@ -11,8 +11,9 @@ function body.
 The grammar is punctuation-based and has no reserved keywords. `true`, `false`,
 `null` and types are well-known values and bindings. `$` denotes the dispatch
 receiver; `self` is an ordinary name. See [names and syntax](docs/reference/syntax.md#no-keywords).
-Numeric spellings can also be shadowed by value bindings; `@"core".literal(1)`
-requests the intrinsic number. See [numeric names](docs/reference/syntax.md#numeric-names-and-intrinsic-literals).
+Undotted numeric spellings can also name value bindings. `10.4` selects field `4`
+when `10` is bound and otherwise denotes a decimal; `@"core".literal(10.4)` always
+requests the number. See [numeric names](docs/reference/syntax.md#numeric-names-and-intrinsic-literals).
 Spaces are optional: `value<T>` tests a type and `value~<T>` explicitly ascribes it.
 Punctuation can delimit a complete program without whitespace.
 

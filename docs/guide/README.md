@@ -46,8 +46,8 @@ cannot later become an integer merely because its binding is mutable.
 
 ## Numeric spellings can be names
 
-Numbers normally construct their own values. Like other value names, their
-spellings can also be bound in a scope:
+Numbers normally construct their own values. Their undotted spellings can also
+be bound in a scope:
 
 ```meowy
 literal : @"core".literal
@@ -61,7 +61,23 @@ literal : @"core".literal
 
 `doubled` is `4`, while `original` is `1`. Leaving the block restores the outer
 meaning of `1`. Lookup uses spelling: shadowing `1` leaves `01` and `0x1` alone.
-The same rule applies to floating-point spellings.
+Undotted exponents such as `1e2` can be names too. Dotted declarations such as
+`10.4 : "four"` are invalid.
+
+Dots select members when the numeric root is bound:
+
+```meowy
+10 : { -> 4 : "four" }
+
+@"debug".print(10.4)
+@"debug".print(11.4)
+@"debug".print(@"core".literal(10.4))
+```
+
+These print `four`, `11.4` and `10.4`. Since `10` is bound, `10.5` is a missing-field
+error; it never falls back to a decimal. A scalar binding named `10` also makes
+`10.4` an invalid field access. Parentheses are ordinary grouping and are optional
+around the receiver. Fields still need `->` to be visible outside their block.
 
 A numeric binding still has one fixed type. `1 <uint8> : literal(1)` creates a
 `uint8` binding; reading it later does not change its width. The intrinsic

@@ -23,8 +23,10 @@ current named implementation target; it is not a meaning assigned to every `0.0`
 version, nor a requirement to wait for `v1.0.0`.
 
 The bootstrap now implements [numeric value names and `core.literal`](compiler/docs/NUMBERS.md)
-through ordinary lexical resolution and intrinsic numeric syntax. Source cases,
-required evaluation, module facades, checked documentation and editor support are
+through ordinary lexical resolution and intrinsic numeric syntax. Names use
+undotted spellings; dotted expressions select members of bound numeric roots,
+with decimal fallback only for unbound roots. Source cases, required evaluation,
+module facades, checked documentation and lexical editor highlighting are
 tracked in the [compiler handoff](compiler/STATUS.md#numeric-shadowing-implementation).
 The remaining implementation and release gates below still apply.
 
