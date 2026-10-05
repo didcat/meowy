@@ -1,6 +1,8 @@
 use super::super::direct::Directs;
 use super::*;
-use crate::check::dependencies::edges::forward::consumers::field_results::lookup::narrowing::Source;
+use crate::check::dependencies::edges::forward::consumers::{
+    field_results::lookup::narrowing::Source, scalars::Source as Block,
+};
 use crate::flow::Flow;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -19,6 +21,7 @@ pub(crate) enum Visit {
     Cycle(Root),
     Value(Key, Input),
     Field(Key, Input, Source),
+    Block(Key, Input, Block),
     Projection(Key, Input),
     Unresolved(Key, Input),
 }
@@ -197,7 +200,7 @@ impl Graph<'_> {
                             (Projection::Value, None) => {
                                 let source = if let Some(sources) = sources {
                                     if !flow.spend(
-                                        sources.len().checked_ilog2().unwrap_or(0) as usize + 3,
+                                        sources.len().checked_ilog2().unwrap_or(0) as usize + 4,
                                     ) {
                                         return Err(budget());
                                     }
@@ -206,21 +209,23 @@ impl Graph<'_> {
                                     if stored_owner != owner || direct.point != input.point {
                                         return Err(invalid());
                                     }
-                                    direct.source
+                                    (direct.source, direct.block)
                                 } else {
-                                    None
+                                    (None, None)
                                 };
-                                if let Some(source) = source {
-                                    state.visit(Visit::Field(key, input, source), span)?;
-                                    state.push(
-                                        Frame::Enter(Root {
-                                            owner,
-                                            slot: source.slot,
-                                        }),
-                                        span,
-                                    )?;
-                                } else {
-                                    state.visit(Visit::Value(key, input), span)?;
+                                let (visit, slot) = match source {
+                                    (Some(source), None) => {
+                                        (Visit::Field(key, input, source), Some(source.slot))
+                                    }
+                                    (None, Some(source)) if source.slot.index == 0 => {
+                                        (Visit::Block(key, input, source), Some(source.slot))
+                                    }
+                                    (None, None) => (Visit::Value(key, input), None),
+                                    _ => return Err(invalid()),
+                                };
+                                state.visit(visit, span)?;
+                                if let Some(slot) = slot {
+                                    state.push(Frame::Enter(Root { owner, slot }), span)?;
                                 }
                             }
                             (Projection::Value, Some(_)) => return Err(invalid()),
@@ -256,3 +261,6 @@ mod field_cycles;
 
 #[cfg(test)]
 mod field_limits;
+
+#[cfg(test)]
+mod blocks;

@@ -35,7 +35,7 @@ pub(crate) fn direct_block_sources_preserve_value_points_fields_and_independent_
             reports
                 .expanded_walk
                 .visits
-                .contains(&Visit::Value(key, input))
+                .contains(&Visit::Block(key, input, source))
         );
         wrapped += usize::from(direct.point != source.consumer);
         owners.insert(owner);

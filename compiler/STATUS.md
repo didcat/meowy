@@ -2437,7 +2437,13 @@ stored field/block alternatives. All 2597 library tests pass
 (`/tmp/meowy-scalar-blocks-collection.log`), including ten stored-descriptor faults,
 owner separation and preserved original Value points. Formatting and whitespace
 checks pass. The expanded forest still treats these new descriptors as Value
-terminals until the separate traversal slice.
+terminals until the separate traversal slice. Descriptor collection: `19e33be`.
+The expanded forest now records explicit Block visits and shares Field/composed
+traversal state and limits. It rejects conflicting alternatives and non-primary
+block slots. Mixed-chain, empty/multiple/shared and seeded Unknown-history tests
+pass, together with all 2600 library tests (`/tmp/meowy-scalar-blocks-walk.log`).
+The original candidate forest stays intact. Remaining slices cover producer/report
+corruption, exact collection/traversal budgets, mixed cycles and source conformance.
 
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
 `results/inputs/direct.rs` currently stores only field-source descriptors. A direct
