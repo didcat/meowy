@@ -1,6 +1,8 @@
 use super::{super::tests::checked, *};
 use crate::check::dependencies::CoercionKind;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn dispatch_coercion_primaries_retain_preconversion_types_ports_and_owners() {
     let source = "r:3.{->$;->tag:true};copy:((r));a<int32>:copy;b<int32><null>:copy;c:-copy;f<int32>:(){r:4.{->$;->tag:false};->r}";

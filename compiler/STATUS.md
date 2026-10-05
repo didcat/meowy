@@ -2723,9 +2723,7 @@ ordering and required/reborrow paths. Baseline: `/tmp/meowy-coercion-dispatch-ba
 
 Dependency-ordered commit plan:
 
-1. Add focused integration fault, cycle, control and exact map/work regressions.
-   Keep projected coercions opaque to generic wrapper/direct-value forwarding.
-2. Add required source cases for typed copies, conversion and stopped inputs plus
+1. Add required source cases for typed copies, conversion and stopped inputs plus
    classified evidence; run compiler, strict and documentation gates and update both
    handoffs. Split further if capture/report changes exceed review thresholds.
 
@@ -2754,6 +2752,11 @@ and dispatch flags, projection-only conversion without operation registration, a
 opaque nonscalar/stopped/indirect inputs. A list element's separate coercion now
 owns its new link; the list's own projection port remains unlinked. Earlier arithmetic
 tests now count their own ports separately from these newly supported coercions.
+All eight dispatch-coercion tests pass (`/tmp/meowy-coercion-dispatch-boundaries.log`).
+Eight late type/origin/registration faults, exact shared map/work limits, wrapped
+initializer cycles and independent producer/consumer control marks preserve stored
+reports and edge counters. All-target Clippy also passes
+(`/tmp/meowy-coercion-dispatch-lint.log`). Source conformance and final gates remain.
 
 ## Documentation conventions and layout
 
