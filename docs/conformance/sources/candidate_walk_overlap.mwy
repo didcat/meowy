@@ -1,0 +1,5 @@
+merge <{n <int32>}> : (flag <boolean>) {
+    source : { -> n : 1 }
+    | flag | -> source
+    -> source
+}

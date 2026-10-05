@@ -3484,6 +3484,36 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "candidate_walk_branches",
+      "phase": "run",
+      "source": "sources/candidate_walk_branches.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nselected\nrow\ntrue\n7\n3\nsource\nsource tail\nselected\nrow\nfalse\n7\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "candidate_walk_opaque",
+      "phase": "run",
+      "source": "sources/candidate_walk_opaque.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "make\nrow tail\n9\n1\n2\ntrue\n9\n"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "candidate_walk_overlap",
+      "phase": "check",
+      "source": "sources/candidate_walk_overlap.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
     }
   ]
 }

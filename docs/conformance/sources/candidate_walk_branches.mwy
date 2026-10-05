@@ -1,0 +1,20 @@
+d : @"debug"
+show <null> : (flag <boolean>) {
+    source : {
+        d.print("source")
+        -> 7
+        -> n : 3
+        d.print("source tail")
+    }
+    selected : {
+        | flag | -> source
+        | !flag | -> source
+        d.print("selected")
+    }
+    row : { -> selected; d.print("row") }
+    d.print(flag)
+    d.print(row)
+    d.print(row.n)
+}
+show(true)
+show(false)

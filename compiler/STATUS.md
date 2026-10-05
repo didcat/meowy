@@ -1977,7 +1977,13 @@ aggregate peak storage, exact work and late malformed targets. These are structu
 engine fixtures; checked-source traversal evidence remains separate. All nine walk
 groups pass, including the corrected named-field source selection
 (`/tmp/meowy-candidate-walk-boundaries.log`); all-target Clippy passes
-(`/tmp/meowy-candidate-walk-boundaries-lint.log`). Source conformance is next.
+(`/tmp/meowy-candidate-walk-boundaries-lint.log`). Boundary coverage is committed as
+`60fd5e0`. Three required source cases pass fresh-compiler debug/release
+(`/tmp/meowy-candidate-walk-source.log`); catalog and coverage checks pass.
+All four default checks pass (`/tmp/meowy-candidate-walk-source-docs.log`). The
+preservation audit confirms 328 prior cases, 360 source assets, 37 reference
+contracts/reviewed hashes, capability pins and proof obligations are unchanged
+(`/tmp/meowy-candidate-walk-preservation.log`). The full compiler gate follows.
 Concurrent editor/root-tracker changes remain outside this compiler series.
 
 Dependency-ordered commit plan:

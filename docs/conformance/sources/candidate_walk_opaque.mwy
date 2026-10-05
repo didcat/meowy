@@ -1,0 +1,13 @@
+d : @"debug"
+make <{n <int32>}> : () { d.print("make"); -> n : 9 }
+row : { -> make(); d.print("row tail") }
+d.print(row.n)
+value : { -> n := 1 }
+copy : value
+value.n = 2
+d.print(copy.n)
+d.print(value.n)
+empty <{}> : {}
+d.print(empty<{}>)
+view : &row
+d.print(view.n)
