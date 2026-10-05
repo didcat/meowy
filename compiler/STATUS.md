@@ -2710,7 +2710,11 @@ stopped right operand (P006), and checked int8 primary negation after its dispat
 tail (P002). All four panic-slice documentation checks pass
 (`/tmp/meowy-dispatch-primary-panic-docs.log`). The audit preserves 390 prior cases,
 463 tracked contract/source/pin files and 37 reviewed reference hashes
-(`/tmp/meowy-dispatch-primary-preservation.log`). Full gates and final handoff remain.
+(`/tmp/meowy-dispatch-primary-preservation.log`). Strict mode reports 376 passes,
+19 unchanged gaps and zero failures (`/tmp/meowy-dispatch-primary-strict.log`).
+All-target Clippy passes after two test constants adopt explicit `pub(super)`
+visibility (`/tmp/meowy-dispatch-primary-lint.log`). The full gate rerun and final
+documentation handoff remain.
 
 ## Documentation conventions and layout
 

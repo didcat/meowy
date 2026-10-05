@@ -1,7 +1,7 @@
 use super::*;
 use crate::check::dependencies::ScalarKind;
 
-pub(self) const SOURCE: &str = "a:3.{->$;->tag:true};b:4.{->$;->tag:false};good:a+1;bad:a+b";
+pub(super) const SOURCE: &str = "a:3.{->$;->tag:true};b:4.{->$;->tag:false};good:a+1;bad:a+b";
 
 #[test]
 pub(crate) fn dispatch_binary_primaries_reject_late_operand_type_plan_and_source_faults() {

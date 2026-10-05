@@ -1,7 +1,7 @@
 use super::*;
 use crate::check::dependencies::edges::forward::effects::tests::checked;
 
-pub(self) const SOURCE: &str = "flag:=false;r:3.{|flag|->$;|!flag|->4;->tag:true}";
+pub(super) const SOURCE: &str = "flag:=false;r:3.{|flag|->$;|!flag|->4;->tag:true}";
 
 #[test]
 pub(crate) fn receiver_inputs_preserve_guarded_emissions_nested_blocks_and_owners() {
