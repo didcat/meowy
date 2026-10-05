@@ -2058,7 +2058,12 @@ inputs and retains optional direct sources separately. Original candidate/forest
 reports remain unchanged. Both direct-source groups, all 2515 library tests and
 all-target Clippy pass (`/tmp/meowy-field-narrowing-direct.log`,
 `/tmp/meowy-field-narrowing-library.log`, `/tmp/meowy-field-narrowing-direct-lint.log`).
-Adversarial limits and corruption coverage follows.
+Integration is committed as `324fc89`. New tests cover producer conflicts, an
+individually valid seeded narrowing cycle, exact hop/work/cache/map limits, late
+faults and Unknown/empty/multiple histories. All five narrowing groups, five
+direct-source groups and all-target Clippy pass
+(`/tmp/meowy-field-narrowing-boundaries.log`, `/tmp/meowy-field-narrowing-direct-limits.log`,
+`/tmp/meowy-field-narrowing-boundaries-lint.log`). Source conformance follows.
 
 Dependency-ordered commit plan:
 
