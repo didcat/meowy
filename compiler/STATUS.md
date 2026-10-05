@@ -121,7 +121,12 @@ Editor slice: `2ceded0`. Numeric checked links now have a required executable
 source fixture and an updated documentation reference. All 330 required cases
 pass with 19 unchanged gaps (`/tmp/meowy-numeric-source-links.log`).
 
-Next steps: module source integration, rejection cases, remaining docs and final gates.
+Checked-link contract: `610bfec`. Numeric scalar and function exports now have
+required multi-file facade coverage; module semantics explicitly retain numeric
+names. Conformance is 331 passed, 19 unchanged gaps, zero failures in both profiles
+(`/tmp/meowy-numeric-source-modules.log`). The module coverage hash is reviewed.
+
+Next steps: rejection cases, remaining docs and final gates.
 
 ## LLVM 23 and Rust 1.99 host qualification
 

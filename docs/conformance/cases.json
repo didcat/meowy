@@ -3694,6 +3694,20 @@
         "stdout": "7\n8\n9\n"
       },
       "reference": "../reference/documentation.md#semantic-links"
+    },
+    {
+      "id": "numeric_exports",
+      "phase": "run",
+      "source": "sources/modules/numeric_exports/main.mwy",
+      "companions": [
+        "sources/modules/numeric_exports/values.mwy",
+        "sources/modules/numeric_exports/facade.mwy"
+      ],
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n8.5\n9\n"
+      },
+      "reference": "../reference/modules-and-ffi.md#files-and-exports"
     }
   ]
 }

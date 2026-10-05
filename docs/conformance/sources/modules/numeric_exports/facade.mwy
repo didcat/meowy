@@ -1,0 +1,4 @@
+values : @"./values.mwy"
+-> 1 <uint8> : values.1
+-> 1.0 <float64> : values.1.0
+-> 2 <(int32) -> int32> : values.2
