@@ -1,5 +1,7 @@
 use super::*;
 
+pub(in super::super::super) mod narrowing;
+
 pub(in super::super::super) struct Lookup<'a> {
     pub(in super::super::super) reports: &'a Reports,
     pub(in super::super::super) parts: usize,

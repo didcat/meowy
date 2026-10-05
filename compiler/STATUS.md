@@ -2047,7 +2047,12 @@ forest to avoid a dependency cycle. The lookup context now requalifies retained
 associations and caches checked fields and forest roots within the remaining payload.
 All three focused lookup groups pass (`/tmp/meowy-field-narrowing-lookup.log`);
 all-target Clippy passes (`/tmp/meowy-field-narrowing-lookup-lint.log`).
-Narrowing-only resolution is next.
+Stored lookup is committed as `1cd353b`. Narrowing-only resolution now validates
+exact point/owner/body and producer identities, follows only observed unchanged
+normal narrowing, and uses the existing mixed-chain hop cap. It preserves the
+terminal field identity without copying wrapper paths. Both focused resolver groups
+and all-target Clippy pass (`/tmp/meowy-field-narrowing-resolver.log`,
+`/tmp/meowy-field-narrowing-resolver-lint.log`). Production collection follows.
 
 Dependency-ordered commit plan:
 
