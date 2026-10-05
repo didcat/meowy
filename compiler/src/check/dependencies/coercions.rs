@@ -1,5 +1,6 @@
 use super::{
     PointKind,
+    bodies::{Completion, completion::Shape},
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -16,15 +17,42 @@ pub(crate) enum Kind {
     Stopped,
 }
 
+impl Kind {
+    pub(crate) fn valid_source(self, primary: bool, source: Option<Shape>) -> bool {
+        if !primary {
+            return source.is_none();
+        }
+        let Some(source) = source else {
+            return false;
+        };
+        (Completion {
+            normal: source != Shape::Never,
+            result: source,
+        })
+        .valid()
+            && (self == Self::Stopped) == (source == Shape::Never)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Coercion {
     pub(crate) owner: usize,
     pub(crate) input: hir::PointId,
     pub(crate) kind: Kind,
     pub(crate) primary: bool,
+    pub(crate) source: Option<Shape>,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
+}
+
+impl Coercion {
+    pub(crate) fn primary_source(ty: &hir::Type) -> Option<Shape> {
+        match ty {
+            hir::Type::Record { primary, .. } => Some(Completion::of(primary).result),
+            _ => None,
+        }
+    }
 }
 
 impl Checker {
@@ -35,7 +63,7 @@ impl Checker {
         kind: Kind,
         span: Span,
     ) -> Result<()> {
-        self.coercion_stages(id, input, kind, false, span)
+        self.coercion_stages(id, input, kind, false, None, span)
     }
 
     pub(crate) fn coercion_stages(
@@ -44,6 +72,7 @@ impl Checker {
         input: hir::PointId,
         kind: Kind,
         primary: bool,
+        source: Option<Shape>,
         span: Span,
     ) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof coercion-operation budget exhausted", span);
@@ -51,12 +80,13 @@ impl Checker {
             || Diagnostic::unsupported("proof coercion-operation identity mismatch", span);
         if !self
             .flow
-            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize * 2 + 4)
+            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize * 2 + 8)
         {
             return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
-        if point.kind != PointKind::Expr
+        if !kind.valid_source(primary, source)
+            || point.kind != PointKind::Expr
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
             || !self.points.get(input).is_some_and(|child| {
@@ -89,6 +119,7 @@ impl Checker {
             input,
             kind,
             primary,
+            source,
             control: self.control,
             span,
             edges,
@@ -107,6 +138,9 @@ impl Checker {
 
 #[cfg(test)]
 mod expected;
+
+#[cfg(test)]
+mod sources;
 
 #[cfg(test)]
 mod tests {

@@ -140,12 +140,12 @@ pub(crate) fn expected_stages_validate_projection_identity_and_shared_budgets_at
     let op = checker.coercions[&id].clone();
     let count = checker.coercion_edges;
     checker
-        .coercion_stages(id, op.input, op.kind, true, op.span)
+        .coercion_stages(id, op.input, op.kind, true, op.source, op.span)
         .unwrap();
     assert_eq!(checker.coercion_edges, count);
     assert!(
         checker
-            .coercion_stages(id, op.input, op.kind, false, op.span)
+            .coercion_stages(id, op.input, op.kind, false, None, op.span)
             .unwrap_err()
             .message
             .contains("identity")
@@ -155,7 +155,7 @@ pub(crate) fn expected_stages_validate_projection_identity_and_shared_budgets_at
     checker.binary_edges = super::super::edges::MAX_EDGES;
     assert!(
         checker
-            .coercion_stages(id, op.input, op.kind, true, op.span)
+            .coercion_stages(id, op.input, op.kind, true, op.source, op.span)
             .unwrap_err()
             .message
             .contains("budget")

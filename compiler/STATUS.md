@@ -2705,34 +2705,47 @@ All four final documentation checks pass (`/tmp/meowy-dispatch-primary-docs.log`
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Next: coercion-owned dispatch primary sources
+### Active: coercion-owned dispatch primary sources
 
-`Effect::Coercion` can report a primary Projection, but its producer/report records
-have only the primary flag and Forward/Convert/Stopped kind, with no captured source
-shape. Do not infer that shape from the converted target or final HIR type. Ordinary
-coercion-owned primary links and non-projecting wrapper forwarding remain unchanged.
+Coercion producers now capture the primary source shape before conversion; report
+propagation and dispatch consumers are next. Do not infer source shape from the
+converted target or final HIR type. Ordinary coercion-owned primary links and
+non-projecting wrapper forwarding remain unchanged.
+
+Investigation confirms the original record primary type is available immediately
+before `expected_plan` in `coerced_expression`. Capture its existing shallow Shape,
+retaining it only when that plan actually projects a primary. Non-primary paths use
+None; projected Never stays distinct and agrees with Stopped. Charge bounded capture/
+validation work at registration after ordinary type checking. Preserve all edge
+ordering and required/reborrow paths. Baseline: `/tmp/meowy-coercion-dispatch-baseline.json`
+(395 cases, 468 tracked contract/source/pin files). Only unrelated
+`docs/programs/hey/` is initially dirty.
 
 Dependency-ordered commit plan:
 
-1. In `check/expressions.rs` and `dependencies/coercions.rs`, capture a bounded shallow
-   primary source shape before `expected_plan` consumes/converts the checked value.
-   Preserve exact primary decisions, kind, roots, spans and edges, including Never
-   and non-primary paths. Add focused capture/replay/budget tests with this slice.
-2. Carry the source shape through coercion stages and observations in a separate
+1. Carry the source shape through coercion stages and observations in a separate
    slice, checking exact producer/report identity without inferring additional visits.
    Keep Forward, Convert and Stopped stage rules and other producer reports intact.
-3. Qualify only observed scalar primary Projection inputs of `Effect::Coercion`,
+2. Qualify only observed scalar primary Projection inputs of `Effect::Coercion`,
    reusing the captured source kind and `dispatch_primary_slot`. Preserve port step
    zero and separate projection/conversion/result flags. Projected coercions must
    remain opaque to generic wrapper/direct-value forwarding. Include focused valid,
    absent, corrupt, cycle and resource-limit tests with the integration.
-4. Add required source cases for typed copies, conversion and stopped inputs plus
+3. Add required source cases for typed copies, conversion and stopped inputs plus
    classified evidence; run compiler, strict and documentation gates and update both
    handoffs. Split further if capture/report changes exceed review thresholds.
 
 Output/list/composition dispatch consumers, contextual record-hint repair,
 record-receiver transparency, aggregate value selection, precise joins, function
 returns, restarts, E225 enforcement and proof outcomes remain separate.
+
+Producer capture is implemented through the coercion module's shallow classifier,
+before conversion consumes the checked value. Exact replay includes the optional
+source shape; primary/source presence and Never/Stopped agreement are validated
+before publication. All 51 coercion-focused tests pass
+(`/tmp/meowy-coercion-dispatch-capture.log`), including three new capture/type/replay/
+budget tests, whole-record conversion, reference/list primaries and required/reborrow
+boundaries. Reports do not carry the new shape yet; propagation is next.
 
 ## Documentation conventions and layout
 

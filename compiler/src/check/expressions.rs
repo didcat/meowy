@@ -1,6 +1,6 @@
 use super::{
     Checker, Result, Value,
-    dependencies::{CoercionKind, FormatInput, PointKind},
+    dependencies::{Coercion, CoercionKind, FormatInput, PointKind},
 };
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
@@ -92,13 +92,21 @@ impl Checker {
         let Some(expected) = expected else {
             return Ok(value);
         };
+        let shape = Coercion::primary_source(&value.ty);
         let (primary, kind, value) = Self::expected_plan(value, expected, expr.span)?;
         if let Some(source) = input {
             let point = self.point.expect("expected context");
             if shared && !primary && kind == CoercionKind::Forward {
                 self.region_edges(point, source, expr.span)?;
             } else if !self.required {
-                self.coercion_stages(point, source, kind, primary, expr.span)?;
+                self.coercion_stages(
+                    point,
+                    source,
+                    kind,
+                    primary,
+                    if primary { shape } else { None },
+                    expr.span,
+                )?;
             }
         }
         Ok(value)
