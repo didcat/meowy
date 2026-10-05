@@ -41,7 +41,7 @@ pub(crate) fn direct_sources_preserve_candidate_positions_inputs_and_independent
             .values()
             .filter(|(_, direct)| direct.source.is_some())
             .count(),
-        2
+        3
     );
     let before = format!("{reports:?}{:?}", checker.edge_counts());
     assert_eq!(
@@ -64,7 +64,7 @@ pub(crate) fn direct_sources_keep_missing_field_links_and_other_wrappers_explici
             .values()
             .filter(|(_, direct)| direct.source.is_some())
             .count(),
-        1
+        2
     );
     let before = reports.direct_sources.clone();
     reports.field_results.clear();

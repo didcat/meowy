@@ -19,7 +19,7 @@ impl Checker {
     ) -> Result<Option<Source>> {
         let budget = || Diagnostic::unsupported("proof field-narrowing budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof field-narrowing identity mismatch", span);
-        if !self.flow.spend(1) {
+        if self.group_inputs.len() > MAX_GROUPS || !self.flow.spend(1) {
             return Err(budget());
         }
         let reports = ctx.reports;
@@ -77,7 +77,13 @@ impl Checker {
                     slot,
                 }));
             }
-            let Some(next) = self.unchanged_narrowing_input(reports, current, owner, span)? else {
+            let next = if let Some(&group) = self.group_inputs.get(&current) {
+                self.qualified_group_input(current, owner, group, span)?
+            } else if let Some(input) =
+                self.unchanged_narrowing_input(reports, current, owner, span)?
+            {
+                input
+            } else {
                 return Ok(None);
             };
             if seen.len() >= limit.min(MAX_GROUPS) {
@@ -94,3 +100,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod groups;

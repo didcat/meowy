@@ -2141,7 +2141,14 @@ Existing grouped-consumer tests pass before extraction
 (`/tmp/meowy-group-fields-before.log`). The helper now contains the unchanged
 child/edge checks and work charge; callers retain producer/body/cycle validation.
 All 34 grouped-consumer tests also pass after extraction
-(`/tmp/meowy-group-fields-extract.log`). Next extend direct resolution (step 2).
+(`/tmp/meowy-group-fields-extract.log`); committed as `39032ab`. The direct resolver
+now follows explicit groups through that helper and shares its hop/cycle bounds
+with unchanged narrowing. Collection and expanded traversal retain original points
+and terminal fields across owners. All three positive/opaque-route groups pass
+(`/tmp/meowy-group-fields-resolver.log`). All 2536 library tests and all-target
+Clippy pass (`/tmp/meowy-group-fields-library.log`,
+`/tmp/meowy-group-fields-lint.log`). Next cover mixed-chain corruption, cycles and
+exact resource limits (step 3).
 Dependency-ordered commit plan:
 
 1. Extract the existing explicit-group child qualification from
