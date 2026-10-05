@@ -145,3 +145,6 @@ mod reads;
 
 #[cfg(test)]
 mod read_boundaries;
+
+#[cfg(test)]
+mod read_faults;

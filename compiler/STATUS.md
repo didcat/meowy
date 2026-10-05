@@ -2377,7 +2377,12 @@ covering missing evidence, consistent stopped/empty initializers, special-cell
 exclusions and independent read/Bind control marks. Stale stored descriptors are
 rejected; recollection retains an explicit unresolved Value candidate.
 Keep corrupt read/Bind metadata tests in their own slice so the expanded boundary
-coverage remains reviewable. Unrelated `docs/programs/hey/` remains excluded.
+coverage remains reviewable. Opacity/control slice: `389a7a9`. The identity suite
+now covers 42 read/Bind/registry/parent/site/conflicting-producer faults with and
+without field associations; all six local-source groups pass
+(`/tmp/meowy-local-fields-faults.log`). Collection and stored-report qualification
+reject every corruption without publishing partial results. Mixed cycles and
+shared resource limits are next. Unrelated `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
