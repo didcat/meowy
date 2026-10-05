@@ -1,0 +1,13 @@
+d : @"debug"
+d.print(({
+    -> n := 1
+    n = 2
+    d.print("mutable tail")
+}).n)
+empty <{n <null>}> : {}
+d.print(empty.n<null>)
+inner : ({ -> inner : { -> n : 8 }; d.print("outer tail") }).inner
+d.print(inner.n)
+row : { -> n : 9 }
+view : &row
+d.print(view.n)

@@ -1,0 +1,19 @@
+d : @"debug"
+show <null> : (flag <boolean>) {
+    source : {
+        d.print("source")
+        | flag | -> n : { d.print("first"); -> 1 }
+        | !flag | -> n : { d.print("second"); -> 2 }
+        d.print("source tail")
+    }
+    copy : ((source))~<(source<>)>
+    row : { -> copy; d.print("composed") }
+    d.print(row.n)
+    d.print(({
+        d.print("direct")
+        -> n : 3
+        d.print("direct tail")
+    }).n)
+}
+show(true)
+show(false)

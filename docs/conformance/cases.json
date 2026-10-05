@@ -3514,6 +3514,36 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "field_result_link_order",
+      "phase": "run",
+      "source": "sources/field_result_link_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nfirst\nsource tail\ncomposed\n1\ndirect\ndirect tail\n3\nsource\nsecond\nsource tail\ncomposed\n2\ndirect\ndirect tail\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "field_result_link_histories",
+      "phase": "run",
+      "source": "sources/field_result_link_histories.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "mutable tail\n2\ntrue\nouter tail\n8\n9\n"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "field_result_link_escape",
+      "phase": "check",
+      "source": "sources/field_result_link_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
     }
   ]
 }

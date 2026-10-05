@@ -1,0 +1,2 @@
+view : &({ -> n : 1 })
+value : view.n

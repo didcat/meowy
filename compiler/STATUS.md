@@ -2015,7 +2015,13 @@ scratch/work limits, malformed headers and roots, late failures, Never result cl
 load opacity and duplicate visits without rebuilding the forest. All 14 matching
 field-result groups and all-target Clippy pass
 (`/tmp/meowy-field-result-links-boundaries.log`, `/tmp/meowy-field-result-links-boundaries-lint.log`).
-Source conformance is next.
+Boundary coverage is committed as `1ff75ba`. Three required source cases pass
+fresh-compiler debug/release (`/tmp/meowy-field-result-links-source.log`); catalog
+and coverage checks pass. All four default checks pass
+(`/tmp/meowy-field-result-links-source-docs.log`). The preservation audit confirms
+331 prior cases, 363 source assets, 37 reference contracts/reviewed hashes, capability
+pins and proof obligations are unchanged (`/tmp/meowy-field-result-links-preservation.log`).
+The full compiler gate follows.
 
 Dependency-ordered commit plan:
 
