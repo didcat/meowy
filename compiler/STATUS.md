@@ -2659,10 +2659,11 @@ consumer-specific rules. Baseline: `/tmp/meowy-dispatch-primary-baseline.json`
 
 Dependency-ordered commit plan:
 
-1. Extend binary primary Projection inputs in a separate slice, preserving both
+1. Finish binary primary Projection integration in a separate slice, preserving both
    operand positions, left-to-right boundaries and partial projection observations
    before a stopped second operand. Do not generalize to other producer families.
-2. Add required arithmetic/ordering/rejection source cases and classified evidence,
+2. Add focused binary conflict/cycle/map/work regressions before source conformance.
+3. Add required arithmetic/ordering/rejection source cases and classified evidence,
    then run compiler, strict and documentation gates and refresh both handoffs.
 
 Other record-dispatch primary consumers, composed source propagation, record-receiver
@@ -2681,6 +2682,16 @@ Unary Projection ports retain exact owners/types through groups and inline dispa
 records. Projection/result/initialization independence, six consumer/source faults
 and exact combined map/work limits are covered. Coercion-owned primary extraction,
 output/list/emission rules and arithmetic result values remain opaque on the new path.
+Binary integration exposed an existing guarded-receiver regression, reproduced by
+a standalone dispatch without arithmetic. Match points cover condition spans;
+Then arms have separate spans. Receiver scope now validates that transition against
+the exact registered True edge, condition identity and checked statement site;
+ordinary parent containment and owner/body/cycle checks remain intact. All ten
+receiver qualifier tests pass (`/tmp/meowy-dispatch-primary-scope.log`), including
+three source forms, ten corrupt branch/site faults and exact guarded hop/work limits.
+All four binary-focused tests now pass (`/tmp/meowy-dispatch-primary-binary.log`);
+binary edits remain a separate pending slice. A required guarded-source run case
+will accompany the planned arithmetic conformance cases.
 
 ## Documentation conventions and layout
 

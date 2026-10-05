@@ -34,6 +34,7 @@ impl Checker {
             let body = self.bodies.get(&block).ok_or_else(invalid)?;
             let next = point.parent.ok_or_else(invalid)?;
             let parent = self.points.get(next).ok_or_else(invalid)?;
+            let guarded = point.kind == PointKind::Then && parent.kind == PointKind::Match;
             if !point.complete
                 || point.owner != owner
                 || body.owner != owner
@@ -42,10 +43,46 @@ impl Checker {
                 || body.span.end < point.span.end
                 || !parent.complete
                 || parent.owner != owner
-                || parent.span.start > point.span.start
-                || parent.span.end < point.span.end
+                || (!guarded
+                    && (parent.span.start > point.span.start || parent.span.end < point.span.end))
             {
                 return Err(invalid());
+            }
+            if guarded {
+                if !self.flow.spend(
+                    self.branch_edges.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.sites.len().checked_ilog2().unwrap_or(0) as usize
+                        + 20,
+                ) {
+                    return Err(budget());
+                }
+                let edges = self.branch_edges.get(&next).ok_or_else(invalid)?;
+                let Port::Entry(condition) = edges[0].to else {
+                    return Err(invalid());
+                };
+                let condition_point = self.points.get(condition).ok_or_else(invalid)?;
+                let site_id = point.site.ok_or_else(invalid)?;
+                let site = self.sites.get(&site_id).ok_or_else(invalid)?;
+                if parent.site != Some(site_id)
+                    || condition_point.site != Some(site_id)
+                    || site_id >= self.statements
+                    || !site.complete
+                    || site.owner != owner
+                    || site.block != Some(block)
+                    || site.span.start > point.span.start
+                    || site.span.end < point.span.end
+                    || site.span.start > parent.span.start
+                    || site.span.end < parent.span.end
+                    || !condition_point.complete
+                    || condition_point.kind != PointKind::Condition
+                    || condition_point.owner != owner
+                    || condition_point.block != Some(block)
+                    || condition_point.parent != Some(next)
+                    || edges[0] != Edge::new(Port::Entry(next), Port::Entry(condition), Route::Next)
+                    || edges[1] != Edge::new(Port::Normal(condition), Port::Entry(id), Route::True)
+                {
+                    return Err(invalid());
+                }
             }
             if body.parent == Some(next) {
                 if parent.span.start > body.span.start
