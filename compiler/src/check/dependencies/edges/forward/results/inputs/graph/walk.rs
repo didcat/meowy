@@ -264,3 +264,6 @@ mod field_limits;
 
 #[cfg(test)]
 mod blocks;
+
+#[cfg(test)]
+mod block_limits;

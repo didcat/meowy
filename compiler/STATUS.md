@@ -2450,6 +2450,11 @@ missing consumer associations and exact qualifier work. All three groups pass
 (`/tmp/meowy-scalar-blocks-boundaries.log`). Missing associations remain opaque;
 stale or contradictory retained observations fail atomically. Exact map/forest
 budgets and mixed-cycle traversal tests are next.
+Boundary slice: `7405868`. Resource tests now cover shared Field/Block map and
+qualification budgets, iterative 2048-slot depth, exact peak storage/work, mixed
+Block/Field/composition cycles and eight late traversal faults. All 81 block-focused
+tests and all 591 forward-report tests pass (`/tmp/meowy-scalar-blocks-limits.log`,
+`/tmp/meowy-scalar-blocks-reports.log`). Source conformance and final gates remain.
 
 `results/inputs/sources.rs` qualifies composed Primary/Field candidates;
 `results/inputs/direct.rs` currently stores only field-source descriptors. A direct
