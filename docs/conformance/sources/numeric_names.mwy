@@ -1,0 +1,25 @@
+debug : @"debug"
+core : @"core"
+literal : core.literal
+1 : literal(2)
+debug.print(1 + 1)
+{ 1 : 3; debug.print(1) }
+debug.print(1)
+debug.print(01)
+debug.print(0x1)
+0x1 : true
+debug.print(0x1)
+debug.print(literal(0x1))
+1.0 : 2.5
+debug.print(1.0)
+small <uint8> : literal(1)
+minimum <int8> : literal(-128)
+wide <uint64> : literal(18446744073709551615)
+real <float32> : literal(1.5)
+debug.print(small)
+debug.print(minimum)
+debug.print(wide)
+debug.print(real)
+6 <int32> : (2 <int32>) { -> 2 + 3 }
+debug.print(6(4))
+{ core : { -> literal : 7 }; debug.print(core.literal) }

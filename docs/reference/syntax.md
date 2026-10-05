@@ -4,7 +4,8 @@
 
 Source files use UTF-8 and the `.mwy` extension. Names are case-sensitive. The
 portable identifier set is ASCII letters, digits, and `_`, with a letter or `_`
-first. This revision accepts exactly that identifier set; non-ASCII text remains
+first. Value names may also use a complete numeric token, as described below.
+Type names and scope labels retain the identifier rule. Non-ASCII text remains
 valid in strings and comments. Type aliases conventionally start with an uppercase letter.
 
 Outside strings/comments, whitespace is ASCII space, tab, LF, or CRLF. CRLF is
@@ -55,6 +56,44 @@ The alias must stay inside its target's function, task, and lexical lifetime.
 An ordinary record field named `leave` has no scope-control behavior unless it
 actually contains that intrinsic value.
 
+## Numeric names and intrinsic literals
+
+A valid integer or floating-point token can name an ordinary value binding,
+parameter or named emission. Numeric spellings resolve to the nearest lexical
+value binding; without one, they construct the intrinsic numeric literal.
+Lookup uses the exact spelling: `1`, `01`, `0x1`, `0X1`, `0b1`, `1.0` and `1e0`
+are independent names. Separators are significant too: `1_000` and `1000` differ.
+A leading `-` remains an operator and is never part of a binding name.
+
+```meowy
+core : @"core"
+
+{
+    1 : core.literal(2)
+    sum : 1 + 1
+    original : core.literal(1)
+}
+```
+
+Here `sum` is `4` and `original` is `1`. Outside the block, `1` keeps its outer
+meaning. A declaration's initializer uses the enclosing bindings before the new
+value is introduced; `1 : 1` therefore copies the preceding meaning. Function
+self names and forward groups retain their ordinary reservation rules.
+
+Numeric bindings obey the same type, mutability, borrowing, duplicate-declaration
+and scope rules as identifier bindings. They can hold any value. For example,
+`1 <uint8> : core.literal(1)` fixes the binding to `uint8`; later reads do not
+receive a different contextual width. Numeric value bindings do not introduce
+numeric type names or scope labels. List capacities, indices, interpolation and
+required expressions perform the same value lookup.
+
+[`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) bypasses numeric
+lookup for its single syntax operand, including through an alias of the intrinsic.
+Use `core.literal(-128)` for an intrinsic signed literal. Numeric fields use
+ordinary member selection, such as `row.1` or `row.1.0` (the latter selects the
+single floating spelling `1.0`). Group a numeric receiver before member access:
+`(1).field`. Existing token rules still reject `1.field` as a malformed number.
+
 ## Literals, values, and comments
 
 | Form                             | Meaning                                        |
@@ -81,6 +120,7 @@ that documentation opener was not intended. `##` remains an empty ordinary comme
 inside a string and is retained. There is no implicit indentation stripping.
 String literals contain UTF-8 bytes and need not be NUL-terminated.
 
+Unshadowed numeric tokens and `core.literal(...)` construct intrinsic literals.
 Integer literals are checked against their expected type; unconstrained integers
 default to `<int32>` and unconstrained decimals to `<float64>`. A default that
 cannot represent a literal is a diagnostic, not an automatic promotion. Negative
@@ -97,7 +137,8 @@ integer followed by dispatch. Float literals round once to the expected binary
 precision, ties to even; overflow to infinity is `E216`, and underflow to a
 subnormal or signed zero is allowed.
 
-Unary `-` immediately applied to an integer literal, with only whitespace or
+Unary `-` immediately applied to an unshadowed integer token (or to the numeric
+operand inside `core.literal`), with only whitespace or
 comments between them, checks the **negated mathematical value** against the
 expected signed type. Thus `x <int8> : -128` is valid. `128` alone as `int8` and
 `x <int8> : -(128)` are `E216`; parentheses end this literal rule. Negating an

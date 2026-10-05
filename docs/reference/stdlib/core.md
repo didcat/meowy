@@ -23,6 +23,43 @@ exclusive, and consuming calls of a concrete environment with signature `S`.
 compiler-checked capabilities, not keywords, runtime interfaces, or opt-in flags.
 See [callable environments](../types.md#callable-environments) for source examples.
 
+## Intrinsic numeric literals
+
+`core.literal(number)` constructs the intrinsic number even when its spelling
+has a local binding. Core exposes this intrinsic instead of an enumerated set of
+numeric members such as `core.1`. Ordinary unshadowed numeric tokens already
+construct their intrinsic values; no prelude declarations are needed.
+
+```meowy
+core : @"core"
+literal : core.literal
+
+1 : literal(2)
+original <uint8> : literal(1)
+minimum <int8> : literal(-128)
+hex <uint16> : literal(0xff)
+```
+
+The single argument must be a valid integer or floating-point token, optionally
+preceded directly by unary `-`; intervening whitespace and comments are allowed.
+The operand is syntax: it is neither looked up nor evaluated as an expression.
+`literal(name)`, `literal(1 + 2)` and `literal((1))` are invalid (`E207`). Missing
+or extra arguments are `E212`. Malformed numeric tokens remain lexical errors.
+
+The result follows ordinary literal defaults, contextual widths, range checks
+and floating-point rounding. A value outside its expected range is `E216`.
+`literal(-128)` can construct `int8`; `-literal(128)` must first construct its
+positive operand and does not extend the signed-minimum literal rule.
+The intrinsic is pure and available in required evaluation and list capacities.
+It has no runtime call or allocation. It is not a conversion or string parser.
+
+Call the intrinsic directly, including through an immutable alias. Its syntax
+operand is not a runtime function parameter or dispatch receiver. Ordinary
+lexical resolution selects the callable: shadowing `core` or an alias affects
+that lookup, and an unrelated function named `literal` keeps ordinary arguments.
+Numeric bindings created from its result have fixed types like other bindings.
+See [numeric names](../syntax.md#numeric-names-and-intrinsic-literals).
+
 ## Output and text
 
 | API                               | Result                        | Contract                                                                |

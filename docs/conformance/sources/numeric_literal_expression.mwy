@@ -1,0 +1,1 @@
+value : @"core".literal(1 + 2)

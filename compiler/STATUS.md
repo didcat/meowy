@@ -94,8 +94,15 @@ Query boundary slice: `31c1cb9`. Checked-documentation value paths now follow
 the source parser, retaining numeric spelling, grouping and field boundaries.
 All 15 documentation groups pass (`/tmp/meowy-numeric-doc-links.log`).
 
-Next steps: source conformance and reference/teaching documentation, editor
-highlighting and the complete compiler/editor gate.
+Checked-doc links: `64d585c`. Syntax and core references now specify exact-spelling
+lookup, fixed binding types and the literal syntax escape. Two new required source
+cases pass; conformance is 326 passed, 19 unchanged gaps, zero failures in both
+profiles (`/tmp/meowy-numeric-source-core.log`). Reviewed syntax/core inventory
+hashes and evidence are refreshed; all four documentation checks pass
+(`/tmp/meowy-numeric-contract-docs.log`). Proof obligations are unchanged.
+
+Next steps: storage/required/documentation-link source cases and cross-reference
+updates, teaching/compiler docs, editor highlighting and the full final gate.
 
 ## LLVM 23 and Rust 1.99 host qualification
 
