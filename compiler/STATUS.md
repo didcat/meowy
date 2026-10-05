@@ -2530,9 +2530,8 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Active: scalar dispatch receiver input sources
 
-Dispatch result slots can now link to their consumers, but `$` reads remain explicit
-opaque leaves. `read_initializer_input` correctly excludes synthetic receivers;
-keep that exclusion and use a producer-specific path for any future forwarding.
+Scalar `$` reads now follow the captured input through a dedicated initialized
+receiver path. `read_initializer_input` still excludes synthetic receivers.
 
 Investigation confirms that the synthetic Bind's checked type is available at
 dispatch capture, while report construction has already moved local types into
@@ -2545,9 +2544,8 @@ The current tree contains only unrelated `docs/programs/hey/`. Preservation base
 
 Dependency-ordered commit plan:
 
-1. Integrate source links using existing input roots, without replaying receiver
-   evaluation or granting lifetime/loan authority. Keep ordinary read eligibility,
-   original candidates and all Field/Block/Dispatch/composed identities intact.
+1. Complete integrated conflict, mixed-cycle and exact hop/payload/work boundary
+   evidence for receiver forwarding and stored direct-source requalification.
 2. Add required source cases and classified evidence, then run compiler, strict
    and final documentation gates and refresh both handoffs.
 
@@ -2558,7 +2556,7 @@ and proof outcomes remain separate.
 Receiver shape capture and exact observation/replay checks are implemented. All 55
 dispatch-focused tests pass (`/tmp/meowy-receiver-sources-shape.log`), including
 scalar/reference/record/list/union/Never capture, independent stopped bodies and
-atomic rejection of changed shapes. No source forwarding is enabled yet.
+atomic rejection of changed shapes.
 The receiver index charges each fixed descriptor against the existing shared
 payload remainder, alongside its own MAX_EDGES row cap; it does not add ordinary
 consumer or initializer rows. Later traversal retains that same payload budget.
@@ -2576,7 +2574,15 @@ reference/aggregate/unobserved reads (`/tmp/meowy-receiver-sources-qualifier.log
 All seven qualifier/boundary tests pass
 (`/tmp/meowy-receiver-sources-boundaries.log`): nearest-dispatch identity and five
 cross-scope faults, exact hop/shared-work limits and iterative 2048-point ancestry
-with late-cycle rejection. Source walkers do not use this new qualifier yet.
+with late-cycle rejection.
+Both grouped and field-source walkers now use the scalar receiver qualifier.
+All 627 forward-report tests pass (`/tmp/meowy-receiver-sources-integration.log`).
+Field/Block/Dispatch identities and original candidate leaves are retained across
+receiver aliases and nested blocks; expanded reports reuse existing source links.
+Calls, dereferences, arithmetic, aggregate/union/reference receivers remain opaque.
+One previous scalar-receiver opacity regression is now positive; record-receiver
+field transparency remains explicitly excluded. Read/control and runtime ownership
+semantics are unchanged; no receiver evaluation is replayed.
 
 ## Documentation conventions and layout
 

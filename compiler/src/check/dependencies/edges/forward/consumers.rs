@@ -18,6 +18,9 @@ mod outputs;
 #[cfg(test)]
 mod lists;
 
+#[cfg(test)]
+mod receivers;
+
 pub(crate) type Index = BTreeMap<PointId, (usize, hir::BlockId)>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]

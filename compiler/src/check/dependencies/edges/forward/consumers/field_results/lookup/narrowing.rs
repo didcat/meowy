@@ -97,6 +97,8 @@ impl Checker {
                 self.read_initializer_input(reports, current, owner, span)?
             {
                 input
+            } else if let Some(input) = self.read_receiver_input(reports, current, owner, span)? {
+                input
             } else {
                 return Ok(None);
             };
