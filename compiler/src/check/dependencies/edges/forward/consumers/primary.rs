@@ -96,3 +96,6 @@ mod dispatch_coercions;
 
 #[cfg(test)]
 mod receiver_coercions;
+
+#[cfg(test)]
+mod receiver_binary;

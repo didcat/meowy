@@ -1,7 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Coercion-owned record-receiver primaries are complete;
-binary-owned record-receiver primaries are next. Validation is recorded below.
+Updated: 2026-10-06. Binary-owned record-receiver primaries are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3048,6 +3047,16 @@ incomplete.
 
 ### Next: binary-owned record-receiver primaries
 
+Active series: confirmed on `main` after `735a55f`; untracked `docs/programs/hey/`
+remains excluded. Scalar binary projections now use `receiver_primary_slot` after
+dispatch lookup, preserving each operand's captured kind and original step. No
+capture or prerequisite refactor was needed. Both new tests demonstrated the missing
+link before integration (`/tmp/meowy-receiver-binary-before.log`); all 741 forward-report
+tests now pass (`/tmp/meowy-receiver-binary-integration.log`). Coverage includes both
+positions, scalar kinds, comparisons, nested/guarded scope and independent owners.
+Existing mixed-family tests retain their coercion/field links and admit the binary
+port. Independent stages and stopped/opaque inputs are next.
+
 The nested-port fixture in `consumers/primary/receiver_coercions.rs` retains separate
 coercion links for typed copies, typed list elements and unary operands. Its direct
 `$ + 1` has an observed binary-owned projection but no source link. Scalar binary
@@ -3056,7 +3065,7 @@ step can reuse `receiver_primary_slot` without changing capture or generic looku
 
 Dependency-ordered commit plan:
 
-1. Extend only observed scalar binary Projection inputs in `consumers.rs` through
+1. Complete: extend only observed scalar binary Projection inputs in `consumers.rs` through
    `receiver_primary_slot` after ordinary and dispatch lookup. Keep step zero/one,
    operand kinds (including comparisons), independent owners and existing receiver
    qualification. Include both operand positions and nested/guarded receiver tests
