@@ -241,3 +241,6 @@ mod ascriptions;
 
 #[cfg(test)]
 mod ascription_limits;
+
+#[cfg(test)]
+mod record_receivers;

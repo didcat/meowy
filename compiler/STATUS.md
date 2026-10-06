@@ -2963,8 +2963,12 @@ fixtures are now covered positively. Reference fixtures use distinct referent an
 field names to preserve the existing E303 rule (integration commit `44e4887`). Ten
 late source/scope/layout faults, missing-evidence requalification, independent control
 and exact map/cache/work bounds pass all nine record-receiver field tests
-(`/tmp/meowy-record-receiver-boundaries.log`), including downstream field-result
-and expanded-graph requalification. Shared-hop and mixed-cycle coverage is next.
+(`/tmp/meowy-record-receiver-boundaries.log`, commit `cc0243a`), including downstream
+field-result and expanded-graph requalification. Shared-hop tests now place groups
+on both sides of the receiver jump; cycle tests cross receiver inputs and initializer
+links. All three path tests pass (`/tmp/meowy-record-receiver-paths.log`), including
+generic target isolation and exact work at each shared hop boundary. Required
+execution/rejection cases and final compiler/strict/documentation gates remain next.
 
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
