@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Contextual-list dispatch primary sources are in progress.
+Updated: 2026-10-06. Contextual-list dispatch primary sources are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2815,75 +2815,99 @@ Strict mode exits 1 only for those unchanged gaps
 checks pass (`/tmp/meowy-output-dispatch-docs.log`). No outstanding failures remain.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: contextual-list dispatch primary sources
+### Contextual-list dispatch primary sources
 
-Active investigation: confirmed on `main` after `459cfa8`; untracked
-`docs/programs/hey/` is the only pre-existing change and remains excluded. Reuse
-`Coercion::primary_source` and `CoercionKind::valid_source` for final contextual
-plans. Producer and report validation must inspect all plans, including suffixes
-after a stop, while preserving the list-specific terminal-registration rule.
-Capture now records a shallow source shape before final `expected_plan`, retains it
-only for primary projections and validates every contextual plan before publishing
-sequences/endpoints. All 24 list producer tests pass, including scalar/list/union
-shapes, deferred order, whole-record conversion, Never suffixes, exact replay and
-work limits (`/tmp/meowy-list-dispatch-capture.log`, commit `126a2da`). Reports now
-retain source shapes alongside original plans; producer replay, merging and report
-qualification check all inputs, including unobserved suffixes. Allocation charges
-four fixed units per input, including its shape, before copying. All 68 focused
-list tests pass (`/tmp/meowy-list-dispatch-reports.log`), including independent
-stages, malformed suffixes, merge conflicts and exact/max payload/work boundaries.
-Report qualification is committed as `efe756b`; shared-payload fixture correction
-is `840c2e8`. List consumers now qualify observed scalar dispatch primaries using
-captured source kinds and original element indices. Four integration tests cover
-owners, kinds, sparse stages, construction-registration requirements, stopped prefixes
-and opaque/inner-coercion boundaries. All 694 forward-report tests pass
-(`/tmp/meowy-list-dispatch-consumers.log`, integration commit `54ef4b2`). Ten late
-shape/origin/owner/registration faults, mixed initializer cycles, independent control,
-duplicate visits and exact map/work boundaries pass all eight dispatch-list tests
-(`/tmp/meowy-list-dispatch-boundaries.log`, commit `faeaedf`). Four new required
-source cases cover list order across owners, scalar kinds/mutable snapshots/list
-primaries, stopped dispatch P006 and incompatible-width E207. The compiler builds
-and all four pass debug/release (`/tmp/meowy-list-dispatch-source.log`). Evidence is
-refreshed. All four default checks pass (`/tmp/meowy-list-dispatch-source-docs.log`).
-The audit preserves 403 prior cases, 476 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-list-dispatch-preservation.log`). The full compiler
-and strict gates remain next.
-The stopped fixture selects its list context before a direct
-Never operand removes guard-based narrowing; existing E207 behavior is preserved.
+Final contextual plans retain a shallow primary source shape captured before
+`expected_plan` consumes the checked element. Only actual projections retain a
+shape; non-primary and whole-record conversions keep None. Producer registration,
+full replay, merging and report qualification validate exact input/plan/source
+vectors, including unobserved suffixes. Source kinds retain widths and signedness,
+and projected Never agrees with Stopped without altering normal metadata rules.
 
-The prerequisite touched nine files including STATUS after the split review: the assertions
-share the same four-unit list descriptor contract, and leaving any unchanged keeps
-the global effect-budget regression suite inconsistent. The correction is limited
-to exact expected capacity/remainder values; keep consumer behavior in its own slice.
+List-owned scalar projections now use the exact dispatch-primary qualifier after
+ordinary source lookup. Links retain original element indices and independent
+projection/conversion/construction/result and dispatch initialization/result visits.
+Construction registration remains required whenever its checked edges exist, even
+for sparse projection-only reports. Mutable reads, parameters, calls, reference loads
+and nonscalar primaries remain opaque. Ordinary typed element coercions keep their
+own ports; generic value forwarding, evaluation edges and loan/proof authority are
+unchanged.
 
-`list_context.rs` selects candidates before `expected_plan` consumes each checked
-element and records its final `ListInput`. These plans currently retain point,
-primary, coercion kind and optional source shape; list-owned consumers use ordinary
-`primary_slot` or the exact scalar dispatch qualifier.
-Ordinary typed element coercions already retain their own dispatch-primary ports.
+Report storage charges four fixed units per input before allocation, including the
+source shape. Unused list capacity adds no copied inputs. Consumer links reuse the
+existing map/work limits without further payload. The budget correction touched
+nine files including STATUS: eight cross-family fixtures assert the same descriptor
+cost and needed consistent exact capacities/remainders. It was kept separate from
+consumer behavior after the required split review.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Capture contextual primary source shapes | `126a2da` |
+| Retain and bound source shapes in list reports | `efe756b` |
+| Align shared-payload fixture costs | `840c2e8` |
+| Link observed list projections to dispatch primaries | `54ef4b2` |
+| Bound links and reject source conflicts | `faeaedf` |
+| Cover list order, kinds and stopped elements | `9c5c3e8` |
+
+Focused evidence includes 24 producer tests, 68 list tests and eight dispatch-list
+tests. Exact shape/replay/merge faults, full suffix validation, sparse stage/source
+observations, ten late identity faults, mixed initializer cycles, independent control,
+duplicate visits and exact map/payload/work boundaries preserve stored reports.
+All 698 forward-report tests pass in the compiler gate. Focused logs:
+`/tmp/meowy-list-dispatch-capture.log`, `/tmp/meowy-list-dispatch-reports.log`,
+`/tmp/meowy-list-dispatch-consumers.log`, `/tmp/meowy-list-dispatch-boundaries.log`.
+
+Four required cases pass debug/release: receiver/tail and list order across owners,
+scalar kinds, typed copies, mutable snapshots, list primaries, stopped-dispatch P006
+and incompatible-width E207 (`/tmp/meowy-list-dispatch-source.log`). The stopped
+fixture selects its context before the direct Never operand; using a later
+guard-narrowed selector retains its pre-existing E207 rejection. The audit retains
+all 403 prior cases, 476 tracked contract/source/pin files and 37 reviewed hashes
+(`/tmp/meowy-list-dispatch-preservation.log`). Capability pins and proof obligations
+are unchanged; unrelated `docs/programs/hey/` remains excluded.
+
+All ten compiler checks pass: formatting, all-target Clippy, 2726 library/921 native
+tests, 62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-list-dispatch-gate.log`). Conformance has 407 cases: 388 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. All four source-slice
+documentation checks pass (`/tmp/meowy-list-dispatch-source-docs.log`). Strict mode
+exits 1 only for those gaps (`/tmp/meowy-list-dispatch-strict.log`). All four final
+guide/handoff checks pass (`/tmp/meowy-list-dispatch-docs.log`). No outstanding
+failures remain.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: composed-emission dispatch source slots
+
+`consumers/emissions.rs::emission_source_block` currently resolves only ordinary
+block sources. It is shared by emission slot-use collection and
+`results/inputs/sources.rs::candidate_source_slot`. Existing tagged dispatch body
+qualification can identify the source without registering an ordinary consumer;
+complete source layout checks and downstream candidate/forest qualification must
+remain shared and bounded.
 
 Dependency-ordered commit plan:
 
-1. Complete: capture a bounded primary source shape before `expected_plan` in
-   `list_context.rs` and retain it only for actual primary projections in
-   `dependencies/lists/conversions.rs`. Preserve candidate selection, deferred
-   element order, normal/Stopped rules and exact replay. Include focused capture,
-   kind/shape, rejection and budget tests with the producer change.
-2. Complete: carry and requalify shapes through `effects/lists.rs` and its report, validation
-   and qualification helpers. Preserve exact full root/plan vectors and checked
-   suffixes, independent projection/conversion/construction/result flags and the
-   list-specific construction registration rule. Bound copies and work before
-   publication; keep non-contextual and inner-coercion paths distinct.
-3. Integration complete: link observed scalar list-owned projections to exact dispatch primary slots via
-   the captured source kind, retaining original element indices and shared limits.
-   Owner/type/sparse/stopped regressions and separate corruption, cycle, control
-   and exact map/payload/work coverage are complete.
-4. Source cases and classified evidence complete. Run compiler and strict gates,
-   update the guide and both handoffs, then run final documentation checks.
+1. Separate the bounded complete source-layout validation in `consumers/emissions.rs`
+   from source-body selection without changing behavior. Preserve record counts,
+   original ordered field names, all targets including unobserved ones, shared work
+   limits and existing emission/candidate tests in the prerequisite commit.
+2. Add observed record-dispatch fallback via `record_dispatch_body` after ordinary
+   lookup, reusing that full layout qualification. Retain exact owner/origin/body
+   identities and Primary/Field emission ports; only initialized targets create
+   links. Include focused source/destination, sparse/stopped, unknown-history and
+   opaque-source regressions. Keep direct Value emissions separate.
+3. Qualify candidate-source cache and forest integration through the same resolver
+   in `results/inputs/sources.rs` and its graph consumers. Preserve original candidate
+   identities, tagged result origins, unknown/empty/multiple histories and existing
+   walks. Add corruption, mixed-cycle, owner/control and exact map/cache/payload/work
+   coverage; split independently useful integration and boundary slices as needed.
+4. Add required composition execution/rejection/stopped cases and classified evidence,
+   preserve references and pins, run compiler/strict/documentation gates and refresh
+   the guide and both handoffs.
 
-Composition dispatch consumers, contextual record-hint repair, record-receiver
-transparency, aggregate value selection, precise joins, function returns, restarts,
-E225 enforcement and proof outcomes remain separate.
+Contextual record-hint repair, record-receiver transparency, aggregate value selection,
+precise joins, function returns, restarts, E225 enforcement and proof outcomes remain
+separate.
 
 ## Documentation conventions and layout
 
@@ -4477,9 +4501,9 @@ Forward coercions, normal unchanged ascriptions and eligible immutable local rea
 now qualify direct field sources. Distinct scalar-block descriptors and expanded
 visits are complete. Tagged dispatch histories and scalar dispatch visits are also
 complete. Initialized scalar receiver inputs and record dispatch scalar field sources
-are complete. Record dispatch unary/binary, coercion-owned and output-owned primary
-sources are complete. Contextual-list dispatch primary sources are next, following
-the ordered plan above; value selection and broader aggregate provenance remain separate.
+are complete. Record dispatch unary/binary, coercion-owned, output-owned and
+contextual-list primary sources are complete. Composed-emission dispatch source slots
+are next, following the ordered plan above; value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5105,8 +5129,10 @@ the ordered plan above; value selection and broader aggregate provenance remain 
    (`bd0312c`), dispatch integration (`68f229d`), boundaries (`cda72ce`) and source
    cases (`4a9592a`) are complete. Output shape capture (`053241c`), reports (`bf5b1d8`),
    dispatch links (`65a82d4`), boundaries (`82659ca`) and source cases (`7b71fd6`)
-   are complete; final gate results are above. Next qualify contextual-list dispatch
-   primary sources; other producer families and broader value provenance remain
+   are complete. Contextual-list capture (`126a2da`), reports (`efe756b`), shared budgets
+   (`840c2e8`), dispatch links (`54ef4b2`), boundaries (`faeaedf`) and source cases
+   (`9c5c3e8`) are complete; final gate results are above. Next qualify composed-emission
+   dispatch source slots; other producer families and broader value provenance remain
    separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

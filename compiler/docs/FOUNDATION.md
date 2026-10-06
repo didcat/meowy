@@ -862,6 +862,25 @@ sources remain opaque; stopped-anchor seeds provide structural evidence only.
 Streaming reuses the shared slot-use map and work limits, with atomic failures and
 unchanged payload. No values, branch choice, lifetime authority or proof result is inferred.
 
+Final contextual-list plans now retain the primary source shape captured before
+expected-value conversion. Only actual primary projections retain a shape; ordinary
+elements and whole-record conversions keep None. Producer registration, full replay,
+report merging and qualification check source/kind agreement for every input,
+including unobserved suffixes after a stop. Report copies charge four fixed units
+per input before allocation; unused list capacity adds no input payload.
+
+Observed scalar list projections can also link to an exact dispatch primary slot.
+The immutable unnamed slot must match the source kind, width and signedness, and
+the link retains the original element index. Conversion, construction and result
+visits remain independent of projection and of dispatch initialization/result visits.
+The list-specific construction-registration rule still applies to sparse reports.
+Mutable reads, parameters, calls, reference loads and nonscalar source shapes remain
+opaque. Inner element coercions retain their own ports. Required cases preserve
+receiver/tail and list order across owners, scalar kinds, mutable snapshots, list
+primaries, stopped-dispatch P006 and incompatible-width E207. Source conflicts,
+initializer cycles, independent control and exact shared budgets are structural
+evidence only.
+
 Composed emissions now link each observed initialized `Emission(EmitId)` port to
 the original source block's primary slot zero or named field slot `index + 1`.
 Whole-report qualification is shared with result-source indexing and preserves exact
