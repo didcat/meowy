@@ -824,6 +824,23 @@ Source cases preserve typed and nullable copies, receiver/tail order across owne
 scalar kinds, mutable snapshots, reference/list primaries, incompatible-target E207
 and stopped-source P006. These links grant no lifetime, loan or proof authority.
 
+Scalar coercion projections can also reach an original source through eligible
+record receiver reads. A shared body lookup requires at least one qualified receiver
+hop, preserves checked scope and initialization, and requalifies the ordinary block
+or dispatch source. Its immutable unnamed slot zero must match the captured scalar
+kind exactly, including width and signedness. Original source results remain required;
+the consuming receiver's result is independent of its initialization. Coercion
+projection, conversion and result observations remain independent as well.
+
+Only coercion-owned projections use this receiver-primary path. Inner typed-element
+and operand coercions retain their own ports; generic receiver forwarding and other
+consumer families keep their existing limits. Mutable/reference/list paths remain
+opaque. Empty and multiple candidate histories are preserved without selecting a
+value. Shared map/work bounds and atomic failure apply without new report payload.
+Structural checks cover stale shapes, owners, eligibility, mixed cycles and exact
+budgets. Required cases cover aliases, nested receivers, scalar copies, source/tail
+order, incompatible targets and stopped bodies; they do not establish proof answers.
+
 Output-owned primary consumers retain each formatting part's original index,
 including gaps for literals and scalar inputs. Sparse observed reports independently
 validate prefix, projection, output and terminal flags against exact checked headers,
