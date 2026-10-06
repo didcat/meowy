@@ -2954,7 +2954,14 @@ and lexical scope, with bounded membership/mutation checks and no new payload.
 The scalar entry point still requests only scalar sources. All 34 receiver tests
 pass (`/tmp/meowy-record-receiver-qualification.log`), including HIR-transfer
 eligibility, nested scopes/owners, independent visits, stale headers and exact work.
-No field consumer uses record mode yet.
+The qualifier is committed as `06bcf2a`. A field-specific wrapper target now requires
+at least one eligible record-receiver hop before returning a qualified ordinary or
+dispatch source. Field lookup restricts that path to immutable scalar slots, while
+generic/scalar callers retain their original targets. All 723 forward-report tests
+pass (`/tmp/meowy-record-receiver-fields.log`). Two formerly opaque receiver-field
+fixtures are now covered positively. Reference fixtures use distinct referent and
+field names to preserve the existing E303 rule. Independent corruption, shared-hop,
+map/work and downstream field-result checks remain next.
 
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
@@ -2971,7 +2978,7 @@ Dependency-ordered commit plan:
    qualifier. Verify immutable/reference-free eligibility after HIR transfer, retain
    exact local/input/owner/body identities and charge lookup work without new payload.
    Keep mutable/reference receiver cases opaque and test malformed replay and limits.
-3. Add a field-specific record receiver lookup in `consumers/fields.rs` and its
+3. Complete: add a field-specific record receiver lookup in `consumers/fields.rs` and its
    wrapper-resolution path. Reuse qualified ordinary/dispatch source records and
    exact field count/index/shape checks; require receiver initialization without
    requiring the enclosing dispatch result. Preserve separate Field Operation/Normal

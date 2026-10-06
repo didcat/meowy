@@ -112,7 +112,6 @@ pub(crate) fn local_field_sources_keep_special_cells_calls_and_loads_opaque() {
     for source in [
         "r:{->n:1};n:=r.n;s:{->((n))}",
         "box:{->n:1;inner:{->((n))}}",
-        "r:{->n:1};s:r.{inner:{->($.n)}}",
         "f<int32>:(n<int32>){copy:n;->((copy))}",
         "f<never>:(n<never>){->n}",
         "r:{->n:1};n:r.n;p:&n;s:{->(*p)}",

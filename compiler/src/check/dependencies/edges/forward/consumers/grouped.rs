@@ -4,6 +4,13 @@ use std::collections::BTreeSet;
 
 mod input;
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(self) enum Target {
+    Block,
+    Dispatch,
+    Receiver,
+}
+
 impl Checker {
     pub(super) fn grouped_consumer(
         &mut self,
@@ -23,7 +30,7 @@ impl Checker {
         span: Span,
         limit: usize,
     ) -> Result<Option<PointId>> {
-        self.grouped_source_limited(reports, input, owner, span, limit, false)
+        self.grouped_source_limited(reports, input, owner, span, limit, Target::Block)
     }
 
     pub(super) fn dispatch_consumer(
@@ -33,7 +40,17 @@ impl Checker {
         owner: usize,
         span: Span,
     ) -> Result<Option<PointId>> {
-        self.grouped_source_limited(reports, input, owner, span, MAX_GROUPS, true)
+        self.grouped_source_limited(reports, input, owner, span, MAX_GROUPS, Target::Dispatch)
+    }
+
+    pub(super) fn record_field_consumer(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<PointId>> {
+        self.grouped_source_limited(reports, input, owner, span, MAX_GROUPS, Target::Receiver)
     }
 
     pub(self) fn grouped_source_limited(
@@ -43,7 +60,7 @@ impl Checker {
         owner: usize,
         span: Span,
         limit: usize,
-        dispatch: bool,
+        target: Target,
     ) -> Result<Option<PointId>> {
         let budget = || Diagnostic::unsupported("proof group-consumer budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof group-consumer identity mismatch", span);
@@ -53,6 +70,7 @@ impl Checker {
         let limit = limit.min(MAX_GROUPS);
         let mut seen = BTreeSet::new();
         let mut current = input;
+        let mut receiver = false;
         loop {
             if !self.flow.spend(
                 reports.consumers.len().checked_ilog2().unwrap_or(0) as usize
@@ -78,7 +96,7 @@ impl Checker {
             let narrowing = self.narrowings.contains_key(&current);
             let read = self.local_reads.contains_key(&current);
             let typed = self.typed_ops.contains_key(&current);
-            if dispatch {
+            if target != Target::Block {
                 if !self.flow.spend(
                     self.dispatch_ops.len().checked_ilog2().unwrap_or(0) as usize
                         + self.fields.len().checked_ilog2().unwrap_or(0) as usize
@@ -99,7 +117,7 @@ impl Checker {
                     {
                         return Err(invalid());
                     }
-                    return Ok(Some(current));
+                    return Ok((target == Target::Dispatch || receiver).then_some(current));
                 }
                 if field {
                     if group.is_some()
@@ -133,7 +151,7 @@ impl Checker {
                 {
                     return Err(invalid());
                 }
-                return Ok((!dispatch).then_some(current));
+                return Ok((target == Target::Block || receiver).then_some(current));
             }
             let block = point.block;
             let next = if let Some(group) = group {
@@ -154,6 +172,12 @@ impl Checker {
             {
                 input
             } else if let Some(input) = self.read_receiver_input(reports, current, owner, span)? {
+                input
+            } else if target == Target::Receiver
+                && let Some(input) =
+                    self.receiver_value_input(reports, current, owner, span, true)?
+            {
+                receiver = true;
                 input
             } else if let Some(input) =
                 self.unchanged_ascription_input(reports, current, owner, span)?

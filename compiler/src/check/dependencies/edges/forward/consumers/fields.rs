@@ -26,14 +26,26 @@ impl Checker {
         if *load || !operation {
             return Ok(None);
         }
-        let (block, dispatch) =
-            if let Some(block) = self.slot_block(reports, *input, owner, span)? {
-                (block, false)
-            } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
-                (block, true)
+        let (block, scalar, receiver) = if let Some(block) =
+            self.slot_block(reports, *input, owner, span)?
+        {
+            (block, false, false)
+        } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
+            (block, true, false)
+        } else if let Some(input) = self.record_field_consumer(reports, *input, owner, span)? {
+            let block = if let Some(block) =
+                self.qualified_slot_block(reports, input, owner, span)?
+            {
+                block
+            } else if let Some(block) = self.record_dispatch_body(reports, input, owner, span)? {
+                block
             } else {
                 return Ok(None);
             };
+            (block, true, true)
+        } else {
+            return Ok(None);
+        };
         if !self.flow.spend(
             self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                 + self.fields.len().checked_ilog2().unwrap_or(0) as usize
@@ -56,10 +68,11 @@ impl Checker {
         if self.fields[&id].count != fields
             || selected.field.is_none()
             || *normal != (selected.shape != Shape::Never)
+            || (receiver && selected.mutable)
         {
             return Err(invalid());
         }
-        if dispatch && !matches!(selected.shape, Shape::Scalar(_)) {
+        if scalar && !matches!(selected.shape, Shape::Scalar(_)) {
             return Ok(None);
         }
         Ok(Some(Slot { block, index: slot }))
@@ -71,3 +84,6 @@ mod tests;
 
 #[cfg(test)]
 mod dispatch;
+
+#[cfg(test)]
+mod receivers;

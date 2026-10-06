@@ -134,7 +134,6 @@ pub(crate) fn record_dispatch_fields_keep_mutable_histories_unknown_and_nonscala
         "n:(3.{->n:[$]}).n",
         "n:1;x:2.{->n:&n}.n",
         "v<int32><null>:1;n:3.{->n:v}.n",
-        "r:{->n:1};x:r.{->$.n}",
         "r:3.{->n:=1};x:r.n",
     ] {
         let (_, reports) = checked(source);

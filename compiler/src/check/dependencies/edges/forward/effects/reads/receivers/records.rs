@@ -49,8 +49,8 @@ pub(crate) fn record_receiver_inputs_reuse_checked_eligibility_across_scopes_and
 pub(crate) fn record_receiver_inputs_keep_ineligible_and_unobserved_records_opaque() {
     for source in [
         "r:{->n:=1};v:r.{copy:$;->$.n}",
-        "n:1;r:{->n:2;->p:&n};v:r.{copy:$;->$.n}",
-        "n:1;r:{->n:2;->inner:{->p:&n}};v:r.{copy:$;->$.n}",
+        "base:1;r:{->n:2;->p:&base};v:r.{copy:$;->$.n}",
+        "base:1;r:{->n:2;->inner:{->p:&base}};v:r.{copy:$;->$.n}",
         "r:{->n:2;->inner:{->n:=3}};v:r.{copy:$;->$.n}",
         "r:{->n:2;->h:@\"memory\".heap};v:r.{copy:$;->$.n}",
         "r:{->n:1};v:(&r).{copy:$;->$.n}",

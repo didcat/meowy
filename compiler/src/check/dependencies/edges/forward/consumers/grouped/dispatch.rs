@@ -91,8 +91,14 @@ pub(crate) fn dispatch_consumers_share_exact_wrapper_hops_and_work() {
         (direct.point, depth + 2, true),
         (direct.point, depth + 1, false),
     ] {
-        let result =
-            checker.grouped_source_limited(&reports, input, 0, Span::default(), hops, true);
+        let result = checker.grouped_source_limited(
+            &reports,
+            input,
+            0,
+            Span::default(),
+            hops,
+            Target::Dispatch,
+        );
         if allowed {
             assert_eq!(result.unwrap(), Some(id));
         } else {
