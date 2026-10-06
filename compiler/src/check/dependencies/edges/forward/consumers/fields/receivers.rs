@@ -1,6 +1,8 @@
 use super::{super::tests::checked, *};
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn record_receiver_fields_keep_source_slots_wrappers_and_independent_owners() {
     for (source, dispatch) in [("{->z:9;->a:true}", false), ("3.{->z:9;->a:true}", true)] {

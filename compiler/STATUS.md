@@ -2960,8 +2960,11 @@ dispatch source. Field lookup restricts that path to immutable scalar slots, whi
 generic/scalar callers retain their original targets. All 723 forward-report tests
 pass (`/tmp/meowy-record-receiver-fields.log`). Two formerly opaque receiver-field
 fixtures are now covered positively. Reference fixtures use distinct referent and
-field names to preserve the existing E303 rule. Independent corruption, shared-hop,
-map/work and downstream field-result checks remain next.
+field names to preserve the existing E303 rule (integration commit `44e4887`). Ten
+late source/scope/layout faults, missing-evidence requalification, independent control
+and exact map/cache/work bounds pass all nine record-receiver field tests
+(`/tmp/meowy-record-receiver-boundaries.log`), including downstream field-result
+and expanded-graph requalification. Shared-hop and mixed-cycle coverage is next.
 
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
