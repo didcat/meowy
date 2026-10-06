@@ -2909,8 +2909,11 @@ empty/multiple/unknown histories. The unknown fixture retains two composition ho
 between the dispatch and its original mutable slot, including an intermediate
 multiple-candidate history. Its regression now checks that exact chain and the
 Unknown visit in both forests; no checker behavior or representation changed.
-All three graph integration tests pass (`/tmp/meowy-emission-dispatch-graphs.log`).
-Exact candidate/graph cache, map, work and late-failure coverage remains next.
+All three graph integration tests pass (`/tmp/meowy-emission-dispatch-graphs.log`,
+commit `110fbb9`). Candidate collection and both graph qualifiers now have eleven
+late slot/origin faults and mixed initializer-cycle regressions, plus exact shared
+source-cache, map, scratch and work boundaries. All seven candidate/graph tests pass
+(`/tmp/meowy-emission-dispatch-graph-bounds.log`). Required source coverage is next.
 
 `consumers/emissions.rs::emission_source_block` now resolves ordinary and observed
 record-dispatch sources. It is shared by emission slot-use collection and
@@ -2930,8 +2933,8 @@ Dependency-ordered commit plan:
    identities and Primary/Field emission ports; only initialized targets create
    links. Include focused source/destination, sparse/stopped, unknown-history and
    opaque-source regressions. Keep direct Value emissions separate.
-3. Existing candidate-source cache and forest paths already call the shared resolver.
-   Add a separate consumer identity/cycle/limit slice, then verify that integration
+3. Complete: existing candidate-source cache and forest paths share the resolver.
+   Separate consumer identity/cycle/limit and candidate/forest tests verify integration
    in `results/inputs/sources.rs` and its graph consumers. Preserve original candidate
    identities, tagged result origins, unknown/empty/multiple histories and existing
    walks. Add corruption, mixed-cycle, owner/control and exact map/cache/payload/work
