@@ -63,7 +63,13 @@ impl Checker {
         if !observed.initialized.iter().any(|initialized| *initialized) {
             return Ok(None);
         }
-        let Some(block) = self.slot_block(reports, observed.input, owner, span)? else {
+        let block = if let Some(block) = self.slot_block(reports, observed.input, owner, span)? {
+            block
+        } else if let Some(block) =
+            self.record_dispatch_body(reports, observed.input, owner, span)?
+        {
+            block
+        } else {
             return Ok(None);
         };
         self.emission_source_layout(block, composed.count, &observed.targets, span)
@@ -113,3 +119,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod dispatch;

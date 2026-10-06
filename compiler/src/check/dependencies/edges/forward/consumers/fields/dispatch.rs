@@ -138,7 +138,13 @@ pub(crate) fn record_dispatch_fields_keep_mutable_histories_unknown_and_nonscala
         "r:3.{->n:=1};x:r.n",
     ] {
         let (_, reports) = checked(source);
-        assert!(reports.slot_uses.is_empty(), "{source}");
+        assert!(
+            reports
+                .slot_uses
+                .keys()
+                .all(|port| matches!(port, Port::Emission(_))),
+            "{source}"
+        );
         assert!(reports.field_results.is_empty(), "{source}");
     }
 }

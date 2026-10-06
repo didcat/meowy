@@ -2890,9 +2890,19 @@ unobserved suffix corruption. Logs: `/tmp/meowy-emission-dispatch-layout-before.
 `/tmp/meowy-emission-dispatch-candidates-before.log`,
 `/tmp/meowy-emission-dispatch-layout-after.log`,
 `/tmp/meowy-emission-dispatch-candidates-after.log`.
+The refactor is committed as `4e3b5a5`. The shared resolver now tries qualified
+record-dispatch results after ordinary lookup and reuses complete layout validation.
+Focused integration covers exact ports/owners, independent source/target visits,
+unknown/empty/partial layouts, stopped destinations and opaque producers; the
+unknown-slot fixture now uses direct dispatch expressions: local records containing
+mutable fields correctly remain outside existing immutable-read eligibility. Three
+prior field/output/coercion fixtures now account for independent composition links
+while preserving their original family assertions. All 703 forward-report tests
+pass (`/tmp/meowy-emission-dispatch-consumers.log`); no eligibility boundary was
+widened. Consumer boundaries and downstream candidate/forest verification are next.
 
-`consumers/emissions.rs::emission_source_block` currently resolves only ordinary
-block sources. It is shared by emission slot-use collection and
+`consumers/emissions.rs::emission_source_block` now resolves ordinary and observed
+record-dispatch sources. It is shared by emission slot-use collection and
 `results/inputs/sources.rs::candidate_source_slot`. Existing tagged dispatch body
 qualification can identify the source without registering an ordinary consumer;
 complete source layout checks and downstream candidate/forest qualification must
@@ -2904,12 +2914,13 @@ Dependency-ordered commit plan:
    from source-body selection without changing behavior. Preserve record counts,
    original ordered field names, all targets including unobserved ones, shared work
    limits and existing emission/candidate tests in the prerequisite commit.
-2. Add observed record-dispatch fallback via `record_dispatch_body` after ordinary
+2. Complete: add observed record-dispatch fallback via `record_dispatch_body` after ordinary
    lookup, reusing that full layout qualification. Retain exact owner/origin/body
    identities and Primary/Field emission ports; only initialized targets create
    links. Include focused source/destination, sparse/stopped, unknown-history and
    opaque-source regressions. Keep direct Value emissions separate.
-3. Qualify candidate-source cache and forest integration through the same resolver
+3. Existing candidate-source cache and forest paths already call the shared resolver.
+   Add a separate consumer identity/cycle/limit slice, then verify that integration
    in `results/inputs/sources.rs` and its graph consumers. Preserve original candidate
    identities, tagged result origins, unknown/empty/multiple histories and existing
    walks. Add corruption, mixed-cycle, owner/control and exact map/cache/payload/work

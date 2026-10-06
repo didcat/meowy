@@ -139,8 +139,14 @@ pub(crate) fn dispatch_output_primaries_keep_opaque_shapes_and_inner_coercion_po
     }
     let (checker, reports) =
         checked("d:@\"debug\";r:3.{->$;->tag:true};d.print(-r);xs<int32[1]>:[r];out:{->r}");
-    assert_eq!(reports.slot_uses.len(), 2);
-    for port in reports.slot_uses.keys() {
+    assert_eq!(reports.slot_uses.len(), 4);
+    let ports: Vec<_> = reports
+        .slot_uses
+        .keys()
+        .filter(|port| !matches!(port, Port::Emission(_)))
+        .collect();
+    assert_eq!(ports.len(), 2);
+    for port in ports {
         let Port::Projection { point, step: 0 } = port else {
             panic!()
         };
