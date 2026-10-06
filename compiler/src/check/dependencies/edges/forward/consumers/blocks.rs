@@ -1,6 +1,23 @@
 use super::*;
 
 impl Checker {
+    pub(super) fn record_receiver_body(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let Some(input) = self.record_receiver_consumer(reports, input, owner, span)? else {
+            return Ok(None);
+        };
+        if let Some(block) = self.qualified_slot_block(reports, input, owner, span)? {
+            Ok(Some(block))
+        } else {
+            self.record_dispatch_body(reports, input, owner, span)
+        }
+    }
+
     pub(super) fn slot_block(
         &mut self,
         reports: &Reports,

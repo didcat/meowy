@@ -90,7 +90,7 @@ pub(crate) fn seeded_record_receiver_paths_reject_cycles_through_receiver_inputs
     let before = format!("{reports:?}{:?}", checker.edge_counts());
     assert!(
         checker
-            .record_field_consumer(&reports, input, 0, Span::default())
+            .record_receiver_consumer(&reports, input, 0, Span::default())
             .unwrap_err()
             .message
             .contains("identity")
@@ -123,7 +123,7 @@ pub(crate) fn record_receiver_paths_require_a_record_hop_and_leave_other_targets
         let input = checker.fields.values().next().unwrap().input;
         assert_eq!(
             checker
-                .record_field_consumer(&reports, input, 0, Span::default())
+                .record_receiver_consumer(&reports, input, 0, Span::default())
                 .unwrap(),
             None
         );
@@ -145,7 +145,7 @@ pub(crate) fn record_receiver_paths_require_a_record_hop_and_leave_other_targets
     );
     assert!(
         checker
-            .record_field_consumer(&reports, input, 0, Span::default())
+            .record_receiver_consumer(&reports, input, 0, Span::default())
             .unwrap()
             .is_some()
     );

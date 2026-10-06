@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Record-receiver field sources are implemented.
+Updated: 2026-10-06. Coercion-owned record-receiver primaries are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2995,7 +2995,16 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: coercion-owned record-receiver primaries
 
-`record_field_consumer` now provides a bounded target that follows eligible record
+Active investigation: confirmed on `main` after `7a4e0eb`; untracked
+`docs/programs/hey/` is the only pre-existing change and remains excluded. Follow
+the ordered plan below, preserving generic receiver lookup and existing field
+behavior. Baseline record-receiver tests pass. The existing body resolution is now
+shared as `record_receiver_body`, with a neutral receiver-consumer name and unchanged
+qualification/work ordering. All 16 record-receiver checks pass before and after
+extraction (`/tmp/meowy-receiver-primary-before.log`,
+`/tmp/meowy-receiver-primary-after.log`).
+
+`record_receiver_consumer` provides a bounded target that follows eligible record
 receiver reads while generic block/dispatch lookups stay unchanged. Field lookup
 already requalifies the resulting ordinary or dispatch body. Coercion reports retain
 the scalar source shape from before projection/conversion, but their primary lookup
@@ -3003,7 +3012,7 @@ still stops at record receivers.
 
 Dependency-ordered commit plan:
 
-1. Share the qualified record-receiver body lookup currently embedded in
+1. Complete: share the qualified record-receiver body lookup previously embedded in
    `consumers/fields.rs`, with a neutral receiver-source name. Preserve the explicit
    receiver-hop requirement, source qualification, existing field behavior and
    resource checks in a separately validated refactor.

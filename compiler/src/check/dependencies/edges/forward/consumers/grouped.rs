@@ -43,7 +43,7 @@ impl Checker {
         self.grouped_source_limited(reports, input, owner, span, MAX_GROUPS, Target::Dispatch)
     }
 
-    pub(super) fn record_field_consumer(
+    pub(super) fn record_receiver_consumer(
         &mut self,
         reports: &Reports,
         input: PointId,

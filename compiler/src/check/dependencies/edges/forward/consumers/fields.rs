@@ -26,26 +26,16 @@ impl Checker {
         if *load || !operation {
             return Ok(None);
         }
-        let (block, scalar, receiver) = if let Some(block) =
-            self.slot_block(reports, *input, owner, span)?
-        {
-            (block, false, false)
-        } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
-            (block, true, false)
-        } else if let Some(input) = self.record_field_consumer(reports, *input, owner, span)? {
-            let block = if let Some(block) =
-                self.qualified_slot_block(reports, input, owner, span)?
-            {
-                block
-            } else if let Some(block) = self.record_dispatch_body(reports, input, owner, span)? {
-                block
+        let (block, scalar, receiver) =
+            if let Some(block) = self.slot_block(reports, *input, owner, span)? {
+                (block, false, false)
+            } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
+                (block, true, false)
+            } else if let Some(block) = self.record_receiver_body(reports, *input, owner, span)? {
+                (block, true, true)
             } else {
                 return Ok(None);
             };
-            (block, true, true)
-        } else {
-            return Ok(None);
-        };
         if !self.flow.spend(
             self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                 + self.fields.len().checked_ilog2().unwrap_or(0) as usize
