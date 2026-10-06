@@ -2,6 +2,8 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::edges::forward::results::Sources;
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 pub(super) const SOURCE: &str = "r:3.{->$;->z:9;->a:true};copy:{->((r))}";
 
 #[test]

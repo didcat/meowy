@@ -2899,7 +2899,11 @@ mutable fields correctly remain outside existing immutable-read eligibility. Thr
 prior field/output/coercion fixtures now account for independent composition links
 while preserving their original family assertions. All 703 forward-report tests
 pass (`/tmp/meowy-emission-dispatch-consumers.log`); no eligibility boundary was
-widened. Consumer boundaries and downstream candidate/forest verification are next.
+widened (integration commit `aa7b5d6`). Twelve late origin/owner/target/layout faults,
+including unobserved suffixes, plus mixed initializer cycles, independent control,
+duplicate visits and exact map/work limits pass all nine dispatch-emission tests
+(`/tmp/meowy-emission-dispatch-boundaries.log`). Candidate/forest verification remains
+next, through the existing shared APIs rather than new report representations.
 
 `consumers/emissions.rs::emission_source_block` now resolves ordinary and observed
 record-dispatch sources. It is shared by emission slot-use collection and
