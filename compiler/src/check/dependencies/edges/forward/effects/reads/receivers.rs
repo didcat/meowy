@@ -4,7 +4,7 @@ use crate::check::dependencies::{bodies::completion::Shape, grouped::MAX_GROUPS}
 mod scope;
 
 #[derive(Clone, Copy)]
-pub(self) struct Receiver {
+pub(super) struct Receiver {
     pub(self) point: PointId,
     pub(self) input: PointId,
     pub(self) local: crate::hir::LocalId,

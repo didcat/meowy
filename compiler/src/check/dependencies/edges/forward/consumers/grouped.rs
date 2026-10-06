@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 mod input;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(self) enum Target {
+pub(super) enum Target {
     Block,
     Dispatch,
     Receiver,

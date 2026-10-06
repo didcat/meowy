@@ -2975,8 +2975,10 @@ compiler build passes and all four cases pass debug/release
 unchanged reference hashes and pins. All four default checks pass
 (`/tmp/meowy-record-receiver-source-docs.log`). The audit preserves 411 prior cases,
 484 tracked contract/source/pin files and all 37 reviewed hashes
-(`/tmp/meowy-record-receiver-preservation.log`). Full compiler and strict gates
-remain next.
+(`/tmp/meowy-record-receiver-preservation.log`). The two helper types now use
+`pub(super)` to preserve explicit visibility without Clippy's `needless_pub_self`.
+Formatting and all-target Clippy pass (`/tmp/meowy-record-receiver-visibility.log`).
+The full compiler gate must be rerun; strict mode remains pending.
 
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
