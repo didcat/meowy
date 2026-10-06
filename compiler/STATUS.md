@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Contextual-list dispatch primary sources are implemented.
+Updated: 2026-10-06. Composed-emission dispatch source slots are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2878,6 +2878,19 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: composed-emission dispatch source slots
 
+Active investigation: confirmed on `main` after `bda2035`; the only pre-existing
+change is untracked `docs/programs/hey/`, excluded from this series. Both emission
+links and candidate sources already share one resolver; graph qualification calls
+that same candidate checker. Preserve its exact layout work accounting during the
+prerequisite extraction. Baseline checks passed 45 emission and ten candidate-source
+tests. Complete layout qualification is now a separate private helper with unchanged
+work charges, result shape, field ordering and errors. The same 45 emission and ten
+candidate-source tests pass after extraction, including exact work/map limits and
+unobserved suffix corruption. Logs: `/tmp/meowy-emission-dispatch-layout-before.log`,
+`/tmp/meowy-emission-dispatch-candidates-before.log`,
+`/tmp/meowy-emission-dispatch-layout-after.log`,
+`/tmp/meowy-emission-dispatch-candidates-after.log`.
+
 `consumers/emissions.rs::emission_source_block` currently resolves only ordinary
 block sources. It is shared by emission slot-use collection and
 `results/inputs/sources.rs::candidate_source_slot`. Existing tagged dispatch body
@@ -2887,7 +2900,7 @@ remain shared and bounded.
 
 Dependency-ordered commit plan:
 
-1. Separate the bounded complete source-layout validation in `consumers/emissions.rs`
+1. Complete: separate the bounded complete source-layout validation in `consumers/emissions.rs`
    from source-body selection without changing behavior. Preserve record counts,
    original ordered field names, all targets including unobserved ones, shared work
    limits and existing emission/candidate tests in the prerequisite commit.

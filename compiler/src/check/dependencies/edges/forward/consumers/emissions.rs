@@ -1,5 +1,8 @@
 use super::*;
-use crate::check::dependencies::{bodies::completion::Shape, emissions::Projection};
+use crate::check::dependencies::{
+    bodies::completion::Shape,
+    emissions::{Projection, Target},
+};
 
 impl Checker {
     pub(super) fn emission_slot_uses(
@@ -54,7 +57,6 @@ impl Checker {
             return Ok(None);
         };
         let budget = || Diagnostic::unsupported("proof emission-slot budget exhausted", span);
-        let invalid = || Diagnostic::unsupported("proof emission-slot identity mismatch", span);
         if !self.flow.spend(observed.initialized.len() * 2 + 1) {
             return Err(budget());
         }
@@ -64,6 +66,18 @@ impl Checker {
         let Some(block) = self.slot_block(reports, observed.input, owner, span)? else {
             return Ok(None);
         };
+        self.emission_source_layout(block, composed.count, &observed.targets, span)
+    }
+
+    pub(self) fn emission_source_layout(
+        &mut self,
+        block: hir::BlockId,
+        fields: usize,
+        targets: &[Target],
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let budget = || Diagnostic::unsupported("proof emission-slot budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof emission-slot identity mismatch", span);
         if !self
             .flow
             .spend(self.bodies.len().checked_ilog2().unwrap_or(0) as usize + 2)
@@ -81,14 +95,11 @@ impl Checker {
         if !self.flow.spend(bytes * 2 + count + 1) {
             return Err(budget());
         }
-        if body.completion.result
-            != (Shape::Record {
-                fields: composed.count,
-            })
-            || count != observed.targets.len()
+        if body.completion.result != (Shape::Record { fields })
+            || count != targets.len()
             || slots
                 .iter()
-                .zip(&observed.targets)
+                .zip(targets)
                 .any(|(slot, target)| slot.field != target.field)
         {
             return Err(invalid());
