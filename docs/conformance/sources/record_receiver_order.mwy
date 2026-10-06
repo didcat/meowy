@@ -1,0 +1,22 @@
+d : @"debug"
+show <null> : (n <int32>, flag <boolean>) {
+    row : n.{
+        d.print("source {n}")
+        -> value : $
+        -> tag : flag
+        d.print("source tail {n}")
+    }
+    out : row.{
+        d.print("outer")
+        alias : (($))
+        d.print(alias.value)
+        inner : $.{ d.print("inner"); -> $.value }
+        d.print(inner)
+        | $.tag | { d.print("guard"); d.print($.value) }
+        -> $.value
+        d.print("outer tail")
+    }
+    d.print(out)
+}
+show(3, true)
+show(5, false)

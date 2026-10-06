@@ -1,0 +1,23 @@
+d : @"debug"
+small <uint8> : 255
+decimal <float32> : 1.5
+row : { -> tiny : small; -> text : "cat"; -> flag : true; -> nil : null; -> number : decimal }
+row.{
+    d.print($.tiny)
+    d.print($.text)
+    d.print($.flag)
+    d.print($.nil)
+    d.print($.number)
+}
+mutable := { -> value : 7 }
+saved : mutable.{ -> $.value }
+mutable = { -> value : 9 }
+d.print(saved)
+d.print(mutable.value)
+record : { -> value := 2 }
+view : &record
+loaded : view.{ -> $.value }
+d.print(loaded)
+nested : { -> inner : { -> value : 4 } }
+out : nested.{ -> $.inner.value }
+d.print(out)

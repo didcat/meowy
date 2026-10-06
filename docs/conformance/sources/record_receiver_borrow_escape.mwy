@@ -1,0 +1,2 @@
+row : { -> value : 7 }
+escaped : row.{ -> &($.value) }

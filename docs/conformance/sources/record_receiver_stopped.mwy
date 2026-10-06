@@ -1,0 +1,10 @@
+d : @"debug"
+row : { -> value : 7 }
+out : row.{
+    d.print($.value)
+    nested : { d.print($.value) }
+    d.panic("stopped receiver body")
+    d.print("late")
+    -> $.value
+}
+d.print("outside")

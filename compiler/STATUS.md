@@ -2966,9 +2966,17 @@ and exact map/cache/work bounds pass all nine record-receiver field tests
 (`/tmp/meowy-record-receiver-boundaries.log`, commit `cc0243a`), including downstream
 field-result and expanded-graph requalification. Shared-hop tests now place groups
 on both sides of the receiver jump; cycle tests cross receiver inputs and initializer
-links. All three path tests pass (`/tmp/meowy-record-receiver-paths.log`), including
-generic target isolation and exact work at each shared hop boundary. Required
-execution/rejection cases and final compiler/strict/documentation gates remain next.
+links. All three path tests pass (`/tmp/meowy-record-receiver-paths.log`, commit
+`4ee0fac`), including generic target isolation and exact work at each shared hop
+boundary. Four required source cases cover nested/guarded field reads, scalar kinds,
+mutable snapshots/shared loads, stopped bodies P006 and borrow escape E303. The
+compiler build passes and all four cases pass debug/release
+(`/tmp/meowy-record-receiver-source.log`). Classified evidence is refreshed with
+unchanged reference hashes and pins. All four default checks pass
+(`/tmp/meowy-record-receiver-source-docs.log`). The audit preserves 411 prior cases,
+484 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-record-receiver-preservation.log`). Full compiler and strict gates
+remain next.
 
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
@@ -2991,9 +2999,9 @@ Dependency-ordered commit plan:
    requiring the enclosing dispatch result. Preserve separate Field Operation/Normal
    observations, nearest receiver scope and existing generic/scalar consumers.
    Keep the new behavior with focused owner, nested-scope, stopped and opaque tests.
-4. Add independent corruption/cycle/hop/cache/work boundaries and required field
-   execution/rejection cases. Preserve references and pins; run compiler, strict
-   and documentation gates and refresh the guide and both handoffs.
+4. Boundary coverage, required source cases and classified evidence are complete.
+   Run compiler and strict gates, update the guide and both handoffs, then run final
+   documentation checks.
 
 Contextual record-hint repair, broader record-receiver consumers, aggregate value
 selection, precise joins, function returns, restarts, E225 enforcement and proof

@@ -4348,6 +4348,48 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "record_receiver_order",
+      "phase": "run",
+      "source": "sources/record_receiver_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source 3\nsource tail 3\nouter\n3\ninner\n3\nguard\n3\nouter tail\n3\nsource 5\nsource tail 5\nouter\n5\ninner\n5\nouter tail\n5\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_receiver_boundaries",
+      "phase": "run",
+      "source": "sources/record_receiver_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\ncat\ntrue\nnull\n1.5\n7\n9\n2\n4\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_receiver_stopped",
+      "phase": "run",
+      "source": "sources/record_receiver_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n7\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "record_receiver_borrow_escape",
+      "phase": "check",
+      "source": "sources/record_receiver_borrow_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }
