@@ -2902,8 +2902,15 @@ pass (`/tmp/meowy-emission-dispatch-consumers.log`); no eligibility boundary was
 widened (integration commit `aa7b5d6`). Twelve late origin/owner/target/layout faults,
 including unobserved suffixes, plus mixed initializer cycles, independent control,
 duplicate visits and exact map/work limits pass all nine dispatch-emission tests
-(`/tmp/meowy-emission-dispatch-boundaries.log`). Candidate/forest verification remains
-next, through the existing shared APIs rather than new report representations.
+(`/tmp/meowy-emission-dispatch-boundaries.log`, commit `0f76be5`). Candidate collection
+and both forests now have explicit integration checks for original projection slots,
+mixed ordinary/dispatch origins, owners, field-source expansion, missing links and
+empty/multiple/unknown histories. The unknown fixture retains two composition hops
+between the dispatch and its original mutable slot, including an intermediate
+multiple-candidate history. Its regression now checks that exact chain and the
+Unknown visit in both forests; no checker behavior or representation changed.
+All three graph integration tests pass (`/tmp/meowy-emission-dispatch-graphs.log`).
+Exact candidate/graph cache, map, work and late-failure coverage remains next.
 
 `consumers/emissions.rs::emission_source_block` now resolves ordinary and observed
 record-dispatch sources. It is shared by emission slot-use collection and

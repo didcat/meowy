@@ -81,3 +81,6 @@ mod limits;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod dispatch;
