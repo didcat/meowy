@@ -2,7 +2,7 @@ use super::{super::tests::checked, *};
 
 #[test]
 pub(crate) fn equality_effects_share_exact_work_and_map_limits_with_operand_effects() {
-    for (missing, parts, pass) in [(0, 6, true), (0, 5, false), (1, 6, false)] {
+    for (missing, parts, pass) in [(0, 8, true), (0, 7, false), (1, 8, false)] {
         let (mut checker, mut reports) = checked("a:[1];b:[2];x:a==b", false);
         for (_, walk) in reports.entries.values_mut() {
             walk.ports.extend(walk.ports.clone());

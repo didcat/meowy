@@ -3,7 +3,7 @@ use super::{super::tests::checked, *};
 #[test]
 pub(crate) fn element_effects_share_exact_work_effect_and_source_payload_limits() {
     let source = "r:{->inner:{->xs:[1]}};p:&(r.inner.xs[1])";
-    for (missing, parts, pass) in [(0, 23, true), (0, 22, false), (1, 23, false)] {
+    for (missing, parts, pass) in [(0, 24, true), (0, 23, false), (1, 24, false)] {
         let (mut checker, mut reports) = checked(source, false);
         for (_, walk) in reports.entries.values_mut() {
             walk.ports.extend(walk.ports.clone());

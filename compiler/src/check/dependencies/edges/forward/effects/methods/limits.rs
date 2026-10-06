@@ -165,7 +165,7 @@ pub(crate) fn method_effects_bound_duplicate_stage_work_and_shared_effect_capaci
             &reports,
             Span::default(),
             expected.len() - spare,
-            4,
+            5,
             0,
         );
         assert_eq!(result.is_ok(), spare == 0);

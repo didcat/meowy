@@ -2832,8 +2832,19 @@ qualification check all inputs, including unobserved suffixes. Allocation charge
 four fixed units per input, including its shape, before copying. All 68 focused
 list tests pass (`/tmp/meowy-list-dispatch-reports.log`), including independent
 stages, malformed suffixes, merge conflicts and exact/max payload/work boundaries.
-Dispatch consumer integration remains next; candidate selection and evaluation
-edges are unchanged.
+Report qualification is committed as `efe756b`. List consumer integration is in
+progress. The eight cross-family payload fixtures now grant the extra unit per
+stored list input. The stopped fixture selects its list context before a direct
+Never operand removes the guard-based narrowing; later operands remain checked.
+The original E207 behavior is preserved. All 694 forward-report tests pass
+(`/tmp/meowy-list-dispatch-consumers.log`). Consumer integration files are validated
+but remain uncommitted until their separate slice.
+
+Insert one prerequisite commit to update all eight cross-family payload fixtures.
+This touches nine files including STATUS after the split review: the assertions
+share the same four-unit list descriptor contract, and leaving any unchanged keeps
+the global effect-budget regression suite inconsistent. The correction is limited
+to exact expected capacity/remainder values; keep consumer behavior in its own slice.
 
 `list_context.rs` selects candidates before `expected_plan` consumes each checked
 element and records its final `ListInput`. These plans currently retain point,

@@ -6,13 +6,13 @@ pub(crate) fn operation_payload_remainder_preserves_shared_costs_and_duplicate_v
     let (_, parts) = checker
         .operation_effects_budgeted(&reports, Span::default())
         .unwrap();
-    assert_eq!(parts, MAX_EDGES - 9);
+    assert_eq!(parts, MAX_EDGES - 10);
     let final_parts = reports.parts;
     let expected = reports.effects.clone();
     for (_, walk) in reports.entries.values_mut() {
         walk.ports.extend(walk.ports.clone());
     }
-    for (parts, room) in [(9, 0), (12, 3)] {
+    for (parts, room) in [(10, 0), (13, 3)] {
         let (effects, remaining) = checker
             .operation_effects_with_room(&reports, Span::default(), expected.len(), parts, 0)
             .unwrap();
@@ -21,7 +21,7 @@ pub(crate) fn operation_payload_remainder_preserves_shared_costs_and_duplicate_v
     }
     assert!(
         checker
-            .operation_effects_with_room(&reports, Span::default(), expected.len(), 8, 0)
+            .operation_effects_with_room(&reports, Span::default(), expected.len(), 9, 0)
             .is_err()
     );
     assert_eq!(reports.effects, expected);

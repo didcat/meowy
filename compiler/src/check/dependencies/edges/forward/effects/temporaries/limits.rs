@@ -13,7 +13,7 @@ pub(crate) fn temporary_effects_share_exact_work_and_effect_limits_without_paylo
         let counts = checker.edge_counts();
         let before = checker.flow.work;
         let limit = expected.len() - missing;
-        let result = checker.operation_effects_limited(&reports, Span::default(), limit, 6, 0);
+        let result = checker.operation_effects_limited(&reports, Span::default(), limit, 8, 0);
         assert_eq!(result.is_ok(), missing == 0);
         let work = checker.flow.work - before;
         if let Ok(actual) = result {
@@ -21,7 +21,7 @@ pub(crate) fn temporary_effects_share_exact_work_and_effect_limits_without_paylo
             for spare in [0, 1] {
                 checker.flow.work = crate::flow::MAX_PROOF_WORK - work + spare;
                 let result =
-                    checker.operation_effects_limited(&reports, Span::default(), limit, 6, 0);
+                    checker.operation_effects_limited(&reports, Span::default(), limit, 8, 0);
                 assert_eq!(result.is_ok(), spare == 0);
                 if let Ok(actual) = result {
                     assert_eq!(actual, expected);
