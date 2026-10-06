@@ -2948,7 +2948,13 @@ indexing already validates their exact local/owner/input/body identity. Reuse th
 two checked reports instead of adding another index or copying types.
 Shared header and scope qualification are now separate private helpers; scalar
 shape/initialization gates and work charges are unchanged. All 30 receiver tests
-pass after extraction (`/tmp/meowy-record-receiver-after.log`).
+pass after extraction (`/tmp/meowy-record-receiver-after.log`, commit `73e0f47`).
+A record-mode qualifier now reuses checked receiver identities, local eligibility
+and lexical scope, with bounded membership/mutation checks and no new payload.
+The scalar entry point still requests only scalar sources. All 34 receiver tests
+pass (`/tmp/meowy-record-receiver-qualification.log`), including HIR-transfer
+eligibility, nested scopes/owners, independent visits, stale headers and exact work.
+No field consumer uses record mode yet.
 
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
@@ -2961,7 +2967,7 @@ Dependency-ordered commit plan:
 1. Complete: separate shared bounded receiver-read identity and lexical-scope qualification
    in `effects/reads/receivers.rs`, preserving the current scalar-only entry point,
    observation gates, exact work and guard/scope regressions.
-2. Reuse existing local eligibility and receiver indexing for a bounded record-read
+2. Complete: reuse existing local eligibility and receiver indexing for a bounded record-read
    qualifier. Verify immutable/reference-free eligibility after HIR transfer, retain
    exact local/input/owner/body identities and charge lookup work without new payload.
    Keep mutable/reference receiver cases opaque and test malformed replay and limits.

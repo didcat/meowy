@@ -7,6 +7,7 @@ mod scope;
 pub(self) struct Receiver {
     pub(self) point: PointId,
     pub(self) input: PointId,
+    pub(self) local: crate::hir::LocalId,
     pub(self) block: crate::hir::BlockId,
     pub(self) shape: Shape,
     pub(self) span: Span,
@@ -20,10 +21,39 @@ impl Checker {
         owner: usize,
         span: Span,
     ) -> Result<Option<PointId>> {
+        self.receiver_value_input(reports, id, owner, span, false)
+    }
+
+    pub(in super::super::super) fn receiver_value_input(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        span: Span,
+        record: bool,
+    ) -> Result<Option<PointId>> {
         let Some(source) = self.receiver_read(reports, id, owner, span)? else {
             return Ok(None);
         };
-        if !matches!(source.shape, Shape::Scalar(_)) {
+        if record {
+            if !matches!(source.shape, Shape::Record { .. }) {
+                return Ok(None);
+            }
+            if !self.flow.spend(
+                reports.eligible.len().checked_ilog2().unwrap_or(0) as usize
+                    + self.proofs.mutable.len().checked_ilog2().unwrap_or(0) as usize
+                    + self.proofs.fields.len().checked_ilog2().unwrap_or(0) as usize
+                    + 3,
+            ) {
+                return Err(Diagnostic::unsupported(
+                    "proof read-receiver budget exhausted",
+                    span,
+                ));
+            }
+            if !reports.eligible.contains(&source.local) || self.proofs.variable(source.local) {
+                return Ok(None);
+            }
+        } else if !matches!(source.shape, Shape::Scalar(_)) {
             return Ok(None);
         }
         self.receiver_input(reports, id, owner, source, span)
@@ -136,6 +166,7 @@ impl Checker {
         Ok(Some(Receiver {
             point: dispatch,
             input: op.input,
+            local: op.local,
             block: op.block,
             shape: op.receiver,
             span: op.span,
@@ -181,3 +212,6 @@ mod limits;
 
 #[cfg(test)]
 mod guards;
+
+#[cfg(test)]
+mod records;
