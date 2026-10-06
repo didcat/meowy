@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-05. Output-owned dispatch primary sources are implemented.
+Updated: 2026-10-06. Contextual-list dispatch primary sources are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2817,6 +2817,19 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: contextual-list dispatch primary sources
 
+Active investigation: confirmed on `main` after `459cfa8`; untracked
+`docs/programs/hey/` is the only pre-existing change and remains excluded. Reuse
+`Coercion::primary_source` and `CoercionKind::valid_source` for final contextual
+plans. Producer and report validation must inspect all plans, including suffixes
+after a stop, while preserving the list-specific terminal-registration rule.
+Capture now records a shallow source shape before final `expected_plan`, retains it
+only for primary projections and validates every contextual plan before publishing
+sequences/endpoints. All 24 list producer tests pass, including scalar/list/union
+shapes, deferred order, whole-record conversion, Never suffixes, exact replay and
+work limits (`/tmp/meowy-list-dispatch-capture.log`). Report propagation remains
+next; candidate selection and evaluation edges are unchanged. Report storage will
+charge one additional fixed shape unit per list input before allocation.
+
 `list_context.rs` selects candidates before `expected_plan` consumes each checked
 element and records its final `ListInput`. These plans currently retain point,
 primary and coercion kind; list-owned consumers only use ordinary `primary_slot`.
@@ -2824,7 +2837,7 @@ Ordinary typed element coercions already retain their own dispatch-primary ports
 
 Dependency-ordered commit plan:
 
-1. Capture a bounded primary source shape before `expected_plan` in
+1. Complete: capture a bounded primary source shape before `expected_plan` in
    `list_context.rs` and retain it only for actual primary projections in
    `dependencies/lists/conversions.rs`. Preserve candidate selection, deferred
    element order, normal/Stopped rules and exact replay. Include focused capture,

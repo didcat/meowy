@@ -4,7 +4,7 @@ pub(crate) mod source;
 pub(crate) mod types;
 
 use crate::ast::{self, Span};
-use crate::check::{Checker, ListInput, Result};
+use crate::check::{Checker, Coercion, ListInput, Result};
 use crate::diagnostic::Diagnostic;
 use crate::flow::{FALSE, Guard};
 use crate::hir::{self, Type};
@@ -171,16 +171,16 @@ impl Checker {
             .into_iter()
             .enumerate()
             .map(|(index, value)| {
-                let (primary, kind, value) = Self::expected_plan(
-                    value.expect("checked list element"),
-                    element,
-                    values[index].span,
-                )?;
+                let value = value.expect("checked list element");
+                let source = Coercion::primary_source(&value.ty);
+                let (primary, kind, value) =
+                    Self::expected_plan(value, element, values[index].span)?;
                 Ok((
                     ListInput {
                         point: points[index].expect("checked list element root"),
                         primary,
                         kind,
+                        source: if primary { source } else { None },
                     },
                     value,
                 ))

@@ -1,11 +1,12 @@
 use super::*;
-use crate::check::dependencies::CoercionKind;
+use crate::check::dependencies::{CoercionKind, bodies::completion::Shape};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct Input {
     pub(crate) point: hir::PointId,
     pub(crate) primary: bool,
     pub(crate) kind: CoercionKind,
+    pub(crate) source: Option<Shape>,
 }
 
 impl Checker {
@@ -20,15 +21,18 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof list-conversion identity mismatch", span);
         if inputs.len() > super::super::sequences::MAX_ITEMS
             || !self.flow.spend(
-                inputs.len() * 2 + self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize + 4,
+                inputs.len() * 5 + self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize + 4,
             )
         {
             return Err(budget());
         }
-        if (!normal
-            && !inputs
-                .iter()
-                .any(|input| input.kind == CoercionKind::Stopped))
+        if inputs
+            .iter()
+            .any(|input| !input.kind.valid_source(input.primary, input.source))
+            || (!normal
+                && !inputs
+                    .iter()
+                    .any(|input| input.kind == CoercionKind::Stopped))
             || (normal
                 && inputs
                     .iter()
@@ -105,6 +109,9 @@ impl Checker {
 
 #[cfg(test)]
 mod stages;
+
+#[cfg(test)]
+mod sources;
 
 #[cfg(test)]
 mod tests {

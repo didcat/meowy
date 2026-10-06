@@ -22,7 +22,7 @@ mod temporaries;
 mod type_values;
 
 pub(crate) use dependencies::{
-    ElementAccess, IndexAccess, ListInput, MethodKind, PointKind, SequenceSource,
+    Coercion, ElementAccess, IndexAccess, ListInput, MethodKind, PointKind, SequenceSource,
 };
 
 use std::collections::{BTreeMap, BTreeSet};
