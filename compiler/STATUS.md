@@ -2826,13 +2826,19 @@ Capture now records a shallow source shape before final `expected_plan`, retains
 only for primary projections and validates every contextual plan before publishing
 sequences/endpoints. All 24 list producer tests pass, including scalar/list/union
 shapes, deferred order, whole-record conversion, Never suffixes, exact replay and
-work limits (`/tmp/meowy-list-dispatch-capture.log`). Report propagation remains
-next; candidate selection and evaluation edges are unchanged. Report storage will
-charge one additional fixed shape unit per list input before allocation.
+work limits (`/tmp/meowy-list-dispatch-capture.log`, commit `126a2da`). Reports now
+retain source shapes alongside original plans; producer replay, merging and report
+qualification check all inputs, including unobserved suffixes. Allocation charges
+four fixed units per input, including its shape, before copying. All 68 focused
+list tests pass (`/tmp/meowy-list-dispatch-reports.log`), including independent
+stages, malformed suffixes, merge conflicts and exact/max payload/work boundaries.
+Dispatch consumer integration remains next; candidate selection and evaluation
+edges are unchanged.
 
 `list_context.rs` selects candidates before `expected_plan` consumes each checked
 element and records its final `ListInput`. These plans currently retain point,
-primary and coercion kind; list-owned consumers only use ordinary `primary_slot`.
+primary, coercion kind and optional source shape; list-owned consumers still use
+only ordinary `primary_slot`.
 Ordinary typed element coercions already retain their own dispatch-primary ports.
 
 Dependency-ordered commit plan:
@@ -2842,7 +2848,7 @@ Dependency-ordered commit plan:
    `dependencies/lists/conversions.rs`. Preserve candidate selection, deferred
    element order, normal/Stopped rules and exact replay. Include focused capture,
    kind/shape, rejection and budget tests with the producer change.
-2. Carry and requalify shapes through `effects/lists.rs` and its report, validation
+2. Complete: carry and requalify shapes through `effects/lists.rs` and its report, validation
    and qualification helpers. Preserve exact full root/plan vectors and checked
    suffixes, independent projection/conversion/construction/result flags and the
    list-specific construction registration rule. Bound copies and work before

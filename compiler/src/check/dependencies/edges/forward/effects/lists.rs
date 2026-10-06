@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::{CoercionKind, SequenceSource};
+use crate::check::dependencies::{CoercionKind, SequenceSource, bodies::completion::Shape};
 use std::collections::BTreeSet;
 
 mod qualification;
@@ -55,7 +55,7 @@ impl Checker {
         };
         if op.count > crate::list::MAX_CAPACITY
             || !self.flow.spend(
-                op.count * (op.count.checked_ilog2().unwrap_or(0) as usize + 12)
+                op.count * (op.count.checked_ilog2().unwrap_or(0) as usize + 15)
                     + self.sequences.len().checked_ilog2().unwrap_or(0) as usize
                     + self.endpoints.len().checked_ilog2().unwrap_or(0) as usize
                     + self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize
@@ -89,7 +89,10 @@ impl Checker {
             let child = child.ok_or_else(invalid)?;
             if child == id
                 || !seen.insert(child)
-                || inputs.is_some_and(|inputs| inputs[part].point != child)
+                || inputs.is_some_and(|inputs| {
+                    let input = inputs[part];
+                    input.point != child || !input.kind.valid_source(input.primary, input.source)
+                })
                 || !self.points.get(child).is_some_and(|child| {
                     child.complete
                         && child.owner == owner
@@ -237,3 +240,6 @@ mod limits;
 
 #[cfg(test)]
 mod selection;
+
+#[cfg(test)]
+mod sources;

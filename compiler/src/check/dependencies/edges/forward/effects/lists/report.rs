@@ -4,6 +4,7 @@ use super::*;
 pub(crate) struct Input {
     pub(crate) point: PointId,
     pub(crate) plan: Option<(bool, CoercionKind)>,
+    pub(crate) source: Option<Shape>,
     pub(crate) projected: bool,
     pub(crate) converted: bool,
 }
@@ -48,7 +49,7 @@ impl Checker {
             return Err(budget());
         }
         let op = self.lists.get(&id).ok_or_else(invalid)?;
-        if op.count > crate::list::MAX_CAPACITY || !self.flow.spend(op.count * 6 + 6) {
+        if op.count > crate::list::MAX_CAPACITY || !self.flow.spend(op.count * 10 + 6) {
             return Err(budget());
         }
         let sequence = self
@@ -67,6 +68,7 @@ impl Checker {
             return Err(invalid());
         }
         let plan = |part: usize| inputs.map(|inputs| (inputs[part].primary, inputs[part].kind));
+        let source = |part: usize| inputs.and_then(|inputs| inputs[part].source);
         let stop = inputs.and_then(|inputs| {
             inputs
                 .iter()
@@ -87,7 +89,12 @@ impl Checker {
         };
         if !valid
             || sequence.items.iter().enumerate().any(|(part, point)| {
-                point.is_none() || inputs.is_some_and(|inputs| Some(inputs[part].point) != *point)
+                point.is_none()
+                    || inputs.is_some_and(|inputs| {
+                        let input = inputs[part];
+                        Some(input.point) != *point
+                            || !input.kind.valid_source(input.primary, input.source)
+                    })
             })
         {
             return Err(invalid());
@@ -103,14 +110,16 @@ impl Checker {
                 || prior.control != op.control
                 || prior.inputs.len() != op.count
                 || prior.inputs.iter().enumerate().any(|(part, input)| {
-                    Some(input.point) != sequence.items[part] || input.plan != plan(part)
+                    Some(input.point) != sequence.items[part]
+                        || input.plan != plan(part)
+                        || input.source != source(part)
                 })
             {
                 return Err(invalid());
             }
             false
         } else {
-            if effects.len() >= limit || op.count * 3 > *parts {
+            if effects.len() >= limit || op.count * 4 > *parts {
                 return Err(budget());
             }
             true
@@ -130,6 +139,7 @@ impl Checker {
                         .map(|(part, point)| Input {
                             point: point.unwrap(),
                             plan: plan(part),
+                            source: source(part),
                             projected: false,
                             converted: false,
                         })
@@ -149,7 +159,7 @@ impl Checker {
             _ => unreachable!(),
         }
         if fresh {
-            *parts -= op.count * 3;
+            *parts -= op.count * 4;
         }
         Ok(())
     }

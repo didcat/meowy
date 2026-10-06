@@ -13,7 +13,7 @@ impl Checker {
         let budget = || Diagnostic::unsupported("proof list-effect budget exhausted", span);
         if observed.inputs.len() > crate::list::MAX_CAPACITY
             || !self.flow.spend(
-                observed.inputs.len() * 5
+                observed.inputs.len() * 6
                     + self.lists.len().checked_ilog2().unwrap_or(0) as usize
                     + self.sequences.len().checked_ilog2().unwrap_or(0) as usize
                     + self.list_inputs.len().checked_ilog2().unwrap_or(0) as usize
@@ -39,6 +39,7 @@ impl Checker {
             || observed.inputs.iter().enumerate().any(|(part, input)| {
                 Some(input.point) != sequence.items[part]
                     || input.plan != inputs.map(|inputs| (inputs[part].primary, inputs[part].kind))
+                    || input.source != inputs.and_then(|inputs| inputs[part].source)
             })
         {
             return Err(invalid());

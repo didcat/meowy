@@ -3,7 +3,7 @@ use super::{super::tests::checked, *};
 #[test]
 pub(crate) fn list_effects_share_exact_work_effect_and_payload_limits() {
     let source = "f<int32>:(x<int32>){->x};xs:[f(1),2];r:{->n:=1};r.n=2";
-    for (missing, parts, pass) in [(0, 13, true), (0, 12, false), (1, 13, false)] {
+    for (missing, parts, pass) in [(0, 15, true), (0, 14, false), (1, 15, false)] {
         let (mut checker, mut reports) = checked(source, false);
         for (_, walk) in reports.entries.values_mut() {
             walk.ports.extend(walk.ports.clone());
@@ -42,22 +42,22 @@ pub(crate) fn list_effects_preserve_partial_reports_on_conflicts_and_limits() {
     let owner = op.owner;
     let port = Port::Projection { point: id, step: 0 };
     let mut effects = Effects::new();
-    let mut parts = 2;
+    let mut parts = 3;
     assert!(
         checker
             .record_list_effect(owner, port, &mut effects, 1, &mut parts, Span::default())
             .is_err()
     );
     assert!(effects.is_empty());
-    assert_eq!(parts, 2);
-    parts = 3;
+    assert_eq!(parts, 3);
+    parts = 4;
     assert!(
         checker
             .record_list_effect(owner, port, &mut effects, 0, &mut parts, Span::default())
             .is_err()
     );
     assert!(effects.is_empty());
-    assert_eq!(parts, 3);
+    assert_eq!(parts, 4);
     checker
         .record_list_effect(owner, port, &mut effects, 1, &mut parts, Span::default())
         .unwrap();
@@ -182,7 +182,7 @@ pub(crate) fn list_effects_bound_maximum_inputs_without_charging_unused_capacity
     for missing in [0, 1] {
         checker.flow.work = 0;
         let result =
-            checker.operation_effects_limited(&reports, Span::default(), 1, max * 3 - missing, 0);
+            checker.operation_effects_limited(&reports, Span::default(), 1, max * 4 - missing, 0);
         assert_eq!(result.is_ok(), missing == 0);
         if let Ok(effects) = result {
             let (_, Effect::List(op)) = &effects[&id] else {

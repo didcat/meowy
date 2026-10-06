@@ -58,7 +58,7 @@ pub(crate) fn list_effects_keep_projection_conversion_construction_and_result_vi
         }
         reports.entries.get_mut(&owner).unwrap().1.ports = vec![port, port];
         let effects = checker
-            .operation_effects_limited(&reports, Span::default(), 1, 3, 0)
+            .operation_effects_limited(&reports, Span::default(), 1, 4, 0)
             .unwrap();
         let (_, Effect::List(op)) = &effects[&id] else {
             panic!()

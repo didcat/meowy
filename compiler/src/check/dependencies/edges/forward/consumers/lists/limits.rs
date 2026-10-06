@@ -54,6 +54,7 @@ pub(crate) fn list_slots_keep_projected_stops_and_validate_unvisited_suffixes() 
     let stop = Port::Projection { point: id, step: 2 };
     let prior = reports.slot_uses.clone();
     checker.list_inputs.get_mut(&id).unwrap()[2].kind = CoercionKind::Stopped;
+    checker.list_inputs.get_mut(&id).unwrap()[2].source = Some(Shape::Never);
     let edges = &mut checker.sequences.get_mut(&key).unwrap().edges;
     checker.sequence_edges -= edges.len() - 2;
     edges.truncate(2);
@@ -65,6 +66,7 @@ pub(crate) fn list_slots_keep_projected_stops_and_validate_unvisited_suffixes() 
         panic!()
     };
     op.inputs[2].plan = Some((true, CoercionKind::Stopped));
+    op.inputs[2].source = Some(Shape::Never);
     for (part, input) in op.inputs.iter_mut().enumerate() {
         input.projected &= part <= 2;
         input.converted &= part < 2;
