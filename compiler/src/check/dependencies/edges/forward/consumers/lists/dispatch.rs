@@ -1,5 +1,7 @@
 use super::*;
 
+mod boundaries;
+
 pub(super) const SOURCE: &str = "<T>:<int32><boolean>;<U>:<int32><string>;f:(v<boolean><string>){r:3.{->$;->tag:true};copy:((r));|v<boolean>|xs<T[5]><U[5]>:[r,1,copy,r,v]}";
 
 #[test]

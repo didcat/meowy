@@ -2837,8 +2837,11 @@ is `840c2e8`. List consumers now qualify observed scalar dispatch primaries usin
 captured source kinds and original element indices. Four integration tests cover
 owners, kinds, sparse stages, construction-registration requirements, stopped prefixes
 and opaque/inner-coercion boundaries. All 694 forward-report tests pass
-(`/tmp/meowy-list-dispatch-consumers.log`). Additional identity/cycle/control/limit
-coverage is next. The stopped fixture selects its list context before a direct
+(`/tmp/meowy-list-dispatch-consumers.log`, integration commit `54ef4b2`). Ten late
+shape/origin/owner/registration faults, mixed initializer cycles, independent control,
+duplicate visits and exact map/work boundaries pass all eight dispatch-list tests
+(`/tmp/meowy-list-dispatch-boundaries.log`). Required source coverage is next.
+The stopped fixture selects its list context before a direct
 Never operand removes guard-based narrowing; existing E207 behavior is preserved.
 
 The prerequisite touched nine files including STATUS after the split review: the assertions
@@ -2866,8 +2869,8 @@ Dependency-ordered commit plan:
    publication; keep non-contextual and inner-coercion paths distinct.
 3. Integration complete: link observed scalar list-owned projections to exact dispatch primary slots via
    the captured source kind, retaining original element indices and shared limits.
-   Owner/type/sparse/stopped regressions pass. Next add corruption, cycle, control
-   and exact map/payload/work coverage as a separate reviewable slice.
+   Owner/type/sparse/stopped regressions and separate corruption, cycle, control
+   and exact map/payload/work coverage are complete.
 4. Add required contextual-list execution/rejection/stopped cases and classified
    evidence. Preserve existing references and pins, run compiler/strict/documentation
    gates, and refresh this handoff and the root tracker.
