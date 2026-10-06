@@ -1,0 +1,28 @@
+d : @"debug"
+small <uint8> : 7
+byte : small.{ -> $; -> tag : true }
+byte.{
+    copy <uint8> : $
+    maybe <uint8><null> : $
+    d.print(copy)
+    | maybe <uint8> | d.print(maybe)
+}
+truth : true.{ -> $; -> tag : true }
+truth.{ copy <boolean> : $; d.print(copy) }
+text : "cat".{ -> $; -> tag : true }
+text.{ copy <string> : $; d.print(copy) }
+number <float32> : 1.5
+decimal : number.{ -> $; -> tag : true }
+decimal.{ copy <float32> : $; d.print(copy) }
+empty : { -> tag : true }
+empty.{ copy <null> : $; d.print(copy == null) }
+mutable := { -> 3; -> tag : true }
+saved : mutable.{ copy <int32> : $; -> copy }
+mutable = { -> 4; -> tag : true }
+d.print(saved)
+d.print(mutable)
+base : 9
+reference : { -> &base; -> tag : true }
+reference.{ copy <&int32> : $; d.print(*copy) }
+list : 3.{ -> [$]; -> tag : true }
+list.{ items <int32[1]> : $; d.print(items[1]) }

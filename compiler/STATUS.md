@@ -3013,8 +3013,16 @@ remain unchanged (integration commit `185eb65`). Boundary coverage now includes
 twelve faults across ordinary/dispatch sources, missing eligibility/index evidence,
 mixed receiver/initializer cycles, independent control, unchanged empty/multiple
 histories and exact map/work limits. All nine coercion-receiver tests pass
-(`/tmp/meowy-receiver-primary-boundaries.log`). Required source coverage and final
-compiler/strict/documentation gates remain next.
+(`/tmp/meowy-receiver-primary-boundaries.log`). Four required source cases now cover
+typed/nullable copies through aliases and nested receivers, scalar kinds and opaque
+mutable/reference/list boundaries, stopped-body P006 and incompatible-target E207.
+The compiler build and all four debug/release cases pass
+(`/tmp/meowy-receiver-primary-source.log`, boundary commit `7be796d`). Classified
+evidence is refreshed. All four default checks pass
+(`/tmp/meowy-receiver-primary-source-docs.log`). The audit preserves 415 prior cases,
+488 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-primary-preservation.log`). Full compiler and strict gates
+remain next.
 
 `record_receiver_consumer` provides a bounded target that follows eligible record
 receiver reads while generic block/dispatch lookups stay unchanged. Field lookup
@@ -3037,9 +3045,9 @@ Dependency-ordered commit plan:
 3. Complete: add independently useful stale-origin, eligibility, mixed-cycle and exact
    map/cache/hop/work boundaries. Keep generic receiver forwarding and direct Value
    sources separate; nested element/operand coercions retain their own ports.
-4. Add required typed/nullable-copy and rejection/stopped source cases, refresh
-   classified evidence without changing prior contracts/pins, run compiler/strict/
-   documentation gates and update the guide and both handoffs.
+4. Required source cases and classified evidence are complete. Run compiler and
+   strict gates, update the guide and both handoffs, then run final documentation
+   checks.
 
 Output/list/composition-owned receiver projections, broader aggregate receiver paths,
 contextual record-hint repair, value selection, precise joins, function returns,

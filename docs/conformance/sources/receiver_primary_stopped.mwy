@@ -1,0 +1,11 @@
+d : @"debug"
+row : { -> 3; -> tag : true }
+out : row.{
+    copy <int32> : $
+    maybe <int32><null> : $
+    d.print(copy)
+    d.print(maybe)
+    d.panic("stopped receiver body")
+    late <int32> : $
+}
+d.print("outside")

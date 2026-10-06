@@ -1,0 +1,2 @@
+row : { -> "cat"; -> tag : true }
+out : row.{ copy <int32> : $ }

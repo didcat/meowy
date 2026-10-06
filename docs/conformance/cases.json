@@ -4390,6 +4390,48 @@
         "code": "E303"
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_primary_order",
+      "phase": "run",
+      "source": "sources/receiver_primary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source 3\nsource tail 3\n3\n3\n3\nreceiver tail 3\n3\nsource 5\nsource tail 5\n5\n5\n5\nreceiver tail 5\n5\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "receiver_primary_boundaries",
+      "phase": "run",
+      "source": "sources/receiver_primary_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\n7\ntrue\ncat\n1.5\ntrue\n3\n4\n9\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "receiver_primary_stopped",
+      "phase": "run",
+      "source": "sources/receiver_primary_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "3\n3\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_primary_wrong_type",
+      "phase": "check",
+      "source": "sources/receiver_primary_wrong_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }
