@@ -144,7 +144,13 @@ impl Checker {
                         } else if let Effect::Coercion(op) = effect
                             && let Some(Shape::Scalar(ty)) = op.source
                         {
-                            self.dispatch_primary_slot(reports, input, *owner, ty, span)?
+                            if let Some(slot) =
+                                self.dispatch_primary_slot(reports, input, *owner, ty, span)?
+                            {
+                                Some(slot)
+                            } else {
+                                self.receiver_primary_slot(reports, input, *owner, ty, span)?
+                            }
                         } else {
                             None
                         };

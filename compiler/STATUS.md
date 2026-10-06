@@ -3002,7 +3002,15 @@ behavior. Baseline record-receiver tests pass. The existing body resolution is n
 shared as `record_receiver_body`, with a neutral receiver-consumer name and unchanged
 qualification/work ordering. All 16 record-receiver checks pass before and after
 extraction (`/tmp/meowy-receiver-primary-before.log`,
-`/tmp/meowy-receiver-primary-after.log`).
+`/tmp/meowy-receiver-primary-after.log`, refactor commit `683b88c`). Observed scalar
+coercion projections now fall back to the qualified receiver body and require an
+immutable unnamed primary matching the captured kind/width/signedness. Focused
+integration covers owners, source/receiver/coercion stage independence, opaque
+inputs and nested coercion ports before a stopped body. All 734 forward-report tests
+pass (`/tmp/meowy-receiver-primary-integration.log`). The prior field-family fixture
+now retains its independent element-coercion link. Other receiver projection families
+remain unchanged. Additional identity, eligibility, cycle and resource boundaries
+are next.
 
 `record_receiver_consumer` provides a bounded target that follows eligible record
 receiver reads while generic block/dispatch lookups stay unchanged. Field lookup
@@ -3016,7 +3024,7 @@ Dependency-ordered commit plan:
    `consumers/fields.rs`, with a neutral receiver-source name. Preserve the explicit
    receiver-hop requirement, source qualification, existing field behavior and
    resource checks in a separately validated refactor.
-2. Extend only observed scalar coercion Projection inputs through that receiver
+2. Complete: extend only observed scalar coercion Projection inputs through that receiver
    path in `consumers.rs` and its primary helpers. Require an immutable unnamed
    source slot zero matching the captured kind, width and signedness. Preserve
    coercion-owned ports and independent projection/conversion/result observations,
