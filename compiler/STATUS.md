@@ -2913,7 +2913,16 @@ All three graph integration tests pass (`/tmp/meowy-emission-dispatch-graphs.log
 commit `110fbb9`). Candidate collection and both graph qualifiers now have eleven
 late slot/origin faults and mixed initializer-cycle regressions, plus exact shared
 source-cache, map, scratch and work boundaries. All seven candidate/graph tests pass
-(`/tmp/meowy-emission-dispatch-graph-bounds.log`). Required source coverage is next.
+(`/tmp/meowy-emission-dispatch-graph-bounds.log`, commit `cd4287f`). Four required
+source cases now cover receiver/composition/tail order, scalar/mutable/nested/empty
+records and branch histories, stopped destinations P006 and duplicate fields E205.
+All four pass debug/release (`/tmp/meowy-emission-dispatch-source.log`); the compiler
+build passes. Reference review confirms E205 for a same-slot second emission;
+E206 is reserved for conflicting declarations. All four default checks pass
+(`/tmp/meowy-emission-dispatch-source-docs.log`). The audit preserves all 407 prior
+cases, 480 tracked contract/source/pin files and 37 reviewed hashes
+(`/tmp/meowy-emission-dispatch-preservation.log`). Full compiler and strict gates
+remain next.
 
 `consumers/emissions.rs::emission_source_block` now resolves ordinary and observed
 record-dispatch sources. It is shared by emission slot-use collection and
@@ -2939,9 +2948,9 @@ Dependency-ordered commit plan:
    identities, tagged result origins, unknown/empty/multiple histories and existing
    walks. Add corruption, mixed-cycle, owner/control and exact map/cache/payload/work
    coverage; split independently useful integration and boundary slices as needed.
-4. Add required composition execution/rejection/stopped cases and classified evidence,
-   preserve references and pins, run compiler/strict/documentation gates and refresh
-   the guide and both handoffs.
+4. Required composition cases and classified evidence are complete. Run compiler
+   and strict gates, update the guide and both handoffs, then run final documentation
+   checks.
 
 Contextual record-hint repair, record-receiver transparency, aggregate value selection,
 precise joins, function returns, restarts, E225 enforcement and proof outcomes remain

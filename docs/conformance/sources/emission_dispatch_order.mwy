@@ -1,0 +1,28 @@
+d : @"debug"
+receiver <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+
+show <null> : (n <int32>) {
+    row : receiver(n).{
+        d.print("body {n}")
+        -> $
+        -> z : $ + 1
+        -> a : true
+        d.print("dispatch tail {n}")
+    }
+    alias : ((row))
+    copy : 'out {
+        { 'out -> ((alias)); d.print("copy tail {n}") }
+    }
+    more : {
+        -> copy
+        -> extra : 11
+        d.print("outer tail {n}")
+    }
+    d.print(more)
+    d.print(more.a)
+    d.print(more.z)
+    d.print(more.extra)
+}
+
+show(3)
+show(5)

@@ -1,0 +1,6 @@
+source : 3.{ -> z : 11; -> a : true; -> $ }
+copy : ((source))
+row : 'out {
+    { 'out -> ((copy)) }
+    -> a : false
+}

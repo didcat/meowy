@@ -4306,6 +4306,48 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "emission_dispatch_order",
+      "phase": "run",
+      "source": "sources/emission_dispatch_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 3\nbody 3\ndispatch tail 3\ncopy tail 3\nouter tail 3\n3\ntrue\n4\n11\nreceiver 5\nbody 5\ndispatch tail 5\ncopy tail 5\nouter tail 5\n5\ntrue\n6\n11\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "emission_dispatch_boundaries",
+      "phase": "run",
+      "source": "sources/emission_dispatch_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\n2\n2\n4\ntrue\n1\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "emission_dispatch_stopped",
+      "phase": "run",
+      "source": "sources/emission_dispatch_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source body\nsource tail\ncopied\ncopy tail\n3\n9\nsource body\nsource tail\ncopied\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "emission_dispatch_duplicate",
+      "phase": "check",
+      "source": "sources/emission_dispatch_duplicate.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

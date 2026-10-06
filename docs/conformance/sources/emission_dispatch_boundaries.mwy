@@ -1,0 +1,25 @@
+d : @"debug"
+small <uint8> : 255
+byte : { -> (small.{ -> $; -> tag : true }) }
+d.print(byte)
+mutable : { -> (0.{ -> $; -> n := 1 }) }
+mutable.n = 2
+d.print(mutable.n)
+list : { -> (0.{ -> [1, 2]; -> inner : { -> n : 4 } }) }
+items <int32[2]> : list
+d.print(items[2])
+d.print(list.inner.n)
+empty <{}> : 3.{}
+snapshot : { -> empty }
+d.print(snapshot == empty)
+
+choose <null> : (flag <boolean>) {
+    row : flag.{
+        | $ | -> n : 1
+        | !$ | -> n : 2
+    }
+    copy : { -> row }
+    d.print(copy.n)
+}
+choose(true)
+choose(false)
