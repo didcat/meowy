@@ -1,0 +1,29 @@
+d : @"debug"
+<T> : <int32><boolean>
+<U> : <int32><string>
+stop <never> : () {
+    row : 4.{
+        d.print("stopped body")
+        -> $
+        -> tag : false
+        d.print("stopped tail")
+        d.panic("stopped dispatch")
+    }
+}
+
+show <null> : (choice <boolean><string>) {
+    row : 3.{
+        d.print("ready body")
+        -> $
+        -> tag : true
+        d.print("ready tail")
+    }
+    copy : ((row))
+    | choice <boolean> | {
+        d.print("before list")
+        xs <T[4]><U[4]> : [copy, choice, stop(), { d.print("late item"); -> true }]
+        d.print("after list")
+    }
+}
+show(true)
+d.print("after call")

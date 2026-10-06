@@ -2840,7 +2840,14 @@ and opaque/inner-coercion boundaries. All 694 forward-report tests pass
 (`/tmp/meowy-list-dispatch-consumers.log`, integration commit `54ef4b2`). Ten late
 shape/origin/owner/registration faults, mixed initializer cycles, independent control,
 duplicate visits and exact map/work boundaries pass all eight dispatch-list tests
-(`/tmp/meowy-list-dispatch-boundaries.log`). Required source coverage is next.
+(`/tmp/meowy-list-dispatch-boundaries.log`, commit `faeaedf`). Four new required
+source cases cover list order across owners, scalar kinds/mutable snapshots/list
+primaries, stopped dispatch P006 and incompatible-width E207. The compiler builds
+and all four pass debug/release (`/tmp/meowy-list-dispatch-source.log`). Evidence is
+refreshed. All four default checks pass (`/tmp/meowy-list-dispatch-source-docs.log`).
+The audit preserves 403 prior cases, 476 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-list-dispatch-preservation.log`). The full compiler
+and strict gates remain next.
 The stopped fixture selects its list context before a direct
 Never operand removes guard-based narrowing; existing E207 behavior is preserved.
 
@@ -2871,9 +2878,8 @@ Dependency-ordered commit plan:
    the captured source kind, retaining original element indices and shared limits.
    Owner/type/sparse/stopped regressions and separate corruption, cycle, control
    and exact map/payload/work coverage are complete.
-4. Add required contextual-list execution/rejection/stopped cases and classified
-   evidence. Preserve existing references and pins, run compiler/strict/documentation
-   gates, and refresh this handoff and the root tracker.
+4. Source cases and classified evidence complete. Run compiler and strict gates,
+   update the guide and both handoffs, then run final documentation checks.
 
 Composition dispatch consumers, contextual record-hint repair, record-receiver
 transparency, aggregate value selection, precise joins, function returns, restarts,

@@ -4264,6 +4264,48 @@
         "code": "E201"
       },
       "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "list_dispatch_order",
+      "phase": "run",
+      "source": "sources/list_dispatch_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 2\nbody\ntail\nlist 2\n1\n2\n2\n2\ntrue\nreceiver 3\nbody\ntail\nlist 3\n1\n3\n3\n3\nfalse\nreceiver 7\nentry body\nentry tail\n7\ntrue\n"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "list_dispatch_boundaries",
+      "phase": "run",
+      "source": "sources/list_dispatch_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\n1.5\ncat\nnull\n3\n4\n5\n"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "list_dispatch_stopped",
+      "phase": "run",
+      "source": "sources/list_dispatch_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "ready body\nready tail\nbefore list\nstopped body\nstopped tail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "list_dispatch_wrong_width",
+      "phase": "check",
+      "source": "sources/list_dispatch_wrong_width.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
     }
   ]
 }

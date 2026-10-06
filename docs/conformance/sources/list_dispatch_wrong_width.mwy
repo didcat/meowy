@@ -1,0 +1,6 @@
+<T> : <uint16><boolean>
+<U> : <uint16><string>
+small <uint8> : 7
+row : small.{ -> $; -> tag : true }
+choice <boolean><string> : true
+| choice <boolean> | xs <T[2]><U[2]> : [row, choice]
