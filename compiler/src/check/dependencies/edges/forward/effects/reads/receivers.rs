@@ -3,6 +3,15 @@ use crate::check::dependencies::{bodies::completion::Shape, grouped::MAX_GROUPS}
 
 mod scope;
 
+#[derive(Clone, Copy)]
+pub(self) struct Receiver {
+    pub(self) point: PointId,
+    pub(self) input: PointId,
+    pub(self) block: crate::hir::BlockId,
+    pub(self) shape: Shape,
+    pub(self) span: Span,
+}
+
 impl Checker {
     pub(in super::super::super) fn read_receiver_input(
         &mut self,
@@ -11,6 +20,23 @@ impl Checker {
         owner: usize,
         span: Span,
     ) -> Result<Option<PointId>> {
+        let Some(source) = self.receiver_read(reports, id, owner, span)? else {
+            return Ok(None);
+        };
+        if !matches!(source.shape, Shape::Scalar(_)) {
+            return Ok(None);
+        }
+        self.receiver_input(reports, id, owner, source, span)
+            .map(Some)
+    }
+
+    pub(self) fn receiver_read(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        span: Span,
+    ) -> Result<Option<Receiver>> {
         let budget = || Diagnostic::unsupported("proof read-receiver budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof read-receiver identity mismatch", span);
         if !self
@@ -104,11 +130,29 @@ impl Checker {
         {
             return Err(invalid());
         }
-        if !observed.initialized || !matches!(op.receiver, Shape::Scalar(_)) {
+        if !observed.initialized {
             return Ok(None);
         }
-        let (input, block, source) = (op.input, op.block, op.span);
-        if !self.validate_dispatch_effect(reports, owner, Port::Operation(dispatch), span)? {
+        Ok(Some(Receiver {
+            point: dispatch,
+            input: op.input,
+            block: op.block,
+            shape: op.receiver,
+            span: op.span,
+        }))
+    }
+
+    pub(self) fn receiver_input(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        source: Receiver,
+        span: Span,
+    ) -> Result<PointId> {
+        let budget = || Diagnostic::unsupported("proof read-receiver budget exhausted", span);
+        let invalid = || Diagnostic::unsupported("proof read-receiver identity mismatch", span);
+        if !self.validate_dispatch_effect(reports, owner, Port::Operation(source.point), span)? {
             return Err(invalid());
         }
         if !self
@@ -117,15 +161,15 @@ impl Checker {
         {
             return Err(budget());
         }
-        let input_span = self.points[input].span;
-        if input_span.start < source.start
+        let input_span = self.points[source.input].span;
+        if input_span.start < source.span.start
             || input_span.start > input_span.end
-            || input_span.end > self.bodies[&block].span.start
+            || input_span.end > self.bodies[&source.block].span.start
         {
             return Err(invalid());
         }
-        self.receiver_scope(id, block, owner, span, MAX_GROUPS)?;
-        Ok(Some(input))
+        self.receiver_scope(id, source.block, owner, span, MAX_GROUPS)?;
+        Ok(source.input)
     }
 }
 

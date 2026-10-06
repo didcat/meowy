@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Composed-emission dispatch source slots are implemented.
+Updated: 2026-10-06. Record-receiver field sources are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2937,6 +2937,19 @@ qualification remain incomplete.
 
 ### Next: record-receiver field sources
 
+Active investigation: confirmed on `main` after `934dd8b`; the only pre-existing
+change is untracked `docs/programs/hey/`, excluded from this series. Scalar receiver
+lookup combines header, shape and scope validation; field consumers share generic
+wrapper resolution. Preserve scalar behavior first, then add bounded record
+eligibility and a field-specific lookup path. All 30 baseline receiver tests pass
+(`/tmp/meowy-record-receiver-before.log`). `eligible_locals` already checks receiver
+types recursively and excludes mutation, references and foundation values; receiver
+indexing already validates their exact local/owner/input/body identity. Reuse those
+two checked reports instead of adding another index or copying types.
+Shared header and scope qualification are now separate private helpers; scalar
+shape/initialization gates and work charges are unchanged. All 30 receiver tests
+pass after extraction (`/tmp/meowy-record-receiver-after.log`).
+
 `effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
 scalar receiver reads. `receiver_index` already validates shallow receiver shapes
 against checked program locals, while `consumers/grouped.rs` shares the scalar path
@@ -2945,12 +2958,12 @@ record forwarding for other consumer families remains separate.
 
 Dependency-ordered commit plan:
 
-1. Separate shared bounded receiver-read identity and lexical-scope qualification
+1. Complete: separate shared bounded receiver-read identity and lexical-scope qualification
    in `effects/reads/receivers.rs`, preserving the current scalar-only entry point,
    observation gates, exact work and guard/scope regressions.
-2. Establish bounded eligibility for immutable, reference-free record receivers
-   using checked receiver types and the existing receiver index. Preserve exact
-   local/input/owner/body identities and charge index/copy/work room before publication.
+2. Reuse existing local eligibility and receiver indexing for a bounded record-read
+   qualifier. Verify immutable/reference-free eligibility after HIR transfer, retain
+   exact local/input/owner/body identities and charge lookup work without new payload.
    Keep mutable/reference receiver cases opaque and test malformed replay and limits.
 3. Add a field-specific record receiver lookup in `consumers/fields.rs` and its
    wrapper-resolution path. Reuse qualified ordinary/dispatch source records and
