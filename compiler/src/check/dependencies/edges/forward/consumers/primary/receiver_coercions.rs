@@ -2,6 +2,8 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::CoercionKind;
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn receiver_coercion_primaries_keep_source_shapes_ports_and_independent_owners() {
     for (init, dispatch) in [("{->3;->tag:true}", false), ("3.{->$;->tag:true}", true)] {

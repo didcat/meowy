@@ -3009,8 +3009,12 @@ integration covers owners, source/receiver/coercion stage independence, opaque
 inputs and nested coercion ports before a stopped body. All 734 forward-report tests
 pass (`/tmp/meowy-receiver-primary-integration.log`). The prior field-family fixture
 now retains its independent element-coercion link. Other receiver projection families
-remain unchanged. Additional identity, eligibility, cycle and resource boundaries
-are next.
+remain unchanged (integration commit `185eb65`). Boundary coverage now includes
+twelve faults across ordinary/dispatch sources, missing eligibility/index evidence,
+mixed receiver/initializer cycles, independent control, unchanged empty/multiple
+histories and exact map/work limits. All nine coercion-receiver tests pass
+(`/tmp/meowy-receiver-primary-boundaries.log`). Required source coverage and final
+compiler/strict/documentation gates remain next.
 
 `record_receiver_consumer` provides a bounded target that follows eligible record
 receiver reads while generic block/dispatch lookups stay unchanged. Field lookup
@@ -3030,7 +3034,7 @@ Dependency-ordered commit plan:
    coercion-owned ports and independent projection/conversion/result observations,
    receiver initialization and original source result requirements. Include focused
    owner/type/stopped/sparse and opacity regressions with the behavior change.
-3. Add independently useful stale-origin, eligibility, mixed-cycle and exact
+3. Complete: add independently useful stale-origin, eligibility, mixed-cycle and exact
    map/cache/hop/work boundaries. Keep generic receiver forwarding and direct Value
    sources separate; nested element/operand coercions retain their own ports.
 4. Add required typed/nullable-copy and rejection/stopped source cases, refresh
