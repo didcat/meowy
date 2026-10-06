@@ -474,8 +474,9 @@ scalar shape. Its Operation link still requires an observed field operation; the
 Normal source link additionally requires checked availability and both field visits.
 Original Field descriptors, candidate positions and expanded visits retain the
 dispatch body's slot identity. Mutable scalar histories stay Unknown. Shared loads,
-calls, nonscalar selected slots and record-receiver inputs remain opaque. Ordinary
-block field lookup and record primary projection rules retain their existing scope.
+calls and nonscalar selected slots remain opaque. Eligible record receivers use the
+field-specific path described below. Ordinary block field lookup and record primary
+projection rules retain their existing scope.
 Conflicting field producers along dispatch input wrappers fail qualification.
 
 These links reuse the existing map limits, root/field cache payload and work budget.
@@ -521,9 +522,9 @@ and unobserved producers without inventing observations or ordinary Bind stateme
 Each fixed index row consumes shared payload room and the index has a bounded row
 count. Ordinary initializer forwarding continues to exclude synthetic receivers.
 
-A source link requires matching observed read/storage and dispatch headers, a scalar
-receiver shape, and an observed initialization. Checked point and body ancestry must
-reach the same nearest dispatch within one owner. Ordinary nested blocks inherit `$`;
+The generic receiver path requires matching observed read/storage and dispatch
+headers, a scalar receiver shape, and an observed initialization. Checked point and
+body ancestry must reach the same nearest dispatch within one owner. Ordinary nested blocks inherit `$`;
 nested dispatch bodies introduce their own receiver. The nested dispatch's input
 still uses the enclosing scope. Parent cycles, conflicting producers and stale
 identities fail qualification. Result observations do not imply initialization,
@@ -544,6 +545,27 @@ missing initializer evidence, calls and reference loads remain boundaries.
 Original input and terminal field IDs retain the exact qualified route;
 no deep type shapes are copied. Receiver links reuse the existing captured input
 without evaluating it again, extending a lifetime or granting loan authority.
+
+Owned scalar fields can additionally follow eligible record-receiver reads through
+a dedicated wrapper target. It requires at least one qualified record-receiver hop
+and initialization of the consuming dispatch; that dispatch's final result need not
+be observed. Original source blocks and dispatches retain their existing result
+qualification. The terminal field must have the exact record count and named-slot
+offset and an immutable scalar shape. Generic/scalar lookup modes remain unchanged.
+
+Record qualification reuses checked local eligibility and receiver indexing after
+HIR transfer, including their nested mutation/reference/foundation exclusions. No
+additional type tree or index is copied. Shared read-header and lexical-scope checks
+retain exact local/input/owner/body identities, nearest receiver binding and guarded
+scope transitions. Wrappers, initializer links and record receiver jumps share one
+hop budget across both sides of each jump; cycles fail atomically.
+
+Field Operation/Normal observations remain independent. Field-result caches and the
+expanded graph requalify the same original source slots under shared map/payload/work
+bounds. Mutable source reads, calls, parameters, shared loads and aggregate selected
+fields retain their existing opacity. Required cases preserve nested/guarded reads,
+source/tail order, scalar kinds, snapshots and shared loads, stopped-body P006 and
+borrow-escape E303. These links add no loan, lifetime or proof authority.
 
 Direct-source reports retain each original Value candidate's point and optional
 field, scalar-block or scalar-dispatch descriptor at its existing block/slot/candidate
@@ -601,7 +623,7 @@ Receiver input cases also preserve typed copies, inherited and nested `$`, field
 block/dispatch tail order, stopped-body P006 and receiver-borrow escape E303.
 Record-dispatch field cases also preserve field/tail order, typed copies, composed
 records, scalar widths/kinds, mutable snapshots, shared reads, missing-field E201
-and stopped-tail P006. Other record-dispatch consumers, function returns and broader
+and stopped-tail P006. Broader record-receiver consumers, function returns and
 aggregate provenance remain separate. Proof evaluation remains unimplemented.
 
 Observed unary, binary and coercion primary Projection ports reference slot0,

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Record-receiver field sources are in progress.
+Updated: 2026-10-06. Record-receiver field sources are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2935,79 +2935,94 @@ All four final guide/handoff checks pass (`/tmp/meowy-emission-dispatch-docs.log
 No outstanding failures remain. Proof evaluation and full language/release
 qualification remain incomplete.
 
-### Next: record-receiver field sources
+### Record-receiver field sources
 
-Active investigation: confirmed on `main` after `934dd8b`; the only pre-existing
-change is untracked `docs/programs/hey/`, excluded from this series. Scalar receiver
-lookup combines header, shape and scope validation; field consumers share generic
-wrapper resolution. Preserve scalar behavior first, then add bounded record
-eligibility and a field-specific lookup path. All 30 baseline receiver tests pass
-(`/tmp/meowy-record-receiver-before.log`). `eligible_locals` already checks receiver
-types recursively and excludes mutation, references and foundation values; receiver
-indexing already validates their exact local/owner/input/body identity. Reuse those
-two checked reports instead of adding another index or copying types.
-Shared header and scope qualification are now separate private helpers; scalar
-shape/initialization gates and work charges are unchanged. All 30 receiver tests
-pass after extraction (`/tmp/meowy-record-receiver-after.log`, commit `73e0f47`).
-A record-mode qualifier now reuses checked receiver identities, local eligibility
-and lexical scope, with bounded membership/mutation checks and no new payload.
-The scalar entry point still requests only scalar sources. All 34 receiver tests
-pass (`/tmp/meowy-record-receiver-qualification.log`), including HIR-transfer
-eligibility, nested scopes/owners, independent visits, stale headers and exact work.
-The qualifier is committed as `06bcf2a`. A field-specific wrapper target now requires
-at least one eligible record-receiver hop before returning a qualified ordinary or
-dispatch source. Field lookup restricts that path to immutable scalar slots, while
-generic/scalar callers retain their original targets. All 723 forward-report tests
-pass (`/tmp/meowy-record-receiver-fields.log`). Two formerly opaque receiver-field
-fixtures are now covered positively. Reference fixtures use distinct referent and
-field names to preserve the existing E303 rule (integration commit `44e4887`). Ten
-late source/scope/layout faults, missing-evidence requalification, independent control
-and exact map/cache/work bounds pass all nine record-receiver field tests
-(`/tmp/meowy-record-receiver-boundaries.log`, commit `cc0243a`), including downstream
-field-result and expanded-graph requalification. Shared-hop tests now place groups
-on both sides of the receiver jump; cycle tests cross receiver inputs and initializer
-links. All three path tests pass (`/tmp/meowy-record-receiver-paths.log`, commit
-`4ee0fac`), including generic target isolation and exact work at each shared hop
-boundary. Four required source cases cover nested/guarded field reads, scalar kinds,
-mutable snapshots/shared loads, stopped bodies P006 and borrow escape E303. The
-compiler build passes and all four cases pass debug/release
-(`/tmp/meowy-record-receiver-source.log`). Classified evidence is refreshed with
-unchanged reference hashes and pins. All four default checks pass
-(`/tmp/meowy-record-receiver-source-docs.log`). The audit preserves 411 prior cases,
-484 tracked contract/source/pin files and all 37 reviewed hashes
-(`/tmp/meowy-record-receiver-preservation.log`). The two helper types now use
-`pub(super)` to preserve explicit visibility without Clippy's `needless_pub_self`.
-Formatting and all-target Clippy pass (`/tmp/meowy-record-receiver-visibility.log`).
-The full compiler gate must be rerun; strict mode remains pending.
+Shared receiver-read headers and lexical-scope qualification now serve a bounded
+record mode. It reuses existing local eligibility and receiver indexing after HIR
+transfer, including nested mutation/reference/foundation exclusions; no additional
+type tree, index or payload is copied. The generic receiver entry point retains its
+scalar-only behavior and work charges.
 
-`effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
-scalar receiver reads. `receiver_index` already validates shallow receiver shapes
-against checked program locals, while `consumers/grouped.rs` shares the scalar path
-across existing callers. Extend only the owned scalar-field consumer path initially;
-record forwarding for other consumer families remains separate.
+Field lookup has a dedicated wrapper target requiring at least one eligible record
+receiver hop. It resolves an already qualified ordinary/dispatch source and checks
+full record count, named-slot offset, normal availability and an immutable scalar
+slot. The consuming dispatch requires initialization independently of its result;
+original source producers retain their result requirements. Field Operation/Normal
+visits, nearest receiver scope and guard transitions stay independent and exact.
+
+Groups and initializer links share one hop budget across receiver jumps. Field-result
+caches and expanded graphs requalify the same source slots; stale evidence and cycles
+fail atomically. Mutable source reads, calls, parameters, shared loads and aggregate
+selected slots remain opaque. Generic/coercion/output/list/composition receiver paths
+are unchanged. These reports grant no value selection, evaluation edges, lifetime,
+loan or proof authority.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Separate receiver headers from scope qualification | `73e0f47` |
+| Qualify eligible record receiver inputs | `06bcf2a` |
+| Link owned scalar fields through receiver inputs | `44e4887` |
+| Bound field links and requalify stored results | `cc0243a` |
+| Bound shared wrapper hops and initializer cycles | `4ee0fac` |
+| Cover field order, snapshots and borrow bounds | `df73b72` |
+| Keep explicit helper visibility compatible with Clippy | `cd93c4e` |
+
+All 30 receiver tests passed before and after the prerequisite refactor. Qualification
+passes 34 receiver tests; nine field tests and three path tests cover HIR-transfer
+eligibility, source kinds/owners, nested/guarded scope, independent visits, ten late
+source/layout faults, missing evidence, cache reuse, independent control, mixed
+receiver/initializer cycles and exact shared hop/map/cache/work bounds. Logs:
+`/tmp/meowy-record-receiver-before.log`, `/tmp/meowy-record-receiver-after.log`,
+`/tmp/meowy-record-receiver-qualification.log`, `/tmp/meowy-record-receiver-fields.log`,
+`/tmp/meowy-record-receiver-boundaries.log`, `/tmp/meowy-record-receiver-paths.log`.
+
+Four required cases pass debug/release: nested/guarded field reads and source/tail
+order across owners, scalar kinds, mutable snapshots/shared loads, stopped-body P006
+and receiver-field borrow escape E303 (`/tmp/meowy-record-receiver-source.log`). The
+audit preserves 411 prior cases, 484 tracked contract/source/pin files and all 37
+reviewed hashes (`/tmp/meowy-record-receiver-preservation.log`). Capability pins and
+proof obligations are unchanged; unrelated `docs/programs/hey/` remains excluded.
+
+All ten compiler checks pass: formatting, all-target Clippy, 2758 library/921 native
+tests, 62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-record-receiver-gate.log`). All 730 forward-report tests pass. Conformance
+has 415 cases: 396 required passes, 19 unchanged pinned gaps and zero failures in
+debug/release. All four source-slice documentation checks pass
+(`/tmp/meowy-record-receiver-source-docs.log`). Strict mode exits 1 only for those
+gaps (`/tmp/meowy-record-receiver-strict.log`). All four final guide/handoff checks
+pass (`/tmp/meowy-record-receiver-docs.log`). No outstanding failures remain.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: coercion-owned record-receiver primaries
+
+`record_field_consumer` now provides a bounded target that follows eligible record
+receiver reads while generic block/dispatch lookups stay unchanged. Field lookup
+already requalifies the resulting ordinary or dispatch body. Coercion reports retain
+the scalar source shape from before projection/conversion, but their primary lookup
+still stops at record receivers.
 
 Dependency-ordered commit plan:
 
-1. Complete: separate shared bounded receiver-read identity and lexical-scope qualification
-   in `effects/reads/receivers.rs`, preserving the current scalar-only entry point,
-   observation gates, exact work and guard/scope regressions.
-2. Complete: reuse existing local eligibility and receiver indexing for a bounded record-read
-   qualifier. Verify immutable/reference-free eligibility after HIR transfer, retain
-   exact local/input/owner/body identities and charge lookup work without new payload.
-   Keep mutable/reference receiver cases opaque and test malformed replay and limits.
-3. Complete: add a field-specific record receiver lookup in `consumers/fields.rs` and its
-   wrapper-resolution path. Reuse qualified ordinary/dispatch source records and
-   exact field count/index/shape checks; require receiver initialization without
-   requiring the enclosing dispatch result. Preserve separate Field Operation/Normal
-   observations, nearest receiver scope and existing generic/scalar consumers.
-   Keep the new behavior with focused owner, nested-scope, stopped and opaque tests.
-4. Boundary coverage, required source cases and classified evidence are complete.
-   Run compiler and strict gates, update the guide and both handoffs, then run final
-   documentation checks.
+1. Share the qualified record-receiver body lookup currently embedded in
+   `consumers/fields.rs`, with a neutral receiver-source name. Preserve the explicit
+   receiver-hop requirement, source qualification, existing field behavior and
+   resource checks in a separately validated refactor.
+2. Extend only observed scalar coercion Projection inputs through that receiver
+   path in `consumers.rs` and its primary helpers. Require an immutable unnamed
+   source slot zero matching the captured kind, width and signedness. Preserve
+   coercion-owned ports and independent projection/conversion/result observations,
+   receiver initialization and original source result requirements. Include focused
+   owner/type/stopped/sparse and opacity regressions with the behavior change.
+3. Add independently useful stale-origin, eligibility, mixed-cycle and exact
+   map/cache/hop/work boundaries. Keep generic receiver forwarding and direct Value
+   sources separate; nested element/operand coercions retain their own ports.
+4. Add required typed/nullable-copy and rejection/stopped source cases, refresh
+   classified evidence without changing prior contracts/pins, run compiler/strict/
+   documentation gates and update the guide and both handoffs.
 
-Contextual record-hint repair, broader record-receiver consumers, aggregate value
-selection, precise joins, function returns, restarts, E225 enforcement and proof
-outcomes remain separate.
+Output/list/composition-owned receiver projections, broader aggregate receiver paths,
+contextual record-hint repair, value selection, precise joins, function returns,
+restarts, E225 enforcement and proof outcomes remain separate.
 
 ## Documentation conventions and layout
 
@@ -4603,7 +4618,8 @@ visits are complete. Tagged dispatch histories and scalar dispatch visits are al
 complete. Initialized scalar receiver inputs and record dispatch scalar field sources
 are complete. Record dispatch unary/binary, coercion-owned, output-owned and
 contextual-list primary sources and composed-emission dispatch source slots are
-complete. Record-receiver field sources are next, following the ordered plan above;
+complete, including owned scalar field sources through eligible record receivers.
+Coercion-owned record-receiver primaries are next, following the ordered plan above;
 value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -5235,8 +5251,11 @@ value selection and broader aggregate provenance remain separate.
    (`9c5c3e8`) are complete. Emission layout sharing (`4e3b5a5`), dispatch links
    (`aa7b5d6`), consumer boundaries (`0f76be5`), graph integration (`110fbb9`), graph
    bounds (`cd4287f`) and source cases (`9c1cd15`) are complete; final gates are above.
-   Next qualify record-receiver field sources; broader receiver consumers and value
-   provenance remain separate.
+   Receiver header sharing (`73e0f47`), record qualification (`06bcf2a`), field links
+   (`44e4887`), boundaries (`cc0243a`, `4ee0fac`), source cases (`df73b72`) and visibility
+   (`cd93c4e`) are complete; final gate results are above. Next qualify coercion-owned
+   record-receiver primaries; broader receiver consumers and value provenance remain
+   separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
