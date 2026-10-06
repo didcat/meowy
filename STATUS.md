@@ -28,30 +28,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Contextual-list scalar projections now link to dispatch primaries using source shapes
-captured before final element conversion. Exact scalar kinds, owners and original
-element indices are preserved. Projection, conversion, construction, result and
-dispatch-result observations remain independent. Full input validation includes
-checked suffixes, and report allocation accounts for the added shape storage.
-The [compiler handoff](compiler/STATUS.md#contextual-list-dispatch-primary-sources)
+Composed emissions now link initialized targets to qualified record-dispatch source
+slots. Exact owners, origins, counts, field ordering and original emission ports are
+preserved. Source publication, target initialization and statement completion remain
+independent. Candidate caches and both forests share the same qualification and
+preserve intermediate compositions and unknown/empty/multiple histories.
+The [compiler handoff](compiler/STATUS.md#composed-emission-dispatch-source-slots)
 records the reviewed slices and next dependency-ordered plan.
 
-All ten compiler checks pass: 2726 library/921 native tests and 62 Python groups
-(`/tmp/meowy-list-dispatch-gate.log`). Conformance has 407 cases: 388 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. Four new required cases
-preserve list and receiver/tail order across owners, scalar kinds, typed copies,
-mutable snapshots, list primaries, stopped-dispatch P006 and incompatible-width E207.
-Structural links remain distinct from observable execution. Strict mode exits 1 only
-for those gaps (`/tmp/meowy-list-dispatch-strict.log`). All four final documentation
-checks pass (`/tmp/meowy-list-dispatch-docs.log`).
+All ten compiler checks pass: 2742 library/921 native tests and 62 Python groups
+(`/tmp/meowy-emission-dispatch-gate.log`). Conformance has 411 cases: 392 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Four new required
+cases preserve receiver/composition/tail order across owners, scalar/mutable/nested/
+empty records, branches, stopped-destination P006 and duplicate-field E205. Structural
+links remain distinct from observable execution. Strict mode exits 1 only for those
+gaps (`/tmp/meowy-emission-dispatch-strict.log`). All four final documentation checks
+pass (`/tmp/meowy-emission-dispatch-docs.log`).
 
-The audit preserves 403 prior cases, 476 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-list-dispatch-preservation.log`). All four source-slice
-documentation checks pass (`/tmp/meowy-list-dispatch-source-docs.log`). Generic value
-forwarding and loan/proof authority are unchanged. Proof evaluation and full
+The audit preserves 407 prior cases, 480 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-emission-dispatch-preservation.log`). All four source
+slice documentation checks pass (`/tmp/meowy-emission-dispatch-source-docs.log`).
+Read eligibility and loan/proof authority are unchanged. Proof evaluation and full
 language/release qualification remain incomplete.
 
-Next, qualify composed-emission source slots from dispatch results.
+Next, qualify scalar field sources through eligible record dispatch receivers.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

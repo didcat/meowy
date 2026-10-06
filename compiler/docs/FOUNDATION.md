@@ -902,6 +902,23 @@ charging report payload again. Corrupt suffixes and exact resource failures publ
 no partial map. These identities do not select a value, establish runtime reachability,
 grant lifetime authority or answer a proof query.
 
+Composed emissions also accept qualified record-dispatch sources after ordinary
+lookup. Tagged source/body identities and the complete count and ordered field layout
+must agree before any target link is collected. Source publication remains independent
+of receiver initialization, target visits and statement completion. Direct dispatch
+expressions can retain mutable or aggregate slots as Unknown; local records containing
+mutable fields retain their existing read-eligibility boundary.
+
+Candidate-source collection and both graph qualifiers reuse this resolver and its
+bounded source cache. They retain original Primary/Field positions and every
+intermediate composition, including paths through multiple-candidate histories to an
+Unknown slot. Missing links stay unresolved; stale owners, origins, slots, layouts
+and mixed initializer cycles reject atomically. Shared map/cache/scratch/work limits
+apply without copying new payload or selecting candidate values. Required cases
+preserve receiver/composition/tail order, scalar/mutable/nested/empty records and
+branches, stopped-destination P006 and duplicate-field E205. These source cases
+remain separate from structural graph and resource-limit evidence.
+
 The resolver reuses field, scalar/output/list primary and composed-emission slot
 links, preserving their original ports and flags. Stored Normal edges do not establish
 that a child returns; observed extraction stages and block results govern publication.

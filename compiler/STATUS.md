@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Composed-emission dispatch source slots are in progress.
+Updated: 2026-10-06. Composed-emission dispatch source slots are implemented.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2876,85 +2876,95 @@ guide/handoff checks pass (`/tmp/meowy-list-dispatch-docs.log`). No outstanding
 failures remain.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: composed-emission dispatch source slots
+### Composed-emission dispatch source slots
 
-Active investigation: confirmed on `main` after `bda2035`; the only pre-existing
-change is untracked `docs/programs/hey/`, excluded from this series. Both emission
-links and candidate sources already share one resolver; graph qualification calls
-that same candidate checker. Preserve its exact layout work accounting during the
-prerequisite extraction. Baseline checks passed 45 emission and ten candidate-source
-tests. Complete layout qualification is now a separate private helper with unchanged
-work charges, result shape, field ordering and errors. The same 45 emission and ten
-candidate-source tests pass after extraction, including exact work/map limits and
-unobserved suffix corruption. Logs: `/tmp/meowy-emission-dispatch-layout-before.log`,
-`/tmp/meowy-emission-dispatch-candidates-before.log`,
+The shared resolver now accepts observed record-dispatch sources after ordinary
+lookup, then validates complete source counts and ordered field names, including
+unobserved targets. Exact source/owner/body tags and original Primary/Field EmitIds
+are retained. Only initialized targets create links; dispatch result publication,
+receiver initialization, emission-statement completion and destination completion
+remain independent. No ordinary consumer is registered for a dispatch source.
+
+Candidate collection, source caching and both graph qualifiers reuse the same
+resolver. Existing forests preserve original candidate positions, intermediate
+compositions and unknown/empty/multiple histories. Missing links remain unresolved;
+corrupted stored links and mixed initializer cycles fail atomically. Direct dispatch
+expressions retain mutable or aggregate slot histories as Unknown, while reads from
+local records containing mutable fields keep their prior eligibility boundary.
+Composition links require Primary/Field projections. Calls, reference loads and
+parameter sources retain their existing opacity.
+Shared map/cache/scratch/work limits apply without new payload or value selection,
+evaluation edges, lifetime authority or proof answers.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Separate complete source-layout validation | `4e3b5a5` |
+| Link composed emissions to dispatch source slots | `aa7b5d6` |
+| Bound links and reject stale layouts | `0f76be5` |
+| Verify candidate and forest integration | `110fbb9` |
+| Bound caches and requalify stored graph sources | `cd4287f` |
+| Cover composition order, shapes and stopped destinations | `9c1cd15` |
+
+The refactor preserved 45 emission and ten candidate-source checks before/after.
+Nine dispatch-emission and seven candidate/graph tests cover exact identities,
+independent visits, partial destinations, unknown/empty/multiple histories, twelve
+consumer faults, eleven graph faults, mixed initializer cycles, independent control,
+duplicate visits and exact map/cache/scratch/work limits. All 714 forward-report
+tests pass in the compiler gate. Focused logs:
+`/tmp/meowy-emission-dispatch-layout-before.log`,
 `/tmp/meowy-emission-dispatch-layout-after.log`,
-`/tmp/meowy-emission-dispatch-candidates-after.log`.
-The refactor is committed as `4e3b5a5`. The shared resolver now tries qualified
-record-dispatch results after ordinary lookup and reuses complete layout validation.
-Focused integration covers exact ports/owners, independent source/target visits,
-unknown/empty/partial layouts, stopped destinations and opaque producers; the
-unknown-slot fixture now uses direct dispatch expressions: local records containing
-mutable fields correctly remain outside existing immutable-read eligibility. Three
-prior field/output/coercion fixtures now account for independent composition links
-while preserving their original family assertions. All 703 forward-report tests
-pass (`/tmp/meowy-emission-dispatch-consumers.log`); no eligibility boundary was
-widened (integration commit `aa7b5d6`). Twelve late origin/owner/target/layout faults,
-including unobserved suffixes, plus mixed initializer cycles, independent control,
-duplicate visits and exact map/work limits pass all nine dispatch-emission tests
-(`/tmp/meowy-emission-dispatch-boundaries.log`, commit `0f76be5`). Candidate collection
-and both forests now have explicit integration checks for original projection slots,
-mixed ordinary/dispatch origins, owners, field-source expansion, missing links and
-empty/multiple/unknown histories. The unknown fixture retains two composition hops
-between the dispatch and its original mutable slot, including an intermediate
-multiple-candidate history. Its regression now checks that exact chain and the
-Unknown visit in both forests; no checker behavior or representation changed.
-All three graph integration tests pass (`/tmp/meowy-emission-dispatch-graphs.log`,
-commit `110fbb9`). Candidate collection and both graph qualifiers now have eleven
-late slot/origin faults and mixed initializer-cycle regressions, plus exact shared
-source-cache, map, scratch and work boundaries. All seven candidate/graph tests pass
-(`/tmp/meowy-emission-dispatch-graph-bounds.log`, commit `cd4287f`). Four required
-source cases now cover receiver/composition/tail order, scalar/mutable/nested/empty
-records and branch histories, stopped destinations P006 and duplicate fields E205.
-All four pass debug/release (`/tmp/meowy-emission-dispatch-source.log`); the compiler
-build passes. Reference review confirms E205 for a same-slot second emission;
-E206 is reserved for conflicting declarations. All four default checks pass
-(`/tmp/meowy-emission-dispatch-source-docs.log`). The audit preserves all 407 prior
-cases, 480 tracked contract/source/pin files and 37 reviewed hashes
-(`/tmp/meowy-emission-dispatch-preservation.log`). Full compiler and strict gates
-remain next.
+`/tmp/meowy-emission-dispatch-consumers.log`,
+`/tmp/meowy-emission-dispatch-boundaries.log`,
+`/tmp/meowy-emission-dispatch-graphs.log`,
+`/tmp/meowy-emission-dispatch-graph-bounds.log`.
 
-`consumers/emissions.rs::emission_source_block` now resolves ordinary and observed
-record-dispatch sources. It is shared by emission slot-use collection and
-`results/inputs/sources.rs::candidate_source_slot`. Existing tagged dispatch body
-qualification can identify the source without registering an ordinary consumer;
-complete source layout checks and downstream candidate/forest qualification must
-remain shared and bounded.
+Four required cases pass debug/release: receiver/composition/tail order across owners,
+scalar/mutable/nested/empty records, branch histories, stopped-destination P006 and
+duplicate-field E205 (`/tmp/meowy-emission-dispatch-source.log`). The audit preserves
+all 407 prior cases, 480 tracked contract/source/pin files and 37 reviewed hashes
+(`/tmp/meowy-emission-dispatch-preservation.log`). Capability pins and proof obligations
+are unchanged; unrelated `docs/programs/hey/` remains excluded.
+
+All ten compiler checks pass: formatting, all-target Clippy, 2742 library/921 native
+tests, 62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-emission-dispatch-gate.log`). Conformance has 411 cases: 392 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. All four
+source-slice documentation checks pass (`/tmp/meowy-emission-dispatch-source-docs.log`).
+Strict mode exits 1 only for those gaps (`/tmp/meowy-emission-dispatch-strict.log`).
+All four final guide/handoff checks pass (`/tmp/meowy-emission-dispatch-docs.log`).
+No outstanding failures remain. Proof evaluation and full language/release
+qualification remain incomplete.
+
+### Next: record-receiver field sources
+
+`effects/reads/receivers.rs::read_receiver_input` currently forwards only initialized
+scalar receiver reads. `receiver_index` already validates shallow receiver shapes
+against checked program locals, while `consumers/grouped.rs` shares the scalar path
+across existing callers. Extend only the owned scalar-field consumer path initially;
+record forwarding for other consumer families remains separate.
 
 Dependency-ordered commit plan:
 
-1. Complete: separate the bounded complete source-layout validation in `consumers/emissions.rs`
-   from source-body selection without changing behavior. Preserve record counts,
-   original ordered field names, all targets including unobserved ones, shared work
-   limits and existing emission/candidate tests in the prerequisite commit.
-2. Complete: add observed record-dispatch fallback via `record_dispatch_body` after ordinary
-   lookup, reusing that full layout qualification. Retain exact owner/origin/body
-   identities and Primary/Field emission ports; only initialized targets create
-   links. Include focused source/destination, sparse/stopped, unknown-history and
-   opaque-source regressions. Keep direct Value emissions separate.
-3. Complete: existing candidate-source cache and forest paths share the resolver.
-   Separate consumer identity/cycle/limit and candidate/forest tests verify integration
-   in `results/inputs/sources.rs` and its graph consumers. Preserve original candidate
-   identities, tagged result origins, unknown/empty/multiple histories and existing
-   walks. Add corruption, mixed-cycle, owner/control and exact map/cache/payload/work
-   coverage; split independently useful integration and boundary slices as needed.
-4. Required composition cases and classified evidence are complete. Run compiler
-   and strict gates, update the guide and both handoffs, then run final documentation
-   checks.
+1. Separate shared bounded receiver-read identity and lexical-scope qualification
+   in `effects/reads/receivers.rs`, preserving the current scalar-only entry point,
+   observation gates, exact work and guard/scope regressions.
+2. Establish bounded eligibility for immutable, reference-free record receivers
+   using checked receiver types and the existing receiver index. Preserve exact
+   local/input/owner/body identities and charge index/copy/work room before publication.
+   Keep mutable/reference receiver cases opaque and test malformed replay and limits.
+3. Add a field-specific record receiver lookup in `consumers/fields.rs` and its
+   wrapper-resolution path. Reuse qualified ordinary/dispatch source records and
+   exact field count/index/shape checks; require receiver initialization without
+   requiring the enclosing dispatch result. Preserve separate Field Operation/Normal
+   observations, nearest receiver scope and existing generic/scalar consumers.
+   Keep the new behavior with focused owner, nested-scope, stopped and opaque tests.
+4. Add independent corruption/cycle/hop/cache/work boundaries and required field
+   execution/rejection cases. Preserve references and pins; run compiler, strict
+   and documentation gates and refresh the guide and both handoffs.
 
-Contextual record-hint repair, record-receiver transparency, aggregate value selection,
-precise joins, function returns, restarts, E225 enforcement and proof outcomes remain
-separate.
+Contextual record-hint repair, broader record-receiver consumers, aggregate value
+selection, precise joins, function returns, restarts, E225 enforcement and proof
+outcomes remain separate.
 
 ## Documentation conventions and layout
 
@@ -4549,8 +4559,9 @@ now qualify direct field sources. Distinct scalar-block descriptors and expanded
 visits are complete. Tagged dispatch histories and scalar dispatch visits are also
 complete. Initialized scalar receiver inputs and record dispatch scalar field sources
 are complete. Record dispatch unary/binary, coercion-owned, output-owned and
-contextual-list primary sources are complete. Composed-emission dispatch source slots
-are next, following the ordered plan above; value selection and broader aggregate provenance remain separate.
+contextual-list primary sources and composed-emission dispatch source slots are
+complete. Record-receiver field sources are next, following the ordered plan above;
+value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5178,9 +5189,11 @@ are next, following the ordered plan above; value selection and broader aggregat
    dispatch links (`65a82d4`), boundaries (`82659ca`) and source cases (`7b71fd6`)
    are complete. Contextual-list capture (`126a2da`), reports (`efe756b`), shared budgets
    (`840c2e8`), dispatch links (`54ef4b2`), boundaries (`faeaedf`) and source cases
-   (`9c5c3e8`) are complete; final gate results are above. Next qualify composed-emission
-   dispatch source slots; other producer families and broader value provenance remain
-   separate.
+   (`9c5c3e8`) are complete. Emission layout sharing (`4e3b5a5`), dispatch links
+   (`aa7b5d6`), consumer boundaries (`0f76be5`), graph integration (`110fbb9`), graph
+   bounds (`cd4287f`) and source cases (`9c1cd15`) are complete; final gates are above.
+   Next qualify record-receiver field sources; broader receiver consumers and value
+   provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
