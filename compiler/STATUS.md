@@ -2832,24 +2832,24 @@ qualification check all inputs, including unobserved suffixes. Allocation charge
 four fixed units per input, including its shape, before copying. All 68 focused
 list tests pass (`/tmp/meowy-list-dispatch-reports.log`), including independent
 stages, malformed suffixes, merge conflicts and exact/max payload/work boundaries.
-Report qualification is committed as `efe756b`. List consumer integration is in
-progress. The eight cross-family payload fixtures now grant the extra unit per
-stored list input. The stopped fixture selects its list context before a direct
-Never operand removes the guard-based narrowing; later operands remain checked.
-The original E207 behavior is preserved. All 694 forward-report tests pass
-(`/tmp/meowy-list-dispatch-consumers.log`). Consumer integration files are validated
-but remain uncommitted until their separate slice.
+Report qualification is committed as `efe756b`; shared-payload fixture correction
+is `840c2e8`. List consumers now qualify observed scalar dispatch primaries using
+captured source kinds and original element indices. Four integration tests cover
+owners, kinds, sparse stages, construction-registration requirements, stopped prefixes
+and opaque/inner-coercion boundaries. All 694 forward-report tests pass
+(`/tmp/meowy-list-dispatch-consumers.log`). Additional identity/cycle/control/limit
+coverage is next. The stopped fixture selects its list context before a direct
+Never operand removes guard-based narrowing; existing E207 behavior is preserved.
 
-Insert one prerequisite commit to update all eight cross-family payload fixtures.
-This touches nine files including STATUS after the split review: the assertions
+The prerequisite touched nine files including STATUS after the split review: the assertions
 share the same four-unit list descriptor contract, and leaving any unchanged keeps
 the global effect-budget regression suite inconsistent. The correction is limited
 to exact expected capacity/remainder values; keep consumer behavior in its own slice.
 
 `list_context.rs` selects candidates before `expected_plan` consumes each checked
 element and records its final `ListInput`. These plans currently retain point,
-primary, coercion kind and optional source shape; list-owned consumers still use
-only ordinary `primary_slot`.
+primary, coercion kind and optional source shape; list-owned consumers use ordinary
+`primary_slot` or the exact scalar dispatch qualifier.
 Ordinary typed element coercions already retain their own dispatch-primary ports.
 
 Dependency-ordered commit plan:
@@ -2864,10 +2864,10 @@ Dependency-ordered commit plan:
    suffixes, independent projection/conversion/construction/result flags and the
    list-specific construction registration rule. Bound copies and work before
    publication; keep non-contextual and inner-coercion paths distinct.
-3. Link observed scalar list-owned projections to exact dispatch primary slots via
+3. Integration complete: link observed scalar list-owned projections to exact dispatch primary slots via
    the captured source kind, retaining original element indices and shared limits.
-   Include owner/type/sparse/stopped regressions; split additional corruption,
-   cycle, control and exact map/payload/work coverage when independently reviewable.
+   Owner/type/sparse/stopped regressions pass. Next add corruption, cycle, control
+   and exact map/payload/work coverage as a separate reviewable slice.
 4. Add required contextual-list execution/rejection/stopped cases and classified
    evidence. Preserve existing references and pins, run compiler/strict/documentation
    gates, and refresh this handoff and the root tracker.

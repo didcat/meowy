@@ -106,7 +106,16 @@ impl Checker {
                     if !input.projected {
                         continue;
                     }
-                    if let Some(slot) = self.primary_slot(reports, input.point, *owner, span)? {
+                    let slot = if let Some(slot) =
+                        self.primary_slot(reports, input.point, *owner, span)?
+                    {
+                        Some(slot)
+                    } else if let Some(Shape::Scalar(ty)) = input.source {
+                        self.dispatch_primary_slot(reports, input.point, *owner, ty, span)?
+                    } else {
+                        None
+                    };
+                    if let Some(slot) = slot {
                         let port = Port::Projection { point: id, step };
                         self.record_slot_use(&mut uses, port, (*owner, slot), limit, span)?;
                     }

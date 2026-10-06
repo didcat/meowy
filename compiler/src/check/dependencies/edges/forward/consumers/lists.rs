@@ -1,6 +1,7 @@
 use super::{tests::checked, *};
 use crate::check::dependencies::CoercionKind;
 
+mod dispatch;
 mod limits;
 
 #[test]
