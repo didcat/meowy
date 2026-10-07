@@ -848,9 +848,9 @@ kind exactly, including width and signedness. Original source results remain req
 the consuming receiver's result is independent of its initialization. Coercion
 projection, conversion and result observations remain independent as well.
 
-Coercion-owned and scalar binary projections use this receiver-primary path. Inner
-typed-element and operand coercions retain their own ports; generic receiver forwarding
-and other consumer families keep their existing limits. Mutable/reference/list paths remain
+Coercion-owned, scalar binary and output projections share this receiver-primary path.
+Inner typed-element and operand coercions retain their own ports; generic receiver
+forwarding and other consumer families keep their limits. Mutable/reference/list paths remain
 opaque. Empty and multiple candidate histories are preserved without selecting a
 value. Shared map/work bounds and atomic failure apply without new report payload.
 Structural checks cover stale shapes, owners, eligibility, mixed cycles and exact
@@ -895,6 +895,23 @@ Shared map/work bounds apply without new payload. Source cases cover streamed
 receiver/body/tail order, copies across owners, scalar formatting, mutable snapshots,
 panic operands, stopped prefixes and ordinary errors in checked suffixes. Corruption,
 cycles and exact budget checks establish structural evidence only.
+
+Scalar output projections also follow eligible record receivers through the shared
+receiver-body lookup. The original source's immutable unnamed slot zero must match
+the captured kind, width and signedness. Each projection retains its original sparse
+formatting index. Original source results and consuming receiver initialization stay
+required independently of output writes, panic prefixes, terminal observations and
+consuming receiver results. Projection-only reports need no terminal registration.
+
+Earlier links survive stopped formatting parts and bodies; checked suffixes still
+undergo complete producer validation. Inner coercions retain their own ports, and
+mutable sources, calls, parameters, reference loads and nonscalar primaries keep
+their limits. Empty/multiple histories select no value. Missing evidence, stale
+headers/layouts, mixed cycles, duplicate observations, independent control and exact
+map/work limits preserve atomic reports without new payload or I/O/loan/proof claims.
+Required cases cover nested/guarded receivers, source/format/tail order, scalar and
+nullable formatting, snapshots/shared loads, panic operands, stopped-prefix P006
+and checked-suffix E201.
 
 Contextual-list primary consumers retain original input indices and slot-zero links.
 Whole-producer replay preserves exact sequences/endpoints, input uniqueness and all
