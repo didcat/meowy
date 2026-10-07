@@ -3213,8 +3213,13 @@ EmitIds, nested/guarded receivers, named destinations, independent owners and im
 candidate requalification in both forests (integration commit `0c505c6c`). Mixed-family
 ports remain distinct. Independent source/receiver/target/result visits, stopped
 destinations and direct/opaque/unknown/empty/multiple/partial-layout regressions pass.
-All six receiver-emission tests pass (`/tmp/meowy-receiver-emission-stages.log`).
-Consumer corruption/budget checks and deeper candidate-graph/cache validation are next.
+All six receiver-emission tests pass (`/tmp/meowy-receiver-emission-stages.log`, stage
+commit `fc8f83a6`). Consumer boundary tests now cover fifteen late faults across
+ordinary/dispatch sources, unobserved target layouts, missing eligibility/index data,
+mutation evidence, duplicate visits, mixed cycles, independent control and exact
+map/work limits. All ten consumer tests pass
+(`/tmp/meowy-receiver-emission-boundaries.log`). Deeper candidate-graph/cache checks
+are next; consumer and graph boundary coverage remain separate review slices.
 
 `emission_source_block` remains the shared whole-layout source qualifier for slot
 links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
@@ -3232,7 +3237,7 @@ Dependency-ordered commit plan:
    and destination completion, including initialized prefixes before stopped bodies.
    Preserve direct Value emissions, opaque producers and unknown/empty/multiple
    candidate histories. Validate focused consumer and candidate-source tests.
-3. Verify existing candidate graphs and source-cache reuse across receiver compositions.
+3. Consumer boundaries are complete. Verify candidate graphs and source-cache reuse across receiver compositions.
    Add stale layout/identity, missing evidence, mixed receiver/initializer/composition
    cycles and exact shared map/cache/scratch/work bounds. Keep consumer and graph
    boundary slices separate if needed; confirm atomic reports without new payload.
