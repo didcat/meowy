@@ -99,3 +99,6 @@ mod receiver_coercions;
 
 #[cfg(test)]
 mod receiver_binary;
+
+#[cfg(test)]
+mod receiver_unary;

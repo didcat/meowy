@@ -148,7 +148,13 @@ impl Checker {
                         if let Some(slot) = self.primary_slot(reports, input, *owner, span)? {
                             Some(slot)
                         } else if let Effect::Unary(op) = effect {
-                            self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
+                            if let Some(slot) =
+                                self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
+                            {
+                                Some(slot)
+                            } else {
+                                self.receiver_primary_slot(reports, input, *owner, op.ty, span)?
+                            }
                         } else if let Effect::Binary(op) = effect
                             && let BinaryClass::Scalar(ty) = op.types.inputs[step]
                         {

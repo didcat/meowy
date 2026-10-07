@@ -1,7 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-07. Composed-emission record-receiver sources are complete;
-unary-owned record-receiver primaries are next. Validation is recorded below.
+Updated: 2026-10-07. Unary-owned record-receiver primaries are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3258,16 +3257,19 @@ incomplete.
 
 ### Next: unary-owned record-receiver primaries
 
-The `Effect::Unary` branch in `consumers.rs` still stops after dispatch-primary lookup.
-Bare receiver operands can project through an inner coercion because `unary_context`
-uses the operand hint's primary type. Begin with unchanged explicit record ascriptions:
-`hint` in `check/expressions.rs` does not classify ascriptions, so these are candidates
-for retaining a record operand until `unary_plan_value`. Confirm the actual owning
-projection before adding the shared receiver-primary fallback; do not retag coercions.
+Active series: confirmed on `main` after `987c6d7e`; untracked `docs/programs/hey/`
+remains excluded. Unchanged explicit record ascriptions retain unary-owned projections;
+bare receiver operands retain their inner coercion ports. Both new tests demonstrated
+missing source links before integration (`/tmp/meowy-receiver-unary-before.log`).
+The unary branch now uses the shared receiver-primary fallback after dispatch lookup,
+without changing capture, hints or ascription rules. All 789 forward-report tests
+pass (`/tmp/meowy-receiver-unary-integration.log`), including negation, boolean not,
+bits.not, widths, nested/guarded scope and independent owners. Scalar guard operations
+remain unprojected. Independent stages, stopped bodies and opaque inputs are next.
 
 Dependency-ordered commit plan:
 
-1. Add focused capture/source regressions for unary projections through explicitly
+1. Complete: add capture/source regressions for unary projections through explicitly
    ascribed record receivers, then extend only observed Unary Projection inputs via
    `receiver_primary_slot` after ordinary/dispatch lookup. Preserve step zero, exact
    scalar kind/width/signedness, owners and scope. Keep bare-operand coercion ports
