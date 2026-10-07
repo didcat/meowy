@@ -1009,6 +1009,24 @@ preserve receiver/composition/tail order, scalar/mutable/nested/empty records an
 branches, stopped-destination P006 and duplicate-field E205. These source cases
 remain separate from structural graph and resource-limit evidence.
 
+Composed emissions also resolve through eligible record receivers. The shared body
+lookup requires a qualified receiver hop before ordinary or dispatch source lookup,
+then revalidates the complete source count and ordered field names, including targets
+without initialization observations. Exact EmitIds keep primary slot zero and named
+field index plus one. Original source publication and consuming receiver initialization
+remain required independently of receiver results, target visits, statement results
+and destination completion. Earlier initialized links survive stopped destinations.
+
+Candidate collection and both forests reuse the same qualification and one source
+cache entry per composition. They preserve intermediate projection/field chains and
+empty/multiple/Unknown histories. Missing links stay unresolved after rebuilding;
+stale links, layouts or receiver evidence reject atomically. Shared map/cache/scratch/
+forest-storage/work limits add no payload or value/loan/proof authority. Direct Value
+emissions, ineligible mutable/reference records, calls and parameters stay separate.
+Required cases preserve nested receiver/composition/tail order, scalar and aggregate
+values, mutable copies, empty records and branches, stopped-destination P006 and
+duplicate-field E205.
+
 The resolver reuses field, scalar/output/list primary and composed-emission slot
 links, preserving their original ports and flags. Stored Normal edges do not establish
 that a child returns; observed extraction stages and block results govern publication.

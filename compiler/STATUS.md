@@ -1,6 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-07. Composed-emission record-receiver sources are in progress.
+Updated: 2026-10-07. Composed-emission record-receiver sources are complete;
+unary-owned record-receiver primaries are next. Validation is recorded below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3200,71 +3201,89 @@ and reasons (`/tmp/meowy-receiver-list-strict.log`). All four final guide/handof
 checks pass (`/tmp/meowy-receiver-list-docs.log`). No outstanding failures remain.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: composed-emission record-receiver sources
+### Composed-emission record-receiver sources
 
-Active series: confirmed on `main` after `e5a46561`; untracked `docs/programs/hey/`
-remains excluded. `emission_source_block` now uses the qualified receiver-body
-fallback after ordinary/dispatch lookup, retaining whole-layout qualification and
-the existing candidate-source cache. No capture or prerequisite refactor was needed.
-Both new regressions demonstrated missing links before integration
-(`/tmp/meowy-receiver-emission-before.log`); all 771 forward-report tests now pass
-(`/tmp/meowy-receiver-emission-integration.log`). Coverage includes exact sorted slots,
-EmitIds, nested/guarded receivers, named destinations, independent owners and immediate
-candidate requalification in both forests (integration commit `0c505c6c`). Mixed-family
-ports remain distinct. Independent source/receiver/target/result visits, stopped
-destinations and direct/opaque/unknown/empty/multiple/partial-layout regressions pass.
-All six receiver-emission tests pass (`/tmp/meowy-receiver-emission-stages.log`, stage
-commit `fc8f83a6`). Consumer boundary tests now cover fifteen late faults across
-ordinary/dispatch sources, unobserved target layouts, missing eligibility/index data,
-mutation evidence, duplicate visits, mixed cycles, independent control and exact
-map/work limits. All ten consumer tests pass
-(`/tmp/meowy-receiver-emission-boundaries.log`). Deeper candidate-graph/cache checks
-are next; consumer and graph boundary coverage remain separate review slices
-(consumer-boundary commit `fdd62067`). Candidate-source regressions now cover deeper
-composition/field chains in both forests, missing links becoming unresolved, and
-empty/multiple histories leading to Unknown slots. All three candidate-source tests
-pass (`/tmp/meowy-receiver-emission-graphs.log`, graph commit `f576207d`). Graph boundary
-tests now cover sixteen stale link/source/receiver faults, one source-cache entry per
-composition, mixed cycles and exact map/scratch/forest-storage/work limits. All eight
-candidate-source/graph tests pass (`/tmp/meowy-receiver-emission-graph-bounds.log`).
-Cycle seeds follow checked forwarding/narrowing wrappers before selecting the read
-(graph-boundary commit `564e8d13`). The compiler build and four required source cases
-pass debug/release for nested receiver/composition/tail order, scalar/aggregate and
-mutable copies, empty records/branches, stopped-destination P006 and duplicate-field
-E205 (`/tmp/meowy-receiver-emission-build.log`, `/tmp/meowy-receiver-emission-source.log`).
-Classified evidence is refreshed and all four default checks pass
-(`/tmp/meowy-receiver-emission-source-docs.log`). The audit preserves 432 prior cases,
-505 tracked contract/source/pin files and all 37 reviewed hashes
-(`/tmp/meowy-receiver-emission-preservation.log`). Full compiler/strict gates and final
-guide/handoff updates remain next.
+`emission_source_block` now resolves eligible record receiver inputs after ordinary
+and dispatch lookup, then revalidates the complete source count and ordered field
+names. Exact initialized EmitIds retain primary slot zero and named-field index plus
+one, including partial expected destinations. Source publication and consuming
+receiver initialization remain required independently of receiver results, target
+visits, statement results and destination completion. Earlier links survive stopped
+destinations; direct Value emissions and ineligible/opaque producers remain separate.
 
-`emission_source_block` remains the shared whole-layout source qualifier for slot
-links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
-reuses this lookup and caches one source per composition. Generic receiver forwarding
-and scalar-only primary qualification remain separate.
+Candidate collection and both forests reuse this resolver and one bounded source
+cache entry per composition. They preserve intermediate projections/field sources,
+unknown/empty/multiple histories and unresolved missing links. Stale metadata and
+resource failures publish no partial reports. No new variable payload, value selection,
+loan authority or proof evaluation is introduced. Checked forwarding/narrowing wrappers
+must be resolved before a cycle test selects the underlying read.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Link composed emissions through record receivers | `0c505c6c` |
+| Preserve stages and source histories | `fc8f83a6` |
+| Bound emission links and reject stale layouts | `fdd62067` |
+| Cover composition candidate graphs | `f576207d` |
+| Bound candidate caches, graphs and forest walks | `564e8d13` |
+| Cover composition order, boundaries and errors | `c1f73fe5` |
+
+Both integration regressions demonstrated missing links before the change
+(`/tmp/meowy-receiver-emission-before.log`); all 771 forward-report tests pass after
+integration (`/tmp/meowy-receiver-emission-integration.log`). Ten consumer tests cover
+sorted slots, EmitIds, nested/guarded receivers, named destinations, independent
+owners/stages, fifteen late faults, missing eligibility/index data, mutation evidence,
+duplicate visits, cycles and exact map/work limits (`/tmp/meowy-receiver-emission-stages.log`,
+`/tmp/meowy-receiver-emission-boundaries.log`). Eight candidate/graph tests cover both
+forests, unresolved links, histories through Unknown slots, sixteen stale faults,
+source-cache reuse and exact map/scratch/forest-storage/work bounds
+(`/tmp/meowy-receiver-emission-graphs.log`, `/tmp/meowy-receiver-emission-graph-bounds.log`).
+
+Four required cases pass debug/release for nested receiver/composition/tail order,
+scalar/aggregate and mutable copies, empty records/branches, stopped-destination P006
+and duplicate-field E205 (`/tmp/meowy-receiver-emission-source.log`). The audit preserves
+432 prior cases, 505 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-emission-preservation.log`). Capability pins and proof obligations
+are unchanged; unrelated `docs/programs/hey/` remains excluded.
+
+All four source-slice documentation checks pass
+(`/tmp/meowy-receiver-emission-source-docs.log`). All ten compiler checks pass:
+formatting, all-target Clippy, 2815 library/921 native tests, 62 Python groups, build,
+metadata and source conformance (`/tmp/meowy-receiver-emission-gate.log`). All 787
+forward-report tests pass. Conformance has 436 cases: 417 required passes, 19 unchanged
+pinned gaps and zero failures in debug/release. Strict mode exits 1 only for the
+19 pinned names and reasons (`/tmp/meowy-receiver-emission-strict.log`). All four final
+guide/handoff checks pass (`/tmp/meowy-receiver-emission-docs.log`). No outstanding
+failures remain. Proof evaluation and full language/release qualification remain
+incomplete.
+
+### Next: unary-owned record-receiver primaries
+
+The `Effect::Unary` branch in `consumers.rs` still stops after dispatch-primary lookup.
+Bare receiver operands can project through an inner coercion because `unary_context`
+uses the operand hint's primary type. Begin with unchanged explicit record ascriptions:
+`hint` in `check/expressions.rs` does not classify ascriptions, so these are candidates
+for retaining a record operand until `unary_plan_value`. Confirm the actual owning
+projection before adding the shared receiver-primary fallback; do not retag coercions.
 
 Dependency-ordered commit plan:
 
-1. Complete: extend composed-emission lookup through `record_receiver_body`, preserving complete
-   source count/name/layout validation and only observed initialized targets. Keep
-   exact EmitId/owner identities, primary slot zero and named-field index plus one.
-   Include nested/guarded receivers, sorted fields, independent owners and immediate
-   candidate-source requalification with the behavior change; run focused reports.
-2. Complete: cover independent source results, receiver initialization/results, target visits
-   and destination completion, including initialized prefixes before stopped bodies.
-   Preserve direct Value emissions, opaque producers and unknown/empty/multiple
-   candidate histories. Validate focused consumer and candidate-source tests.
-3. Complete: verify candidate graphs and source-cache reuse across receiver compositions.
-   Consumer and graph regressions cover stale layout/identity, missing evidence,
-   mixed cycles and exact shared map/cache/scratch/forest-storage/work bounds without
-   new payload.
-4. All four required source cases and classified evidence are complete. Run compiler
-   and strict gates, then update the guide and both handoffs and run final
-   documentation checks.
+1. Add focused capture/source regressions for unary projections through explicitly
+   ascribed record receivers, then extend only observed Unary Projection inputs via
+   `receiver_primary_slot` after ordinary/dispatch lookup. Preserve step zero, exact
+   scalar kind/width/signedness, owners and scope. Keep bare-operand coercion ports
+   distinct and run focused forward-report tests with the integration.
+2. Cover independent projection/operation/result, source publication and receiver
+   initialization/results. Preserve earlier projections before stopped bodies,
+   operation-registration rules, opaque producers and scalar arithmetic results.
+3. Add stale source/header/layout, missing evidence, mixed-cycle and exact map/work
+   regressions in `consumers/primary/`; confirm atomic reports without new payload.
+4. Add required source cases for supported unary kinds, ordering/stops and ordinary
+   rejection/overflow behavior; update classified evidence, run compiler/strict gates,
+   then update the guide and both handoffs and run final documentation checks.
 
-Unary-owned receiver projections, broader aggregate receiver
-paths, contextual record-hint repair, value selection, precise joins, function
-returns, restarts, E225 enforcement and proof outcomes remain separate.
+Broader aggregate receiver paths, contextual record-hint repair, value selection,
+precise joins, function returns, restarts, E225 enforcement and proof outcomes remain
+separate.
 
 ## Documentation conventions and layout
 
@@ -4862,8 +4881,9 @@ are complete. Record dispatch unary/binary, coercion-owned, output-owned and
 contextual-list primary sources and composed-emission dispatch source slots are
 complete, including owned scalar fields and coercion-owned, binary-owned, output-owned
 and contextual-list-owned primary sources through eligible record receivers.
-Composed-emission record-receiver sources are next, following the ordered plan above;
-value selection and broader aggregate provenance remain separate.
+Composed-emission record-receiver sources are complete. Unary-owned receiver primaries
+are next, following the ordered plan above; value selection and broader aggregate
+provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5502,8 +5522,10 @@ value selection and broader aggregate provenance remain separate.
    source cases (`c1c1c9c`, `bf9e509`) are complete. Output receiver links (`072eebd`),
    stages (`79b4e80`), boundaries (`737aefa`) and source cases (`b8aa46b`) are complete;
    contextual-list receiver links (`3b576da`), stages (`1c55795`), boundaries (`69e9e33`)
-   and source cases (`d318485d`) are complete; final gate results are above. Next qualify
-   composed-emission record-receiver sources; broader receiver consumers and value
+   and source cases (`d318485d`) are complete. Receiver composition links (`0c505c6c`),
+   stages (`fc8f83a6`), consumer bounds (`fdd62067`), graphs (`f576207d`), graph bounds
+   (`564e8d13`) and source cases (`c1f73fe5`) are complete; final gate results are above.
+   Next qualify unary-owned receiver primaries; broader receiver consumers and value
    provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
