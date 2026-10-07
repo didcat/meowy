@@ -1,0 +1,13 @@
+d : @"debug"
+tiny <uint8> : 255
+row : {
+    d.print("source")
+    -> tiny
+    -> tag : true
+    d.print("source tail")
+}
+out : row.{
+    d.print("body")
+    value : $ + 1
+    d.print("unreached body")
+}

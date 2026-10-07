@@ -3068,8 +3068,12 @@ cases pass debug/release (`/tmp/meowy-receiver-binary-build.log`,
 `/tmp/meowy-receiver-binary-normal-source.log`). Classified evidence is refreshed;
 all four default checks pass (`/tmp/meowy-receiver-binary-normal-docs.log`). The audit
 preserves 419 prior cases, 492 tracked contract/source/pin files and all 37 reviewed
-hashes (`/tmp/meowy-receiver-binary-preservation.log`). Stopped, overflow and width
-rejection cases are next, followed by final gates and handoffs.
+hashes (`/tmp/meowy-receiver-binary-preservation.log`, normal-case commit `c1c1c9c`).
+Three further required cases pass debug/release for stopped-right P006, checked
+overflow P002 and width-mismatch E213 (`/tmp/meowy-receiver-binary-errors-source.log`).
+Classified evidence is updated and all four default checks pass
+(`/tmp/meowy-receiver-binary-errors-docs.log`). Full compiler/strict gates and final
+guide/handoff updates remain next.
 
 The nested-port fixture in `consumers/primary/receiver_coercions.rs` retains separate
 coercion links for typed copies, typed list elements and unary operands. Its direct
@@ -3091,9 +3095,8 @@ Dependency-ordered commit plan:
 3. Complete: add independently useful stale-header/source, eligibility, mixed-cycle and exact
    shared-budget regressions alongside the binary tests in `consumers/primary/`.
    Confirm atomic failure and unchanged reports/payload with focused tests.
-4. Normal-order/scalar-boundary source cases and classified evidence are complete.
-   Add stopped/overflow/width-rejection cases in a separate reviewable slice. Run
-   compiler and strict gates, then update the guide and both handoffs and run final
+4. All five required source cases and classified evidence are complete. Run compiler
+   and strict gates, then update the guide and both handoffs and run final
    documentation checks.
 
 Unary/output/list/composition-owned receiver projections, broader aggregate receiver

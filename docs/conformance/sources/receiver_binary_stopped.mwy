@@ -1,0 +1,14 @@
+d : @"debug"
+row : 3.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+out : row.{
+    d.print("body")
+    alias : (($))
+    value : alias + { d.print("right"); d.panic("stop") }
+    d.print("unreached body")
+}
+d.print("unreached program")

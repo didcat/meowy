@@ -1,0 +1,4 @@
+small <uint8> : 7
+wide <uint16> : 1
+row : { -> small; -> tag : true }
+out : row.{ value : $ + wide }
