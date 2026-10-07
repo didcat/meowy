@@ -3165,8 +3165,12 @@ receiver stage tests pass alongside stopped prefixes, opaque inputs and empty/mu
 histories. All six list-receiver tests pass
 (`/tmp/meowy-receiver-list-stages.log`). Stopped suffix fixtures use literal context
 selectors because prior narrowing is not retained after a `never` call; existing
-narrowing behavior and reference fixtures are unchanged. Corruption, mixed cycles
-and exact shared limits are next.
+narrowing behavior and reference fixtures are unchanged (stage commit `1c55795`).
+Boundary tests now cover sixteen faults across ordinary/dispatch sources, missing
+eligibility/index evidence, duplicate observations, mixed cycles, independent control,
+checked suffixes after stops and exact map/work limits. All eleven list-receiver
+tests pass (`/tmp/meowy-receiver-list-boundaries.log`). Required source cases and
+classified evidence are next, followed by final gates and handoffs.
 
 The former gap is reproduced by adapting the ambiguous-context fixture in
 `consumers/lists/dispatch.rs` to a list inside a record receiver body. Ordinary typed
@@ -3184,7 +3188,7 @@ Dependency-ordered commit plan:
    and bodies. Keep the list-specific rule requiring operation registration whenever
    construction edges exist, including projection-only reports. Validate opaque
    sources and inner coercion ports in `consumers/lists/`.
-3. Add stale shape/header/source, missing evidence, mixed-cycle and exact shared
+3. Complete: add stale shape/header/source, missing evidence, mixed-cycle and exact shared
    map/work regressions. Confirm checked suffix validation and atomic failure without
    new report payload.
 4. Add required source cases and classified evidence, run compiler and strict gates,
