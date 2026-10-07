@@ -3223,8 +3223,12 @@ are next; consumer and graph boundary coverage remain separate review slices
 (consumer-boundary commit `fdd62067`). Candidate-source regressions now cover deeper
 composition/field chains in both forests, missing links becoming unresolved, and
 empty/multiple histories leading to Unknown slots. All three candidate-source tests
-pass (`/tmp/meowy-receiver-emission-graphs.log`). Source-cache, stale-graph and exact
-scratch/walk/work boundary checks remain next.
+pass (`/tmp/meowy-receiver-emission-graphs.log`, graph commit `f576207d`). Graph boundary
+tests now cover sixteen stale link/source/receiver faults, one source-cache entry per
+composition, mixed cycles and exact map/scratch/forest-storage/work limits. All eight
+candidate-source/graph tests pass (`/tmp/meowy-receiver-emission-graph-bounds.log`).
+Cycle seeds follow checked forwarding/narrowing wrappers before selecting the read.
+Required source cases and classified evidence are next, followed by final gates.
 
 `emission_source_block` remains the shared whole-layout source qualifier for slot
 links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
@@ -3242,10 +3246,10 @@ Dependency-ordered commit plan:
    and destination completion, including initialized prefixes before stopped bodies.
    Preserve direct Value emissions, opaque producers and unknown/empty/multiple
    candidate histories. Validate focused consumer and candidate-source tests.
-3. Consumer boundaries are complete. Verify candidate graphs and source-cache reuse across receiver compositions.
-   Add stale layout/identity, missing evidence, mixed receiver/initializer/composition
-   cycles and exact shared map/cache/scratch/work bounds. Keep consumer and graph
-   boundary slices separate if needed; confirm atomic reports without new payload.
+3. Complete: verify candidate graphs and source-cache reuse across receiver compositions.
+   Consumer and graph regressions cover stale layout/identity, missing evidence,
+   mixed cycles and exact shared map/cache/scratch/forest-storage/work bounds without
+   new payload.
 4. Add required source cases and classified evidence, run compiler and strict gates,
    then update the guide and both handoffs and run final documentation checks.
 
