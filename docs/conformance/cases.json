@@ -4614,6 +4614,28 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "receiver_unary_order",
+      "phase": "run",
+      "source": "sources/receiver_unary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 3\nsource 3\nsource tail 3\n-3\n-3\n-3\nreceiver tail 3\n-3\nreceiver 5\nsource 5\nsource tail 5\n-5\n-5\n-5\nreceiver tail 5\n-5\n-7\n248\n-1.5\nfalse\n-3\n-4\n-6\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "receiver_unary_stopped",
+      "phase": "run",
+      "source": "sources/receiver_unary_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\n-3\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

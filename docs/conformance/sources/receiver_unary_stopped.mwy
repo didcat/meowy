@@ -1,0 +1,15 @@
+d : @"debug"
+<R> : <{ -> <int32>; tag <boolean> }>
+row : 3.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+out : row.{
+    value : -($~<R>)
+    d.print(value)
+    d.panic("stop")
+    later : -($~<R>)
+}
+d.print("unreachable")

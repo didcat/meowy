@@ -1,0 +1,52 @@
+d : @"debug"
+b : @"bits"
+invert : b.not
+<R> : <{ -> <int32>; tag <boolean> }>
+<Small> : <{ -> <int8>; tag <boolean> }>
+<Byte> : <{ -> <uint8>; tag <boolean> }>
+<Decimal> : <{ -> <float32>; tag <boolean> }>
+<Truth> : <{ -> <boolean>; tag <boolean> }>
+receiver <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+
+show <null> : (n <int32>) {
+    row : receiver(n).{
+        d.print("source {n}")
+        -> $
+        -> tag : true
+        d.print("source tail {n}")
+    }
+    out : row.{
+        alias : (($))
+        bare : -$
+        owned : -(alias~<R>)
+        d.print(bare)
+        d.print(owned)
+        inner : $.{ value : -($~<R>); -> value }
+        d.print(inner)
+        -> owned
+        d.print("receiver tail {n}")
+    }
+    d.print(out)
+}
+show(3)
+show(5)
+small <int8> : 7
+signed : { -> small; -> tag : true }
+a : signed.{ d.print(-($~<Small>)) }
+byte <uint8> : 7
+unsigned : { -> byte; -> tag : true }
+c : unsigned.{ d.print(invert($~<Byte>)) }
+number <float32> : 1.5
+decimal : { -> number; -> tag : true }
+e : decimal.{ d.print(-($~<Decimal>)) }
+truth : { -> true; -> tag : true }
+f : truth.{ d.print(!($~<Truth>)) }
+mutable := { -> 3; -> tag : true }
+g : mutable.{
+    mutable = { -> 4; -> tag : true }
+    d.print(-($~<R>))
+    d.print(-mutable)
+}
+row : { -> 6; -> tag : true }
+view : &row
+h : (*view).{ d.print(-($~<R>)) }

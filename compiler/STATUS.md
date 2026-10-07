@@ -3272,8 +3272,14 @@ tests pass (`/tmp/meowy-receiver-unary-stages.log`, stage commit `f2696e83`). Bo
 regressions now cover sixteen late faults across ordinary/dispatch sources, absent
 eligibility/index/ascription evidence, mixed receiver/initializer cycles, independent
 control across all four producers and exact map/work limits. All nine unary-receiver
-tests pass (`/tmp/meowy-receiver-unary-boundaries.log`). Required source cases and
-classified evidence are next, followed by final gates and handoffs.
+tests pass (`/tmp/meowy-receiver-unary-boundaries.log`, boundary commit `8695a59b`).
+The compiler build and two required normal/stopped cases pass debug/release
+(`/tmp/meowy-receiver-unary-build.log`, `/tmp/meowy-receiver-unary-normal-source.log`).
+Classified evidence is refreshed; all four default checks pass
+(`/tmp/meowy-receiver-unary-normal-docs.log`). The audit preserves 436 prior cases,
+509 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-unary-preservation.log`). Error cases are next, then final gates
+and guide/handoff updates.
 
 Dependency-ordered commit plan:
 
@@ -3287,7 +3293,7 @@ Dependency-ordered commit plan:
    operation-registration rules, opaque producers and scalar arithmetic results.
 3. Complete: add stale source/header/layout, missing evidence, mixed-cycle and exact map/work
    regressions in `consumers/primary/`; confirm atomic reports without new payload.
-4. Add required source cases for supported unary kinds and ordering/stops. Add
+4. Normal unary-kind/order/stopped source cases and evidence are complete. Add
    overflow, unsigned-negation and unproven-ascription rejections in a separate
    reviewable slice; update classified evidence for each. Run compiler/strict gates,
    then update the guide and both handoffs and run final documentation checks.
