@@ -28,30 +28,32 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Coercion-owned scalar projections through eligible record receivers now retain the
-original immutable unnamed source slot. The shared body lookup preserves receiver
-scope, initialization and source qualification; captured kind, width and signedness
-must match. Projection, conversion and result observations remain independent.
-The [compiler handoff](compiler/STATUS.md#coercion-owned-record-receiver-primaries)
+Binary-owned scalar projections through eligible record receivers now retain the
+original immutable unnamed source slot. Each operand keeps its original projection
+index and exact kind, width and signedness. Source results, receiver initialization
+and projection/operation/result observations remain independent; earlier links
+survive stopped right operands.
+The [compiler handoff](compiler/STATUS.md#binary-owned-record-receiver-primaries)
 records the reviewed slices and next dependency-ordered plan.
 
-Four new required cases pass debug/release: typed/nullable copies through aliases
-and nested receivers, scalar kinds and mutable/reference/list boundaries,
-source/tail order, stopped-body P006 and incompatible-target E207. Structural links
-remain distinct from observable execution. All ten compiler checks pass: 2767
-library/921 native tests and 62 Python groups
-(`/tmp/meowy-receiver-primary-gate.log`). Conformance has 419 cases: 400 required
+Five new required cases pass debug/release: nested receiver/source/tail order, scalar
+arithmetic/comparisons, mutable snapshots and shared loads, full-record/reference/list/
+union equality, stopped-right P006, checked overflow P002 and width-mismatch E213.
+Structural links remain distinct from observable execution. All ten compiler checks
+pass: 2776 library/921 native tests and 62 Python groups
+(`/tmp/meowy-receiver-binary-gate.log`). Conformance has 424 cases: 405 required
 passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits
-1 only for those exact names and reasons (`/tmp/meowy-receiver-primary-strict.log`).
-All four final guide/handoff checks pass (`/tmp/meowy-receiver-primary-docs.log`).
+1 only for those exact names and reasons (`/tmp/meowy-receiver-binary-strict.log`).
+All four final guide/handoff checks pass (`/tmp/meowy-receiver-binary-docs.log`).
 
-The audit preserves 415 prior cases, 488 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-receiver-primary-preservation.log`). All four source
-slice documentation checks pass (`/tmp/meowy-receiver-primary-source-docs.log`).
+The audit preserves 419 prior cases, 492 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-receiver-binary-preservation.log`). All four checks
+pass for each source slice (`/tmp/meowy-receiver-binary-normal-docs.log`,
+`/tmp/meowy-receiver-binary-errors-docs.log`).
 Loan/proof authority is unchanged. Proof evaluation and full language/release
 qualification remain incomplete.
 
-Next, qualify binary-owned primary sources through eligible record receivers.
+Next, qualify output-owned primary sources through eligible record receivers.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

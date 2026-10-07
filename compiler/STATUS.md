@@ -1,6 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Binary-owned record-receiver primaries are in progress.
+Updated: 2026-10-06. Binary-owned record-receiver primaries are complete;
+output-owned record-receiver primaries are next. Validation is recorded below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3045,61 +3046,84 @@ final guide/handoff checks pass (`/tmp/meowy-receiver-primary-docs.log`). No out
 failures remain. Proof evaluation and full language/release qualification remain
 incomplete.
 
-### Next: binary-owned record-receiver primaries
+### Binary-owned record-receiver primaries
 
-Active series: confirmed on `main` after `735a55f`; untracked `docs/programs/hey/`
-remains excluded. Scalar binary projections now use `receiver_primary_slot` after
-dispatch lookup, preserving each operand's captured kind and original step. No
-capture or prerequisite refactor was needed. Both new tests demonstrated the missing
-link before integration (`/tmp/meowy-receiver-binary-before.log`); all 741 forward-report
-tests now pass (`/tmp/meowy-receiver-binary-integration.log`). Coverage includes both
-positions, scalar kinds, comparisons, nested/guarded scope and independent owners.
-Existing mixed-family tests retain their coercion/field links and admit the binary
-port (integration commit `ceab575`). Independent left/right projection, original
-source result, receiver initialization/result and operation-registration checks are
-now covered, alongside stopped prefixes and empty/multiple/opaque histories. All
-five binary-receiver tests pass (`/tmp/meowy-receiver-binary-stages.log`, stage commit
-`971156b`). Boundary tests now cover fifteen late faults for ordinary/dispatch
-sources, absent eligibility/index evidence, mixed receiver/initializer cycles,
-independent control and exact shared map/work limits without payload growth. All nine
-binary-receiver tests pass (`/tmp/meowy-receiver-binary-boundaries.log`, boundary
-commit `be928f2`). The compiler build and two required normal-order/scalar-boundary
-cases pass debug/release (`/tmp/meowy-receiver-binary-build.log`,
-`/tmp/meowy-receiver-binary-normal-source.log`). Classified evidence is refreshed;
-all four default checks pass (`/tmp/meowy-receiver-binary-normal-docs.log`). The audit
-preserves 419 prior cases, 492 tracked contract/source/pin files and all 37 reviewed
-hashes (`/tmp/meowy-receiver-binary-preservation.log`, normal-case commit `c1c1c9c`).
-Three further required cases pass debug/release for stopped-right P006, checked
-overflow P002 and width-mismatch E213 (`/tmp/meowy-receiver-binary-errors-source.log`).
-Classified evidence is updated and all four default checks pass
-(`/tmp/meowy-receiver-binary-errors-docs.log`). Full compiler/strict gates and final
-guide/handoff updates remain next.
+Observed scalar binary projections now use `receiver_primary_slot` after ordinary
+and dispatch lookup. Each original operand index and scalar kind is preserved,
+including comparisons whose result is boolean. The immutable unnamed source slot
+must match kind, width and signedness. Original source results and consuming receiver
+initialization remain required independently; consuming receiver results, binary
+operation/results and the other operand's projection never imply a link.
 
-The nested-port fixture in `consumers/primary/receiver_coercions.rs` retains separate
-coercion links for typed copies, typed list elements and unary operands. Its direct
-`$ + 1` previously had an observed binary-owned projection but no source link. Scalar binary
-inputs already retain their own kinds and original operand indices, so the next
-step can reuse `receiver_primary_slot` without changing capture or generic lookup.
+Projection-only reports need no binary-operation registration. A left projection
+survives a stopped right operand. Inner coercions keep their own ports; generic
+receiver forwarding, full-record equality, nonscalar sources, mutable/reference
+paths and arithmetic results retain their boundaries. Empty/multiple histories
+select no value. Shared map/work limits and atomic failure add no payload or
+loan/proof authority.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Link binary primary projections through record receivers | `ceab575` |
+| Preserve independent stages and opaque sources | `971156b` |
+| Bound source links and reject stale metadata | `be928f2` |
+| Cover receiver order and scalar boundaries | `c1c1c9c` |
+| Cover stops, overflow and width errors | `bf9e509` |
+
+Both new integration tests demonstrated the missing link before the change
+(`/tmp/meowy-receiver-binary-before.log`); all 741 forward-report tests pass after
+integration (`/tmp/meowy-receiver-binary-integration.log`). Nine focused tests cover
+operand positions/types, nested/guarded scope, independent owners and stages,
+fifteen late faults across ordinary/dispatch sources, missing eligibility/index
+evidence, mixed receiver/initializer cycles, independent control and exact shared
+map/work limits (`/tmp/meowy-receiver-binary-stages.log`,
+`/tmp/meowy-receiver-binary-boundaries.log`).
+
+Five required cases pass debug/release for nested receiver/source/tail order, scalar
+arithmetic/comparisons, mutable snapshots and shared loads, full-record/reference/list/
+union equality, stopped-right P006, checked overflow P002 and width-mismatch E213
+(`/tmp/meowy-receiver-binary-normal-source.log`,
+`/tmp/meowy-receiver-binary-errors-source.log`). The audit preserves 419 prior cases,
+492 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-binary-preservation.log`). Capability pins and proof obligations
+are unchanged; unrelated `docs/programs/hey/` remains excluded.
+
+All four documentation checks pass for both source slices
+(`/tmp/meowy-receiver-binary-normal-docs.log`, `/tmp/meowy-receiver-binary-errors-docs.log`).
+All ten compiler checks pass: formatting, all-target Clippy, 2776 library/921 native
+tests, 62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-receiver-binary-gate.log`). All 748 forward-report tests pass. Conformance
+has 424 cases: 405 required passes, 19 unchanged pinned gaps and zero failures in
+debug/release. Strict mode exits 1 only for the 19 pinned names and reasons
+(`/tmp/meowy-receiver-binary-strict.log`). All four final guide/handoff checks pass
+(`/tmp/meowy-receiver-binary-docs.log`). No outstanding failures remain. Proof
+evaluation and full language/release qualification remain incomplete.
+
+### Next: output-owned record-receiver primaries
+
+The mixed-family fixtures in `consumers/fields/receivers.rs` and
+`consumers/primary/receiver_coercions.rs` still retain observed `d.print($)` projections
+without receiver source links. Output reports already capture each formatting input's
+primary shape and original part index. The output branch in `consumers.rs` can reuse
+`receiver_primary_slot` after dispatch lookup, preserving whole-producer validation.
 
 Dependency-ordered commit plan:
 
-1. Complete: extend only observed scalar binary Projection inputs in `consumers.rs` through
-   `receiver_primary_slot` after ordinary and dispatch lookup. Keep step zero/one,
-   operand kinds (including comparisons), independent owners and existing receiver
-   qualification. Include both operand positions and nested/guarded receiver tests
-   with the behavior change; run focused forward-report tests.
-2. Complete: cover independent left/right projections, operation/result observations, original
-   source results and receiver initialization. Preserve a left projection before a
-   stopped right operand. Keep full-record equality and nonscalar inputs opaque;
-   nested coercions retain their own ports. Validate focused stage/opacity tests.
-3. Complete: add independently useful stale-header/source, eligibility, mixed-cycle and exact
-   shared-budget regressions alongside the binary tests in `consumers/primary/`.
-   Confirm atomic failure and unchanged reports/payload with focused tests.
-4. All five required source cases and classified evidence are complete. Run compiler
-   and strict gates, then update the guide and both handoffs and run final
-   documentation checks.
+1. Extend only observed scalar output Projection inputs through the shared receiver
+   primary lookup. Preserve sparse original formatting indices, scalar kind/width/
+   signedness, independent owners and qualified receiver scope. Include normal and
+   panic output, more than two projections and nested/guarded receiver tests with
+   the behavior change; run focused forward-report tests.
+2. Cover independent projection/output/terminal/panic-prefix visits, original source
+   results and receiver initialization. Preserve earlier projections before stopped
+   parts and bodies; keep projection-only registration rules and nested coercion
+   ports unchanged. Validate focused stage/opacity tests in `consumers/outputs/`.
+3. Add stale shape/header/source, missing evidence, mixed-cycle and exact shared
+   map/work regressions. Confirm atomic failure and unchanged reports/payload.
+4. Add required source cases and classified evidence, run compiler and strict gates,
+   then update the guide and both handoffs and run final documentation checks.
 
-Unary/output/list/composition-owned receiver projections, broader aggregate receiver
+Unary/list/composition-owned receiver projections, broader aggregate receiver
 paths, contextual record-hint repair, value selection, precise joins, function
 returns, restarts, E225 enforcement and proof outcomes remain separate.
 
@@ -4697,10 +4721,10 @@ visits are complete. Tagged dispatch histories and scalar dispatch visits are al
 complete. Initialized scalar receiver inputs and record dispatch scalar field sources
 are complete. Record dispatch unary/binary, coercion-owned, output-owned and
 contextual-list primary sources and composed-emission dispatch source slots are
-complete, including owned scalar fields and coercion-owned primary sources through
-eligible record receivers. Binary-owned record-receiver primaries are next, following
-the ordered plan above; value selection and broader aggregate provenance remain
-separate.
+complete, including owned scalar fields and coercion-owned and binary-owned primary
+sources through eligible record receivers. Output-owned record-receiver primaries
+are next, following the ordered plan above; value selection and broader aggregate
+provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5335,8 +5359,10 @@ separate.
    (`44e4887`), boundaries (`cc0243a`, `4ee0fac`), source cases (`df73b72`) and visibility
    (`cd93c4e`) are complete. Receiver body sharing (`683b88c`), coercion-primary links
    (`185eb65`), boundaries (`7be796d`) and source cases (`645d23d`) are complete;
-   final gate results are above. Next qualify binary-owned record-receiver primaries;
-   broader receiver consumers and value provenance remain separate.
+   binary receiver links (`ceab575`), stages (`971156b`), boundaries (`be928f2`) and
+   source cases (`c1c1c9c`, `bf9e509`) are complete; final gate results are above.
+   Next qualify output-owned record-receiver primaries; broader receiver consumers
+   and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

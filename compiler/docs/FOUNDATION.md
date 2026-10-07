@@ -654,10 +654,26 @@ Empty and multiple histories keep their meaning, and arithmetic result values re
 opaque. Full-record equality adds no primary projection; nonscalar primaries, calls,
 reference loads and mutable reads retain their existing boundaries.
 
-Output, list and composed-emission consumers retain their ordinary block paths;
-coercion-owned dispatch links are described below. Projected coercions do not become
-transparent wrappers. Source cases preserve receiver/tail order, scalar kinds and
-bare arithmetic results, guarded `$` scopes,
+Scalar binary projections also follow eligible record receivers through the shared
+receiver-body lookup. Each original operand index and scalar kind is preserved,
+including comparisons whose result is boolean. The source must have an immutable
+unnamed slot zero of the same kind, width and signedness. Each original source result
+and consuming receiver initialization is required independently; consuming dispatch
+results, binary operation/results and the other operand's projection imply no link.
+Projection-only reports need no binary-operation registration. Inner coercions keep
+their own ports, and arithmetic results remain opaque.
+
+Both operand positions, nested/guarded scope, separate owners, empty/multiple
+histories and stopped-right prefixes have structural coverage. Late corruption,
+missing evidence, mixed receiver/initializer cycles and exact map/work limits preserve
+atomic reports without new payload or proof authority. Required cases preserve
+receiver/source/tail order, scalar arithmetic/comparisons, mutable snapshots, shared
+loads, full-record/reference/list/union equality, stopped-right P006, checked overflow
+P002 and width-mismatch E213.
+
+Output, list, composed-emission and coercion dispatch links are described below.
+Projected coercions do not become transparent wrappers. Source cases preserve
+receiver/tail order, scalar kinds and bare arithmetic results, guarded `$` scopes,
 unsigned-negation E222, stopped-right-operand P006 and checked primary-negation P002.
 The order case explicitly ascribes the right dispatch's record type: an unannotated
 right dispatch can receive a scalar construction hint and reject named fields with
@@ -832,9 +848,9 @@ kind exactly, including width and signedness. Original source results remain req
 the consuming receiver's result is independent of its initialization. Coercion
 projection, conversion and result observations remain independent as well.
 
-Only coercion-owned projections use this receiver-primary path. Inner typed-element
-and operand coercions retain their own ports; generic receiver forwarding and other
-consumer families keep their existing limits. Mutable/reference/list paths remain
+Coercion-owned and scalar binary projections use this receiver-primary path. Inner
+typed-element and operand coercions retain their own ports; generic receiver forwarding
+and other consumer families keep their existing limits. Mutable/reference/list paths remain
 opaque. Empty and multiple candidate histories are preserved without selecting a
 value. Shared map/work bounds and atomic failure apply without new report payload.
 Structural checks cover stale shapes, owners, eligibility, mixed cycles and exact
