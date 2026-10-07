@@ -1,0 +1,43 @@
+d : @"debug"
+mark <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+show <null> : (n <int32>) {
+    row : mark(n).{
+        d.print("source")
+        -> $
+        -> tag : true
+        d.print("source tail")
+    }
+    out : row.{
+        copy : (($))
+        d.print("parts {copy}|{1}|{$}|{(($))}")
+        inner : $.{ d.print("inner {$}") }
+        d.print("after {copy}")
+        d.print("receiver tail")
+    }
+}
+show(3)
+show(5)
+small <uint8> : 255
+number <float32> : 1.5
+byte : small.{ -> $; -> tag : true }
+decimal : { -> number; -> tag : true }
+truth : { -> true; -> tag : true }
+text : { -> "cat"; -> tag : true }
+empty : { -> tag : true }
+a : byte.{ d.print($) }
+b : decimal.{ d.print($) }
+c : truth.{ d.print($) }
+e : text.{ d.print($) }
+f : empty.{ d.print($) }
+mutable := { -> 3; -> tag : true }
+g : mutable.{
+    mutable = { -> 4; -> tag : true }
+    d.print("snapshot {$}/{mutable}")
+}
+view : &byte
+h : (*view).{ d.print($) }
+value <int32><null> : 1
+maybe : { -> value; -> tag : true }
+i : maybe.{ d.print($) }
+choose := true
+j : byte.{ | choose | d.print($); | !choose | $.{ d.print($) } }

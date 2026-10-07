@@ -3116,8 +3116,16 @@ commit `79b4e80`). Boundary tests now cover fifteen faults across ordinary/dispa
 sources, missing eligibility/index evidence, duplicate observations, mixed cycles,
 independent control, checked suffixes after stops and exact map/work limits without
 new payload. All ten output-receiver tests pass
-(`/tmp/meowy-receiver-output-boundaries.log`). Required source cases and classified
-evidence are next, followed by final gates and handoffs.
+(`/tmp/meowy-receiver-output-boundaries.log`, boundary commit `737aefa`). The compiler
+build and four required source cases pass debug/release for formatting/source/tail
+order, nested/guarded receivers, scalar kinds and opaque snapshots/loads/nullable
+values, panic message operands, stopped-prefix P006 and checked-suffix E201
+(`/tmp/meowy-receiver-output-build.log`, `/tmp/meowy-receiver-output-source.log`).
+Classified evidence is refreshed and all four default checks pass
+(`/tmp/meowy-receiver-output-source-docs.log`). The audit preserves 424 prior cases,
+497 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-output-preservation.log`). Full compiler/strict gates and final
+guide/handoff updates remain next.
 
 The mixed-family fixtures in `consumers/fields/receivers.rs` and
 `consumers/primary/receiver_coercions.rs` previously retained observed `d.print($)` projections
@@ -3138,8 +3146,9 @@ Dependency-ordered commit plan:
    ports unchanged. Validate focused stage/opacity tests in `consumers/outputs/`.
 3. Complete: add stale shape/header/source, missing evidence, mixed-cycle and exact shared
    map/work regressions. Confirm atomic failure and unchanged reports/payload.
-4. Add required source cases and classified evidence, run compiler and strict gates,
-   then update the guide and both handoffs and run final documentation checks.
+4. All four required source cases and classified evidence are complete. Run compiler
+   and strict gates, then update the guide and both handoffs and run final
+   documentation checks.
 
 Unary/list/composition-owned receiver projections, broader aggregate receiver
 paths, contextual record-hint repair, value selection, precise joins, function

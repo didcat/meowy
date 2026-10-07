@@ -1,0 +1,16 @@
+d : @"debug"
+row : 3.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+out : row.{
+    alias : (($))
+    d.panic("a{alias}b{($.{
+        d.print("nested body")
+        -> $ + 1
+        d.print("nested tail")
+    })}c{$}")
+    d.print("unreached body")
+}

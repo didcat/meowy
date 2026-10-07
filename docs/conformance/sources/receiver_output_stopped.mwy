@@ -1,0 +1,12 @@
+d : @"debug"
+row : {
+    d.print("ready")
+    -> 3
+    -> tag : true
+    d.print("ready tail")
+}
+late <int32> : () { d.print("unreached operand"); -> 9 }
+out : row.{
+    d.print("prefix {$}|{({ d.print("right"); d.panic("stop") })}|{$}|{late()} end")
+    d.print("unreached body")
+}

@@ -1,0 +1,3 @@
+d : @"debug"
+row : { -> 3; -> tag : true }
+out : row.{ d.print("prefix {$}|{d.panic("stop")}|{missing} end") }

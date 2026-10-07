@@ -4486,6 +4486,50 @@
         "code": "E213"
       },
       "reference": "../reference/types.md#inference-and-assignment"
+    },
+    {
+      "id": "receiver_output_order",
+      "phase": "run",
+      "source": "sources/receiver_output_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 3\nsource\nsource tail\nparts 3|1|3|3\ninner 3\nafter 3\nreceiver tail\nreceiver 5\nsource\nsource tail\nparts 5|1|5|5\ninner 5\nafter 5\nreceiver tail\n255\n1.5\ntrue\ncat\nnull\nsnapshot 3/4\n255\n1\n255\n"
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "receiver_output_panic",
+      "phase": "run",
+      "source": "sources/receiver_output_panic.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nnested body\nnested tail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "receiver_output_stopped",
+      "phase": "run",
+      "source": "sources/receiver_output_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "ready\nready tail\nprefix 3|right\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/stdlib/core.md#output-and-text"
+    },
+    {
+      "id": "receiver_output_checked_tail",
+      "phase": "check",
+      "source": "sources/receiver_output_checked_tail.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E201"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
     }
   ]
 }
