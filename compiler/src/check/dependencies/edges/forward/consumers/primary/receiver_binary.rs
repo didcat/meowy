@@ -1,6 +1,8 @@
 use super::{super::tests::checked, *};
 use std::collections::BTreeSet;
 
+mod stages;
+
 #[test]
 pub(crate) fn receiver_binary_primaries_keep_operand_positions_types_and_independent_owners() {
     for (init, dispatch) in [("{->3;->tag:true}", false), ("3.{->$;->tag:true}", true)] {

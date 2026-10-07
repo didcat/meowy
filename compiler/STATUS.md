@@ -3055,11 +3055,15 @@ link before integration (`/tmp/meowy-receiver-binary-before.log`); all 741 forwa
 tests now pass (`/tmp/meowy-receiver-binary-integration.log`). Coverage includes both
 positions, scalar kinds, comparisons, nested/guarded scope and independent owners.
 Existing mixed-family tests retain their coercion/field links and admit the binary
-port. Independent stages and stopped/opaque inputs are next.
+port (integration commit `ceab575`). Independent left/right projection, original
+source result, receiver initialization/result and operation-registration checks are
+now covered, alongside stopped prefixes and empty/multiple/opaque histories. All
+five binary-receiver tests pass (`/tmp/meowy-receiver-binary-stages.log`). Corruption,
+mixed cycles and exact shared limits are next.
 
 The nested-port fixture in `consumers/primary/receiver_coercions.rs` retains separate
 coercion links for typed copies, typed list elements and unary operands. Its direct
-`$ + 1` has an observed binary-owned projection but no source link. Scalar binary
+`$ + 1` previously had an observed binary-owned projection but no source link. Scalar binary
 inputs already retain their own kinds and original operand indices, so the next
 step can reuse `receiver_primary_slot` without changing capture or generic lookup.
 
@@ -3070,7 +3074,7 @@ Dependency-ordered commit plan:
    operand kinds (including comparisons), independent owners and existing receiver
    qualification. Include both operand positions and nested/guarded receiver tests
    with the behavior change; run focused forward-report tests.
-2. Cover independent left/right projections, operation/result observations, original
+2. Complete: cover independent left/right projections, operation/result observations, original
    source results and receiver initialization. Preserve a left projection before a
    stopped right operand. Keep full-record equality and nonscalar inputs opaque;
    nested coercions retain their own ports. Validate focused stage/opacity tests.
