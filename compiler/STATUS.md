@@ -3058,8 +3058,12 @@ Existing mixed-family tests retain their coercion/field links and admit the bina
 port (integration commit `ceab575`). Independent left/right projection, original
 source result, receiver initialization/result and operation-registration checks are
 now covered, alongside stopped prefixes and empty/multiple/opaque histories. All
-five binary-receiver tests pass (`/tmp/meowy-receiver-binary-stages.log`). Corruption,
-mixed cycles and exact shared limits are next.
+five binary-receiver tests pass (`/tmp/meowy-receiver-binary-stages.log`, stage commit
+`971156b`). Boundary tests now cover fifteen late faults for ordinary/dispatch
+sources, absent eligibility/index evidence, mixed receiver/initializer cycles,
+independent control and exact shared map/work limits without payload growth. All nine
+binary-receiver tests pass (`/tmp/meowy-receiver-binary-boundaries.log`). Required
+source cases and classified evidence are next.
 
 The nested-port fixture in `consumers/primary/receiver_coercions.rs` retains separate
 coercion links for typed copies, typed list elements and unary operands. Its direct
@@ -3078,11 +3082,13 @@ Dependency-ordered commit plan:
    source results and receiver initialization. Preserve a left projection before a
    stopped right operand. Keep full-record equality and nonscalar inputs opaque;
    nested coercions retain their own ports. Validate focused stage/opacity tests.
-3. Add independently useful stale-header/source, eligibility, mixed-cycle and exact
+3. Complete: add independently useful stale-header/source, eligibility, mixed-cycle and exact
    shared-budget regressions alongside the binary tests in `consumers/primary/`.
    Confirm atomic failure and unchanged reports/payload with focused tests.
-4. Add required source cases and classified evidence, run compiler and strict gates,
-   then update the guide and both handoffs and run final documentation checks.
+4. Add required normal-order/scalar-boundary source cases and classified evidence.
+   Add stopped/overflow/width-rejection cases in a separate reviewable slice. Run
+   compiler and strict gates, then update the guide and both handoffs and run final
+   documentation checks.
 
 Unary/output/list/composition-owned receiver projections, broader aggregate receiver
 paths, contextual record-hint repair, value selection, precise joins, function
