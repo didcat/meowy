@@ -3111,8 +3111,13 @@ sparse projections, scalar kinds, nested/guarded receiver scope and independent
 owners (integration commit `072eebd`). Existing field/coercion ports remain distinct.
 Independent projection/output/terminal/prefix, source result and receiver stage tests
 are covered alongside stopped prefixes, opaque inputs and empty/multiple histories.
-All five output-receiver tests pass (`/tmp/meowy-receiver-output-stages.log`).
-Corruption, mixed cycles and exact shared limits are next.
+All five output-receiver tests pass (`/tmp/meowy-receiver-output-stages.log`, stage
+commit `79b4e80`). Boundary tests now cover fifteen faults across ordinary/dispatch
+sources, missing eligibility/index evidence, duplicate observations, mixed cycles,
+independent control, checked suffixes after stops and exact map/work limits without
+new payload. All ten output-receiver tests pass
+(`/tmp/meowy-receiver-output-boundaries.log`). Required source cases and classified
+evidence are next, followed by final gates and handoffs.
 
 The mixed-family fixtures in `consumers/fields/receivers.rs` and
 `consumers/primary/receiver_coercions.rs` previously retained observed `d.print($)` projections
@@ -3131,7 +3136,7 @@ Dependency-ordered commit plan:
    results and receiver initialization. Preserve earlier projections before stopped
    parts and bodies; keep projection-only registration rules and nested coercion
    ports unchanged. Validate focused stage/opacity tests in `consumers/outputs/`.
-3. Add stale shape/header/source, missing evidence, mixed-cycle and exact shared
+3. Complete: add stale shape/header/source, missing evidence, mixed-cycle and exact shared
    map/work regressions. Confirm atomic failure and unchanged reports/payload.
 4. Add required source cases and classified evidence, run compiler and strict gates,
    then update the guide and both handoffs and run final documentation checks.

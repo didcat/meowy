@@ -1,5 +1,6 @@
 use super::*;
 
+mod boundaries;
 mod stages;
 
 #[test]
