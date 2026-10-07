@@ -3108,11 +3108,14 @@ was needed. Both new regressions demonstrated missing links before integration
 (`/tmp/meowy-receiver-output-before.log`); all 750 forward-report tests now pass
 (`/tmp/meowy-receiver-output-integration.log`). Coverage includes print/panic, three
 sparse projections, scalar kinds, nested/guarded receiver scope and independent
-owners. Existing field/coercion ports remain distinct. Independent output stages,
-stopped prefixes and opaque inputs are next.
+owners (integration commit `072eebd`). Existing field/coercion ports remain distinct.
+Independent projection/output/terminal/prefix, source result and receiver stage tests
+are covered alongside stopped prefixes, opaque inputs and empty/multiple histories.
+All five output-receiver tests pass (`/tmp/meowy-receiver-output-stages.log`).
+Corruption, mixed cycles and exact shared limits are next.
 
 The mixed-family fixtures in `consumers/fields/receivers.rs` and
-`consumers/primary/receiver_coercions.rs` still retain observed `d.print($)` projections
+`consumers/primary/receiver_coercions.rs` previously retained observed `d.print($)` projections
 without receiver source links. Output reports already capture each formatting input's
 primary shape and original part index. The output branch in `consumers.rs` can reuse
 `receiver_primary_slot` after dispatch lookup, preserving whole-producer validation.
@@ -3124,7 +3127,7 @@ Dependency-ordered commit plan:
    signedness, independent owners and qualified receiver scope. Include normal and
    panic output, more than two projections and nested/guarded receiver tests with
    the behavior change; run focused forward-report tests.
-2. Cover independent projection/output/terminal/panic-prefix visits, original source
+2. Complete: cover independent projection/output/terminal/panic-prefix visits, original source
    results and receiver initialization. Preserve earlier projections before stopped
    parts and bodies; keep projection-only registration rules and nested coercion
    ports unchanged. Validate focused stage/opacity tests in `consumers/outputs/`.

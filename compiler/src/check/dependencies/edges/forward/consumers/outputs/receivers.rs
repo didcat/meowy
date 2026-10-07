@@ -1,5 +1,7 @@
 use super::*;
 
+mod stages;
+
 #[test]
 pub(crate) fn receiver_output_primaries_keep_sparse_parts_shapes_and_independent_owners() {
     for (init, dispatch) in [("{->3;->tag:true}", false), ("3.{->$;->tag:true}", true)] {
