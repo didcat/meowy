@@ -3159,8 +3159,14 @@ new regressions demonstrated missing links before integration
 (`/tmp/meowy-receiver-list-before.log`); all 760 forward-report tests now pass
 (`/tmp/meowy-receiver-list-integration.log`). Coverage includes later context selection,
 three sparse projections, nested/guarded receivers, scalar kinds and independent
-owners. Construction-registration rules remain unchanged. Independent stages,
-stopped prefixes and opaque inputs are next.
+owners (integration commit `3b576da`). Construction-registration rules remain
+unchanged. Independent projection/conversion/construction/result, source result and
+receiver stage tests pass alongside stopped prefixes, opaque inputs and empty/multiple
+histories. All six list-receiver tests pass
+(`/tmp/meowy-receiver-list-stages.log`). Stopped suffix fixtures use literal context
+selectors because prior narrowing is not retained after a `never` call; existing
+narrowing behavior and reference fixtures are unchanged. Corruption, mixed cycles
+and exact shared limits are next.
 
 The former gap is reproduced by adapting the ambiguous-context fixture in
 `consumers/lists/dispatch.rs` to a list inside a record receiver body. Ordinary typed
@@ -3173,7 +3179,7 @@ Dependency-ordered commit plan:
    scope. Include multiple candidate list contexts selected by a later input, more
    than two projections, scalar kinds and nested/guarded receivers with the behavior
    change; run focused forward-report tests.
-2. Cover independent projection/conversion/construction/result visits, source results
+2. Complete: cover independent projection/conversion/construction/result visits, source results
    and receiver initialization. Preserve earlier projections before stopped elements
    and bodies. Keep the list-specific rule requiring operation registration whenever
    construction edges exist, including projection-only reports. Validate opaque
