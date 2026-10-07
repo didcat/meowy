@@ -28,31 +28,31 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Output-owned scalar projections through eligible record receivers now retain the
-original immutable unnamed source slot. Each formatting part keeps its original
+Contextual-list-owned scalar projections through eligible record receivers now
+retain the original immutable unnamed source slot. Each element keeps its original
 index and exact kind, width and signedness. Source results, receiver initialization
-and projection/output/terminal/prefix observations remain independent; earlier links
-survive stopped parts and bodies, with checked suffixes still validated.
-The [compiler handoff](compiler/STATUS.md#output-owned-record-receiver-primaries)
+and list-stage observations remain independent. Operation registration remains
+mandatory whenever construction edges exist; stopped suffixes stay checked.
+The [compiler handoff](compiler/STATUS.md#contextual-list-owned-record-receiver-primaries)
 records the reviewed slices and next dependency-ordered plan.
 
-Four new required cases pass debug/release: nested/guarded receiver and formatting
-order, scalar/nullable formatting, mutable snapshots and shared loads, panic operands,
-stopped-prefix P006 and checked-suffix E201. Structural links remain distinct from
-observable execution. All ten compiler checks pass: 2786 library/921 native tests
-and 62 Python groups (`/tmp/meowy-receiver-output-gate.log`). Conformance has 428
-cases: 409 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
+Four new required cases pass debug/release: nested receiver/list/source/tail order,
+scalar kinds, mutable snapshots and shared loads, list-valued primaries,
+stopped-element P006 and incompatible-width E207. Structural links remain distinct
+from observable execution. All ten compiler checks pass: 2797 library/921 native tests
+and 62 Python groups (`/tmp/meowy-receiver-list-gate.log`). Conformance has 432 cases:
+413 required passes, 19 unchanged pinned gaps and zero failures in debug/release.
 Strict mode exits 1 only for those exact names and reasons
-(`/tmp/meowy-receiver-output-strict.log`). All four final guide/handoff checks pass
-(`/tmp/meowy-receiver-output-docs.log`).
+(`/tmp/meowy-receiver-list-strict.log`). All four final guide/handoff checks pass
+(`/tmp/meowy-receiver-list-docs.log`).
 
-The audit preserves 424 prior cases, 497 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-receiver-output-preservation.log`). All four source
-slice documentation checks pass (`/tmp/meowy-receiver-output-source-docs.log`).
+The audit preserves 428 prior cases, 501 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-receiver-list-preservation.log`). All four source
+slice documentation checks pass (`/tmp/meowy-receiver-list-source-docs.log`).
 Loan/proof authority is unchanged. Proof evaluation and full language/release
 qualification remain incomplete.
 
-Next, qualify contextual-list-owned primary sources through eligible record receivers.
+Next, qualify composed-emission sources through eligible record receivers.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

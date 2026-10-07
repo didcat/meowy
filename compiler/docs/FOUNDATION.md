@@ -848,11 +848,12 @@ kind exactly, including width and signedness. Original source results remain req
 the consuming receiver's result is independent of its initialization. Coercion
 projection, conversion and result observations remain independent as well.
 
-Coercion-owned, scalar binary and output projections share this receiver-primary path.
-Inner typed-element and operand coercions retain their own ports; generic receiver
-forwarding and other consumer families keep their limits. Mutable/reference/list paths remain
-opaque. Empty and multiple candidate histories are preserved without selecting a
-value. Shared map/work bounds and atomic failure apply without new report payload.
+Coercion-owned, scalar binary, output and contextual-list projections share this
+receiver-primary path. Inner typed-element and operand coercions retain their own
+ports; generic receiver forwarding and other consumer families keep their limits.
+Mutable/reference/list-valued source paths remain opaque. Empty and multiple candidate
+histories are preserved without selecting a value. Shared map/work bounds and atomic
+failure apply without new report payload.
 Structural checks cover stale shapes, owners, eligibility, mixed cycles and exact
 budgets. Required cases cover aliases, nested receivers, scalar copies, source/tail
 order, incompatible targets and stopped bodies; they do not establish proof answers.
@@ -952,6 +953,23 @@ receiver/tail and list order across owners, scalar kinds, mutable snapshots, lis
 primaries, stopped-dispatch P006 and incompatible-width E207. Source conflicts,
 initializer cycles, independent control and exact shared budgets are structural
 evidence only.
+
+Observed scalar contextual-list projections also follow eligible record receivers.
+Each list-owned port retains its original element index and matches the source's
+immutable unnamed slot zero against the captured kind, width and signedness. Source
+results and receiver initialization remain required independently of consuming
+receiver results and list projection/conversion/construction/result observations.
+The list-specific operation-registration requirement remains in force whenever
+construction edges exist, including projection-only reports.
+
+Earlier projections survive stopped elements and bodies; every checked suffix
+retains complete producer validation. Ordinary typed-element coercions keep their
+own ports. Mutable sources, calls, parameters, reference loads and nonscalar primaries
+remain opaque. Empty/multiple histories select no value. Missing evidence, stale
+identities/layouts, duplicate visits, mixed cycles, independent control and exact
+map/work bounds preserve atomic reports without new payload or loan/proof authority.
+Required cases preserve nested/guarded receiver and list order, scalar kinds,
+snapshots/shared loads, list-valued primaries, stopped-element P006 and width E207.
 
 Composed emissions now link each observed initialized `Emission(EmitId)` port to
 the original source block's primary slot zero or named field slot `index + 1`.
