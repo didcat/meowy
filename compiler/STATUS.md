@@ -3227,8 +3227,16 @@ pass (`/tmp/meowy-receiver-emission-graphs.log`, graph commit `f576207d`). Graph
 tests now cover sixteen stale link/source/receiver faults, one source-cache entry per
 composition, mixed cycles and exact map/scratch/forest-storage/work limits. All eight
 candidate-source/graph tests pass (`/tmp/meowy-receiver-emission-graph-bounds.log`).
-Cycle seeds follow checked forwarding/narrowing wrappers before selecting the read.
-Required source cases and classified evidence are next, followed by final gates.
+Cycle seeds follow checked forwarding/narrowing wrappers before selecting the read
+(graph-boundary commit `564e8d13`). The compiler build and four required source cases
+pass debug/release for nested receiver/composition/tail order, scalar/aggregate and
+mutable copies, empty records/branches, stopped-destination P006 and duplicate-field
+E205 (`/tmp/meowy-receiver-emission-build.log`, `/tmp/meowy-receiver-emission-source.log`).
+Classified evidence is refreshed and all four default checks pass
+(`/tmp/meowy-receiver-emission-source-docs.log`). The audit preserves 432 prior cases,
+505 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-emission-preservation.log`). Full compiler/strict gates and final
+guide/handoff updates remain next.
 
 `emission_source_block` remains the shared whole-layout source qualifier for slot
 links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
@@ -3250,8 +3258,9 @@ Dependency-ordered commit plan:
    Consumer and graph regressions cover stale layout/identity, missing evidence,
    mixed cycles and exact shared map/cache/scratch/forest-storage/work bounds without
    new payload.
-4. Add required source cases and classified evidence, run compiler and strict gates,
-   then update the guide and both handoffs and run final documentation checks.
+4. All four required source cases and classified evidence are complete. Run compiler
+   and strict gates, then update the guide and both handoffs and run final
+   documentation checks.
 
 Unary-owned receiver projections, broader aggregate receiver
 paths, contextual record-hint repair, value selection, precise joins, function

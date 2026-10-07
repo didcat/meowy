@@ -1,0 +1,38 @@
+d : @"debug"
+small <uint8> : 255
+byte : small.{ -> $; -> tag : true }
+a : byte.{ copy : { -> $ }; d.print(copy) }
+number <float32> : 1.5
+decimal : { -> number; -> tag : true }
+b : decimal.{ copy : { -> $ }; d.print(copy) }
+text : { -> "cat"; -> tag : true }
+c : text.{ copy : { -> $ }; d.print(copy) }
+mutable : { -> n := 1 }
+e : mutable.{
+    copy : { -> $ }
+    copy.n = 2
+    d.print(copy.n)
+    d.print($.n)
+}
+list : { -> [1, 2]; -> inner : { -> n : 4 } }
+f : list.{
+    copy : { -> $ }
+    items <int32[2]> : copy
+    d.print(items[2])
+    d.print(copy.inner.n)
+}
+empty <{}> : 3.{}
+g : empty.{ copy : { -> $ }; d.print(copy == empty) }
+row : { -> 5; -> tag : true }
+view : &row
+h : (*view).{ copy : { -> $ }; d.print(copy) }
+
+choose <null> : (flag <boolean>) {
+    row : flag.{
+        | $ | -> n : 1
+        | !$ | -> n : 2
+    }
+    out : row.{ copy : { -> $ }; d.print(copy.n) }
+}
+choose(true)
+choose(false)

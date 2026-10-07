@@ -1,0 +1,8 @@
+source : { -> z : 11; -> a : true; -> 3 }
+out : source.{
+    alias : (($))
+    copy : 'made {
+        { 'made -> ((alias)) }
+        -> a : false
+    }
+}

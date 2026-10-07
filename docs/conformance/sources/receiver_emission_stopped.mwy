@@ -1,0 +1,24 @@
+d : @"debug"
+show <null> : (fail <boolean>) {
+    row : 3.{
+        d.print("source body")
+        -> $
+        -> tag : true
+        d.print("source tail")
+    }
+    out : row.{
+        copy : {
+            -> $
+            d.print("copied")
+            | fail | d.panic("stopped destination")
+            -> extra : 9
+            d.print("copy tail")
+        }
+        d.print(copy)
+        d.print(copy.extra)
+        d.print("receiver tail")
+    }
+}
+show(false)
+show(true)
+d.print("unreachable")
