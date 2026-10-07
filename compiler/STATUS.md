@@ -3210,8 +3210,11 @@ Both new regressions demonstrated missing links before integration
 (`/tmp/meowy-receiver-emission-before.log`); all 771 forward-report tests now pass
 (`/tmp/meowy-receiver-emission-integration.log`). Coverage includes exact sorted slots,
 EmitIds, nested/guarded receivers, named destinations, independent owners and immediate
-candidate requalification in both forests. Mixed-family ports remain distinct.
-Independent initialization/results and opaque/partial histories are next.
+candidate requalification in both forests (integration commit `0c505c6c`). Mixed-family
+ports remain distinct. Independent source/receiver/target/result visits, stopped
+destinations and direct/opaque/unknown/empty/multiple/partial-layout regressions pass.
+All six receiver-emission tests pass (`/tmp/meowy-receiver-emission-stages.log`).
+Consumer corruption/budget checks and deeper candidate-graph/cache validation are next.
 
 `emission_source_block` remains the shared whole-layout source qualifier for slot
 links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
@@ -3225,7 +3228,7 @@ Dependency-ordered commit plan:
    exact EmitId/owner identities, primary slot zero and named-field index plus one.
    Include nested/guarded receivers, sorted fields, independent owners and immediate
    candidate-source requalification with the behavior change; run focused reports.
-2. Cover independent source results, receiver initialization/results, target visits
+2. Complete: cover independent source results, receiver initialization/results, target visits
    and destination completion, including initialized prefixes before stopped bodies.
    Preserve direct Value emissions, opaque producers and unknown/empty/multiple
    candidate histories. Validate focused consumer and candidate-source tests.
