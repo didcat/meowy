@@ -3,6 +3,7 @@ use crate::check::dependencies::CoercionKind;
 
 mod dispatch;
 mod limits;
+mod receivers;
 
 #[test]
 pub(crate) fn list_consumers_link_original_contextual_parts_to_local_record_anchors() {

@@ -1,7 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Output-owned record-receiver primaries are complete;
-contextual-list-owned record-receiver primaries are next. Validation is recorded below.
+Updated: 2026-10-06. Contextual-list-owned record-receiver primaries are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3152,15 +3151,24 @@ incomplete.
 
 ### Next: contextual-list-owned record-receiver primaries
 
-The list branch in `consumers.rs` still stops at record receivers. It already retains
-each projected input's original index and captured scalar shape. Reuse the shared
-receiver-primary lookup after dispatch lookup, adapting the ambiguous-context fixture
-in `consumers/lists/dispatch.rs` to a list inside a record receiver body. Ordinary
-typed elements may use coercion-owned ports and must remain distinct.
+Active series: confirmed on `main` after `466f768`; untracked `docs/programs/hey/`
+remains excluded. Observed scalar list projections now use `receiver_primary_slot`
+after dispatch lookup, retaining complete producer validation, original indices
+and captured source shapes. No capture or prerequisite refactor was needed. Both
+new regressions demonstrated missing links before integration
+(`/tmp/meowy-receiver-list-before.log`); all 760 forward-report tests now pass
+(`/tmp/meowy-receiver-list-integration.log`). Coverage includes later context selection,
+three sparse projections, nested/guarded receivers, scalar kinds and independent
+owners. Construction-registration rules remain unchanged. Independent stages,
+stopped prefixes and opaque inputs are next.
+
+The former gap is reproduced by adapting the ambiguous-context fixture in
+`consumers/lists/dispatch.rs` to a list inside a record receiver body. Ordinary typed
+elements may use coercion-owned ports and must remain distinct.
 
 Dependency-ordered commit plan:
 
-1. Extend only observed scalar list Projection inputs through `receiver_primary_slot`.
+1. Complete: extend only observed scalar list Projection inputs through `receiver_primary_slot`.
    Preserve sparse original indices, exact captured kinds, source owners and receiver
    scope. Include multiple candidate list contexts selected by a later input, more
    than two projections, scalar kinds and nested/guarded receivers with the behavior
