@@ -3268,8 +3268,12 @@ bits.not, widths, nested/guarded scope and independent owners. Scalar guard oper
 remain unprojected (integration commit `63433675`). Independent unary/ascription/
 source/receiver stages, operation registration, stopped bodies, opaque inputs,
 multiple histories and arithmetic-result boundaries are covered. All five unary-receiver
-tests pass (`/tmp/meowy-receiver-unary-stages.log`). Stale source/header, missing
-evidence, mixed-cycle and exact shared-budget checks are next.
+tests pass (`/tmp/meowy-receiver-unary-stages.log`, stage commit `f2696e83`). Boundary
+regressions now cover sixteen late faults across ordinary/dispatch sources, absent
+eligibility/index/ascription evidence, mixed receiver/initializer cycles, independent
+control across all four producers and exact map/work limits. All nine unary-receiver
+tests pass (`/tmp/meowy-receiver-unary-boundaries.log`). Required source cases and
+classified evidence are next, followed by final gates and handoffs.
 
 Dependency-ordered commit plan:
 
@@ -3281,10 +3285,11 @@ Dependency-ordered commit plan:
 2. Complete: cover independent projection/operation/result, source publication and receiver
    initialization/results. Preserve earlier projections before stopped bodies,
    operation-registration rules, opaque producers and scalar arithmetic results.
-3. Add stale source/header/layout, missing evidence, mixed-cycle and exact map/work
+3. Complete: add stale source/header/layout, missing evidence, mixed-cycle and exact map/work
    regressions in `consumers/primary/`; confirm atomic reports without new payload.
-4. Add required source cases for supported unary kinds, ordering/stops and ordinary
-   rejection/overflow behavior; update classified evidence, run compiler/strict gates,
+4. Add required source cases for supported unary kinds and ordering/stops. Add
+   overflow, unsigned-negation and unproven-ascription rejections in a separate
+   reviewable slice; update classified evidence for each. Run compiler/strict gates,
    then update the guide and both handoffs and run final documentation checks.
 
 Broader aggregate receiver paths, contextual record-hint repair, value selection,

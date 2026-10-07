@@ -1,6 +1,7 @@
 use super::{super::tests::checked, *};
 use std::collections::BTreeSet;
 
+mod boundaries;
 mod stages;
 
 pub(super) const SOURCE: &str =
