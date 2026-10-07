@@ -4432,6 +4432,26 @@
         "code": "E207"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "receiver_binary_order",
+      "phase": "run",
+      "source": "sources/receiver_binary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 3\nfirst source\nfirst tail\nsecond source\nsecond tail\nouter\ninner\n7\n1\ntrue\nfalse\ninner tail\n7\nright operand\nouter tail\n5\nreceiver 5\nfirst source\nfirst tail\nsecond source\nsecond tail\nouter\ninner\n11\n1\ntrue\nfalse\ninner tail\n11\nright operand\nouter tail\n7\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_binary_boundaries",
+      "phase": "run",
+      "source": "sources/receiver_binary_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\ntrue\n2\ntrue\ntrue\ntrue\ntrue\n4\n10\n10\ntrue\ntrue\ntrue\n8\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
     }
   ]
 }

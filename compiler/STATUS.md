@@ -3062,8 +3062,14 @@ five binary-receiver tests pass (`/tmp/meowy-receiver-binary-stages.log`, stage 
 `971156b`). Boundary tests now cover fifteen late faults for ordinary/dispatch
 sources, absent eligibility/index evidence, mixed receiver/initializer cycles,
 independent control and exact shared map/work limits without payload growth. All nine
-binary-receiver tests pass (`/tmp/meowy-receiver-binary-boundaries.log`). Required
-source cases and classified evidence are next.
+binary-receiver tests pass (`/tmp/meowy-receiver-binary-boundaries.log`, boundary
+commit `be928f2`). The compiler build and two required normal-order/scalar-boundary
+cases pass debug/release (`/tmp/meowy-receiver-binary-build.log`,
+`/tmp/meowy-receiver-binary-normal-source.log`). Classified evidence is refreshed;
+all four default checks pass (`/tmp/meowy-receiver-binary-normal-docs.log`). The audit
+preserves 419 prior cases, 492 tracked contract/source/pin files and all 37 reviewed
+hashes (`/tmp/meowy-receiver-binary-preservation.log`). Stopped, overflow and width
+rejection cases are next, followed by final gates and handoffs.
 
 The nested-port fixture in `consumers/primary/receiver_coercions.rs` retains separate
 coercion links for typed copies, typed list elements and unary operands. Its direct
@@ -3085,7 +3091,7 @@ Dependency-ordered commit plan:
 3. Complete: add independently useful stale-header/source, eligibility, mixed-cycle and exact
    shared-budget regressions alongside the binary tests in `consumers/primary/`.
    Confirm atomic failure and unchanged reports/payload with focused tests.
-4. Add required normal-order/scalar-boundary source cases and classified evidence.
+4. Normal-order/scalar-boundary source cases and classified evidence are complete.
    Add stopped/overflow/width-rejection cases in a separate reviewable slice. Run
    compiler and strict gates, then update the guide and both handoffs and run final
    documentation checks.

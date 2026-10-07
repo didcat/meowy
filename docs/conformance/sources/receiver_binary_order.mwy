@@ -1,0 +1,35 @@
+d : @"debug"
+mark <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+show <null> : (n <int32>) {
+    first : mark(n).{
+        d.print("first source")
+        -> $
+        -> tag : true
+        d.print("first tail")
+    }
+    second : {
+        d.print("second source")
+        -> n + 1
+        -> tag : false
+        d.print("second tail")
+    }
+    out : first.{
+        d.print("outer")
+        alias : (($))
+        inner : second.{
+            d.print("inner")
+            d.print(alias + $)
+            d.print($ - alias)
+            d.print(alias < $)
+            d.print(alias == $)
+            -> alias + $
+            d.print("inner tail")
+        }
+        d.print(inner)
+        -> $ + { d.print("right operand"); -> 2 }
+        d.print("outer tail")
+    }
+    d.print(out)
+}
+show(3)
+show(5)

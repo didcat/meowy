@@ -1,0 +1,32 @@
+d : @"debug"
+tiny <uint8> : 7
+number : tiny.{ -> $; -> tag : true }
+a : number.{ d.print($ % 2); d.print(($ + 1)<uint8>) }
+floating <float32> : 1.5
+real : { -> floating; -> tag : true }
+b : real.{ d.print(3.0 / $); d.print($ <= 1.5) }
+flag : { -> true; -> tag : true }
+c : flag.{ d.print($ == true) }
+text : { -> "cat"; -> tag : true }
+e : text.{ d.print($ < "dog") }
+empty : { -> tag : true }
+f : empty.{ d.print(null == $) }
+row := { -> 3; -> tag : true }
+g : row.{
+    row = { -> 9; -> tag : false }
+    d.print($ + 1)
+    d.print(row + 1)
+}
+ptr : &row
+h : (*ptr).{ d.print($ + 1) }
+base : 1
+reference : { -> &base; -> tag : true }
+i : reference.{ d.print($ == &base) }
+list : { -> [1]; -> tag : true }
+j : list.{ d.print($ == list) }
+value <int32><null> : 1
+maybe : { -> value; -> tag : true }
+k : maybe.{ d.print($ == value) }
+choose := true
+guarded : number.{ | choose | -> $ + 1; | !choose | -> $.{ -> $ + 2 } }
+d.print(guarded)
