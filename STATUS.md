@@ -28,29 +28,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Composed emissions through eligible record receivers now retain original primary
-and named-field source slots. Exact EmitIds, source layouts and independent source,
-receiver and target observations remain checked. Candidate graphs share the same
-qualification and bounded source cache, preserving intermediate and unknown histories.
-The [compiler handoff](compiler/STATUS.md#composed-emission-record-receiver-sources)
+Unary-owned projections through ascribed record receivers now retain original
+immutable primary slots. Exact scalar kinds, widths, signedness, owners and scope
+remain checked. Unary, ascription, source and receiver observations stay independent;
+bare operands retain their coercion-owned ports. Capture and type hints are unchanged.
+The [compiler handoff](compiler/STATUS.md#unary-owned-record-receiver-primaries)
 records the reviewed slices and next dependency-ordered plan.
 
-Four new required cases pass debug/release: nested receiver/composition/tail order,
-scalar/aggregate and mutable copies, empty records/branches, stopped-destination P006
-and duplicate-field E205. Structural links remain distinct from observable execution.
-All ten compiler checks pass: 2815 library/921 native tests and 62 Python groups
-(`/tmp/meowy-receiver-emission-gate.log`). Conformance has 436 cases: 417 required
-passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits
-1 only for those exact names and reasons (`/tmp/meowy-receiver-emission-strict.log`).
-All four final guide/handoff checks pass (`/tmp/meowy-receiver-emission-docs.log`).
+Five new required cases pass debug/release: unary kinds and source/receiver/tail order,
+snapshots/shared loads, stopped-body P006, checked overflow P002, unsigned-negation
+E222 and unproven-ascription E208. Structural links remain distinct from execution.
+All ten compiler checks pass: 2824 library/921 native tests and 62 Python groups
+(`/tmp/meowy-receiver-unary-gate.log`). Conformance has 441 cases: 422 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for those exact names and reasons (`/tmp/meowy-receiver-unary-strict.log`). All four
+final guide/handoff checks pass (`/tmp/meowy-receiver-unary-docs.log`).
 
-The audit preserves 432 prior cases, 505 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-receiver-emission-preservation.log`). All four source
-slice documentation checks pass (`/tmp/meowy-receiver-emission-source-docs.log`).
+The audit preserves 436 prior cases, 509 tracked contract/source/pin files and all
+37 reviewed hashes (`/tmp/meowy-receiver-unary-preservation.log`). All four checks pass
+for each source slice (`/tmp/meowy-receiver-unary-normal-docs.log`,
+`/tmp/meowy-receiver-unary-errors-docs.log`).
 Loan/proof authority is unchanged. Proof evaluation and full language/release
 qualification remain incomplete.
 
-Next, qualify unary-owned primary sources through eligible record receivers.
+Next, repair scalar operand hints reaching record construction in binary expressions.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

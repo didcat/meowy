@@ -671,6 +671,24 @@ receiver/source/tail order, scalar arithmetic/comparisons, mutable snapshots, sh
 loads, full-record/reference/list/union equality, stopped-right P006, checked overflow
 P002 and width-mismatch E213.
 
+Unary-owned projections also follow eligible record receivers. Unchanged explicit
+record ascriptions retain the record until unary processing, while bare operands may
+project through an inner coercion. Capture and type hints are unchanged; each owner
+keeps its original port. Unary step zero requires an immutable unnamed source slot
+matching the scalar kind, width and signedness. The source result, receiver
+initialization, observed ascription result and unary projection remain independent
+of unary operation/results and consuming receiver results. Projection-only reports
+need no unary-operation registration.
+
+Negation, boolean not and `bits.not` retain their domains and checked behavior.
+Earlier links survive stopped bodies; mutable/borrowed/call/parameter and changed
+receiver paths remain opaque, as do arithmetic results. Multiple source histories
+select no value. Stale headers/layouts/ascriptions, missing evidence, mixed cycles,
+independent control and exact map/work checks preserve atomic reports without new
+payload or proof authority. Required cases cover source/receiver/tail order, widths,
+snapshots/shared loads, stopped-body P006, checked overflow P002, unsigned-negation
+E222 and unproven-ascription E208.
+
 Output, list, composed-emission and coercion dispatch links are described below.
 Projected coercions do not become transparent wrappers. Source cases preserve
 receiver/tail order, scalar kinds and bare arithmetic results, guarded `$` scopes,
@@ -848,7 +866,7 @@ kind exactly, including width and signedness. Original source results remain req
 the consuming receiver's result is independent of its initialization. Coercion
 projection, conversion and result observations remain independent as well.
 
-Coercion-owned, scalar binary, output and contextual-list projections share this
+Coercion-owned, scalar unary/binary, output and contextual-list projections share this
 receiver-primary path. Inner typed-element and operand coercions retain their own
 ports; generic receiver forwarding and other consumer families keep their limits.
 Mutable/reference/list-valued source paths remain opaque. Empty and multiple candidate

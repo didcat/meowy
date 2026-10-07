@@ -1,6 +1,7 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-07. Unary-owned record-receiver primaries are in progress.
+Updated: 2026-10-07. Unary-owned record-receiver primaries are complete;
+contextual record hints in binary operands are next. Validation is recorded below.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3255,54 +3256,87 @@ guide/handoff checks pass (`/tmp/meowy-receiver-emission-docs.log`). No outstand
 failures remain. Proof evaluation and full language/release qualification remain
 incomplete.
 
-### Next: unary-owned record-receiver primaries
+### Unary-owned record-receiver primaries
 
-Active series: confirmed on `main` after `987c6d7e`; untracked `docs/programs/hey/`
-remains excluded. Unchanged explicit record ascriptions retain unary-owned projections;
-bare receiver operands retain their inner coercion ports. Both new tests demonstrated
-missing source links before integration (`/tmp/meowy-receiver-unary-before.log`).
-The unary branch now uses the shared receiver-primary fallback after dispatch lookup,
-without changing capture, hints or ascription rules. All 789 forward-report tests
-pass (`/tmp/meowy-receiver-unary-integration.log`), including negation, boolean not,
-bits.not, widths, nested/guarded scope and independent owners. Scalar guard operations
-remain unprojected (integration commit `63433675`). Independent unary/ascription/
-source/receiver stages, operation registration, stopped bodies, opaque inputs,
-multiple histories and arithmetic-result boundaries are covered. All five unary-receiver
-tests pass (`/tmp/meowy-receiver-unary-stages.log`, stage commit `f2696e83`). Boundary
-regressions now cover sixteen late faults across ordinary/dispatch sources, absent
-eligibility/index/ascription evidence, mixed receiver/initializer cycles, independent
-control across all four producers and exact map/work limits. All nine unary-receiver
-tests pass (`/tmp/meowy-receiver-unary-boundaries.log`, boundary commit `8695a59b`).
-The compiler build and two required normal/stopped cases pass debug/release
-(`/tmp/meowy-receiver-unary-build.log`, `/tmp/meowy-receiver-unary-normal-source.log`).
-Classified evidence is refreshed; all four default checks pass
-(`/tmp/meowy-receiver-unary-normal-docs.log`). The audit preserves 436 prior cases,
+Observed unary-owned scalar projections now use `receiver_primary_slot` after ordinary
+and dispatch lookup. Unchanged explicit record ascriptions retain unary ownership;
+bare receiver operands retain inner coercion ports. Capture, type hints, ascription
+rules and scalar guards are unchanged. Step zero requires an immutable unnamed source
+slot with exact kind, width and signedness. Original source publication, receiver
+initialization, ascription results and unary projections remain independent of unary
+operation/results and consuming receiver results.
+
+Projection-only reports need no unary-operation registration. Earlier links survive
+stopped bodies. Mutable sources, shared loads, calls, parameters and changed receiver
+paths remain opaque; multiple histories select no value and arithmetic results do not
+gain provenance. Missing evidence and late failures preserve atomic reports without
+new payload or loan/proof authority.
+
+| Reviewable slice | Commit |
+| --- | --- |
+| Link unary primary projections through record receivers | `63433675` |
+| Preserve stages and opaque source boundaries | `f2696e83` |
+| Bound sources and validate ascription evidence | `8695a59b` |
+| Cover kinds, order and stopped bodies | `4f6316bf` |
+| Cover overflow and type rejections | `6f0dfbbe` |
+
+Both integration tests confirmed unary-owned projections before exposing the missing
+links (`/tmp/meowy-receiver-unary-before.log`). All 789 forward-report tests pass after
+integration (`/tmp/meowy-receiver-unary-integration.log`). Nine focused tests cover
+negation, boolean not, bits.not, widths, nested/guarded scope, independent owners and
+stages, sixteen late faults across ordinary/dispatch sources, missing eligibility/
+index/ascription evidence, mixed cycles, independent control and exact map/work limits
+(`/tmp/meowy-receiver-unary-stages.log`, `/tmp/meowy-receiver-unary-boundaries.log`).
+
+Five required cases pass debug/release for supported unary kinds, source/receiver/tail
+order, snapshots/shared loads, stopped-body P006, checked overflow P002, unsigned-negation
+E222 and unproven-ascription E208 (`/tmp/meowy-receiver-unary-normal-source.log`,
+`/tmp/meowy-receiver-unary-errors-source.log`). The audit preserves 436 prior cases,
 509 tracked contract/source/pin files and all 37 reviewed hashes
-(`/tmp/meowy-receiver-unary-preservation.log`, normal-case commit `4f6316bf`). Three
-further required cases pass debug/release for checked overflow P002, unsigned-negation
-E222 and unproven-ascription E208 (`/tmp/meowy-receiver-unary-errors-source.log`).
-Classified evidence is updated; all four default checks pass
-(`/tmp/meowy-receiver-unary-errors-docs.log`). Full compiler/strict gates and final
-guide/handoff updates remain next.
+(`/tmp/meowy-receiver-unary-preservation.log`). Capability pins and proof obligations
+are unchanged; unrelated `docs/programs/hey/` remains excluded.
+
+All four documentation checks pass for both source slices
+(`/tmp/meowy-receiver-unary-normal-docs.log`, `/tmp/meowy-receiver-unary-errors-docs.log`).
+All ten compiler checks pass: formatting, all-target Clippy, 2824 library/921 native
+tests, 62 Python groups, build, metadata and source conformance
+(`/tmp/meowy-receiver-unary-gate.log`). All 796 forward-report tests pass. Conformance
+has 441 cases: 422 required passes, 19 unchanged pinned gaps and zero failures in
+debug/release. Strict mode exits 1 only for the 19 pinned names and reasons
+(`/tmp/meowy-receiver-unary-strict.log`). All four final guide/handoff checks pass
+(`/tmp/meowy-receiver-unary-docs.log`). No outstanding failures remain. Proof
+evaluation and full language/release qualification remain incomplete.
+
+### Next: contextual record hints in binary operands
+
+The previously documented hint boundary is reproduced with the current compiler:
+`a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207
+for the named field in a scalar result; explicitly ascribing the right dispatch's
+record type passes (`/tmp/meowy-record-hint-handoff.log`). Existing ascribed fixtures
+must remain unchanged. `binary` in `check/scalars.rs` forwards a scalar primary context
+through `expression_point`; `dispatch_point` in `check/expressions/dispatch.rs` passes
+that context into `block_parts`, and `check/statements.rs` treats it as a scalar result
+constraint. `check/blocks.rs` already has a distinct composed-value path to inspect.
 
 Dependency-ordered commit plan:
 
-1. Complete: add capture/source regressions for unary projections through explicitly
-   ascribed record receivers, then extend only observed Unary Projection inputs via
-   `receiver_primary_slot` after ordinary/dispatch lookup. Preserve step zero, exact
-   scalar kind/width/signedness, owners and scope. Keep bare-operand coercion ports
-   distinct and run focused forward-report tests with the integration.
-2. Complete: cover independent projection/operation/result, source publication and receiver
-   initialization/results. Preserve earlier projections before stopped bodies,
-   operation-registration rules, opaque producers and scalar arithmetic results.
-3. Complete: add stale source/header/layout, missing evidence, mixed-cycle and exact map/work
-   regressions in `consumers/primary/`; confirm atomic reports without new payload.
-4. All five required source cases and classified evidence are complete. Run compiler/strict gates,
-   then update the guide and both handoffs and run final documentation checks.
+1. Add focused regressions distinguishing scalar operand hints from explicit declared
+   result/record constraints. Reproduce the unannotated dispatch failure, inspect
+   existing composed-value handling, and record the smallest typing change. Separate
+   a behavior-preserving prerequisite only if that change actually needs one.
+2. Repair operand context propagation at its responsible layer with regressions for
+   ordinary/grouped blocks and dispatches, both operand positions and primary literal
+   widths. Preserve numeric same-type rules, full-record equality, explicit annotations,
+   receiver-once evaluation and stopped-operand checking; avoid dropping all hints.
+3. Cover resulting capture/operation/source identities and exact effect order without
+   replaying expressions or changing budgets. Keep hard expected-record field checks,
+   ordinary diagnostics and current B001 boundaries intact.
+4. Add required source cases for newly accepted forms and preserved rejections; update
+   classified evidence, run compiler/strict gates, then update the guide and both
+   handoffs and run final documentation checks.
 
-Broader aggregate receiver paths, contextual record-hint repair, value selection,
-precise joins, function returns, restarts, E225 enforcement and proof outcomes remain
-separate.
+Broader aggregate receiver paths, value selection, precise joins, function returns,
+restarts, E225 enforcement and proof outcomes remain separate.
 
 ## Documentation conventions and layout
 
@@ -4900,9 +4934,9 @@ are complete. Record dispatch unary/binary, coercion-owned, output-owned and
 contextual-list primary sources and composed-emission dispatch source slots are
 complete, including owned scalar fields and coercion-owned, binary-owned, output-owned
 and contextual-list-owned primary sources through eligible record receivers.
-Composed-emission record-receiver sources are complete. Unary-owned receiver primaries
-are next, following the ordered plan above; value selection and broader aggregate
-provenance remain separate.
+Composed-emission and unary-owned record-receiver sources are complete. Contextual
+record hints in binary operands are next, following the ordered plan above; value
+selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5544,8 +5578,10 @@ provenance remain separate.
    and source cases (`d318485d`) are complete. Receiver composition links (`0c505c6c`),
    stages (`fc8f83a6`), consumer bounds (`fdd62067`), graphs (`f576207d`), graph bounds
    (`564e8d13`) and source cases (`c1f73fe5`) are complete; final gate results are above.
-   Next qualify unary-owned receiver primaries; broader receiver consumers and value
-   provenance remain separate.
+   Unary receiver links (`63433675`), stages (`f2696e83`), boundaries (`8695a59b`) and
+   source cases (`4f6316bf`, `6f0dfbbe`) are complete. Next repair contextual record
+   hints in binary operands; broader receiver consumers and value provenance remain
+   separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.
