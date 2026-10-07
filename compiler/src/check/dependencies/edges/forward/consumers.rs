@@ -83,7 +83,13 @@ impl Checker {
                     {
                         Some(slot)
                     } else if let Some(Shape::Scalar(ty)) = input.source {
-                        self.dispatch_primary_slot(reports, input.point, *owner, ty, span)?
+                        if let Some(slot) =
+                            self.dispatch_primary_slot(reports, input.point, *owner, ty, span)?
+                        {
+                            Some(slot)
+                        } else {
+                            self.receiver_primary_slot(reports, input.point, *owner, ty, span)?
+                        }
                     } else {
                         None
                     };

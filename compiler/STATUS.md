@@ -1,7 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Binary-owned record-receiver primaries are complete;
-output-owned record-receiver primaries are next. Validation is recorded below.
+Updated: 2026-10-06. Output-owned record-receiver primaries are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3101,6 +3100,17 @@ evaluation and full language/release qualification remain incomplete.
 
 ### Next: output-owned record-receiver primaries
 
+Active series: confirmed on `main` after `efd278d`; untracked `docs/programs/hey/`
+remains excluded. Observed scalar output projections now use `receiver_primary_slot`
+after dispatch lookup, preserving complete producer validation, captured source
+shapes and sparse original formatting indices. No capture or prerequisite refactor
+was needed. Both new regressions demonstrated missing links before integration
+(`/tmp/meowy-receiver-output-before.log`); all 750 forward-report tests now pass
+(`/tmp/meowy-receiver-output-integration.log`). Coverage includes print/panic, three
+sparse projections, scalar kinds, nested/guarded receiver scope and independent
+owners. Existing field/coercion ports remain distinct. Independent output stages,
+stopped prefixes and opaque inputs are next.
+
 The mixed-family fixtures in `consumers/fields/receivers.rs` and
 `consumers/primary/receiver_coercions.rs` still retain observed `d.print($)` projections
 without receiver source links. Output reports already capture each formatting input's
@@ -3109,7 +3119,7 @@ primary shape and original part index. The output branch in `consumers.rs` can r
 
 Dependency-ordered commit plan:
 
-1. Extend only observed scalar output Projection inputs through the shared receiver
+1. Complete: extend only observed scalar output Projection inputs through the shared receiver
    primary lookup. Preserve sparse original formatting indices, scalar kind/width/
    signedness, independent owners and qualified receiver scope. Include normal and
    panic output, more than two projections and nested/guarded receiver tests with

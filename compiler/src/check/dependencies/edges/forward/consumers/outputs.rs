@@ -2,6 +2,7 @@ use super::{tests::checked, *};
 
 mod dispatch;
 mod limits;
+mod receivers;
 
 #[test]
 pub(crate) fn output_consumers_link_sparse_original_parts_through_local_copies() {

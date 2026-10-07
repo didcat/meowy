@@ -113,7 +113,7 @@ pub(crate) fn record_receiver_fields_keep_unhandled_receiver_consumer_families_o
     let source =
         "d:@\"debug\";r:{->3;->n:4};out:r.{d.print($);a:$+1;xs<int32[1]>:[$];copy:{->$};->$.n}";
     let (checker, reports) = checked(source);
-    assert_eq!(reports.slot_uses.len(), 3);
+    assert_eq!(reports.slot_uses.len(), 4);
     let (&port, _) = reports
         .slot_uses
         .iter()
@@ -131,7 +131,7 @@ pub(crate) fn record_receiver_fields_keep_unhandled_receiver_consumer_families_o
         panic!()
     };
     assert!(matches!(reports.effects[&point].1, Effect::Coercion(_)));
-    for &id in checker.binaries.keys() {
+    for &id in checker.binaries.keys().chain(checker.outputs.keys()) {
         assert_eq!(
             reports.slot_uses[&Port::Projection { point: id, step: 0 }]
                 .1
