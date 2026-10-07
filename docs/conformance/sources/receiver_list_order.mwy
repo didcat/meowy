@@ -1,0 +1,43 @@
+d : @"debug"
+<R> : <{ -> <int32>; tag <boolean> }>
+<T> : <int32><boolean>
+<U> : <int32><string>
+receiver <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+
+show <null> : (n <int32>, choice <boolean><string>) {
+    row : receiver(n).{
+        d.print("source")
+        -> $
+        -> tag : true
+        d.print("source tail")
+    }
+    out : row.{
+        copy : (($))
+        saved <R> : copy
+        inner : $.{
+            | choice <boolean> | {
+                xs <T[5]><U[5]> : [1, $, ((saved)), $, choice]
+                d.print("list {n}")
+                | xs <T[5]> | {
+                    d.print(xs[1])
+                    d.print(xs[2])
+                    d.print(xs[3])
+                    d.print(xs[4])
+                    d.print(xs[5])
+                }
+            }
+            d.print("inner tail")
+        }
+        d.print("receiver tail")
+    }
+}
+show(2, true)
+show(3, false)
+row : { -> 7; -> tag : true }
+choice <boolean><string> : true
+out : row.{
+    | choice <boolean> | {
+        xs <T[2]><U[2]> : [$, choice]
+        | xs <T[2]> | { d.print(xs[1]); d.print(xs[2]) }
+    }
+}

@@ -1,0 +1,67 @@
+d : @"debug"
+<Byte> : <uint8><boolean>
+<OtherByte> : <uint8><string>
+<Decimal> : <float32><boolean>
+<OtherDecimal> : <float32><string>
+<Text> : <string><boolean>
+<Empty> : <null><boolean>
+<OtherEmpty> : <null><string>
+<T> : <int32><boolean>
+<U> : <int32><string>
+<Items> : <int32[1]><boolean>
+<OtherItems> : <int32[1]><string>
+<Truth> : <boolean><int32>
+<OtherTruth> : <boolean><string>
+
+choice <boolean><string> : true
+| choice <boolean> | {
+    small <uint8> : 255
+    byte : small.{ -> $; -> tag : true }
+    a : byte.{
+        xs <Byte[2]><OtherByte[2]> : [$, choice]
+        | xs <Byte[2]> | d.print(xs[1])
+    }
+    number <float32> : 1.5
+    decimal : { -> number; -> tag : true }
+    b : decimal.{
+        xs <Decimal[2]><OtherDecimal[2]> : [$, choice]
+        | xs <Decimal[2]> | d.print(xs[1])
+    }
+    text : { -> "cat"; -> tag : true }
+    c : text.{
+        xs <Text[2]><string[2]> : [$, choice]
+        | xs <Text[2]> | d.print(xs[1])
+    }
+    empty : { -> tag : true }
+    e : empty.{
+        xs <Empty[2]><OtherEmpty[2]> : [$, choice]
+        | xs <Empty[2]> | d.print(xs[1])
+    }
+    mutable := { -> 3; -> tag : true }
+    f : mutable.{
+        mutable = { -> 4; -> tag : true }
+        xs <T[3]><U[3]> : [$, mutable, choice]
+        | xs <T[3]> | { d.print(xs[1]); d.print(xs[2]) }
+    }
+    view : &byte
+    g : (*view).{
+        xs <Byte[2]><OtherByte[2]> : [$, choice]
+        | xs <Byte[2]> | d.print(xs[1])
+    }
+    list : { -> [5]; -> tag : true }
+    h : list.{
+        xs <Items[2]><OtherItems[2]> : [$, choice]
+        | xs <Items[2]> | {
+            first : xs[1]
+            | first <int32[1]> | d.print(first[1])
+        }
+    }
+}
+select <int32><string> : 2
+truth : { -> true; -> tag : true }
+i : truth.{
+    | select <int32> | {
+        xs <Truth[2]><OtherTruth[2]> : [$, select]
+        | xs <Truth[2]> | d.print(xs[1])
+    }
+}

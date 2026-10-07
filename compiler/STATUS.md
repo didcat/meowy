@@ -3169,8 +3169,16 @@ narrowing behavior and reference fixtures are unchanged (stage commit `1c55795`)
 Boundary tests now cover sixteen faults across ordinary/dispatch sources, missing
 eligibility/index evidence, duplicate observations, mixed cycles, independent control,
 checked suffixes after stops and exact map/work limits. All eleven list-receiver
-tests pass (`/tmp/meowy-receiver-list-boundaries.log`). Required source cases and
-classified evidence are next, followed by final gates and handoffs.
+tests pass (`/tmp/meowy-receiver-list-boundaries.log`, boundary commit `69e9e33`).
+The compiler build and four required source cases pass debug/release for list/source/
+receiver/tail order across owners, scalar kinds, mutable snapshots, shared loads,
+list-valued primaries, stopped-element P006 and incompatible-width E207
+(`/tmp/meowy-receiver-list-build.log`, `/tmp/meowy-receiver-list-source.log`).
+Classified evidence is refreshed and all four default checks pass
+(`/tmp/meowy-receiver-list-source-docs.log`). The audit preserves 428 prior cases,
+501 tracked contract/source/pin files and all 37 reviewed hashes
+(`/tmp/meowy-receiver-list-preservation.log`). Full compiler/strict gates and final
+guide/handoff updates remain next.
 
 The former gap is reproduced by adapting the ambiguous-context fixture in
 `consumers/lists/dispatch.rs` to a list inside a record receiver body. Ordinary typed
@@ -3191,8 +3199,9 @@ Dependency-ordered commit plan:
 3. Complete: add stale shape/header/source, missing evidence, mixed-cycle and exact shared
    map/work regressions. Confirm checked suffix validation and atomic failure without
    new report payload.
-4. Add required source cases and classified evidence, run compiler and strict gates,
-   then update the guide and both handoffs and run final documentation checks.
+4. All four required source cases and classified evidence are complete. Run compiler
+   and strict gates, then update the guide and both handoffs and run final
+   documentation checks.
 
 Unary/composition-owned receiver projections, broader aggregate receiver
 paths, contextual record-hint repair, value selection, precise joins, function

@@ -4530,6 +4530,48 @@
         "code": "E201"
       },
       "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "receiver_list_order",
+      "phase": "run",
+      "source": "sources/receiver_list_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 2\nsource\nsource tail\nlist 2\n1\n2\n2\n2\ntrue\ninner tail\nreceiver tail\nreceiver 3\nsource\nsource tail\nlist 3\n1\n3\n3\n3\nfalse\ninner tail\nreceiver tail\n7\ntrue\n"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "receiver_list_boundaries",
+      "phase": "run",
+      "source": "sources/receiver_list_boundaries.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "255\n1.5\ncat\nnull\n3\n4\n255\n5\ntrue\n"
+      },
+      "reference": "../reference/collections.md#bounded-lists"
+    },
+    {
+      "id": "receiver_list_stopped",
+      "phase": "run",
+      "source": "sources/receiver_list_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nbefore list\nstopping item\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "receiver_list_wrong_width",
+      "phase": "check",
+      "source": "sources/receiver_list_wrong_width.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#inference-and-assignment"
     }
   ]
 }

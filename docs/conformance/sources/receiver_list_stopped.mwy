@@ -1,0 +1,24 @@
+d : @"debug"
+<T> : <int32><boolean>
+<U> : <int32><string>
+stop <never> : () { d.print("stopping item"); d.panic("stop") }
+
+show <null> : (choice <boolean><string>) {
+    row : 3.{
+        d.print("source")
+        -> $
+        -> tag : true
+        d.print("source tail")
+    }
+    out : row.{
+        copy : (($))
+        | choice <boolean> | {
+            d.print("before list")
+            xs <T[4]><U[4]> : [copy, choice, stop(), $]
+            d.print("after list")
+        }
+        d.print("receiver tail")
+    }
+}
+show(true)
+d.print("after call")
