@@ -1,0 +1,17 @@
+d : @"debug"
+<R> : <{ -> <int8>; tag <boolean> }>
+negate <null> : (n <int8>) {
+    row : n.{
+        d.print("source")
+        -> $
+        -> tag : true
+        d.print("source tail")
+    }
+    out : row.{
+        d.print("before negation")
+        value : -($~<R>)
+        d.print(value)
+    }
+}
+negate(-128)
+d.print("unreachable")

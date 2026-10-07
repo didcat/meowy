@@ -3278,8 +3278,12 @@ The compiler build and two required normal/stopped cases pass debug/release
 Classified evidence is refreshed; all four default checks pass
 (`/tmp/meowy-receiver-unary-normal-docs.log`). The audit preserves 436 prior cases,
 509 tracked contract/source/pin files and all 37 reviewed hashes
-(`/tmp/meowy-receiver-unary-preservation.log`). Error cases are next, then final gates
-and guide/handoff updates.
+(`/tmp/meowy-receiver-unary-preservation.log`, normal-case commit `4f6316bf`). Three
+further required cases pass debug/release for checked overflow P002, unsigned-negation
+E222 and unproven-ascription E208 (`/tmp/meowy-receiver-unary-errors-source.log`).
+Classified evidence is updated; all four default checks pass
+(`/tmp/meowy-receiver-unary-errors-docs.log`). Full compiler/strict gates and final
+guide/handoff updates remain next.
 
 Dependency-ordered commit plan:
 
@@ -3293,9 +3297,7 @@ Dependency-ordered commit plan:
    operation-registration rules, opaque producers and scalar arithmetic results.
 3. Complete: add stale source/header/layout, missing evidence, mixed-cycle and exact map/work
    regressions in `consumers/primary/`; confirm atomic reports without new payload.
-4. Normal unary-kind/order/stopped source cases and evidence are complete. Add
-   overflow, unsigned-negation and unproven-ascription rejections in a separate
-   reviewable slice; update classified evidence for each. Run compiler/strict gates,
+4. All five required source cases and classified evidence are complete. Run compiler/strict gates,
    then update the guide and both handoffs and run final documentation checks.
 
 Broader aggregate receiver paths, contextual record-hint repair, value selection,

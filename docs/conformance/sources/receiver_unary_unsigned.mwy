@@ -1,0 +1,4 @@
+<R> : <{ -> <uint8>; tag <boolean> }>
+n <uint8> : 7
+row : { -> n; -> tag : true }
+out : row.{ value : -($~<R>) }

@@ -1,0 +1,5 @@
+<R> : <{ -> <int32>; tag <boolean> }>
+<S> : <{ -> <string>; tag <boolean> }>
+negate <null> : (row <R><S>) {
+    out : row.{ value : -($~<R>) }
+}

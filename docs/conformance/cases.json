@@ -4636,6 +4636,38 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "receiver_unary_overflow",
+      "phase": "run",
+      "source": "sources/receiver_unary_overflow.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nbefore negation\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "receiver_unary_unsigned",
+      "phase": "check",
+      "source": "sources/receiver_unary_unsigned.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "receiver_unary_unproven",
+      "phase": "check",
+      "source": "sources/receiver_unary_unproven.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E208"
+      },
+      "reference": "../reference/types.md#unions-and-narrowing"
     }
   ]
 }
