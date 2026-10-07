@@ -3219,7 +3219,12 @@ ordinary/dispatch sources, unobserved target layouts, missing eligibility/index 
 mutation evidence, duplicate visits, mixed cycles, independent control and exact
 map/work limits. All ten consumer tests pass
 (`/tmp/meowy-receiver-emission-boundaries.log`). Deeper candidate-graph/cache checks
-are next; consumer and graph boundary coverage remain separate review slices.
+are next; consumer and graph boundary coverage remain separate review slices
+(consumer-boundary commit `fdd62067`). Candidate-source regressions now cover deeper
+composition/field chains in both forests, missing links becoming unresolved, and
+empty/multiple histories leading to Unknown slots. All three candidate-source tests
+pass (`/tmp/meowy-receiver-emission-graphs.log`). Source-cache, stale-graph and exact
+scratch/walk/work boundary checks remain next.
 
 `emission_source_block` remains the shared whole-layout source qualifier for slot
 links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
