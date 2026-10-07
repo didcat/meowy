@@ -3265,7 +3265,11 @@ The unary branch now uses the shared receiver-primary fallback after dispatch lo
 without changing capture, hints or ascription rules. All 789 forward-report tests
 pass (`/tmp/meowy-receiver-unary-integration.log`), including negation, boolean not,
 bits.not, widths, nested/guarded scope and independent owners. Scalar guard operations
-remain unprojected. Independent stages, stopped bodies and opaque inputs are next.
+remain unprojected (integration commit `63433675`). Independent unary/ascription/
+source/receiver stages, operation registration, stopped bodies, opaque inputs,
+multiple histories and arithmetic-result boundaries are covered. All five unary-receiver
+tests pass (`/tmp/meowy-receiver-unary-stages.log`). Stale source/header, missing
+evidence, mixed-cycle and exact shared-budget checks are next.
 
 Dependency-ordered commit plan:
 
@@ -3274,7 +3278,7 @@ Dependency-ordered commit plan:
    `receiver_primary_slot` after ordinary/dispatch lookup. Preserve step zero, exact
    scalar kind/width/signedness, owners and scope. Keep bare-operand coercion ports
    distinct and run focused forward-report tests with the integration.
-2. Cover independent projection/operation/result, source publication and receiver
+2. Complete: cover independent projection/operation/result, source publication and receiver
    initialization/results. Preserve earlier projections before stopped bodies,
    operation-registration rules, opaque producers and scalar arithmetic results.
 3. Add stale source/header/layout, missing evidence, mixed-cycle and exact map/work

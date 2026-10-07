@@ -1,6 +1,11 @@
 use super::{super::tests::checked, *};
 use std::collections::BTreeSet;
 
+mod stages;
+
+pub(super) const SOURCE: &str =
+    "<R>:<{-><int32>;tag<boolean>}>;r:3.{->$;->tag:true};out:r.{x:-($~<R>)}";
+
 #[test]
 pub(crate) fn receiver_unary_primaries_keep_ascribed_ports_shapes_and_independent_owners() {
     for (init, dispatch) in [("{->3;->tag:true}", false), ("3.{->$;->tag:true}", true)] {
