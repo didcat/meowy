@@ -160,9 +160,21 @@ pub(crate) fn receiver_coercion_primaries_keep_ineligible_and_unprojected_source
 pub(crate) fn receiver_coercion_primaries_keep_nested_ports_and_links_before_stopped_bodies() {
     let source = "d:@\"debug\";r:{->3;->tag:true};out:r.{copy<int32>:$;d.print($);xs<int32[1]>:[$];n:-$;direct:$+1;whole:{->$};d.panic(\"stop\")}";
     let (checker, reports) = checked(source);
-    assert_eq!(reports.slot_uses.len(), 5);
+    assert_eq!(reports.slot_uses.len(), 7);
+    assert_eq!(
+        reports
+            .slot_uses
+            .keys()
+            .filter(|port| matches!(port, Port::Emission(_)))
+            .count(),
+        2
+    );
     let mut coercions = 0;
-    for port in reports.slot_uses.keys() {
+    for port in reports
+        .slot_uses
+        .keys()
+        .filter(|port| !matches!(port, Port::Emission(_)))
+    {
         let Port::Projection { point, step: 0 } = port else {
             panic!()
         };

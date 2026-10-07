@@ -152,8 +152,20 @@ pub(crate) fn receiver_output_primaries_keep_opaque_inputs_inner_coercions_and_c
     }
     let (checker, reports) =
         checked("d:@\"debug\";r:{->3;->tag:true};out:r.{d.print(-$);xs<int32[1]>:[$];whole:{->$}}");
-    assert_eq!(reports.slot_uses.len(), 2);
-    for port in reports.slot_uses.keys() {
+    assert_eq!(reports.slot_uses.len(), 4);
+    assert_eq!(
+        reports
+            .slot_uses
+            .keys()
+            .filter(|port| matches!(port, Port::Emission(_)))
+            .count(),
+        2
+    );
+    for port in reports
+        .slot_uses
+        .keys()
+        .filter(|port| !matches!(port, Port::Emission(_)))
+    {
         let Port::Projection { point, step: 0 } = port else {
             panic!()
         };

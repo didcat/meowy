@@ -69,6 +69,10 @@ impl Checker {
             self.record_dispatch_body(reports, observed.input, owner, span)?
         {
             block
+        } else if let Some(block) =
+            self.record_receiver_body(reports, observed.input, owner, span)?
+        {
+            block
         } else {
             return Ok(None);
         };
@@ -122,3 +126,6 @@ mod limits;
 
 #[cfg(test)]
 mod dispatch;
+
+#[cfg(test)]
+mod receivers;

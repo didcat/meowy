@@ -1,7 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-06. Contextual-list-owned record-receiver primaries are complete;
-composed-emission record-receiver sources are next. Validation is recorded below.
+Updated: 2026-10-07. Composed-emission record-receiver sources are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3203,15 +3202,25 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Next: composed-emission record-receiver sources
 
-`emission_source_block` in `consumers/emissions.rs` currently resolves ordinary and
-dispatch sources, then validates the whole source layout. The mixed-family receiver
-fixtures still leave `copy : { -> $ }` opaque. Add the qualified receiver-body fallback
-without using the scalar-only primary helper. `candidate_source_slot` in
-`results/inputs/sources.rs` reuses this same lookup and caches one source per composition.
+Active series: confirmed on `main` after `e5a46561`; untracked `docs/programs/hey/`
+remains excluded. `emission_source_block` now uses the qualified receiver-body
+fallback after ordinary/dispatch lookup, retaining whole-layout qualification and
+the existing candidate-source cache. No capture or prerequisite refactor was needed.
+Both new regressions demonstrated missing links before integration
+(`/tmp/meowy-receiver-emission-before.log`); all 771 forward-report tests now pass
+(`/tmp/meowy-receiver-emission-integration.log`). Coverage includes exact sorted slots,
+EmitIds, nested/guarded receivers, named destinations, independent owners and immediate
+candidate requalification in both forests. Mixed-family ports remain distinct.
+Independent initialization/results and opaque/partial histories are next.
+
+`emission_source_block` remains the shared whole-layout source qualifier for slot
+links and candidate sources. `candidate_source_slot` in `results/inputs/sources.rs`
+reuses this lookup and caches one source per composition. Generic receiver forwarding
+and scalar-only primary qualification remain separate.
 
 Dependency-ordered commit plan:
 
-1. Extend composed-emission lookup through `record_receiver_body`, preserving complete
+1. Complete: extend composed-emission lookup through `record_receiver_body`, preserving complete
    source count/name/layout validation and only observed initialized targets. Keep
    exact EmitId/owner identities, primary slot zero and named-field index plus one.
    Include nested/guarded receivers, sorted fields, independent owners and immediate

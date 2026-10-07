@@ -109,11 +109,11 @@ pub(crate) fn record_receiver_fields_keep_ineligible_load_call_parameter_and_agg
 }
 
 #[test]
-pub(crate) fn record_receiver_fields_keep_unhandled_receiver_consumer_families_opaque() {
+pub(crate) fn record_receiver_fields_keep_consumer_ports_distinct() {
     let source =
         "d:@\"debug\";r:{->3;->n:4};out:r.{d.print($);a:$+1;xs<int32[1]>:[$];copy:{->$};->$.n}";
     let (checker, reports) = checked(source);
-    assert_eq!(reports.slot_uses.len(), 4);
+    assert_eq!(reports.slot_uses.len(), 6);
     let (&port, _) = reports
         .slot_uses
         .iter()
@@ -121,6 +121,15 @@ pub(crate) fn record_receiver_fields_keep_unhandled_receiver_consumer_families_o
         .unwrap();
     let Port::Operation(id) = port else { panic!() };
     assert!(checker.fields.contains_key(&id));
+    for op in checker
+        .emissions
+        .values()
+        .filter(|op| op.composed.is_some())
+    {
+        for (index, target) in op.targets.iter().enumerate() {
+            assert_eq!(reports.slot_uses[&Port::Emission(target.id)].1.index, index);
+        }
+    }
     let (&port, _) = reports
         .slot_uses
         .iter()
