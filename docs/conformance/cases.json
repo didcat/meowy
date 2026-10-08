@@ -4712,6 +4712,46 @@
         "exit": 1
       },
       "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "operand_record_literal_width",
+      "phase": "check",
+      "source": "sources/operand_record_literal_width.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E216"
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "operand_record_receiver_width",
+      "phase": "check",
+      "source": "sources/operand_record_receiver_width.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#numeric-behavior"
+    },
+    {
+      "id": "operand_record_missing_primary",
+      "phase": "check",
+      "source": "sources/operand_record_missing_primary.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E204"
+      },
+      "reference": "../reference/values-and-blocks.md#emission-is-construction"
+    },
+    {
+      "id": "operand_record_duplicate_field",
+      "phase": "check",
+      "source": "sources/operand_record_duplicate_field.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E205"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

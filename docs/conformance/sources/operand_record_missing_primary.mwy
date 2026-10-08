@@ -1,0 +1,6 @@
+tiny <uint8> : 7
+choose := false
+value : tiny + {
+    | choose | -> 1
+    -> tag : true
+}

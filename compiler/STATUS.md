@@ -3349,8 +3349,15 @@ without changing reference contracts or reviewed hashes; normal cases are commit
 as `cde2be40`. Two panic cases pass debug/release: stopped-right P006 preserves only
 the evaluated prefix, and primary overflow P002 occurs after both operand tails
 (`/tmp/meowy-record-hint-panics-source.log`). All four panic-slice documentation checks
-pass (`/tmp/meowy-record-hint-panics-docs.log`). Ordinary diagnostic cases and the final
-compiler/strict/documentation gates remain pending for this series.
+pass (`/tmp/meowy-record-hint-panics-docs.log`); panic cases are committed as `1f7c5966`.
+Four ordinary rejection cases pass debug/release for literal range E216, fixed receiver
+width E207, missing primary E204 and grouped duplicate composition E205
+(`/tmp/meowy-record-hint-errors-source.log`). All four diagnostic-slice documentation
+checks pass (`/tmp/meowy-record-hint-errors-docs.log`). The audit preserves all 441
+prior case records, 514 tracked contract/source/pin/obligation files and all 37 reviewed
+hashes (`/tmp/meowy-record-hint-preservation.log`). Eight new cases are required; the
+19 capability pins and proof obligations are unchanged. Final compiler/strict gates
+and the guide/handoff update remain pending for this series.
 
 The prior compiler reproduced the documented hint boundary:
 `a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207

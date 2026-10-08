@@ -1,0 +1,4 @@
+value : 1 + {
+    -> (({ -> 3; -> tag : true }))
+    -> tag : false
+}

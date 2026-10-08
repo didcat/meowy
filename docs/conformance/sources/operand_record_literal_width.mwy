@@ -1,0 +1,2 @@
+tiny <uint8> : 7
+value : tiny + (({ -> 256; -> tag : true }))
