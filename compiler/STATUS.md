@@ -3333,9 +3333,14 @@ The primary-only frame now types its primary while inferring named fields; opera
 construction preserves group coercion boundaries, receiver gates and nested composition,
 including named fields inside grouped emissions. Explicit field annotations retain
 their hard constraints. All 2828 library tests pass
-(`/tmp/meowy-record-hint-integration-library.log`). Structural capture, source identity,
-exact work and stopped/gated operand checks are next; source conformance and the full
-compiler gate remain pending for this series.
+(`/tmp/meowy-record-hint-integration-library.log`); behavior is committed as `895c541c`.
+Four added structural tests preserve existing scalar HIR/capture and exact work,
+grouped/direct primary source identities across owners, ordered projections, dispatch
+receiver identity, stopped prefixes and atomic map/work limits. Required evaluation,
+short-circuit, exclusive receivers, checked suffix errors and restart gates are covered.
+All nine focused hint tests and all 798 forward-report tests pass
+(`/tmp/meowy-record-hint-structure.log`, `/tmp/meowy-record-hint-forward.log`).
+Source conformance and the full compiler gate remain pending for this series.
 
 The previously documented hint boundary is reproduced with the current compiler:
 `a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207
@@ -3355,7 +3360,7 @@ Dependency-ordered commit plan:
    ordinary/grouped blocks and dispatches, both operand positions and primary literal
    widths. Preserve numeric same-type rules, full-record equality, explicit annotations,
    receiver-once evaluation and stopped-operand checking; avoid dropping all hints.
-3. Cover resulting capture/operation/source identities and exact effect order without
+3. Complete: cover resulting capture/operation/source identities and exact effect order without
    replaying expressions or changing budgets. Keep hard expected-record field checks,
    ordinary diagnostics and current B001 boundaries intact.
 4. Add required source cases for newly accepted forms and preserved rejections; update

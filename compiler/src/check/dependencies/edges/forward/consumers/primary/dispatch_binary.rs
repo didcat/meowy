@@ -2,6 +2,7 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::edges::forward::results::Sources;
 
 mod boundaries;
+mod hints;
 
 #[test]
 pub(crate) fn dispatch_binary_primaries_preserve_operand_positions_types_and_owners() {

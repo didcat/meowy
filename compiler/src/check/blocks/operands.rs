@@ -148,3 +148,6 @@ impl Checker {
         Ok(value)
     }
 }
+
+#[cfg(test)]
+mod tests;
