@@ -1,0 +1,11 @@
+d : @"debug"
+mark <int32> : () { d.print("receiver"); -> 4 }
+row : { d.print("left"); -> 3; -> tag : true; d.print("left tail") }
+value : row + ((mark().{
+    d.print("right")
+    -> $
+    -> tag : false
+    d.panic("stop")
+    d.print("unreached right")
+}))
+d.print("unreached result {value}")

@@ -1,0 +1,10 @@
+d : @"debug"
+tiny <uint8> : 255
+row : { d.print("left"); -> tiny; -> tag : true; d.print("left tail") }
+value : row + ((0.{
+    d.print("right")
+    -> 1
+    -> tag : 300
+    d.print("right tail")
+}))
+d.print("unreached result {value}")

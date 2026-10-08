@@ -3345,8 +3345,12 @@ debug/release for source/receiver/tail order, once-only receiver evaluation, sna
 shared loads, labels, nested composition, scalar kinds, literal widths and full-record
 equality (`/tmp/meowy-record-hint-normal-source.log`). All four documentation checks
 pass (`/tmp/meowy-record-hint-normal-docs.log`). Classified evidence is updated
-without changing reference contracts or reviewed hashes. Panic/diagnostic cases and
-the final compiler/strict/documentation gates remain pending for this series.
+without changing reference contracts or reviewed hashes; normal cases are committed
+as `cde2be40`. Two panic cases pass debug/release: stopped-right P006 preserves only
+the evaluated prefix, and primary overflow P002 occurs after both operand tails
+(`/tmp/meowy-record-hint-panics-source.log`). All four panic-slice documentation checks
+pass (`/tmp/meowy-record-hint-panics-docs.log`). Ordinary diagnostic cases and the final
+compiler/strict/documentation gates remain pending for this series.
 
 The prior compiler reproduced the documented hint boundary:
 `a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207

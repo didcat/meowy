@@ -4688,6 +4688,30 @@
         "stdout": "9\n2\ntrue\ntrue\n14\n3\n1\ntrue\ntrue\ntrue\ntrue\n4294967297\ntrue\n3.5\ntrue\ntrue\ntrue\ntrue\ntrue\nfalse\ntrue\n"
       },
       "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "operand_record_stopped",
+      "phase": "run",
+      "source": "sources/operand_record_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nleft tail\nreceiver\nright\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "operand_record_overflow",
+      "phase": "run",
+      "source": "sources/operand_record_overflow.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nleft tail\nright\nright tail\n",
+        "panic": "P002",
+        "exit": 1
+      },
+      "reference": "../reference/types.md#numeric-behavior"
     }
   ]
 }
