@@ -3340,9 +3340,15 @@ receiver identity, stopped prefixes and atomic map/work limits. Required evaluat
 short-circuit, exclusive receivers, checked suffix errors and restart gates are covered.
 All nine focused hint tests and all 798 forward-report tests pass
 (`/tmp/meowy-record-hint-structure.log`, `/tmp/meowy-record-hint-forward.log`).
-Source conformance and the full compiler gate remain pending for this series.
+Structural coverage is committed as `626cba6e`. Two new required source cases pass
+debug/release for source/receiver/tail order, once-only receiver evaluation, snapshots,
+shared loads, labels, nested composition, scalar kinds, literal widths and full-record
+equality (`/tmp/meowy-record-hint-normal-source.log`). All four documentation checks
+pass (`/tmp/meowy-record-hint-normal-docs.log`). Classified evidence is updated
+without changing reference contracts or reviewed hashes. Panic/diagnostic cases and
+the final compiler/strict/documentation gates remain pending for this series.
 
-The previously documented hint boundary is reproduced with the current compiler:
+The prior compiler reproduced the documented hint boundary:
 `a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207
 for the named field in a scalar result; explicitly ascribing the right dispatch's
 record type passes (`/tmp/meowy-record-hint-handoff.log`). Existing ascribed fixtures

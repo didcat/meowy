@@ -1,0 +1,27 @@
+d : @"debug"
+mark <int32> : (n <int32>) { d.print("receiver {n}"); -> n }
+show <null> : (n <int32>) {
+    row : { -> n; -> tag : true }
+    value : row + mark(n + 1).{
+        d.print("dispatch {$}")
+        -> $
+        -> tag : false
+        d.print("dispatch tail")
+    }
+    d.print(value)
+    d.print((({ d.print("left"); -> n + 2; -> tag : false; d.print("left tail") })) - row)
+    d.print(row + ((mark(n + 3).{ -> $; -> tag : true; d.print("group tail") })))
+    choose := true
+    d.print(row + 'outer {
+        | choose | { 'outer -> 2; 'outer -> tag : true; 'outer.leave() }
+        -> 3
+        -> tag : false
+    })
+}
+show(3)
+show(5)
+row := { -> 3; -> tag : true }
+d.print(row + { row = { -> 9; -> tag : false }; -> 1; -> tag : true })
+d.print(row + 0.{ -> 1; -> tag : false })
+ptr : &row
+d.print((*ptr) + { -> 1; -> tag : false })

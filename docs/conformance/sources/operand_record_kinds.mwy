@@ -1,0 +1,30 @@
+d : @"debug"
+tiny <uint8> : 7
+a : tiny + { -> 2; -> tag : 300 }
+b : (({ -> 9; -> tag : false })) - tiny
+d.print(a)
+d.print(b)
+d.print(a<uint8>)
+d.print(b<uint8>)
+d.print(tiny * 0.{ -> 2; -> tag : true })
+d.print(tiny / { -> 2; -> tag : true })
+d.print(tiny % { -> 2; -> tag : true })
+d.print(tiny < { -> 8; -> tag : true })
+d.print(tiny <= (({ -> 7; -> tag : true })))
+d.print(tiny > 0.{ -> 6; -> tag : true })
+d.print(tiny >= ((0.{ -> 7; -> tag : true })))
+wide <uint64> : 1
+large : wide + { -> (({ -> 4294967296; -> a : true })); -> z : 300 }
+d.print(large)
+d.print(large<uint64>)
+real <float32> : 1.5
+sum : (({ -> 2.0; -> tag : true })) + real
+d.print(sum)
+d.print(sum<float32>)
+d.print(false != { -> true; -> tag : true })
+d.print("cat" < (("dog".{ -> $; -> tag : true })))
+d.print(null == { -> tag : true })
+row : { -> 3; -> tag : true }
+d.print(row == { -> 3; -> tag : true })
+d.print(row == ((3.{ -> $; -> tag : false })))
+d.print(3 == { -> 3; -> tag : false })

@@ -4668,6 +4668,26 @@
         "code": "E208"
       },
       "reference": "../reference/types.md#unions-and-narrowing"
+    },
+    {
+      "id": "operand_record_order",
+      "phase": "run",
+      "source": "sources/operand_record_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver 4\ndispatch 4\ndispatch tail\n7\nleft\nleft tail\n2\nreceiver 6\ngroup tail\n9\n5\nreceiver 6\ndispatch 6\ndispatch tail\n11\nleft\nleft tail\n2\nreceiver 8\ngroup tail\n13\n7\n4\n10\n10\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "operand_record_kinds",
+      "phase": "run",
+      "source": "sources/operand_record_kinds.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "9\n2\ntrue\ntrue\n14\n3\n1\ntrue\ntrue\ntrue\ntrue\n4294967297\ntrue\n3.5\ntrue\ntrue\ntrue\ntrue\ntrue\nfalse\ntrue\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
     }
   ]
 }
