@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-08. Contextual record hints in binary operands are in progress.
+Updated: 2026-10-08. Primitive binary record contexts are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -2688,8 +2688,9 @@ bare arithmetic results, full-record versus scalar equality, guarded receivers a
 owners, unsigned-negation E222, stopped-right-operand P006 and checked int8 primary
 negation P002 (`/tmp/meowy-dispatch-primary-source.log`,
 `/tmp/meowy-dispatch-primary-panics.log`). The order case explicitly ascribes the
-right dispatch's record type; the unannotated form hits the existing scalar-context
-named-field E207 boundary. Broader contextual record-hint repair remains separate.
+right dispatch's record type; the unannotated form previously hit a scalar-context
+named-field E207 boundary. Primitive operand hints are now repaired; the original
+ascribed fixture stays unchanged. Nonprimitive contexts remain separate.
 
 The audit preserves 390 prior cases, 463 tracked contract/source/pin files, proof
 obligations and all 37 reviewed reference hashes
@@ -3306,81 +3307,75 @@ debug/release. Strict mode exits 1 only for the 19 pinned names and reasons
 (`/tmp/meowy-receiver-unary-docs.log`). No outstanding failures remain. Proof
 evaluation and full language/release qualification remain incomplete.
 
-### Next: contextual record hints in binary operands
+### Primitive contextual record hints in binary operands
 
-Active series: confirmed on `main` after `4eb243eb`; untracked `docs/programs/hey/`
-is the only existing change and remains excluded. `Frame.expected` currently serves
-both primary typing and whole-result constraints. Partial record construction still
-constrains field names, so it cannot represent an open record with a scalar primary
-context. Use a separate primary-only frame mode for primitive binary operand contexts:
-keep primary typing/initialization checks, infer named fields and the resulting record,
-and preserve hard scalar/record annotations. Receiver evaluation keeps its current
-unhinted context. Share the post-prefix block body pass first, then integrate operand
-checking without replaying expressions or weakening required-evaluation gates.
-Two characterization tests preserve explicit constraints, scalar widths and primary
-initialization. All 2826 library tests pass before extraction
-(`/tmp/meowy-record-hint-refactor-before.log`). The body pass is now shared as
-`block_contents`; all 2826 library tests pass after extraction too
-(`/tmp/meowy-record-hint-refactor-after.log`). Primitive non-short-circuit runtime
-operands will use the new mode; required evaluation, full-record equality and other
-expected-type families retain their existing paths. Grouped operands must preserve
-their existing coercion/region boundaries while forwarding the construction context.
-The prerequisite is committed as `ddad6eb2`. New regressions cover unannotated
-ordinary/grouped blocks and dispatches, primary widths, nested composition and labeled
-emissions while retaining explicit constraints and diagnostics. Both new tests failed
-with the original E207 field rejection (`/tmp/meowy-record-hint-integration-before.log`).
-The primary-only frame now types its primary while inferring named fields; operand
-construction preserves group coercion boundaries, receiver gates and nested composition,
-including named fields inside grouped emissions. Explicit field annotations retain
-their hard constraints. All 2828 library tests pass
-(`/tmp/meowy-record-hint-integration-library.log`); behavior is committed as `895c541c`.
-Four added structural tests preserve existing scalar HIR/capture and exact work,
-grouped/direct primary source identities across owners, ordered projections, dispatch
-receiver identity, stopped prefixes and atomic map/work limits. Required evaluation,
-short-circuit, exclusive receivers, checked suffix errors and restart gates are covered.
+Complete. Runtime primitive operand contexts now type the primary of ordinary/grouped
+blocks and dispatches while inferring named fields. Grouped nested composition keeps
+its fields; explicit scalar/record annotations remain whole-result constraints.
+Receivers retain unhinted typing, primary initialization and widths stay checked, and
+full-record equality, short-circuit, required and nonprimitive contexts keep their
+existing paths. No new proof, value-provenance or loan authority is inferred.
+
+Reviewed slices: shared body pass `ddad6eb2`; primary-only contexts and regressions
+`895c541c`; capture/source/work checks `626cba6e`; normal source cases `cde2be40`;
+panics `1f7c5966`; ordinary diagnostics `1ecd86e0`.
+
+All 2826 library tests passed before/after the body extraction; all 2828 passed after
+context integration (`/tmp/meowy-record-hint-refactor-before.log`,
+`/tmp/meowy-record-hint-refactor-after.log`, `/tmp/meowy-record-hint-integration-library.log`).
+Four additional tests cover unchanged scalar HIR/capture/work, grouped/direct source
+identity across owners, ordered projections, receiver identity, stopped prefixes,
+atomic map/work limits, ordinary errors and required/short-circuit/restart gates.
 All nine focused hint tests and all 798 forward-report tests pass
 (`/tmp/meowy-record-hint-structure.log`, `/tmp/meowy-record-hint-forward.log`).
-Structural coverage is committed as `626cba6e`. Two new required source cases pass
-debug/release for source/receiver/tail order, once-only receiver evaluation, snapshots,
-shared loads, labels, nested composition, scalar kinds, literal widths and full-record
-equality (`/tmp/meowy-record-hint-normal-source.log`). All four documentation checks
-pass (`/tmp/meowy-record-hint-normal-docs.log`). Classified evidence is updated
-without changing reference contracts or reviewed hashes; normal cases are committed
-as `cde2be40`. Two panic cases pass debug/release: stopped-right P006 preserves only
-the evaluated prefix, and primary overflow P002 occurs after both operand tails
-(`/tmp/meowy-record-hint-panics-source.log`). All four panic-slice documentation checks
-pass (`/tmp/meowy-record-hint-panics-docs.log`); panic cases are committed as `1f7c5966`.
-Four ordinary rejection cases pass debug/release for literal range E216, fixed receiver
-width E207, missing primary E204 and grouped duplicate composition E205
-(`/tmp/meowy-record-hint-errors-source.log`). All four diagnostic-slice documentation
-checks pass (`/tmp/meowy-record-hint-errors-docs.log`). The audit preserves all 441
-prior case records, 514 tracked contract/source/pin/obligation files and all 37 reviewed
-hashes (`/tmp/meowy-record-hint-preservation.log`). Eight new cases are required; the
-19 capability pins and proof obligations are unchanged. Final compiler/strict gates
-and the guide/handoff update remain pending for this series.
 
-The prior compiler reproduced the documented hint boundary:
-`a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207
-for the named field in a scalar result; explicitly ascribing the right dispatch's
-record type passes (`/tmp/meowy-record-hint-handoff.log`). Existing ascribed fixtures
-must remain unchanged. `binary` in `check/scalars.rs` forwards a scalar primary context
-through `expression_point`; `dispatch_point` in `check/expressions/dispatch.rs` passes
-that context into `block_parts`, and `check/statements.rs` treats it as a scalar result
-constraint. `check/blocks.rs` already has a distinct composed-value path to inspect.
+Eight new required cases pass debug/release: scalar kinds/widths, nested composition,
+source/receiver/tail order, snapshots/shared loads, labeled emissions, full-record
+equality, stopped-right P006, overflow P002, literal range E216, fixed receiver width
+E207, missing primary E204 and grouped duplicate field E205
+(`/tmp/meowy-record-hint-normal-source.log`, `/tmp/meowy-record-hint-panics-source.log`,
+`/tmp/meowy-record-hint-errors-source.log`). All four documentation checks pass for
+each source slice (`/tmp/meowy-record-hint-normal-docs.log`,
+`/tmp/meowy-record-hint-panics-docs.log`, `/tmp/meowy-record-hint-errors-docs.log`).
+
+The audit preserves all 441 prior case records, 514 tracked contract/source/pin/obligation
+files and all 37 reviewed hashes (`/tmp/meowy-record-hint-preservation.log`). The 19
+capability pins and proof obligations are unchanged. Unrelated `docs/programs/hey/`
+remains excluded.
+
+All ten compiler checks pass: formatting, all-target Clippy, 2832 library/921 native
+tests, 62 Python tests, build, metadata and source conformance
+(`/tmp/meowy-record-hint-gate.log`). Conformance has 449 cases: 430 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for those exact pinned names and reasons (`/tmp/meowy-record-hint-strict.log`). All four
+final guide/handoff documentation checks pass (`/tmp/meowy-record-hint-docs.log`).
+No outstanding failures remain in this series. Proof evaluation and full
+language/release qualification remain incomplete.
+
+### Next: shared-reference and list equality operand hints
+
+The primitive repair deliberately leaves nonprimitive contexts on their original paths.
+`v : [1]; x : v == { -> [1]; -> tag : true }` and
+`n : 1; p : &n; x : p == { -> &n; -> tag : true }` still report E207 for a field in a
+scalar result. Explicitly ascribing the right operand's full record type makes both
+check successfully (`/tmp/meowy-record-hint-next.log`). Existing accepted fixtures and
+all B001 boundaries must remain unchanged.
 
 Dependency-ordered commit plan:
 
-1. Complete: characterize explicit result/record constraints and literal widths, then
-   share the post-prefix body pass in `check/blocks.rs` without changing behavior.
-   This lets operand construction set its frame mode before checking statements.
-2. Complete: repair operand context propagation at its responsible layer with regressions for
-   ordinary/grouped blocks and dispatches, both operand positions and primary literal
-   widths. Preserve numeric same-type rules, full-record equality, explicit annotations,
-   receiver-once evaluation and stopped-operand checking; avoid dropping all hints.
-3. Complete: cover resulting capture/operation/source identities and exact effect order without
-   replaying expressions or changing budgets. Keep hard expected-record field checks,
-   ordinary diagnostics and current B001 boundaries intact.
-4. Add required source cases for newly accepted forms and preserved rejections; update
+1. Characterize shared-reference/list equality contexts against named and explicitly
+   ascribed record operands, both positions and groups. Check fixed list lengths,
+   reference identity, explicit record constraints, stopped operands and exclusive
+   receiver gates. Confirm projection/copy contracts before widening any context.
+2. Separate a reusable expected-value conversion prerequisite only if needed.
+   `check/blocks/operands.rs::operand_coercion` handles primitive contexts; shared
+   reborrows and list conversions must retain their existing ownership and source
+   boundaries from `check/expressions.rs`. Do not merely remove the primitive filter.
+3. Integrate each supported context in a separate behavior slice with focused checks;
+   retain field shape inference, receiver-once evaluation and exact context widths/
+   extents. Record unions, exclusive primaries and required contexts remain separate
+   unless their contracts and existing support justify inclusion.
+4. Verify capture/source identities and work limits, add required source cases, update
    classified evidence, run compiler/strict gates, then update the guide and both
    handoffs and run final documentation checks.
 
@@ -5628,9 +5623,11 @@ selection and broader aggregate provenance remain separate.
    stages (`fc8f83a6`), consumer bounds (`fdd62067`), graphs (`f576207d`), graph bounds
    (`564e8d13`) and source cases (`c1f73fe5`) are complete; final gate results are above.
    Unary receiver links (`63433675`), stages (`f2696e83`), boundaries (`8695a59b`) and
-   source cases (`4f6316bf`, `6f0dfbbe`) are complete. Next repair contextual record
-   hints in binary operands; broader receiver consumers and value provenance remain
-   separate.
+   source cases (`4f6316bf`, `6f0dfbbe`) are complete. Primitive binary operand
+   contexts and their source qualification are implemented (`895c541c`, `626cba6e`,
+   `cde2be40`, `1f7c5966`, `1ecd86e0`). Final gates are recorded above. Next inspect
+   shared-reference/list equality hints; broader receiver consumers and value provenance
+   remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

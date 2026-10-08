@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-07. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-08. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -28,30 +28,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Unary-owned projections through ascribed record receivers now retain original
-immutable primary slots. Exact scalar kinds, widths, signedness, owners and scope
-remain checked. Unary, ascription, source and receiver observations stay independent;
-bare operands retain their coercion-owned ports. Capture and type hints are unchanged.
-The [compiler handoff](compiler/STATUS.md#unary-owned-record-receiver-primaries)
-records the reviewed slices and next dependency-ordered plan.
+Primitive binary operand hints now type block and dispatch primaries while allowing
+inferred named fields, including grouped and nested composition. Explicit constraints,
+receiver typing, numeric widths and full-record equality stay checked. Existing scalar
+capture and work counts are preserved; structural metadata grants no new proof or loan
+authority. The [compiler handoff](compiler/STATUS.md#primitive-contextual-record-hints-in-binary-operands)
+records the reviewed slices and validation.
 
-Five new required cases pass debug/release: unary kinds and source/receiver/tail order,
-snapshots/shared loads, stopped-body P006, checked overflow P002, unsigned-negation
-E222 and unproven-ascription E208. Structural links remain distinct from execution.
-All ten compiler checks pass: 2824 library/921 native tests and 62 Python groups
-(`/tmp/meowy-receiver-unary-gate.log`). Conformance has 441 cases: 422 required passes,
+Eight new required cases pass in debug/release for kinds/widths, evaluation order,
+snapshots/shared loads, labeled emissions, stopped-right P006, overflow P002 and
+E216/E207/E204/E205 rejections. All 798 forward-report tests pass. All ten compiler
+checks pass: 2832 library/921 native tests and 62 Python tests
+(`/tmp/meowy-record-hint-gate.log`). Conformance has 449 cases: 430 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
-for those exact names and reasons (`/tmp/meowy-receiver-unary-strict.log`). All four
-final guide/handoff checks pass (`/tmp/meowy-receiver-unary-docs.log`).
+for those exact names and reasons (`/tmp/meowy-record-hint-strict.log`).
 
-The audit preserves 436 prior cases, 509 tracked contract/source/pin files and all
-37 reviewed hashes (`/tmp/meowy-receiver-unary-preservation.log`). All four checks pass
-for each source slice (`/tmp/meowy-receiver-unary-normal-docs.log`,
-`/tmp/meowy-receiver-unary-errors-docs.log`).
-Loan/proof authority is unchanged. Proof evaluation and full language/release
-qualification remain incomplete.
+The audit preserves 441 prior cases, 514 tracked contract/source/pin/obligation files
+and all 37 reviewed hashes (`/tmp/meowy-record-hint-preservation.log`). The 19 capability
+pins and proof obligations are unchanged. All four documentation checks pass for each
+source slice and the final guide/handoff (`/tmp/meowy-record-hint-docs.log`). Proof
+evaluation and full language/release qualification remain incomplete.
 
-Next, repair scalar operand hints reaching record construction in binary expressions.
+Next inspect shared-reference and list equality operand hints; both still reject
+unannotated record constructors with E207 while explicit record ascriptions pass.
+The compiler handoff includes reproducers and a dependency-ordered plan.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

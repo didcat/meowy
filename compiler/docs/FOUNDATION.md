@@ -693,9 +693,17 @@ Output, list, composed-emission and coercion dispatch links are described below.
 Projected coercions do not become transparent wrappers. Source cases preserve
 receiver/tail order, scalar kinds and bare arithmetic results, guarded `$` scopes,
 unsigned-negation E222, stopped-right-operand P006 and checked primary-negation P002.
-The order case explicitly ascribes the right dispatch's record type: an unannotated
-right dispatch can receive a scalar construction hint and reject named fields with
-E207. Contextual record-hint repair remains separate from source qualification.
+Runtime primitive binary operand hints now type block and dispatch primaries while
+allowing inferred named fields. Grouped constructors and nested primary composition
+retain those fields and their existing coercion boundaries. Explicit scalar/record
+annotations remain whole-result constraints; a dispatch receiver keeps its original
+unhinted type. Primary widths, initialization and duplicate-field checks remain exact.
+Existing scalar capture and work counts are preserved. New required cases cover
+unannotated operands, source/receiver/tail order, snapshots/shared loads, scalar kinds,
+stopped-right P006, checked overflow P002 and ordinary E216/E207/E204/E205 rejections.
+The earlier ascribed order case remains unchanged. Short-circuit, required-evaluation
+and nonprimitive operand contexts retain their prior paths. Shared-reference and list
+equality construction hints remain a separate, reproduced boundary.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
