@@ -3325,6 +3325,17 @@ initialization. All 2826 library tests pass before extraction
 operands will use the new mode; required evaluation, full-record equality and other
 expected-type families retain their existing paths. Grouped operands must preserve
 their existing coercion/region boundaries while forwarding the construction context.
+The prerequisite is committed as `ddad6eb2`. New regressions cover unannotated
+ordinary/grouped blocks and dispatches, primary widths, nested composition and labeled
+emissions while retaining explicit constraints and diagnostics. Both new tests failed
+with the original E207 field rejection (`/tmp/meowy-record-hint-integration-before.log`).
+The primary-only frame now types its primary while inferring named fields; operand
+construction preserves group coercion boundaries, receiver gates and nested composition,
+including named fields inside grouped emissions. Explicit field annotations retain
+their hard constraints. All 2828 library tests pass
+(`/tmp/meowy-record-hint-integration-library.log`). Structural capture, source identity,
+exact work and stopped/gated operand checks are next; source conformance and the full
+compiler gate remain pending for this series.
 
 The previously documented hint boundary is reproduced with the current compiler:
 `a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207
@@ -3340,7 +3351,7 @@ Dependency-ordered commit plan:
 1. Complete: characterize explicit result/record constraints and literal widths, then
    share the post-prefix body pass in `check/blocks.rs` without changing behavior.
    This lets operand construction set its frame mode before checking statements.
-2. Repair operand context propagation at its responsible layer with regressions for
+2. Complete: repair operand context propagation at its responsible layer with regressions for
    ordinary/grouped blocks and dispatches, both operand positions and primary literal
    widths. Preserve numeric same-type rules, full-record equality, explicit annotations,
    receiver-once evaluation and stopped-operand checking; avoid dropping all hints.

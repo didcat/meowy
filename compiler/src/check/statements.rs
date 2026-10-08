@@ -450,7 +450,9 @@ impl Checker {
                                         let expected = frame
                                             .expected
                                             .as_ref()
-                                            .filter(|_| !frame.partial)
+                                            .filter(|_| {
+                                                !frame.partial && (!frame.primary || name.is_none())
+                                            })
                                             .ok_or_else(unsupported)?;
                                         crate::borrow_contract::type_weight(
                                             expected,
@@ -633,7 +635,9 @@ impl Checker {
         } else {
             None
         };
+        let primary = frame.primary && name.is_none();
         let expected = match (&frame.expected, name) {
+            (_, Some(_)) if frame.primary => None,
             (Some(ty), name) if Self::record_union(ty) => Self::union_slot(ty, name, mutable),
             (Some(Type::Record { primary, .. }), None) => Some(*primary.clone()),
             (Some(Type::Record { fields, .. }), Some(name)) => Some(
@@ -677,6 +681,8 @@ impl Checker {
             } else {
                 self.expression_point(value, expected.as_ref())?
             }
+        } else if primary && annotated.is_none() {
+            self.primary_emission_point(value, expected.as_ref().expect("primary context"))?
         } else {
             self.expr_point(value, annotated.as_ref().or(expected.as_ref()))?
         };
@@ -911,6 +917,7 @@ impl Checker {
         }
         if frame.expected.is_some()
             && expected.is_none()
+            && !frame.primary
             && !frame.expected.as_ref().is_some_and(Self::record_union)
         {
             return Err(Self::error(

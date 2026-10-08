@@ -6,6 +6,7 @@ use crate::hir::{self, Type};
 use std::collections::BTreeMap;
 
 mod fallback;
+mod operands;
 
 impl Checker {
     pub(crate) fn block(
@@ -117,6 +118,7 @@ impl Checker {
             start: self.writes,
             first: self.proofs.emissions.len(),
             partial,
+            primary: false,
             owner: self.owner,
         });
         let mut stmts = Vec::new();
@@ -262,7 +264,9 @@ impl Checker {
                     ));
                 }
             }
-            return Ok(expected.clone());
+            if !frame.primary {
+                return Ok(expected.clone());
+            }
         }
         let primary = slots
             .remove(&None)

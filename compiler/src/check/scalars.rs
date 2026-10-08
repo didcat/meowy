@@ -302,7 +302,7 @@ impl Checker {
             let (root, value) = self.composed_point(left, record, Some(&primary))?;
             (None, Some(root), value)
         } else {
-            let (root, value) = self.expression_point(left, context.as_ref())?;
+            let (root, value) = self.operand_point(left, context.as_ref())?;
             (None, Some(root), value)
         };
         let skipped = if boolean {
@@ -343,7 +343,7 @@ impl Checker {
             let (root, value) = self.composed_point(right, record, Some(&primary))?;
             (None, Some(root), value)
         } else {
-            let (root, value) = self.expression_point(right, right_context.as_ref())?;
+            let (root, value) = self.operand_point(right, right_context.as_ref())?;
             (None, Some(root), value)
         };
         let skipped = if boolean {

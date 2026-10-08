@@ -135,6 +135,7 @@ pub(crate) struct Frame {
     pub(crate) start: usize,
     pub(crate) first: hir::EmitId,
     pub(crate) partial: bool,
+    pub(crate) primary: bool,
     pub(crate) owner: usize,
 }
 
