@@ -35,10 +35,18 @@ impl Checker {
         receiver: Option<hir::Expr>,
         partial: bool,
     ) -> Result<(Option<hir::LocalId>, hir::Block)> {
-        let opaque = receiver.is_some();
-        let (local, mut stmts) = self.block_prefix(block, expected, receiver, partial)?;
+        let prefix = self.block_prefix(block, expected, receiver, partial)?;
+        self.block_contents(block, prefix)
+    }
+
+    pub(crate) fn block_contents(
+        &mut self,
+        block: &ast::Block,
+        prefix: (Option<hir::LocalId>, Vec<hir::Stmt>),
+    ) -> Result<(Option<hir::LocalId>, hir::Block)> {
+        let (local, mut stmts) = prefix;
         let mut points = Vec::new();
-        if opaque {
+        if local.is_some() {
             points.push(None);
         }
         let mut index = 0;

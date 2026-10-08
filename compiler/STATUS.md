@@ -1,7 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-07. Unary-owned record-receiver primaries are complete;
-contextual record hints in binary operands are next. Validation is recorded below.
+Updated: 2026-10-08. Contextual record hints in binary operands are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3309,6 +3308,24 @@ evaluation and full language/release qualification remain incomplete.
 
 ### Next: contextual record hints in binary operands
 
+Active series: confirmed on `main` after `4eb243eb`; untracked `docs/programs/hey/`
+is the only existing change and remains excluded. `Frame.expected` currently serves
+both primary typing and whole-result constraints. Partial record construction still
+constrains field names, so it cannot represent an open record with a scalar primary
+context. Use a separate primary-only frame mode for primitive binary operand contexts:
+keep primary typing/initialization checks, infer named fields and the resulting record,
+and preserve hard scalar/record annotations. Receiver evaluation keeps its current
+unhinted context. Share the post-prefix block body pass first, then integrate operand
+checking without replaying expressions or weakening required-evaluation gates.
+Two characterization tests preserve explicit constraints, scalar widths and primary
+initialization. All 2826 library tests pass before extraction
+(`/tmp/meowy-record-hint-refactor-before.log`). The body pass is now shared as
+`block_contents`; all 2826 library tests pass after extraction too
+(`/tmp/meowy-record-hint-refactor-after.log`). Primitive non-short-circuit runtime
+operands will use the new mode; required evaluation, full-record equality and other
+expected-type families retain their existing paths. Grouped operands must preserve
+their existing coercion/region boundaries while forwarding the construction context.
+
 The previously documented hint boundary is reproduced with the current compiler:
 `a : 3.{ -> $; -> tag : true }; x : a + 4.{ -> $; -> tag : false }` reports E207
 for the named field in a scalar result; explicitly ascribing the right dispatch's
@@ -3320,10 +3337,9 @@ constraint. `check/blocks.rs` already has a distinct composed-value path to insp
 
 Dependency-ordered commit plan:
 
-1. Add focused regressions distinguishing scalar operand hints from explicit declared
-   result/record constraints. Reproduce the unannotated dispatch failure, inspect
-   existing composed-value handling, and record the smallest typing change. Separate
-   a behavior-preserving prerequisite only if that change actually needs one.
+1. Complete: characterize explicit result/record constraints and literal widths, then
+   share the post-prefix body pass in `check/blocks.rs` without changing behavior.
+   This lets operand construction set its frame mode before checking statements.
 2. Repair operand context propagation at its responsible layer with regressions for
    ordinary/grouped blocks and dispatches, both operand positions and primary literal
    widths. Preserve numeric same-type rules, full-record equality, explicit annotations,

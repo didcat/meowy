@@ -663,3 +663,6 @@ mod binary;
 
 #[cfg(test)]
 mod contexts;
+
+#[cfg(test)]
+mod records;
