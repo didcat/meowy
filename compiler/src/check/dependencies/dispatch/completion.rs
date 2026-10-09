@@ -105,7 +105,10 @@ pub(crate) fn dispatch_receiver_shape_is_shallow_and_independent_of_body_results
         ("v:null.{->3}", Shape::Scalar(ScalarKind::Null), true),
         (
             "n:1;v:(&n).{->3}",
-            Shape::Reference(hir::ReferenceMode::Shared),
+            Shape::SharedScalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
             true,
         ),
         ("v:{->n:1}.{->3}", Shape::Record { fields: 1 }, true),

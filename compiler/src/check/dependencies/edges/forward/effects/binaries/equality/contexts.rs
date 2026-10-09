@@ -40,8 +40,11 @@ pub(crate) fn equality_context_reports_keep_reference_projection_sources_and_ord
                     assert!(slots[0].field.is_none());
                     assert_eq!(
                         slots[0].shape,
-                        crate::check::dependencies::bodies::completion::Shape::Reference(
-                            crate::hir::ReferenceMode::Shared
+                        crate::check::dependencies::bodies::completion::Shape::SharedScalar(
+                            ScalarKind::Int {
+                                bits: 32,
+                                signed: true
+                            }
                         )
                     );
                     assert!(reports.results[&slot.block].1.dispatch.is_none());

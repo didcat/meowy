@@ -21,7 +21,13 @@ pub(crate) fn block_completion_keeps_checked_shapes_and_partial_results() {
         ("->n:1;->tag:true", Shape::Record { fields: 2 }),
         ("flag:=false;|flag|->1", Shape::Union { members: 2 }),
         ("-> [1,2]", Shape::List { capacity: 2 }),
-        ("n:1;->&n", Shape::Reference(hir::ReferenceMode::Shared)),
+        (
+            "n:1;->&n",
+            Shape::SharedScalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
+        ),
         ("'loop{'loop.restart()}", Shape::Never),
     ] {
         let (checker, block) = check(source);
@@ -32,6 +38,126 @@ pub(crate) fn block_completion_keeps_checked_shapes_and_partial_results() {
         assert_eq!(body.completion.normal, result != Shape::Never);
         assert!(body.completion.valid());
     }
+}
+
+#[test]
+pub(crate) fn shared_scalar_shapes_retain_exact_referents_without_recursive_types() {
+    use hir::Type;
+    let mut types = vec![
+        (Type::Null, ScalarKind::Null),
+        (Type::Bool, ScalarKind::Bool),
+        (Type::String, ScalarKind::String),
+    ];
+    for bits in [8, 16, 32, 64] {
+        for signed in [false, true] {
+            types.push((Type::Int { bits, signed }, ScalarKind::Int { bits, signed }));
+        }
+    }
+    for bits in [32, 64] {
+        types.push((Type::Float { bits }, ScalarKind::Float { bits }));
+    }
+    for (ty, kind) in types {
+        let shared = Type::Reference(Box::new(ty.clone()));
+        let completion = Completion::of(&shared);
+        assert_eq!(completion.result, Shape::SharedScalar(kind));
+        assert!(completion.normal && completion.valid());
+        assert_eq!(
+            Completion::of(&Type::Exclusive(Box::new(ty))).result,
+            Shape::Reference(hir::ReferenceMode::Exclusive)
+        );
+        assert_eq!(
+            Completion::of(&Type::Reference(Box::new(shared))).result,
+            Shape::Reference(hir::ReferenceMode::Shared)
+        );
+    }
+    for ty in [
+        Type::Never,
+        Type::Int {
+            bits: 7,
+            signed: true,
+        },
+        Type::Float { bits: 16 },
+        Type::List {
+            element: Box::new(Type::Bool),
+            capacity: 1,
+        },
+        Type::Record {
+            primary: Box::new(Type::Bool),
+            fields: Vec::new(),
+        },
+        Type::union(vec![Type::Bool, Type::Null]),
+        Type::Foundation(hir::FoundationType::Allocator),
+    ] {
+        assert_eq!(
+            Completion::of(&Type::Reference(Box::new(ty))).result,
+            Shape::Reference(hir::ReferenceMode::Shared)
+        );
+    }
+    for kind in [
+        ScalarKind::Int {
+            bits: 7,
+            signed: true,
+        },
+        ScalarKind::Float { bits: 16 },
+    ] {
+        assert!(
+            !Completion {
+                normal: true,
+                result: Shape::SharedScalar(kind)
+            }
+            .valid()
+        );
+    }
+}
+
+#[test]
+pub(crate) fn shared_scalar_layouts_reject_stale_types_with_exact_shallow_work() {
+    use super::super::Layout;
+    let int = hir::Type::Int {
+        bits: 32,
+        signed: true,
+    };
+    let shared = hir::Type::Reference(Box::new(int.clone()));
+    let other = hir::Type::Reference(Box::new(hir::Type::Bool));
+    let span = Span::default();
+    let mut work = Vec::new();
+    for ty in [&int, &shared, &other] {
+        let mut flow = crate::flow::Flow::new();
+        let (layout, count, names) = Layout::capture(ty, &mut flow, 0, 0, span).unwrap();
+        assert_eq!((count, names), (1, 0));
+        assert!(layout.matches(ty));
+        if ty == &shared {
+            assert!(!layout.matches(&other));
+        }
+        let used = flow.work;
+        work.push(used);
+        for short in [0, 1] {
+            flow.work = crate::flow::MAX_PROOF_WORK - used + short;
+            flow.full = false;
+            let result = Layout::capture(ty, &mut flow, 0, 0, span);
+            if short == 0 {
+                assert_eq!(result.unwrap(), (layout.clone(), count, names));
+            } else {
+                assert!(result.unwrap_err().message.contains("budget"));
+            }
+        }
+    }
+    assert!(work.iter().all(|used| *used == work[0]));
+    let (mut checker, mut block) = check("n:1;->&n");
+    let before = format!("{:?}{:?}", checker.bodies, checker.edge_counts());
+    checker.track_body(&block, Span::new(0, 8)).unwrap();
+    block.ty = other;
+    assert!(
+        checker
+            .track_body(&block, Span::new(0, 8))
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(
+        format!("{:?}{:?}", checker.bodies, checker.edge_counts()),
+        before
+    );
 }
 
 #[test]

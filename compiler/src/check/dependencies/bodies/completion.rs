@@ -6,6 +6,7 @@ pub(crate) const MAX_BODY_RESULTS: usize = super::super::sequences::MAX_ITEMS;
 pub(crate) enum Shape {
     Never,
     Scalar(ScalarKind),
+    SharedScalar(ScalarKind),
     Record { fields: usize },
     List { capacity: usize },
     Reference(hir::ReferenceMode),
@@ -42,7 +43,10 @@ impl Completion {
             Type::List { capacity, .. } if *capacity <= crate::list::MAX_CAPACITY => Shape::List {
                 capacity: *capacity,
             },
-            Type::Reference(_) => Shape::Reference(hir::ReferenceMode::Shared),
+            Type::Reference(ty) => ScalarKind::of(ty).map_or(
+                Shape::Reference(hir::ReferenceMode::Shared),
+                Shape::SharedScalar,
+            ),
             Type::Exclusive(_) => Shape::Reference(hir::ReferenceMode::Exclusive),
             Type::Union(members) if (2..=MAX_BODY_RESULTS).contains(&members.len()) => {
                 Shape::Union {
@@ -62,8 +66,10 @@ impl Completion {
             return false;
         }
         match self.result {
-            Shape::Scalar(ScalarKind::Int { bits, .. }) => matches!(bits, 8 | 16 | 32 | 64),
-            Shape::Scalar(ScalarKind::Float { bits }) => matches!(bits, 32 | 64),
+            Shape::Scalar(ScalarKind::Int { bits, .. })
+            | Shape::SharedScalar(ScalarKind::Int { bits, .. }) => matches!(bits, 8 | 16 | 32 | 64),
+            Shape::Scalar(ScalarKind::Float { bits })
+            | Shape::SharedScalar(ScalarKind::Float { bits }) => matches!(bits, 32 | 64),
             Shape::Record { fields } => fields <= MAX_BODY_RESULTS,
             Shape::List { capacity } => capacity <= crate::list::MAX_CAPACITY,
             Shape::Union { members } => (2..=MAX_BODY_RESULTS).contains(&members),

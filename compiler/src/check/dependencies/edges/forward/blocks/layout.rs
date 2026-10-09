@@ -45,7 +45,10 @@ impl Checker {
         }
         let expected = match shape {
             Shape::Record { fields } => fields + 1,
-            Shape::Scalar(_) | Shape::List { .. } | Shape::Reference(_) => 1,
+            Shape::Scalar(_)
+            | Shape::SharedScalar(_)
+            | Shape::List { .. }
+            | Shape::Reference(_) => 1,
             _ => return Err(invalid()),
         };
         if count != expected || slots[0].field.is_some() || slots[0].mutable {

@@ -51,7 +51,10 @@ pub(crate) fn coercion_sources_capture_primary_shapes_before_forwarding_or_conve
         ),
         (
             "n:1;r:3.{->&n;->tag:true};v<&int32>:r",
-            Shape::Reference(hir::ReferenceMode::Shared),
+            Shape::SharedScalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
         ),
         (
             "r:3.{->[$];->tag:true};v<int32[1]>:r",

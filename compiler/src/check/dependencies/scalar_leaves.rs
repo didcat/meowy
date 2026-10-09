@@ -18,6 +18,26 @@ pub(crate) enum Kind {
     String,
 }
 
+impl Kind {
+    pub(crate) fn of(ty: &hir::Type) -> Option<Self> {
+        match ty {
+            hir::Type::Null => Some(Self::Null),
+            hir::Type::Bool => Some(Self::Bool),
+            hir::Type::Int { bits, signed } if matches!(bits, 8 | 16 | 32 | 64) => {
+                Some(Self::Int {
+                    bits: *bits,
+                    signed: *signed,
+                })
+            }
+            hir::Type::Float { bits } if matches!(bits, 32 | 64) => {
+                Some(Self::Float { bits: *bits })
+            }
+            hir::Type::String => Some(Self::String),
+            _ => None,
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct ScalarLeaf {
     pub(crate) owner: usize,

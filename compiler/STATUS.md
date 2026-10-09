@@ -3405,7 +3405,7 @@ All four final guide/handoff documentation checks pass
 (`/tmp/meowy-equality-context-docs.log`). No outstanding failures remain in this series.
 Proof evaluation and full language/release qualification remain incomplete.
 
-### Next: shared-reference dispatch binary source qualification
+### Shared-reference dispatch binary source qualification
 
 The new `check/dependencies/edges/forward/effects/binaries/equality/contexts.rs` tests
 show the boundary directly:
@@ -3415,24 +3415,32 @@ without a dispatch source slot link. Both forms are supported and have source ex
 coverage. Dispatch and receiver fallback in `edges/forward/consumers.rs` requires `BinaryClass::Scalar`;
 reference operands carry only `BinaryClass::Reference(mode)`.
 
+Inspection confirms that body layouts and binary classes retain reference mode only.
+Existing dispatch resolution already validates wrappers, exact owners, observed result
+origins and layouts; a scalar referent descriptor can reuse it without type interning
+or recursive type copies. The bounded scope is shared references to Null/Bool/Int/Float/
+String, retaining exact numeric widths and signedness. Other referents remain opaque.
+Body/slot shapes now retain shared scalar referents, including numeric widths and
+signedness, without recursive type copies. Shape/layout replay rejects stale
+referents; exact and one-short layout work checks preserve the prior shallow charge.
+All 2845 library tests pass (`/tmp/meowy-shared-shapes-library.log`), including the
+two new focused tests (`/tmp/meowy-shared-shapes-focused.log`). Formatting passes.
+Binary classes and dispatch source qualification are next; source behavior is unchanged.
+
 Dependency-ordered commit plan:
 
-1. Inspect retained type/owner/source evidence in `dependencies/binaries/types.rs`,
-   `dependencies/bodies/completion.rs` and `edges/forward/consumers/primary/` before
-   widening qualification. A shared mode alone does not establish compatible referent
-   identity, storage provenance or loan authority. Characterize shared modes with
-   incompatible referents, groups/ascriptions, owners/scopes and stopped results first.
-2. If required, capture the smallest bounded reference type identity as an independent
-   prerequisite with unchanged source behavior and exact budget tests. Do not simply
-   remove the scalar fallback filter or infer missing identities from spans/HIR order.
-3. Qualify direct dispatch reference-primary sources and integrate binary projection
-   links in separately reviewable slices. Keep observed source results, initialization,
-   projection and operation/results independent; receiver chains and other consumers
-   remain separate until their own qualification is complete.
-4. Add stale-identity, missing-evidence, cycle, control and exact map/work tests. Reuse
-   source conformance where it already covers behavior; add required cases for any
-   newly supported source forms. Audit contracts/pins, run compiler/strict gates, and
-   update the guide and both handoffs before final documentation checks.
+1. Complete: capture shared scalar referents in body shapes, with replay/type/budget regression
+   coverage. Preserve shallow aggregate categories and exclusive-reference boundaries.
+2. Capture the same descriptor in binary classes; validate exact referent agreement
+   and malformed widths while retaining fixed-size metadata and existing work charges.
+3. Qualify dispatch reference-primary slots through existing record/result validation;
+   cover wrappers, owners, absent/stopped results and incompatible referents.
+4. Connect observed binary reference projections, with focused stage/order tests.
+   Receiver chains and nonbinary consumers remain separate.
+5. Cover stale identities, cycles, independent control and exact map/work limits;
+   reuse existing source conformance for unchanged supported language behavior.
+6. Audit contracts/pins, run `python3 -B tools/verify.py --compiler` and strict
+   conformance, then update the guide and both handoffs and run documentation checks.
 
 Reference origin inference, ownership authority, list/union/exclusive primaries,
 precise joins, function results, restarts, E225 enforcement and proof outcomes remain
