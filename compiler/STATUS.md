@@ -3523,18 +3523,25 @@ The existing bounded type walk is now shared without changing its rules, diagnos
 or work charges. All eight eligibility tests pass before and after extraction
 (`/tmp/meowy-reference-receiver-eligibility-before.log`,
 `/tmp/meowy-reference-receiver-eligibility-after.log`); formatting passes.
-Receiver-index descriptor capture is next.
+The extraction is committed as `8e74c4c6`. Receiver-index rows now retain an optional
+shared scalar primary descriptor without adding rows or variable payload. Other fields
+use the original immutable/reference-free walk, and ordinary local eligibility remains
+unchanged. All three new index tests and 823 forward-report tests pass
+(`/tmp/meowy-reference-receiver-index.log`, `/tmp/meowy-reference-receiver-index-forward.log`).
+Capacity, payload, type-work and mutable/reference-field exclusions are covered.
+Typed receiver-hop and body-primary qualification are next; they form one consumer
+qualification slice, with binary integration kept separate.
 
 Dependency-ordered commit plan:
 
 1. Complete: share the bounded type-eligibility walk without changing rules or work charges;
    run the existing eligibility checks before and after the extraction.
-2. Capture optional shared scalar primary eligibility in receiver-index rows, with
+2. Complete: capture optional shared scalar primary eligibility in receiver-index rows, with
    type/mutability exclusions, unchanged ordinary eligibility and exact budget tests.
-3. Add a dedicated typed receiver hop and scope/identity checks. Keep generic record
+3. Add a dedicated typed receiver hop and resolve primary slots through checked
+   groups/ascriptions, scope/identity checks and exact body layouts. Keep generic record
    forwarding unchanged and validate initialization independently of receiver results.
-4. Resolve shared receiver primary slots through checked groups/ascriptions and exact
-   body layouts, then integrate binary projection fallback in a separate slice.
+4. Integrate binary projection fallback with focused stage and ordering checks.
 5. Cover missing/stale evidence, scopes, cycles and exact limits, add required source
    coverage where needed, audit contracts/pins, run compiler/strict gates and update
    the guide and both handoffs before final documentation checks.

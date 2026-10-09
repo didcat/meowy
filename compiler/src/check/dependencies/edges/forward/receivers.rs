@@ -1,10 +1,15 @@
 use super::{entries::Reports, *};
 use crate::{
-    check::dependencies::bodies::{Completion, Fact},
+    check::dependencies::{
+        ScalarKind,
+        bodies::{Completion, Fact},
+    },
     hir,
 };
 
-pub(crate) type Receivers = BTreeMap<hir::LocalId, (usize, PointId)>;
+mod shared;
+
+pub(crate) type Receivers = BTreeMap<hir::LocalId, (usize, PointId, Option<ScalarKind>)>;
 
 impl Checker {
     pub(super) fn receiver_index(
@@ -88,8 +93,21 @@ impl Checker {
             {
                 return Err(invalid());
             }
+            let mut primary = shared::primary(ty, &mut self.flow, span)?;
+            if primary.is_some() {
+                if !self.flow.spend(
+                    self.proofs.mutable.len().checked_ilog2().unwrap_or(0) as usize
+                        + self.proofs.fields.len().checked_ilog2().unwrap_or(0) as usize
+                        + 2,
+                ) {
+                    return Err(budget());
+                }
+                if self.proofs.variable(op.local) {
+                    primary = None;
+                }
+            }
             parts = parts.checked_sub(1).ok_or_else(budget)?;
-            index.insert(op.local, (op.owner, id));
+            index.insert(op.local, (op.owner, id, primary));
         }
         Ok((index, parts))
     }

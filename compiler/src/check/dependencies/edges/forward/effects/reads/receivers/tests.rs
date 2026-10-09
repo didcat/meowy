@@ -17,7 +17,7 @@ pub(crate) fn receiver_inputs_keep_nested_scopes_owners_and_ordinary_initializer
                 reports
                     .receivers
                     .get(&read.local)
-                    .map(|&(owner, dispatch)| (id, owner, dispatch))
+                    .map(|&(owner, dispatch, _)| (id, owner, dispatch))
             })
             .collect();
         assert!(!reads.is_empty());

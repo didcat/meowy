@@ -108,7 +108,7 @@ impl Checker {
         if !self.flow.spend(work) {
             return Err(budget());
         }
-        let Some(&(indexed, dispatch)) = reports.receivers.get(local) else {
+        let Some(&(indexed, dispatch, _)) = reports.receivers.get(local) else {
             return Ok(None);
         };
         let work = [

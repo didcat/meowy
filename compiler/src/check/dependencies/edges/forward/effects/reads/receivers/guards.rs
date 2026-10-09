@@ -19,7 +19,7 @@ pub(crate) fn receiver_inputs_preserve_guarded_emissions_nested_blocks_and_owner
                 reports
                     .receivers
                     .get(&read.local)
-                    .map(|&(owner, dispatch)| (id, owner, dispatch))
+                    .map(|&(owner, dispatch, _)| (id, owner, dispatch))
             })
             .collect();
         assert!(!reads.is_empty());

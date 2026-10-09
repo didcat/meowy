@@ -13,7 +13,7 @@ pub(crate) fn record_receiver_inputs_reuse_checked_eligibility_across_scopes_and
             reports
                 .receivers
                 .get(&read.local)
-                .map(|&(owner, dispatch)| (id, owner, dispatch))
+                .map(|&(owner, dispatch, _)| (id, owner, dispatch))
         })
         .collect();
     assert!(reads.iter().any(|(_, owner, _)| *owner != 0));

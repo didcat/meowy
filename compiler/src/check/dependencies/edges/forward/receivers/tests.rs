@@ -24,8 +24,9 @@ pub(crate) fn receiver_index_keeps_nested_and_independent_owners_after_hir_trans
     assert!(checker.locals.is_empty());
     let reports = checker.entry_reports(&program, Span::default()).unwrap();
     assert_eq!(reports.receivers.len(), 3);
-    assert!(reports.receivers.values().any(|(owner, _)| *owner != 0));
-    for (&local, &(owner, id)) in &reports.receivers {
+    assert!(reports.receivers.values().any(|(owner, _, _)| *owner != 0));
+    for (&local, &(owner, id, primary)) in &reports.receivers {
+        assert!(primary.is_none());
         let op = &checker.dispatch_ops[&id];
         assert_eq!((op.local, op.owner), (local, owner));
         assert!(!reports.initializers.contains_key(&local));
