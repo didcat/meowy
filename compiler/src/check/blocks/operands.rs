@@ -2,6 +2,22 @@ use super::*;
 use crate::check::dependencies::{CoercionKind, PointKind};
 
 impl Checker {
+    pub(crate) fn binary_operand_point(
+        &mut self,
+        expr: &ast::Expr,
+        expected: Option<&Type>,
+        equality: bool,
+    ) -> Result<(hir::PointId, hir::Expr)> {
+        if !self.required
+            && equality
+            && let Some(expected @ Type::List { .. }) = expected
+        {
+            self.operand_root(expr, expected)
+        } else {
+            self.operand_point(expr, expected)
+        }
+    }
+
     pub(crate) fn operand_constructor(mut expr: &ast::Expr) -> bool {
         while let ExprKind::Group(child) = &expr.kind {
             expr = child;
@@ -32,6 +48,14 @@ impl Checker {
         }) else {
             return self.expression_point(expr, expected);
         };
+        self.operand_root(expr, expected)
+    }
+
+    pub(crate) fn operand_root(
+        &mut self,
+        expr: &ast::Expr,
+        expected: &Type,
+    ) -> Result<(hir::PointId, hir::Expr)> {
         self.with_continuation(expr.span, "expression", |checker| {
             checker.with_point_id(PointKind::expression(expr), expr.span, |checker| {
                 checker.operand_value(expr, expected)
@@ -44,7 +68,7 @@ impl Checker {
         expr: &ast::Expr,
         expected: &Type,
     ) -> Result<(hir::PointId, hir::Expr)> {
-        let constructor = Self::operand_constructor(expr);
+        let constructor = Self::operand_constructor(expr) || matches!(expected, Type::List { .. });
         self.operand_coercion(expr, expected, |checker| {
             if constructor {
                 checker.operand_value(expr, expected)
@@ -79,6 +103,12 @@ impl Checker {
     }
 
     pub(crate) fn operand_value(&mut self, expr: &ast::Expr, expected: &Type) -> Result<hir::Expr> {
+        if !matches!(
+            expr.kind,
+            ExprKind::Group(_) | ExprKind::Block(_) | ExprKind::DispatchBlock { .. }
+        ) {
+            return self.expression_value(expr, Some(expected));
+        }
         self.charge_integer(expr)?;
         let value = match &expr.kind {
             ExprKind::Group(child) => {

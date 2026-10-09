@@ -1,5 +1,7 @@
 use super::super::tests::{accepts, rejects};
 
+mod aggregates;
+
 #[test]
 pub(crate) fn equality_contexts_keep_shared_conversions_and_declared_constraints() {
     for source in [

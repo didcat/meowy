@@ -156,3 +156,59 @@ pub(crate) fn shared_operand_hints_keep_existing_capture_reborrows_and_exact_wor
         assert!(new.point.is_none() && new.frames.is_empty());
     }
 }
+
+#[test]
+pub(crate) fn list_equality_contexts_keep_existing_capture_and_exact_work() {
+    let ty = Type::List {
+        element: Box::new(Type::Int {
+            signed: false,
+            bits: 8,
+        }),
+        capacity: 3,
+    };
+    for source in [
+        "v",
+        "((v))",
+        "[]",
+        "(([1,2]))",
+        "{->[1,2]}",
+        "(({->v}))",
+        "{->((v))}",
+        "0.{->[2]}",
+        "((0.{->v}))",
+        "(({d.panic(\"stop\")}))",
+    ] {
+        let expr = expression(source);
+        let setup = || {
+            let mut checker = Checker::new();
+            for stmt in crate::parser::parse("v<uint8[3]>:[1];d:@\"debug\"")
+                .unwrap()
+                .stmts
+            {
+                checker.stmt(&stmt).unwrap();
+            }
+            checker
+        };
+        let mut old = setup();
+        let mut new = setup();
+        let before = old.expression_point(&expr, Some(&ty)).unwrap();
+        let after = new.binary_operand_point(&expr, Some(&ty), true).unwrap();
+        assert_eq!(format!("{before:?}"), format!("{after:?}"), "{source}");
+        assert_eq!(old.flow.work, new.flow.work, "{source}");
+        assert_eq!(old.edge_counts(), new.edge_counts(), "{source}");
+        let captures = |checker: &Checker| {
+            format!(
+                "{:?}{:?}{:?}{:?}{:?}{:?}{:?}",
+                checker.points,
+                checker.coercions,
+                checker.group_inputs,
+                checker.dispatch_ops,
+                checker.bodies,
+                checker.sequences,
+                checker.lists
+            )
+        };
+        assert_eq!(captures(&old), captures(&new), "{source}");
+        assert!(new.point.is_none() && new.frames.is_empty());
+    }
+}

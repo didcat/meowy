@@ -302,7 +302,7 @@ impl Checker {
             let (root, value) = self.composed_point(left, record, Some(&primary))?;
             (None, Some(root), value)
         } else {
-            let (root, value) = self.operand_point(left, context.as_ref())?;
+            let (root, value) = self.binary_operand_point(left, context.as_ref(), equality)?;
             (None, Some(root), value)
         };
         let skipped = if boolean {
@@ -343,7 +343,8 @@ impl Checker {
             let (root, value) = self.composed_point(right, record, Some(&primary))?;
             (None, Some(root), value)
         } else {
-            let (root, value) = self.operand_point(right, right_context.as_ref())?;
+            let (root, value) =
+                self.binary_operand_point(right, right_context.as_ref(), equality)?;
             (None, Some(root), value)
         };
         let skipped = if boolean {
@@ -416,6 +417,10 @@ impl Checker {
     ) -> Result<(super::dependencies::BinaryPlan, hir::Expr)> {
         let boolean = ["&&", "||"].contains(&op);
         let compare = ["==", "!=", "<", ">", "<=", ">="].contains(&op);
+        let mixed = matches!(
+            (&left.ty, &right.ty),
+            (Type::Record { .. }, Type::List { .. }) | (Type::List { .. }, Type::Record { .. })
+        );
         let primary = if !["==", "!="].contains(&op)
             || !matches!(
                 (&left.ty, &right.ty),
@@ -431,6 +436,13 @@ impl Checker {
         };
         let normal = [left.ty != Type::Never, right.ty != Type::Never];
         let diverges = !boolean && (!normal[0] || !normal[1]);
+        if !diverges && mixed && ["==", "!="].contains(&op) {
+            return Err(Self::error(
+                "E222",
+                "equality requires matching aggregate shapes",
+                span,
+            ));
+        }
         if !diverges
             && left.ty != right.ty
             && !(boolean

@@ -3386,7 +3386,15 @@ named record (`/tmp/meowy-reference-hint-reborrow-boundary.log`). The acceptance
 now distinguishes that capability boundary from supported shared-reference records.
 All 2837 library tests pass (`/tmp/meowy-reference-hint-library.log`); existing shared,
 reborrowed and stopped operands retain exact HIR/capture/work and reborrow sites.
-List/record equality correction is next.
+Reference integration is committed as `3216e15c`. Two aggregate-equality regressions
+reproduce accepted mismatched shapes and the masked duplicate-composition error
+(`/tmp/meowy-aggregate-equality-before.log`). List equality now retains whole operand
+shapes through groups, block forwarding and dispatch composition, then rejects
+completing list/record pairs with E222. List capacities/element contexts stay checked;
+stopped plans retain their existing behavior. All 2840 library tests pass
+(`/tmp/meowy-aggregate-equality-library.log`), including exact HIR/capture/work checks
+for previously accepted list operands. Structural report integration and required
+source conformance are next.
 
 Dependency-ordered commit plan:
 
@@ -3396,7 +3404,7 @@ Dependency-ordered commit plan:
 2. Complete: enable shared-reference construction hints with direct/grouped block/dispatch
    regressions. Preserve receiver typing, reborrow sites, lifetime/loan checks, full
    record constraints, required contexts and exclusive receiver gates.
-3. Reject completing list/record equality pairs before returning a binary plan. Preserve
+3. Complete: reject completing list/record equality pairs before returning a binary plan. Preserve
    full operand shapes through grouping under list equality contexts so grouping or
    ascription cannot hide the mismatch. Keep list/list typing and stopped plans intact.
 4. Verify source/capture/operation identity and exact work, then add required accepted
