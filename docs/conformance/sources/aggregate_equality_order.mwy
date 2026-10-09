@@ -1,0 +1,17 @@
+d : @"debug"
+value <uint8[3]> : [1]
+d.print(value == ((0.{ d.print("right"); -> [1]; d.print("right tail") })))
+d.print((({ d.print("left"); -> [1, 2]; d.print("left tail") })) != value)
+row : { -> value; -> tag : true }
+d.print(row == {
+    d.print("record")
+    -> [1]
+    -> tag : false
+    d.print("record tail")
+})
+d.print(value == [])
+same <boolean> : (items <uint8[3]>) { -> items == { -> [1] } }
+d.print(same(value))
+more <uint8[3]> : [1, 2]
+other : { -> more; -> tag : true }
+d.print(row != other)

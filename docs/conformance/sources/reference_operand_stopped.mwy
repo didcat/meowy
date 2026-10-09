@@ -1,0 +1,13 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("receiver"); -> p }
+n : 3
+p : &n
+d.print("left")
+value : p == ((mark(p).{
+    d.print("right")
+    -> $
+    -> tag : true
+    d.panic("stop")
+    d.print("unreached tail")
+}))
+d.print("unreached result {value}")

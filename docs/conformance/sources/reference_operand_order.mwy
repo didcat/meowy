@@ -1,0 +1,24 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("receiver"); -> p }
+show <null> : (p <&int32>, q <&int32>) {
+    d.print(p == mark(p).{
+        d.print("right")
+        -> $
+        -> tag : false
+        d.print("right tail")
+    })
+    d.print((({ d.print("left"); -> q; -> tag : true; d.print("left tail") })) != p)
+    d.print(p == { -> (({ -> p; -> first : true })); -> tag : 300 })
+    row : { -> p; -> tag : true }
+    d.print(row == { -> p; -> tag : false })
+    choose := true
+    d.print(p == 'outer {
+        | choose | { 'outer -> p; 'outer -> tag : true; 'outer.leave() }
+        -> q
+        -> tag : false
+    })
+    d.print(((q.{ -> $; -> tag : true })) == p)
+}
+n : 3
+m : 3
+show(&n, &m)

@@ -4752,6 +4752,50 @@
         "code": "E205"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_operand_order",
+      "phase": "run",
+      "source": "sources/reference_operand_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nright\nright tail\ntrue\nleft\nleft tail\ntrue\ntrue\nfalse\ntrue\nfalse\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "aggregate_equality_order",
+      "phase": "run",
+      "source": "sources/aggregate_equality_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "right\nright tail\ntrue\nleft\nleft tail\ntrue\nrecord\nrecord tail\nfalse\nfalse\ntrue\ntrue\n"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "reference_operand_stopped",
+      "phase": "run",
+      "source": "sources/reference_operand_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nreceiver\nright\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "aggregate_equality_stopped",
+      "phase": "run",
+      "source": "sources/aggregate_equality_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "left\nright\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
     }
   ]
 }

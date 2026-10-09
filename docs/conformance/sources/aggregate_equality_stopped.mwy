@@ -1,0 +1,11 @@
+d : @"debug"
+items <uint8[3]> : [1]
+d.print("left")
+value : items == ((0.{
+    d.print("right")
+    -> [1]
+    -> tag : true
+    d.panic("stop")
+    d.print("unreached tail")
+}))
+d.print("unreached result {value}")

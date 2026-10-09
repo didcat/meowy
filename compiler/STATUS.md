@@ -3398,7 +3398,13 @@ report tests check reference projection identity across owners, retaining ordina
 block slot links while shared-reference dispatch fallback stays opaque. They also
 check full list/record equality categories, stopped boundaries and absence of a
 published binary plan for rejected shapes. All 801 forward-report tests pass
-(`/tmp/meowy-equality-forward.log`). Required source cases and the final gates are next.
+(`/tmp/meowy-equality-forward.log`); report coverage is committed as `37d2e262`.
+Four required source cases pass debug/release for reference address comparison,
+same-shape list/record equality, source/receiver/tail order and stopped-right P006
+(`/tmp/meowy-equality-normal-source.log`). All four documentation checks pass
+(`/tmp/meowy-equality-normal-docs.log`). Classified evidence is updated without
+changing contracts or capability pins. Borrow/type and mismatched-shape rejection
+cases, the preservation audit and final gates remain pending.
 
 Dependency-ordered commit plan:
 
