@@ -3570,7 +3570,13 @@ Three integration tests and all 838 forward-report tests pass
 (`/tmp/meowy-receiver-coercion-links.log`, `/tmp/meowy-receiver-coercion-forward.log`).
 Exact types/owners, guarded and nested receivers, ascriptions, step-zero ports,
 independent stages, projection-only registration and stopped prefixes are covered.
-Identity/scope/budget boundaries and source execution coverage are next.
+Integration is committed as `46c12b48`. Three boundary tests pass
+(`/tmp/meowy-receiver-coercion-boundaries.log`): late source-type/index/canonical
+conflicts, missing registration, group cycles and crossed dispatch scopes fail atomically;
+missing evidence preserves earlier links. Source/receiver/consumer control and exact
+map/work limits stay independent. Formatting, all-target Clippy and the current build
+pass (`/tmp/meowy-receiver-coercion-lint.log`, `/tmp/meowy-receiver-coercion-build.log`).
+Source execution coverage and final gates are next.
 
 Dependency-ordered commit plan:
 
@@ -3581,7 +3587,7 @@ Dependency-ordered commit plan:
    receiver fallback after direct dispatch qualification. Preserve independent source
    results, receiver initialization/results, projection, conversion and result stages,
    including projection-only operation-registration rules.
-3. Cover mismatched descriptors, scopes, missing/stale evidence, cycles, independent
+3. Complete: cover mismatched descriptors, scopes, missing/stale evidence, cycles, independent
    control and exact map/work limits. Keep ordinary stored copies, generic forwarding,
    reference-bearing fields, nonscalar referents and Unknown histories unchanged.
 4. Review source execution coverage, add required cases where needed, audit contracts/

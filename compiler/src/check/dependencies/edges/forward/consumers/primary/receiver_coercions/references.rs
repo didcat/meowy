@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn shared_receiver_coercions_link_exact_slots_through_contexts_scopes_and_owners() {
     for (ty, value) in [
