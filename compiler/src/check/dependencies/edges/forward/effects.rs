@@ -50,6 +50,7 @@ pub(crate) enum Effect {
     Field {
         input: PointId,
         index: usize,
+        shared_primary: Option<crate::check::dependencies::ScalarKind>,
         load: bool,
         normal: bool,
         control: bool,

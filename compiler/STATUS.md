@@ -3611,13 +3611,18 @@ Owned field capture now retains optional exact shared scalar primary kinds. Impl
 reference loads keep no descriptor, while explicit dereferences remain separate input
 producers. All seven field-capture tests pass, including three new type/owner/load,
 replay-conflict and exact-work tests (`/tmp/meowy-reference-fields-capture.log`).
-Formatting passes. Field-report propagation and validation are next.
+Capture is committed as `dd5afb94`. Field reports now retain and validate the descriptor
+at independent operation/result stages, reject stale/invalid/loaded combinations and
+merge atomically. All 16 field-report tests and 844 forward-report tests pass
+(`/tmp/meowy-reference-fields-reports.log`, `/tmp/meowy-reference-fields-report-forward.log`),
+including exact map/work limits with zero variable payload. Formatting passes.
+Receiver field-slot integration is next.
 
 Dependency-ordered commit plan:
 
 1. Complete: capture optional shared scalar primary kinds in owned field operations, with
    source/replay/exclusion and exact-work tests; preserve source behavior and load paths.
-2. Propagate and validate that descriptor in field reports, preserving independent
+2. Complete: propagate and validate that descriptor in field reports, preserving independent
    operation/result flags and atomic merging with no new variable payload.
 3. Integrate exact receiver/body primary qualification for immutable scalar field
    operation slots. Verify associated scalar field-result links and candidate consumers,

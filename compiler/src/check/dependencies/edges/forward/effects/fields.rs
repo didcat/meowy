@@ -1,5 +1,8 @@
 use super::*;
-use crate::check::dependencies::Field;
+use crate::check::dependencies::{
+    Field, ScalarKind,
+    bodies::{Completion, completion::Shape},
+};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
@@ -13,10 +16,22 @@ pub(super) struct Stage {
     pub(super) owner: usize,
     pub(super) input: PointId,
     pub(super) index: usize,
+    pub(super) shared_primary: Option<ScalarKind>,
     pub(super) load: bool,
     pub(super) normal: bool,
     pub(super) control: bool,
     pub(super) kind: Kind,
+}
+
+pub(super) fn valid_shared(load: bool, primary: Option<ScalarKind>) -> bool {
+    primary.is_none_or(|kind| {
+        !load
+            && (Completion {
+                normal: true,
+                result: Shape::SharedScalar(kind),
+            })
+            .valid()
+    })
 }
 
 impl Checker {
@@ -33,6 +48,7 @@ impl Checker {
         let Effect::Field {
             input,
             index,
+            shared_primary,
             load,
             normal,
             control,
@@ -44,6 +60,7 @@ impl Checker {
         };
         if *input != field.input
             || *index != field.index
+            || *shared_primary != field.shared_primary
             || *load != field.load
             || *normal != field.normal
             || *control != field.control
@@ -91,6 +108,7 @@ impl Checker {
             owner,
             input: field.input,
             index: field.index,
+            shared_primary: field.shared_primary,
             load: field.load,
             normal: field.normal,
             control: field.control,
@@ -113,13 +131,16 @@ impl Checker {
         {
             return Err(budget());
         }
-        if stage.kind == Kind::Result && !stage.normal {
+        if !valid_shared(stage.load, stage.shared_primary)
+            || (stage.kind == Kind::Result && !stage.normal)
+        {
             return Err(invalid());
         }
         if let Some((owner, prior)) = effects.get(&stage.point) {
             let Effect::Field {
                 input,
                 index,
+                shared_primary,
                 load,
                 normal,
                 control,
@@ -131,6 +152,7 @@ impl Checker {
             if *owner != stage.owner
                 || *input != stage.input
                 || *index != stage.index
+                || *shared_primary != stage.shared_primary
                 || *load != stage.load
                 || *normal != stage.normal
                 || *control != stage.control
@@ -151,6 +173,7 @@ impl Checker {
                 Effect::Field {
                     input: stage.input,
                     index: stage.index,
+                    shared_primary: stage.shared_primary,
                     load: stage.load,
                     normal: stage.normal,
                     control: stage.control,
@@ -206,7 +229,8 @@ impl Checker {
         } else {
             &direct[..2 + usize::from(field.normal)]
         };
-        if field.index >= field.count
+        if !valid_shared(field.load, field.shared_primary)
+            || field.index >= field.count
             || field.owner != owner
             || point.owner != owner
             || !point.complete
@@ -236,3 +260,6 @@ mod limits;
 
 #[cfg(test)]
 mod observations;
+
+#[cfg(test)]
+mod references;

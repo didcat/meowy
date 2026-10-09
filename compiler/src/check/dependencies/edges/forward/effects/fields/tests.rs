@@ -19,6 +19,7 @@ pub(crate) fn field_effects_preserve_indices_and_owned_shared_explicit_loads() {
                 Effect::Field {
                     input: field.input,
                     index,
+                    shared_primary: None,
                     load,
                     normal: true,
                     control: false,
@@ -95,6 +96,7 @@ pub(crate) fn field_effects_preserve_never_stopped_required_and_static_boundarie
                 Effect::Field {
                     input: field.input,
                     index: 0,
+                    shared_primary: None,
                     load,
                     normal: false,
                     control: false,
