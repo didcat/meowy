@@ -3547,7 +3547,7 @@ prior evidence and proof obligations are unchanged
 (`/tmp/meowy-reference-receiver-preservation.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: coercion-owned shared-reference record-receiver primaries
+### Coercion-owned shared-reference record-receiver primaries
 
 `consumers/primary/shared_receivers/binaries.rs` confirms that `$ == p` retains a
 binary-owned projection, while `p != (($))` under a shared-reference context projects
@@ -3556,9 +3556,19 @@ inside `Effect::Coercion` first. That projection still has no receiver slot link
 boundary: `n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ copy <&int32> : $ }`.
 The raw unchanged-ascription receiver path is already qualified by the new helper.
 
+Inspection confirms that exact `Shape::SharedScalar` source capture, canonical receiver
+eligibility and the typed receiver/body qualifier already exist. The implementation
+needs only a fallback in the shared-reference coercion branch. Producer observations,
+ordinary local eligibility and scope rules remain unchanged. The two new source-driven
+characterization tests and all 20 coercion-report tests pass
+(`/tmp/meowy-receiver-coercion-capture.log`, `/tmp/meowy-receiver-coercion-reports.log`).
+They cover exact scalar referents, Forward/Convert, function owners/returns, step-zero
+ports, stopped receiver inputs, projected Never and unobserved suffixes. Formatting
+passes. Receiver slot-link integration is next.
+
 Dependency-ordered commit plan:
 
-1. Characterize Forward/Convert/Stopped receiver contexts and exact step-zero owners
+1. Complete: characterize Forward/Convert/Stopped receiver contexts and exact step-zero owners
    in `effects/coercions/` and `consumers/primary/receiver_coercions/`. Reuse canonical
    receiver eligibility and `receiver_primary_shape`; add no ordinary-local eligibility.
 2. Extend only observed shared-reference coercion projections in `consumers.rs` with

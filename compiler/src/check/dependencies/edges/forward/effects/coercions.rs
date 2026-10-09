@@ -260,3 +260,6 @@ mod sources;
 
 #[cfg(test)]
 mod references;
+
+#[cfg(test)]
+mod receiver_references;
