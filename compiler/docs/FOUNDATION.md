@@ -725,9 +725,9 @@ operation and result visits remain independent; a stopped reference conversion c
 make later operations observable just because its final type is non-Never.
 
 Reference histories remain Unknown, including multiple guarded emissions. Named
-reference-bearing records retain their initializer-forwarding exclusion. Generic
-field/value consumers and nonscalar referents remain
-separate. Missing evidence stays opaque;
+reference-bearing records retain their initializer-forwarding exclusion. Whole-record
+forwarding, composed receiver emissions and nonscalar referents remain separate.
+Missing evidence stays opaque;
 stale identities, malformed widths, cycles and exhausted map/work limits publish no
 partial collection. The descriptors copy no recursive types and add no variable
 payload. Existing reference address/order/panic and E207/E302/E303 conformance cases
@@ -771,9 +771,29 @@ Convert observations need no operation registration; conversion/result observati
 Stopped receiver inputs and unreachable suffixes gain no later coercion observations.
 Projected Never keeps its separate Stopped descriptor. Additional required source cases
 verify typed/nullable copies, returned reference identity, receiver/tail/function order
-and panic after an earlier copy. Field/value forwarding, ordinary stored copies and
+and panic after an earlier copy. Ordinary stored copies and
 ineligible receiver types remain separate. No source link grants value provenance or
 loan/proof authority.
+
+Owned scalar field operations can also link through these receivers. Field capture and
+reports retain the original shared scalar primary kind, width and signedness. Implicit
+reference loads retain no descriptor; explicit dereferences keep their separate input
+producer and remain opaque to receiver-source lookup. Matching the descriptor against
+canonical receiver eligibility and the source body's primary precedes named-slot
+selection. The selected field must be immutable and scalar, with the exact checked
+index/count and normal-completion agreement.
+
+Operation links require an observed field operation. Scalar field-result and candidate
+links additionally require an observed normal result; result-only reports create no
+operation link. Original source results and receiver initialization remain required,
+independently of receiver completion. Reference primary histories stay Unknown, while
+scalar field histories reuse existing candidates without selecting a runtime value.
+Stale metadata, crossed scopes, cycles and exhausted map/work/root budgets publish no
+partial maps or expanded traversal. Capture work is unchanged; reports add no variable
+payload, and result lookup charges the existing root index. Required cases preserve
+field kinds, groups/ascriptions, emitted scalar values, source/receiver/nested/function
+order and panic after an earlier field read. Ordinary stored records, reference loads,
+mutable/reference-bearing fields and nonscalar selected fields or referents stay separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

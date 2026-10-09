@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-09. Shared-reference receiver coercion links are implemented and validated.
+Updated: 2026-10-09. Scalar field sources through shared-reference receivers are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3560,8 +3560,8 @@ Source results, receiver initialization/results, projection, conversion and resu
 observations remain independent. Projection-only Convert needs no operation registration;
 observed conversion/results require it. Stopped receiver inputs, projected Never and
 unobserved suffixes retain their separate metadata. Ordinary stored copies, reference
-loads, mutable/reference-bearing fields, nonscalar referents and generic field/value
-forwarding remain excluded. Reference histories stay Unknown; no value selection,
+loads, mutable/reference-bearing fields, nonscalar referents and whole-record
+forwarding remain excluded; scalar field sources are qualified below. Reference histories stay Unknown; no value selection,
 pointee provenance, borrow authority or proof outcome is inferred.
 
 | Commit | Reviewable slice |
@@ -3592,74 +3592,85 @@ No known failures remain. Unrelated `docs/programs/hey/` is preserved; nothing w
 
 ### Scalar field sources through shared-reference record receivers
 
-`consumers/primary/shared_receivers/binaries.rs` retains this supported opaque boundary:
-`n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ -> $.tag }`. Binary and coercion primary
-links now qualify the reference primary, but the scalar `tag` field has no receiver
-source-slot link. `consumers/fields.rs::field_slot` still calls the generic
-`record_receiver_body`, which requires ordinary local eligibility and excludes these
-records. `dependencies/fields.rs::Field` retains the input, index, count, load/result
-and control facts, but no reference-primary type descriptor.
+Complete implementation. Owned field capture and reports retain optional exact shared
+scalar primary kinds, widths and signedness. Implicit reference loads retain no
+descriptor; explicit dereferences keep separate input producers and do not gain source
+forwarding. A matching typed receiver/body primary now qualifies immutable scalar
+named-field operation slots. Canonical eligibility, owners, guarded/nested scopes,
+source results, field index/count and normal-completion checks remain mandatory.
 
-Inspection confirms the missing descriptor is the only new representation needed:
-retain an optional exact shared scalar referent on owned field capture and in field
-reports. The typed receiver-primary qualifier can then establish both canonical
-eligibility and source-body primary agreement before selecting the named scalar slot.
-Loaded/reference-view fields stay excluded. Existing field-result collection reuses
-the operation slot only when both operation and result are observed; its scalar links
-must be tested alongside operation links without broadening aggregate/reference results.
-Owned field capture now retains optional exact shared scalar primary kinds. Implicit
-reference loads keep no descriptor, while explicit dereferences remain separate input
-producers. All seven field-capture tests pass, including three new type/owner/load,
-replay-conflict and exact-work tests (`/tmp/meowy-reference-fields-capture.log`).
-Capture is committed as `dd5afb94`. Field reports now retain and validate the descriptor
-at independent operation/result stages, reject stale/invalid/loaded combinations and
-merge atomically. All 16 field-report tests and 844 forward-report tests pass
-(`/tmp/meowy-reference-fields-reports.log`, `/tmp/meowy-reference-fields-report-forward.log`),
-including exact map/work limits with zero variable payload. Formatting passes.
-Report capture is committed as `162bfb9a`. Owned field operations now fall back through
-the typed receiver-primary qualifier and then select their immutable scalar named slot.
-Three integration tests and all 847 forward-report tests pass
-(`/tmp/meowy-reference-fields-links.log`, `/tmp/meowy-reference-fields-forward.log`).
-Operation/result independence, associated scalar field-result and candidate links,
-guarded/nested owners, Unknown reference histories and excluded storage/load/aggregate
-paths are covered. Integration is committed as `1b822659`. Two boundary tests pass
-(`/tmp/meowy-reference-fields-boundaries.log`): late type/layout/index/canonical faults,
-missing registration, group cycles and crossed dispatch scopes reject operation links,
-field-result maps and expanded traversal atomically. Missing evidence preserves earlier
-links and suppresses the affected result source. Identity boundaries are committed as
-`c15b2853`. All seven receiver-field integration/boundary/limit tests pass
-(`/tmp/meowy-reference-fields-limits.log`). Source/receiver/field control is independent;
-operation maps require no variable payload, while result lookup charges its exact root
-index. Exact and one-short work/map/root limits preserve reports and edges. All-target
-Clippy and the current build pass (`/tmp/meowy-reference-fields-lint.log`,
-`/tmp/meowy-reference-fields-build.log`). Limits are committed as `278e8143`.
-Two required field-receiver cases pass exact debug/release output for scalar field kinds,
-groups/ascriptions, emitted values, source/receiver/nested/function order and panic after
-an earlier read (`/tmp/meowy-reference-fields-source.log`). All four source/inventory
-checks pass (`/tmp/meowy-reference-fields-source-docs.log`). Final gates and audit are next.
-A composition probe still compiles (`/tmp/meowy-reference-composition-handoff.mwy`),
-but `emission_source_block` uses generic receiver eligibility and `Composition` retains
-only local/count metadata; composed receiver emissions remain the next source gap.
+Field operation and result visits remain independent. Result-only reports create no
+operation links; scalar field-result and candidate links require both observed operation
+and normal result. Receiver initialization is required independently of its completion.
+Reference primary histories stay Unknown; scalar histories reuse existing candidates
+without selecting values. Ordinary stored copies, reference loads, mutable/reference-
+bearing fields, nonscalar selected fields/referents, whole-record forwarding and composed
+receiver emissions remain separate. No link grants pointee provenance or loan/proof authority.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `dd5afb94` | Capture exact reference-primary descriptors for owned fields |
+| `162bfb9a` | Retain and validate descriptors in independent field reports |
+| `1b822659` | Link scalar operation/result slots and candidate consumers |
+| `c15b2853` | Reject stale identities, layouts and scopes atomically |
+| `278e8143` | Bound operation maps, result roots and work |
+| `689a6879` | Cover scalar field order and stopped reads |
+
+Thirteen new structural tests cover capture, implicit/explicit load distinctions,
+replay, descriptors, independent stages, type/owner/layout conflicts, missing evidence,
+scopes, cycles, three control flags and exact map/work/root limits. Seven capture tests,
+16 field-report tests and all 847 forward-report tests passed during integration; the
+four later boundary/limit tests also pass. Expanded field-source traversal is revalidated
+without changing reports or edges. Capture work is unchanged and field reports consume
+no variable payload; result collection charges the existing root index.
+
+Two required cases pass exact debug/release output for field kinds, groups/ascriptions,
+emitted field values, source/receiver/nested/function order and panic after an earlier
+read (`/tmp/meowy-reference-fields-source.log`). All ten checks in
+`python3 -B tools/verify.py --compiler` pass: 2900 library/921 native and 62 Python tests,
+formatting, all-target Clippy, build, metadata and source execution
+(`/tmp/meowy-reference-fields-gate.log`). Conformance has 468 cases: 449 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for the exact pinned names/reasons (`/tmp/meowy-reference-fields-strict.log`). All four
+final guide/handoff documentation checks pass (`/tmp/meowy-reference-fields-docs.log`).
+The audit preserves 539 tracked reference/source/pin/obligation
+files, all 466 prior cases, 19 pins, 37 reviewed hashes and previous evidence
+(`/tmp/meowy-reference-fields-preservation.log`). No known failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: composed-emission sources through shared-reference record receivers
+
+A current probe accepts
+`n : 1; p : &n; out : p.{ -> $; -> tag : true }.{ copy : { -> $ } }`
+(`/tmp/meowy-reference-composition-handoff.mwy` also reads `copy.tag`). The emission
+consumer still routes receiver lookup through `record_receiver_body`, which requires
+ordinary local eligibility and excludes reference-bearing records. Unlike the new
+field/primary consumers, it does not use the typed receiver qualifier.
+`dependencies/emissions.rs::Composition` retains only `local` and `count`;
+`emissions/projections.rs::emission_composition` reads the checked source-local type.
 
 Dependency-ordered commit plan:
 
-1. Complete: capture optional shared scalar primary kinds in owned field operations, with
-   source/replay/exclusion and exact-work tests; preserve source behavior and load paths.
-2. Complete: propagate and validate that descriptor in field reports, preserving independent
-   operation/result flags and atomic merging with no new variable payload.
-3. Complete: integrate exact receiver/body primary qualification for immutable scalar field
-   operation slots. Verify associated scalar field-result links and candidate consumers,
-   preserving separate operation/result requirements and Unknown reference histories.
-4. Complete: cover stale/missing metadata, scopes, cycles, control and exact map/work limits.
-5. Add required source
-   cases where needed, audit contracts/pins, run compiler/strict gates and update the
-   guide and both handoffs before final documentation checks.
+1. Characterize composition capture, initialized target ports and source layouts in
+   `dependencies/emissions/`, `effects/emissions/`, `consumers/emissions/receivers/`
+   and the candidate-source graph. Establish exact shared-primary identity before
+   enabling receiver fallback; do not infer it from destination slots or field counts.
+2. If needed, capture and validate a minimal fixed-size source descriptor in a separate
+   prerequisite with replay/identity and exact budget tests. Keep ordinary local
+   eligibility, alias/storage identity and reference histories unchanged.
+3. Integrate typed receiver source qualification for composed emissions in a separate
+   slice. Preserve each initialized target's Primary/Field projection and slot identity,
+   source results, receiver initialization/results and destination completion. Validate
+   complete layouts, including unobserved suffixes, before publishing any source links.
+4. Qualify candidate/expanded traversal separately where needed; cover stale/missing
+   evidence, scopes, cycles, control and exact limits. Add required source coverage,
+   audit contracts/pins, run compiler/strict gates and update the guide and both handoffs
+   before final documentation checks.
 
-Composed emissions, broader field results, ordinary stored references, generic receiver
-forwarding and reference formatting remain separate. Formatting still reports B001
-(`reference formatting; dereference the copyable value`). Function-result provenance,
-precise joins, restarts, E225 and proof outcomes remain incomplete. Full v0.0.1 release
-qualification is not established.
+Ordinary stored references, reference loads, broader aggregate results, mutable or
+reference-bearing fields, generic receiver forwarding and reference formatting remain
+separate. Formatting still reports B001. Precise joins, function-result provenance,
+restarts, E225 and proof outcomes remain incomplete; full v0.0.1 is not qualified.
 
 ## Documentation conventions and layout
 
@@ -5914,8 +5925,10 @@ selection and broader aggregate provenance remain separate.
    (`8e74c4c6`, `b026ca9d`, `3fa014b1`), qualification (`b5940145`), binary links
    (`e7205cc9`), boundaries (`b872d507`) and source cases (`c37a3fe1`) are complete. Receiver coercion
    characterization (`6ee93699`), links (`46c12b48`), boundaries (`6bba46ec`) and source
-   cases (`8aecd78a`) are complete. Next inspect scalar field sources through shared-
-   reference record receivers. Broader consumers
+   cases (`8aecd78a`) are complete. Field capture (`dd5afb94`), reports (`162bfb9a`),
+   receiver links (`1b822659`), boundaries (`c15b2853`), limits (`278e8143`) and source
+   cases (`689a6879`) are complete. Next inspect composed-emission sources through
+   shared-reference record receivers. Broader consumers
    and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
