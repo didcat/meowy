@@ -3498,7 +3498,7 @@ pins, 37 reviewed hashes and prior evidence are unchanged
 (`/tmp/meowy-shared-coercion-preservation.log`). No outstanding test failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: shared-reference record-receiver primary qualification
+### Shared-reference record-receiver primary qualification
 
 Existing supported source behavior accepts
 `n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ -> $ == p }`, while the binary
@@ -3513,22 +3513,34 @@ primaries. Exact SharedScalar body descriptors alone do not bypass either bounda
 `consumers/blocks.rs::record_receiver_body` reuses receiver scope validation before
 resolving an ordinary block or dispatch body.
 
+Inspection supports a receiver-only descriptor in the existing receiver-index row:
+an optional exact shared scalar referent, admitted only when the record's other fields
+are immutable and satisfy the existing reference-free type eligibility walk. The
+ordinary `reports.eligible` set and generic record/field/value consumers stay unchanged.
+The new path must request the exact referent and revalidate the resolved body primary;
+receiver initialization, scope, owner and source-result checks remain mandatory.
+The existing bounded type walk is now shared without changing its rules, diagnostics
+or work charges. All eight eligibility tests pass before and after extraction
+(`/tmp/meowy-reference-receiver-eligibility-before.log`,
+`/tmp/meowy-reference-receiver-eligibility-after.log`); formatting passes.
+Receiver-index descriptor capture is next.
+
 Dependency-ordered commit plan:
 
-1. Characterize receiver-only eligibility, exact local/source evidence and guarded
-   scopes in `entries/locals/eligibility.rs`, `effects/reads/receivers.rs` and
-   `consumers/grouped.rs`. Distinguish reference primaries from reference-bearing
-   fields, mutable records, ordinary stored copies and stopped receiver initialization.
-2. If justified, introduce the smallest separately qualified receiver-only evidence
-   with exact budget/identity tests. Do not globally relax `reports.eligible`, infer
-   pointees from shared mode or skip receiver scope/owner validation.
-3. Qualify shared scalar reference receiver primaries and wire binary projection
-   fallback in separate reviewable slices. Keep coercion-owned receiver integration
-   separate until the binary boundary is qualified. Retain Unknown histories and
-   independent initialization, projection and result observations.
-4. Cover missing/stale evidence, scopes, cycles and exact limits, add required source
+1. Complete: share the bounded type-eligibility walk without changing rules or work charges;
+   run the existing eligibility checks before and after the extraction.
+2. Capture optional shared scalar primary eligibility in receiver-index rows, with
+   type/mutability exclusions, unchanged ordinary eligibility and exact budget tests.
+3. Add a dedicated typed receiver hop and scope/identity checks. Keep generic record
+   forwarding unchanged and validate initialization independently of receiver results.
+4. Resolve shared receiver primary slots through checked groups/ascriptions and exact
+   body layouts, then integrate binary projection fallback in a separate slice.
+5. Cover missing/stale evidence, scopes, cycles and exact limits, add required source
    coverage where needed, audit contracts/pins, run compiler/strict gates and update
    the guide and both handoffs before final documentation checks.
+
+Coercion-owned receiver integration remains a later slice. Do not globally relax
+`reports.eligible`, infer pointees from shared mode or skip receiver scope checks.
 
 A current probe of `debug.print` on an ascribed reference-primary dispatch rejects
 with B001: `reference formatting; dereference the copyable value`. Output consumers

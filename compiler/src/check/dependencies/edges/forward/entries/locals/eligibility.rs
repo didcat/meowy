@@ -72,18 +72,27 @@ impl Checker {
         span: Span,
         limit: usize,
     ) -> Result<bool> {
+        Self::eligible_type(ty, &mut self.flow, span, limit)
+    }
+
+    pub(in crate::check::dependencies) fn eligible_type(
+        ty: &Type,
+        flow: &mut crate::flow::Flow,
+        span: Span,
+        limit: usize,
+    ) -> Result<bool> {
         let budget = || Diagnostic::unsupported("proof local-eligibility budget exhausted", span);
         let limit = limit.min(MAX_TYPES);
-        if limit == 0 || !self.flow.spend(1) {
+        if limit == 0 || !flow.spend(1) {
             return Err(budget());
         }
         let mut pending = vec![ty];
         while let Some(ty) = pending.pop() {
-            if !self.flow.spend(1) {
+            if !flow.spend(1) {
                 return Err(budget());
             }
             let mut push = |ty| {
-                if pending.len() >= limit || !self.flow.spend(1) {
+                if pending.len() >= limit || !flow.spend(1) {
                     return Err(budget());
                 }
                 pending.push(ty);
@@ -94,13 +103,13 @@ impl Checker {
                 Type::Record { primary, fields } => {
                     push(primary.as_ref())?;
                     for field in fields {
-                        if !self.flow.spend(1) {
+                        if !flow.spend(1) {
                             return Err(budget());
                         }
                         if field.mutable {
                             return Ok(false);
                         }
-                        if pending.len() >= limit || !self.flow.spend(1) {
+                        if pending.len() >= limit || !flow.spend(1) {
                             return Err(budget());
                         }
                         pending.push(&field.ty);
