@@ -3430,7 +3430,17 @@ reports reject mismatched referents and invalid widths with no variable payload 
 All five shared-scalar tests, seven binary-type tests and 26 binary-report tests pass
 (`/tmp/meowy-shared-binaries-focused.log`, `/tmp/meowy-shared-binaries-effects.log`).
 Exact map/work limits and unchanged capture costs across referent types pass. Source
-behavior is unchanged. Dispatch source qualification is next.
+behavior is unchanged. Binary capture is committed as `41d703f7`.
+Qualification tests confirm an existing boundary: reference-bearing local records
+are excluded by `entries/locals/eligibility.rs`, so reads/copies cannot forward to
+their dispatch initializers. Direct dispatches and checked groups/ascriptions remain
+the intended scope. Keep that eligibility gate; receiver and stored-reference paths
+need separate prerequisites. Dispatch qualification now passes all three focused tests
+and all 806 forward-report tests (`/tmp/meowy-shared-dispatch-focused.log`,
+`/tmp/meowy-shared-dispatch-forward.log`). Exact kinds/widths, owners, groups/ascriptions,
+independent initialization/results, missing/stopped evidence and stale layouts are covered.
+The existing scalar path shares the same validator and retains its prior work charges.
+Binary projection integration is next.
 
 Dependency-ordered commit plan:
 
@@ -3438,7 +3448,7 @@ Dependency-ordered commit plan:
    coverage. Preserve shallow aggregate categories and exclusive-reference boundaries.
 2. Complete: capture the same descriptor in binary classes; validate exact referent agreement
    and malformed widths while retaining fixed-size metadata and existing work charges.
-3. Qualify dispatch reference-primary slots through existing record/result validation;
+3. Complete: qualify dispatch reference-primary slots through existing record/result validation;
    cover wrappers, owners, absent/stopped results and incompatible referents.
 4. Connect observed binary reference projections, with focused stage/order tests.
    Receiver chains and nonbinary consumers remain separate.

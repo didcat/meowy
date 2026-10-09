@@ -10,6 +10,17 @@ impl Checker {
         ty: ScalarKind,
         span: Span,
     ) -> Result<Option<Slot>> {
+        self.dispatch_primary_shape(reports, input, owner, Shape::Scalar(ty), span)
+    }
+
+    pub(in super::super) fn dispatch_primary_shape(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        ty: Shape,
+        span: Span,
+    ) -> Result<Option<Slot>> {
         let invalid = || Diagnostic::unsupported("proof dispatch-primary identity mismatch", span);
         let Some(block) = self.record_dispatch_body(reports, input, owner, span)? else {
             return Ok(None);
@@ -30,10 +41,12 @@ impl Checker {
         if primary.field.is_some() || primary.mutable {
             return Err(invalid());
         }
-        let Shape::Scalar(actual) = primary.shape else {
-            return Ok(None);
-        };
-        if actual != ty {
+        match (primary.shape, ty) {
+            (Shape::Scalar(_), Shape::Scalar(_))
+            | (Shape::SharedScalar(_), Shape::SharedScalar(_)) => (),
+            _ => return Ok(None),
+        }
+        if primary.shape != ty {
             return Err(invalid());
         }
         Ok(Some(Slot { block, index: 0 }))
@@ -42,3 +55,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod references;
