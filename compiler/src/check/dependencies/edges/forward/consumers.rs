@@ -185,6 +185,10 @@ impl Checker {
                                 Shape::SharedScalar(ty),
                                 span,
                             )?
+                        } else if let Effect::Coercion(op) = effect
+                            && let Some(source @ Shape::SharedScalar(_)) = op.source
+                        {
+                            self.dispatch_primary_shape(reports, input, *owner, source, span)?
                         } else {
                             None
                         };

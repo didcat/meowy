@@ -3472,14 +3472,20 @@ shared reference retains the existing borrow-origin B001 gate; its checker/repor
 characterization is structural evidence only. Reference histories, local eligibility
 and receiver-chain boundaries remain unchanged. The two new characterization tests
 and all 18 coercion-report tests pass (`/tmp/meowy-shared-coercion-capture.log`,
-`/tmp/meowy-shared-coercion-reports.log`); formatting passes. Consumer integration is next.
+`/tmp/meowy-shared-coercion-reports.log`); formatting passes. Characterization is
+committed as `d3da9ebd`. Observed coercion projections now reuse exact shared scalar
+dispatch qualification. All three integration tests and 817 forward-report tests pass
+(`/tmp/meowy-shared-coercion-links.log`, `/tmp/meowy-shared-coercion-forward.log`).
+Step-zero ports, exact referents/owners, Unknown histories, independent source/consumer
+stages and projection-only registration rules remain intact. Identity/budget boundaries
+and the missing ascribed-reference source contexts are next.
 
 Dependency-ordered commit plan:
 
 1. Complete: add source-driven report characterization in `effects/coercions/` for shared
    reference Forward/Convert/Stopped contexts, widths, owners and step-zero ports.
    Validate independently before changing the consumer branch.
-2. Integrate exact `Shape::SharedScalar` dispatch qualification for observed coercion
+2. Complete: integrate exact `Shape::SharedScalar` dispatch qualification for observed coercion
    projections with focused tests. Keep initialization, projection, conversion and
    result observations independent, including projection-only registration rules.
 3. Cover stale type/source/owner evidence, wrappers, missing results, cycles and exact

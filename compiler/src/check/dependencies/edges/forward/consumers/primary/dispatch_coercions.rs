@@ -2,6 +2,7 @@ use super::{super::tests::checked, *};
 use crate::check::dependencies::CoercionKind;
 
 mod boundaries;
+mod references;
 
 #[test]
 pub(crate) fn dispatch_coercion_primaries_retain_preconversion_types_ports_and_owners() {
