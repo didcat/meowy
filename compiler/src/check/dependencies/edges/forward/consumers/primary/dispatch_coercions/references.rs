@@ -132,7 +132,6 @@ pub(crate) fn shared_dispatch_coercions_keep_local_receiver_and_stopped_boundari
         "n:1;p:&n;r:p.{->$;->tag:true};x<&int32>:r",
         "n:1;p:&n;r:=p.{->$;->tag:true};x<&int32>:r",
         "n:1;p:&n;r:p.{->$;->tag:true};q:&r;x<&int32>:*q",
-        "n:1;p:&n;x:p.{->$;->tag:true}.{x<&int32>:$}",
         "n:[1];p:&n;x<&int32[1]>:(p.{->$;->tag:true}~<{-><&int32[1]>;tag<boolean>}>)",
         "d:@\"debug\";n:1;p:&n;x<&int32>:(p.{->$;->tag:true;d.panic(\"stop\")}~<{-><&int32>;tag<boolean>}>)",
         "d:@\"debug\";n:1;p:&n;x<&int32><null>:(p.{->$;->tag:true;d.panic(\"stop\")}~<{-><&int32>;tag<boolean>}>)",

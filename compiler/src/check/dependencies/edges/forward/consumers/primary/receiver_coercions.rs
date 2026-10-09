@@ -3,6 +3,7 @@ use crate::check::dependencies::CoercionKind;
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod references;
 
 #[test]
 pub(crate) fn receiver_coercion_primaries_keep_source_shapes_ports_and_independent_owners() {

@@ -198,7 +198,13 @@ impl Checker {
                         } else if let Effect::Coercion(op) = effect
                             && let Some(source @ Shape::SharedScalar(_)) = op.source
                         {
-                            self.dispatch_primary_shape(reports, input, *owner, source, span)?
+                            if let Some(slot) =
+                                self.dispatch_primary_shape(reports, input, *owner, source, span)?
+                            {
+                                Some(slot)
+                            } else {
+                                self.receiver_primary_shape(reports, input, *owner, source, span)?
+                            }
                         } else {
                             None
                         };

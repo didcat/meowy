@@ -3564,14 +3564,20 @@ characterization tests and all 20 coercion-report tests pass
 (`/tmp/meowy-receiver-coercion-capture.log`, `/tmp/meowy-receiver-coercion-reports.log`).
 They cover exact scalar referents, Forward/Convert, function owners/returns, step-zero
 ports, stopped receiver inputs, projected Never and unobserved suffixes. Formatting
-passes. Receiver slot-link integration is next.
+passes. Characterization is committed as `6ee93699`. Shared-reference coercion
+projections now try the qualified receiver path after direct dispatch qualification.
+Three integration tests and all 838 forward-report tests pass
+(`/tmp/meowy-receiver-coercion-links.log`, `/tmp/meowy-receiver-coercion-forward.log`).
+Exact types/owners, guarded and nested receivers, ascriptions, step-zero ports,
+independent stages, projection-only registration and stopped prefixes are covered.
+Identity/scope/budget boundaries and source execution coverage are next.
 
 Dependency-ordered commit plan:
 
 1. Complete: characterize Forward/Convert/Stopped receiver contexts and exact step-zero owners
    in `effects/coercions/` and `consumers/primary/receiver_coercions/`. Reuse canonical
    receiver eligibility and `receiver_primary_shape`; add no ordinary-local eligibility.
-2. Extend only observed shared-reference coercion projections in `consumers.rs` with
+2. Complete: extend only observed shared-reference coercion projections in `consumers.rs` with
    receiver fallback after direct dispatch qualification. Preserve independent source
    results, receiver initialization/results, projection, conversion and result stages,
    including projection-only operation-registration rules.

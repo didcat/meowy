@@ -16,14 +16,16 @@ pub(crate) fn shared_receiver_binaries_link_types_and_guarded_owners() {
                 "n<{ty}>:{value};p:&n;flag:=true;x:({init}).{{a:$==p;b:p!=(($));|flag|inner:$.{{->$==p}}}};f<boolean>:(p<&{ty}>){{->({init}).{{->$==p}}}}"
             );
             let (mut checker, reports) = checked(&source);
-            assert_eq!(reports.slot_uses.len(), 3, "{source}");
+            assert_eq!(reports.slot_uses.len(), 4, "{source}");
             assert!(reports.slot_uses.values().any(|(owner, _)| *owner != 0));
             for (&port, &(owner, slot)) in &reports.slot_uses {
                 let Port::Projection { point, step } = port else {
                     panic!()
                 };
-                let (_, Effect::Binary(op)) = &reports.effects[&point] else {
-                    panic!()
+                let (_, effect) = &reports.effects[&point];
+                let Effect::Binary(op) = effect else {
+                    assert!(matches!(effect, Effect::Coercion(op) if op.projected));
+                    continue;
                 };
                 let BinaryClass::SharedScalar(kind) = op.types.inputs[step] else {
                     panic!()
@@ -47,7 +49,7 @@ pub(crate) fn shared_receiver_binaries_link_types_and_guarded_owners() {
             assert_eq!(projected.len(), 1);
             let (&id, _) = projected[0];
             assert!(
-                !reports
+                reports
                     .slot_uses
                     .contains_key(&Port::Projection { point: id, step: 0 })
             );
@@ -142,7 +144,6 @@ pub(crate) fn shared_receiver_binaries_preserve_stopped_order_and_other_consumer
         "n:1;p:&n;x:{->p;->other:p}.{->$==p}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{copy:$;->copy==p}",
         "n:1;p:&n;r:{->p;->tag:true};x:(&r).{->(*$)==p}",
-        "n:1;p:&n;x:p.{->$;->tag:true}.{copy<&int32>:$}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{->$.tag}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{->$==$}",
         "d:@\"debug\";n:1;p:&n;x:p.{->$;->tag:true}.{d.panic(\"stop\");->$==p}",
