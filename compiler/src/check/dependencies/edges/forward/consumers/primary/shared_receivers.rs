@@ -1,6 +1,7 @@
 use super::{super::tests::checked, *};
 
 mod binaries;
+mod boundaries;
 
 #[test]
 pub(crate) fn shared_receiver_primaries_qualify_exact_sources_groups_scopes_and_owners() {

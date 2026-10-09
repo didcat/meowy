@@ -3556,7 +3556,13 @@ tests (`/tmp/meowy-reference-receiver-binaries.log`,
 `/tmp/meowy-reference-receiver-binary-forward.log`). Exact types, guarded/nested owners,
 source results, receiver initialization/results, projection stages and stopped order
 are covered; ordinary copies, fields and coercion-owned receiver ports stay opaque.
-Late identity/scope failures, exact limits and source execution coverage are next.
+Binary integration is committed as `e7205cc9`. Three additional boundary tests pass
+(`/tmp/meowy-reference-receiver-boundaries.log`): stale index/canonical/body evidence,
+group cycles and cross-dispatch receiver scope fail atomically; missing evidence keeps
+earlier links; source/receiver/consumer control and exact map/work limits stay independent.
+All-target Clippy and the current compiler build pass
+(`/tmp/meowy-reference-receiver-lint.log`, `/tmp/meowy-reference-receiver-build.log`).
+Source execution coverage, preservation audit and final gates are next.
 
 Dependency-ordered commit plan:
 
