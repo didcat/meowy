@@ -3590,7 +3590,7 @@ source/pin/obligation files, all 464 prior cases, 19 pins, 37 reviewed hashes, p
 evidence and proof obligations (`/tmp/meowy-receiver-coercion-preservation.log`).
 No known failures remain. Unrelated `docs/programs/hey/` is preserved; nothing was pushed.
 
-### Next: scalar field sources through shared-reference record receivers
+### Scalar field sources through shared-reference record receivers
 
 `consumers/primary/shared_receivers/binaries.rs` retains this supported opaque boundary:
 `n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ -> $.tag }`. Binary and coercion primary
@@ -3600,20 +3600,30 @@ source-slot link. `consumers/fields.rs::field_slot` still calls the generic
 records. `dependencies/fields.rs::Field` retains the input, index, count, load/result
 and control facts, but no reference-primary type descriptor.
 
+Inspection confirms the missing descriptor is the only new representation needed:
+retain an optional exact shared scalar referent on owned field capture and in field
+reports. The typed receiver-primary qualifier can then establish both canonical
+eligibility and source-body primary agreement before selecting the named scalar slot.
+Loaded/reference-view fields stay excluded. Existing field-result collection reuses
+the operation slot only when both operation and result are observed; its scalar links
+must be tested alongside operation links without broadening aggregate/reference results.
+Owned field capture now retains optional exact shared scalar primary kinds. Implicit
+reference loads keep no descriptor, while explicit dereferences remain separate input
+producers. All seven field-capture tests pass, including three new type/owner/load,
+replay-conflict and exact-work tests (`/tmp/meowy-reference-fields-capture.log`).
+Formatting passes. Field-report propagation and validation are next.
+
 Dependency-ordered commit plan:
 
-1. Characterize field source evidence in `dependencies/fields.rs`, `effects/fields.rs`,
-   `consumers/fields/receivers/` and the canonical receiver helpers. Establish how to
-   preserve exact reference-primary agreement through groups/ascriptions and receiver
-   scopes; field counts or shared mode alone are insufficient.
-2. If needed, capture the smallest bounded source descriptor as an independent
-   prerequisite with replay/identity and exact budget tests. Keep ordinary local
-   eligibility and generic whole-record forwarding unchanged.
-3. Qualify observed immutable scalar field operations through eligible shared-reference
-   record receivers in a separate integration slice. Preserve original source results,
-   receiver initialization/results, field operation/result independence and Unknown
-   reference histories; do not enable reference loads or mutable/nonscalar fields.
-4. Cover missing/stale metadata, scopes, cycles and exact limits; add required source
+1. Complete: capture optional shared scalar primary kinds in owned field operations, with
+   source/replay/exclusion and exact-work tests; preserve source behavior and load paths.
+2. Propagate and validate that descriptor in field reports, preserving independent
+   operation/result flags and atomic merging with no new variable payload.
+3. Integrate exact receiver/body primary qualification for immutable scalar field
+   operation slots. Verify associated scalar field-result links and candidate consumers,
+   preserving separate operation/result requirements and Unknown reference histories.
+4. Cover stale/missing metadata, scopes, cycles, control and exact map/work limits.
+5. Add required source
    cases where needed, audit contracts/pins, run compiler/strict gates and update the
    guide and both handoffs before final documentation checks.
 

@@ -1,5 +1,5 @@
 use super::{
-    PointKind,
+    PointKind, ScalarKind,
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -15,6 +15,7 @@ pub(crate) struct Field {
     pub(crate) input: hir::PointId,
     pub(crate) index: usize,
     pub(crate) count: usize,
+    pub(crate) shared_primary: Option<ScalarKind>,
     pub(crate) load: bool,
     pub(crate) normal: bool,
     pub(crate) control: bool,
@@ -60,7 +61,7 @@ impl Checker {
         else {
             return Err(invalid());
         };
-        let hir::Type::Record { fields, .. } = &receiver.ty else {
+        let hir::Type::Record { primary, fields } = &receiver.ty else {
             return Err(invalid());
         };
         let selected = fields.get(*index).ok_or_else(invalid)?;
@@ -109,6 +110,11 @@ impl Checker {
             input,
             index: *index,
             count: fields.len(),
+            shared_primary: if !load && let hir::Type::Reference(ty) = primary.as_ref() {
+                ScalarKind::of(ty)
+            } else {
+                None
+            },
             load,
             normal,
             control: self.control,
@@ -133,3 +139,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod references;
