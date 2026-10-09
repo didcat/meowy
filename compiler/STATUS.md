@@ -3622,7 +3622,12 @@ Three integration tests and all 847 forward-report tests pass
 (`/tmp/meowy-reference-fields-links.log`, `/tmp/meowy-reference-fields-forward.log`).
 Operation/result independence, associated scalar field-result and candidate links,
 guarded/nested owners, Unknown reference histories and excluded storage/load/aggregate
-paths are covered. Late identity/scope failures and exact lookup limits are next.
+paths are covered. Integration is committed as `1b822659`. Two boundary tests pass
+(`/tmp/meowy-reference-fields-boundaries.log`): late type/layout/index/canonical faults,
+missing registration, group cycles and crossed dispatch scopes reject operation links,
+field-result maps and expanded traversal atomically. Missing evidence preserves earlier
+links and suppresses the affected result source. Exact lookup limits and independent
+control are next.
 
 Dependency-ordered commit plan:
 

@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn shared_receiver_fields_link_named_slots_results_and_candidate_consumers() {
     for init in ["{->p;->z:9;->a:true}", "p.{->$;->z:9;->a:true}"] {
