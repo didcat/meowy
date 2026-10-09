@@ -4826,6 +4826,46 @@
         "code": "E303"
       },
       "reference": "../reference/memory.md#lifetimes"
+    },
+    {
+      "id": "aggregate_equality_named",
+      "phase": "check",
+      "source": "sources/aggregate_equality_named.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "aggregate_equality_ascribed",
+      "phase": "check",
+      "source": "sources/aggregate_equality_ascribed.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "aggregate_equality_forwarded",
+      "phase": "check",
+      "source": "sources/aggregate_equality_forwarded.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "aggregate_equality_constructed",
+      "phase": "check",
+      "source": "sources/aggregate_equality_constructed.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E222"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
     }
   ]
 }

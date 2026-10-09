@@ -1,0 +1,3 @@
+items : [1]
+record : { -> [1]; -> tag : true }
+value : ((record~<{ -> <int32[1]>; tag <boolean> }>)) != items

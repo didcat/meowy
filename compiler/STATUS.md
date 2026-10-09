@@ -3407,8 +3407,14 @@ changing contracts or capability pins; execution cases are committed as `a8770a5
 Three required rejection cases pass debug/release for fixed receiver referent E207,
 live-borrow conflict E302 and escaping local reference E303
 (`/tmp/meowy-reference-errors-source.log`). All four documentation checks pass
-(`/tmp/meowy-reference-errors-docs.log`). Mismatched-shape source rejections,
-the preservation audit and final gates remain pending.
+(`/tmp/meowy-reference-errors-docs.log`); reference rejection commit is `15bc2ad4`.
+Four required E222 cases pass debug/release for named, ascribed, forwarded and direct
+list/record mismatches (`/tmp/meowy-aggregate-errors-source.log`). The audit preserves
+449 prior cases, 522 tracked contract/source/pin/obligation files, all 37 reviewed
+hashes and the 19 unchanged capability pins (`/tmp/meowy-equality-preservation.log`).
+No prior fixture expectation or proof obligation changed. All four aggregate rejection
+documentation checks pass (`/tmp/meowy-aggregate-errors-docs.log`). Final compiler and
+strict gates, then the guide/handoff update, remain pending.
 
 Dependency-ordered commit plan:
 
