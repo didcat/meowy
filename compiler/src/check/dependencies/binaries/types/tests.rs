@@ -61,7 +61,10 @@ pub(crate) fn binary_types_keep_stopped_and_nonscalar_operands_distinct() {
         ("xs:[1];ys:[2];x:xs==ys", Class::List { capacity: 1 }),
         (
             "n:1;a:&n;b:&n;x:a==b",
-            Class::Reference(ReferenceMode::Shared),
+            Class::SharedScalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
         ),
         (
             "a<int32><null>:1;b<int32><null>:null;x:a==b",
@@ -209,4 +212,54 @@ pub(crate) fn binary_types_preserve_checked_equality_on_replay() {
     );
     assert_eq!(checker.binaries[&id], op);
     assert_eq!(checker.edge_counts(), counts);
+}
+
+#[test]
+pub(crate) fn binary_shared_scalar_capture_rejects_stale_referents_with_fixed_work() {
+    let mut costs = Vec::new();
+    for source in ["n:1;p:&n;p==p", "n:true;p:&n;p==p", "n:1.5;p:&n;p==p"] {
+        let (mut checker, body) = check(source);
+        let crate::hir::Stmt::Expr(value) = body.stmts.last().unwrap() else {
+            panic!()
+        };
+        let (&id, op) = checker.binaries.first_key_value().unwrap();
+        let op = op.clone();
+        let counts = checker.edge_counts();
+        let start = checker.flow.work;
+        checker
+            .binary_operation(id, op.inputs, op.plan, value, op.span)
+            .unwrap();
+        let cost = checker.flow.work - start;
+        costs.push(cost);
+        for short in [0, 1] {
+            checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + short;
+            checker.flow.full = false;
+            let result = checker.binary_operation(id, op.inputs, op.plan, value, op.span);
+            assert_eq!(result.is_ok(), short == 0);
+            if short == 1 {
+                assert!(result.unwrap_err().message.contains("budget"));
+            }
+        }
+        checker.flow.work = 0;
+        checker.flow.full = false;
+        let mut changed = value.clone();
+        let crate::hir::ExprKind::Binary { left, right, .. } = &mut changed.kind else {
+            panic!()
+        };
+        left.ty = Type::Reference(Box::new(Type::Int {
+            bits: 16,
+            signed: true,
+        }));
+        right.ty = left.ty.clone();
+        assert!(
+            checker
+                .binary_operation(id, op.inputs, op.plan, &changed, op.span)
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+        assert_eq!(checker.binaries[&id], op);
+        assert_eq!(checker.edge_counts(), counts);
+    }
+    assert!(costs.iter().all(|cost| *cost == costs[0]));
 }

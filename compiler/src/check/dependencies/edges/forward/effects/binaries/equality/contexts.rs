@@ -16,7 +16,10 @@ pub(crate) fn equality_context_reports_keep_reference_projection_sources_and_ord
         for (&id, op) in &checker.binaries {
             assert_eq!(
                 op.types.inputs,
-                [Class::Reference(crate::hir::ReferenceMode::Shared); 2]
+                [Class::SharedScalar(ScalarKind::Int {
+                    bits: 32,
+                    signed: true
+                }); 2]
             );
             assert!(op.plan.equality && !op.plan.checked);
             assert_eq!(op.plan.primary.iter().filter(|&&value| value).count(), 1);

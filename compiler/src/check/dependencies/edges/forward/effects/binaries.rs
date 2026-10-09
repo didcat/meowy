@@ -38,10 +38,18 @@ pub(crate) struct Observed {
 pub(super) fn signature(op: &str, types: BinaryTypes, plan: BinaryPlan) -> bool {
     for ty in types.inputs.into_iter().chain([types.result]) {
         match ty {
-            Class::Scalar(ScalarKind::Int { bits, .. }) if !matches!(bits, 8 | 16 | 32 | 64) => {
+            Class::Scalar(ScalarKind::Int { bits, .. })
+            | Class::SharedScalar(ScalarKind::Int { bits, .. })
+                if !matches!(bits, 8 | 16 | 32 | 64) =>
+            {
                 return false;
             }
-            Class::Scalar(ScalarKind::Float { bits }) if !matches!(bits, 32 | 64) => return false,
+            Class::Scalar(ScalarKind::Float { bits })
+            | Class::SharedScalar(ScalarKind::Float { bits })
+                if !matches!(bits, 32 | 64) =>
+            {
+                return false;
+            }
             Class::Record { fields } if fields > MAX_COUNT => return false,
             Class::List { capacity } if capacity > crate::list::MAX_CAPACITY => return false,
             Class::Union { members } if !(2..=MAX_COUNT).contains(&members) => return false,

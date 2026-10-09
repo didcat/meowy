@@ -7,6 +7,7 @@ pub(crate) const MAX_COUNT: usize = super::super::sequences::MAX_ITEMS;
 pub(crate) enum Class {
     Never,
     Scalar(ScalarKind),
+    SharedScalar(ScalarKind),
     Record { fields: usize },
     List { capacity: usize },
     Reference(ReferenceMode),
@@ -38,7 +39,8 @@ impl Class {
             Type::List { capacity, .. } if *capacity <= crate::list::MAX_CAPACITY => Self::List {
                 capacity: *capacity,
             },
-            Type::Reference(_) => Self::Reference(ReferenceMode::Shared),
+            Type::Reference(ty) => ScalarKind::of(ty)
+                .map_or(Self::Reference(ReferenceMode::Shared), Self::SharedScalar),
             Type::Exclusive(_) => Self::Reference(ReferenceMode::Exclusive),
             Type::Union(members) if (2..=MAX_COUNT).contains(&members.len()) => Self::Union {
                 members: members.len(),

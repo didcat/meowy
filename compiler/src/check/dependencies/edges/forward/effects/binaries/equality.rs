@@ -1,6 +1,7 @@
 use super::{super::tests::checked, *};
 
 mod contexts;
+mod references;
 
 #[test]
 pub(crate) fn equality_effects_preserve_checked_whole_shape_categories_and_plain_result_routes() {
@@ -19,7 +20,10 @@ pub(crate) fn equality_effects_preserve_checked_whole_shape_categories_and_plain
         ),
         (
             "n:1;m:2;x:(&n)==(&m)",
-            Class::Reference(crate::hir::ReferenceMode::Shared),
+            Class::SharedScalar(ScalarKind::Int {
+                bits: 32,
+                signed: true,
+            }),
         ),
         (
             "a<int32><null>:1;b<int32><null>:null;x:a!=b",

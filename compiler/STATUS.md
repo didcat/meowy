@@ -3425,13 +3425,18 @@ signedness, without recursive type copies. Shape/layout replay rejects stale
 referents; exact and one-short layout work checks preserve the prior shallow charge.
 All 2845 library tests pass (`/tmp/meowy-shared-shapes-library.log`), including the
 two new focused tests (`/tmp/meowy-shared-shapes-focused.log`). Formatting passes.
-Binary classes and dispatch source qualification are next; source behavior is unchanged.
+Body capture is committed as `0f11f29c`. Binary classes now retain the same descriptor;
+reports reject mismatched referents and invalid widths with no variable payload charge.
+All five shared-scalar tests, seven binary-type tests and 26 binary-report tests pass
+(`/tmp/meowy-shared-binaries-focused.log`, `/tmp/meowy-shared-binaries-effects.log`).
+Exact map/work limits and unchanged capture costs across referent types pass. Source
+behavior is unchanged. Dispatch source qualification is next.
 
 Dependency-ordered commit plan:
 
 1. Complete: capture shared scalar referents in body shapes, with replay/type/budget regression
    coverage. Preserve shallow aggregate categories and exclusive-reference boundaries.
-2. Capture the same descriptor in binary classes; validate exact referent agreement
+2. Complete: capture the same descriptor in binary classes; validate exact referent agreement
    and malformed widths while retaining fixed-size metadata and existing work charges.
 3. Qualify dispatch reference-primary slots through existing record/result validation;
    cover wrappers, owners, absent/stopped results and incompatible referents.
