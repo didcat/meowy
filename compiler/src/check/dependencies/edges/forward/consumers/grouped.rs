@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::grouped::MAX_GROUPS;
+use crate::check::dependencies::{ScalarKind, grouped::MAX_GROUPS};
 use std::collections::BTreeSet;
 
 mod input;
@@ -9,6 +9,7 @@ pub(super) enum Target {
     Block,
     Dispatch,
     Receiver,
+    SharedReceiver(ScalarKind),
 }
 
 impl Checker {
@@ -51,6 +52,24 @@ impl Checker {
         span: Span,
     ) -> Result<Option<PointId>> {
         self.grouped_source_limited(reports, input, owner, span, MAX_GROUPS, Target::Receiver)
+    }
+
+    pub(super) fn shared_receiver_consumer(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        ty: ScalarKind,
+        span: Span,
+    ) -> Result<Option<PointId>> {
+        self.grouped_source_limited(
+            reports,
+            input,
+            owner,
+            span,
+            MAX_GROUPS,
+            Target::SharedReceiver(ty),
+        )
     }
 
     pub(self) fn grouped_source_limited(
@@ -176,6 +195,12 @@ impl Checker {
             } else if target == Target::Receiver
                 && let Some(input) =
                     self.receiver_value_input(reports, current, owner, span, true)?
+            {
+                receiver = true;
+                input
+            } else if let Target::SharedReceiver(ty) = target
+                && let Some(input) =
+                    self.shared_receiver_input(reports, current, owner, ty, span)?
             {
                 receiver = true;
                 input

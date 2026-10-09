@@ -3539,6 +3539,14 @@ own. Canonical capture/replay and all four receiver-index tests pass
 (`/tmp/meowy-reference-receiver-capture.log`,
 `/tmp/meowy-reference-receiver-canonical-index.log`), including same-count referent/field
 corruption and exact capture-work limits. Generic consumers remain unchanged.
+Canonical capture is committed as `3fa014b1`; all-target Clippy passes
+(`/tmp/meowy-reference-receiver-capture-lint.log`). Dedicated typed receiver hops and
+body-primary lookup now pass eight shared-receiver tests and all 827 forward-report
+tests (`/tmp/meowy-reference-receiver-qualification.log`,
+`/tmp/meowy-reference-receiver-qualified-forward.log`). Two focused primary tests also
+verify raw unchanged ascriptions (`/tmp/meowy-reference-receiver-primary.log`).
+Generic forwarding stays excluded, receiver initialization is independent of its result,
+and index/canonical/type/body conflicts reject. Binary projection integration is next.
 
 Dependency-ordered commit plan:
 
@@ -3546,7 +3554,7 @@ Dependency-ordered commit plan:
    run the existing eligibility checks before and after the extraction.
 2. Complete: capture optional shared scalar primary eligibility in receiver-index rows, with
    type/mutability exclusions, unchanged ordinary eligibility and exact budget tests.
-3. Capture and cross-check canonical dispatch eligibility, then add a dedicated typed
+3. Complete: capture and cross-check canonical dispatch eligibility, then add a dedicated typed
    receiver hop and resolve primary slots through checked
    groups/ascriptions, scope/identity checks and exact body layouts. Keep generic record
    forwarding unchanged and validate initialization independently of receiver results.

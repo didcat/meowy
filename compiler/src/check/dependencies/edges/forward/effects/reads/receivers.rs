@@ -1,7 +1,8 @@
 use super::*;
-use crate::check::dependencies::{bodies::completion::Shape, grouped::MAX_GROUPS};
+use crate::check::dependencies::{ScalarKind, bodies::completion::Shape, grouped::MAX_GROUPS};
 
 mod scope;
+mod shared;
 
 #[derive(Clone, Copy)]
 pub(super) struct Receiver {
@@ -10,6 +11,7 @@ pub(super) struct Receiver {
     pub(self) local: crate::hir::LocalId,
     pub(self) block: crate::hir::BlockId,
     pub(self) shape: Shape,
+    pub(self) shared_primary: Option<ScalarKind>,
     pub(self) span: Span,
 }
 
@@ -108,7 +110,7 @@ impl Checker {
         if !self.flow.spend(work) {
             return Err(budget());
         }
-        let Some(&(indexed, dispatch, _)) = reports.receivers.get(local) else {
+        let Some(&(indexed, dispatch, shared_primary)) = reports.receivers.get(local) else {
             return Ok(None);
         };
         let work = [
@@ -141,6 +143,7 @@ impl Checker {
         if indexed != owner
             || op.owner != owner
             || op.local != *local
+            || op.shared_primary != shared_primary
             || !self.proofs.receivers.contains(local)
             || self.proofs.aliases.contains_key(local)
             || self.proofs.temporaries.contains_key(local)
@@ -169,6 +172,7 @@ impl Checker {
             local: op.local,
             block: op.block,
             shape: op.receiver,
+            shared_primary,
             span: op.span,
         }))
     }

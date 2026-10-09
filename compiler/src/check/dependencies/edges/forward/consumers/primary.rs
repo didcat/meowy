@@ -10,8 +10,26 @@ impl Checker {
         ty: ScalarKind,
         span: Span,
     ) -> Result<Option<Slot>> {
+        self.receiver_primary_shape(reports, input, owner, Shape::Scalar(ty), span)
+    }
+
+    pub(super) fn receiver_primary_shape(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        ty: Shape,
+        span: Span,
+    ) -> Result<Option<Slot>> {
         let invalid = || Diagnostic::unsupported("proof receiver-primary identity mismatch", span);
-        let Some(block) = self.record_receiver_body(reports, input, owner, span)? else {
+        let block = match ty {
+            Shape::Scalar(_) => self.record_receiver_body(reports, input, owner, span)?,
+            Shape::SharedScalar(kind) => {
+                self.shared_receiver_body(reports, input, owner, kind, span)?
+            }
+            _ => return Ok(None),
+        };
+        let Some(block) = block else {
             return Ok(None);
         };
         if !self
@@ -34,10 +52,12 @@ impl Checker {
         {
             return Err(invalid());
         }
-        let Shape::Scalar(actual) = primary.shape else {
-            return Ok(None);
-        };
-        if actual != ty {
+        match (primary.shape, ty) {
+            (Shape::Scalar(_), Shape::Scalar(_))
+            | (Shape::SharedScalar(_), Shape::SharedScalar(_)) => (),
+            _ => return Ok(None),
+        }
+        if primary.shape != ty {
             return Err(invalid());
         }
         Ok(Some(Slot { block, index: 0 }))
@@ -102,6 +122,9 @@ mod receiver_coercions;
 
 #[cfg(test)]
 mod receiver_binary;
+
+#[cfg(test)]
+mod shared_receivers;
 
 #[cfg(test)]
 mod receiver_unary;

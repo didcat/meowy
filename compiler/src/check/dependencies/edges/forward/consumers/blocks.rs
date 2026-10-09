@@ -1,6 +1,25 @@
 use super::*;
+use crate::check::dependencies::ScalarKind;
 
 impl Checker {
+    pub(super) fn shared_receiver_body(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        ty: ScalarKind,
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let Some(input) = self.shared_receiver_consumer(reports, input, owner, ty, span)? else {
+            return Ok(None);
+        };
+        if let Some(block) = self.qualified_slot_block(reports, input, owner, span)? {
+            Ok(Some(block))
+        } else {
+            self.record_dispatch_body(reports, input, owner, span)
+        }
+    }
+
     pub(super) fn record_receiver_body(
         &mut self,
         reports: &Reports,
