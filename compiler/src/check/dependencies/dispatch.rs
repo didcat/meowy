@@ -1,5 +1,5 @@
 use super::{
-    PointKind, SequenceSource,
+    PointKind, ScalarKind, SequenceSource,
     bodies::{Completion, completion::Shape},
     edges::{Edge, Port, Route},
 };
@@ -17,6 +17,7 @@ pub(crate) struct Dispatch {
     pub(crate) local: hir::LocalId,
     pub(crate) block: hir::BlockId,
     pub(crate) receiver: Shape,
+    pub(crate) shared_primary: Option<ScalarKind>,
     pub(crate) input_normal: bool,
     pub(crate) normal: bool,
     pub(crate) control: bool,
@@ -108,6 +109,19 @@ impl Checker {
         if ty != &value.ty {
             return Err(invalid());
         }
+        let mut shared_primary = Self::shared_receiver_type(ty, &mut self.flow, span)?;
+        if shared_primary.is_some() {
+            if !self.flow.spend(
+                self.proofs.mutable.len().checked_ilog2().unwrap_or(0) as usize
+                    + self.proofs.fields.len().checked_ilog2().unwrap_or(0) as usize
+                    + 2,
+            ) {
+                return Err(budget());
+            }
+            if self.proofs.variable(local) {
+                shared_primary = None;
+            }
+        }
         let input_normal = value.ty != hir::Type::Never;
         let normal = body.ty != hir::Type::Never;
         let mut edges = vec![
@@ -142,6 +156,7 @@ impl Checker {
             local,
             block: body.id,
             receiver: Completion::of(&value.ty).result,
+            shared_primary,
             input_normal,
             normal,
             control: self.control,

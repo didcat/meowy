@@ -93,7 +93,7 @@ impl Checker {
             {
                 return Err(invalid());
             }
-            let mut primary = shared::primary(ty, &mut self.flow, span)?;
+            let mut primary = Self::shared_receiver_type(ty, &mut self.flow, span)?;
             if primary.is_some() {
                 if !self.flow.spend(
                     self.proofs.mutable.len().checked_ilog2().unwrap_or(0) as usize
@@ -105,6 +105,9 @@ impl Checker {
                 if self.proofs.variable(op.local) {
                     primary = None;
                 }
+            }
+            if primary != op.shared_primary {
+                return Err(invalid());
             }
             parts = parts.checked_sub(1).ok_or_else(budget)?;
             index.insert(op.local, (op.owner, id, primary));

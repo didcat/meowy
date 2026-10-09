@@ -3531,6 +3531,14 @@ unchanged. All three new index tests and 823 forward-report tests pass
 Capacity, payload, type-work and mutable/reference-field exclusions are covered.
 Typed receiver-hop and body-primary qualification are next; they form one consumer
 qualification slice, with binary integration kept separate.
+Index review identified a necessary canonical cross-check before qualification:
+retain the same eligibility descriptor in the checked dispatch and compare it against
+the transferred local type during indexing. This rejects stale same-shape referents
+or field permissions and prevents a forged index descriptor from qualifying on its
+own. Canonical capture/replay and all four receiver-index tests pass
+(`/tmp/meowy-reference-receiver-capture.log`,
+`/tmp/meowy-reference-receiver-canonical-index.log`), including same-count referent/field
+corruption and exact capture-work limits. Generic consumers remain unchanged.
 
 Dependency-ordered commit plan:
 
@@ -3538,7 +3546,8 @@ Dependency-ordered commit plan:
    run the existing eligibility checks before and after the extraction.
 2. Complete: capture optional shared scalar primary eligibility in receiver-index rows, with
    type/mutability exclusions, unchanged ordinary eligibility and exact budget tests.
-3. Add a dedicated typed receiver hop and resolve primary slots through checked
+3. Capture and cross-check canonical dispatch eligibility, then add a dedicated typed
+   receiver hop and resolve primary slots through checked
    groups/ascriptions, scope/identity checks and exact body layouts. Keep generic record
    forwarding unchanged and validate initialization independently of receiver results.
 4. Integrate binary projection fallback with focused stage and ordering checks.

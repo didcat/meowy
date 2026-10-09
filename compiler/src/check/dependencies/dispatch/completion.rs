@@ -1,6 +1,64 @@
 use super::{tests::check, *};
 
 #[test]
+pub(crate) fn dispatch_shared_receiver_capture_preserves_checked_type_and_replay_identity() {
+    for (source, expected) in [
+        (
+            "n<uint8>:1;p:&n;x:{->p;->tag:true}.{}",
+            Some(ScalarKind::Int {
+                bits: 8,
+                signed: false,
+            }),
+        ),
+        ("n:true;p:&n;x:{->p;->tag:true}.{}", Some(ScalarKind::Bool)),
+        ("n:1;p:&n;x:{->p;->tag:=true}.{}", None),
+        ("n:1;p:&n;x:{->p;->other:p}.{}", None),
+        ("n:1;p:&n;x:p.{}", None),
+    ] {
+        crate::compile(source).unwrap();
+        let (mut checker, body) = check(source);
+        let hir::Stmt::Bind { value, .. } = body.stmts.last().unwrap() else {
+            panic!()
+        };
+        let hir::ExprKind::Block(body) = &value.kind else {
+            panic!()
+        };
+        let (&id, op) = checker.dispatch_ops.first_key_value().unwrap();
+        let op = op.clone();
+        assert_eq!(op.shared_primary, expected);
+        let edges = checker.edge_counts();
+        let start = checker.flow.work;
+        checker
+            .dispatch_operation(id, op.input, op.local, body, op.span)
+            .unwrap();
+        let work = checker.flow.work - start;
+        for short in [0, 1] {
+            checker.flow.work = crate::flow::MAX_PROOF_WORK - work + short;
+            checker.flow.full = false;
+            let result = checker.dispatch_operation(id, op.input, op.local, body, op.span);
+            assert_eq!(result.is_ok(), short == 0);
+        }
+        checker.flow.work = 0;
+        checker.flow.full = false;
+        checker.dispatch_ops.get_mut(&id).unwrap().shared_primary = if expected.is_some() {
+            None
+        } else {
+            Some(ScalarKind::Bool)
+        };
+        let before = checker.dispatch_ops[&id].clone();
+        assert!(
+            checker
+                .dispatch_operation(id, op.input, op.local, body, op.span)
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+        assert_eq!(checker.dispatch_ops[&id], before);
+        assert_eq!(checker.edge_counts(), edges);
+    }
+}
+
+#[test]
 pub(crate) fn dispatch_completion_keeps_receiver_and_body_stops_independent() {
     for composed in [false, true] {
         for (tail, input_normal, normal) in [

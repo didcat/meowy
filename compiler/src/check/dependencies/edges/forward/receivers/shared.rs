@@ -1,28 +1,34 @@
 use super::*;
 use crate::{check::dependencies::bodies::layout::MAX_SLOTS, flow::Flow};
 
-pub(super) fn primary(ty: &hir::Type, flow: &mut Flow, span: Span) -> Result<Option<ScalarKind>> {
-    let hir::Type::Record { primary, fields } = ty else {
-        return Ok(None);
-    };
-    let hir::Type::Reference(target) = primary.as_ref() else {
-        return Ok(None);
-    };
-    let Some(kind) = ScalarKind::of(target) else {
-        return Ok(None);
-    };
-    if fields.len() >= MAX_SLOTS || !flow.spend(fields.len() + 1) {
-        return Err(Diagnostic::unsupported(
-            "proof receiver-type budget exhausted",
-            span,
-        ));
-    }
-    for field in fields {
-        if field.mutable || !Checker::eligible_type(&field.ty, flow, span, MAX_SLOTS)? {
+impl Checker {
+    pub(in crate::check::dependencies) fn shared_receiver_type(
+        ty: &hir::Type,
+        flow: &mut Flow,
+        span: Span,
+    ) -> Result<Option<ScalarKind>> {
+        let hir::Type::Record { primary, fields } = ty else {
             return Ok(None);
+        };
+        let hir::Type::Reference(target) = primary.as_ref() else {
+            return Ok(None);
+        };
+        let Some(kind) = ScalarKind::of(target) else {
+            return Ok(None);
+        };
+        if fields.len() >= MAX_SLOTS || !flow.spend(fields.len() + 1) {
+            return Err(Diagnostic::unsupported(
+                "proof receiver-type budget exhausted",
+                span,
+            ));
         }
+        for field in fields {
+            if field.mutable || !Checker::eligible_type(&field.ty, flow, span, MAX_SLOTS)? {
+                return Ok(None);
+            }
+        }
+        Ok(Some(kind))
     }
-    Ok(Some(kind))
 }
 
 #[cfg(test)]
@@ -106,10 +112,13 @@ mod tests {
         let reports = checker.entry_reports(&program, Span::default()).unwrap();
         let local = *reports.receivers.keys().next().unwrap();
         checker.proofs.mutable.insert(local);
-        let (index, _) = checker
-            .receiver_index(&program, &reports, Span::default(), 1, 1)
-            .unwrap();
-        assert!(index[&local].2.is_none());
+        assert!(
+            checker
+                .receiver_index(&program, &reports, Span::default(), 1, 1)
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
     }
 
     #[test]
@@ -156,10 +165,44 @@ mod tests {
             ],
         };
         assert!(
-            primary(&ty, &mut Flow::new(), Span::default())
+            Checker::shared_receiver_type(&ty, &mut Flow::new(), Span::default())
                 .unwrap_err()
                 .message
                 .contains("budget")
         );
+    }
+
+    #[test]
+    pub(crate) fn shared_receiver_index_rejects_stale_referents_fields_and_canonical_descriptors() {
+        for fault in 0..5 {
+            let (mut checker, mut program) = checked("n:1;p:&n;x:{->p;->tag:true}.{}");
+            let reports = checker.entry_reports(&program, Span::default()).unwrap();
+            let (&id, op) = checker.dispatch_ops.first_key_value().unwrap();
+            let local = op.local;
+            let hir::Type::Record { primary, fields } = &mut program.locals[local] else {
+                panic!()
+            };
+            match fault {
+                0 => **primary = hir::Type::Reference(Box::new(hir::Type::Bool)),
+                1 => fields[0].mutable = true,
+                2 => fields[0].ty = hir::Type::Reference(Box::new(hir::Type::Bool)),
+                3 => {
+                    checker.dispatch_ops.get_mut(&id).unwrap().shared_primary =
+                        Some(ScalarKind::Bool)
+                }
+                4 => checker.dispatch_ops.get_mut(&id).unwrap().shared_primary = None,
+                _ => unreachable!(),
+            }
+            let before = format!("{reports:?}{:?}", checker.edge_counts());
+            assert!(
+                checker
+                    .receiver_index(&program, &reports, Span::default(), 1, 1)
+                    .unwrap_err()
+                    .message
+                    .contains("identity"),
+                "fault {fault}"
+            );
+            assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+        }
     }
 }
