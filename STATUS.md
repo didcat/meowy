@@ -49,9 +49,9 @@ pins and proof obligations are unchanged. All four documentation checks pass for
 source slice and the final guide/handoff (`/tmp/meowy-record-hint-docs.log`). Proof
 evaluation and full language/release qualification remain incomplete.
 
-Next inspect shared-reference and list equality operand hints; both still reject
-unannotated record constructors with E207 while explicit record ascriptions pass.
-The compiler handoff includes reproducers and a dependency-ordered plan.
+Current work repairs shared-reference operand hints and enforces full-shape equality
+for list/record pairs. The user confirmed the reference rule: existing acceptance of
+list-primary projection must be corrected. The compiler handoff records the plan.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain

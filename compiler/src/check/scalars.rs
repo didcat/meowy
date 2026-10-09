@@ -666,3 +666,6 @@ mod contexts;
 
 #[cfg(test)]
 mod records;
+
+#[cfg(test)]
+mod equality;

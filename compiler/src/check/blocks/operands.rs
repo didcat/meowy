@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::{Coercion, CoercionKind, PointKind};
+use crate::check::dependencies::{CoercionKind, PointKind};
 
 impl Checker {
     pub(crate) fn operand_constructor(mut expr: &ast::Expr) -> bool {
@@ -59,27 +59,16 @@ impl Checker {
             checker.with_point_id(PointKind::Expr, expr.span, |checker| {
                 let (input, value) =
                     checker.with_point_id(PointKind::expression(expr), expr.span, check)?;
-                let point = checker.point.expect("operand context");
-                if value.ty == Type::Never || matches!(value.ty, Type::Record { .. }) {
-                    let kind = if value.ty == Type::Never {
-                        CoercionKind::Stopped
-                    } else {
-                        CoercionKind::Forward
-                    };
-                    checker.coercion_operation(point, input, kind, expr.span)?;
+                if matches!(value.ty, Type::Record { .. }) {
+                    checker.coercion_operation(
+                        checker.point.expect("operand context"),
+                        input,
+                        CoercionKind::Forward,
+                        expr.span,
+                    )?;
                     return Ok(value);
                 }
-                let shape = Coercion::primary_source(&value.ty);
-                let (primary, kind, value) = Self::expected_plan(value, expected, expr.span)?;
-                checker.coercion_stages(
-                    point,
-                    input,
-                    kind,
-                    primary,
-                    if primary { shape } else { None },
-                    expr.span,
-                )?;
-                Ok(value)
+                checker.coerced_value(value, Some(expected), Some(input), expr.span)
             })
         })
     }

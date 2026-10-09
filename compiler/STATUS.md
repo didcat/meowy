@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-08. Primitive binary record contexts are implemented and validated.
+Updated: 2026-10-09. Shared-reference operand hints and aggregate equality are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3352,32 +3352,47 @@ final guide/handoff documentation checks pass (`/tmp/meowy-record-hint-docs.log`
 No outstanding failures remain in this series. Proof evaluation and full
 language/release qualification remain incomplete.
 
-### Next: shared-reference and list equality operand hints
+### Shared-reference operand hints and full-shape equality
 
-The primitive repair deliberately leaves nonprimitive contexts on their original paths.
-`v : [1]; x : v == { -> [1]; -> tag : true }` and
-`n : 1; p : &n; x : p == { -> &n; -> tag : true }` still report E207 for a field in a
-scalar result. Explicitly ascribing the right operand's full record type makes both
-check successfully (`/tmp/meowy-record-hint-next.log`). Existing accepted fixtures and
-all B001 boundaries must remain unchanged.
+Active series starts at `97a20b6f` on `main`; unrelated `docs/programs/hey/` is the
+only existing change and remains excluded. Shared-reference record construction
+still rejects named fields under a reference operand hint; named/ascribed equivalents
+pass. `coerced_expression` already preserves shared reborrows, forwarded regions and
+stopped reference operations. Reuse that conversion path before adding reference
+contexts to `check/blocks/operands.rs`.
+
+The user confirmed that list/record comparisons must follow the reference's full-shape
+aggregate equality rule. The previous suggestion to widen list primary comparison was
+incorrect: named/ascribed/grouped list/record pairs currently accepted by the compiler
+must instead be rejected. Reference/scalar primary comparison remains valid. Preserve
+list/list and full record/record equality, declared capacities, untyped element context,
+ordinary errors, stopped operands and current B001 gates; do not change contracts.
+Baseline reproducers are in `/tmp/meowy-reference-hint-baseline.log` and
+`/tmp/meowy-record-hint-next.log`. Two characterization tests preserve existing
+reference conversions/constraints, live-borrow and lifetime errors, list capacities,
+element widths and full-record equality. All 2834 library tests pass before extraction
+(`/tmp/meowy-equality-conversion-before.log`). Post-check conversion is now shared as
+`coerced_value` in `check/expressions/expected.rs`. All 2834 library tests also pass
+after extraction (`/tmp/meowy-equality-conversion-after.log`), including exact scalar
+capture/work checks. Library Clippy also passes without warnings
+(`/tmp/meowy-equality-conversion-clippy.log`). Shared-reference hint integration is next.
 
 Dependency-ordered commit plan:
 
-1. Characterize shared-reference/list equality contexts against named and explicitly
-   ascribed record operands, both positions and groups. Check fixed list lengths,
-   reference identity, explicit record constraints, stopped operands and exclusive
-   receiver gates. Confirm projection/copy contracts before widening any context.
-2. Separate a reusable expected-value conversion prerequisite only if needed.
-   `check/blocks/operands.rs::operand_coercion` handles primitive contexts; shared
-   reborrows and list conversions must retain their existing ownership and source
-   boundaries from `check/expressions.rs`. Do not merely remove the primitive filter.
-3. Integrate each supported context in a separate behavior slice with focused checks;
-   retain field shape inference, receiver-once evaluation and exact context widths/
-   extents. Record unions, exclusive primaries and required contexts remain separate
-   unless their contracts and existing support justify inclusion.
-4. Verify capture/source identities and work limits, add required source cases, update
-   classified evidence, run compiler/strict gates, then update the guide and both
-   handoffs and run final documentation checks.
+1. Complete: characterize existing shared-reference conversions/constraints and list equality;
+   share post-check expected-value conversion without changing behavior. Run focused
+   checks and the library suite before and after this prerequisite.
+2. Enable shared-reference construction hints with direct/grouped block/dispatch
+   regressions. Preserve receiver typing, reborrow sites, lifetime/loan checks, full
+   record constraints, required contexts and exclusive receiver gates.
+3. Reject completing list/record equality pairs before returning a binary plan. Preserve
+   full operand shapes through grouping under list equality contexts so grouping or
+   ascription cannot hide the mismatch. Keep list/list typing and stopped plans intact.
+4. Verify source/capture/operation identity and exact work, then add required accepted
+   and rejected source cases in reviewable slices; update classified evidence and audit
+   prior fixtures, capability pins, proof obligations and reviewed contract hashes.
+5. Run compiler/strict gates, update the guide and both handoffs with the next concrete
+   dependency step, then run final documentation checks.
 
 Broader aggregate receiver paths, value selection, precise joins, function returns,
 restarts, E225 enforcement and proof outcomes remain separate.

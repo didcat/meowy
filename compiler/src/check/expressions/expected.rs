@@ -2,6 +2,78 @@ use super::*;
 use crate::check::dependencies::CoercionKind;
 
 impl Checker {
+    pub(crate) fn coerced_value(
+        &mut self,
+        mut value: hir::Expr,
+        expected: Option<&Type>,
+        input: Option<hir::PointId>,
+        span: Span,
+    ) -> Result<hir::Expr> {
+        let shared = matches!(expected, Some(Type::Reference(_)));
+        if value.ty == Type::Never {
+            self.reach = FALSE;
+            if let Some(source) = input {
+                let point = self.point.expect("expected context");
+                if shared {
+                    self.reborrow_operation(
+                        point,
+                        source,
+                        hir::ReferenceMode::Shared,
+                        &value,
+                        span,
+                    )?;
+                } else {
+                    self.coercion_operation(point, source, CoercionKind::Stopped, span)?;
+                }
+            }
+            return Ok(value);
+        }
+        if let (Some(Type::Reference(target)), Type::Exclusive(source)) = (expected, &value.ty)
+            && target == source
+        {
+            let site = self.reborrows;
+            self.reborrows += 1;
+            value = hir::Expr {
+                kind: hir::ExprKind::Reborrow {
+                    site,
+                    value: Box::new(value),
+                    fields: Vec::new(),
+                },
+                ty: expected.unwrap().clone(),
+                span,
+            };
+            self.reborrow_operation(
+                self.point.expect("shared context"),
+                input.expect("shared conversion source"),
+                hir::ReferenceMode::Shared,
+                &value,
+                span,
+            )?;
+            return Ok(value);
+        }
+        let Some(expected) = expected else {
+            return Ok(value);
+        };
+        let shape = Coercion::primary_source(&value.ty);
+        let (primary, kind, value) = Self::expected_plan(value, expected, span)?;
+        if let Some(source) = input {
+            let point = self.point.expect("expected context");
+            if shared && !primary && kind == CoercionKind::Forward {
+                self.region_edges(point, source, span)?;
+            } else if !self.required {
+                self.coercion_stages(
+                    point,
+                    source,
+                    kind,
+                    primary,
+                    if primary { shape } else { None },
+                    span,
+                )?;
+            }
+        }
+        Ok(value)
+    }
+
     pub(crate) fn expected_plan(
         value: hir::Expr,
         expected: &Type,

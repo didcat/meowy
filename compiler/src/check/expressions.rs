@@ -1,6 +1,6 @@
 use super::{
     Checker, Result, Value,
-    dependencies::{Coercion, CoercionKind, FormatInput, PointKind},
+    dependencies::{Coercion, FormatInput, PointKind},
 };
 use crate::ast::{self, ExprKind, Span};
 use crate::diagnostic::Diagnostic;
@@ -38,8 +38,7 @@ impl Checker {
         expr: &ast::Expr,
         expected: Option<&Type>,
     ) -> Result<hir::Expr> {
-        let shared = matches!(expected, Some(Type::Reference(_)));
-        let (input, mut value) = if self.expected_boundary(expected) {
+        let (input, value) = if self.expected_boundary(expected) {
             let (source, value) =
                 self.with_point_id(PointKind::expression(expr), expr.span, |checker| {
                     checker.expression_value(expr, expected)
@@ -48,68 +47,7 @@ impl Checker {
         } else {
             (None, self.expression_value(expr, expected)?)
         };
-        if value.ty == Type::Never {
-            self.reach = FALSE;
-            if let Some(source) = input {
-                let point = self.point.expect("expected context");
-                if shared {
-                    self.reborrow_operation(
-                        point,
-                        source,
-                        hir::ReferenceMode::Shared,
-                        &value,
-                        expr.span,
-                    )?;
-                } else {
-                    self.coercion_operation(point, source, CoercionKind::Stopped, expr.span)?;
-                }
-            }
-            return Ok(value);
-        }
-        if let (Some(Type::Reference(target)), Type::Exclusive(source)) = (expected, &value.ty)
-            && target == source
-        {
-            let site = self.reborrows;
-            self.reborrows += 1;
-            value = hir::Expr {
-                kind: hir::ExprKind::Reborrow {
-                    site,
-                    value: Box::new(value),
-                    fields: Vec::new(),
-                },
-                ty: expected.unwrap().clone(),
-                span: expr.span,
-            };
-            self.reborrow_operation(
-                self.point.expect("shared context"),
-                input.expect("shared conversion source"),
-                hir::ReferenceMode::Shared,
-                &value,
-                expr.span,
-            )?;
-            return Ok(value);
-        }
-        let Some(expected) = expected else {
-            return Ok(value);
-        };
-        let shape = Coercion::primary_source(&value.ty);
-        let (primary, kind, value) = Self::expected_plan(value, expected, expr.span)?;
-        if let Some(source) = input {
-            let point = self.point.expect("expected context");
-            if shared && !primary && kind == CoercionKind::Forward {
-                self.region_edges(point, source, expr.span)?;
-            } else if !self.required {
-                self.coercion_stages(
-                    point,
-                    source,
-                    kind,
-                    primary,
-                    if primary { shape } else { None },
-                    expr.span,
-                )?;
-            }
-        }
-        Ok(value)
+        self.coerced_value(value, expected, input, expr.span)
     }
 
     pub(crate) fn expected_value(
