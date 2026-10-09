@@ -15,6 +15,7 @@ pub(crate) fn dispatch_shared_primary_slots_keep_exact_referents_wrappers_and_ow
         let (mut checker, reports) = checked(source);
         let ops: Vec<_> = checker.binaries.values().cloned().collect();
         let before = format!("{reports:?}{:?}", checker.edge_counts());
+        let mut count = 0;
         for op in ops {
             for (step, &input) in op.inputs.iter().enumerate() {
                 if !op.plan.primary[step] {
@@ -42,8 +43,34 @@ pub(crate) fn dispatch_shared_primary_slots_keep_exact_referents_wrappers_and_ow
                 assert_eq!(slots[0].shape, Shape::SharedScalar(kind));
                 let result = &reports.results[&slot.block].1;
                 assert!(result.dispatch.is_some() && result.consumer.is_none());
+                count += 1;
             }
         }
+        let typed: Vec<_> = checker
+            .typed_ops
+            .iter()
+            .map(|(&id, op)| (id, op.owner))
+            .collect();
+        for (id, owner) in typed {
+            let block = checker
+                .dispatch_ops
+                .values()
+                .find(|op| op.owner == owner)
+                .unwrap()
+                .block;
+            let Layout::Slots(slots) = &checker.bodies[&block].layout else {
+                panic!()
+            };
+            let shape = slots[0].shape;
+            assert_eq!(
+                checker
+                    .dispatch_primary_shape(&reports, id, owner, shape, Span::default())
+                    .unwrap(),
+                Some(Slot { block, index: 0 })
+            );
+            count += 1;
+        }
+        assert!(count > 0, "{source}");
         assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
     }
 }

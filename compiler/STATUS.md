@@ -3440,7 +3440,16 @@ and all 806 forward-report tests (`/tmp/meowy-shared-dispatch-focused.log`,
 `/tmp/meowy-shared-dispatch-forward.log`). Exact kinds/widths, owners, groups/ascriptions,
 independent initialization/results, missing/stopped evidence and stale layouts are covered.
 The existing scalar path shares the same validator and retains its prior work charges.
-Binary projection integration is next.
+Dispatch qualification is committed as `12a9b1bb`. Binary projection integration passes
+three focused tests and all 809 forward-report tests (`/tmp/meowy-shared-links-focused.log`,
+`/tmp/meowy-shared-links-forward.log`). Both operand positions, numeric/scalar kinds,
+projection-only and operation/result-only visits, stopped order and opaque consumers
+are covered. Ascribed operands may project in `Effect::Coercion` before the binary;
+those consumer ports remain separate, while the raw unchanged ascription can resolve
+the dispatch. Stopped-reference conversion may retain a non-Never final type, but no
+binary operation/result visit follows the stopped input. Reference result histories
+remain `Sources::Unknown`, including multiple guarded emissions; a slot link grants
+no reference-value provenance or candidate selection.
 
 Dependency-ordered commit plan:
 
@@ -3450,7 +3459,7 @@ Dependency-ordered commit plan:
    and malformed widths while retaining fixed-size metadata and existing work charges.
 3. Complete: qualify dispatch reference-primary slots through existing record/result validation;
    cover wrappers, owners, absent/stopped results and incompatible referents.
-4. Connect observed binary reference projections, with focused stage/order tests.
+4. Complete: connect observed binary reference projections, with focused stage/order tests.
    Receiver chains and nonbinary consumers remain separate.
 5. Cover stale identities, cycles, independent control and exact map/work limits;
    reuse existing source conformance for unchanged supported language behavior.

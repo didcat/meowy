@@ -175,6 +175,16 @@ impl Checker {
                             } else {
                                 self.receiver_primary_slot(reports, input, *owner, ty, span)?
                             }
+                        } else if let Effect::Binary(op) = effect
+                            && let BinaryClass::SharedScalar(ty) = op.types.inputs[step]
+                        {
+                            self.dispatch_primary_shape(
+                                reports,
+                                input,
+                                *owner,
+                                Shape::SharedScalar(ty),
+                                span,
+                            )?
                         } else {
                             None
                         };

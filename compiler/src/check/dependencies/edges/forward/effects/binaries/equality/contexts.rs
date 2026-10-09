@@ -32,7 +32,7 @@ pub(crate) fn equality_context_reports_keep_reference_projection_sources_and_ord
             for (step, &input) in op.inputs.iter().enumerate() {
                 assert_eq!(checker.points[input].parent, Some(id));
                 let slot = reports.slot_uses.get(&Port::Projection { point: id, step });
-                if op.plan.primary[step] && !dispatch {
+                if op.plan.primary[step] {
                     let &(owner, slot) = slot.unwrap();
                     assert_eq!((owner, slot.index), (op.owner, 0));
                     let crate::check::dependencies::bodies::Layout::Slots(slots) =
@@ -50,7 +50,7 @@ pub(crate) fn equality_context_reports_keep_reference_projection_sources_and_ord
                             }
                         )
                     );
-                    assert!(reports.results[&slot.block].1.dispatch.is_none());
+                    assert_eq!(reports.results[&slot.block].1.dispatch.is_some(), dispatch);
                 } else {
                     assert!(slot.is_none());
                 }

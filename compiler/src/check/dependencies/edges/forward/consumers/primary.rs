@@ -92,6 +92,9 @@ mod dispatch_unary;
 mod dispatch_binary;
 
 #[cfg(test)]
+mod dispatch_references;
+
+#[cfg(test)]
 mod dispatch_coercions;
 
 #[cfg(test)]
