@@ -3576,7 +3576,14 @@ conflicts, missing registration, group cycles and crossed dispatch scopes fail a
 missing evidence preserves earlier links. Source/receiver/consumer control and exact
 map/work limits stay independent. Formatting, all-target Clippy and the current build
 pass (`/tmp/meowy-receiver-coercion-lint.log`, `/tmp/meowy-receiver-coercion-build.log`).
-Source execution coverage and final gates are next.
+Boundary coverage is committed as `6bba46ec`. Two new required receiver-coercion
+cases pass debug/release with exact typed/nullable copies, reference returns,
+nested/guarded order and panic after an earlier copy
+(`/tmp/meowy-receiver-coercion-source.log`). All four source/inventory checks pass
+(`/tmp/meowy-receiver-coercion-source-docs.log`). Preservation and final gates are next.
+The next source gap is scalar field selection through the same reference-primary
+record receivers: `$.tag` remains opaque because `field_slot` uses generic receiver
+eligibility and the field capture retains no reference-primary descriptor.
 
 Dependency-ordered commit plan:
 

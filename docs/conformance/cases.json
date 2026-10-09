@@ -4910,6 +4910,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "reference_receiver_coercion_order",
+      "phase": "run",
+      "source": "sources/reference_receiver_coercion_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource body\nsource tail\nreceiver body\ntrue\ntrue\ntrue\nfalse\nreceiver tail\nfunction tail\ntrue\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "reference_receiver_coercion_stopped",
+      "phase": "run",
+      "source": "sources/reference_receiver_coercion_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource body\nsource tail\ntrue\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }
