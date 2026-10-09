@@ -3626,8 +3626,13 @@ paths are covered. Integration is committed as `1b822659`. Two boundary tests pa
 (`/tmp/meowy-reference-fields-boundaries.log`): late type/layout/index/canonical faults,
 missing registration, group cycles and crossed dispatch scopes reject operation links,
 field-result maps and expanded traversal atomically. Missing evidence preserves earlier
-links and suppresses the affected result source. Exact lookup limits and independent
-control are next.
+links and suppresses the affected result source. Identity boundaries are committed as
+`c15b2853`. All seven receiver-field integration/boundary/limit tests pass
+(`/tmp/meowy-reference-fields-limits.log`). Source/receiver/field control is independent;
+operation maps require no variable payload, while result lookup charges its exact root
+index. Exact and one-short work/map/root limits preserve reports and edges. All-target
+Clippy and the current build pass (`/tmp/meowy-reference-fields-lint.log`,
+`/tmp/meowy-reference-fields-build.log`). Source execution coverage and final gates are next.
 
 Dependency-ordered commit plan:
 
@@ -3638,7 +3643,7 @@ Dependency-ordered commit plan:
 3. Complete: integrate exact receiver/body primary qualification for immutable scalar field
    operation slots. Verify associated scalar field-result links and candidate consumers,
    preserving separate operation/result requirements and Unknown reference histories.
-4. Cover stale/missing metadata, scopes, cycles, control and exact map/work limits.
+4. Complete: cover stale/missing metadata, scopes, cycles, control and exact map/work limits.
 5. Add required source
    cases where needed, audit contracts/pins, run compiler/strict gates and update the
    guide and both handoffs before final documentation checks.
