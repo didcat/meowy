@@ -144,7 +144,6 @@ pub(crate) fn shared_receiver_binaries_preserve_stopped_order_and_other_consumer
         "n:1;p:&n;x:{->p;->other:p}.{->$==p}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{copy:$;->copy==p}",
         "n:1;p:&n;r:{->p;->tag:true};x:(&r).{->(*$)==p}",
-        "n:1;p:&n;x:p.{->$;->tag:true}.{->$.tag}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{->$==$}",
         "d:@\"debug\";n:1;p:&n;x:p.{->$;->tag:true}.{d.panic(\"stop\");->$==p}",
     ] {

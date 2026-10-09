@@ -2,6 +2,7 @@ use super::{super::tests::checked, *};
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod references;
 
 #[test]
 pub(crate) fn record_receiver_fields_keep_source_slots_wrappers_and_independent_owners() {

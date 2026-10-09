@@ -3616,7 +3616,13 @@ at independent operation/result stages, reject stale/invalid/loaded combinations
 merge atomically. All 16 field-report tests and 844 forward-report tests pass
 (`/tmp/meowy-reference-fields-reports.log`, `/tmp/meowy-reference-fields-report-forward.log`),
 including exact map/work limits with zero variable payload. Formatting passes.
-Receiver field-slot integration is next.
+Report capture is committed as `162bfb9a`. Owned field operations now fall back through
+the typed receiver-primary qualifier and then select their immutable scalar named slot.
+Three integration tests and all 847 forward-report tests pass
+(`/tmp/meowy-reference-fields-links.log`, `/tmp/meowy-reference-fields-forward.log`).
+Operation/result independence, associated scalar field-result and candidate links,
+guarded/nested owners, Unknown reference histories and excluded storage/load/aggregate
+paths are covered. Late identity/scope failures and exact lookup limits are next.
 
 Dependency-ordered commit plan:
 
@@ -3624,7 +3630,7 @@ Dependency-ordered commit plan:
    source/replay/exclusion and exact-work tests; preserve source behavior and load paths.
 2. Complete: propagate and validate that descriptor in field reports, preserving independent
    operation/result flags and atomic merging with no new variable payload.
-3. Integrate exact receiver/body primary qualification for immutable scalar field
+3. Complete: integrate exact receiver/body primary qualification for immutable scalar field
    operation slots. Verify associated scalar field-result links and candidate consumers,
    preserving separate operation/result requirements and Unknown reference histories.
 4. Cover stale/missing metadata, scopes, cycles, control and exact map/work limits.

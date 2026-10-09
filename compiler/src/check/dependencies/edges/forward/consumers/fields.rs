@@ -13,6 +13,7 @@ impl Checker {
         let Effect::Field {
             input,
             index,
+            shared_primary,
             load,
             normal,
             operation,
@@ -26,16 +27,22 @@ impl Checker {
         if *load || !operation {
             return Ok(None);
         }
-        let (block, scalar, receiver) =
-            if let Some(block) = self.slot_block(reports, *input, owner, span)? {
-                (block, false, false)
-            } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
-                (block, true, false)
-            } else if let Some(block) = self.record_receiver_body(reports, *input, owner, span)? {
-                (block, true, true)
-            } else {
-                return Ok(None);
-            };
+        let (block, scalar, receiver) = if let Some(block) =
+            self.slot_block(reports, *input, owner, span)?
+        {
+            (block, false, false)
+        } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
+            (block, true, false)
+        } else if let Some(block) = self.record_receiver_body(reports, *input, owner, span)? {
+            (block, true, true)
+        } else if let Some(ty) = *shared_primary
+            && let Some(primary) =
+                self.receiver_primary_shape(reports, *input, owner, Shape::SharedScalar(ty), span)?
+        {
+            (primary.block, true, true)
+        } else {
+            return Ok(None);
+        };
         if !self.flow.spend(
             self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                 + self.fields.len().checked_ilog2().unwrap_or(0) as usize
