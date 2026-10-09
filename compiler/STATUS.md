@@ -3547,6 +3547,16 @@ tests (`/tmp/meowy-reference-receiver-qualification.log`,
 verify raw unchanged ascriptions (`/tmp/meowy-reference-receiver-primary.log`).
 Generic forwarding stays excluded, receiver initialization is independent of its result,
 and index/canonical/type/body conflicts reject. Binary projection integration is next.
+The binary integration probe confirms an ownership distinction: `$ == p` projects at
+the binary, while `p != (($))` projects earlier in `Effect::Coercion` under the shared
+reference context. Only the former gains the new receiver link in this slice; the
+latter remains the explicit next consumer boundary. Qualification is committed as
+`b5940145`. Binary integration passes three focused tests and all 830 forward-report
+tests (`/tmp/meowy-reference-receiver-binaries.log`,
+`/tmp/meowy-reference-receiver-binary-forward.log`). Exact types, guarded/nested owners,
+source results, receiver initialization/results, projection stages and stopped order
+are covered; ordinary copies, fields and coercion-owned receiver ports stay opaque.
+Late identity/scope failures, exact limits and source execution coverage are next.
 
 Dependency-ordered commit plan:
 
@@ -3558,7 +3568,7 @@ Dependency-ordered commit plan:
    receiver hop and resolve primary slots through checked
    groups/ascriptions, scope/identity checks and exact body layouts. Keep generic record
    forwarding unchanged and validate initialization independently of receiver results.
-4. Integrate binary projection fallback with focused stage and ordering checks.
+4. Complete: integrate binary projection fallback with focused stage and ordering checks.
 5. Cover missing/stale evidence, scopes, cycles and exact limits, add required source
    coverage where needed, audit contracts/pins, run compiler/strict gates and update
    the guide and both handoffs before final documentation checks.

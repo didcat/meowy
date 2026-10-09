@@ -1,5 +1,7 @@
 use super::{super::tests::checked, *};
 
+mod binaries;
+
 #[test]
 pub(crate) fn shared_receiver_primaries_qualify_exact_sources_groups_scopes_and_owners() {
     for init in ["{->p;->tag:true}", "p.{->$;->tag:true}"] {

@@ -126,7 +126,6 @@ pub(crate) fn dispatch_reference_binaries_keep_stopped_order_and_multiple_histor
         "n:1;p:&n;r:p.{->$;->tag:true};x:r==p",
         "n:[1];p:&n;x:p.{->$;->tag:true}==p",
         "n:1;p:&n;x:p.{->$;->tag:true}==p.{->$;->tag:false}",
-        "n:1;p:&n;x:p.{->$;->tag:true}.{->$==p}",
     ] {
         let (_, reports) = checked(source);
         assert!(reports.slot_uses.is_empty(), "{source}");

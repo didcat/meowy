@@ -178,13 +178,23 @@ impl Checker {
                         } else if let Effect::Binary(op) = effect
                             && let BinaryClass::SharedScalar(ty) = op.types.inputs[step]
                         {
-                            self.dispatch_primary_shape(
+                            if let Some(slot) = self.dispatch_primary_shape(
                                 reports,
                                 input,
                                 *owner,
                                 Shape::SharedScalar(ty),
                                 span,
-                            )?
+                            )? {
+                                Some(slot)
+                            } else {
+                                self.receiver_primary_shape(
+                                    reports,
+                                    input,
+                                    *owner,
+                                    Shape::SharedScalar(ty),
+                                    span,
+                                )?
+                            }
                         } else if let Effect::Coercion(op) = effect
                             && let Some(source @ Shape::SharedScalar(_)) = op.source
                         {

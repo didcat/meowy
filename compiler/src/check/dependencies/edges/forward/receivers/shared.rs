@@ -72,7 +72,7 @@ mod tests {
                 assert!(!reports.eligible.contains(&local));
                 assert!(!reports.initializers.contains_key(&local));
             }
-            assert!(reports.slot_uses.is_empty());
+            assert_eq!(reports.slot_uses.len(), 2);
             for (local, ty) in program.locals.iter().enumerate() {
                 if ty.has_reference() {
                     assert!(!reports.eligible.contains(&local));
