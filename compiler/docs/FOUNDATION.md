@@ -715,10 +715,25 @@ scalar/reference/list operands keep exact capture and work. Required cases cover
 equality, same-shape list/record equality, source/receiver/tail order, stopped-right P006
 and E207/E302/E303/E222 rejections.
 
-Ordinary block reference-primary slot links remain structural evidence. Dispatch
-reference sources stay opaque; scalar dispatch qualification does not establish
-compatible referent identity or loan authority. Short-circuit, required-evaluation,
-union and exclusive operand contexts retain their prior paths.
+Ordinary block and direct dispatch reference-primary slot links remain structural
+evidence. Body shapes and binary classes retain exact shared scalar referents:
+Null/Bool/Int/Float/String, including numeric widths and signedness. Observed binary
+projections can link to dispatch slot 0 only when that descriptor matches the checked
+immutable unnamed primary and the dispatch result is observed. Grouping and unchanged
+ascription qualification preserve exact owners and origins. Initialization, projection,
+operation and result visits remain independent; a stopped reference conversion cannot
+make later operations observable just because its final type is non-Never.
+
+Reference histories remain Unknown, including multiple guarded emissions. Named
+reference-bearing records retain their initializer-forwarding exclusion. Receiver
+chains, coercion-owned projections (including contextual ascribed operands), other
+consumers and nonscalar referents remain separate. Missing evidence stays opaque;
+stale identities, malformed widths, cycles and exhausted map/work limits publish no
+partial collection. The descriptors copy no recursive types and add no variable
+payload. Existing reference address/order/panic and E207/E302/E303 conformance cases
+cover the unchanged language behavior; internal tests qualify these structural links.
+Short-circuit, required-evaluation, union and exclusive operand contexts retain their
+prior paths. No compatible slot grants storage provenance or loan authority.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
@@ -1208,7 +1223,9 @@ and signed-literal leaves keep their separate paths, and expected primary projec
 are not repeated. These structural reports evaluate no values or proof outcomes.
 Binary metadata retains compact Never/scalar/record/list/reference/union/other
 classes without copying aggregate shapes. Record field counts, list capacities,
-reference modes and union member counts come from the checked types. Counts have
+reference modes and union member counts come from the checked types. Shared scalar
+references additionally retain exact referent kinds, widths and signedness; other
+referents remain mode-only categories. Counts have
 explicit bounds; unsupported nominal types stay Other. Reports preserve exact roots,
 canonical operator symbols, type widths, primary/normal plans and control flags.
 Ordinary checking establishes complete type compatibility and recursive equality

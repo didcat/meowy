@@ -28,35 +28,33 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Shared-reference operand hints now preserve record fields through groups and dispatches
-while retaining referent types, shared conversion, borrow checks and lifetime rules.
-List/record comparisons now enforce the reference's full-shape equality rule and reject
-with E222, including ascribed and forwarded forms. Valid list/list and record/record
-comparisons preserve capacity, element context and every field. The
-[compiler handoff](compiler/STATUS.md#shared-reference-operand-hints-and-full-shape-equality)
+Binary projections now link to exact primary slots of direct dispatches returning
+shared scalar references. Body shapes and binary reports preserve referent kinds,
+numeric widths and signedness. Source results, receiver initialization, projections
+and binary operations/results remain independent. Missing evidence stays opaque;
+stale identities, cycles and exhausted budgets publish no partial links. The
+[compiler handoff](compiler/STATUS.md#shared-reference-dispatch-binary-source-qualification)
 records the reviewed slices and validation.
 
-Eleven new required cases pass debug/release for reference address comparison,
-evaluation order, stopped-right P006 and E207/E302/E303/E222 rejections. All 801
-forward-report tests pass. Existing scalar/reference/list capture and work stay exact;
-structural slot links grant no new proof or loan authority. All ten compiler checks
-pass: 2843 library/921 native tests and 62 Python tests
-(`/tmp/meowy-equality-context-gate.log`). Conformance has 460 cases: 441 required passes,
+Reference values and guarded histories remain unknown. Named reference-bearing
+records, receiver chains, nonscalar referents and coercion-owned projections retain
+their current boundaries. Existing full-shape equality, borrow/lifetime diagnostics,
+exclusive-ancestry B001 and proof gates remain intact. Source conformance is reused
+because supported language behavior is unchanged.
+
+All ten compiler checks pass: 2857 library/921 native tests, 62 Python tests,
+formatting, Clippy, build, metadata and source conformance
+(`/tmp/meowy-shared-dispatch-gate.log`). Conformance retains 441 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
-for the exact pinned names and reasons (`/tmp/meowy-equality-context-strict.log`).
-All four final guide/handoff documentation checks pass (`/tmp/meowy-equality-context-docs.log`).
+for those exact pins (`/tmp/meowy-shared-dispatch-strict.log`). The audit preserves
+534 tracked contract/source/catalog/pin/obligation files, all 460 cases and 37 reviewed
+hashes (`/tmp/meowy-shared-dispatch-preservation.log`). All four final guide/handoff
+documentation checks pass (`/tmp/meowy-shared-dispatch-docs.log`). Proof evaluation
+and full language/release qualification remain incomplete.
 
-The audit preserves 449 prior cases, 522 tracked contract/source/pin/obligation files,
-all 37 reviewed hashes and the 19 capability pins (`/tmp/meowy-equality-preservation.log`).
-No prior expectation or proof obligation changed. All four documentation checks pass
-for each source slice. Proof evaluation and full language/release qualification remain
-incomplete.
-
-Next inspect shared-reference dispatch binary source qualification: ordinary block
-reference slots are linked, but dispatch reference fallback remains opaque. The compiler
-handoff identifies the evidence and prerequisite for retaining exact type identity.
-Existing exclusive ancestry and other B001 boundaries remain intact.
-Unrelated `docs/programs/hey/` remains excluded from commits.
+Next: qualify coercion-owned shared-reference dispatch primaries. Ascribed operands
+can project there before a binary operation; their raw dispatch sources now retain
+the necessary scalar referent evidence. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

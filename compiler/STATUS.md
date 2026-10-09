@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-09. Shared-reference hints and full-shape equality are implemented and validated.
+Updated: 2026-10-09. Shared scalar-reference dispatch binary links are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3407,75 +3407,78 @@ Proof evaluation and full language/release qualification remain incomplete.
 
 ### Shared-reference dispatch binary source qualification
 
-The new `check/dependencies/edges/forward/effects/binaries/equality/contexts.rs` tests
-show the boundary directly:
-`n : 1; p : &n; x : p == { -> p; -> tag : true }` retains an ordinary block primary
-slot link, while `x : p == p.{ -> $; -> tag : true }` keeps the reference projection
-without a dispatch source slot link. Both forms are supported and have source execution
-coverage. Dispatch and receiver fallback in `edges/forward/consumers.rs` requires `BinaryClass::Scalar`;
-reference operands carry only `BinaryClass::Reference(mode)`.
+Complete implementation. Body/slot shapes and binary classes retain exact shared
+scalar referents (Null/Bool/Int/Float/String), including numeric widths and signedness.
+Descriptors are fixed-size, copy no recursive types and keep existing capture charges.
+Observed binary projections now link to direct dispatch primary slot 0 after exact
+owner/origin/layout validation and an observed dispatch result. Initialization,
+projection and operation/result visits remain independent. Groups and unchanged raw
+ascriptions reuse existing bounded source resolution; an ascribed binary operand may
+instead project in `Effect::Coercion`, whose reference consumer remains separate.
 
-Inspection confirms that body layouts and binary classes retain reference mode only.
-Existing dispatch resolution already validates wrappers, exact owners, observed result
-origins and layouts; a scalar referent descriptor can reuse it without type interning
-or recursive type copies. The bounded scope is shared references to Null/Bool/Int/Float/
-String, retaining exact numeric widths and signedness. Other referents remain opaque.
-Body/slot shapes now retain shared scalar referents, including numeric widths and
-signedness, without recursive type copies. Shape/layout replay rejects stale
-referents; exact and one-short layout work checks preserve the prior shallow charge.
-All 2845 library tests pass (`/tmp/meowy-shared-shapes-library.log`), including the
-two new focused tests (`/tmp/meowy-shared-shapes-focused.log`). Formatting passes.
-Body capture is committed as `0f11f29c`. Binary classes now retain the same descriptor;
-reports reject mismatched referents and invalid widths with no variable payload charge.
-All five shared-scalar tests, seven binary-type tests and 26 binary-report tests pass
-(`/tmp/meowy-shared-binaries-focused.log`, `/tmp/meowy-shared-binaries-effects.log`).
-Exact map/work limits and unchanged capture costs across referent types pass. Source
-behavior is unchanged. Binary capture is committed as `41d703f7`.
-Qualification tests confirm an existing boundary: reference-bearing local records
-are excluded by `entries/locals/eligibility.rs`, so reads/copies cannot forward to
-their dispatch initializers. Direct dispatches and checked groups/ascriptions remain
-the intended scope. Keep that eligibility gate; receiver and stored-reference paths
-need separate prerequisites. Dispatch qualification now passes all three focused tests
-and all 806 forward-report tests (`/tmp/meowy-shared-dispatch-focused.log`,
-`/tmp/meowy-shared-dispatch-forward.log`). Exact kinds/widths, owners, groups/ascriptions,
-independent initialization/results, missing/stopped evidence and stale layouts are covered.
-The existing scalar path shares the same validator and retains its prior work charges.
-Dispatch qualification is committed as `12a9b1bb`. Binary projection integration passes
-three focused tests and all 809 forward-report tests (`/tmp/meowy-shared-links-focused.log`,
-`/tmp/meowy-shared-links-forward.log`). Both operand positions, numeric/scalar kinds,
-projection-only and operation/result-only visits, stopped order and opaque consumers
-are covered. Ascribed operands may project in `Effect::Coercion` before the binary;
-those consumer ports remain separate, while the raw unchanged ascription can resolve
-the dispatch. Stopped-reference conversion may retain a non-Never final type, but no
-binary operation/result visit follows the stopped input. Reference result histories
-remain `Sources::Unknown`, including multiple guarded emissions; a slot link grants
-no reference-value provenance or candidate selection.
-Integration is committed as `0c79d65f`. All three additional boundary tests pass
-(`/tmp/meowy-shared-links-boundaries.log`): late metadata faults and group cycles
-publish no partial map, absent source/type evidence remains opaque, and independent
-control plus exact/one-short map/work limits preserve prior reports and edge counts.
-Compiler/strict gates, contract/pin audit and final documentation are next.
-Explicit test-constant visibility now uses `pub(super)`; all-target Clippy passes
-(`/tmp/meowy-shared-dispatch-lint.log`). The full compiler gate will be rerun.
+Reference result histories remain `Sources::Unknown`, including multiple guarded
+emissions. Named reference-bearing records retain their initializer eligibility gate;
+reads/copies do not forward to dispatch initializers. Receiver chains, nonscalar
+referents, exclusive references and nonbinary consumers remain separate. A stopped
+reference conversion can retain a non-Never final type without any later binary
+operation/result observation. No slot link grants reference-value provenance,
+candidate selection, runtime reachability, loan authority or a proof outcome.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `0f11f29c` | Capture shared scalar referents in body shapes |
+| `41d703f7` | Capture and validate binary referent descriptors |
+| `12a9b1bb` | Qualify direct dispatch reference-primary slots |
+| `0c79d65f` | Connect observed binary reference projections |
+| `095be2e0` | Reject stale evidence and bound slot-link publication |
+| `2213db2b` | Keep explicit test visibility compatible with Clippy |
+
+Focused tests cover exact referents, malformed widths, replay identity and fixed report
+costs. Late stale metadata, missing source/type evidence, group cycles, independent
+control and exact/one-short map/work limits preserve reports and edges. All ten checks
+in `python3 -B tools/verify.py --compiler` pass: 2857 library/921 native tests, 62 Python
+tests, formatting, all-target Clippy, build, metadata and source conformance
+(`/tmp/meowy-shared-dispatch-gate.log`). Conformance has 460 cases: 441 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for the exact pinned names/reasons (`/tmp/meowy-shared-dispatch-strict.log`).
+
+Existing required reference operand cases cover unchanged address equality,
+source/receiver/tail order, stopped-right P006 and E207/E302/E303 diagnostics. No new
+source capability or reference contract is introduced. Coverage notes now link the
+structural tests separately. The preservation audit passes: 534 tracked contract/source/
+catalog/pin/obligation files, all 460 cases, 19 capability pins and 37 reviewed hashes
+remain unchanged (`/tmp/meowy-shared-dispatch-preservation.log`). No known failures
+remain. All four final guide/handoff documentation checks pass
+(`/tmp/meowy-shared-dispatch-docs.log`). Unrelated `docs/programs/hey/`
+is preserved; nothing was pushed or published.
+
+### Next: coercion-owned shared-reference dispatch primaries
+
+`edges/forward/consumers/primary/dispatch_references.rs` records the next boundary:
+`n : 1; p : &n; x : (p.{ -> $; -> tag : true }~<{ -> <&int32>; tag <boolean> }>) == p`
+projects inside `Effect::Coercion`, so the binary has no projection of its own and
+retains no dispatch slot link. Direct binary-owned reference projections now link.
+The shared referent descriptor is already captured in `Effect::Coercion.source`;
+`dispatch_primary_shape` can qualify the raw unchanged-ascription dispatch source.
 
 Dependency-ordered commit plan:
 
-1. Complete: capture shared scalar referents in body shapes, with replay/type/budget regression
-   coverage. Preserve shallow aggregate categories and exclusive-reference boundaries.
-2. Complete: capture the same descriptor in binary classes; validate exact referent agreement
-   and malformed widths while retaining fixed-size metadata and existing work charges.
-3. Complete: qualify dispatch reference-primary slots through existing record/result validation;
-   cover wrappers, owners, absent/stopped results and incompatible referents.
-4. Complete: connect observed binary reference projections, with focused stage/order tests.
-   Receiver chains and nonbinary consumers remain separate.
-5. Complete: cover stale identities, cycles, independent control and exact map/work limits;
-   reuse existing source conformance for unchanged supported language behavior.
-6. Audit contracts/pins, run `python3 -B tools/verify.py --compiler` and strict
-   conformance, then update the guide and both handoffs and run documentation checks.
+1. Inspect `edges/forward/consumers.rs`, `effects/coercions.rs`,
+   `consumers/primary/dispatch_coercions/` and the new reference cases. Characterize
+   shared-reference Forward/Convert/Stopped and step-zero projection evidence before
+   widening the coercion branch, which currently accepts only `Shape::Scalar`.
+2. Integrate exact `Shape::SharedScalar` dispatch qualification for observed coercion
+   projections with focused tests. Keep initialization, projection, conversion and
+   result observations independent, including projection-only registration rules.
+3. Cover stale type/source/owner evidence, wrappers, missing results, cycles and exact
+   map/work limits; retain Unknown histories, local reference-record exclusions and
+   receiver-chain boundaries. Reuse existing conformance when behavior is unchanged.
+4. Audit contracts/pins, run compiler and strict conformance gates, then update the
+   guide, coverage notes and both handoffs and run documentation checks.
 
-Reference origin inference, ownership authority, list/union/exclusive primaries,
-precise joins, function results, restarts, E225 enforcement and proof outcomes remain
-separate.
+Reference-origin inference, ownership authority, aggregate/exclusive referents,
+receiver chains, precise joins, function results, restarts, E225 enforcement and
+proof outcomes remain separate. Full v0.0.1 release qualification is incomplete.
 
 ## Documentation conventions and layout
 
@@ -5722,8 +5725,10 @@ selection and broader aggregate provenance remain separate.
    contexts and their source qualification are implemented (`895c541c`, `626cba6e`,
    `cde2be40`, `1f7c5966`, `1ecd86e0`). Shared-reference hints (`3216e15c`), full-shape
    aggregate equality (`88f66147`), reports (`37d2e262`) and source cases (`a8770a53`,
-   `15bc2ad4`, `0460f306`) are implemented; final gates are above. Next inspect
-   shared-reference dispatch binary source qualification. Broader receiver consumers
+   `15bc2ad4`, `0460f306`) are implemented. Shared scalar-reference shape capture
+   (`0f11f29c`), binary reports (`41d703f7`), dispatch qualification (`12a9b1bb`), binary
+   links (`0c79d65f`) and boundaries (`095be2e0`) are complete; current validation is
+   above. Next inspect coercion-owned shared-reference dispatch primaries. Broader receiver consumers
    and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
