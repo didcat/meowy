@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-09. Shared-reference operand hints and aggregate equality are in progress.
+Updated: 2026-10-09. Shared-reference hints and full-shape equality are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3313,8 +3313,9 @@ Complete. Runtime primitive operand contexts now type the primary of ordinary/gr
 blocks and dispatches while inferring named fields. Grouped nested composition keeps
 its fields; explicit scalar/record annotations remain whole-result constraints.
 Receivers retain unhinted typing, primary initialization and widths stay checked, and
-full-record equality, short-circuit, required and nonprimitive contexts keep their
-existing paths. No new proof, value-provenance or loan authority is inferred.
+full-record equality, short-circuit and required contexts retain their contracts.
+Shared-reference and aggregate equality updates follow below. No new proof,
+value-provenance or loan authority is inferred.
 
 Reviewed slices: shared body pass `ddad6eb2`; primary-only contexts and regressions
 `895c541c`; capture/source/work checks `626cba6e`; normal source cases `cde2be40`;
@@ -3354,87 +3355,88 @@ language/release qualification remain incomplete.
 
 ### Shared-reference operand hints and full-shape equality
 
-Active series starts at `97a20b6f` on `main`; unrelated `docs/programs/hey/` is the
-only existing change and remains excluded. Shared-reference record construction
-still rejects named fields under a reference operand hint; named/ascribed equivalents
-pass. `coerced_expression` already preserves shared reborrows, forwarded regions and
-stopped reference operations. Reuse that conversion path before adding reference
-contexts to `check/blocks/operands.rs`.
+Complete. Shared-reference hints now retain named fields in direct/grouped block
+and dispatch operands. Expected conversion is shared with the ordinary expression
+path, preserving shared forwarding, reborrow sites, stopped-reference operations,
+receiver referent types, lifetime checks and live-borrow errors. Records carrying a
+view derived from an exclusive reborrow retain the existing exclusive-ancestry B001
+gate; this work does not extend loan authority or supported ownership paths.
 
-The user confirmed that list/record comparisons must follow the reference's full-shape
-aggregate equality rule. The previous suggestion to widen list primary comparison was
-incorrect: named/ascribed/grouped list/record pairs currently accepted by the compiler
-must instead be rejected. Reference/scalar primary comparison remains valid. Preserve
-list/list and full record/record equality, declared capacities, untyped element context,
-ordinary errors, stopped operands and current B001 gates; do not change contracts.
-Baseline reproducers are in `/tmp/meowy-reference-hint-baseline.log` and
-`/tmp/meowy-record-hint-next.log`. Two characterization tests preserve existing
-reference conversions/constraints, live-borrow and lifetime errors, list capacities,
-element widths and full-record equality. All 2834 library tests pass before extraction
-(`/tmp/meowy-equality-conversion-before.log`). Post-check conversion is now shared as
-`coerced_value` in `check/expressions/expected.rs`. All 2834 library tests also pass
-after extraction (`/tmp/meowy-equality-conversion-after.log`), including exact scalar
-capture/work checks. Library Clippy also passes without warnings
-(`/tmp/meowy-equality-conversion-clippy.log`); prerequisite commit is `c0c6f56f`.
-Two new reference-hint tests reproduce the original field E207, including its masking
-of the live-borrow E302 (`/tmp/meowy-reference-hint-before.log`). Shared-reference
-construction is now enabled through the shared conversion path. An exact capture/work
-test compares existing shared, reborrowed and stopped operands with the original path.
-Reference-bearing records sourced from an exclusive reborrow retain the existing
-exclusive-ancestry B001 gate, also reproduced through an explicitly shared local and
-named record (`/tmp/meowy-reference-hint-reborrow-boundary.log`). The acceptance test
-now distinguishes that capability boundary from supported shared-reference records.
-All 2837 library tests pass (`/tmp/meowy-reference-hint-library.log`); existing shared,
-reborrowed and stopped operands retain exact HIR/capture/work and reborrow sites.
-Reference integration is committed as `3216e15c`. Two aggregate-equality regressions
-reproduce accepted mismatched shapes and the masked duplicate-composition error
-(`/tmp/meowy-aggregate-equality-before.log`). List equality now retains whole operand
-shapes through groups, block forwarding and dispatch composition, then rejects
-completing list/record pairs with E222. List capacities/element contexts stay checked;
-stopped plans retain their existing behavior. All 2840 library tests pass
-(`/tmp/meowy-aggregate-equality-library.log`), including exact HIR/capture/work checks
-for previously accepted list operands); correction commit is `88f66147`. Three added
-report tests check reference projection identity across owners, retaining ordinary
-block slot links while shared-reference dispatch fallback stays opaque. They also
-check full list/record equality categories, stopped boundaries and absence of a
-published binary plan for rejected shapes. All 801 forward-report tests pass
-(`/tmp/meowy-equality-forward.log`); report coverage is committed as `37d2e262`.
-Four required source cases pass debug/release for reference address comparison,
-same-shape list/record equality, source/receiver/tail order and stopped-right P006
-(`/tmp/meowy-equality-normal-source.log`). All four documentation checks pass
-(`/tmp/meowy-equality-normal-docs.log`). Classified evidence is updated without
-changing contracts or capability pins; execution cases are committed as `a8770a53`.
-Three required rejection cases pass debug/release for fixed receiver referent E207,
-live-borrow conflict E302 and escaping local reference E303
-(`/tmp/meowy-reference-errors-source.log`). All four documentation checks pass
-(`/tmp/meowy-reference-errors-docs.log`); reference rejection commit is `15bc2ad4`.
-Four required E222 cases pass debug/release for named, ascribed, forwarded and direct
-list/record mismatches (`/tmp/meowy-aggregate-errors-source.log`). The audit preserves
-449 prior cases, 522 tracked contract/source/pin/obligation files, all 37 reviewed
-hashes and the 19 unchanged capability pins (`/tmp/meowy-equality-preservation.log`).
-No prior fixture expectation or proof obligation changed. All four aggregate rejection
-documentation checks pass (`/tmp/meowy-aggregate-errors-docs.log`). Final compiler and
-strict gates, then the guide/handoff update, remain pending.
+The user confirmed full-shape equality between aggregates. A list compared with a
+record now reports E222, including named, grouped, ascribed and forwarded operands;
+a matching list primary does not make their shapes equal. List/list comparisons keep
+capacity and element context, and record/record comparisons keep every field. The
+reference contracts were already correct and remain unchanged. Stopped operands,
+required evaluation, short-circuit and other unsupported contexts retain their gates.
+
+Reviewed slices: expected conversion `c0c6f56f`; shared-reference hints `3216e15c`;
+aggregate equality `88f66147`; report checks `37d2e262`; execution cases `a8770a53`;
+reference diagnostics `15bc2ad4`; aggregate rejections `0460f306`.
+
+All 2834 library tests passed before and after the conversion extraction
+(`/tmp/meowy-equality-conversion-before.log`, `/tmp/meowy-equality-conversion-after.log`).
+The reference and aggregate changes passed all 2837 and 2840 library tests respectively
+(`/tmp/meowy-reference-hint-library.log`, `/tmp/meowy-aggregate-equality-library.log`).
+Exact tests preserve previous scalar/reference/list HIR, captured operations, reborrow
+sites and work. All 801 forward-report tests pass (`/tmp/meowy-equality-forward.log`):
+ordinary block reference slots remain linked, dispatch reference sources stay opaque,
+list/record categories and stopped boundaries stay exact, and rejected shapes publish
+no mismatched binary plan. These remain structural checks, not proof outcomes.
+
+Eleven new required cases pass debug/release: reference address comparison, same-shape
+list/record equality, operand/receiver/tail order, stopped-right P006, referent type E207,
+live borrow E302, escaping reference E303 and four list/record E222 forms
+(`/tmp/meowy-equality-normal-source.log`, `/tmp/meowy-reference-errors-source.log`,
+`/tmp/meowy-aggregate-errors-source.log`). All four documentation checks pass for each
+source slice (`/tmp/meowy-equality-normal-docs.log`, `/tmp/meowy-reference-errors-docs.log`,
+`/tmp/meowy-aggregate-errors-docs.log`).
+
+The audit preserves all 449 prior case records, 522 tracked contract/source/pin/obligation
+files, all 37 reviewed hashes and the 19 unchanged capability pins
+(`/tmp/meowy-equality-preservation.log`). No prior fixture expectation or proof obligation
+changed. Unrelated `docs/programs/hey/` remains excluded.
+
+All ten compiler checks pass: formatting, all-target Clippy, 2843 library/921 native
+tests, 62 Python tests, build, metadata and source conformance
+(`/tmp/meowy-equality-context-gate.log`). Conformance has 460 cases: 441 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for the exact 19 pinned names and reasons (`/tmp/meowy-equality-context-strict.log`).
+All four final guide/handoff documentation checks pass
+(`/tmp/meowy-equality-context-docs.log`). No outstanding failures remain in this series.
+Proof evaluation and full language/release qualification remain incomplete.
+
+### Next: shared-reference dispatch binary source qualification
+
+The new `check/dependencies/edges/forward/effects/binaries/equality/contexts.rs` tests
+show the boundary directly:
+`n : 1; p : &n; x : p == { -> p; -> tag : true }` retains an ordinary block primary
+slot link, while `x : p == p.{ -> $; -> tag : true }` keeps the reference projection
+without a dispatch source slot link. Both forms are supported and have source execution
+coverage. Dispatch and receiver fallback in `edges/forward/consumers.rs` requires `BinaryClass::Scalar`;
+reference operands carry only `BinaryClass::Reference(mode)`.
 
 Dependency-ordered commit plan:
 
-1. Complete: characterize existing shared-reference conversions/constraints and list equality;
-   share post-check expected-value conversion without changing behavior. Run focused
-   checks and the library suite before and after this prerequisite.
-2. Complete: enable shared-reference construction hints with direct/grouped block/dispatch
-   regressions. Preserve receiver typing, reborrow sites, lifetime/loan checks, full
-   record constraints, required contexts and exclusive receiver gates.
-3. Complete: reject completing list/record equality pairs before returning a binary plan. Preserve
-   full operand shapes through grouping under list equality contexts so grouping or
-   ascription cannot hide the mismatch. Keep list/list typing and stopped plans intact.
-4. Verify source/capture/operation identity and exact work, then add required accepted
-   and rejected source cases in reviewable slices; update classified evidence and audit
-   prior fixtures, capability pins, proof obligations and reviewed contract hashes.
-5. Run compiler/strict gates, update the guide and both handoffs with the next concrete
-   dependency step, then run final documentation checks.
+1. Inspect retained type/owner/source evidence in `dependencies/binaries/types.rs`,
+   `dependencies/bodies/completion.rs` and `edges/forward/consumers/primary/` before
+   widening qualification. A shared mode alone does not establish compatible referent
+   identity, storage provenance or loan authority. Characterize shared modes with
+   incompatible referents, groups/ascriptions, owners/scopes and stopped results first.
+2. If required, capture the smallest bounded reference type identity as an independent
+   prerequisite with unchanged source behavior and exact budget tests. Do not simply
+   remove the scalar fallback filter or infer missing identities from spans/HIR order.
+3. Qualify direct dispatch reference-primary sources and integrate binary projection
+   links in separately reviewable slices. Keep observed source results, initialization,
+   projection and operation/results independent; receiver chains and other consumers
+   remain separate until their own qualification is complete.
+4. Add stale-identity, missing-evidence, cycle, control and exact map/work tests. Reuse
+   source conformance where it already covers behavior; add required cases for any
+   newly supported source forms. Audit contracts/pins, run compiler/strict gates, and
+   update the guide and both handoffs before final documentation checks.
 
-Broader aggregate receiver paths, value selection, precise joins, function returns,
-restarts, E225 enforcement and proof outcomes remain separate.
+Reference origin inference, ownership authority, list/union/exclusive primaries,
+precise joins, function results, restarts, E225 enforcement and proof outcomes remain
+separate.
 
 ## Documentation conventions and layout
 
@@ -5679,9 +5681,11 @@ selection and broader aggregate provenance remain separate.
    Unary receiver links (`63433675`), stages (`f2696e83`), boundaries (`8695a59b`) and
    source cases (`4f6316bf`, `6f0dfbbe`) are complete. Primitive binary operand
    contexts and their source qualification are implemented (`895c541c`, `626cba6e`,
-   `cde2be40`, `1f7c5966`, `1ecd86e0`). Final gates are recorded above. Next inspect
-   shared-reference/list equality hints; broader receiver consumers and value provenance
-   remain separate.
+   `cde2be40`, `1f7c5966`, `1ecd86e0`). Shared-reference hints (`3216e15c`), full-shape
+   aggregate equality (`88f66147`), reports (`37d2e262`) and source cases (`a8770a53`,
+   `15bc2ad4`, `0460f306`) are implemented; final gates are above. Next inspect
+   shared-reference dispatch binary source qualification. Broader receiver consumers
+   and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

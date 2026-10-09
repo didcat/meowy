@@ -701,9 +701,24 @@ unhinted type. Primary widths, initialization and duplicate-field checks remain 
 Existing scalar capture and work counts are preserved. New required cases cover
 unannotated operands, source/receiver/tail order, snapshots/shared loads, scalar kinds,
 stopped-right P006, checked overflow P002 and ordinary E216/E207/E204/E205 rejections.
-The earlier ascribed order case remains unchanged. Short-circuit, required-evaluation
-and nonprimitive operand contexts retain their prior paths. Shared-reference and list
-equality construction hints remain a separate, reproduced boundary.
+The earlier ascribed order case remains unchanged. Shared-reference operand hints
+also retain named fields. Shared forwarding, reborrow sites and stopped-reference
+operations reuse ordinary expected-value conversion; receiver referent types, lifetime
+checks and live-borrow conflicts stay checked. Records derived from exclusive
+reborrows retain the existing B001 boundary for exclusive ancestry.
+
+List equality keeps complete operand shapes through groups, ascriptions and forwarding
+blocks/dispatches. A list and a record are different aggregate shapes and reject with
+E222, even when the record has a matching list primary. List/list comparisons retain
+element context and capacity; record/record comparisons retain every field. Compatible
+scalar/reference/list operands keep exact capture and work. Required cases cover reference address
+equality, same-shape list/record equality, source/receiver/tail order, stopped-right P006
+and E207/E302/E303/E222 rejections.
+
+Ordinary block reference-primary slot links remain structural evidence. Dispatch
+reference sources stay opaque; scalar dispatch qualification does not establish
+compatible referent identity or loan authority. Short-circuit, required-evaluation,
+union and exclusive operand contexts retain their prior paths.
 Program/function roots gain no caller provenance or execution claim.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size

@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-08. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-09. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -28,30 +28,34 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Primitive binary operand hints now type block and dispatch primaries while allowing
-inferred named fields, including grouped and nested composition. Explicit constraints,
-receiver typing, numeric widths and full-record equality stay checked. Existing scalar
-capture and work counts are preserved; structural metadata grants no new proof or loan
-authority. The [compiler handoff](compiler/STATUS.md#primitive-contextual-record-hints-in-binary-operands)
+Shared-reference operand hints now preserve record fields through groups and dispatches
+while retaining referent types, shared conversion, borrow checks and lifetime rules.
+List/record comparisons now enforce the reference's full-shape equality rule and reject
+with E222, including ascribed and forwarded forms. Valid list/list and record/record
+comparisons preserve capacity, element context and every field. The
+[compiler handoff](compiler/STATUS.md#shared-reference-operand-hints-and-full-shape-equality)
 records the reviewed slices and validation.
 
-Eight new required cases pass in debug/release for kinds/widths, evaluation order,
-snapshots/shared loads, labeled emissions, stopped-right P006, overflow P002 and
-E216/E207/E204/E205 rejections. All 798 forward-report tests pass. All ten compiler
-checks pass: 2832 library/921 native tests and 62 Python tests
-(`/tmp/meowy-record-hint-gate.log`). Conformance has 449 cases: 430 required passes,
+Eleven new required cases pass debug/release for reference address comparison,
+evaluation order, stopped-right P006 and E207/E302/E303/E222 rejections. All 801
+forward-report tests pass. Existing scalar/reference/list capture and work stay exact;
+structural slot links grant no new proof or loan authority. All ten compiler checks
+pass: 2843 library/921 native tests and 62 Python tests
+(`/tmp/meowy-equality-context-gate.log`). Conformance has 460 cases: 441 required passes,
 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
-for those exact names and reasons (`/tmp/meowy-record-hint-strict.log`).
+for the exact pinned names and reasons (`/tmp/meowy-equality-context-strict.log`).
+All four final guide/handoff documentation checks pass (`/tmp/meowy-equality-context-docs.log`).
 
-The audit preserves 441 prior cases, 514 tracked contract/source/pin/obligation files
-and all 37 reviewed hashes (`/tmp/meowy-record-hint-preservation.log`). The 19 capability
-pins and proof obligations are unchanged. All four documentation checks pass for each
-source slice and the final guide/handoff (`/tmp/meowy-record-hint-docs.log`). Proof
-evaluation and full language/release qualification remain incomplete.
+The audit preserves 449 prior cases, 522 tracked contract/source/pin/obligation files,
+all 37 reviewed hashes and the 19 capability pins (`/tmp/meowy-equality-preservation.log`).
+No prior expectation or proof obligation changed. All four documentation checks pass
+for each source slice. Proof evaluation and full language/release qualification remain
+incomplete.
 
-Current work repairs shared-reference operand hints and enforces full-shape equality
-for list/record pairs. The user confirmed the reference rule: existing acceptance of
-list-primary projection must be corrected. The compiler handoff records the plan.
+Next inspect shared-reference dispatch binary source qualification: ordinary block
+reference slots are linked, but dispatch reference fallback remains opaque. The compiler
+handoff identifies the evidence and prerequisite for retaining exact type identity.
+Existing exclusive ancestry and other B001 boundaries remain intact.
 Unrelated `docs/programs/hey/` remains excluded from commits.
 
 ## Host toolchain
