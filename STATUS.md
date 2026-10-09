@@ -28,34 +28,35 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Coercion-owned shared-reference projections now link to exact dispatch primary slots.
-This covers unchanged ascriptions, nullable conversion, annotated bindings, contextual
-binary operands and function returns. Original scalar referent types, source owners
-and independent initialization/projection/conversion/result observations stay exact.
-The [compiler handoff](compiler/STATUS.md#coercion-owned-shared-reference-dispatch-primaries)
-records the reviewed implementation/coverage slices and validation.
+Binary-owned shared-reference projections now link through separately qualified
+record receivers. Checked dispatches and receiver-index rows retain exact scalar
+referents, with immutable and reference-free other fields. Ordinary local eligibility
+and generic forwarding remain unchanged. Typed hops preserve guarded/nested scopes,
+source owners, initialization and exact body-primary identity. The
+[compiler handoff](compiler/STATUS.md#shared-reference-record-receiver-primary-qualification)
+records seven implementation/coverage slices and validation.
 
-Reference histories remain unknown. Stored reference records, receiver chains,
-nonscalar referents, exclusive ancestry and existing borrow-origin B001 gates retain
-their boundaries. Whole stopped shared inputs keep entry-only reborrow metadata;
-no new loan authority or proof outcome is inferred. Two new required cases verify
-ascribed-reference address equality, conversion, execution order and stopped P006.
+Source results, receiver initialization/results and binary stages remain independent.
+Reference histories stay unknown; stored copies, mutable/reference-bearing fields,
+nonscalar referents and coercion-owned receiver projections retain their boundaries.
+Two new required cases verify source/body/tail/nested/function order, reference address
+comparison and stopped-right P006. No new loan authority or proof outcomes are inferred.
 
-All ten compiler checks pass: 2865 library/921 native tests, 62 Python tests,
-formatting, Clippy, build, metadata and 443 required conformance passes. The same
+All ten compiler checks pass: 2879 library/921 native tests, 62 Python tests,
+formatting, Clippy, build, metadata and 445 required conformance passes. The same
 19 pinned gaps remain, with zero failures in debug/release
-(`/tmp/meowy-shared-coercion-gate.log`). Strict mode exits 1 only for those exact pins
-(`/tmp/meowy-shared-coercion-strict.log`). All four final guide/handoff documentation
-checks pass (`/tmp/meowy-shared-coercion-docs.log`).
-The audit preserves 533 tracked reference/source/pin/obligation
-files, all 460 prior case records, 19 pins and 37 reviewed hashes
-(`/tmp/meowy-shared-coercion-preservation.log`). Full proof/release qualification remains
-incomplete.
+(`/tmp/meowy-reference-receiver-gate.log`). Strict mode exits 1 only for those exact
+pins (`/tmp/meowy-reference-receiver-strict.log`). All four final guide/handoff
+documentation checks pass (`/tmp/meowy-reference-receiver-docs.log`).
+The audit preserves 535 tracked reference/source/pin/obligation
+files, all 462 prior cases, 19 pins and 37 reviewed hashes
+(`/tmp/meowy-reference-receiver-preservation.log`). Full proof/release qualification
+remains incomplete.
 
-Next: investigate shared-reference record-receiver eligibility and primary source
-qualification. Ordinary local eligibility excludes reference-bearing records, so the
-receiver path needs its own evidence before widening. Reference formatting remains
-B001 and is a separate language prerequisite. Unrelated `docs/programs/hey/` is preserved.
+Next: coercion-owned shared-reference receiver projections, including typed copies
+and `p != $`, whose projection occurs before the binary operation. The receiver
+qualifier is ready; ordinary-local eligibility remains excluded. Reference formatting
+still requires its separate B001 prerequisite. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
