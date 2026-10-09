@@ -28,33 +28,34 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Binary projections now link to exact primary slots of direct dispatches returning
-shared scalar references. Body shapes and binary reports preserve referent kinds,
-numeric widths and signedness. Source results, receiver initialization, projections
-and binary operations/results remain independent. Missing evidence stays opaque;
-stale identities, cycles and exhausted budgets publish no partial links. The
-[compiler handoff](compiler/STATUS.md#shared-reference-dispatch-binary-source-qualification)
-records the reviewed slices and validation.
+Coercion-owned shared-reference projections now link to exact dispatch primary slots.
+This covers unchanged ascriptions, nullable conversion, annotated bindings, contextual
+binary operands and function returns. Original scalar referent types, source owners
+and independent initialization/projection/conversion/result observations stay exact.
+The [compiler handoff](compiler/STATUS.md#coercion-owned-shared-reference-dispatch-primaries)
+records the reviewed implementation/coverage slices and validation.
 
-Reference values and guarded histories remain unknown. Named reference-bearing
-records, receiver chains, nonscalar referents and coercion-owned projections retain
-their current boundaries. Existing full-shape equality, borrow/lifetime diagnostics,
-exclusive-ancestry B001 and proof gates remain intact. Source conformance is reused
-because supported language behavior is unchanged.
+Reference histories remain unknown. Stored reference records, receiver chains,
+nonscalar referents, exclusive ancestry and existing borrow-origin B001 gates retain
+their boundaries. Whole stopped shared inputs keep entry-only reborrow metadata;
+no new loan authority or proof outcome is inferred. Two new required cases verify
+ascribed-reference address equality, conversion, execution order and stopped P006.
 
-All ten compiler checks pass: 2857 library/921 native tests, 62 Python tests,
-formatting, Clippy, build, metadata and source conformance
-(`/tmp/meowy-shared-dispatch-gate.log`). Conformance retains 441 required passes,
-19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
-for those exact pins (`/tmp/meowy-shared-dispatch-strict.log`). The audit preserves
-534 tracked contract/source/catalog/pin/obligation files, all 460 cases and 37 reviewed
-hashes (`/tmp/meowy-shared-dispatch-preservation.log`). All four final guide/handoff
-documentation checks pass (`/tmp/meowy-shared-dispatch-docs.log`). Proof evaluation
-and full language/release qualification remain incomplete.
+All ten compiler checks pass: 2865 library/921 native tests, 62 Python tests,
+formatting, Clippy, build, metadata and 443 required conformance passes. The same
+19 pinned gaps remain, with zero failures in debug/release
+(`/tmp/meowy-shared-coercion-gate.log`). Strict mode exits 1 only for those exact pins
+(`/tmp/meowy-shared-coercion-strict.log`). All four final guide/handoff documentation
+checks pass (`/tmp/meowy-shared-coercion-docs.log`).
+The audit preserves 533 tracked reference/source/pin/obligation
+files, all 460 prior case records, 19 pins and 37 reviewed hashes
+(`/tmp/meowy-shared-coercion-preservation.log`). Full proof/release qualification remains
+incomplete.
 
-Next: qualify coercion-owned shared-reference dispatch primaries. Ascribed operands
-can project there before a binary operation; their raw dispatch sources now retain
-the necessary scalar referent evidence. Unrelated `docs/programs/hey/` is preserved.
+Next: investigate shared-reference record-receiver eligibility and primary source
+qualification. Ordinary local eligibility excludes reference-bearing records, so the
+receiver path needs its own evidence before widening. Reference formatting remains
+B001 and is a separate language prerequisite. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

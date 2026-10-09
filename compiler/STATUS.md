@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-09. Shared scalar-reference dispatch binary links are implemented and validated.
+Updated: 2026-10-09. Coercion-owned shared-reference dispatch links are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3414,12 +3414,12 @@ Observed binary projections now link to direct dispatch primary slot 0 after exa
 owner/origin/layout validation and an observed dispatch result. Initialization,
 projection and operation/result visits remain independent. Groups and unchanged raw
 ascriptions reuse existing bounded source resolution; an ascribed binary operand may
-instead project in `Effect::Coercion`, whose reference consumer remains separate.
+instead project in `Effect::Coercion`, whose qualification is recorded below.
 
 Reference result histories remain `Sources::Unknown`, including multiple guarded
 emissions. Named reference-bearing records retain their initializer eligibility gate;
 reads/copies do not forward to dispatch initializers. Receiver chains, nonscalar
-referents, exclusive references and nonbinary consumers remain separate. A stopped
+referents, exclusive references and other consumers remain separate. A stopped
 reference conversion can retain a non-Never final type without any later binary
 operation/result observation. No slot link grants reference-value provenance,
 candidate selection, runtime reachability, loan authority or a proof outcome.
@@ -3454,64 +3454,87 @@ is preserved; nothing was pushed or published.
 
 ### Coercion-owned shared-reference dispatch primaries
 
-`edges/forward/consumers/primary/dispatch_references.rs` records the next boundary:
-`n : 1; p : &n; x : (p.{ -> $; -> tag : true }~<{ -> <&int32>; tag <boolean> }>) == p`
-projects inside `Effect::Coercion`, so the binary has no projection of its own and
-retains no dispatch slot link. Direct binary-owned reference projections now link.
-The shared referent descriptor is already captured in `Effect::Coercion.source`;
-`dispatch_primary_shape` can qualify the raw unchanged-ascription dispatch source.
+Complete implementation. Observed coercion-owned shared scalar reference projections
+now link to exact dispatch primary slot 0 through the existing bounded qualifier.
+The original referent kind/width/signedness is retained before Forward or nullable
+Convert; groups, unchanged ascriptions, annotated bindings, contextual binary operands
+and function returns preserve owner/source identity. Source initialization/results,
+projection, conversion and result visits remain independent. Projection-only Convert
+visits need no operation registration; observed conversion/results require it.
+Projected coercions remain opaque to generic Forward/direct-value resolution.
 
-Inspection confirms that existing capture/report validation already retains exact
-`Shape::SharedScalar` source descriptors. No new type representation or producer
-validator is needed. `Kind::valid_source` admits a projected Stopped coercion only
-with `Shape::Never`; stopped whole shared inputs retain entry-only reborrow metadata
-with no acquisition site or coercion primary. Forward projections
-create no operation, while Convert operation/result observations require the owner
-registry independently of the projection. Returning a projected `never` primary as a
-shared reference retains the existing borrow-origin B001 gate; its checker/report
-characterization is structural evidence only. Reference histories, local eligibility
-and receiver-chain boundaries remain unchanged. The two new characterization tests
-and all 18 coercion-report tests pass (`/tmp/meowy-shared-coercion-capture.log`,
-`/tmp/meowy-shared-coercion-reports.log`); formatting passes. Characterization is
-committed as `d3da9ebd`. Observed coercion projections now reuse exact shared scalar
-dispatch qualification. All three integration tests and 817 forward-report tests pass
-(`/tmp/meowy-shared-coercion-links.log`, `/tmp/meowy-shared-coercion-forward.log`).
-Step-zero ports, exact referents/owners, Unknown histories, independent source/consumer
-stages and projection-only registration rules remain intact. Integration is committed
-as `19edd7ed`. Three boundary tests pass (`/tmp/meowy-shared-coercion-boundaries.log`):
-late type/owner/source corruption and cycles reject atomically, missing evidence keeps
-earlier links, and control plus exact/one-short map/work limits remain independent.
-Formatting, all-target Clippy and the current compiler build pass
-(`/tmp/meowy-shared-coercion-lint.log`, `/tmp/meowy-shared-coercion-build.log`).
-Boundary coverage is committed as `64a964e0`. Two new required source cases pass in
-debug/release with exact output: ascribed-reference Forward/nullable Convert, return/
-tail/binary order and stopped dispatch P006 (`/tmp/meowy-shared-coercion-source.log`).
-All four source/inventory documentation checks pass
-(`/tmp/meowy-shared-coercion-source-docs.log`). Final compiler/strict gates and the
-preservation audit are next. A handoff probe confirms reference formatting is still
-B001 (`reference formatting; dereference the copyable value`); output consumers must
-not be widened without that language prerequisite. Supported reference record-receiver
-binary/coercion paths remain opaque and are the next source-qualification area.
+Stopped whole shared inputs retain entry-only reborrow metadata with no acquisition
+site or coercion primary. Projected Never retains Stopped coercion metadata; returning
+it as a shared reference keeps the borrow-origin B001 gate. That checker/report test
+is structural evidence, not a supported source-conformance outcome. Reference histories
+remain Unknown, including multiple guarded emissions. Named reference-bearing records,
+receiver chains, nonscalar referents and exclusive-reference paths retain their gates.
+No link grants reference-value provenance, candidate selection, runtime reachability,
+loan/lifetime authority or a proof outcome.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `d3da9ebd` | Characterize shared-reference source descriptors and stopped inputs |
+| `19edd7ed` | Link observed coercion projections to dispatch primaries |
+| `64a964e0` | Reject stale identities and bound atomic link publication |
+| `39558714` | Qualify ascribed-reference execution order and stopped dispatches |
+
+Eight new structural tests cover exact referents/owners, independent stages, preserved
+producer boundaries, late stale metadata, missing evidence, group cycles, control and
+exact/one-short map/work limits. The integration slice passed all 817 forward-report
+tests; the full compiler gate includes the three later boundary tests. Both new required
+source cases pass debug/release with exact reference address/order and stopped P006
+outcomes (`/tmp/meowy-shared-coercion-source.log`). Formatting and all-target Clippy pass.
+
+All ten checks in `python3 -B tools/verify.py --compiler` pass: 2865 library/921 native
+and 62 Python tests, formatting, lint, build, metadata and source execution
+(`/tmp/meowy-shared-coercion-gate.log`). Conformance has 462 cases: 443 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for the exact pinned names/reasons (`/tmp/meowy-shared-coercion-strict.log`).
+All four final guide/handoff documentation checks pass
+(`/tmp/meowy-shared-coercion-docs.log`). The preservation audit confirms 533
+tracked reference/source/pin/obligation files, all 460 prior case records, 19 capability
+pins, 37 reviewed hashes and prior evidence are unchanged
+(`/tmp/meowy-shared-coercion-preservation.log`). No outstanding test failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: shared-reference record-receiver primary qualification
+
+Existing supported source behavior accepts
+`n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ -> $ == p }`, while the binary
+projection stays opaque in `consumers/primary/dispatch_references.rs`. The related
+coercion boundary is captured in `consumers/primary/dispatch_coercions/references.rs`:
+`x : p.{ -> $; -> tag : true }.{ value <&int32> : $ }`.
+
+There are two prerequisites: `effects/reads/receivers.rs::receiver_value_input`
+requires `reports.eligible`, whose ordinary-local rules exclude reference-bearing
+records, and `consumers/primary.rs::receiver_primary_slot` only accepts scalar
+primaries. Exact SharedScalar body descriptors alone do not bypass either boundary.
+`consumers/blocks.rs::record_receiver_body` reuses receiver scope validation before
+resolving an ordinary block or dispatch body.
 
 Dependency-ordered commit plan:
 
-1. Complete: add source-driven report characterization in `effects/coercions/` for shared
-   reference Forward/Convert/Stopped contexts, widths, owners and step-zero ports.
-   Validate independently before changing the consumer branch.
-2. Complete: integrate exact `Shape::SharedScalar` dispatch qualification for observed coercion
-   projections with focused tests. Keep initialization, projection, conversion and
-   result observations independent, including projection-only registration rules.
-3. Complete: cover stale type/source/owner evidence, wrappers, missing results, cycles and exact
-   map/work limits; retain Unknown histories, local reference-record exclusions and
-   receiver-chain boundaries. Reuse existing conformance when behavior is unchanged.
-4. Complete: review existing source coverage and add required ascribed-reference order/panic
-   cases if those contexts are missing; keep source outcomes separate from metadata.
-5. Audit contracts/pins, run compiler and strict conformance gates, then update the
-   guide, coverage notes and both handoffs and run documentation checks.
+1. Characterize receiver-only eligibility, exact local/source evidence and guarded
+   scopes in `entries/locals/eligibility.rs`, `effects/reads/receivers.rs` and
+   `consumers/grouped.rs`. Distinguish reference primaries from reference-bearing
+   fields, mutable records, ordinary stored copies and stopped receiver initialization.
+2. If justified, introduce the smallest separately qualified receiver-only evidence
+   with exact budget/identity tests. Do not globally relax `reports.eligible`, infer
+   pointees from shared mode or skip receiver scope/owner validation.
+3. Qualify shared scalar reference receiver primaries and wire binary projection
+   fallback in separate reviewable slices. Keep coercion-owned receiver integration
+   separate until the binary boundary is qualified. Retain Unknown histories and
+   independent initialization, projection and result observations.
+4. Cover missing/stale evidence, scopes, cycles and exact limits, add required source
+   coverage where needed, audit contracts/pins, run compiler/strict gates and update
+   the guide and both handoffs before final documentation checks.
 
-Reference-origin inference, ownership authority, aggregate/exclusive referents,
-receiver chains, precise joins, function results, restarts, E225 enforcement and
-proof outcomes remain separate. Full v0.0.1 release qualification is incomplete.
+A current probe of `debug.print` on an ascribed reference-primary dispatch rejects
+with B001: `reference formatting; dereference the copyable value`. Output consumers
+require that separate language prerequisite. Broader referents, ownership authority,
+precise joins, function-result provenance, restarts, E225 and proof outcomes remain
+separate. Full v0.0.1 release qualification is incomplete.
 
 ## Documentation conventions and layout
 
@@ -5761,7 +5784,9 @@ selection and broader aggregate provenance remain separate.
    `15bc2ad4`, `0460f306`) are implemented. Shared scalar-reference shape capture
    (`0f11f29c`), binary reports (`41d703f7`), dispatch qualification (`12a9b1bb`), binary
    links (`0c79d65f`) and boundaries (`095be2e0`) are complete; current validation is
-   above. Next inspect coercion-owned shared-reference dispatch primaries. Broader receiver consumers
+   above. Coercion characterization (`d3da9ebd`), shared reference links (`19edd7ed`),
+   boundaries (`64a964e0`) and source cases (`39558714`) are complete. Next inspect
+   shared-reference record-receiver eligibility and primary qualification. Broader consumers
    and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

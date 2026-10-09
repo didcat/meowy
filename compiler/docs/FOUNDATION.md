@@ -718,16 +718,15 @@ and E207/E302/E303/E222 rejections.
 Ordinary block and direct dispatch reference-primary slot links remain structural
 evidence. Body shapes and binary classes retain exact shared scalar referents:
 Null/Bool/Int/Float/String, including numeric widths and signedness. Observed binary
-projections can link to dispatch slot 0 only when that descriptor matches the checked
-immutable unnamed primary and the dispatch result is observed. Grouping and unchanged
+and coercion projections can link to dispatch slot 0 only when that descriptor matches
+the checked immutable unnamed primary and the dispatch result is observed. Grouping and unchanged
 ascription qualification preserve exact owners and origins. Initialization, projection,
 operation and result visits remain independent; a stopped reference conversion cannot
 make later operations observable just because its final type is non-Never.
 
 Reference histories remain Unknown, including multiple guarded emissions. Named
 reference-bearing records retain their initializer-forwarding exclusion. Receiver
-chains, coercion-owned projections (including contextual ascribed operands), other
-consumers and nonscalar referents remain separate. Missing evidence stays opaque;
+chains, other consumers and nonscalar referents remain separate. Missing evidence stays opaque;
 stale identities, malformed widths, cycles and exhausted map/work limits publish no
 partial collection. The descriptors copy no recursive types and add no variable
 payload. Existing reference address/order/panic and E207/E302/E303 conformance cases
@@ -735,6 +734,19 @@ cover the unchanged language behavior; internal tests qualify these structural l
 Short-circuit, required-evaluation, union and exclusive operand contexts retain their
 prior paths. No compatible slot grants storage provenance or loan authority.
 Program/function roots gain no caller provenance or execution claim.
+
+Coercion-owned shared-reference projections retain step zero and the original scalar
+referent descriptor before conversion, including contextual ascribed binary operands,
+annotated bindings and function returns. Forward projection creates no conversion
+operation. Convert projection-only visits need no operation registration; observed
+conversion/result visits do. Projected coercions remain opaque to generic forwarding.
+Stopped whole shared inputs retain entry-only reborrow metadata with no acquisition
+site; projecting a Never primary retains a Stopped coercion. Returning that impossible
+primary as a reference keeps the existing borrow-origin B001 gate, whose checker tests
+are structural evidence only. Two required source cases verify ascribed reference
+address equality, nullable conversion, receiver/body/tail/return order and stopped-body
+P006 in debug/release. Reference formatting remains B001 and requires its own language
+implementation before output-owned reference source qualification.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
