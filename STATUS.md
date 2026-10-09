@@ -28,35 +28,36 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Binary-owned shared-reference projections now link through separately qualified
-record receivers. Checked dispatches and receiver-index rows retain exact scalar
-referents, with immutable and reference-free other fields. Ordinary local eligibility
-and generic forwarding remain unchanged. Typed hops preserve guarded/nested scopes,
-source owners, initialization and exact body-primary identity. The
-[compiler handoff](compiler/STATUS.md#shared-reference-record-receiver-primary-qualification)
-records seven implementation/coverage slices and validation.
+Coercion-owned shared-reference projections now link through qualified record receivers.
+Typed copies, nullable conversions, unchanged ascriptions, function returns and `p != $`
+retain exact source types, owners and their own projection ports. Canonical eligibility,
+source layouts and guarded/nested scopes reuse the existing receiver qualifier. The
+[compiler handoff](compiler/STATUS.md#coercion-owned-shared-reference-record-receiver-primaries)
+records the four implementation/coverage slices and validation.
 
-Source results, receiver initialization/results and binary stages remain independent.
-Reference histories stay unknown; stored copies, mutable/reference-bearing fields,
-nonscalar referents and coercion-owned receiver projections retain their boundaries.
-Two new required cases verify source/body/tail/nested/function order, reference address
-comparison and stopped-right P006. No new loan authority or proof outcomes are inferred.
+Source results, receiver initialization/results and consumer stages remain independent.
+Stopped inputs and unreachable suffixes gain no later observations. Stored copies,
+reference loads, mutable/reference-bearing fields, nonscalar referents and generic
+field/value forwarding retain their boundaries. Two new required cases verify typed/
+nullable copies, returned reference identity, execution order and panic after an earlier
+copy. Reference histories remain unknown; no new loan authority or proof outcomes arise.
 
-All ten compiler checks pass: 2879 library/921 native tests, 62 Python tests,
-formatting, Clippy, build, metadata and 445 required conformance passes. The same
+All ten compiler checks pass: 2887 library/921 native tests, 62 Python tests,
+formatting, Clippy, build, metadata and 447 required conformance passes. The same
 19 pinned gaps remain, with zero failures in debug/release
-(`/tmp/meowy-reference-receiver-gate.log`). Strict mode exits 1 only for those exact
-pins (`/tmp/meowy-reference-receiver-strict.log`). All four final guide/handoff
-documentation checks pass (`/tmp/meowy-reference-receiver-docs.log`).
-The audit preserves 535 tracked reference/source/pin/obligation
-files, all 462 prior cases, 19 pins and 37 reviewed hashes
-(`/tmp/meowy-reference-receiver-preservation.log`). Full proof/release qualification
+(`/tmp/meowy-receiver-coercion-gate.log`). Strict mode exits 1 only for those exact
+pins (`/tmp/meowy-receiver-coercion-strict.log`). All four final guide/handoff
+documentation checks pass (`/tmp/meowy-receiver-coercion-docs.log`).
+The audit preserves 537 tracked reference/source/pin/obligation
+files, all 464 prior cases, 19 pins and 37 reviewed hashes
+(`/tmp/meowy-receiver-coercion-preservation.log`). Full proof/release qualification
 remains incomplete.
 
-Next: coercion-owned shared-reference receiver projections, including typed copies
-and `p != $`, whose projection occurs before the binary operation. The receiver
-qualifier is ready; ordinary-local eligibility remains excluded. Reference formatting
-still requires its separate B001 prerequisite. Unrelated `docs/programs/hey/` is preserved.
+Next: scalar field-source qualification through shared-reference record receivers.
+`$.tag` still uses the generic receiver eligibility gate, and field capture lacks a
+reference-primary descriptor. Preserve ordinary-local eligibility while establishing
+that evidence. Reference formatting remains a separate B001 prerequisite.
+Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

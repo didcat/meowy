@@ -725,8 +725,8 @@ operation and result visits remain independent; a stopped reference conversion c
 make later operations observable just because its final type is non-Never.
 
 Reference histories remain Unknown, including multiple guarded emissions. Named
-reference-bearing records retain their initializer-forwarding exclusion. Coercion-owned
-receiver projections, generic field/value consumers and nonscalar referents remain
+reference-bearing records retain their initializer-forwarding exclusion. Generic
+field/value consumers and nonscalar referents remain
 separate. Missing evidence stays opaque;
 stale identities, malformed widths, cycles and exhausted map/work limits publish no
 partial collection. The descriptors copy no recursive types and add no variable
@@ -749,7 +749,8 @@ address equality, nullable conversion, receiver/body/tail/return order and stopp
 P006 in debug/release. Reference formatting remains B001 and requires its own language
 implementation before output-owned reference source qualification.
 
-Binary-owned shared scalar reference primaries can also link through record receivers.
+Binary-owned and coercion-owned shared scalar reference primaries can also link through
+record receivers.
 The checked dispatch and receiver index retain matching optional descriptors. Admission
 requires an exact scalar referent and immutable, reference-free other fields, using the
 existing bounded type walk. Ordinary local eligibility remains unchanged; named stored
@@ -758,13 +759,21 @@ payload and is checked again against the resolved source body's primary layout.
 
 Typed receiver hops require observed initialization and preserve exact owners, guarded
 and nested scopes, and dispatch boundaries. Original source results remain required;
-the consuming receiver's result and binary projection/operation/result observations
+the consuming receiver's result and consumer projection/operation/result observations
 stay independent. Reference histories remain Unknown. Stale descriptors/types, crossed
 dispatch scopes, cycles and exhausted map/work limits publish no partial map. Required
 cases cover source/body/tail/nested/function order, address equality and stopped-right
 P006 in both profiles. `$ == p` can own a binary projection; `p != $` under a shared
-reference context projects earlier in `Effect::Coercion`, whose receiver integration
-remains separate. No source link grants value provenance or loan/proof authority.
+reference context projects earlier in `Effect::Coercion`. Both retain their own ports.
+Coercion receiver links cover exact Forward and nullable Convert contexts, typed copies,
+unchanged ascriptions, guarded/nested receivers and function returns. Projection-only
+Convert observations need no operation registration; conversion/result observations do.
+Stopped receiver inputs and unreachable suffixes gain no later coercion observations.
+Projected Never keeps its separate Stopped descriptor. Additional required source cases
+verify typed/nullable copies, returned reference identity, receiver/tail/function order
+and panic after an earlier copy. Field/value forwarding, ordinary stored copies and
+ineligible receiver types remain separate. No source link grants value provenance or
+loan/proof authority.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

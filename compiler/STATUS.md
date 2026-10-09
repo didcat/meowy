@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-09. Shared-reference binary receiver links are implemented and validated.
+Updated: 2026-10-09. Shared-reference receiver coercion links are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3514,7 +3514,7 @@ nested receivers retain their existing boundaries. The final body primary must m
 the exact descriptor. Source results, receiver initialization/results and binary
 projection/operation/results stay independent. Reference histories remain Unknown;
 ordinary stored copies, reference-bearing fields, mutable records, nonscalar referents,
-generic record/field/value forwarding and coercion-owned receiver consumers stay separate.
+generic record/field/value forwarding remain separate; coercion receiver links follow below.
 No metadata grants reference values, pointee provenance, loan authority or proof outcomes.
 
 | Commit | Reviewable slice |
@@ -3549,62 +3549,79 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Coercion-owned shared-reference record-receiver primaries
 
-`consumers/primary/shared_receivers/binaries.rs` confirms that `$ == p` retains a
-binary-owned projection, while `p != (($))` under a shared-reference context projects
-inside `Effect::Coercion` first. That projection still has no receiver slot link.
-`consumers/primary/dispatch_coercions/references.rs` also preserves the typed-copy
-boundary: `n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ copy <&int32> : $ }`.
-The raw unchanged-ascription receiver path is already qualified by the new helper.
+Complete implementation. Observed coercion-owned shared scalar reference projections
+now use receiver fallback after direct dispatch qualification. Exact original referents,
+canonical receiver eligibility, source-body primary layouts, owners and guarded/nested
+scopes reuse the existing qualifier; no new representation or ordinary-local eligibility
+was introduced. Typed copies, nullable conversion, raw unchanged ascriptions, reference
+returns and `p != (($))` retain their own step-zero projection ports.
 
-Inspection confirms that exact `Shape::SharedScalar` source capture, canonical receiver
-eligibility and the typed receiver/body qualifier already exist. The implementation
-needs only a fallback in the shared-reference coercion branch. Producer observations,
-ordinary local eligibility and scope rules remain unchanged. The two new source-driven
-characterization tests and all 20 coercion-report tests pass
-(`/tmp/meowy-receiver-coercion-capture.log`, `/tmp/meowy-receiver-coercion-reports.log`).
-They cover exact scalar referents, Forward/Convert, function owners/returns, step-zero
-ports, stopped receiver inputs, projected Never and unobserved suffixes. Formatting
-passes. Characterization is committed as `6ee93699`. Shared-reference coercion
-projections now try the qualified receiver path after direct dispatch qualification.
-Three integration tests and all 838 forward-report tests pass
-(`/tmp/meowy-receiver-coercion-links.log`, `/tmp/meowy-receiver-coercion-forward.log`).
-Exact types/owners, guarded and nested receivers, ascriptions, step-zero ports,
-independent stages, projection-only registration and stopped prefixes are covered.
-Integration is committed as `46c12b48`. Three boundary tests pass
-(`/tmp/meowy-receiver-coercion-boundaries.log`): late source-type/index/canonical
-conflicts, missing registration, group cycles and crossed dispatch scopes fail atomically;
-missing evidence preserves earlier links. Source/receiver/consumer control and exact
-map/work limits stay independent. Formatting, all-target Clippy and the current build
-pass (`/tmp/meowy-receiver-coercion-lint.log`, `/tmp/meowy-receiver-coercion-build.log`).
-Boundary coverage is committed as `6bba46ec`. Two new required receiver-coercion
-cases pass debug/release with exact typed/nullable copies, reference returns,
-nested/guarded order and panic after an earlier copy
-(`/tmp/meowy-receiver-coercion-source.log`). All four source/inventory checks pass
-(`/tmp/meowy-receiver-coercion-source-docs.log`). Preservation and final gates are next.
-The next source gap is scalar field selection through the same reference-primary
-record receivers: `$.tag` remains opaque because `field_slot` uses generic receiver
-eligibility and the field capture retains no reference-primary descriptor.
+Source results, receiver initialization/results, projection, conversion and result
+observations remain independent. Projection-only Convert needs no operation registration;
+observed conversion/results require it. Stopped receiver inputs, projected Never and
+unobserved suffixes retain their separate metadata. Ordinary stored copies, reference
+loads, mutable/reference-bearing fields, nonscalar referents and generic field/value
+forwarding remain excluded. Reference histories stay Unknown; no value selection,
+pointee provenance, borrow authority or proof outcome is inferred.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `6ee93699` | Characterize receiver coercion sources and stopped observations |
+| `46c12b48` | Link observed coercion projections through qualified receivers |
+| `6bba46ec` | Reject stale types/scopes and bound atomic publication |
+| `8aecd78a` | Cover typed copies, reference returns and stopped suffixes |
+
+Eight new structural tests cover source descriptors and owners, independent stages,
+unchanged storage/type boundaries, type/index/canonical conflicts, missing registration,
+cross-dispatch scopes, group cycles, missing evidence, three control flags and exact
+map/work limits. Integration passed all 838 forward-report tests before the three final
+boundary tests. Two new required cases pass exact debug/release output for typed/nullable
+copies, reference returns, guarded/nested execution order and panic after an earlier copy
+(`/tmp/meowy-receiver-coercion-source.log`). Formatting, all-target Clippy and build pass.
+
+All ten checks in `python3 -B tools/verify.py --compiler` pass: 2887 library/921 native
+and 62 Python tests, formatting, lint, build, metadata and source execution
+(`/tmp/meowy-receiver-coercion-gate.log`). Conformance has 466 cases: 447 required passes,
+19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1 only
+for the exact pinned names/reasons (`/tmp/meowy-receiver-coercion-strict.log`).
+All four final guide/handoff documentation checks pass
+(`/tmp/meowy-receiver-coercion-docs.log`). The audit preserves 537 tracked reference/
+source/pin/obligation files, all 464 prior cases, 19 pins, 37 reviewed hashes, prior
+evidence and proof obligations (`/tmp/meowy-receiver-coercion-preservation.log`).
+No known failures remain. Unrelated `docs/programs/hey/` is preserved; nothing was pushed.
+
+### Next: scalar field sources through shared-reference record receivers
+
+`consumers/primary/shared_receivers/binaries.rs` retains this supported opaque boundary:
+`n : 1; p : &n; x : p.{ -> $; -> tag : true }.{ -> $.tag }`. Binary and coercion primary
+links now qualify the reference primary, but the scalar `tag` field has no receiver
+source-slot link. `consumers/fields.rs::field_slot` still calls the generic
+`record_receiver_body`, which requires ordinary local eligibility and excludes these
+records. `dependencies/fields.rs::Field` retains the input, index, count, load/result
+and control facts, but no reference-primary type descriptor.
 
 Dependency-ordered commit plan:
 
-1. Complete: characterize Forward/Convert/Stopped receiver contexts and exact step-zero owners
-   in `effects/coercions/` and `consumers/primary/receiver_coercions/`. Reuse canonical
-   receiver eligibility and `receiver_primary_shape`; add no ordinary-local eligibility.
-2. Complete: extend only observed shared-reference coercion projections in `consumers.rs` with
-   receiver fallback after direct dispatch qualification. Preserve independent source
-   results, receiver initialization/results, projection, conversion and result stages,
-   including projection-only operation-registration rules.
-3. Complete: cover mismatched descriptors, scopes, missing/stale evidence, cycles, independent
-   control and exact map/work limits. Keep ordinary stored copies, generic forwarding,
-   reference-bearing fields, nonscalar referents and Unknown histories unchanged.
-4. Review source execution coverage, add required cases where needed, audit contracts/
-   pins, run compiler/strict gates and update the guide and both handoffs before final
-   documentation checks.
+1. Characterize field source evidence in `dependencies/fields.rs`, `effects/fields.rs`,
+   `consumers/fields/receivers/` and the canonical receiver helpers. Establish how to
+   preserve exact reference-primary agreement through groups/ascriptions and receiver
+   scopes; field counts or shared mode alone are insufficient.
+2. If needed, capture the smallest bounded source descriptor as an independent
+   prerequisite with replay/identity and exact budget tests. Keep ordinary local
+   eligibility and generic whole-record forwarding unchanged.
+3. Qualify observed immutable scalar field operations through eligible shared-reference
+   record receivers in a separate integration slice. Preserve original source results,
+   receiver initialization/results, field operation/result independence and Unknown
+   reference histories; do not enable reference loads or mutable/nonscalar fields.
+4. Cover missing/stale metadata, scopes, cycles and exact limits; add required source
+   cases where needed, audit contracts/pins, run compiler/strict gates and update the
+   guide and both handoffs before final documentation checks.
 
-Reference formatting remains B001 (`reference formatting; dereference the copyable
-value`) and requires a separate language prerequisite. Other receiver consumers,
-broader referents, ownership authority, precise joins, function-result provenance,
-restarts, E225 and proof outcomes remain separate. Full v0.0.1 qualification is incomplete.
+Composed emissions, broader field results, ordinary stored references, generic receiver
+forwarding and reference formatting remain separate. Formatting still reports B001
+(`reference formatting; dereference the copyable value`). Function-result provenance,
+precise joins, restarts, E225 and proof outcomes remain incomplete. Full v0.0.1 release
+qualification is not established.
 
 ## Documentation conventions and layout
 
@@ -5855,10 +5872,12 @@ selection and broader aggregate provenance remain separate.
    (`0f11f29c`), binary reports (`41d703f7`), dispatch qualification (`12a9b1bb`), binary
    links (`0c79d65f`) and boundaries (`095be2e0`) are complete; current validation is
    above. Coercion characterization (`d3da9ebd`), shared reference links (`19edd7ed`),
-   boundaries (`64a964e0`) and source cases (`39558714`) are complete. Next inspect
-   coercion-owned shared-reference record-receiver primaries after completed eligibility
+   boundaries (`64a964e0`) and source cases (`39558714`) are complete. Receiver eligibility
    (`8e74c4c6`, `b026ca9d`, `3fa014b1`), qualification (`b5940145`), binary links
-   (`e7205cc9`), boundaries (`b872d507`) and source cases (`c37a3fe1`). Broader consumers
+   (`e7205cc9`), boundaries (`b872d507`) and source cases (`c37a3fe1`) are complete. Receiver coercion
+   characterization (`6ee93699`), links (`46c12b48`), boundaries (`6bba46ec`) and source
+   cases (`8aecd78a`) are complete. Next inspect scalar field sources through shared-
+   reference record receivers. Broader consumers
    and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
