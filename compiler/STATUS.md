@@ -3452,7 +3452,7 @@ remain. All four final guide/handoff documentation checks pass
 (`/tmp/meowy-shared-dispatch-docs.log`). Unrelated `docs/programs/hey/`
 is preserved; nothing was pushed or published.
 
-### Next: coercion-owned shared-reference dispatch primaries
+### Coercion-owned shared-reference dispatch primaries
 
 `edges/forward/consumers/primary/dispatch_references.rs` records the next boundary:
 `n : 1; p : &n; x : (p.{ -> $; -> tag : true }~<{ -> <&int32>; tag <boolean> }>) == p`
@@ -3461,19 +3461,33 @@ retains no dispatch slot link. Direct binary-owned reference projections now lin
 The shared referent descriptor is already captured in `Effect::Coercion.source`;
 `dispatch_primary_shape` can qualify the raw unchanged-ascription dispatch source.
 
+Inspection confirms that existing capture/report validation already retains exact
+`Shape::SharedScalar` source descriptors. No new type representation or producer
+validator is needed. `Kind::valid_source` admits a projected Stopped coercion only
+with `Shape::Never`; stopped whole shared inputs retain entry-only reborrow metadata
+with no acquisition site or coercion primary. Forward projections
+create no operation, while Convert operation/result observations require the owner
+registry independently of the projection. Returning a projected `never` primary as a
+shared reference retains the existing borrow-origin B001 gate; its checker/report
+characterization is structural evidence only. Reference histories, local eligibility
+and receiver-chain boundaries remain unchanged. The two new characterization tests
+and all 18 coercion-report tests pass (`/tmp/meowy-shared-coercion-capture.log`,
+`/tmp/meowy-shared-coercion-reports.log`); formatting passes. Consumer integration is next.
+
 Dependency-ordered commit plan:
 
-1. Inspect `edges/forward/consumers.rs`, `effects/coercions.rs`,
-   `consumers/primary/dispatch_coercions/` and the new reference cases. Characterize
-   shared-reference Forward/Convert/Stopped and step-zero projection evidence before
-   widening the coercion branch, which currently accepts only `Shape::Scalar`.
+1. Complete: add source-driven report characterization in `effects/coercions/` for shared
+   reference Forward/Convert/Stopped contexts, widths, owners and step-zero ports.
+   Validate independently before changing the consumer branch.
 2. Integrate exact `Shape::SharedScalar` dispatch qualification for observed coercion
    projections with focused tests. Keep initialization, projection, conversion and
    result observations independent, including projection-only registration rules.
 3. Cover stale type/source/owner evidence, wrappers, missing results, cycles and exact
    map/work limits; retain Unknown histories, local reference-record exclusions and
    receiver-chain boundaries. Reuse existing conformance when behavior is unchanged.
-4. Audit contracts/pins, run compiler and strict conformance gates, then update the
+4. Review existing source coverage and add required ascribed-reference order/panic
+   cases if those contexts are missing; keep source outcomes separate from metadata.
+5. Audit contracts/pins, run compiler and strict conformance gates, then update the
    guide, coverage notes and both handoffs and run documentation checks.
 
 Reference-origin inference, ownership authority, aggregate/exclusive referents,

@@ -257,3 +257,6 @@ mod forward;
 
 #[cfg(test)]
 mod sources;
+
+#[cfg(test)]
+mod references;
