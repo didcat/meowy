@@ -3632,7 +3632,14 @@ links and suppresses the affected result source. Identity boundaries are committ
 operation maps require no variable payload, while result lookup charges its exact root
 index. Exact and one-short work/map/root limits preserve reports and edges. All-target
 Clippy and the current build pass (`/tmp/meowy-reference-fields-lint.log`,
-`/tmp/meowy-reference-fields-build.log`). Source execution coverage and final gates are next.
+`/tmp/meowy-reference-fields-build.log`). Limits are committed as `278e8143`.
+Two required field-receiver cases pass exact debug/release output for scalar field kinds,
+groups/ascriptions, emitted values, source/receiver/nested/function order and panic after
+an earlier read (`/tmp/meowy-reference-fields-source.log`). All four source/inventory
+checks pass (`/tmp/meowy-reference-fields-source-docs.log`). Final gates and audit are next.
+A composition probe still compiles (`/tmp/meowy-reference-composition-handoff.mwy`),
+but `emission_source_block` uses generic receiver eligibility and `Composition` retains
+only local/count metadata; composed receiver emissions remain the next source gap.
 
 Dependency-ordered commit plan:
 
