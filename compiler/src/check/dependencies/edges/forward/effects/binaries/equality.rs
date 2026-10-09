@@ -1,5 +1,7 @@
 use super::{super::tests::checked, *};
 
+mod contexts;
+
 #[test]
 pub(crate) fn equality_effects_preserve_checked_whole_shape_categories_and_plain_result_routes() {
     for (source, class) in [

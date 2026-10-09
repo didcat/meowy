@@ -3393,8 +3393,12 @@ shapes through groups, block forwarding and dispatch composition, then rejects
 completing list/record pairs with E222. List capacities/element contexts stay checked;
 stopped plans retain their existing behavior. All 2840 library tests pass
 (`/tmp/meowy-aggregate-equality-library.log`), including exact HIR/capture/work checks
-for previously accepted list operands. Structural report integration and required
-source conformance are next.
+for previously accepted list operands); correction commit is `88f66147`. Three added
+report tests check reference projection identity across owners, retaining ordinary
+block slot links while shared-reference dispatch fallback stays opaque. They also
+check full list/record equality categories, stopped boundaries and absence of a
+published binary plan for rejected shapes. All 801 forward-report tests pass
+(`/tmp/meowy-equality-forward.log`). Required source cases and the final gates are next.
 
 Dependency-ordered commit plan:
 
