@@ -4888,6 +4888,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "reference_receiver_order",
+      "phase": "run",
+      "source": "sources/reference_receiver_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource body\nsource tail\nreceiver body\nnested\ntrue\nfalse\nreceiver tail\nfunction tail\ntrue\nblock receiver\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "reference_receiver_stopped",
+      "phase": "run",
+      "source": "sources/reference_receiver_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource body\nsource tail\nreceiver body\nright\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

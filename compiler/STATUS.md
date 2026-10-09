@@ -3562,7 +3562,11 @@ group cycles and cross-dispatch receiver scope fail atomically; missing evidence
 earlier links; source/receiver/consumer control and exact map/work limits stay independent.
 All-target Clippy and the current compiler build pass
 (`/tmp/meowy-reference-receiver-lint.log`, `/tmp/meowy-reference-receiver-build.log`).
-Source execution coverage, preservation audit and final gates are next.
+Boundary coverage is committed as `b872d507`. Two new required receiver cases pass
+debug/release with exact source/body/tail/nested/function order, address comparisons
+and stopped-right P006 (`/tmp/meowy-reference-receiver-source.log`). All four source/
+inventory documentation checks pass (`/tmp/meowy-reference-receiver-source-docs.log`).
+The preservation audit, full compiler/strict gates and final handoff are next.
 
 Dependency-ordered commit plan:
 

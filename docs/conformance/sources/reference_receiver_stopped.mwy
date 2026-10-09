@@ -1,0 +1,14 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("source"); -> p }
+n : 7
+p : &n
+value : mark(p).{
+    d.print("source body")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}.{
+    d.print("receiver body")
+    -> $ == { d.print("right"); d.panic("stop") }
+}
+d.print("unreached")

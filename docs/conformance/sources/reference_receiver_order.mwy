@@ -1,0 +1,25 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("source"); -> p }
+test <boolean> : (p <&int32>) {
+    choose := true
+    -> mark(p).{
+        d.print("source body")
+        -> $
+        -> tag : true
+        d.print("source tail")
+    }.{
+        d.print("receiver body")
+        | choose | d.print($.{ d.print("nested"); -> $ == p })
+        d.print(p != (($)))
+        -> $ == p
+        d.print("receiver tail")
+    }
+    d.print("function tail")
+}
+n : 7
+p : &n
+d.print(test(p))
+d.print(({ -> p; -> tag : true; -> meta : { -> count : 2 } }).{
+    d.print("block receiver")
+    -> $ == p
+})
