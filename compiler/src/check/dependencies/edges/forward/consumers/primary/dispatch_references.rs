@@ -1,6 +1,8 @@
 use super::{super::tests::checked, *};
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn dispatch_reference_binaries_keep_exact_slots_and_operand_positions() {
     for (ty, value) in [

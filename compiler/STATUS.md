@@ -3450,6 +3450,11 @@ the dispatch. Stopped-reference conversion may retain a non-Never final type, bu
 binary operation/result visit follows the stopped input. Reference result histories
 remain `Sources::Unknown`, including multiple guarded emissions; a slot link grants
 no reference-value provenance or candidate selection.
+Integration is committed as `0c79d65f`. All three additional boundary tests pass
+(`/tmp/meowy-shared-links-boundaries.log`): late metadata faults and group cycles
+publish no partial map, absent source/type evidence remains opaque, and independent
+control plus exact/one-short map/work limits preserve prior reports and edge counts.
+Compiler/strict gates, contract/pin audit and final documentation are next.
 
 Dependency-ordered commit plan:
 
@@ -3461,7 +3466,7 @@ Dependency-ordered commit plan:
    cover wrappers, owners, absent/stopped results and incompatible referents.
 4. Complete: connect observed binary reference projections, with focused stage/order tests.
    Receiver chains and nonbinary consumers remain separate.
-5. Cover stale identities, cycles, independent control and exact map/work limits;
+5. Complete: cover stale identities, cycles, independent control and exact map/work limits;
    reuse existing source conformance for unchanged supported language behavior.
 6. Audit contracts/pins, run `python3 -B tools/verify.py --compiler` and strict
    conformance, then update the guide and both handoffs and run documentation checks.
