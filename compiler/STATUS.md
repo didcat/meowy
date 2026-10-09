@@ -3477,8 +3477,13 @@ committed as `d3da9ebd`. Observed coercion projections now reuse exact shared sc
 dispatch qualification. All three integration tests and 817 forward-report tests pass
 (`/tmp/meowy-shared-coercion-links.log`, `/tmp/meowy-shared-coercion-forward.log`).
 Step-zero ports, exact referents/owners, Unknown histories, independent source/consumer
-stages and projection-only registration rules remain intact. Identity/budget boundaries
-and the missing ascribed-reference source contexts are next.
+stages and projection-only registration rules remain intact. Integration is committed
+as `19edd7ed`. Three boundary tests pass (`/tmp/meowy-shared-coercion-boundaries.log`):
+late type/owner/source corruption and cycles reject atomically, missing evidence keeps
+earlier links, and control plus exact/one-short map/work limits remain independent.
+Formatting, all-target Clippy and the current compiler build pass
+(`/tmp/meowy-shared-coercion-lint.log`, `/tmp/meowy-shared-coercion-build.log`).
+The missing ascribed-reference execution contexts and final gates are next.
 
 Dependency-ordered commit plan:
 
@@ -3488,7 +3493,7 @@ Dependency-ordered commit plan:
 2. Complete: integrate exact `Shape::SharedScalar` dispatch qualification for observed coercion
    projections with focused tests. Keep initialization, projection, conversion and
    result observations independent, including projection-only registration rules.
-3. Cover stale type/source/owner evidence, wrappers, missing results, cycles and exact
+3. Complete: cover stale type/source/owner evidence, wrappers, missing results, cycles and exact
    map/work limits; retain Unknown histories, local reference-record exclusions and
    receiver-chain boundaries. Reuse existing conformance when behavior is unchanged.
 4. Review existing source coverage and add required ascribed-reference order/panic
