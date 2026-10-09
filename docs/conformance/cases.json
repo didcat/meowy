@@ -4866,6 +4866,28 @@
         "code": "E222"
       },
       "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "reference_coercion_order",
+      "phase": "run",
+      "source": "sources/reference_coercion_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nforward body\nforward tail\ntrue\nreceiver\nconvert body\nconvert tail\ntrue\nreceiver\nreturn body\nreturn tail\nfunction tail\ntrue\nreceiver\nbinary body\nbinary tail\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_coercion_stopped",
+      "phase": "run",
+      "source": "sources/reference_coercion_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "receiver\nbody\ntail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
     }
   ]
 }

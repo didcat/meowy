@@ -1,0 +1,13 @@
+d : @"debug"
+<Row> : <{ -> <&int32>; tag <boolean> }>
+mark <&int32> : (p <&int32>) { d.print("receiver"); -> p }
+n : 7
+p : &n
+value <&int32><null> : (mark(p).{
+    d.print("body")
+    -> $
+    -> tag : true
+    d.print("tail")
+    d.panic("stop")
+}~<Row>)
+d.print("unreached")

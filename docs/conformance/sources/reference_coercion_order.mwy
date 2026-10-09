@@ -1,0 +1,35 @@
+d : @"debug"
+<Row> : <{ -> <&int32>; tag <boolean> }>
+mark <&int32> : (p <&int32>) { d.print("receiver"); -> p }
+pass <&int32> : (p <&int32>) {
+    -> (mark(p).{
+        d.print("return body")
+        -> $
+        -> tag : true
+        d.print("return tail")
+    }~<Row>)
+    d.print("function tail")
+}
+n : 7
+p : &n
+same <&int32> : (mark(p).{
+    d.print("forward body")
+    -> $
+    -> tag : true
+    d.print("forward tail")
+}~<Row>)
+d.print(same == p)
+maybe <&int32><null> : (mark(p).{
+    d.print("convert body")
+    -> $
+    -> tag : false
+    d.print("convert tail")
+}~<Row>)
+| maybe<&int32> | d.print((maybe~<&int32>) == p)
+d.print(pass(p) == p)
+d.print((mark(p).{
+    d.print("binary body")
+    -> $
+    -> tag : true
+    d.print("binary tail")
+}~<Row>) == p)

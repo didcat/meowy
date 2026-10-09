@@ -3483,7 +3483,15 @@ late type/owner/source corruption and cycles reject atomically, missing evidence
 earlier links, and control plus exact/one-short map/work limits remain independent.
 Formatting, all-target Clippy and the current compiler build pass
 (`/tmp/meowy-shared-coercion-lint.log`, `/tmp/meowy-shared-coercion-build.log`).
-The missing ascribed-reference execution contexts and final gates are next.
+Boundary coverage is committed as `64a964e0`. Two new required source cases pass in
+debug/release with exact output: ascribed-reference Forward/nullable Convert, return/
+tail/binary order and stopped dispatch P006 (`/tmp/meowy-shared-coercion-source.log`).
+All four source/inventory documentation checks pass
+(`/tmp/meowy-shared-coercion-source-docs.log`). Final compiler/strict gates and the
+preservation audit are next. A handoff probe confirms reference formatting is still
+B001 (`reference formatting; dereference the copyable value`); output consumers must
+not be widened without that language prerequisite. Supported reference record-receiver
+binary/coercion paths remain opaque and are the next source-qualification area.
 
 Dependency-ordered commit plan:
 
@@ -3496,7 +3504,7 @@ Dependency-ordered commit plan:
 3. Complete: cover stale type/source/owner evidence, wrappers, missing results, cycles and exact
    map/work limits; retain Unknown histories, local reference-record exclusions and
    receiver-chain boundaries. Reuse existing conformance when behavior is unchanged.
-4. Review existing source coverage and add required ascribed-reference order/panic
+4. Complete: review existing source coverage and add required ascribed-reference order/panic
    cases if those contexts are missing; keep source outcomes separate from metadata.
 5. Audit contracts/pins, run compiler and strict conformance gates, then update the
    guide, coverage notes and both handoffs and run documentation checks.
