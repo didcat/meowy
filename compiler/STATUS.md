@@ -3455,6 +3455,8 @@ Integration is committed as `0c79d65f`. All three additional boundary tests pass
 publish no partial map, absent source/type evidence remains opaque, and independent
 control plus exact/one-short map/work limits preserve prior reports and edge counts.
 Compiler/strict gates, contract/pin audit and final documentation are next.
+Explicit test-constant visibility now uses `pub(super)`; all-target Clippy passes
+(`/tmp/meowy-shared-dispatch-lint.log`). The full compiler gate will be rerun.
 
 Dependency-ordered commit plan:
 

@@ -1,6 +1,6 @@
 use super::*;
 
-pub(self) const SOURCE: &str = "n:1;p:&n;good:p.{->$;->tag:true}==p;bad:p==((p.{->$;->tag:false}))";
+pub(super) const SOURCE: &str = "n:1;p:&n;good:p.{->$;->tag:true}==p;bad:p==((p.{->$;->tag:false}))";
 
 #[test]
 pub(crate) fn dispatch_reference_links_reject_late_identity_faults_and_group_cycles_atomically() {
