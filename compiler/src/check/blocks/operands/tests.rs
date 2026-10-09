@@ -103,3 +103,56 @@ pub(crate) fn operand_hints_preserve_required_errors_stops_and_exhaustion() {
     assert!(checker.point.is_none() && checker.points.is_empty());
     assert!(checker.frames.is_empty() && checker.proofs.receivers.is_empty());
 }
+
+#[test]
+pub(crate) fn shared_operand_hints_keep_existing_capture_reborrows_and_exact_work() {
+    let ty = Type::Reference(Box::new(Type::Int {
+        signed: true,
+        bits: 32,
+    }));
+    for source in [
+        "{->p}",
+        "(({->p}))",
+        "p.{->$}",
+        "((p.{->$}))",
+        "{->r}",
+        "(({->r}))",
+        "{->{->r}}",
+        "{->d.panic(\"stop\")}",
+        "(({d.panic(\"stop\")}))",
+    ] {
+        let expr = expression(source);
+        let setup = || {
+            let mut checker = Checker::new();
+            for stmt in crate::parser::parse("n:=1;m:2;p:&m;r:&!n;d:@\"debug\"")
+                .unwrap()
+                .stmts
+            {
+                checker.stmt(&stmt).unwrap();
+            }
+            checker
+        };
+        let mut old = setup();
+        let mut new = setup();
+        let before = old.expression_point(&expr, Some(&ty)).unwrap();
+        let after = new.operand_point(&expr, Some(&ty)).unwrap();
+        assert_eq!(format!("{before:?}"), format!("{after:?}"), "{source}");
+        assert_eq!(old.flow.work, new.flow.work, "{source}");
+        assert_eq!(old.edge_counts(), new.edge_counts(), "{source}");
+        assert_eq!(old.reborrows, new.reborrows, "{source}");
+        assert_eq!(old.reborrow_ops, new.reborrow_ops, "{source}");
+        let captures = |checker: &Checker| {
+            format!(
+                "{:?}{:?}{:?}{:?}{:?}{:?}",
+                checker.points,
+                checker.coercions,
+                checker.group_inputs,
+                checker.dispatch_ops,
+                checker.bodies,
+                checker.sequences
+            )
+        };
+        assert_eq!(captures(&old), captures(&new), "{source}");
+        assert!(new.point.is_none() && new.frames.is_empty());
+    }
+}

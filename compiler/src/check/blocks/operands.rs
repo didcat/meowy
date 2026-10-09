@@ -21,7 +21,12 @@ impl Checker {
             !self.required
                 && matches!(
                     ty,
-                    Type::Null | Type::Bool | Type::Int { .. } | Type::Float { .. } | Type::String
+                    Type::Null
+                        | Type::Bool
+                        | Type::Int { .. }
+                        | Type::Float { .. }
+                        | Type::String
+                        | Type::Reference(_)
                 )
                 && Self::operand_constructor(expr)
         }) else {

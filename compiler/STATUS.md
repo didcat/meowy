@@ -3375,14 +3375,25 @@ element widths and full-record equality. All 2834 library tests pass before extr
 `coerced_value` in `check/expressions/expected.rs`. All 2834 library tests also pass
 after extraction (`/tmp/meowy-equality-conversion-after.log`), including exact scalar
 capture/work checks. Library Clippy also passes without warnings
-(`/tmp/meowy-equality-conversion-clippy.log`). Shared-reference hint integration is next.
+(`/tmp/meowy-equality-conversion-clippy.log`); prerequisite commit is `c0c6f56f`.
+Two new reference-hint tests reproduce the original field E207, including its masking
+of the live-borrow E302 (`/tmp/meowy-reference-hint-before.log`). Shared-reference
+construction is now enabled through the shared conversion path. An exact capture/work
+test compares existing shared, reborrowed and stopped operands with the original path.
+Reference-bearing records sourced from an exclusive reborrow retain the existing
+exclusive-ancestry B001 gate, also reproduced through an explicitly shared local and
+named record (`/tmp/meowy-reference-hint-reborrow-boundary.log`). The acceptance test
+now distinguishes that capability boundary from supported shared-reference records.
+All 2837 library tests pass (`/tmp/meowy-reference-hint-library.log`); existing shared,
+reborrowed and stopped operands retain exact HIR/capture/work and reborrow sites.
+List/record equality correction is next.
 
 Dependency-ordered commit plan:
 
 1. Complete: characterize existing shared-reference conversions/constraints and list equality;
    share post-check expected-value conversion without changing behavior. Run focused
    checks and the library suite before and after this prerequisite.
-2. Enable shared-reference construction hints with direct/grouped block/dispatch
+2. Complete: enable shared-reference construction hints with direct/grouped block/dispatch
    regressions. Preserve receiver typing, reborrow sites, lifetime/loan checks, full
    record constraints, required contexts and exclusive receiver gates.
 3. Reject completing list/record equality pairs before returning a binary plan. Preserve
