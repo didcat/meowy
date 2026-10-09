@@ -1,0 +1,3 @@
+n : 1
+p : &n
+value : p == { local : 1; -> &local; -> tag : true }

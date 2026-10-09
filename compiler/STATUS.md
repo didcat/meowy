@@ -3403,8 +3403,12 @@ Four required source cases pass debug/release for reference address comparison,
 same-shape list/record equality, source/receiver/tail order and stopped-right P006
 (`/tmp/meowy-equality-normal-source.log`). All four documentation checks pass
 (`/tmp/meowy-equality-normal-docs.log`). Classified evidence is updated without
-changing contracts or capability pins. Borrow/type and mismatched-shape rejection
-cases, the preservation audit and final gates remain pending.
+changing contracts or capability pins; execution cases are committed as `a8770a53`.
+Three required rejection cases pass debug/release for fixed receiver referent E207,
+live-borrow conflict E302 and escaping local reference E303
+(`/tmp/meowy-reference-errors-source.log`). All four documentation checks pass
+(`/tmp/meowy-reference-errors-docs.log`). Mismatched-shape source rejections,
+the preservation audit and final gates remain pending.
 
 Dependency-ordered commit plan:
 

@@ -4796,6 +4796,36 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "reference_operand_wrong_type",
+      "phase": "check",
+      "source": "sources/reference_operand_wrong_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#ordinary-operator-domains"
+    },
+    {
+      "id": "reference_operand_live_borrow",
+      "phase": "check",
+      "source": "sources/reference_operand_live_borrow.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E302"
+      },
+      "reference": "../reference/memory.md#copies-moves-and-borrows"
+    },
+    {
+      "id": "reference_operand_lifetime",
+      "phase": "check",
+      "source": "sources/reference_operand_lifetime.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E303"
+      },
+      "reference": "../reference/memory.md#lifetimes"
     }
   ]
 }
