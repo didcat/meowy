@@ -106,3 +106,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod shared_records;

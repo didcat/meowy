@@ -3685,7 +3685,7 @@ hashes and all prior evidence (`/tmp/meowy-reference-emissions-preservation.log`
 No unexpected failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: immutable local shared-reference record source eligibility
+### Current: immutable local shared-reference record source eligibility
 
 Stored reference-bearing records still lack ordinary local eligibility and initializer
 entries. `entries/locals/eligibility.rs::eligible_type` excludes every reference;
@@ -3694,21 +3694,30 @@ The new receiver qualifier deliberately does not bypass those checks. Existing t
 accept `n : 1; p : &n; r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }`
 but retain no composition source links through `r`.
 
+Characterization passes three focused tests across all scalar referent kinds, direct
+block/dispatch initializers, stored copies, named aliases, guarded declarations,
+independent owners, mutable/reference-field exclusions, stopped Binds and opaque calls.
+Bind reports retain original statement/input roots and canonical storage after HIR
+locals transfer. Named emitted aliases can be their own storage root, so canonical
+identity alone cannot admit them: the alias registry remains an independent exclusion.
+Ordinary eligibility is unchanged. The first consumer family will be owned scalar
+field reads, with other shared local consumers left separate.
+
 Dependency-ordered commit plan:
 
-1. Characterize immutable local records with one shared scalar primary in eligibility,
-   Bind reports and initializer/read lookup. Compare direct block/dispatch sources,
-   stored copies, named aliases, guarded bodies and independent owners. Establish
-   exact original types and canonical storage before admitting any new local source.
-2. If that evidence permits qualification, add a separate fixed-size typed local
-   descriptor/index with replay and exact map/type-work budgets. Keep ordinary
-   eligibility unchanged; mutable/exclusive/reference-field and unknown origins remain
-   opaque. Preserve Unknown reference histories and existing alias/loan authority.
-3. Integrate typed initializer/read traversal separately, initially for one consumer
-   family. Require observed normal Bind/read/source results, original owner/scope and
-   complete source layouts. Reject late identities/cycles atomically and retain earlier
-   valid links when evidence is missing. Keep candidate/expanded integration separate.
-4. Add required source cases, audit prior contracts/pins and run focused checks plus
+1. Characterize eligibility, Binds and canonical storage (complete; three focused
+   tests pass with `cargo test --locked --manifest-path compiler/Cargo.toml
+   shared_local_records --lib`).
+2. Capture fixed-size original shared-record descriptors on ordinary Binds, with
+   replay/type-work tests. No source admission in this slice.
+3. Build a separate bounded typed initializer index from qualified Binds and the
+   transferred Program. Keep ordinary eligibility unchanged and preserve exclusions.
+4. Qualify typed initializer/read traversal and owned scalar field consumers in
+   separate slices. Require observed normal Bind/read/source results, original
+   owner/scope and complete source layouts. Reference histories remain Unknown.
+5. Cover late identities/cycles, missing evidence and exact limits, retaining earlier
+   valid links atomically. Validate candidate/expanded traversal separately.
+6. Add required source cases, audit prior contracts/pins and run focused checks plus
    compiler/strict gates; update the guide and both handoffs before final docs checks.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
