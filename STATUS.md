@@ -28,30 +28,31 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Coercion projections now link shared-reference primaries through immutable local records
-and stored copies. Capture and reports retain original field counts and exact referent
-shapes; typed lookup revalidates Bind/read roots, full layouts, owners, scopes and source
-publication. The [compiler handoff](compiler/STATUS.md#coercion-owned-shared-reference-local-primary-sources)
-records the seven implementation/coverage commits and validation.
+Binary projections now link shared-reference primaries through immutable local records
+and stored copies. Capture and reports retain original counts for each binary-owned
+operand, preserving its exact referent and projection step. Typed lookup revalidates
+Bind/read roots, full layouts, owners, scopes and source publication. The
+[compiler handoff](compiler/STATUS.md#binary-owned-shared-reference-local-primary-sources)
+records the eight implementation/coverage commits and validation.
 
-Source initialization, projection, conversion and result observations remain independent.
-Reference histories stay Unknown; ordinary eligibility, binary-owned projections and
-receiver-copy boundaries are unchanged. Two required cases preserve typed/nullable copies,
-guarded/nested/function order, returned reference identity and P006 after an earlier
-projection. No pointee provenance, loan authority or proof outcomes are added.
+Source initialization, projection, operation and result remain independent. Stopped
+expected typing does not establish completion. Reference histories stay Unknown;
+full-record equality and earlier coercion-owned projections keep their own behavior.
+Two required cases preserve reference identity, both operand orders, guarded/function
+order, full-record comparison and P006 after a reached left projection.
 
-All ten compiler checks pass: 2968 library/921 native and 62 Python tests, formatting,
-Clippy, build and 457 required conformance cases. The same 19 pinned gaps remain,
-with zero debug/release failures (`/tmp/meowy-local-coercion-gate.log`). Strict mode
-exits 1 only for the exact pins (`/tmp/meowy-local-coercion-strict.log`). The audit
-preserves 547 prior reference/source/pin/obligation files, all 474 prior cases, 19 pins
-and 37 hashes (`/tmp/meowy-local-coercion-preservation.log`). All four final documentation
-checks pass (`/tmp/meowy-local-coercion-docs.log`). Full proof/release qualification
+All ten compiler checks pass: 2986 library/921 native and 62 Python tests, formatting,
+Clippy, build and 459 required conformance cases. The same 19 pinned gaps remain,
+with zero debug/release failures (`/tmp/meowy-local-binary-gate.log`). Strict mode
+exits 1 only for the exact pins (`/tmp/meowy-local-binary-strict.log`). The audit
+preserves 549 prior reference/source/pin/obligation files, all 476 prior cases, 19 pins
+and 37 hashes (`/tmp/meowy-local-binary-preservation.log`). All four final documentation
+checks pass (`/tmp/meowy-local-binary-docs.log`). Full proof/release qualification
 remains incomplete.
 
-Next: characterize binary-owned shared-reference local projections, preserving original
-operand record counts before adding typed links. Reference formatting and reference-bearing
-lists retain separate B001 prerequisites. Unrelated `docs/programs/hey/` is preserved.
+Next: characterize shared-reference receiver inputs through immutable local records,
+initially for owned scalar fields. Reference formatting and reference-bearing lists
+retain separate B001 prerequisites. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -1200,8 +1201,9 @@ execution was not part of this documentation edit.
    result-slot consumers, local initializer forwarding and output primary links
    now pass their gates, including contextual-list primary consumers, shared-reference
    receiver fields/composition and immutable shared-reference local field/composition
-   and coercion-primary sources. Next characterize binary-owned shared local primaries
-   using the ordered compiler handoff. Preserve all source/capability gates.
+   and coercion/binary-primary sources. Next characterize shared-reference receiver
+   inputs through immutable locals using the ordered compiler handoff. Preserve all
+   source/capability gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

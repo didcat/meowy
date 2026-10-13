@@ -873,8 +873,30 @@ counts, types, unselected layouts, unrelated scopes and mixed cycles reject atom
 Exact map/work/hop limits, duplicate observations and independent Bind/read/source/coercion
 control have structural tests. Required cases preserve typed and nullable copies,
 guarded/nested/function order, returned reference identity and P006 after an earlier
-projection. Reference histories stay Unknown. Binary-owned projections, receiver copies,
-pointee provenance, loan authority and proof outcomes remain separate.
+projection. Reference histories stay Unknown. Receiver copies, pointee provenance,
+loan authority and proof outcomes remain separate.
+
+Binary-owned shared scalar reference primaries also resolve through immutable local
+records. Capture retains two optional original field counts, using only the operands
+whose primary projections belong to that binary. Each original HIR record wrapper's
+referent must match its projected input class. Counts are bounded and replayed with
+both the operation and sequence records; scalar primaries, full-record equality and
+earlier coercion-owned projections retain no counts and gain no duplicate projection.
+
+Independent binary reports preserve the counts and original step indices. Observed
+projection ports use the typed local qualifier with exact counts, referents, Bind/read
+roots, source publication, complete immutable layouts, owners and scopes. Source
+initialization, projection, operation and result remain independent. Shared expected
+typing can leave a stopped operand with a normal final type; only actual projection
+observations produce links, and stopped operands do not establish operation/results.
+
+Late count/type/operand conflicts, unselected layouts, unrelated scopes and mixed cycles
+reject atomically. Missing evidence preserves earlier links, while exact map/work/hop
+limits, duplicate visits and independent Bind/read/source/binary control retain their
+existing bounds. Required cases preserve reference identity, both operand orders,
+full-record equality, copies, guarded/function order and P006 after a reached left
+projection. Reference histories remain Unknown; stored inputs to shared record receivers
+and broader value/proof authority remain separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
