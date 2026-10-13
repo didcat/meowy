@@ -3866,65 +3866,75 @@ The preservation audit retains 549 prior reference/source/pin/obligation files, 
 (`/tmp/meowy-local-binary-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Current: shared-reference receiver inputs through immutable local records
+### Shared-reference receiver fields through local inputs
 
-Direct local field, composition, coercion and binary sources now qualify, but
-`r : { -> p; -> tag : true }; out : r.{ -> $.tag }` still stops at the stored receiver
-input. `grouped.rs::Target::SharedReceiver` follows the qualified receiver jump but
-cannot use `read_shared_initializer_input`; the latter requires an exact primary/count
-descriptor. Receiver headers already retain the record shape/count, but
-`shared_receiver_input` currently returns only the input point and checks the primary kind.
+Complete implementation. Owned scalar fields now resolve through shared-reference
+record receivers initialized from immutable local records and stored copies. The
+receiver qualifier retains the exact primary/count from the original dispatch header.
+A field-only traversal matches that descriptor before following typed local initializers.
+Direct nested receiver chains qualify first; receiver jumps stop after entering a local
+chain, so `r.{ copy : $; -> copy.{ -> $.tag } }` remains opaque. Other receiver consumer families
+and ordinary local eligibility retain their existing boundaries.
 
-Investigation confirms that receiver and typed-local qualification already enforce
-independent storage/scope identities. The field-only connection must retain the original
-receiver count and permit typed local hops only after a receiver jump. Existing
-`SharedReceiver` consumers and receiver-cell copies keep their current boundaries.
-The clean baseline is `f9b28365`; only unrelated `docs/programs/hey/` was untracked.
-Three characterization tests pass (`cargo test ... shared_local_receiver --lib`).
-Block/dispatch initializers, copies, wrappers, guarded/nested receivers and function
-owners stop only after a valid receiver hop. Mutable/reference/parameter inputs and
-copies of receiver cells remain opaque; binary/coercion/composition paths stay separate.
-The descriptor helper retains the exact primary/count without changing admission.
-All 30 shared-receiver tests pass (`/tmp/meowy-receiver-local-descriptors.log`), including
-three new exact-kind/count, malformed-header and work-budget tests. Fixture issues
-are resolved. Field admission now permits typed local hops only after a qualified,
-count-matched receiver jump and reuses complete immutable source-layout validation.
-All 933 Forward tests pass (`/tmp/meowy-receiver-local-links.log`). Five field tests
-cover exact slots, source/receiver/field stages, scalar kinds, stopped prefixes and
-opaque consumers. Receiver jumps stop after entering a stored initializer chain,
-preserving direct nested receivers while excluding `r.{copy:$;->copy.{->$.tag}}`.
-Two new boundary tests pass all fifteen late descriptor/layout/cycle faults and both
-receiver/initializer sibling-scope faults (`/tmp/meowy-receiver-local-boundaries.log`).
-Operation maps, field results, direct sources and expanded walks reject atomically.
-The missing-evidence test passes ten cases, preserving earlier links and rejecting
-stale field/walk maps (`/tmp/meowy-receiver-local-evidence.log`). Rebuilt field/direct
-maps resolve missing links as unknown; removed dispatch publication still invalidates
-the retained upstream result map, so full forests reject it. No failures remain.
-All eleven local-receiver tests pass (`/tmp/meowy-receiver-local-limits.log`). The three
-new budget/control tests retain exact map, result-root, traversal-hop and shared-work
-limits, atomic failure and all 32 Bind/read/source/receiver/field control combinations.
-Both required local-receiver field cases pass exact debug/release output and P006
-(`/tmp/meowy-receiver-local-source.log`). Metadata validates 480 cases and 37 unchanged
-reference hashes; the regenerated inventory distinguishes structural links from source
-execution. Next: contract/pin preservation audit and complete compiler/strict gates,
-then update the guide and ordered handoff.
+Canonical Bind/read roots, source publication, exact owners/scopes and complete immutable
+layouts remain mandatory, including unselected suffix fields. Source initialization/result,
+receiver initialization/result and field operation/result observations are independent.
+Field-result maps, direct sources and expanded walks revalidate the same qualifier.
+Missing evidence preserves earlier links; stale maps reject until rebuilt. Removed dispatch
+publication also invalidates its retained upstream result map. Reference histories remain
+Unknown, with no new pointee, loan or proof authority.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `ccd33bc3` | Characterize stored receiver inputs and opaque consumer boundaries |
+| `3805a676` | Retain exact receiver descriptors with independent stages and work bounds |
+| `30b1e137` | Link owned scalar fields after qualified receiver jumps |
+| `dcb53304` | Reject stale identities and missing evidence without partial publication |
+| `89b5a0cc` | Bound maps, roots, work and hops with independent control |
+| `8a73fdce` | Cover source/receiver order and stopped reads in debug and release |
+
+Fourteen new structural tests cover exact referents/counts, block/dispatch sources,
+stored copies, wrappers, guarded/nested/function scopes, stopped prefixes and opaque
+consumers. Fifteen late descriptor/layout/cycle faults and both receiver/initializer
+sibling-scope faults reject atomically. Ten missing-evidence cases preserve earlier links;
+exact map/root/hop/work bounds and all 32 Bind/read/source/receiver/field control
+combinations pass. Focused logs are `/tmp/meowy-receiver-local-{descriptors,links,boundaries,evidence,limits}.log`.
+
+Both required source cases pass exact debug/release output and P006
+(`/tmp/meowy-receiver-local-source.log`). The preservation audit retains 551 prior
+reference/source/pin/obligation files, all 478 prior cases, 19 pins, 37 reviewed hashes
+and prior evidence from `f9b28365` (`/tmp/meowy-receiver-local-preservation.log`).
+All ten compiler checks pass: 3000 library, 921 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and conformance execution
+(`/tmp/meowy-receiver-local-gate.log`). The 480-case catalog has 461 required passes,
+19 unchanged pinned gaps and zero debug/release failures. Strict mode exits 1 only for
+the exact pinned names/reasons (`/tmp/meowy-receiver-local-strict.log`). All four final
+guide/handoff checks pass (`/tmp/meowy-receiver-local-docs.log`). No known failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: composed emissions through shared-reference receiver local inputs
+
+`r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }` still stops at the stored
+receiver input. `consumers/emissions.rs::emission_source_block` uses the old kind-only
+receiver path; `Composition` already retains the exact primary/count needed by the new
+qualifier. The field helper in `consumers/fields.rs` currently owns that admission path.
 
 Dependency-ordered commit plan:
 
-1. Characterize shared receivers initialized from locals in `effects/reads/receivers/shared.rs`,
-   `consumers/grouped.rs` and `consumers/fields.rs`. Preserve initialization, normal read,
-   owner and guarded/nested scope checks; compare direct sources, local copies,
-   mutable inputs, parameters and independent owners with focused tests.
-2. Add a bounded receiver qualification path retaining the exact original
-   primary/count descriptor. Keep representation/qualification separate from admission;
-   validate replay, malformed headers and exact work limits without widening eligibility.
-3. Connect typed local initializer hops only after a qualified receiver jump, initially
-   for owned scalar fields. Require complete source layouts and source publication;
-   revalidate field-result/candidate paths and reject stale scopes/cycles atomically.
-   Keep copies of receiver cells and other receiver consumer families separate.
-4. Cover missing evidence, unobserved stages, exact budgets and required source order/panic
-   cases. Audit contracts/pins and run compiler/strict plus final guide/handoff gates.
-   Preserve Unknown reference histories and existing loan/proof authority boundaries.
+1. Characterize composed receiver inputs from locals in `consumers/emissions/receivers/`
+   and `results/inputs/sources/receivers/`. Compare direct receivers, stored copies,
+   guarded/nested/function owners and stopped target prefixes. Preserve field links and
+   opaque copies of receiver cells; verify focused structural tests.
+2. Extract the count-aware receiver-body helper for reuse without changing admission;
+   preserve existing fields, diagnostics and budgets in its own validated slice. Then
+   connect composed-emission admission with the original `Composition` descriptor and
+   complete source/target layouts. Keep binary/coercion receiver families separate.
+3. Revalidate candidate/direct forests, missing source and target evidence, stale scopes,
+   descriptors, suffix layouts and mixed cycles. Prove atomic maps, exact shared work,
+   cache/root/hop limits and independent source/receiver/target/destination observations.
+4. Add required source order/P006 fixtures linked to the owning contract, audit prior
+   fixtures/pins/hashes and run compiler/strict plus final guide/handoff gates. Keep
+   Unknown reference histories and existing loan/proof authority boundaries.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
@@ -5530,9 +5540,10 @@ complete, including owned scalar fields and coercion-owned, binary-owned, output
 and contextual-list-owned primary sources through eligible record receivers.
 Composed-emission and unary-owned record-receiver sources are complete, including
 shared-reference receiver composition and immutable shared-reference local field/composition
-and coercion/binary-primary sources. Next characterize shared-reference receiver inputs
-through immutable local records using the ordered plan above; value selection and broader
-aggregate provenance remain separate.
+and coercion/binary-primary sources. Owned scalar fields now qualify shared-reference
+receiver inputs through immutable local records. Next qualify composed emissions through
+these receiver inputs using the ordered plan above; copies of receiver cells, value
+selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.

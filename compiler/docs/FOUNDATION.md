@@ -895,8 +895,30 @@ reject atomically. Missing evidence preserves earlier links, while exact map/wor
 limits, duplicate visits and independent Bind/read/source/binary control retain their
 existing bounds. Required cases preserve reference identity, both operand orders,
 full-record equality, copies, guarded/function order and P006 after a reached left
-projection. Reference histories remain Unknown; stored inputs to shared record receivers
-and broader value/proof authority remain separate.
+projection. Reference histories remain Unknown; broader value/proof authority remains
+separate.
+
+Owned scalar fields also resolve through shared-reference record receivers initialized
+from immutable local records and stored copies. Receiver qualification retains the
+exact primary/count descriptor from the original dispatch header without new payload.
+The field-specific traversal matches that descriptor before following any typed local
+initializer. Direct nested receivers may precede the local chain; receiver jumps stop
+once that chain begins, keeping copies of receiver cells opaque.
+
+The final source must publish its result and retain a complete immutable layout,
+including unselected suffix fields. Canonical Bind/read roots, original owners and
+lexical/receiver scopes remain mandatory. Source initialization/publication, receiver
+initialization/result and field operation/result observations stay independent.
+Field-result maps and expanded source forests revalidate the same qualifier; missing
+evidence suppresses only its link, while stale maps still reject until rebuilt.
+Removing dispatch publication also invalidates its retained upstream result map.
+
+Late counts, referents, layouts, sibling scopes and mixed cycles reject atomically.
+Exact map/root/hop/work limits and independent Bind/read/source/receiver/field control
+have structural regressions. Required cases preserve source/copy/receiver/nested/function
+order, scalar field values and P006 after a reached field read. Reference histories
+remain Unknown. Other receiver consumer families, ordinary local eligibility and
+loan/proof authority retain their existing boundaries.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
