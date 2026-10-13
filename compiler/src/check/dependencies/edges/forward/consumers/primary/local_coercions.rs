@@ -3,6 +3,7 @@ use crate::check::dependencies::{CoercionKind, edges::forward::results::Sources}
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod limits;
 
 #[test]
 pub(crate) fn shared_local_coercions_link_original_record_primaries_through_copies() {

@@ -3809,10 +3809,12 @@ Dependency-ordered commit plan:
    and result remain independent. Two prior opaque-local test entries now belong to
    the accepted local tests; an opaque-reference seed clears its shared-record count.
    Binary consumers and receiver copies remain separate.
-4. Six local-consumer tests now pass. Fifteen late faults cover descriptor/count/type,
+4. Boundary coverage (`5adcabb1`) covers fifteen late descriptor/count/type,
    unselected layouts, Bind/owner identities and mixed copy/group cycles; nine missing
    observations preserve earlier links. Unrelated lexical scopes reject atomically.
-   Next cover exact map/work/hop limits and independent control, add required source
+   All nine local-consumer tests now pass, including exact map/work and combined
+   wrapper/copy hop bounds, duplicate observations without added payload, and sixteen
+   independent Bind/read/source/coercion control combinations. Next add required source
    order/panic cases, audit contracts/pins and run compiler/strict and final guide/handoff
    gates. Reference histories remain Unknown.
 
