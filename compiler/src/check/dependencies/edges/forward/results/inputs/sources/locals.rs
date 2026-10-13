@@ -239,3 +239,58 @@ pub(crate) fn shared_local_emission_graphs_keep_missing_links_unresolved_and_oth
         assert!(walk.visits.contains(&unresolved));
     }
 }
+
+#[test]
+pub(crate) fn shared_local_emission_graphs_share_exact_source_cache_and_work_limits() {
+    let (mut checker, reports) = checked(SOURCE);
+    let keys: Vec<_> = reports
+        .candidate_inputs
+        .iter()
+        .filter(|(_, (_, input))| input.source.is_some())
+        .map(|(&key, _)| key)
+        .collect();
+    assert_eq!(keys.len(), 2);
+    let before = format!("{reports:?}{:?}", checker.edge_counts());
+    let start = checker.flow.work;
+    let mut ctx = Context::new(&reports, 3);
+    for key in &keys {
+        assert_eq!(
+            checker
+                .candidate_input(&mut ctx, *key, Span::default())
+                .unwrap(),
+            reports.candidate_inputs[key]
+        );
+    }
+    let work = checker.flow.work - start;
+    assert_eq!(
+        (
+            ctx.parts,
+            ctx.sources.len(),
+            ctx.emissions.len(),
+            ctx.blocks.len()
+        ),
+        (0, 1, 1, 1)
+    );
+    for short in [0, 1] {
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - work + short;
+        checker.flow.full = false;
+        let mut ctx = Context::new(&reports, 3);
+        let result: Result<Vec<_>> = keys
+            .iter()
+            .map(|key| checker.candidate_input(&mut ctx, *key, Span::default()))
+            .collect();
+        assert_eq!(result.is_ok(), short == 0);
+    }
+    checker.flow.work = 0;
+    checker.flow.full = false;
+    let mut ctx = Context::new(&reports, 2);
+    assert!(
+        checker
+            .candidate_input(&mut ctx, keys[0], Span::default())
+            .unwrap_err()
+            .message
+            .contains("candidate-source budget")
+    );
+    assert!(ctx.sources.is_empty());
+    assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+}

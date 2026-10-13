@@ -3761,11 +3761,14 @@ Dependency-ordered commit plan:
    target projections/aliases/storage and mixed copy/group cycles. Nine missing-evidence
    cases preserve earlier links; sibling lexical scopes reject atomically. No new
    graph representation or wider receiver admission was added.
-4. Three candidate/expanded graph tests now pass: composition chains preserve exact
+4. Candidate/expanded graph coverage (`6c82b2b5`) preserves exact
    slots, owners, block/dispatch origins and Unknown reference histories; fourteen
    stale-link/descriptor/initializer faults reject atomically. Missing scalar links
-   become unresolved without erasing other sources after revalidation. Next cover
-   exact source-cache/map/room/work/hop bounds and independent control flags.
+   become unresolved without erasing other sources after revalidation. All fourteen
+   local-composition tests now pass, including exact map/work/hop and shared source-cache
+   room limits, duplicate visits, independent Bind/read/emission control, multiple scalar
+   histories, unknown reference/list slots and extra destination fields. Next add source
+   conformance cases and run final gates.
 5. Add required order/panic source cases, preserve contracts/pins and run focused checks,
    compiler/strict gates and final guide/handoff checks. Keep reference histories Unknown.
 
