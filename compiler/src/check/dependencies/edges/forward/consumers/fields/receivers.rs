@@ -2,6 +2,7 @@ use super::{super::tests::checked, *};
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod locals;
 mod references;
 
 #[test]

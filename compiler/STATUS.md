@@ -3866,7 +3866,7 @@ The preservation audit retains 549 prior reference/source/pin/obligation files, 
 (`/tmp/meowy-local-binary-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: shared-reference receiver inputs through immutable local records
+### Current: shared-reference receiver inputs through immutable local records
 
 Direct local field, composition, coercion and binary sources now qualify, but
 `r : { -> p; -> tag : true }; out : r.{ -> $.tag }` still stops at the stored receiver
@@ -3874,6 +3874,17 @@ input. `grouped.rs::Target::SharedReceiver` follows the qualified receiver jump 
 cannot use `read_shared_initializer_input`; the latter requires an exact primary/count
 descriptor. Receiver headers already retain the record shape/count, but
 `shared_receiver_input` currently returns only the input point and checks the primary kind.
+
+Investigation confirms that receiver and typed-local qualification already enforce
+independent storage/scope identities. The field-only connection must retain the original
+receiver count and permit typed local hops only after a receiver jump. Existing
+`SharedReceiver` consumers and receiver-cell copies keep their current boundaries.
+The clean baseline is `f9b28365`; only unrelated `docs/programs/hey/` was untracked.
+Three characterization tests pass (`cargo test ... shared_local_receiver --lib`).
+Block/dispatch initializers, copies, wrappers, guarded/nested receivers and function
+owners stop only after a valid receiver hop. Mutable/reference/parameter inputs and
+copies of receiver cells remain opaque; binary/coercion/composition paths stay separate.
+Next: retain the exact receiver descriptor without changing field admission.
 
 Dependency-ordered commit plan:
 
