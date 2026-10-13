@@ -1,5 +1,5 @@
 use super::{
-    PointKind,
+    PointKind, ScalarKind,
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -15,6 +15,12 @@ pub(crate) enum Kind {
     Write,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct SharedRecord {
+    pub(crate) primary: ScalarKind,
+    pub(crate) fields: usize,
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct Operation {
     pub(crate) kind: Kind,
@@ -22,6 +28,7 @@ pub(crate) struct Operation {
     pub(crate) local: hir::LocalId,
     pub(crate) storage: hir::LocalId,
     pub(crate) input: Option<hir::PointId>,
+    pub(crate) shared: Option<SharedRecord>,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
@@ -85,12 +92,18 @@ impl Checker {
             Port::Normal(id),
             Route::Next,
         ));
+        let shared = if kind == Kind::Bind {
+            Self::shared_record_type(&self.locals[local], &mut self.flow, span)?
+        } else {
+            None
+        };
         let operation = Operation {
             kind,
             owner: self.owner,
             local,
             storage,
             input,
+            shared,
             control: self.control,
             span,
             edges,
@@ -108,6 +121,25 @@ impl Checker {
         self.operation_edges += operation.edges.len();
         self.operations.insert(id, operation);
         Ok(())
+    }
+}
+
+impl Checker {
+    pub(in crate::check::dependencies) fn shared_record_type(
+        ty: &hir::Type,
+        flow: &mut crate::flow::Flow,
+        span: Span,
+    ) -> Result<Option<SharedRecord>> {
+        let Some(primary) = Self::shared_receiver_type(ty, flow, span)? else {
+            return Ok(None);
+        };
+        let hir::Type::Record { fields, .. } = ty else {
+            unreachable!()
+        };
+        Ok(Some(SharedRecord {
+            primary,
+            fields: fields.len(),
+        }))
     }
 }
 
@@ -228,3 +260,6 @@ mod tests {
 
 #[cfg(test)]
 mod writes;
+
+#[cfg(test)]
+mod shared;
