@@ -3912,12 +3912,21 @@ the exact pinned names/reasons (`/tmp/meowy-receiver-local-strict.log`). All fou
 guide/handoff checks pass (`/tmp/meowy-receiver-local-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: composed emissions through shared-reference receiver local inputs
+### Current: composed emissions through shared-reference receiver local inputs
 
 `r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }` still stops at the stored
 receiver input. `consumers/emissions.rs::emission_source_block` uses the old kind-only
 receiver path; `Composition` already retains the exact primary/count needed by the new
 qualifier. The field helper in `consumers/fields.rs` currently owns that admission path.
+
+Investigation confirms that no new capture or report payload is needed: `Composition`
+already retains the descriptor, and existing candidate collection revalidates emission
+source blocks. Start from `e72d94df`, preserving unrelated `docs/programs/hey/`.
+Both characterization tests pass (`/tmp/meowy-receiver-composition-characterization.log`).
+Direct sources retain exact composed slots while local receiver inputs leave candidate
+projections unresolved; scalar field links remain intact across owners and nested/guarded
+scopes. Mutable/reference/parameter inputs and copies of receiver cells stay opaque.
+Next: extract the count-aware receiver helper without changing admission.
 
 Dependency-ordered commit plan:
 

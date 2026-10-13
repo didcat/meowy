@@ -3,6 +3,7 @@ use crate::check::dependencies::edges::forward::results::inputs::graph::Visit;
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod locals;
 mod references;
 mod stages;
 
