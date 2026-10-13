@@ -4998,6 +4998,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "reference_local_emissions_order",
+      "phase": "run",
+      "source": "sources/reference_local_emissions_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\ncopy\ncopy tail\ntrue\ntrue\n7\nnew\nfunction tail\ntrue\nblock\nnamed tail\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_local_emissions_stopped",
+      "phase": "run",
+      "source": "sources/reference_local_emissions_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ntrue\nemitted\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

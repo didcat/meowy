@@ -3764,13 +3764,16 @@ Dependency-ordered commit plan:
 4. Candidate/expanded graph coverage (`6c82b2b5`) preserves exact
    slots, owners, block/dispatch origins and Unknown reference histories; fourteen
    stale-link/descriptor/initializer faults reject atomically. Missing scalar links
-   become unresolved without erasing other sources after revalidation. All fourteen
-   local-composition tests now pass, including exact map/work/hop and shared source-cache
+   become unresolved without erasing other sources after revalidation. Budget/control
+   coverage (`772188c3`) completes all fourteen local-composition tests, including exact map/work/hop and shared source-cache
    room limits, duplicate visits, independent Bind/read/emission control, multiple scalar
-   histories, unknown reference/list slots and extra destination fields. Next add source
-   conformance cases and run final gates.
-5. Add required order/panic source cases, preserve contracts/pins and run focused checks,
-   compiler/strict gates and final guide/handoff checks. Keep reference histories Unknown.
+   histories, unknown reference/list slots and extra destination fields.
+5. Both required local-composition cases pass exact debug/release output and P006
+   (`/tmp/meowy-local-composition-source.log`). They preserve source evaluation, copies,
+   reference identity, extra fields, named/guarded/nested/function scopes and panic after
+   a reached emission. Coverage validates 474 cases and 37 unchanged reference hashes.
+   Next run compiler/strict gates, audit prior fixtures/pins and refresh the guide and
+   both handoffs before final documentation checks.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly

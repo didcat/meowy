@@ -1,0 +1,19 @@
+d : @"debug"
+n : 7
+p : &n
+r : p.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+first : { -> r }
+d.print(first.tag)
+out : 'out {
+    {
+        'out -> first
+        d.print("emitted")
+        d.panic("stop")
+    }
+    d.print("unreached")
+}

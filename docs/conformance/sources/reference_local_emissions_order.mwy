@@ -1,0 +1,35 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("input"); -> p }
+compose <boolean> : (p <&int32>) {
+    r : mark(p).{
+        d.print("source")
+        -> $
+        -> z : 7
+        -> a : true
+        d.print("source tail")
+    }
+    alias <{ -> <&int32>; a <boolean>; z <int32> }> : ((r))
+    out : {
+        d.print("copy")
+        -> (alias~<{ -> <&int32>; a <boolean>; z <int32> }>)
+        d.print("copy tail")
+        -> extra : "new"
+    }
+    d.print(out == p)
+    d.print(out.a)
+    nested : 'outer { { 'outer -> alias } }
+    d.print(nested.z)
+    choose := true
+    | choose | { next : { -> out }; d.print(next.extra) }
+    -> out == p
+    d.print("function tail")
+}
+n : 7
+d.print(compose(&n))
+r : { d.print("block"); -> &n; -> tag : true }
+alias : r
+copy : 'top {
+    { 'top -> alias }
+    d.print("named tail")
+}
+d.print(copy.tag)
