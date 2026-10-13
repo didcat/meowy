@@ -123,7 +123,6 @@ pub(crate) fn dispatch_reference_binaries_keep_stopped_order_and_multiple_histor
     for source in [
         "d:@\"debug\";n:1;p:&n;x:d.panic(\"stop\")==p.{->$;->tag:true}",
         "d:@\"debug\";n:1;p:&n;x:p==p.{->$;->tag:true;d.panic(\"stop\")}",
-        "n:1;p:&n;r:p.{->$;->tag:true};x:r==p",
         "n:[1];p:&n;x:p.{->$;->tag:true}==p",
         "n:1;p:&n;x:p.{->$;->tag:true}==p.{->$;->tag:false}",
     ] {

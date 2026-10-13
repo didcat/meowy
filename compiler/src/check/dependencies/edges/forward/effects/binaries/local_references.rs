@@ -54,7 +54,7 @@ pub(crate) fn local_reference_binaries_preserve_operand_ownership_and_full_recor
                     if primary {
                         assert_eq!(op.types.inputs[step], Class::SharedScalar(kind));
                         assert!(
-                            !reports
+                            reports
                                 .slot_uses
                                 .contains_key(&Port::Projection { point: id, step })
                         );
@@ -71,7 +71,7 @@ pub(crate) fn local_reference_binaries_preserve_operand_ownership_and_full_recor
             assert_eq!(owners, BTreeSet::from([0, 1]));
             assert_eq!(records, 1);
             assert!(!reports.slot_uses.is_empty());
-            assert!(reports.slot_uses.keys().all(|port| matches!(port,
+            assert!(reports.slot_uses.keys().any(|port| matches!(port,
                 Port::Projection { point, step: 0 } if checker.coercions.contains_key(point)
             )));
         }

@@ -28,6 +28,9 @@ mod lists;
 #[cfg(test)]
 mod receivers;
 
+#[cfg(test)]
+mod local_binaries;
+
 pub(crate) type Index = BTreeMap<PointId, (usize, hir::BlockId)>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -187,14 +190,27 @@ impl Checker {
                                 span,
                             )? {
                                 Some(slot)
-                            } else {
-                                self.receiver_primary_shape(
+                            } else if let Some(slot) = self.receiver_primary_shape(
+                                reports,
+                                input,
+                                *owner,
+                                Shape::SharedScalar(ty),
+                                span,
+                            )? {
+                                Some(slot)
+                            } else if let Some(fields) = op.fields[step] {
+                                self.shared_local_primary_slot(
                                     reports,
                                     input,
                                     *owner,
-                                    Shape::SharedScalar(ty),
+                                    crate::check::dependencies::operations::SharedRecord {
+                                        primary: ty,
+                                        fields,
+                                    },
                                     span,
                                 )?
+                            } else {
+                                None
                             }
                         } else if let Effect::Coercion(op) = effect
                             && let Some(source @ Shape::SharedScalar(primary)) = op.source

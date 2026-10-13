@@ -142,7 +142,6 @@ pub(crate) fn dispatch_binary_primaries_preserve_empty_multiple_and_opaque_histo
         "r:=3.{->$;->tag:true};x:r+1",
         "r:3.{->$;->tag:true};p:&r;x:(*p)+1",
         "f<{-><int32>;tag<boolean>}>:(){->3;->tag:true};x:f()+1",
-        "a:1;r:a.{->&a;->tag:true};x:r==&a",
     ] {
         let (_, reports) = checked(source);
         assert!(reports.slot_uses.is_empty(), "{source}");

@@ -3852,10 +3852,12 @@ Dependency-ordered commit plan:
    now assert their own families, with full-record equality retaining the opaque boundary;
    dedicated binary characterization covers primary comparisons. The opaque-reference
    seed clears its record counts. All 916 forward-report tests pass before integration
-   (`/tmp/meowy-local-binary-report-gate.log`).
-3. Add typed local primary links at each observed binary projection's original step.
-   Require exact Bind/read/source results, full immutable layouts, owners and scopes;
-   preserve operand order and independent projection/operation/result stages.
+   (`/tmp/meowy-local-binary-report-gate.log`; prerequisite `86097270`).
+3. Typed local integration passes three focused tests and all 919 forward-report tests
+   (`/tmp/meowy-local-binary-links.log`). Each observed binary-owned step uses its own
+   original count/referent and typed Bind/read/source qualifier. Source publication and
+   projection/operation/result remain independent. A right-operand ascription can own
+   an earlier coercion port; original binary steps and that separation are preserved.
 4. Cover late conflicts, missing evidence, mixed cycles, exact budgets and required
    source order/panic cases. Audit contracts/pins and run compiler/strict plus final
    guide/handoff gates. Keep receiver copies opaque and reference histories Unknown.
