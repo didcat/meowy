@@ -917,8 +917,26 @@ Late counts, referents, layouts, sibling scopes and mixed cycles reject atomical
 Exact map/root/hop/work limits and independent Bind/read/source/receiver/field control
 have structural regressions. Required cases preserve source/copy/receiver/nested/function
 order, scalar field values and P006 after a reached field read. Reference histories
-remain Unknown. Other receiver consumer families, ordinary local eligibility and
-loan/proof authority retain their existing boundaries.
+remain Unknown. Ordinary local eligibility and loan/proof authority retain their
+existing boundaries.
+
+Composed emissions reuse the same exact receiver qualifier through immutable local
+inputs. The original `Composition` primary/count descriptor must match every receiver
+and typed-local hop. Complete source and target layouts preserve names, projection
+indices, aliases and canonical storage, including unobserved suffixes. Each initialized
+target links to its original source slot; extra destination fields do not shift those
+source indices. Source publication, receiver initialization, individual target visits
+and destination completion remain independent.
+
+Candidate collection and both source forests revalidate those links. Multiple scalar
+targets share one qualified source cache entry. Missing evidence preserves earlier
+links; stale maps reject until rebuilt with unresolved projections. Reference and
+nonscalar histories remain Unknown, while multiple scalar histories stay distinct.
+Exact map/cache/forest/work/hop limits, duplicate visits and independent
+Bind/read/source/receiver/emission control have structural regressions. Required source
+cases preserve reference identity, extra fields, named/guarded/nested/function order
+and P006 after a reached composition. Copies of receiver cells, binary/coercion receiver
+paths and broader value/proof authority remain separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
