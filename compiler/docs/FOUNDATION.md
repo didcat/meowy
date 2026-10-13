@@ -724,8 +724,8 @@ ascription qualification preserve exact owners and origins. Initialization, proj
 operation and result visits remain independent; a stopped reference conversion cannot
 make later operations observable just because its final type is non-Never.
 
-Reference histories remain Unknown, including multiple guarded emissions. Named
-reference-bearing records retain their initializer-forwarding exclusion. Whole-record
+Reference histories remain Unknown, including multiple guarded emissions. Generic
+initializer forwarding still excludes reference-bearing records. Whole-record
 forwarding, composed receiver emissions and nonscalar referents remain separate.
 Missing evidence stays opaque;
 stale identities, malformed widths, cycles and exhausted map/work limits publish no
@@ -754,8 +754,8 @@ record receivers.
 The checked dispatch and receiver index retain matching optional descriptors. Admission
 requires an exact scalar referent and immutable, reference-free other fields, using the
 existing bounded type walk. Ordinary local eligibility remains unchanged; named stored
-records and copies do not gain forwarding. The descriptor adds no index row or variable
-payload and is checked again against the resolved source body's primary layout.
+records and copies do not gain receiver forwarding. The descriptor adds no index row
+or variable payload and is checked again against the resolved source body's primary layout.
 
 Typed receiver hops require observed initialization and preserve exact owners, guarded
 and nested scopes, and dispatch boundaries. Original source results remain required;
@@ -792,7 +792,7 @@ Stale metadata, crossed scopes, cycles and exhausted map/work/root budgets publi
 partial maps or expanded traversal. Capture work is unchanged; reports add no variable
 payload, and result lookup charges the existing root index. Required cases preserve
 field kinds, groups/ascriptions, emitted scalar values, source/receiver/nested/function
-order and panic after an earlier field read. Ordinary stored records, reference loads,
+order and panic after an earlier field read. Reference loads,
 mutable/reference-bearing fields and nonscalar selected fields or referents stay separate.
 
 Composed emissions also resolve source slots through these receivers. `Composition`
@@ -813,6 +813,29 @@ links. Required cases cover reference identity, named/nested scopes, source/body
 receiver/function order and P006 after a reached composition. Ordinary stored references,
 generic receiver forwarding and reference formatting remain separate; these structural
 links grant no additional loan authority, value provenance or proof outcomes.
+
+Owned scalar fields also resolve through immutable local records whose primary is a
+shared scalar reference. Bind capture retains the exact scalar referent and field count
+without copying recursive types. A separate initializer index rechecks the transferred
+Program type, original Bind/input/owner identities and canonical storage. Mutable locals,
+emitted aliases, parameters, synthetic receivers and temporary cells remain excluded.
+Each retained row consumes shared report room; bounded type work and replay checks
+reject stale descriptors without changing ordinary local eligibility.
+
+The field-only traversal follows observed, normally available reads through qualified
+Bind roots, copies, groups and unchanged wrappers. Each typed hop matches the consumer's
+primary/count descriptor and validates the original lexical owner and enclosing scope.
+The final block or dispatch must publish its result and retain a complete immutable
+layout, including unselected fields. Unknown inputs, calls, loads and copies of receiver
+cells remain opaque. A missing index, Bind or read observation suppresses that link.
+
+Field operation/result visits and source initialization/publication remain independent.
+Existing field-result maps, candidate roots and expanded traversal revalidate these
+sources; reference histories remain Unknown. Stale metadata, unrelated scopes, cycles
+and exact row/room/map/root/work/hop limits fail atomically. Required source cases
+preserve original evaluation order through stored copies, aliases, ascriptions,
+guarded/nested/function scopes and P006 after an earlier field read. Other shared local
+consumers, pointee provenance, loan authority and proof outcomes remain separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

@@ -28,34 +28,32 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Composed emissions now link through qualified shared-reference record receivers.
-Capture and reports retain exact shared scalar primary descriptors; typed receiver
-lookup preserves each initialized target's source slot, complete layout, canonical
-storage, owners and scopes. Candidate and expanded traversal revalidate those links.
-Source publication, receiver initialization, target visits and destination completion
-remain independent. The
-[compiler handoff](compiler/STATUS.md#composed-emission-sources-through-shared-reference-record-receivers)
-records the eight implementation/coverage commits and validation.
+Owned scalar fields now link through immutable local records with shared scalar
+reference primaries. Original Bind descriptors and a separate typed initializer index
+preserve exact source roots, canonical storage, owners and scopes through stored copies.
+Complete source layouts and independent operation/result observations remain required.
+The [compiler handoff](compiler/STATUS.md#immutable-local-shared-reference-record-field-sources)
+records the seven implementation/coverage commits and validation.
 
-Reference histories remain Unknown. Ordinary stored copies, reference loads,
-mutable/reference-bearing fields, nonscalar referents and generic receiver forwarding
-retain their boundaries. Two required cases preserve composition identity, named/nested
-scopes, execution order and P006 after a reached emission. No loan/proof authority is added.
+Ordinary eligibility stays unchanged. Aliases, mutable locals, receiver/temporary cells,
+parameters, reference loads and unknown origins retain their boundaries. Candidate and
+expanded traversal reuse the qualified field route; reference histories remain Unknown.
+Two required cases preserve copy identity, source/guarded/nested/function order and P006
+after an earlier read. No loan authority or proof outcomes are added.
 
-All ten compiler checks pass: 2917 library/921 native and 62 Python tests, formatting,
-Clippy, build and 451 required conformance cases. The same 19 pinned gaps remain,
-with zero debug/release failures (`/tmp/meowy-reference-emissions-gate.log`). Strict
-mode exits 1 only for the exact pins (`/tmp/meowy-reference-emissions-strict.log`). All
-four final documentation checks pass (`/tmp/meowy-reference-emissions-docs.log`).
-The audit preserves 541 tracked
-reference/source/pin/obligation files, all 468 prior cases, 19 pins and 37 hashes
-(`/tmp/meowy-reference-emissions-preservation.log`). Full proof/release qualification
+All ten compiler checks pass: 2936 library/921 native and 62 Python tests, formatting,
+Clippy, build and 453 required conformance cases. The same 19 pinned gaps remain,
+with zero debug/release failures (`/tmp/meowy-shared-local-gate.log`). Strict mode
+exits 1 only for the exact pins (`/tmp/meowy-shared-local-strict.log`). The audit
+preserves 543 prior reference/source/pin/obligation files, all 470 prior cases, 19 pins
+and 37 hashes (`/tmp/meowy-shared-local-preservation.log`). All four final documentation
+checks pass (`/tmp/meowy-shared-local-docs.log`). Full proof/release qualification
 remains incomplete.
 
-Next: characterize immutable local shared-reference record source eligibility before
-adding separate typed initializer/read qualification. Ordinary local eligibility stays
-unchanged. Reference formatting and reference-bearing lists retain separate B001
-prerequisites. Unrelated `docs/programs/hey/` is preserved.
+Next: qualify composed emissions through shared-reference local records, using the
+typed initializer index and exact composition descriptors. Reference formatting and
+reference-bearing lists retain separate B001 prerequisites. Unrelated
+`docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -1202,9 +1200,10 @@ execution was not part of this documentation edit.
    those series. Emission targets and statement completion now have bounded reports
    with focused/source coverage and compiler/strict evidence. Checked equality,
    result-slot consumers, local initializer forwarding and output primary links
-   now pass their gates, including contextual-list primary consumers. Next share
-   whole-emission report qualification, then connect composed-emission source slots
-   using the ordered compiler handoff. Preserve all source/capability gates.
+   now pass their gates, including contextual-list primary consumers, shared-reference
+   receiver fields/composition and immutable shared-reference local field sources.
+   Next qualify composed emissions through those locals using the ordered compiler
+   handoff. Preserve all source/capability gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

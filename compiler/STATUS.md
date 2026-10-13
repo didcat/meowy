@@ -3685,66 +3685,81 @@ hashes and all prior evidence (`/tmp/meowy-reference-emissions-preservation.log`
 No unexpected failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Current: immutable local shared-reference record source eligibility
+### Immutable local shared-reference record field sources
 
-Shared-reference record locals now have a separate typed initializer index and owned
-scalar field links. `entries/locals/eligibility.rs::eligible_type` still excludes every
-reference; ordinary initializer/read forwarding and receiver qualification retain their
-existing checks. Composition remains separate: existing tests
-accept `n : 1; p : &n; r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }`
-but retain no composition source links through `r`.
+Complete implementation. Bind capture retains fixed-size shared scalar primary
+kinds and field counts. A separate typed initializer index rechecks the transferred
+Program type, original statement/input/owner and canonical storage. Ordinary local
+eligibility stays unchanged. Mutable locals, emitted aliases (including aliases whose
+root equals their LocalId), parameters, receivers and temporary cells remain excluded.
+Rows consume shared report room; no recursive type or value payload is copied.
 
-Characterization passes three focused tests across all scalar referent kinds, direct
-block/dispatch initializers, stored copies, named aliases, guarded declarations,
-independent owners, mutable/reference-field exclusions, stopped Binds and opaque calls.
-Bind reports retain original statement/input roots and canonical storage after HIR
-locals transfer. Named emitted aliases can be their own storage root, so canonical
-identity alone cannot admit them: the alias registry remains an independent exclusion.
-Ordinary eligibility is unchanged. The first consumer family will be owned scalar
-field reads, with other shared local consumers left separate.
+Owned scalar fields follow qualified local reads, copies, groups and unchanged
+wrappers to original block/dispatch results. Each hop revalidates the typed descriptor,
+Bind/read observations, owner and enclosing lexical scope. Complete immutable source
+layouts, including unselected fields, remain mandatory. Field operations/results,
+source initialization/publication and control flags stay independent. Reference
+histories stay Unknown; no link grants pointee provenance or loan/proof authority.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `777b1028` | Characterize local types, Binds, aliases and stored-copy boundaries |
+| `1353a71a` | Capture original shared-record descriptors with replay/work checks |
+| `57c777b1` | Index qualified immutable typed initializers under shared budgets |
+| `d096bd31` | Link owned scalar fields through typed local reads and copy chains |
+| `65a0dddc` | Reject stale identities, layouts, scopes and cycles atomically |
+| `e96cc2df` | Validate independent stages, source forests and exact limits |
+| `a207e27c` | Cover stored field order, reference identity and stopped reads |
+
+Nineteen new structural tests cover all scalar referent kinds, direct block/dispatch
+sources, stored copies, named aliases, guarded bodies, independent owners, original
+roots, duplicate Binds, missing evidence and excluded mutable/reference-field shapes.
+Stale descriptors/layouts/scopes and mixed cycles reject without partial maps; missing
+observations preserve earlier valid links. Existing candidate and expanded collectors
+revalidate the field route without a new graph representation. Exact capture/type work,
+index row/room, operation map, result root and wrapper/copy hop limits pass.
+
+Both required source cases pass exact debug/release output and P006
+(`/tmp/meowy-shared-local-source.log`). All ten compiler checks pass: 2936 library,
+921 native and 62 Python tests, formatting, all-target Clippy, build, metadata and
+conformance execution (`/tmp/meowy-shared-local-gate.log`). The 472-case catalog has
+453 required passes, 19 unchanged pinned gaps and zero debug/release failures.
+Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-shared-local-strict.log`). The preservation audit retains 543 prior
+reference/source/pin/obligation files, all 470 prior cases, 19 pins, 37 reviewed hashes
+and previous evidence (`/tmp/meowy-shared-local-preservation.log`). All four final
+guide/handoff checks pass (`/tmp/meowy-shared-local-docs.log`). No known failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: composed-emission sources through shared-reference local records
+
+Stored local field reads now qualify, but `out : { -> r }` and
+`out : r.{ copy : { -> $ } }` remain outside typed local composition lookup.
+`consumers/emissions.rs::emission_source_block` still uses generic or receiver-only
+resolution. `Composition` already retains the source local, count and shared primary;
+reuse those exact descriptors and the new typed initializer index without widening
+ordinary eligibility or granting generic receiver forwarding.
 
 Dependency-ordered commit plan:
 
-1. Characterize eligibility, Binds and canonical storage (`777b1028`; three focused
-   tests pass with `cargo test --locked --manifest-path compiler/Cargo.toml
-   shared_local_records --lib`).
-2. Capture fixed-size original shared-record descriptors on Binds (`1353a71a`;
-   all 15 storage-operation tests pass). Writes retain no descriptor;
-   mutability and special-cell admission remain separate. No source links are added.
-3. Build a separate bounded typed initializer index (`57c777b1`; all 17 initializer
-   tests pass). Original scalar referents/counts are rechecked against transferred
-   types; each retained row charges shared report room. Exact row/work/room bounds
-   and stale types reject atomically. Ordinary eligibility and special-cell exclusions
-   remain unchanged.
-4. Link owned scalar fields through typed initializer/read traversal (`d096bd31`;
-   two focused tests and all 873 forward-report tests pass). The read qualifier and its
-   sole field consumer form one reviewable slice; the qualifier has no generic
-   forwarding entry point. Qualified Bind/read observations, original owners/scopes,
-   complete immutable layouts and source results remain required. Reference histories
-   remain Unknown. Other shared local consumers and receiver copies remain opaque.
-5. Boundary regressions (`65a0dddc`) cover late descriptor/root/owner/operation/layout conflicts, mixed initializer/group
-   cycles and unrelated lexical scopes now reject atomically across slot/result maps
-   and expanded traversal. Missing type indexes, Binds, reads, source results or roots
-   preserve earlier links. Five field tests and four typed-index tests pass, including
-   duplicate Binds and missing observations.
-   Nine field tests pass (`e96cc2df`), including independent Bind/read/field control, source
-   initialization/publication, field operation/result visits, expanded source visits,
-   exact slot-map/result-root/work budgets and combined wrapper/copy hop limits.
-   No additional graph representation was needed; existing collectors revalidate the
-   new field route. Next add required source cases and run final gates.
-6. Two required local-field cases now pass exact debug/release output and P006
-   (`/tmp/meowy-shared-local-source.log`). They preserve single source evaluation,
-   stored copies, aliases, ascriptions, guarded/nested/function order and reference
-   identity. Coverage metadata validates all 472 cases and 37 reference records;
-   hashes and capability pins remain unchanged. Next audit preservation and run
-   compiler/strict gates; update the guide and both handoffs before final docs checks.
+1. Extract the existing typed local source-body qualifier from `consumers/fields/locals.rs`
+   into a shared consumer helper, preserving its field-only admission and all current
+   tests. Keep this behavior-preserving move separate from composition links.
+2. Add typed local composition lookup in `consumers/emissions.rs`. Preserve complete
+   layouts, exact target projections, aliases, canonical storage, observed source results
+   and independent target/destination stages. Keep receiver copies and unknown origins
+   opaque; validate focused operation links before candidate/expanded integration.
+3. Revalidate candidate and expanded composition sources through the same qualifier.
+   Cover stored-copy chains, owners/scopes, missing evidence, unobserved suffixes,
+   stale descriptors, cycles and exact map/room/work/hop bounds atomically.
+4. Add required order/panic source cases, preserve contracts/pins and run focused checks,
+   compiler/strict gates and final guide/handoff checks. Keep reference histories Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
-The contextual-list probe `/tmp/meowy-reference-list-handoff.mwy` reports exactly
+The existing contextual-list probe reports exactly
 `reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`;
-do not treat it as successful language rejection or enable list-source links from it.
-Precise joins, function-result provenance, restarts, E225 and proof outcomes remain
-incomplete; full v0.0.1 is not qualified.
+it is a capability gap, not successful language rejection. Precise joins, function-result provenance, restarts,
+E225 and proof outcomes remain incomplete; full v0.0.1 is not qualified.
 
 ## Documentation conventions and layout
 
@@ -5343,9 +5358,9 @@ contextual-list primary sources and composed-emission dispatch source slots are
 complete, including owned scalar fields and coercion-owned, binary-owned, output-owned
 and contextual-list-owned primary sources through eligible record receivers.
 Composed-emission and unary-owned record-receiver sources are complete, including
-shared-reference receiver composition. Next characterize immutable local shared-reference
-record eligibility using the ordered plan above; value selection and broader aggregate
-provenance remain separate.
+shared-reference receiver composition and immutable shared-reference local field sources.
+Next qualify composed emissions through shared-reference local records using the ordered
+plan above; value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6004,8 +6019,11 @@ provenance remain separate.
    receiver links (`1b822659`), boundaries (`c15b2853`), limits (`278e8143`) and source
    cases (`689a6879`) are complete. Shared receiver composition capture (`48e32957`),
    reports (`67c6c12d`), links (`65403c2c`), boundaries (`83e15dc9`), graphs (`7bef72d2`),
-   limits (`d5587bbc`) and source cases (`cf9eeac6`) are complete. Next characterize
-   immutable local shared-reference record source eligibility as planned above.
+   limits (`d5587bbc`) and source cases (`cf9eeac6`) are complete. Immutable shared-local
+   characterization (`777b1028`), Bind capture (`1353a71a`), indexing (`57c777b1`), field
+   links (`d096bd31`), boundaries (`65a0dddc`), limits (`e96cc2df`) and source cases
+   (`a207e27c`) pass the compiler gate. Next qualify shared local compositions as
+   planned above.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
