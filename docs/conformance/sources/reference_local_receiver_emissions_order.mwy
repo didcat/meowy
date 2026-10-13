@@ -1,0 +1,41 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("input"); -> p }
+compose <boolean> : (p <&int32>) {
+    byte <uint8> : 7
+    choose := true
+    record : mark(p).{
+        d.print("source")
+        -> $
+        -> z : byte
+        -> a : true
+        d.print("source tail")
+    }
+    alias <{ -> <&int32>; a <boolean>; z <uint8> }> : ((record))
+    -> alias.{
+        d.print("receiver")
+        copy : 'target {
+            d.print("copy")
+            { 'target -> (($)~<{ -> <&int32>; a <boolean>; z <uint8> }>) }
+            d.print("copy tail")
+            -> extra : "new"
+        }
+        d.print(copy.a)
+        view <&int32> : copy
+        d.print(view == p)
+        d.print(copy.extra)
+        | choose | $.{
+            d.print("nested")
+            nested : { -> $ }
+            d.print(nested.z)
+            deep : { -> nested }
+            d.print(deep.a)
+        }
+        -> copy.a
+        d.print("receiver tail")
+    }
+    d.print("function tail")
+}
+n : 7
+d.print(compose(&n))
+local : { d.print("block"); -> &n; -> tag : true }
+local.{ copy : { -> $ }; d.print(copy.tag) }

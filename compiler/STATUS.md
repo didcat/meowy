@@ -3949,8 +3949,10 @@ or warnings remain. All 27 local-receiver tests pass
 (`/tmp/meowy-receiver-composition-limits.log`), including five new tests for exact shared
 map/cache/forest/work/hop limits, duplicate visits and all 32 independent
 Bind/read/source/receiver/emission control combinations. Multiple scalar targets reuse
-one qualified source cache entry. Next: required source cases, preservation audit and
-compiler/strict plus final guide/handoff gates.
+one qualified source cache entry. Both required source cases pass exact debug/release
+output and P006 (`/tmp/meowy-receiver-composition-source.log`); metadata validates 482
+cases and 37 unchanged reference hashes. Next: preservation audit, complete compiler
+and strict gates, then the guide and ordered handoff.
 
 Dependency-ordered commit plan:
 
