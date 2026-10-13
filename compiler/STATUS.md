@@ -3893,8 +3893,14 @@ All 933 Forward tests pass (`/tmp/meowy-receiver-local-links.log`). Five field t
 cover exact slots, source/receiver/field stages, scalar kinds, stopped prefixes and
 opaque consumers. Receiver jumps stop after entering a stored initializer chain,
 preserving direct nested receivers while excluding `r.{copy:$;->copy.{->$.tag}}`.
-No failures remain. Next: late identity/layout/scope/cycle faults and missing evidence,
-then exact budgets, source conformance and final gates.
+Two new boundary tests pass all fifteen late descriptor/layout/cycle faults and both
+receiver/initializer sibling-scope faults (`/tmp/meowy-receiver-local-boundaries.log`).
+Operation maps, field results, direct sources and expanded walks reject atomically.
+The missing-evidence test passes ten cases, preserving earlier links and rejecting
+stale field/walk maps (`/tmp/meowy-receiver-local-evidence.log`). Rebuilt field/direct
+maps resolve missing links as unknown; removed dispatch publication still invalidates
+the retained upstream result map, so full forests reject it. No failures remain.
+Next: exact budgets, independent control, source conformance and final gates.
 
 Dependency-ordered commit plan:
 

@@ -1,6 +1,9 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod boundaries;
+mod evidence;
+
 #[test]
 pub(crate) fn shared_local_receiver_fields_keep_source_receiver_and_field_stages_independent() {
     let (mut checker, mut reports) =
