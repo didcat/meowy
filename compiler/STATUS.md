@@ -3841,12 +3841,14 @@ Dependency-ordered commit plan:
    own ports. A stopped-right shared context can retain two normal final operand types
    while only the left projection is observed; final typing does not establish completion.
    Mutable/alias/load/call/receiver origins retain their exclusions.
-2. Capture now retains two optional original record counts only for binary-owned shared
+2. Capture (`c4b6d55b`) retains two optional original record counts only for binary-owned shared
    scalar primary operands. All fourteen binary-capture tests pass, including exact
    referents/count replay, count limits, fixed work and atomic operation/sequence
    publication. Whole-record equality, scalar primaries and earlier coercion-owned
-   projections retain no counts. Next propagate/validate counts in independent reports;
-   local eligibility and consumer links remain unchanged in this capture slice.
+   projections retain no counts. Report propagation now passes all 32 binary-effect
+   tests: operand counts survive independent projection/operation/result visits, reject
+   stale or wrong-operand replay atomically and preserve exact stage/map work bounds.
+   Local eligibility and consumer links remain unchanged; typed local integration is next.
 3. Add typed local primary links at each observed binary projection's original step.
    Require exact Bind/read/source results, full immutable layouts, owners and scopes;
    preserve operand order and independent projection/operation/result stages.

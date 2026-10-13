@@ -1,6 +1,6 @@
 use super::*;
 use crate::check::dependencies::{
-    BinaryClass as Class, BinaryPlan, BinaryTypes, ScalarKind, SequenceSource,
+    Binary, BinaryClass as Class, BinaryPlan, BinaryTypes, ScalarKind, SequenceSource,
     binaries::types::MAX_COUNT,
 };
 
@@ -18,6 +18,7 @@ pub(super) struct Stage {
     pub(super) inputs: [PointId; 2],
     pub(super) op: &'static str,
     pub(super) types: BinaryTypes,
+    pub(super) fields: [Option<usize>; 2],
     pub(super) plan: BinaryPlan,
     pub(super) control: bool,
     pub(super) kind: Kind,
@@ -28,6 +29,7 @@ pub(crate) struct Observed {
     pub(crate) inputs: [PointId; 2],
     pub(crate) op: &'static str,
     pub(crate) types: BinaryTypes,
+    pub(crate) fields: [Option<usize>; 2],
     pub(crate) plan: BinaryPlan,
     pub(crate) control: bool,
     pub(crate) projected: [bool; 2],
@@ -101,11 +103,13 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof binary-effect identity mismatch", span);
         if !self
             .flow
-            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 12)
+            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 16)
         {
             return Err(budget());
         }
-        if matches!(stage.kind, Kind::Projection(step) if step >= 2) {
+        if matches!(stage.kind, Kind::Projection(step) if step >= 2)
+            || !Binary::valid_fields(stage.types, stage.plan.primary, stage.fields)
+        {
             return Err(invalid());
         }
         if let Some((owner, effect)) = effects.get(&stage.point) {
@@ -116,6 +120,7 @@ impl Checker {
                 || prior.inputs != stage.inputs
                 || prior.op != stage.op
                 || prior.types != stage.types
+                || prior.fields != stage.fields
                 || prior.plan != stage.plan
                 || prior.control != stage.control
             {
@@ -131,6 +136,7 @@ impl Checker {
                     inputs: stage.inputs,
                     op: stage.op,
                     types: stage.types,
+                    fields: stage.fields,
                     plan: stage.plan,
                     control: stage.control,
                     projected: [false; 2],
@@ -173,7 +179,7 @@ impl Checker {
         };
         if !self
             .flow
-            .spend(self.sequences.len().checked_ilog2().unwrap_or(0) as usize + 28)
+            .spend(self.sequences.len().checked_ilog2().unwrap_or(0) as usize + 32)
         {
             return Err(budget());
         }
@@ -200,6 +206,7 @@ impl Checker {
             .get(&SequenceSource::Expr(id))
             .ok_or_else(invalid)?;
         if !signature(symbol, op.types, op.plan)
+            || !Binary::valid_fields(op.types, op.plan.primary, op.fields)
             || op.owner != owner
             || point.owner != owner
             || !point.complete
@@ -300,6 +307,7 @@ impl Checker {
             inputs: op.inputs,
             op: symbol,
             types: op.types,
+            fields: op.fields,
             plan: op.plan,
             control: op.control,
             kind,
@@ -327,3 +335,6 @@ mod equality_limits;
 
 #[cfg(test)]
 mod local_references;
+
+#[cfg(test)]
+mod records;

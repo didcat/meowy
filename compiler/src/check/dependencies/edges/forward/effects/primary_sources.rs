@@ -90,7 +90,7 @@ impl Checker {
                     if !seen {
                         continue;
                     }
-                    if !self.flow.spend(9) {
+                    if !self.flow.spend(11) {
                         return Err(budget());
                     }
                     let stage = self
@@ -99,6 +99,7 @@ impl Checker {
                     if op.inputs != stage.inputs
                         || op.op != stage.op
                         || op.types != stage.types
+                        || op.fields != stage.fields
                         || op.plan != stage.plan
                         || op.control != stage.control
                     {
