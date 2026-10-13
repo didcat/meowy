@@ -1,0 +1,14 @@
+d : @"debug"
+right <never> : () { d.print("right"); d.panic("stop") }
+n : 7
+p : &n
+r : p.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+d.print(r == p)
+alias : ((r))
+d.print(alias == right())
+d.print("unreached")

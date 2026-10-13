@@ -3861,11 +3861,14 @@ Dependency-ordered commit plan:
 4. Boundary coverage (`052a1e1b`) covers fifteen late faults in wrong operands,
    counts/referents, unselected layouts, Bind/owner identities and mixed copy/group
    cycles. Nine missing-evidence cases preserve earlier links; sibling lexical scopes
-   reject atomically. All nine local-consumer tests now pass, including exact map/work
+   reject atomically. Budget/control coverage (`111b65ad`) completes all nine local-consumer tests, including exact map/work
    and combined wrapper/copy hop limits at both operand positions, duplicate visits
    without extra payload and sixteen independent Bind/read/source/binary control
-   combinations. Next add source order/panic cases and run compiler/strict plus final
-   handoff gates.
+   combinations. Both required local-binary cases pass exact debug/release output and
+   P006 (`/tmp/meowy-local-binary-source.log`), covering both operand orders, copies,
+   full-record equality, guarded/function order and a stopped right operand. Coverage
+   validates 478 cases and 37 reference records. Next audit prior fixtures/pins, run
+   compiler/strict gates and refresh the guide and both handoffs.
    Keep receiver copies opaque and reference histories Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.

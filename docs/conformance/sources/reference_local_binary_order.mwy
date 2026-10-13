@@ -1,0 +1,27 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("input"); -> p }
+compare <boolean> : (p <&int32>) {
+    r : mark(p).{
+        d.print("source")
+        -> $
+        -> tag : true
+        -> z : 7
+        d.print("source tail")
+    }
+    alias : ((r~<{ -> <&int32>; tag <boolean>; z <int32> }>))
+    d.print(alias == p)
+    d.print(p != alias)
+    choose := true
+    | choose | { copy : alias; d.print(copy == p) }
+    d.print(r == alias)
+    changed : { -> p; -> tag : false; -> z : 7 }
+    d.print(r == changed)
+    d.print(p == (alias~<{ -> <&int32>; tag <boolean>; z <int32> }>))
+    -> p == alias
+    d.print("function tail")
+}
+n : 7
+p : &n
+d.print(compare(p))
+r : { d.print("block"); -> p; -> tag : true }
+d.print(r == p)
