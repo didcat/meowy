@@ -3917,7 +3917,8 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 `r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }` still stops at the stored
 receiver input. `consumers/emissions.rs::emission_source_block` uses the old kind-only
 receiver path; `Composition` already retains the exact primary/count needed by the new
-qualifier. The field helper in `consumers/fields.rs` currently owns that admission path.
+qualifier. `consumers/blocks.rs::shared_record_receiver_body` now owns the reusable
+count-aware path; fields remain its only consumer until the admission slice.
 
 Investigation confirms that no new capture or report payload is needed: `Composition`
 already retains the descriptor, and existing candidate collection revalidates emission
@@ -3926,7 +3927,9 @@ Both characterization tests pass (`/tmp/meowy-receiver-composition-characterizat
 Direct sources retain exact composed slots while local receiver inputs leave candidate
 projections unresolved; scalar field links remain intact across owners and nested/guarded
 scopes. Mutable/reference/parameter inputs and copies of receiver cells stay opaque.
-Next: extract the count-aware receiver helper without changing admission.
+The helper extraction preserves behavior and all thirteen local-receiver tests pass
+(`/tmp/meowy-receiver-composition-helper.log`), including exact field budgets. Next:
+connect composed-emission admission and cover independent source/receiver/target stages.
 
 Dependency-ordered commit plan:
 
