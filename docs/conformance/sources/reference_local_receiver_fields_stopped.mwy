@@ -1,0 +1,18 @@
+d : @"debug"
+n : 7
+p : &n
+record : p.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+copy : ((record))
+copy.{
+    d.print("receiver")
+    first : $.tag
+    d.print(first)
+    d.panic("stop")
+    later : $.tag
+    d.print("unreached")
+}

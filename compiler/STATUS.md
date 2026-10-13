@@ -3903,7 +3903,11 @@ the retained upstream result map, so full forests reject it. No failures remain.
 All eleven local-receiver tests pass (`/tmp/meowy-receiver-local-limits.log`). The three
 new budget/control tests retain exact map, result-root, traversal-hop and shared-work
 limits, atomic failure and all 32 Bind/read/source/receiver/field control combinations.
-Next: required source order/P006 cases, contract/pin preservation audit and final gates.
+Both required local-receiver field cases pass exact debug/release output and P006
+(`/tmp/meowy-receiver-local-source.log`). Metadata validates 480 cases and 37 unchanged
+reference hashes; the regenerated inventory distinguishes structural links from source
+execution. Next: contract/pin preservation audit and complete compiler/strict gates,
+then update the guide and ordered handoff.
 
 Dependency-ordered commit plan:
 
