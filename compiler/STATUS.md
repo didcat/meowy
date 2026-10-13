@@ -3858,11 +3858,14 @@ Dependency-ordered commit plan:
    original count/referent and typed Bind/read/source qualifier. Source publication and
    projection/operation/result remain independent. A right-operand ascription can own
    an earlier coercion port; original binary steps and that separation are preserved.
-4. Six local-consumer tests now pass. Fifteen late faults cover wrong operands,
+4. Boundary coverage (`052a1e1b`) covers fifteen late faults in wrong operands,
    counts/referents, unselected layouts, Bind/owner identities and mixed copy/group
    cycles. Nine missing-evidence cases preserve earlier links; sibling lexical scopes
-   reject atomically. Next cover exact map/work/hop limits and independent control,
-   then add source order/panic cases and run compiler/strict plus final handoff gates.
+   reject atomically. All nine local-consumer tests now pass, including exact map/work
+   and combined wrapper/copy hop limits at both operand positions, duplicate visits
+   without extra payload and sixteen independent Bind/read/source/binary control
+   combinations. Next add source order/panic cases and run compiler/strict plus final
+   handoff gates.
    Keep receiver copies opaque and reference histories Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
