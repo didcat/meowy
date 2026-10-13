@@ -3942,6 +3942,11 @@ The fixtures select the original input read by its dispatch site, independently 
 composed destination locals. Eleven missing-evidence cases also preserve earlier links
 (`/tmp/meowy-receiver-composition-evidence.log`). No failures remain. Next: candidate
 and expanded graph revalidation, exact shared budgets and independent control.
+Three graph tests pass: transitive composition/field chains across owners, eleven stale
+link/source faults and rebuilding unresolved links after missing initializer evidence
+(`/tmp/meowy-receiver-composition-graphs.log`). The focused rerun is clean; no failures
+or warnings remain. Next: exact shared map/cache/root/work/hop limits and independent
+Bind/read/source/receiver/emission control, then required source cases and final gates.
 
 Dependency-ordered commit plan:
 
