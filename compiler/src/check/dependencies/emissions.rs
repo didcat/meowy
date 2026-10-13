@@ -25,6 +25,19 @@ pub(crate) struct Composition {
     pub(crate) shared_primary: Option<ScalarKind>,
 }
 
+impl Composition {
+    pub(crate) fn valid(self) -> bool {
+        self.count < MAX_TARGETS
+            && self.shared_primary.is_none_or(|kind| {
+                (super::bodies::Completion {
+                    normal: true,
+                    result: super::bodies::completion::Shape::SharedScalar(kind),
+                })
+                .valid()
+            })
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Target {
     pub(crate) id: hir::EmitId,

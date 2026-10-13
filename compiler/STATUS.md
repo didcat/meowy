@@ -3658,14 +3658,18 @@ targets before observing any initialized subset. Capture now retains the descrip
 all seven composition tests pass, including exact scalar referents/owners, opaque
 other primaries, unchanged capture work, exact work exhaustion and atomic replay.
 The synthetic result-index initializer was updated; no outstanding build failure remains.
-Consumer qualification and report descriptor validation remain pending.
+Capture is committed as `48e32957`; all four result-index tests also pass.
+All 19 emission-effect tests pass. Invalid widths, stale referents, independent target/
+result visits and exact map/payload/work exhaustion preserve reports and edge counts.
+Scalar-reference capture and reporting add no variable payload or logical work.
+Consumer qualification remains pending.
 
 Dependency-ordered commit plan:
 
 1. Complete: capture the fixed shared scalar primary descriptor in `Composition`,
    with exact referent, replay and capture-budget coverage; consumers are unchanged.
-2. Validate descriptor identity in emission effects/reports, including stale replay,
-   independent initialized/result visits and exact payload/work budgets.
+2. Complete: validate descriptor identity in emission effects/reports, including stale
+   replay, independent initialized/result visits and exact payload/work budgets.
 3. Integrate typed receiver source qualification for composed emissions in a separate
    slice. Preserve each initialized target's Primary/Field projection and slot identity,
    source results, receiver initialization/results and destination completion. Validate

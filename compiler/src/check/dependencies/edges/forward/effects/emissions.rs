@@ -101,11 +101,11 @@ impl Checker {
                     && matches!(input.kind, PointKind::Expr | PointKind::And | PointKind::Or)
             })
             || match op.composed {
-                Some(Composition { local, count, .. }) => {
-                    local >= reports.locals
-                        || count >= MAX_TARGETS
-                        || op.targets.len() != count + 1
-                        || self.proofs.aliases.contains_key(&local)
+                Some(composed) => {
+                    composed.local >= reports.locals
+                        || !composed.valid()
+                        || op.targets.len() != composed.count + 1
+                        || self.proofs.aliases.contains_key(&composed.local)
                 }
                 None => op.targets.len() != 1,
             }
@@ -274,3 +274,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod references;

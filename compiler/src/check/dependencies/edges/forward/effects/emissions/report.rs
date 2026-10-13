@@ -36,7 +36,11 @@ impl Checker {
         if !self.flow.spend(bytes * 2 + len * 3 + 6) {
             return Err(budget());
         }
-        if op.owner != owner || len == 0 || part.is_some_and(|part| part >= len) {
+        if op.owner != owner
+            || len == 0
+            || part.is_some_and(|part| part >= len)
+            || op.composed.is_some_and(|composed| !composed.valid())
+        {
             return Err(invalid());
         }
         let fresh = if let Some((prior_owner, effect)) = effects.get(&id) {
