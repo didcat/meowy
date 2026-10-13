@@ -2,6 +2,7 @@ use super::*;
 use crate::check::dependencies::{
     bodies::completion::Shape,
     emissions::{Composition, Projection, Target},
+    operations::SharedRecord,
 };
 
 impl Checker {
@@ -83,6 +84,19 @@ impl Checker {
             )?
         {
             primary.block
+        } else if let Some(primary) = composed.shared_primary
+            && let Some(block) = self.shared_local_body(
+                reports,
+                observed.input,
+                owner,
+                SharedRecord {
+                    primary,
+                    fields: composed.count,
+                },
+                span,
+            )?
+        {
+            block
         } else {
             return Ok(None);
         };
@@ -147,3 +161,6 @@ mod dispatch;
 
 #[cfg(test)]
 mod receivers;
+
+#[cfg(test)]
+mod locals;

@@ -3733,12 +3733,9 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Current: composed-emission sources through shared-reference local records
 
-Stored local field reads now qualify, but `out : { -> r }` and
-`out : r.{ copy : { -> $ } }` remain outside typed local composition lookup.
-`consumers/emissions.rs::emission_source_block` still uses generic or receiver-only
-resolution. `Composition` already retains the source local, count and shared primary;
-reuse those exact descriptors and the new typed initializer index without widening
-ordinary eligibility or granting generic receiver forwarding.
+Stored local compositions such as `out : { -> r }` now use the typed initializer
+index and exact `Composition` primary/count descriptors. `out : r.{ copy : { -> $ } }`
+retains its separate receiver boundary. Ordinary eligibility is unchanged.
 
 Inspection confirms candidate collection and both source forests already reuse
 `emission_source_block`; the new local route can reuse their existing validation and
@@ -3746,16 +3743,19 @@ source cache. The body qualifier now lives in `consumers/locals.rs` with identic
 logic, diagnostics and work accounting; its field tests retain their existing paths.
 All 881 forward-report tests pass before and after the move
 (`/tmp/meowy-local-composition-before.log`, `/tmp/meowy-local-composition-extract.log`).
-No composition links have been added yet.
+The three new composition tests and all 884 forward-report tests pass
+(`/tmp/meowy-local-composition-links.log`). Source publication, source initialization,
+individual target visits and destination completion remain independent; exact source
+slots and Unknown reference histories survive copy chains and independent owners.
 
 Dependency-ordered commit plan:
 
-1. Extract the typed local source-body qualifier into `consumers/locals.rs` (complete;
-   baseline and all existing forward-report tests pass). Admission remains field-only.
-2. Add typed local composition lookup in `consumers/emissions.rs`. Preserve complete
-   layouts, exact target projections, aliases, canonical storage, observed source results
-   and independent target/destination stages. Keep receiver copies and unknown origins
-   opaque; validate focused operation links before candidate/expanded integration.
+1. Extract the typed local source-body qualifier (`0997cfb7`; baseline and existing
+   forward-report tests pass with unchanged logic, diagnostics and work).
+2. Add typed local composition lookup (implemented; three focused tests and the
+   forward-report suite pass). Complete layouts, exact target projections, aliases,
+   storage and source results remain mandatory. Receiver copies and unknown origins
+   remain opaque. Candidate/expanded revalidation is the separate coverage step below.
 3. Cover stored-copy chains, owners/scopes, missing evidence, unobserved suffixes,
    stale descriptors and mixed cycles in a separate boundary slice.
 4. Revalidate candidate and expanded composition sources through the same qualifier;
