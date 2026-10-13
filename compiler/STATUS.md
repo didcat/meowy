@@ -3727,12 +3727,16 @@ Dependency-ordered commit plan:
    and expanded traversal. Missing type indexes, Binds, reads, source results or roots
    preserve earlier links. Five field tests and four typed-index tests pass, including
    duplicate Binds and missing observations.
-   Nine field tests now pass, including independent Bind/read/field control, source
+   Nine field tests pass (`e96cc2df`), including independent Bind/read/field control, source
    initialization/publication, field operation/result visits, expanded source visits,
    exact slot-map/result-root/work budgets and combined wrapper/copy hop limits.
    No additional graph representation was needed; existing collectors revalidate the
    new field route. Next add required source cases and run final gates.
-6. Add required source cases, audit prior contracts/pins and run focused checks plus
+6. Two required local-field cases now pass exact debug/release output and P006
+   (`/tmp/meowy-shared-local-source.log`). They preserve single source evaluation,
+   stored copies, aliases, ascriptions, guarded/nested/function order and reference
+   identity. Coverage metadata validates all 472 cases and 37 reference records;
+   hashes and capability pins remain unchanged. Next audit preservation and run
    compiler/strict gates; update the guide and both handoffs before final docs checks.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.

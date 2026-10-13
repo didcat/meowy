@@ -1,0 +1,35 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("input"); -> p }
+read <uint8> : (p <&int32>) {
+    byte <uint8> : 7
+    r : mark(p).{
+        d.print("source")
+        -> $
+        -> z : byte
+        -> flag : true
+        -> text : "cat"
+        d.print("source tail")
+    }
+    d.print("bound")
+    copy : ((r))
+    d.print(copy.flag)
+    nested : {
+        alias : copy
+        d.print("nested")
+        d.print(alias.text)
+        -> alias.z
+    }
+    d.print(nested)
+    choose := true
+    | choose | { alias : copy; d.print(alias.z) }
+    -> copy.z
+    d.print("function tail")
+}
+n : 7
+d.print(read(&n))
+r : { d.print("block"); -> &n; -> flag : true }
+copy <{ -> <&int32>; flag <boolean> }> : ((r))
+d.print((copy~<{ -> <&int32>; flag <boolean> }>).flag)
+named : { -> value : copy; d.print(value.flag) }
+p : &n
+d.print(copy == p)

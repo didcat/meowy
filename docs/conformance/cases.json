@@ -4976,6 +4976,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_local_fields_order",
+      "phase": "run",
+      "source": "sources/reference_local_fields_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\nbound\ntrue\nnested\ncat\n7\n7\nfunction tail\n7\nblock\ntrue\ntrue\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
+    },
+    {
+      "id": "reference_local_fields_stopped",
+      "phase": "run",
+      "source": "sources/reference_local_fields_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ntrue\ntrue\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#evaluation"
     }
   ]
 }
