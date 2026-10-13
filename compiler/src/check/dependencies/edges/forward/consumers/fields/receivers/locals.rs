@@ -188,11 +188,10 @@ pub(crate) fn shared_local_receiver_fields_keep_mutable_parameter_and_copy_input
 }
 
 #[test]
-pub(crate) fn shared_local_receiver_consumers_keep_primary_and_composition_paths_separate() {
+pub(crate) fn shared_local_receiver_consumers_keep_primary_paths_separate() {
     let (checker, reports) =
-        checked("n:1;p:&n;r:{->p;->tag:true};out:r.{a:$==p;b<&int32>:$;copy:{->$};->true}");
+        checked("n:1;p:&n;r:{->p;->tag:true};out:r.{a:$==p;b<&int32>:$;->true}");
     assert!(reports.slot_uses.is_empty());
     assert!(checker.binaries.values().any(|op| op.plan.primary[0]));
     assert!(checker.coercions.values().any(|op| op.primary));
-    assert!(checker.emissions.values().any(|op| op.composed.is_some()));
 }

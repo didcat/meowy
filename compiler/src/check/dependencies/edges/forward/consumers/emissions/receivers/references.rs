@@ -152,7 +152,6 @@ pub(crate) fn shared_receiver_emissions_preserve_stopped_prefixes_and_opaque_sto
         assert_eq!(reports.slot_uses.len(), 2);
     }
     for source in [
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:{->$}}",
         "n:1;p:&n;out:{->p;->tag:=true}.{copy:{->$}}",
         "n:1;p:&n;out:{->p;->other:p}.{copy:{->$}}",
         "n:1;p:&n;r:{->p;->tag:true};out:(&r).{copy:{->*$}}",

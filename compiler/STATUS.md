@@ -3928,8 +3928,14 @@ Direct sources retain exact composed slots while local receiver inputs leave can
 projections unresolved; scalar field links remain intact across owners and nested/guarded
 scopes. Mutable/reference/parameter inputs and copies of receiver cells stay opaque.
 The helper extraction preserves behavior and all thirteen local-receiver tests pass
-(`/tmp/meowy-receiver-composition-helper.log`), including exact field budgets. Next:
-connect composed-emission admission and cover independent source/receiver/target stages.
+(`/tmp/meowy-receiver-composition-helper.log`), including exact field budgets.
+Composition admission now passes its original primary/count to that helper and retains
+existing full target-layout validation. New tests cover all scalar referent families,
+independent source/receiver/target/result stages, stopped prefixes and Unknown/multiple
+histories. All 944 Forward tests pass (`/tmp/meowy-receiver-composition-links.log`).
+The five composition tests retain exact target slots and scalar field links while
+binary/coercion paths and copies of receiver cells remain opaque. Next: late
+descriptor/layout/scope/cycle faults, missing evidence and candidate-graph revalidation.
 
 Dependency-ordered commit plan:
 

@@ -1,8 +1,13 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod stages;
+
+pub(super) const SOURCE: &str =
+    "n:1;p:&n;r:p.{->$;->z:9;->a:true};alias:((r));out:alias.{copy:{->(($))}}";
+
 #[test]
-pub(crate) fn shared_local_receiver_emissions_stop_at_stored_inputs_without_losing_field_links() {
+pub(crate) fn shared_local_receiver_emissions_link_exact_slots_without_losing_field_links() {
     for init in ["{->p;->z:9;->a:true}", "p.{->$;->z:9;->a:true}"] {
         for stored in [false, true] {
             let prefix = if stored {
@@ -23,11 +28,17 @@ pub(crate) fn shared_local_receiver_emissions_stop_at_stored_inputs_without_losi
                 .filter(|op| op.composed.is_some())
             {
                 for (index, target) in op.targets.iter().enumerate() {
-                    let linked = reports.slot_uses.get(&Port::Emission(target.id));
-                    assert_eq!(linked.is_some(), !stored);
-                    if let Some(&(owner, slot)) = linked {
-                        assert_eq!((owner, slot.index), (op.owner, index));
-                    }
+                    let (owner, slot) = reports.slot_uses[&Port::Emission(target.id)];
+                    assert_eq!((owner, slot.index), (op.owner, index));
+                    assert_ne!(slot.block, target.block);
+                    let Layout::Slots(layout) = &checker.bodies[&slot.block].layout else {
+                        panic!()
+                    };
+                    assert_eq!(layout[index].field, target.field);
+                    assert_eq!(
+                        layout[0].shape,
+                        Shape::SharedScalar(op.composed.unwrap().shared_primary.unwrap())
+                    );
                     let sources = reports.results[&target.block].1.slots.as_ref().unwrap();
                     assert_eq!(sources[0], Sources::Unknown);
                     if index > 0 {
@@ -36,13 +47,9 @@ pub(crate) fn shared_local_receiver_emissions_stop_at_stored_inputs_without_losi
                             .iter()
                             .find(|(_, (_, input))| input.candidate.emission == target.id)
                             .unwrap();
-                        assert_eq!(input.source.is_some(), !stored);
+                        assert_eq!(input.source, Some(slot));
                         for walk in [&reports.candidate_walk, &reports.expanded_walk] {
-                            assert!(walk.visits.contains(&if stored {
-                                Visit::Unresolved(key, input)
-                            } else {
-                                Visit::Projection(key, input)
-                            }));
+                            assert!(walk.visits.contains(&Visit::Projection(key, input)));
                         }
                     }
                     owners.insert(op.owner);

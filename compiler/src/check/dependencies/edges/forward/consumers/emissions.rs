@@ -74,16 +74,19 @@ impl Checker {
             self.record_receiver_body(reports, observed.input, owner, span)?
         {
             block
-        } else if let Some(ty) = composed.shared_primary
-            && let Some(primary) = self.receiver_primary_shape(
+        } else if let Some(primary) = composed.shared_primary
+            && let Some(block) = self.shared_record_receiver_body(
                 reports,
                 observed.input,
                 owner,
-                Shape::SharedScalar(ty),
+                SharedRecord {
+                    primary,
+                    fields: composed.count,
+                },
                 span,
             )?
         {
-            primary.block
+            block
         } else if let Some(primary) = composed.shared_primary
             && let Some(block) = self.shared_local_body(
                 reports,
