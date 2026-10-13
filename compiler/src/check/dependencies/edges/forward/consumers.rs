@@ -14,6 +14,7 @@ pub(super) mod field_results;
 mod fields;
 mod grouped;
 mod index;
+mod locals;
 mod primary;
 
 pub(super) mod scalars;

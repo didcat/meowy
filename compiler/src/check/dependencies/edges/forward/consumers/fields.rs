@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::bodies::completion::Shape;
 
+#[cfg(test)]
 mod locals;
 
 impl Checker {
@@ -43,7 +44,7 @@ impl Checker {
         {
             (primary.block, true, true)
         } else if let Some(primary) = *shared_primary
-            && let Some(block) = self.shared_local_field_body(
+            && let Some(block) = self.shared_local_body(
                 reports,
                 *input,
                 owner,

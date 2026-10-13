@@ -3731,7 +3731,7 @@ and previous evidence (`/tmp/meowy-shared-local-preservation.log`). All four fin
 guide/handoff checks pass (`/tmp/meowy-shared-local-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: composed-emission sources through shared-reference local records
+### Current: composed-emission sources through shared-reference local records
 
 Stored local field reads now qualify, but `out : { -> r }` and
 `out : r.{ copy : { -> $ } }` remain outside typed local composition lookup.
@@ -3740,19 +3740,27 @@ resolution. `Composition` already retains the source local, count and shared pri
 reuse those exact descriptors and the new typed initializer index without widening
 ordinary eligibility or granting generic receiver forwarding.
 
+Inspection confirms candidate collection and both source forests already reuse
+`emission_source_block`; the new local route can reuse their existing validation and
+source cache. The body qualifier now lives in `consumers/locals.rs` with identical
+logic, diagnostics and work accounting; its field tests retain their existing paths.
+All 881 forward-report tests pass before and after the move
+(`/tmp/meowy-local-composition-before.log`, `/tmp/meowy-local-composition-extract.log`).
+No composition links have been added yet.
+
 Dependency-ordered commit plan:
 
-1. Extract the existing typed local source-body qualifier from `consumers/fields/locals.rs`
-   into a shared consumer helper, preserving its field-only admission and all current
-   tests. Keep this behavior-preserving move separate from composition links.
+1. Extract the typed local source-body qualifier into `consumers/locals.rs` (complete;
+   baseline and all existing forward-report tests pass). Admission remains field-only.
 2. Add typed local composition lookup in `consumers/emissions.rs`. Preserve complete
    layouts, exact target projections, aliases, canonical storage, observed source results
    and independent target/destination stages. Keep receiver copies and unknown origins
    opaque; validate focused operation links before candidate/expanded integration.
-3. Revalidate candidate and expanded composition sources through the same qualifier.
-   Cover stored-copy chains, owners/scopes, missing evidence, unobserved suffixes,
-   stale descriptors, cycles and exact map/room/work/hop bounds atomically.
-4. Add required order/panic source cases, preserve contracts/pins and run focused checks,
+3. Cover stored-copy chains, owners/scopes, missing evidence, unobserved suffixes,
+   stale descriptors and mixed cycles in a separate boundary slice.
+4. Revalidate candidate and expanded composition sources through the same qualifier;
+   cover exact source-cache/map/room/work/hop bounds and independent observations.
+5. Add required order/panic source cases, preserve contracts/pins and run focused checks,
    compiler/strict gates and final guide/handoff checks. Keep reference histories Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
