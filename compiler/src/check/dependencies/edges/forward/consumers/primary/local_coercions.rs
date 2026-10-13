@@ -118,7 +118,7 @@ pub(crate) fn shared_local_coercions_keep_stopped_prefixes_and_binary_receiver_b
     );
     assert_eq!(reports.slot_uses.len(), 1);
     for tail in [
-        "out:p!=r",
+        "out:r==r",
         "out:r.{copy<&int32>:$}",
         "out:r.{alias:$;copy<&int32>:alias}",
     ] {

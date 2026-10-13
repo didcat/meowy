@@ -93,12 +93,14 @@ pub(crate) fn dispatch_reference_links_keep_missing_source_and_type_evidence_opa
                 op.result = false;
             }
             3 => {
-                let types = &mut checker.binaries.get_mut(&id).unwrap().types;
-                types.inputs = [BinaryClass::Reference(hir::ReferenceMode::Shared); 2];
+                let captured = checker.binaries.get_mut(&id).unwrap();
+                captured.types.inputs = [BinaryClass::Reference(hir::ReferenceMode::Shared); 2];
+                captured.fields = [None; 2];
                 let (_, Effect::Binary(op)) = reports.effects.get_mut(&id).unwrap() else {
                     panic!()
                 };
-                op.types = *types;
+                op.types = captured.types;
+                op.fields = [None; 2];
             }
             4 => {
                 let Layout::Slots(slots) = &mut checker.bodies.get_mut(&block).unwrap().layout

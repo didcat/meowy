@@ -35,7 +35,7 @@ pub(crate) fn shared_local_fields_keep_alias_load_receiver_copy_and_other_consum
         "out:{->named:r;copy:named.tag}",
         "out:(&r).tag",
         "out:(*(&r)).tag",
-        "out:r==p",
+        "out:r==r",
     ] {
         let source = format!("n:1;p:&n;r:{{->p;->tag:true}};{tail}");
         crate::compile(&source).unwrap();

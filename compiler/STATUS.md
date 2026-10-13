@@ -3845,10 +3845,14 @@ Dependency-ordered commit plan:
    scalar primary operands. All fourteen binary-capture tests pass, including exact
    referents/count replay, count limits, fixed work and atomic operation/sequence
    publication. Whole-record equality, scalar primaries and earlier coercion-owned
-   projections retain no counts. Report propagation now passes all 32 binary-effect
+   projections retain no counts. Report propagation (`876262fa`) passes all 32 binary-effect
    tests: operand counts survive independent projection/operation/result visits, reject
    stale or wrong-operand replay atomically and preserve exact stage/map work bounds.
-   Local eligibility and consumer links remain unchanged; typed local integration is next.
+   Local eligibility and consumer links remain unchanged. Existing field/coercion tests
+   now assert their own families, with full-record equality retaining the opaque boundary;
+   dedicated binary characterization covers primary comparisons. The opaque-reference
+   seed clears its record counts. All 916 forward-report tests pass before integration
+   (`/tmp/meowy-local-binary-report-gate.log`).
 3. Add typed local primary links at each observed binary projection's original step.
    Require exact Bind/read/source results, full immutable layouts, owners and scopes;
    preserve operand order and independent projection/operation/result stages.
