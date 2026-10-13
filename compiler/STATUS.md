@@ -3659,6 +3659,11 @@ Source publication, receiver initialization/results, target visits and destinati
 completion remain independent. Both source forms, scopes, owners, wrappers and
 stopped prefixes pass; additional conflict/limit/graph coverage remains next.
 All 857 forward-report tests pass (`/tmp/meowy-reference-emissions-forward.log`).
+Consumer integration is committed as `65403c2c`. All five shared-emission consumer
+tests pass. Sixteen late descriptor/target/layout/scope/cycle faults reject atomically,
+including unobserved suffixes; eight missing-evidence cases retain earlier valid links.
+Exact map/work limits, control independence and candidate/expanded graph boundaries
+remain next; no traversal implementation change has been needed so far.
 
 Dependency-ordered commit plan:
 
