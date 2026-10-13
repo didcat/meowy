@@ -84,8 +84,7 @@ pub(crate) fn shared_emission_graphs_revalidate_referents_links_scopes_and_sourc
         let errors = [
             checker
                 .candidate_inputs_limited(&reports, Span::default(), MAX_EDGES, MAX_EDGES)
-                .err()
-                .expect("candidate collection"),
+                .expect_err("candidate collection"),
             checker
                 .candidate_graph(&reports, Span::default())
                 .err()
