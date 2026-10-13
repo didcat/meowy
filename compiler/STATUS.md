@@ -3900,7 +3900,10 @@ The missing-evidence test passes ten cases, preserving earlier links and rejecti
 stale field/walk maps (`/tmp/meowy-receiver-local-evidence.log`). Rebuilt field/direct
 maps resolve missing links as unknown; removed dispatch publication still invalidates
 the retained upstream result map, so full forests reject it. No failures remain.
-Next: exact budgets, independent control, source conformance and final gates.
+All eleven local-receiver tests pass (`/tmp/meowy-receiver-local-limits.log`). The three
+new budget/control tests retain exact map, result-root, traversal-hop and shared-work
+limits, atomic failure and all 32 Bind/read/source/receiver/field control combinations.
+Next: required source order/P006 cases, contract/pin preservation audit and final gates.
 
 Dependency-ordered commit plan:
 
