@@ -3708,11 +3708,14 @@ Dependency-ordered commit plan:
 1. Characterize eligibility, Binds and canonical storage (`777b1028`; three focused
    tests pass with `cargo test --locked --manifest-path compiler/Cargo.toml
    shared_local_records --lib`).
-2. Capture fixed-size original shared-record descriptors on Binds (implemented;
-   three focused capture/replay/exact-work tests pass). Writes retain no descriptor;
+2. Capture fixed-size original shared-record descriptors on Binds (`1353a71a`;
+   all 15 storage-operation tests pass). Writes retain no descriptor;
    mutability and special-cell admission remain separate. No source links are added.
-3. Build a separate bounded typed initializer index from qualified Binds and the
-   transferred Program. Keep ordinary eligibility unchanged and preserve exclusions.
+3. Build a separate bounded typed initializer index (implemented; all 17 initializer
+   tests pass). Original scalar referents/counts are rechecked against transferred
+   types; each retained row charges shared report room. Exact row/work/room bounds
+   and stale types reject atomically. Ordinary eligibility and special-cell exclusions
+   remain unchanged; no consumer uses the new index yet.
 4. Qualify typed initializer/read traversal and owned scalar field consumers in
    separate slices. Require observed normal Bind/read/source results, original
    owner/scope and complete source layouts. Reference histories remain Unknown.

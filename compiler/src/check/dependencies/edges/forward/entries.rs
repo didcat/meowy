@@ -11,6 +11,7 @@ pub(crate) struct Reports {
     pub(crate) locals: usize,
     pub(crate) eligible: std::collections::BTreeSet<crate::hir::LocalId>,
     pub(crate) initializers: super::initializers::Initializers,
+    pub(crate) shared_initializers: super::initializers::shared::Index,
     pub(crate) receivers: super::receivers::Receivers,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
@@ -58,6 +59,7 @@ impl Checker {
             locals,
             eligible: std::collections::BTreeSet::new(),
             initializers: BTreeMap::new(),
+            shared_initializers: BTreeMap::new(),
             receivers: BTreeMap::new(),
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
@@ -111,6 +113,8 @@ impl Checker {
         reports.consumers = self.result_consumers(&reports, span)?;
         reports.eligible = self.eligible_locals(program, &reports, span)?;
         reports.initializers = self.binding_initializers(program, &reports, span)?;
+        (reports.shared_initializers, reports.parts) =
+            self.shared_initializers(program, &reports, span, MAX_EDGES, reports.parts)?;
         (reports.receivers, reports.parts) =
             self.receiver_index(program, &reports, span, MAX_EDGES, reports.parts)?;
         reports.slot_uses = self.slot_uses(&reports, span)?;
