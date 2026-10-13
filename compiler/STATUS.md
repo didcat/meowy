@@ -3711,14 +3711,17 @@ Dependency-ordered commit plan:
 2. Capture fixed-size original shared-record descriptors on Binds (`1353a71a`;
    all 15 storage-operation tests pass). Writes retain no descriptor;
    mutability and special-cell admission remain separate. No source links are added.
-3. Build a separate bounded typed initializer index (implemented; all 17 initializer
+3. Build a separate bounded typed initializer index (`57c777b1`; all 17 initializer
    tests pass). Original scalar referents/counts are rechecked against transferred
    types; each retained row charges shared report room. Exact row/work/room bounds
    and stale types reject atomically. Ordinary eligibility and special-cell exclusions
-   remain unchanged; no consumer uses the new index yet.
-4. Qualify typed initializer/read traversal and owned scalar field consumers in
-   separate slices. Require observed normal Bind/read/source results, original
-   owner/scope and complete source layouts. Reference histories remain Unknown.
+   remain unchanged.
+4. Link owned scalar fields through typed initializer/read traversal (implemented;
+   two focused tests and the forward-report suite pass). The read qualifier and its
+   sole field consumer form one reviewable slice; the qualifier has no generic
+   forwarding entry point. Qualified Bind/read observations, original owners/scopes,
+   complete immutable layouts and source results remain required. Reference histories
+   remain Unknown. Other shared local consumers and receiver copies remain opaque.
 5. Cover late identities/cycles, missing evidence and exact limits, retaining earlier
    valid links atomically. Validate candidate/expanded traversal separately.
 6. Add required source cases, audit prior contracts/pins and run focused checks plus

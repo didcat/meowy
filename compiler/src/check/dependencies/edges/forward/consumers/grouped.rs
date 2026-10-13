@@ -1,4 +1,5 @@
 use super::*;
+use crate::check::dependencies::operations::SharedRecord;
 use crate::check::dependencies::{ScalarKind, grouped::MAX_GROUPS};
 use std::collections::BTreeSet;
 
@@ -10,6 +11,7 @@ pub(super) enum Target {
     Dispatch,
     Receiver,
     SharedReceiver(ScalarKind),
+    SharedLocal(SharedRecord),
 }
 
 impl Checker {
@@ -72,7 +74,7 @@ impl Checker {
         )
     }
 
-    pub(self) fn grouped_source_limited(
+    pub(super) fn grouped_source_limited(
         &mut self,
         reports: &Reports,
         input: PointId,
@@ -89,7 +91,7 @@ impl Checker {
         let limit = limit.min(MAX_GROUPS);
         let mut seen = BTreeSet::new();
         let mut current = input;
-        let mut receiver = false;
+        let mut qualified = false;
         loop {
             if !self.flow.spend(
                 reports.consumers.len().checked_ilog2().unwrap_or(0) as usize
@@ -136,7 +138,7 @@ impl Checker {
                     {
                         return Err(invalid());
                     }
-                    return Ok((target == Target::Dispatch || receiver).then_some(current));
+                    return Ok((target == Target::Dispatch || qualified).then_some(current));
                 }
                 if field {
                     if group.is_some()
@@ -170,7 +172,7 @@ impl Checker {
                 {
                     return Err(invalid());
                 }
-                return Ok((target == Target::Block || receiver).then_some(current));
+                return Ok((target == Target::Block || qualified).then_some(current));
             }
             let block = point.block;
             let next = if let Some(group) = group {
@@ -190,19 +192,25 @@ impl Checker {
                 self.read_initializer_input(reports, current, owner, span)?
             {
                 input
+            } else if let Target::SharedLocal(record) = target
+                && let Some(input) =
+                    self.read_shared_initializer_input(reports, current, owner, record, span)?
+            {
+                qualified = true;
+                input
             } else if let Some(input) = self.read_receiver_input(reports, current, owner, span)? {
                 input
             } else if target == Target::Receiver
                 && let Some(input) =
                     self.receiver_value_input(reports, current, owner, span, true)?
             {
-                receiver = true;
+                qualified = true;
                 input
             } else if let Target::SharedReceiver(ty) = target
                 && let Some(input) =
                     self.shared_receiver_input(reports, current, owner, ty, span)?
             {
-                receiver = true;
+                qualified = true;
                 input
             } else if let Some(input) =
                 self.unchanged_ascription_input(reports, current, owner, span)?

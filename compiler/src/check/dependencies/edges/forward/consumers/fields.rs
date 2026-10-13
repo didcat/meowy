@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::bodies::completion::Shape;
 
+mod locals;
+
 impl Checker {
     pub(super) fn field_slot(
         &mut self,
@@ -40,6 +42,19 @@ impl Checker {
                 self.receiver_primary_shape(reports, *input, owner, Shape::SharedScalar(ty), span)?
         {
             (primary.block, true, true)
+        } else if let Some(primary) = *shared_primary
+            && let Some(block) = self.shared_local_field_body(
+                reports,
+                *input,
+                owner,
+                crate::check::dependencies::operations::SharedRecord {
+                    primary,
+                    fields: self.fields[&id].count,
+                },
+                span,
+            )?
+        {
+            (block, true, true)
         } else {
             return Ok(None);
         };

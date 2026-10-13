@@ -2,6 +2,7 @@ use super::*;
 
 mod initializers;
 mod receivers;
+mod shared;
 
 impl Checker {
     pub(super) fn read_effect(
