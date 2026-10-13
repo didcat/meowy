@@ -3669,7 +3669,10 @@ candidate collection and both graph validators reject stale referents/slots/scop
 missing initialization/results and cycles through the common emission qualifier.
 Missing scalar links remain unresolved; reference-primary histories remain Unknown.
 Two scalar projections share one source-cache entry with exact payload/work bounds.
-No traversal implementation changes were needed. Consumer limits/control remain next.
+No traversal implementation changes were needed; graph coverage is committed as
+`7bef72d2`. All three consumer limit/control tests pass: exact map/work boundaries,
+duplicate visits, independent source/receiver/emission control and multiple/unknown
+histories with partial destination layouts. Source conformance and final gates are next.
 
 Dependency-ordered commit plan:
 
@@ -3679,8 +3682,8 @@ Dependency-ordered commit plan:
    replay, independent initialized/result visits and exact payload/work budgets.
 3. Complete: integrate typed receiver source qualification for composed emissions,
    preserving exact projections, independent visits and complete source layouts.
-4. Qualify candidate/expanded traversal separately where needed; cover stale/missing
-   evidence, scopes, cycles, control and exact limits in independently useful slices.
+4. Complete: candidate/expanded traversal reuses the common qualifier; stale/missing
+   evidence, scopes, cycles, control and exact limits have focused coverage.
 5. Add required source coverage, audit contracts/pins, run compiler/strict gates and
    update the guide and both handoffs before final documentation checks.
 

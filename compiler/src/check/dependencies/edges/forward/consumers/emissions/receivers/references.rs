@@ -2,6 +2,7 @@ use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
 mod boundaries;
+mod limits;
 
 pub(super) const SOURCE: &str = "n:1;p:&n;out:p.{->$;->z:9;->a:true}.{copy:{->(($))}}";
 
