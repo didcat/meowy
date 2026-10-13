@@ -3951,8 +3951,12 @@ map/cache/forest/work/hop limits, duplicate visits and all 32 independent
 Bind/read/source/receiver/emission control combinations. Multiple scalar targets reuse
 one qualified source cache entry. Both required source cases pass exact debug/release
 output and P006 (`/tmp/meowy-receiver-composition-source.log`); metadata validates 482
-cases and 37 unchanged reference hashes. Next: preservation audit, complete compiler
-and strict gates, then the guide and ordered handoff.
+cases and 37 unchanged reference hashes. The audit preserves all 553 prior
+reference/source/pin/obligation files, 480 cases, 19 pins, 37 hashes and prior evidence
+(`/tmp/meowy-receiver-composition-preservation.log`). The graph fixture helper now uses
+explicit parent visibility, resolving `clippy::needless_pub_self`; all-target Clippy
+passes (`/tmp/meowy-receiver-composition-clippy.log`). Rerun complete compiler/strict
+gates, then update the guide and ordered handoff. No known code failures remain.
 
 Dependency-ordered commit plan:
 

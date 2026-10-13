@@ -6,7 +6,7 @@ mod limits;
 pub(super) const SOURCE: &str =
     "n:1;p:&n;r:p.{->$;->z:9;->a:true};alias:((r));out:alias.{copy:{->(($))}}";
 
-pub(self) fn local(checker: &Checker, reports: &Reports, receiver: PointId) -> hir::LocalId {
+pub(super) fn local(checker: &Checker, reports: &Reports, receiver: PointId) -> hir::LocalId {
     checker
         .local_reads
         .iter()
