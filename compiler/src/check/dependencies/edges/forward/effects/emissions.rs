@@ -101,7 +101,7 @@ impl Checker {
                     && matches!(input.kind, PointKind::Expr | PointKind::And | PointKind::Or)
             })
             || match op.composed {
-                Some(Composition { local, count }) => {
+                Some(Composition { local, count, .. }) => {
                     local >= reports.locals
                         || count >= MAX_TARGETS
                         || op.targets.len() != count + 1

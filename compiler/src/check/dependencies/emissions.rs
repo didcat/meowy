@@ -1,5 +1,5 @@
 use super::{
-    PointKind,
+    PointKind, ScalarKind,
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -22,6 +22,7 @@ pub(crate) enum Projection {
 pub(crate) struct Composition {
     pub(crate) local: hir::LocalId,
     pub(crate) count: usize,
+    pub(crate) shared_primary: Option<ScalarKind>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

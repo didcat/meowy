@@ -155,8 +155,11 @@ pub(crate) fn result_source_index_rejects_late_metadata_conflicts_without_spendi
         match fault {
             0 => op.input = statement,
             1 => {
-                op.composed =
-                    Some(crate::check::dependencies::emissions::Composition { local: 0, count: 0 })
+                op.composed = Some(crate::check::dependencies::emissions::Composition {
+                    local: 0,
+                    count: 0,
+                    shared_primary: None,
+                })
             }
             2 => op.targets[0].field = Some("other".into()),
             3 => op.control = !op.control,

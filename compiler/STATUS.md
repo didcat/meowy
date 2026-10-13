@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-09. Scalar field sources through shared-reference receivers are implemented and validated.
+Updated: 2026-10-13. Shared-reference receiver composition qualification is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3638,7 +3638,7 @@ files, all 466 prior cases, 19 pins, 37 reviewed hashes and previous evidence
 (`/tmp/meowy-reference-fields-preservation.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: composed-emission sources through shared-reference record receivers
+### Composed-emission sources through shared-reference record receivers
 
 A current probe accepts
 `n : 1; p : &n; out : p.{ -> $; -> tag : true }.{ copy : { -> $ } }`
@@ -3649,23 +3649,31 @@ field/primary consumers, it does not use the typed receiver qualifier.
 `dependencies/emissions.rs::Composition` retains only `local` and `count`;
 `emissions/projections.rs::emission_composition` reads the checked source-local type.
 
+Current investigation: composition capture already checks the synthetic source local's
+complete record type, but retains only its local/count. Effect reports copy that fixed
+descriptor and compare it on replay. Source lookup must retain an exact shared scalar
+primary descriptor before using the existing typed receiver qualifier; generic local
+eligibility must remain unchanged. Existing projection/target validation covers all
+targets before observing any initialized subset. Capture now retains the descriptor;
+all seven composition tests pass, including exact scalar referents/owners, opaque
+other primaries, unchanged capture work, exact work exhaustion and atomic replay.
+The synthetic result-index initializer was updated; no outstanding build failure remains.
+Consumer qualification and report descriptor validation remain pending.
+
 Dependency-ordered commit plan:
 
-1. Characterize composition capture, initialized target ports and source layouts in
-   `dependencies/emissions/`, `effects/emissions/`, `consumers/emissions/receivers/`
-   and the candidate-source graph. Establish exact shared-primary identity before
-   enabling receiver fallback; do not infer it from destination slots or field counts.
-2. If needed, capture and validate a minimal fixed-size source descriptor in a separate
-   prerequisite with replay/identity and exact budget tests. Keep ordinary local
-   eligibility, alias/storage identity and reference histories unchanged.
+1. Complete: capture the fixed shared scalar primary descriptor in `Composition`,
+   with exact referent, replay and capture-budget coverage; consumers are unchanged.
+2. Validate descriptor identity in emission effects/reports, including stale replay,
+   independent initialized/result visits and exact payload/work budgets.
 3. Integrate typed receiver source qualification for composed emissions in a separate
    slice. Preserve each initialized target's Primary/Field projection and slot identity,
    source results, receiver initialization/results and destination completion. Validate
    complete layouts, including unobserved suffixes, before publishing any source links.
 4. Qualify candidate/expanded traversal separately where needed; cover stale/missing
-   evidence, scopes, cycles, control and exact limits. Add required source coverage,
-   audit contracts/pins, run compiler/strict gates and update the guide and both handoffs
-   before final documentation checks.
+   evidence, scopes, cycles, control and exact limits in independently useful slices.
+5. Add required source coverage, audit contracts/pins, run compiler/strict gates and
+   update the guide and both handoffs before final documentation checks.
 
 Ordinary stored references, reference loads, broader aggregate results, mutable or
 reference-bearing fields, generic receiver forwarding and reference formatting remain

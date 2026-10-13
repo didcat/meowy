@@ -1,4 +1,4 @@
-use super::{Composition, MAX_TARGETS, Projection};
+use super::{Composition, MAX_TARGETS, Projection, ScalarKind};
 use crate::{
     ast::Span,
     check::{Checker, Result},
@@ -13,7 +13,7 @@ impl Checker {
         span: Span,
     ) -> Result<Option<Composition>> {
         let Some(local) = from else { return Ok(None) };
-        let Some(hir::Type::Record { fields, .. }) = self.locals.get(local) else {
+        let Some(hir::Type::Record { primary, fields }) = self.locals.get(local) else {
             return Err(Diagnostic::unsupported(
                 "proof emission composition identity mismatch",
                 span,
@@ -28,6 +28,11 @@ impl Checker {
         Ok(Some(Composition {
             local,
             count: fields.len(),
+            shared_primary: if let hir::Type::Reference(ty) = primary.as_ref() {
+                ScalarKind::of(ty)
+            } else {
+                None
+            },
         }))
     }
 
