@@ -3752,12 +3752,15 @@ Dependency-ordered commit plan:
 
 1. Extract the typed local source-body qualifier (`0997cfb7`; baseline and existing
    forward-report tests pass with unchanged logic, diagnostics and work).
-2. Add typed local composition lookup (implemented; three focused tests and the
+2. Add typed local composition lookup (`4644c533`; three focused tests and the
    forward-report suite pass). Complete layouts, exact target projections, aliases,
    storage and source results remain mandatory. Receiver copies and unknown origins
    remain opaque. Candidate/expanded revalidation is the separate coverage step below.
-3. Cover stored-copy chains, owners/scopes, missing evidence, unobserved suffixes,
-   stale descriptors and mixed cycles in a separate boundary slice.
+3. Boundary coverage passes all six local-composition tests. Fifteen late faults
+   cover referent/count/root/owner conflicts, unobserved suffix names/mutability,
+   target projections/aliases/storage and mixed copy/group cycles. Nine missing-evidence
+   cases preserve earlier links; sibling lexical scopes reject atomically. No new
+   graph representation or wider receiver admission was added.
 4. Revalidate candidate and expanded composition sources through the same qualifier;
    cover exact source-cache/map/room/work/hop bounds and independent observations.
 5. Add required order/panic source cases, preserve contracts/pins and run focused checks,
