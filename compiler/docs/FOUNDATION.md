@@ -810,8 +810,8 @@ slots stay Unknown. Missing evidence suppresses only its link. Stale types, proj
 aliases, storage, crossed scopes, cycles and exhausted map/cache/work budgets publish
 no partial report. Duplicate visits and independent control flags preserve the same
 links. Required cases cover reference identity, named/nested scopes, source/body/copy/
-receiver/function order and P006 after a reached composition. Ordinary stored references,
-generic receiver forwarding and reference formatting remain separate; these structural
+receiver/function order and P006 after a reached composition. Generic receiver
+forwarding and reference formatting remain separate; these structural
 links grant no additional loan authority, value provenance or proof outcomes.
 
 Owned scalar fields also resolve through immutable local records whose primary is a
@@ -822,7 +822,7 @@ emitted aliases, parameters, synthetic receivers and temporary cells remain excl
 Each retained row consumes shared report room; bounded type work and replay checks
 reject stale descriptors without changing ordinary local eligibility.
 
-The field-only traversal follows observed, normally available reads through qualified
+Typed local traversal follows observed, normally available reads through qualified
 Bind roots, copies, groups and unchanged wrappers. Each typed hop matches the consumer's
 primary/count descriptor and validates the original lexical owner and enclosing scope.
 The final block or dispatch must publish its result and retain a complete immutable
@@ -834,8 +834,25 @@ Existing field-result maps, candidate roots and expanded traversal revalidate th
 sources; reference histories remain Unknown. Stale metadata, unrelated scopes, cycles
 and exact row/room/map/root/work/hop limits fail atomically. Required source cases
 preserve original evaluation order through stored copies, aliases, ascriptions,
-guarded/nested/function scopes and P006 after an earlier field read. Other shared local
-consumers, pointee provenance, loan authority and proof outcomes remain separate.
+guarded/nested/function scopes and P006 after an earlier field read. Pointee provenance,
+loan authority and proof outcomes remain separate.
+
+Composed emissions now reuse the same typed local source qualifier. The captured
+`Composition` primary/count descriptor must match every initializer/read hop and the
+original block/dispatch result. Complete source layouts and all target names,
+projections, aliases and canonical storage are validated, including unobserved suffixes.
+Each initialized target links to its own original source slot; source publication,
+source initialization and destination completion remain independent.
+
+Candidate collection and both source forests revalidate these links through the same
+emission qualifier and shared source cache. Reference and nonscalar histories stay
+Unknown; multiple scalar histories remain distinct, and extra destination fields do
+not alter source indices. Missing evidence suppresses only the affected links; stale
+identities, unrelated scopes, mixed cycles and exact map/cache/work/hop limits reject
+atomically. Duplicate observations and independent Bind/read/emission control retain
+the same links. Required cases preserve single source evaluation, reference identity,
+stored copies, extra fields, named/guarded/nested/function order and P006 after a reached
+emission. Receiver copies and other shared local consumers remain separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

@@ -3731,55 +3731,79 @@ and previous evidence (`/tmp/meowy-shared-local-preservation.log`). All four fin
 guide/handoff checks pass (`/tmp/meowy-shared-local-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Current: composed-emission sources through shared-reference local records
+### Composed-emission sources through shared-reference local records
 
-Stored local compositions such as `out : { -> r }` now use the typed initializer
-index and exact `Composition` primary/count descriptors. `out : r.{ copy : { -> $ } }`
-retains its separate receiver boundary. Ordinary eligibility is unchanged.
+Complete implementation. Composed emissions reuse the typed local body qualifier in
+`consumers/locals.rs`. Exact shared primary/count descriptors qualify original Bind/read
+roots through stored copies and unchanged wrappers. Canonical storage, owners, lexical
+scopes, source publication and complete immutable layouts remain mandatory. Every target
+retains its own projection, alias, storage and original source slot, including validation
+of unobserved suffixes. Ordinary eligibility and receiver-copy boundaries are unchanged.
 
-Inspection confirms candidate collection and both source forests already reuse
-`emission_source_block`; the new local route can reuse their existing validation and
-source cache. The body qualifier now lives in `consumers/locals.rs` with identical
-logic, diagnostics and work accounting; its field tests retain their existing paths.
-All 881 forward-report tests pass before and after the move
-(`/tmp/meowy-local-composition-before.log`, `/tmp/meowy-local-composition-extract.log`).
-The three new composition tests and all 884 forward-report tests pass
-(`/tmp/meowy-local-composition-links.log`). Source publication, source initialization,
-individual target visits and destination completion remain independent; exact source
-slots and Unknown reference histories survive copy chains and independent owners.
+Source initialization/publication, target visits and destination completion remain
+independent. Existing candidate collection and both source forests revalidate the same
+emission qualifier with their shared source cache. Reference/nonscalar histories remain
+Unknown; multiple scalar histories stay distinct. No value selection, pointee provenance,
+loan authority or proof outcome is inferred.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `0997cfb7` | Extract typed local body qualification without changing behavior |
+| `4644c533` | Link composed targets through qualified local records and copies |
+| `bd5cb715` | Reject stale descriptors, suffixes, scopes and mixed cycles |
+| `6c82b2b5` | Revalidate candidate and expanded composition source graphs |
+| `772188c3` | Bound maps, source caches, work and hops with independent control |
+| `7efcc30f` | Cover copy identity, execution order and stopped destinations |
+
+All 881 forward-report tests pass before/after extraction. Fourteen new structural
+tests cover all scalar referents, block/dispatch sources, copy chains, ascriptions,
+named/guarded/nested/function scopes,
+partial target visits and stopped destinations. Late metadata and unobserved suffix
+conflicts reject atomically; missing evidence preserves earlier links. Exact map/work/hop
+and source-cache room limits, duplicate visits, independent Bind/read/emission control,
+multiple scalar histories, unknown reference/list slots and extra destination fields pass.
+
+Both required source cases pass exact debug/release output and P006
+(`/tmp/meowy-local-composition-source.log`). All ten compiler checks pass: 2950 library,
+921 native and 62 Python tests, formatting, all-target Clippy, build, metadata and
+conformance execution (`/tmp/meowy-local-composition-gate.log`). The 474-case catalog has
+455 required passes, 19 unchanged pinned gaps and zero debug/release failures. Strict
+mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-local-composition-strict.log`). The preservation audit retains 545 prior
+reference/source/pin/obligation files, all 472 prior cases, 19 pins, 37 reviewed hashes
+and previous evidence (`/tmp/meowy-local-composition-preservation.log`). All four final
+guide/handoff checks pass (`/tmp/meowy-local-composition-docs.log`). No known failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: coercion-owned shared-reference local primary sources
+
+Typed local qualification currently serves fields and composed emissions. The shared
+reference coercion branch in `consumers.rs` still tries only dispatch and receiver
+primaries. `Coercion::source` retains the projected primary shape but no original record
+field count, while `shared_local_body` requires the complete fixed primary/count
+argument. Establish that original descriptor before admitting a local primary link.
 
 Dependency-ordered commit plan:
 
-1. Extract the typed local source-body qualifier (`0997cfb7`; baseline and existing
-   forward-report tests pass with unchanged logic, diagnostics and work).
-2. Add typed local composition lookup (`4644c533`; three focused tests and the
-   forward-report suite pass). Complete layouts, exact target projections, aliases,
-   storage and source results remain mandatory. Receiver copies and unknown origins
-   remain opaque. Candidate/expanded revalidation is the separate coverage step below.
-3. Boundary coverage (`bd5cb715`) passes all six local-composition tests. Fifteen late faults
-   cover referent/count/root/owner conflicts, unobserved suffix names/mutability,
-   target projections/aliases/storage and mixed copy/group cycles. Nine missing-evidence
-   cases preserve earlier links; sibling lexical scopes reject atomically. No new
-   graph representation or wider receiver admission was added.
-4. Candidate/expanded graph coverage (`6c82b2b5`) preserves exact
-   slots, owners, block/dispatch origins and Unknown reference histories; fourteen
-   stale-link/descriptor/initializer faults reject atomically. Missing scalar links
-   become unresolved without erasing other sources after revalidation. Budget/control
-   coverage (`772188c3`) completes all fourteen local-composition tests, including exact map/work/hop and shared source-cache
-   room limits, duplicate visits, independent Bind/read/emission control, multiple scalar
-   histories, unknown reference/list slots and extra destination fields.
-5. Both required local-composition cases pass exact debug/release output and P006
-   (`/tmp/meowy-local-composition-source.log`). They preserve source evaluation, copies,
-   reference identity, extra fields, named/guarded/nested/function scopes and panic after
-   a reached emission. Coverage validates 474 cases and 37 unchanged reference hashes.
-   Next run compiler/strict gates, audit prior fixtures/pins and refresh the guide and
-   both handoffs before final documentation checks.
+1. Characterize local shared-reference coercion inputs in `coercions.rs`,
+   `effects/coercions.rs` and `consumers.rs`: annotated copies, unchanged wrappers,
+   Forward/nullable Convert, stopped inputs, scopes and independent owners. Compare
+   the existing receiver path and confirm original type/count evidence with focused tests.
+2. If additional capture is needed, retain a bounded original record descriptor before
+   projection, separately from consumer integration. Validate capture/report replay,
+   malformed widths/counts and exact work/room limits without widening ordinary eligibility.
+3. Add a dedicated typed local primary qualifier for observed coercion projection ports.
+   Preserve complete layouts, Bind/read/source-result qualification and independent
+   projection/conversion/result stages. Keep binary consumers and receiver copies separate.
+4. Cover late identity/scope/cycle faults, missing evidence, exact budgets and required
+   source order/panic cases. Audit contracts/pins and run compiler/strict and final
+   guide/handoff gates. Reference histories remain Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
 `reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`;
-it is a capability gap, not successful language rejection. Precise joins, function-result provenance, restarts,
-E225 and proof outcomes remain incomplete; full v0.0.1 is not qualified.
+it is a capability gap, not successful language rejection. Precise joins, function-result
+provenance, restarts, E225 and proof outcomes remain incomplete; full v0.0.1 is not qualified.
 
 ## Documentation conventions and layout
 
@@ -5378,9 +5402,9 @@ contextual-list primary sources and composed-emission dispatch source slots are
 complete, including owned scalar fields and coercion-owned, binary-owned, output-owned
 and contextual-list-owned primary sources through eligible record receivers.
 Composed-emission and unary-owned record-receiver sources are complete, including
-shared-reference receiver composition and immutable shared-reference local field sources.
-Next qualify composed emissions through shared-reference local records using the ordered
-plan above; value selection and broader aggregate provenance remain separate.
+shared-reference receiver composition and immutable shared-reference local field/composition
+sources. Next characterize coercion-owned shared-reference local primary sources using
+the ordered plan above; value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6042,8 +6066,10 @@ plan above; value selection and broader aggregate provenance remain separate.
    limits (`d5587bbc`) and source cases (`cf9eeac6`) are complete. Immutable shared-local
    characterization (`777b1028`), Bind capture (`1353a71a`), indexing (`57c777b1`), field
    links (`d096bd31`), boundaries (`65a0dddc`), limits (`e96cc2df`) and source cases
-   (`a207e27c`) pass the compiler gate. Next qualify shared local compositions as
-   planned above.
+   (`a207e27c`) pass the compiler gate. Local source sharing (`0997cfb7`), composition
+   links (`4644c533`), boundaries (`bd5cb715`), graph revalidation (`6c82b2b5`), limits
+   (`772188c3`) and source cases (`7efcc30f`) pass the compiler gate. Next characterize
+   coercion-owned shared-reference local primaries as planned above.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
