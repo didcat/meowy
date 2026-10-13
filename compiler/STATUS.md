@@ -3800,13 +3800,16 @@ Dependency-ordered commit plan:
 2. Capture (`d19b1a41`) retains an optional original field count for shared scalar primaries
    before projection. Fourteen coercion-capture tests pass, including exact count replay,
    malformed counts/source shapes, atomic publication and work bounds. Counts grant no
-   eligibility and add no type tree or variable payload. Report propagation now passes
+   eligibility and add no type tree or variable payload. Report propagation (`c4301ec4`) passes
    all 26 coercion-effect tests: each observed stage retains the count, rejects stale or
-   malformed replay atomically and preserves exact map/work bounds. Consumers still
-   use the existing dispatch/receiver routes; local primary integration is next.
-3. Add a dedicated typed local primary qualifier for observed coercion projection ports.
-   Preserve complete layouts, Bind/read/source-result qualification and independent
-   projection/conversion/result stages. Keep binary consumers and receiver copies separate.
+   malformed replay atomically and preserves exact map/work bounds.
+3. Local coercion integration passes three focused tests and all 904 forward-report
+   tests (`/tmp/meowy-local-coercion-links.log`). Observed step-zero projections reuse
+   the exact typed local body qualifier; source publication, projection, conversion
+   and result remain independent. Two prior opaque-local test entries now belong to
+   the accepted local tests; an opaque-reference seed clears its shared-record count.
+   Binary consumers and receiver copies remain separate. Next add late identity,
+   scope/cycle, missing-evidence and exact-budget coverage.
 4. Cover late identity/scope/cycle faults, missing evidence, exact budgets and required
    source order/panic cases. Audit contracts/pins and run compiler/strict and final
    guide/handoff gates. Reference histories remain Unknown.

@@ -105,10 +105,12 @@ pub(crate) fn shared_coercion_links_keep_missing_evidence_opaque_without_droppin
             3 => {
                 let source = Some(Shape::Reference(hir::ReferenceMode::Shared));
                 checker.coercions.get_mut(&id).unwrap().source = source;
+                checker.coercions.get_mut(&id).unwrap().fields = None;
                 let (_, Effect::Coercion(op)) = reports.effects.get_mut(&id).unwrap() else {
                     panic!()
                 };
                 op.source = source;
+                op.fields = None;
             }
             4 => {
                 let id = *checker.typed_ops.keys().last().unwrap();

@@ -2,6 +2,18 @@ use super::*;
 use crate::check::dependencies::{ScalarKind, bodies::completion::Shape};
 
 impl Checker {
+    pub(super) fn shared_local_primary_slot(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        record: crate::check::dependencies::operations::SharedRecord,
+        span: Span,
+    ) -> Result<Option<Slot>> {
+        self.shared_local_body(reports, input, owner, record, span)
+            .map(|block| block.map(|block| Slot { block, index: 0 }))
+    }
+
     pub(super) fn receiver_primary_slot(
         &mut self,
         reports: &Reports,
@@ -101,6 +113,9 @@ mod tests;
 
 #[cfg(test)]
 mod coercions;
+
+#[cfg(test)]
+mod local_coercions;
 
 #[cfg(test)]
 mod coercions_limits;

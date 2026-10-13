@@ -49,7 +49,10 @@ pub(crate) fn local_reference_coercions_retain_projection_stages_and_typed_bindi
                 ops.iter().map(|(_, op)| op.owner).collect::<BTreeSet<_>>(),
                 BTreeSet::from([0, 1])
             );
-            assert!(reports.slot_uses.is_empty());
+            assert_eq!(reports.slot_uses.len(), ops.len());
+            assert!(reports.slot_uses.keys().all(|port| matches!(port,
+                Port::Projection { point, step: 0 } if checker.coercions.contains_key(point)
+            )));
             assert!(checker.binaries.values().any(|op| {
                 op.plan.primary == [false, true]
                     && op.types.inputs[1] == BinaryClass::SharedScalar(kind)

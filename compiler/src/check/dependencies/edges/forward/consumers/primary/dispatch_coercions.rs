@@ -130,7 +130,6 @@ pub(crate) fn dispatch_coercion_primaries_keep_projection_conversion_and_result_
 pub(crate) fn dispatch_coercion_primaries_keep_nonscalar_stopped_and_other_producers_opaque() {
     for source in [
         "r:3.{->[$];->tag:true};x<int32[1]>:r",
-        "n:1;r:3.{->&n;->tag:true};x<&int32>:r",
         "n<int32><null>:1;r:3.{->n;->tag:true};x<int32><null>:r",
         "r:3.{->$;->tag:true};x<{-><int32>;tag<boolean>}><null>:r",
         "r:=3.{->$;->tag:true};x<int32>:r",

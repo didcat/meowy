@@ -197,14 +197,29 @@ impl Checker {
                                 )?
                             }
                         } else if let Effect::Coercion(op) = effect
-                            && let Some(source @ Shape::SharedScalar(_)) = op.source
+                            && let Some(source @ Shape::SharedScalar(primary)) = op.source
                         {
                             if let Some(slot) =
                                 self.dispatch_primary_shape(reports, input, *owner, source, span)?
                             {
                                 Some(slot)
-                            } else {
+                            } else if let Some(slot) =
                                 self.receiver_primary_shape(reports, input, *owner, source, span)?
+                            {
+                                Some(slot)
+                            } else if let Some(fields) = op.fields {
+                                self.shared_local_primary_slot(
+                                    reports,
+                                    input,
+                                    *owner,
+                                    crate::check::dependencies::operations::SharedRecord {
+                                        primary,
+                                        fields,
+                                    },
+                                    span,
+                                )?
+                            } else {
+                                None
                             }
                         } else {
                             None
