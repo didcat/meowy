@@ -1,7 +1,7 @@
 use super::*;
 use crate::check::dependencies::{
     bodies::completion::Shape,
-    emissions::{Projection, Target},
+    emissions::{Composition, Projection, Target},
 };
 
 impl Checker {
@@ -73,16 +73,26 @@ impl Checker {
             self.record_receiver_body(reports, observed.input, owner, span)?
         {
             block
+        } else if let Some(ty) = composed.shared_primary
+            && let Some(primary) = self.receiver_primary_shape(
+                reports,
+                observed.input,
+                owner,
+                Shape::SharedScalar(ty),
+                span,
+            )?
+        {
+            primary.block
         } else {
             return Ok(None);
         };
-        self.emission_source_layout(block, composed.count, &observed.targets, span)
+        self.emission_source_layout(block, *composed, &observed.targets, span)
     }
 
     pub(self) fn emission_source_layout(
         &mut self,
         block: hir::BlockId,
-        fields: usize,
+        composed: Composition,
         targets: &[Target],
         span: Span,
     ) -> Result<Option<hir::BlockId>> {
@@ -105,8 +115,16 @@ impl Checker {
         if !self.flow.spend(bytes * 2 + count + 1) {
             return Err(budget());
         }
-        if body.completion.result != (Shape::Record { fields })
+        if body.completion.result
+            != (Shape::Record {
+                fields: composed.count,
+            })
             || count != targets.len()
+            || composed.shared_primary.is_some_and(|kind| {
+                slots
+                    .first()
+                    .is_none_or(|slot| slot.shape != Shape::SharedScalar(kind))
+            })
             || slots
                 .iter()
                 .zip(targets)

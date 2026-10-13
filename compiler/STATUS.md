@@ -3640,21 +3640,10 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Composed-emission sources through shared-reference record receivers
 
-A current probe accepts
-`n : 1; p : &n; out : p.{ -> $; -> tag : true }.{ copy : { -> $ } }`
-(`/tmp/meowy-reference-composition-handoff.mwy` also reads `copy.tag`). The emission
-consumer still routes receiver lookup through `record_receiver_body`, which requires
-ordinary local eligibility and excludes reference-bearing records. Unlike the new
-field/primary consumers, it does not use the typed receiver qualifier.
-`dependencies/emissions.rs::Composition` retains only `local` and `count`;
-`emissions/projections.rs::emission_composition` reads the checked source-local type.
-
-Current investigation: composition capture already checks the synthetic source local's
-complete record type, but retains only its local/count. Effect reports copy that fixed
-descriptor and compare it on replay. Source lookup must retain an exact shared scalar
-primary descriptor before using the existing typed receiver qualifier; generic local
-eligibility must remain unchanged. Existing projection/target validation covers all
-targets before observing any initialized subset. Capture now retains the descriptor;
+`dependencies/emissions.rs::Composition` now retains local/count and the exact optional
+shared scalar primary descriptor from the synthetic source-local type. Effect reports
+copy that fixed descriptor and compare it on replay. Existing projection/target
+validation covers all targets before observing any initialized subset.
 all seven composition tests pass, including exact scalar referents/owners, opaque
 other primaries, unchanged capture work, exact work exhaustion and atomic replay.
 The synthetic result-index initializer was updated; no outstanding build failure remains.
@@ -3662,7 +3651,14 @@ Capture is committed as `48e32957`; all four result-index tests also pass.
 All 19 emission-effect tests pass. Invalid widths, stale referents, independent target/
 result visits and exact map/payload/work exhaustion preserve reports and edge counts.
 Scalar-reference capture and reporting add no variable payload or logical work.
-Consumer qualification remains pending.
+Report validation is committed as `67c6c12d`. All 32 emission-consumer tests pass.
+Typed receiver lookup now links each initialized Primary/Field target to the exact
+source slot and checks the captured primary against the complete layout. Reference
+histories remain Unknown; ordinary stored copies and generic eligibility are unchanged.
+Source publication, receiver initialization/results, target visits and destination
+completion remain independent. Both source forms, scopes, owners, wrappers and
+stopped prefixes pass; additional conflict/limit/graph coverage remains next.
+All 857 forward-report tests pass (`/tmp/meowy-reference-emissions-forward.log`).
 
 Dependency-ordered commit plan:
 
@@ -3670,10 +3666,8 @@ Dependency-ordered commit plan:
    with exact referent, replay and capture-budget coverage; consumers are unchanged.
 2. Complete: validate descriptor identity in emission effects/reports, including stale
    replay, independent initialized/result visits and exact payload/work budgets.
-3. Integrate typed receiver source qualification for composed emissions in a separate
-   slice. Preserve each initialized target's Primary/Field projection and slot identity,
-   source results, receiver initialization/results and destination completion. Validate
-   complete layouts, including unobserved suffixes, before publishing any source links.
+3. Complete: integrate typed receiver source qualification for composed emissions,
+   preserving exact projections, independent visits and complete source layouts.
 4. Qualify candidate/expanded traversal separately where needed; cover stale/missing
    evidence, scopes, cycles, control and exact limits in independently useful slices.
 5. Add required source coverage, audit contracts/pins, run compiler/strict gates and

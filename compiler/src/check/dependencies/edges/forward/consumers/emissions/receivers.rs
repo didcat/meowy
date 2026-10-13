@@ -3,6 +3,7 @@ use crate::check::dependencies::edges::forward::results::inputs::graph::Visit;
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod references;
 mod stages;
 
 pub(super) const SOURCE: &str = "r:3.{->$;->z:9;->a:true};out:r.{copy:{->(($))}}";
