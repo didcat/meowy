@@ -3756,13 +3756,16 @@ Dependency-ordered commit plan:
    forward-report suite pass). Complete layouts, exact target projections, aliases,
    storage and source results remain mandatory. Receiver copies and unknown origins
    remain opaque. Candidate/expanded revalidation is the separate coverage step below.
-3. Boundary coverage passes all six local-composition tests. Fifteen late faults
+3. Boundary coverage (`bd5cb715`) passes all six local-composition tests. Fifteen late faults
    cover referent/count/root/owner conflicts, unobserved suffix names/mutability,
    target projections/aliases/storage and mixed copy/group cycles. Nine missing-evidence
    cases preserve earlier links; sibling lexical scopes reject atomically. No new
    graph representation or wider receiver admission was added.
-4. Revalidate candidate and expanded composition sources through the same qualifier;
-   cover exact source-cache/map/room/work/hop bounds and independent observations.
+4. Three candidate/expanded graph tests now pass: composition chains preserve exact
+   slots, owners, block/dispatch origins and Unknown reference histories; fourteen
+   stale-link/descriptor/initializer faults reject atomically. Missing scalar links
+   become unresolved without erasing other sources after revalidation. Next cover
+   exact source-cache/map/room/work/hop bounds and independent control flags.
 5. Add required order/panic source cases, preserve contracts/pins and run focused checks,
    compiler/strict gates and final guide/handoff checks. Keep reference histories Unknown.
 

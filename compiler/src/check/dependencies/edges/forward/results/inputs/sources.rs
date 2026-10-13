@@ -87,3 +87,6 @@ mod dispatch;
 
 #[cfg(test)]
 mod receivers;
+
+#[cfg(test)]
+mod locals;
