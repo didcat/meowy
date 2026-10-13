@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::bodies::Completion;
+use crate::check::dependencies::{bodies::Completion, operations::SharedRecord};
 
 impl Checker {
     pub(in crate::check::dependencies::edges::forward) fn shared_receiver_input(
@@ -10,13 +10,29 @@ impl Checker {
         ty: ScalarKind,
         span: Span,
     ) -> Result<Option<PointId>> {
+        self.shared_receiver_source(reports, id, owner, ty, span)
+            .map(|source| source.map(|(input, _)| input))
+    }
+
+    pub(in crate::check::dependencies::edges::forward) fn shared_receiver_source(
+        &mut self,
+        reports: &Reports,
+        id: PointId,
+        owner: usize,
+        ty: ScalarKind,
+        span: Span,
+    ) -> Result<Option<(PointId, SharedRecord)>> {
+        let invalid = || Diagnostic::unsupported("proof shared-receiver identity mismatch", span);
         let Some(source) = self.receiver_read(reports, id, owner, span)? else {
             return Ok(None);
         };
         let Some(actual) = source.shared_primary else {
             return Ok(None);
         };
-        if !matches!(source.shape, Shape::Record { .. })
+        let Shape::Record { fields } = source.shape else {
+            return Err(invalid());
+        };
+        if fields >= crate::check::dependencies::bodies::layout::MAX_SLOTS
             || actual != ty
             || !(Completion {
                 normal: true,
@@ -24,10 +40,7 @@ impl Checker {
             })
             .valid()
         {
-            return Err(Diagnostic::unsupported(
-                "proof shared-receiver identity mismatch",
-                span,
-            ));
+            return Err(invalid());
         }
         if !self.flow.spend(
             self.proofs.mutable.len().checked_ilog2().unwrap_or(0) as usize
@@ -43,9 +56,20 @@ impl Checker {
             return Ok(None);
         }
         self.receiver_input(reports, id, owner, source, span)
-            .map(Some)
+            .map(|input| {
+                Some((
+                    input,
+                    SharedRecord {
+                        primary: actual,
+                        fields,
+                    },
+                ))
+            })
     }
 }
+
+#[cfg(test)]
+mod descriptors;
 
 #[cfg(test)]
 mod tests {

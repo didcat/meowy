@@ -3884,7 +3884,11 @@ Three characterization tests pass (`cargo test ... shared_local_receiver --lib`)
 Block/dispatch initializers, copies, wrappers, guarded/nested receivers and function
 owners stop only after a valid receiver hop. Mutable/reference/parameter inputs and
 copies of receiver cells remain opaque; binary/coercion/composition paths stay separate.
-Next: retain the exact receiver descriptor without changing field admission.
+The descriptor helper retains the exact primary/count without changing admission.
+All 30 shared-receiver tests pass (`/tmp/meowy-receiver-local-descriptors.log`), including
+three new exact-kind/count, malformed-header and work-budget tests. Fixture issues
+are resolved; no new failures remain. Next: connect field admission after the receiver
+jump and reuse complete immutable source-layout validation.
 
 Dependency-ordered commit plan:
 
