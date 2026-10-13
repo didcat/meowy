@@ -5020,6 +5020,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_local_coercion_order",
+      "phase": "run",
+      "source": "sources/reference_local_coercion_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\ntrue\ntrue\ntrue\nfunction tail\ntrue\nblock\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_local_coercion_stopped",
+      "phase": "run",
+      "source": "sources/reference_local_coercion_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\ntrue\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

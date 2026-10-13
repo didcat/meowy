@@ -1,0 +1,15 @@
+d : @"debug"
+n : 7
+p : &n
+r : p.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+alias : ((r))
+first <&int32> : alias
+d.print(first == p)
+d.panic("stop")
+last <&int32><null> : alias
+d.print("unreached")

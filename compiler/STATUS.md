@@ -3812,11 +3812,14 @@ Dependency-ordered commit plan:
 4. Boundary coverage (`5adcabb1`) covers fifteen late descriptor/count/type,
    unselected layouts, Bind/owner identities and mixed copy/group cycles; nine missing
    observations preserve earlier links. Unrelated lexical scopes reject atomically.
-   All nine local-consumer tests now pass, including exact map/work and combined
+   Budget/control coverage (`700aa8b7`) completes all nine local-consumer tests, including exact map/work and combined
    wrapper/copy hop bounds, duplicate observations without added payload, and sixteen
-   independent Bind/read/source/coercion control combinations. Next add required source
-   order/panic cases, audit contracts/pins and run compiler/strict and final guide/handoff
-   gates. Reference histories remain Unknown.
+   independent Bind/read/source/coercion control combinations. Both new required source
+   cases pass exact debug/release output and P006 (`/tmp/meowy-local-coercion-source.log`),
+   covering typed/nullable copies, guarded/nested/function order and returned reference
+   identity. Coverage validates 476 cases and 37 reference records. Next audit prior
+   fixtures/pins, run compiler/strict gates and refresh the guide and both handoffs.
+   Reference histories remain Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
