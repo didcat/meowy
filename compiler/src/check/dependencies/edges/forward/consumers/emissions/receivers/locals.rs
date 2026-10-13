@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod boundaries;
+mod evidence;
 mod stages;
 
 pub(super) const SOURCE: &str =

@@ -3936,6 +3936,12 @@ histories. All 944 Forward tests pass (`/tmp/meowy-receiver-composition-links.lo
 The five composition tests retain exact target slots and scalar field links while
 binary/coercion paths and copies of receiver cells remain opaque. Next: late
 descriptor/layout/scope/cycle faults, missing evidence and candidate-graph revalidation.
+Both boundary tests now pass all fifteen descriptor/suffix/cycle faults and both
+receiver/initializer sibling scopes (`/tmp/meowy-receiver-composition-boundaries.log`).
+The fixtures select the original input read by its dispatch site, independently of
+composed destination locals. Eleven missing-evidence cases also preserve earlier links
+(`/tmp/meowy-receiver-composition-evidence.log`). No failures remain. Next: candidate
+and expanded graph revalidation, exact shared budgets and independent control.
 
 Dependency-ordered commit plan:
 
