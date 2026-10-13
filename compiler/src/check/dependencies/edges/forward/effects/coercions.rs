@@ -263,3 +263,6 @@ mod references;
 
 #[cfg(test)]
 mod receiver_references;
+
+#[cfg(test)]
+mod local_references;

@@ -3775,7 +3775,7 @@ and previous evidence (`/tmp/meowy-local-composition-preservation.log`). All fou
 guide/handoff checks pass (`/tmp/meowy-local-composition-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: coercion-owned shared-reference local primary sources
+### Current: coercion-owned shared-reference local primary sources
 
 Typed local qualification currently serves fields and composed emissions. The shared
 reference coercion branch in `consumers.rs` still tries only dispatch and receiver
@@ -3783,15 +3783,23 @@ primaries. `Coercion::source` retains the projected primary shape but no origina
 field count, while `shared_local_body` requires the complete fixed primary/count
 argument. Establish that original descriptor before admitting a local primary link.
 
+Inspection localizes the missing descriptor to `expressions/expected.rs::coerced_value`:
+the original record type is still available before `expected_plan`, but only its primary
+shape reaches `coercion_stages`. Retain an optional fixed field count for shared scalar
+primary projections, separately from reports and consumer admission. Formatting and
+ordinary non-projecting coercions keep their existing source representation.
+
 Dependency-ordered commit plan:
 
-1. Characterize local shared-reference coercion inputs in `coercions.rs`,
-   `effects/coercions.rs` and `consumers.rs`: annotated copies, unchanged wrappers,
-   Forward/nullable Convert, stopped inputs, scopes and independent owners. Compare
-   the existing receiver path and confirm original type/count evidence with focused tests.
-2. If additional capture is needed, retain a bounded original record descriptor before
-   projection, separately from consumer integration. Validate capture/report replay,
-   malformed widths/counts and exact work/room limits without widening ordinary eligibility.
+1. Characterization passes three focused tests across all scalar referent kinds,
+   direct block/dispatch initializers, stored copies, ascriptions, guarded scopes,
+   independent owners and stopped prefixes. Bind indexes retain exact primary/count
+   evidence; coercions retain only the primary shape. Plain `p != r` owns a binary
+   projection, while annotated copies, nullable conversions and returns own coercion
+   projections. Mutable/alias/load/call origins and ordinary eligibility stay separate.
+2. Capture the original shared-record field count before projection, with replay/type/work
+   tests; then propagate and validate it in independent coercion reports as a separate
+   slice. Preserve current scalar sources and ordinary eligibility.
 3. Add a dedicated typed local primary qualifier for observed coercion projection ports.
    Preserve complete layouts, Bind/read/source-result qualification and independent
    projection/conversion/result stages. Keep binary consumers and receiver copies separate.
