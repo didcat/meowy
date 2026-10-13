@@ -28,32 +28,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Composed emissions now link through immutable local records with shared scalar reference
-primaries. They reuse the typed local qualifier, original Bind/read roots and exact
-primary/count descriptors. Each initialized target retains its original source slot;
-complete layouts, target projections, aliases, storage, owners and scopes remain checked.
-The [compiler handoff](compiler/STATUS.md#composed-emission-sources-through-shared-reference-local-records)
-records the six implementation/coverage commits and validation.
+Coercion projections now link shared-reference primaries through immutable local records
+and stored copies. Capture and reports retain original field counts and exact referent
+shapes; typed lookup revalidates Bind/read roots, full layouts, owners, scopes and source
+publication. The [compiler handoff](compiler/STATUS.md#coercion-owned-shared-reference-local-primary-sources)
+records the seven implementation/coverage commits and validation.
 
-Source publication, target visits and destination completion remain independent.
-Candidate and expanded traversal revalidate these links with shared source caching.
-Reference histories stay Unknown; ordinary eligibility and receiver-copy boundaries
-are unchanged. Two required cases preserve single source evaluation, reference identity,
-extra fields, named/guarded/nested/function order and P006 after a reached emission.
+Source initialization, projection, conversion and result observations remain independent.
+Reference histories stay Unknown; ordinary eligibility, binary-owned projections and
+receiver-copy boundaries are unchanged. Two required cases preserve typed/nullable copies,
+guarded/nested/function order, returned reference identity and P006 after an earlier
+projection. No pointee provenance, loan authority or proof outcomes are added.
 
-All ten compiler checks pass: 2950 library/921 native and 62 Python tests, formatting,
-Clippy, build and 455 required conformance cases. The same 19 pinned gaps remain,
-with zero debug/release failures (`/tmp/meowy-local-composition-gate.log`). Strict mode
-exits 1 only for the exact pins (`/tmp/meowy-local-composition-strict.log`). The audit
-preserves 545 prior reference/source/pin/obligation files, all 472 prior cases, 19 pins
-and 37 hashes (`/tmp/meowy-local-composition-preservation.log`). All four final
-documentation checks pass (`/tmp/meowy-local-composition-docs.log`). Full proof/release
-qualification remains incomplete.
+All ten compiler checks pass: 2968 library/921 native and 62 Python tests, formatting,
+Clippy, build and 457 required conformance cases. The same 19 pinned gaps remain,
+with zero debug/release failures (`/tmp/meowy-local-coercion-gate.log`). Strict mode
+exits 1 only for the exact pins (`/tmp/meowy-local-coercion-strict.log`). The audit
+preserves 547 prior reference/source/pin/obligation files, all 474 prior cases, 19 pins
+and 37 hashes (`/tmp/meowy-local-coercion-preservation.log`). All four final documentation
+checks pass (`/tmp/meowy-local-coercion-docs.log`). Full proof/release qualification
+remains incomplete.
 
-Next: characterize coercion-owned shared-reference local primary sources, establishing
-original record descriptors before adding projection links. Reference formatting and
-reference-bearing lists retain separate B001 prerequisites. Unrelated `docs/programs/hey/`
-is preserved.
+Next: characterize binary-owned shared-reference local projections, preserving original
+operand record counts before adding typed links. Reference formatting and reference-bearing
+lists retain separate B001 prerequisites. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -1202,8 +1200,8 @@ execution was not part of this documentation edit.
    result-slot consumers, local initializer forwarding and output primary links
    now pass their gates, including contextual-list primary consumers, shared-reference
    receiver fields/composition and immutable shared-reference local field/composition
-   sources. Next characterize coercion-owned shared local primaries using the ordered
-   compiler handoff. Preserve all source/capability gates.
+   and coercion-primary sources. Next characterize binary-owned shared local primaries
+   using the ordered compiler handoff. Preserve all source/capability gates.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

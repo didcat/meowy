@@ -854,6 +854,28 @@ the same links. Required cases preserve single source evaluation, reference iden
 stored copies, extra fields, named/guarded/nested/function order and P006 after a reached
 emission. Receiver copies and other shared local consumers remain separate.
 
+Coercion-owned shared scalar reference primaries now resolve through these local records.
+Capture retains an optional original record field count before expected-value projection;
+the existing primary shape retains the exact referent kind, width and signedness. Counts
+are bounded and validated at capture and every independent report stage, including replay.
+They copy no recursive types, add no variable payload and grant no local eligibility.
+Non-projecting, scalar, nonscalar-reference and stopped primary shapes retain no count.
+
+An observed step-zero coercion projection can use the typed local primary qualifier only
+when the count, referent and complete immutable source layout agree with the original
+Bind/read chain. Source publication remains required independently of source initialization
+and coercion conversion/result visits. Projection-only Convert observations need no
+conversion-operation registration; operation/result observations retain that requirement.
+Stored copies and unchanged wrappers preserve original owners and lexical scopes.
+
+Missing count/index/Bind/read/source evidence suppresses only the affected link. Stale
+counts, types, unselected layouts, unrelated scopes and mixed cycles reject atomically.
+Exact map/work/hop limits, duplicate observations and independent Bind/read/source/coercion
+control have structural tests. Required cases preserve typed and nullable copies,
+guarded/nested/function order, returned reference identity and P006 after an earlier
+projection. Reference histories stay Unknown. Binary-owned projections, receiver copies,
+pointee provenance, loan authority and proof outcomes remain separate.
+
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
 lookups. Duplicate observations retain one link per port. Late failures publish

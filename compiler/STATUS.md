@@ -3775,51 +3775,74 @@ and previous evidence (`/tmp/meowy-local-composition-preservation.log`). All fou
 guide/handoff checks pass (`/tmp/meowy-local-composition-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Current: coercion-owned shared-reference local primary sources
+### Coercion-owned shared-reference local primary sources
 
-Typed local qualification currently serves fields and composed emissions. The shared
-reference coercion branch in `consumers.rs` still tries only dispatch and receiver
-primaries. `Coercion::source` retains the projected primary shape but no original record
-field count, while `shared_local_body` requires the complete fixed primary/count
-argument. Establish that original descriptor before admitting a local primary link.
+Complete implementation. Coercion capture retains the original optional record field
+count before primary extraction, alongside the exact shared scalar referent shape.
+Counts are bounded and validated through capture, independent reports and replay;
+non-projecting, scalar, nonscalar-reference and stopped shapes retain no count. They
+copy no type trees, add no variable payload and grant no local eligibility.
 
-Inspection localizes the missing descriptor to `expressions/expected.rs::coerced_value`:
-the original record type is still available before `expected_plan`, but only its primary
-shape reaches `coercion_stages`. Retain an optional fixed field count for shared scalar
-primary projections, separately from reports and consumer admission. Formatting and
-ordinary non-projecting coercions keep their existing source representation.
+Observed step-zero coercion projections now reuse the typed local primary qualifier.
+Every original Bind/read root, owner, scope, count and referent must match, and the
+complete immutable source layout and source publication remain required. Source
+initialization, projection, conversion and result observations stay independent.
+Projection-only Convert visits need no operation registration; conversion/result visits
+retain their existing checks. Binary-owned projections and receiver copies remain opaque.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `dca797e6` | Characterize shared local coercion and binary projection ownership |
+| `d19b1a41` | Capture original shared-record counts before projection |
+| `c4301ec4` | Propagate and validate counts in independent coercion reports |
+| `3826b3a5` | Link observed coercion primaries through typed local sources |
+| `5adcabb1` | Reject stale counts, types, layouts, scopes and cycles atomically |
+| `700aa8b7` | Bound maps, work and hops with independent control flags |
+| `dab59c83` | Cover typed/nullable copies, return identity and stopped projections |
+
+Eighteen new structural tests cover all scalar referent families, direct block/dispatch
+sources, copies, wrappers, guards, independent owners and stopped suffixes. Exact
+capture/report replay and bounds pass; late conflicts publish no partial links, while
+missing count/index/Bind/read/source observations preserve earlier links. Duplicate
+visits and sixteen Bind/read/source/coercion control combinations retain the same maps.
+Reference histories remain Unknown; no value, pointee, loan or proof authority is added.
+
+Both required source cases pass exact debug/release output and P006
+(`/tmp/meowy-local-coercion-source.log`). All ten compiler checks pass: 2968 library,
+921 native and 62 Python tests, formatting, all-target Clippy, build, metadata and
+conformance execution (`/tmp/meowy-local-coercion-gate.log`). The 476-case catalog has
+457 required passes, 19 unchanged pinned gaps and zero debug/release failures. Strict
+mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-local-coercion-strict.log`). The preservation audit retains 547 prior
+reference/source/pin/obligation files, all 474 prior cases, 19 pins, 37 reviewed hashes
+and previous evidence (`/tmp/meowy-local-coercion-preservation.log`). All four final
+guide/handoff checks pass (`/tmp/meowy-local-coercion-docs.log`). No known failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: binary-owned shared-reference local primary sources
+
+Plain `p != r` with an immutable shared-primary local record still owns a binary
+projection and has no local source link. Coercion-owned copies now qualify separately.
+`binaries.rs` retains `Plan::primary` and projected input classes, but no original
+record count per operand. During capture each owned primary still has its original
+record HIR wrapper. Preserve that evidence before adding another consumer route.
 
 Dependency-ordered commit plan:
 
-1. Characterization (`dca797e6`) passes three focused tests across all scalar referent kinds,
-   direct block/dispatch initializers, stored copies, ascriptions, guarded scopes,
-   independent owners and stopped prefixes. Bind indexes retain exact primary/count
-   evidence; coercions retain only the primary shape. Plain `p != r` owns a binary
-   projection, while annotated copies, nullable conversions and returns own coercion
-   projections. Mutable/alias/load/call origins and ordinary eligibility stay separate.
-2. Capture (`d19b1a41`) retains an optional original field count for shared scalar primaries
-   before projection. Fourteen coercion-capture tests pass, including exact count replay,
-   malformed counts/source shapes, atomic publication and work bounds. Counts grant no
-   eligibility and add no type tree or variable payload. Report propagation (`c4301ec4`) passes
-   all 26 coercion-effect tests: each observed stage retains the count, rejects stale or
-   malformed replay atomically and preserves exact map/work bounds.
-3. Local coercion integration (`3826b3a5`) passes three focused tests and all 904 forward-report
-   tests (`/tmp/meowy-local-coercion-links.log`). Observed step-zero projections reuse
-   the exact typed local body qualifier; source publication, projection, conversion
-   and result remain independent. Two prior opaque-local test entries now belong to
-   the accepted local tests; an opaque-reference seed clears its shared-record count.
-   Binary consumers and receiver copies remain separate.
-4. Boundary coverage (`5adcabb1`) covers fifteen late descriptor/count/type,
-   unselected layouts, Bind/owner identities and mixed copy/group cycles; nine missing
-   observations preserve earlier links. Unrelated lexical scopes reject atomically.
-   Budget/control coverage (`700aa8b7`) completes all nine local-consumer tests, including exact map/work and combined
-   wrapper/copy hop bounds, duplicate observations without added payload, and sixteen
-   independent Bind/read/source/coercion control combinations. Both new required source
-   cases pass exact debug/release output and P006 (`/tmp/meowy-local-coercion-source.log`),
-   covering typed/nullable copies, guarded/nested/function order and returned reference
-   identity. Coverage validates 476 cases and 37 reference records. Next audit prior
-   fixtures/pins, run compiler/strict gates and refresh the guide and both handoffs.
-   Reference histories remain Unknown.
+1. Characterize left/right binary-owned shared local projections in `binaries.rs`,
+   `binaries/types.rs`, `effects/binaries.rs` and `consumers.rs`. Compare stored copies,
+   wrappers, both operand orders, earlier coercion-owned projections, full aggregate
+   equality, stopped-right prefixes and independent owners with focused tests.
+2. Retain bounded original record counts only for actually binary-owned shared primary
+   operands. Keep capture and report integration separately reviewable; validate exact
+   type/count replay, malformed descriptors and work/room bounds without widening
+   ordinary eligibility or adding a second projection for a coercion-owned operand.
+3. Add typed local primary links at each observed binary projection's original step.
+   Require exact Bind/read/source results, full immutable layouts, owners and scopes;
+   preserve operand order and independent projection/operation/result stages.
+4. Cover late conflicts, missing evidence, mixed cycles, exact budgets and required
+   source order/panic cases. Audit contracts/pins and run compiler/strict plus final
+   guide/handoff gates. Keep receiver copies opaque and reference histories Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
@@ -5425,8 +5448,9 @@ complete, including owned scalar fields and coercion-owned, binary-owned, output
 and contextual-list-owned primary sources through eligible record receivers.
 Composed-emission and unary-owned record-receiver sources are complete, including
 shared-reference receiver composition and immutable shared-reference local field/composition
-sources. Next characterize coercion-owned shared-reference local primary sources using
-the ordered plan above; value selection and broader aggregate provenance remain separate.
+and coercion-primary sources. Next characterize binary-owned shared-reference local
+primaries using the ordered plan above; value selection and broader aggregate provenance
+remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6090,8 +6114,11 @@ the ordered plan above; value selection and broader aggregate provenance remain 
    links (`d096bd31`), boundaries (`65a0dddc`), limits (`e96cc2df`) and source cases
    (`a207e27c`) pass the compiler gate. Local source sharing (`0997cfb7`), composition
    links (`4644c533`), boundaries (`bd5cb715`), graph revalidation (`6c82b2b5`), limits
-   (`772188c3`) and source cases (`7efcc30f`) pass the compiler gate. Next characterize
-   coercion-owned shared-reference local primaries as planned above.
+   (`772188c3`) and source cases (`7efcc30f`) pass the compiler gate. Local coercion
+   characterization (`dca797e6`), count capture (`d19b1a41`), reports (`c4301ec4`), links
+   (`3826b3a5`), boundaries (`5adcabb1`), limits (`700aa8b7`) and source cases (`dab59c83`)
+   pass the compiler gate. Next characterize binary-owned shared-reference local primaries
+   as planned above.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
