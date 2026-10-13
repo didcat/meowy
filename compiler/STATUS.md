@@ -3797,11 +3797,13 @@ Dependency-ordered commit plan:
    evidence; coercions retain only the primary shape. Plain `p != r` owns a binary
    projection, while annotated copies, nullable conversions and returns own coercion
    projections. Mutable/alias/load/call origins and ordinary eligibility stay separate.
-2. Capture now retains an optional original field count for shared scalar primaries
+2. Capture (`d19b1a41`) retains an optional original field count for shared scalar primaries
    before projection. Fourteen coercion-capture tests pass, including exact count replay,
    malformed counts/source shapes, atomic publication and work bounds. Counts grant no
-   eligibility and add no type tree or variable payload. Next propagate/validate them
-   in independent reports as a separate slice; consumers still use the existing routes.
+   eligibility and add no type tree or variable payload. Report propagation now passes
+   all 26 coercion-effect tests: each observed stage retains the count, rejects stale or
+   malformed replay atomically and preserves exact map/work bounds. Consumers still
+   use the existing dispatch/receiver routes; local primary integration is next.
 3. Add a dedicated typed local primary qualifier for observed coercion projection ports.
    Preserve complete layouts, Bind/read/source-result qualification and independent
    projection/conversion/result stages. Keep binary consumers and receiver copies separate.
