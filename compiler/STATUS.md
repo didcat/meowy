@@ -3716,14 +3716,18 @@ Dependency-ordered commit plan:
    types; each retained row charges shared report room. Exact row/work/room bounds
    and stale types reject atomically. Ordinary eligibility and special-cell exclusions
    remain unchanged.
-4. Link owned scalar fields through typed initializer/read traversal (implemented;
-   two focused tests and the forward-report suite pass). The read qualifier and its
+4. Link owned scalar fields through typed initializer/read traversal (`d096bd31`;
+   two focused tests and all 873 forward-report tests pass). The read qualifier and its
    sole field consumer form one reviewable slice; the qualifier has no generic
    forwarding entry point. Qualified Bind/read observations, original owners/scopes,
    complete immutable layouts and source results remain required. Reference histories
    remain Unknown. Other shared local consumers and receiver copies remain opaque.
-5. Cover late identities/cycles, missing evidence and exact limits, retaining earlier
-   valid links atomically. Validate candidate/expanded traversal separately.
+5. Late descriptor/root/owner/operation/layout conflicts, mixed initializer/group
+   cycles and unrelated lexical scopes now reject atomically across slot/result maps
+   and expanded traversal. Missing type indexes, Binds, reads, source results or roots
+   preserve earlier links. Five field tests and four typed-index tests pass, including
+   duplicate Binds and missing observations.
+   Next validate independent stages/control, candidate forests and exact shared limits.
 6. Add required source cases, audit prior contracts/pins and run focused checks plus
    compiler/strict gates; update the guide and both handoffs before final docs checks.
 

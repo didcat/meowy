@@ -113,3 +113,39 @@ pub(crate) fn shared_initializer_index_bounds_rows_payload_and_exact_work() {
     }
     assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
 }
+
+#[test]
+pub(crate) fn shared_initializer_index_rejects_duplicate_binds_and_skips_missing_observations() {
+    let (mut checker, program, mut reports) = checked("n:1;p:&n;r:{->p;->tag:true};copy:r");
+    let (&first, _) = reports.shared_initializers.first_key_value().unwrap();
+    let (&last, row) = reports.shared_initializers.last_key_value().unwrap();
+    let statement = row.init.statement;
+    let effect = reports.effects.remove(&statement).unwrap();
+    let mut expected = reports.shared_initializers.clone();
+    expected.remove(&last);
+    assert_eq!(
+        checker
+            .shared_initializers(&program, &reports, Span::default(), 1, 1)
+            .unwrap(),
+        (expected, 0)
+    );
+    reports.effects.insert(statement, effect);
+    let op = checker.operations.get_mut(&statement).unwrap();
+    op.local = first;
+    op.storage = first;
+    let (_, Effect::Storage { local, storage, .. }) = reports.effects.get_mut(&statement).unwrap()
+    else {
+        panic!()
+    };
+    *local = first;
+    *storage = first;
+    let before = format!("{reports:?}{:?}", checker.edge_counts());
+    assert!(
+        checker
+            .shared_initializers(&program, &reports, Span::default(), 2, 2)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+}
