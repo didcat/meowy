@@ -4954,6 +4954,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "reference_receiver_emissions_order",
+      "phase": "run",
+      "source": "sources/reference_receiver_emissions_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nbody\nsource tail\nreceiver\ncopy\ncopy tail\ntrue\ntrue\nnested\n7\nreceiver tail\nfunction tail\ntrue\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_receiver_emissions_stopped",
+      "phase": "run",
+      "source": "sources/reference_receiver_emissions_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nbody\nsource tail\ntrue\ncopy\nemitted\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

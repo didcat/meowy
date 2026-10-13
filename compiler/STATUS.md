@@ -3679,8 +3679,9 @@ reference identity, named/nested scopes and source/body/copy/receiver/function o
 The reference evidence inventory and generated report are updated; catalog/inventory
 checks pass. Prior hashes, contracts and pins are unchanged; final gates remain pending.
 All-target Clippy and formatting pass after correcting the graph collector assertion
-to `expect_err()` (`/tmp/meowy-reference-emissions-clippy.log`). Source fixtures and
-inventory changes are still uncommitted. The full compiler gate must be rerun.
+to `expect_err()` (`2e3fbd47`, `/tmp/meowy-reference-emissions-clippy.log`). Source
+fixtures and inventory are validated for their coverage slice; the full compiler gate
+is running. Guide/root handoff updates and final documentation checks remain pending.
 The preservation audit passes for 541 tracked
 files, all 468 prior cases, 19 exact pins and 37 reference hashes
 (`/tmp/meowy-reference-emissions-preservation.log`).
