@@ -3945,8 +3945,12 @@ and expanded graph revalidation, exact shared budgets and independent control.
 Three graph tests pass: transitive composition/field chains across owners, eleven stale
 link/source faults and rebuilding unresolved links after missing initializer evidence
 (`/tmp/meowy-receiver-composition-graphs.log`). The focused rerun is clean; no failures
-or warnings remain. Next: exact shared map/cache/root/work/hop limits and independent
-Bind/read/source/receiver/emission control, then required source cases and final gates.
+or warnings remain. All 27 local-receiver tests pass
+(`/tmp/meowy-receiver-composition-limits.log`), including five new tests for exact shared
+map/cache/forest/work/hop limits, duplicate visits and all 32 independent
+Bind/read/source/receiver/emission control combinations. Multiple scalar targets reuse
+one qualified source cache entry. Next: required source cases, preservation audit and
+compiler/strict plus final guide/handoff gates.
 
 Dependency-ordered commit plan:
 
