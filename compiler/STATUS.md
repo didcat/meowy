@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-13. Shared-reference receiver composition qualification is in progress.
+Updated: 2026-10-13. Shared-reference receiver composition is implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -3640,69 +3640,83 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Composed-emission sources through shared-reference record receivers
 
-`dependencies/emissions.rs::Composition` now retains local/count and the exact optional
-shared scalar primary descriptor from the synthetic source-local type. Effect reports
-copy that fixed descriptor and compare it on replay. Existing projection/target
-validation covers all targets before observing any initialized subset.
-all seven composition tests pass, including exact scalar referents/owners, opaque
-other primaries, unchanged capture work, exact work exhaustion and atomic replay.
-The synthetic result-index initializer was updated; no outstanding build failure remains.
-Capture is committed as `48e32957`; all four result-index tests also pass.
-All 19 emission-effect tests pass. Invalid widths, stale referents, independent target/
-result visits and exact map/payload/work exhaustion preserve reports and edge counts.
-Scalar-reference capture and reporting add no variable payload or logical work.
-Report validation is committed as `67c6c12d`. All 32 emission-consumer tests pass.
-Typed receiver lookup now links each initialized Primary/Field target to the exact
-source slot and checks the captured primary against the complete layout. Reference
-histories remain Unknown; ordinary stored copies and generic eligibility are unchanged.
-Source publication, receiver initialization/results, target visits and destination
-completion remain independent. Both source forms, scopes, owners, wrappers and
-stopped prefixes pass; additional conflict/limit/graph coverage remains next.
-All 857 forward-report tests pass (`/tmp/meowy-reference-emissions-forward.log`).
-Consumer integration is committed as `65403c2c`. All five shared-emission consumer
-tests pass. Sixteen late descriptor/target/layout/scope/cycle faults reject atomically,
-including unobserved suffixes; eight missing-evidence cases retain earlier valid links.
-Exact map/work limits, control independence and candidate/expanded graph boundaries
-remain next; no traversal implementation change has been needed so far.
-Consumer boundaries are committed as `83e15dc9`. All three new graph tests pass:
-candidate collection and both graph validators reject stale referents/slots/scopes,
-missing initialization/results and cycles through the common emission qualifier.
-Missing scalar links remain unresolved; reference-primary histories remain Unknown.
-Two scalar projections share one source-cache entry with exact payload/work bounds.
-No traversal implementation changes were needed; graph coverage is committed as
-`7bef72d2`. All three consumer limit/control tests pass: exact map/work boundaries,
-duplicate visits, independent source/receiver/emission control and multiple/unknown
-histories with partial destination layouts. Source conformance and final gates are next.
-Limit/control coverage is committed as `d5587bbc`. Both new required fixtures pass
-exact debug/release output and P006 after an initialized composition. They cover
-reference identity, named/nested scopes and source/body/copy/receiver/function order.
-The reference evidence inventory and generated report are updated; catalog/inventory
-checks pass. Prior hashes, contracts and pins are unchanged; final gates remain pending.
-All-target Clippy and formatting pass after correcting the graph collector assertion
-to `expect_err()` (`2e3fbd47`, `/tmp/meowy-reference-emissions-clippy.log`). Source
-fixtures and inventory are validated for their coverage slice; the full compiler gate
-is running. Guide/root handoff updates and final documentation checks remain pending.
-The preservation audit passes for 541 tracked
-files, all 468 prior cases, 19 exact pins and 37 reference hashes
-(`/tmp/meowy-reference-emissions-preservation.log`).
+Complete implementation. `Composition` retains the synthetic source local, field count
+and exact optional shared scalar primary descriptor. Effect validation checks widths,
+replay and independent target/result visits without adding variable payload or capture
+work. Typed receiver lookup links each initialized Primary/Field target to its exact
+source slot. Canonical storage, owner/scope identity, source results, receiver
+initialization and complete source layouts remain mandatory, including unobserved
+suffixes. Receiver and destination completion are independent of target observations.
+
+Candidate collection and both source forests reuse the emission qualifier. Scalar
+histories retain existing candidates; reference primary histories stay Unknown.
+Ordinary stored copies, reference loads, mutable/reference-bearing fields, nonscalar
+referents and generic receiver forwarding retain their existing boundaries. No new
+loan authority, value provenance or proof outcomes arise.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `48e32957` | Capture exact shared primary descriptors for composition |
+| `67c6c12d` | Validate descriptors in independent emission reports |
+| `65403c2c` | Link initialized source slots through typed receivers |
+| `83e15dc9` | Reject stale referents, suffixes, scopes and cycles atomically |
+| `7bef72d2` | Revalidate candidate and expanded source graphs |
+| `d5587bbc` | Bound maps/work and preserve independent control |
+| `2e3fbd47` | Correct the graph collector assertion for Clippy |
+| `cf9eeac6` | Cover composition identity, order and stopped destinations |
+
+Seventeen new structural tests cover capture/replay, exact referents/owners, partial
+observations, stale layouts/targets/scopes, missing evidence, cycles, source caching,
+independent control and exact map/payload/work limits. The focused capture, report,
+consumer and graph checks pass. Both required source cases pass exact debug/release
+output and P006 after a reached composition, preserving reference identity and
+source/body/copy/receiver/nested/function order. Structural links remain distinct
+from observable execution and proof evaluation.
+
+All ten checks in `python3 -B tools/verify.py --compiler` pass: 2917 library tests,
+921 native tests, 62 Python checks, formatting, Clippy, build and conformance execution
+(`/tmp/meowy-reference-emissions-gate.log`). Conformance has 470 cases: 451 required
+passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict mode exits 1
+only for those exact names/reasons (`/tmp/meowy-reference-emissions-strict.log`). All
+four final guide/handoff documentation checks pass (`/tmp/meowy-reference-emissions-docs.log`).
+The preservation audit retains 541 tracked
+reference/source/pin/obligation files, all 468 prior cases, 19 exact pins, 37 reference
+hashes and all prior evidence (`/tmp/meowy-reference-emissions-preservation.log`).
+No unexpected failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: immutable local shared-reference record source eligibility
+
+Stored reference-bearing records still lack ordinary local eligibility and initializer
+entries. `entries/locals/eligibility.rs::eligible_type` excludes every reference;
+`initializers.rs` and `effects/reads/initializers.rs` require that ordinary eligibility.
+The new receiver qualifier deliberately does not bypass those checks. Existing tests
+accept `n : 1; p : &n; r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }`
+but retain no composition source links through `r`.
 
 Dependency-ordered commit plan:
 
-1. Complete: capture the fixed shared scalar primary descriptor in `Composition`,
-   with exact referent, replay and capture-budget coverage; consumers are unchanged.
-2. Complete: validate descriptor identity in emission effects/reports, including stale
-   replay, independent initialized/result visits and exact payload/work budgets.
-3. Complete: integrate typed receiver source qualification for composed emissions,
-   preserving exact projections, independent visits and complete source layouts.
-4. Complete: candidate/expanded traversal reuses the common qualifier; stale/missing
-   evidence, scopes, cycles, control and exact limits have focused coverage.
-5. Add required source coverage, audit contracts/pins, run compiler/strict gates and
-   update the guide and both handoffs before final documentation checks.
+1. Characterize immutable local records with one shared scalar primary in eligibility,
+   Bind reports and initializer/read lookup. Compare direct block/dispatch sources,
+   stored copies, named aliases, guarded bodies and independent owners. Establish
+   exact original types and canonical storage before admitting any new local source.
+2. If that evidence permits qualification, add a separate fixed-size typed local
+   descriptor/index with replay and exact map/type-work budgets. Keep ordinary
+   eligibility unchanged; mutable/exclusive/reference-field and unknown origins remain
+   opaque. Preserve Unknown reference histories and existing alias/loan authority.
+3. Integrate typed initializer/read traversal separately, initially for one consumer
+   family. Require observed normal Bind/read/source results, original owner/scope and
+   complete source layouts. Reject late identities/cycles atomically and retain earlier
+   valid links when evidence is missing. Keep candidate/expanded integration separate.
+4. Add required source cases, audit prior contracts/pins and run focused checks plus
+   compiler/strict gates; update the guide and both handoffs before final docs checks.
 
-Ordinary stored references, reference loads, broader aggregate results, mutable or
-reference-bearing fields, generic receiver forwarding and reference formatting remain
-separate. Formatting still reports B001. Precise joins, function-result provenance,
-restarts, E225 and proof outcomes remain incomplete; full v0.0.1 is not qualified.
+Reference formatting and reference-bearing lists remain separate B001 prerequisites.
+The contextual-list probe `/tmp/meowy-reference-list-handoff.mwy` reports exactly
+`reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`;
+do not treat it as successful language rejection or enable list-source links from it.
+Precise joins, function-result provenance, restarts, E225 and proof outcomes remain
+incomplete; full v0.0.1 is not qualified.
 
 ## Documentation conventions and layout
 
@@ -5300,9 +5314,10 @@ are complete. Record dispatch unary/binary, coercion-owned, output-owned and
 contextual-list primary sources and composed-emission dispatch source slots are
 complete, including owned scalar fields and coercion-owned, binary-owned, output-owned
 and contextual-list-owned primary sources through eligible record receivers.
-Composed-emission and unary-owned record-receiver sources are complete. Contextual
-record hints in binary operands are next, following the ordered plan above; value
-selection and broader aggregate provenance remain separate.
+Composed-emission and unary-owned record-receiver sources are complete, including
+shared-reference receiver composition. Next characterize immutable local shared-reference
+record eligibility using the ordered plan above; value selection and broader aggregate
+provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -5959,9 +5974,11 @@ selection and broader aggregate provenance remain separate.
    characterization (`6ee93699`), links (`46c12b48`), boundaries (`6bba46ec`) and source
    cases (`8aecd78a`) are complete. Field capture (`dd5afb94`), reports (`162bfb9a`),
    receiver links (`1b822659`), boundaries (`c15b2853`), limits (`278e8143`) and source
-   cases (`689a6879`) are complete. Next inspect composed-emission sources through
-   shared-reference record receivers. Broader consumers
-   and value provenance remain separate.
+   cases (`689a6879`) are complete. Shared receiver composition capture (`48e32957`),
+   reports (`67c6c12d`), links (`65403c2c`), boundaries (`83e15dc9`), graphs (`7bef72d2`),
+   limits (`d5587bbc`) and source cases (`cf9eeac6`) are complete. Next characterize
+   immutable local shared-reference record source eligibility as planned above.
+   Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
    Other contextual builders and required evaluation remain separate.

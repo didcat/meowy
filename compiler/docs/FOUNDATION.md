@@ -795,6 +795,25 @@ field kinds, groups/ascriptions, emitted scalar values, source/receiver/nested/f
 order and panic after an earlier field read. Ordinary stored records, reference loads,
 mutable/reference-bearing fields and nonscalar selected fields or referents stay separate.
 
+Composed emissions also resolve source slots through these receivers. `Composition`
+retains the synthetic source local, field count and exact optional shared scalar
+primary kind. Effect reports validate the descriptor without adding variable payload
+or capture work. Typed receiver qualification preserves canonical storage, scopes,
+owners, source results and receiver initialization. Before linking any target, the
+complete source layout must match the captured primary, field count and target names,
+including unobserved suffixes. Each initialized Primary/Field projection keeps its
+own emission port and source slot; receiver and destination completion stay independent.
+
+Candidate collection and both source forests revalidate the same emission qualifier.
+Scalar fields retain their candidate histories; reference primaries and other unknown
+slots stay Unknown. Missing evidence suppresses only its link. Stale types, projections,
+aliases, storage, crossed scopes, cycles and exhausted map/cache/work budgets publish
+no partial report. Duplicate visits and independent control flags preserve the same
+links. Required cases cover reference identity, named/nested scopes, source/body/copy/
+receiver/function order and P006 after a reached composition. Ordinary stored references,
+generic receiver forwarding and reference formatting remain separate; these structural
+links grant no additional loan authority, value provenance or proof outcomes.
+
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
 lookups. Duplicate observations retain one link per port. Late failures publish
