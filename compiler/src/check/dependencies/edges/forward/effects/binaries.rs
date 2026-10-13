@@ -324,3 +324,6 @@ mod equality_boundaries;
 
 #[cfg(test)]
 mod equality_limits;
+
+#[cfg(test)]
+mod local_references;

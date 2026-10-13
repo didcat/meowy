@@ -3819,7 +3819,7 @@ and previous evidence (`/tmp/meowy-local-coercion-preservation.log`). All four f
 guide/handoff checks pass (`/tmp/meowy-local-coercion-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: binary-owned shared-reference local primary sources
+### Current: binary-owned shared-reference local primary sources
 
 Plain `p != r` with an immutable shared-primary local record still owns a binary
 projection and has no local source link. Coercion-owned copies now qualify separately.
@@ -3827,12 +3827,20 @@ projection and has no local source link. Coercion-owned copies now qualify separ
 record count per operand. During capture each owned primary still has its original
 record HIR wrapper. Preserve that evidence before adding another consumer route.
 
+Inspection confirms `binary_operation` still sees each checked `Primary` HIR wrapper
+and its full original record type. Capture can retain two optional fixed field counts
+only when the matching `Plan::primary` flag owns a shared scalar projection. Keep the
+existing input classes, operand sequence and earlier coercion-owned ports unchanged;
+propagate counts through independent reports before adding local consumer links.
+
 Dependency-ordered commit plan:
 
-1. Characterize left/right binary-owned shared local projections in `binaries.rs`,
-   `binaries/types.rs`, `effects/binaries.rs` and `consumers.rs`. Compare stored copies,
-   wrappers, both operand orders, earlier coercion-owned projections, full aggregate
-   equality, stopped-right prefixes and independent owners with focused tests.
+1. Characterization passes three focused tests across scalar referent families,
+   block/dispatch sources, stored copies, wrappers, both operand orders, full aggregate
+   equality and independent owners. Earlier coercion-owned projections retain their
+   own ports. A stopped-right shared context can retain two normal final operand types
+   while only the left projection is observed; final typing does not establish completion.
+   Mutable/alias/load/call/receiver origins retain their exclusions.
 2. Retain bounded original record counts only for actually binary-owned shared primary
    operands. Keep capture and report integration separately reviewable; validate exact
    type/count replay, malformed descriptors and work/room bounds without widening
