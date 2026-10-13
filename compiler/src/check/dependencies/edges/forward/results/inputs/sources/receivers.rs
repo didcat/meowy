@@ -2,6 +2,7 @@ use super::super::graph::Visit;
 use super::{super::super::tests::checked, *};
 
 mod boundaries;
+mod references;
 
 pub(super) const SOURCE: &str = "r:3.{->$;->a:9;->b:true};out:r.{copy:{->(($))}}";
 

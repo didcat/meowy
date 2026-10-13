@@ -3664,6 +3664,12 @@ tests pass. Sixteen late descriptor/target/layout/scope/cycle faults reject atom
 including unobserved suffixes; eight missing-evidence cases retain earlier valid links.
 Exact map/work limits, control independence and candidate/expanded graph boundaries
 remain next; no traversal implementation change has been needed so far.
+Consumer boundaries are committed as `83e15dc9`. All three new graph tests pass:
+candidate collection and both graph validators reject stale referents/slots/scopes,
+missing initialization/results and cycles through the common emission qualifier.
+Missing scalar links remain unresolved; reference-primary histories remain Unknown.
+Two scalar projections share one source-cache entry with exact payload/work bounds.
+No traversal implementation changes were needed. Consumer limits/control remain next.
 
 Dependency-ordered commit plan:
 
