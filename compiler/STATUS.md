@@ -3853,14 +3853,17 @@ Dependency-ordered commit plan:
    dedicated binary characterization covers primary comparisons. The opaque-reference
    seed clears its record counts. All 916 forward-report tests pass before integration
    (`/tmp/meowy-local-binary-report-gate.log`; prerequisite `86097270`).
-3. Typed local integration passes three focused tests and all 919 forward-report tests
+3. Typed local integration (`284eb11f`) passes three focused tests and all 919 forward-report tests
    (`/tmp/meowy-local-binary-links.log`). Each observed binary-owned step uses its own
    original count/referent and typed Bind/read/source qualifier. Source publication and
    projection/operation/result remain independent. A right-operand ascription can own
    an earlier coercion port; original binary steps and that separation are preserved.
-4. Cover late conflicts, missing evidence, mixed cycles, exact budgets and required
-   source order/panic cases. Audit contracts/pins and run compiler/strict plus final
-   guide/handoff gates. Keep receiver copies opaque and reference histories Unknown.
+4. Six local-consumer tests now pass. Fifteen late faults cover wrong operands,
+   counts/referents, unselected layouts, Bind/owner identities and mixed copy/group
+   cycles. Nine missing-evidence cases preserve earlier links; sibling lexical scopes
+   reject atomically. Next cover exact map/work/hop limits and independent control,
+   then add source order/panic cases and run compiler/strict plus final handoff gates.
+   Keep receiver copies opaque and reference histories Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly

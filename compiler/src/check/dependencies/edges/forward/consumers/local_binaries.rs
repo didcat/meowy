@@ -2,6 +2,8 @@ use super::{tests::checked, *};
 use crate::check::dependencies::edges::forward::results::Sources;
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn shared_local_binaries_link_original_slots_at_both_operand_positions() {
     for init in [
