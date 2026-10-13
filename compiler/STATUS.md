@@ -3803,16 +3803,18 @@ Dependency-ordered commit plan:
    eligibility and add no type tree or variable payload. Report propagation (`c4301ec4`) passes
    all 26 coercion-effect tests: each observed stage retains the count, rejects stale or
    malformed replay atomically and preserves exact map/work bounds.
-3. Local coercion integration passes three focused tests and all 904 forward-report
+3. Local coercion integration (`3826b3a5`) passes three focused tests and all 904 forward-report
    tests (`/tmp/meowy-local-coercion-links.log`). Observed step-zero projections reuse
    the exact typed local body qualifier; source publication, projection, conversion
    and result remain independent. Two prior opaque-local test entries now belong to
    the accepted local tests; an opaque-reference seed clears its shared-record count.
-   Binary consumers and receiver copies remain separate. Next add late identity,
-   scope/cycle, missing-evidence and exact-budget coverage.
-4. Cover late identity/scope/cycle faults, missing evidence, exact budgets and required
-   source order/panic cases. Audit contracts/pins and run compiler/strict and final
-   guide/handoff gates. Reference histories remain Unknown.
+   Binary consumers and receiver copies remain separate.
+4. Six local-consumer tests now pass. Fifteen late faults cover descriptor/count/type,
+   unselected layouts, Bind/owner identities and mixed copy/group cycles; nine missing
+   observations preserve earlier links. Unrelated lexical scopes reject atomically.
+   Next cover exact map/work/hop limits and independent control, add required source
+   order/panic cases, audit contracts/pins and run compiler/strict and final guide/handoff
+   gates. Reference histories remain Unknown.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
