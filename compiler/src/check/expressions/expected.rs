@@ -55,6 +55,7 @@ impl Checker {
             return Ok(value);
         };
         let shape = Coercion::primary_source(&value.ty);
+        let fields = Coercion::primary_fields(&value.ty);
         let (primary, kind, value) = Self::expected_plan(value, expected, span)?;
         if let Some(source) = input {
             let point = self.point.expect("expected context");
@@ -62,11 +63,11 @@ impl Checker {
                 self.region_edges(point, source, span)?;
             } else if !self.required {
                 self.coercion_stages(
-                    point,
-                    source,
+                    (point, source),
                     kind,
                     primary,
                     if primary { shape } else { None },
+                    if primary { fields } else { None },
                     span,
                 )?;
             }

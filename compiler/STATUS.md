@@ -3791,15 +3791,17 @@ ordinary non-projecting coercions keep their existing source representation.
 
 Dependency-ordered commit plan:
 
-1. Characterization passes three focused tests across all scalar referent kinds,
+1. Characterization (`dca797e6`) passes three focused tests across all scalar referent kinds,
    direct block/dispatch initializers, stored copies, ascriptions, guarded scopes,
    independent owners and stopped prefixes. Bind indexes retain exact primary/count
    evidence; coercions retain only the primary shape. Plain `p != r` owns a binary
    projection, while annotated copies, nullable conversions and returns own coercion
    projections. Mutable/alias/load/call origins and ordinary eligibility stay separate.
-2. Capture the original shared-record field count before projection, with replay/type/work
-   tests; then propagate and validate it in independent coercion reports as a separate
-   slice. Preserve current scalar sources and ordinary eligibility.
+2. Capture now retains an optional original field count for shared scalar primaries
+   before projection. Fourteen coercion-capture tests pass, including exact count replay,
+   malformed counts/source shapes, atomic publication and work bounds. Counts grant no
+   eligibility and add no type tree or variable payload. Next propagate/validate them
+   in independent reports as a separate slice; consumers still use the existing routes.
 3. Add a dedicated typed local primary qualifier for observed coercion projection ports.
    Preserve complete layouts, Bind/read/source-result qualification and independent
    projection/conversion/result stages. Keep binary consumers and receiver copies separate.

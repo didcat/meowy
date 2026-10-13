@@ -41,12 +41,27 @@ pub(crate) struct Coercion {
     pub(crate) kind: Kind,
     pub(crate) primary: bool,
     pub(crate) source: Option<Shape>,
+    pub(crate) fields: Option<usize>,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
 }
 
 impl Coercion {
+    pub(crate) fn primary_fields(ty: &hir::Type) -> Option<usize> {
+        match (Self::primary_source(ty), ty) {
+            (Some(Shape::SharedScalar(_)), hir::Type::Record { fields, .. }) => Some(fields.len()),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn valid_fields(source: Option<Shape>, fields: Option<usize>) -> bool {
+        fields.is_none_or(|fields| {
+            matches!(source, Some(Shape::SharedScalar(_)))
+                && fields < super::bodies::layout::MAX_SLOTS
+        })
+    }
+
     pub(crate) fn primary_source(ty: &hir::Type) -> Option<Shape> {
         match ty {
             hir::Type::Record { primary, .. } => Some(Completion::of(primary).result),
@@ -63,29 +78,31 @@ impl Checker {
         kind: Kind,
         span: Span,
     ) -> Result<()> {
-        self.coercion_stages(id, input, kind, false, None, span)
+        self.coercion_stages((id, input), kind, false, None, None, span)
     }
 
     pub(crate) fn coercion_stages(
         &mut self,
-        id: hir::PointId,
-        input: hir::PointId,
+        site: (hir::PointId, hir::PointId),
         kind: Kind,
         primary: bool,
         source: Option<Shape>,
+        fields: Option<usize>,
         span: Span,
     ) -> Result<()> {
+        let (id, input) = site;
         let budget = || Diagnostic::unsupported("proof coercion-operation budget exhausted", span);
         let invalid =
             || Diagnostic::unsupported("proof coercion-operation identity mismatch", span);
         if !self
             .flow
-            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize * 2 + 8)
+            .spend(self.coercions.len().checked_ilog2().unwrap_or(0) as usize * 2 + 9)
         {
             return Err(budget());
         }
         let point = self.points.get(id).ok_or_else(invalid)?;
         if !kind.valid_source(primary, source)
+            || !Coercion::valid_fields(source, fields)
             || point.kind != PointKind::Expr
             || point.owner != self.owner
             || (!point.complete && self.point != Some(id))
@@ -120,6 +137,7 @@ impl Checker {
             kind,
             primary,
             source,
+            fields,
             control: self.control,
             span,
             edges,
@@ -141,6 +159,9 @@ mod expected;
 
 #[cfg(test)]
 mod sources;
+
+#[cfg(test)]
+mod records;
 
 #[cfg(test)]
 mod tests {

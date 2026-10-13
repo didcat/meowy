@@ -122,7 +122,7 @@ pub(crate) fn coercion_sources_reject_malformed_shapes_and_changed_replay_atomic
     ] {
         assert!(
             checker
-                .coercion_stages(id, op.input, op.kind, true, source, op.span)
+                .coercion_stages((id, op.input), op.kind, true, source, op.fields, op.span)
                 .unwrap_err()
                 .message
                 .contains("identity")
@@ -141,13 +141,14 @@ pub(crate) fn coercion_sources_reject_malformed_shapes_and_changed_replay_atomic
     }
     let start = checker.flow.work;
     checker
-        .coercion_stages(id, op.input, op.kind, true, op.source, op.span)
+        .coercion_stages((id, op.input), op.kind, true, op.source, op.fields, op.span)
         .unwrap();
     let work = checker.flow.work - start;
     for short in [0, 1] {
         checker.flow.work = crate::flow::MAX_PROOF_WORK - work + short;
         checker.flow.full = false;
-        let result = checker.coercion_stages(id, op.input, op.kind, true, op.source, op.span);
+        let result =
+            checker.coercion_stages((id, op.input), op.kind, true, op.source, op.fields, op.span);
         assert_eq!(result.is_ok(), short == 0);
         if short == 1 {
             assert!(result.unwrap_err().message.contains("budget"));
