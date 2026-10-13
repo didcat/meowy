@@ -3835,16 +3835,18 @@ propagate counts through independent reports before adding local consumer links.
 
 Dependency-ordered commit plan:
 
-1. Characterization passes three focused tests across scalar referent families,
+1. Characterization (`fcc69802`) passes three focused tests across scalar referent families,
    block/dispatch sources, stored copies, wrappers, both operand orders, full aggregate
    equality and independent owners. Earlier coercion-owned projections retain their
    own ports. A stopped-right shared context can retain two normal final operand types
    while only the left projection is observed; final typing does not establish completion.
    Mutable/alias/load/call/receiver origins retain their exclusions.
-2. Retain bounded original record counts only for actually binary-owned shared primary
-   operands. Keep capture and report integration separately reviewable; validate exact
-   type/count replay, malformed descriptors and work/room bounds without widening
-   ordinary eligibility or adding a second projection for a coercion-owned operand.
+2. Capture now retains two optional original record counts only for binary-owned shared
+   scalar primary operands. All fourteen binary-capture tests pass, including exact
+   referents/count replay, count limits, fixed work and atomic operation/sequence
+   publication. Whole-record equality, scalar primaries and earlier coercion-owned
+   projections retain no counts. Next propagate/validate counts in independent reports;
+   local eligibility and consumer links remain unchanged in this capture slice.
 3. Add typed local primary links at each observed binary projection's original step.
    Require exact Bind/read/source results, full immutable layouts, owners and scopes;
    preserve operand order and independent projection/operation/result stages.

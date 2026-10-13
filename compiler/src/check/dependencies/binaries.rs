@@ -24,9 +24,26 @@ pub(crate) struct Binary {
     pub(crate) op: String,
     pub(crate) plan: Plan,
     pub(crate) types: types::Types,
+    pub(crate) fields: [Option<usize>; 2],
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
+}
+
+impl Binary {
+    pub(crate) fn valid_fields(
+        types: types::Types,
+        primary: [bool; 2],
+        fields: [Option<usize>; 2],
+    ) -> bool {
+        fields.into_iter().enumerate().all(|(step, fields)| {
+            fields.is_none_or(|fields| {
+                primary[step]
+                    && matches!(types.inputs[step], types::Class::SharedScalar(_))
+                    && fields < super::bodies::layout::MAX_SLOTS
+            })
+        })
+    }
 }
 
 impl Checker {
@@ -42,7 +59,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof binary-operation identity mismatch", span);
         if !self
             .flow
-            .spend(self.binaries.len().checked_ilog2().unwrap_or(0) as usize * 2 + 8)
+            .spend(self.binaries.len().checked_ilog2().unwrap_or(0) as usize * 2 + 12)
         {
             return Err(budget());
         }
@@ -70,12 +87,34 @@ impl Checker {
         {
             return Err(invalid());
         }
-        for (primary, value) in plan.primary.iter().zip([left, right]) {
-            if *primary
-                && !matches!(&value.kind, hir::ExprKind::Primary(input) if matches!(input.ty, hir::Type::Record { .. }))
-            {
-                return Err(invalid());
+        let types = types::Types {
+            inputs: [types::Class::of(&left.ty), types::Class::of(&right.ty)],
+            result: types::Class::of(&value.ty),
+        };
+        let mut fields = [None; 2];
+        for (step, (primary, value)) in plan.primary.iter().zip([left, right]).enumerate() {
+            if !primary {
+                continue;
             }
+            let hir::ExprKind::Primary(input) = &value.kind else {
+                return Err(invalid());
+            };
+            let hir::Type::Record {
+                primary,
+                fields: slots,
+            } = &input.ty
+            else {
+                return Err(invalid());
+            };
+            if let types::Class::SharedScalar(kind) = types.inputs[step] {
+                if types::Class::of(primary) != types::Class::SharedScalar(kind) {
+                    return Err(invalid());
+                }
+                fields[step] = Some(slots.len());
+            }
+        }
+        if !Binary::valid_fields(types, plan.primary, fields) {
+            return Err(invalid());
         }
         let key = SequenceSource::Expr(id);
         let mut sequence = self.prepare_sequence(key, inputs.map(Some).to_vec(), span)?;
@@ -112,10 +151,8 @@ impl Checker {
             inputs,
             op: op.clone(),
             plan,
-            types: types::Types {
-                inputs: [types::Class::of(&left.ty), types::Class::of(&right.ty)],
-                result: types::Class::of(&value.ty),
-            },
+            types,
+            fields,
             control: self.control,
             span,
             edges,
@@ -138,5 +175,8 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod records;
 
 pub(super) mod types;
