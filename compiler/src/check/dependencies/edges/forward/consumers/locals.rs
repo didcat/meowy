@@ -12,8 +12,6 @@ impl Checker {
         record: SharedRecord,
         span: Span,
     ) -> Result<Option<hir::BlockId>> {
-        let invalid =
-            || Diagnostic::unsupported("proof shared-local field identity mismatch", span);
         let Some(input) = self.grouped_source_limited(
             reports,
             input,
@@ -25,6 +23,19 @@ impl Checker {
         else {
             return Ok(None);
         };
+        self.shared_record_body(reports, input, owner, record, span)
+    }
+
+    pub(super) fn shared_record_body(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        record: SharedRecord,
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let invalid =
+            || Diagnostic::unsupported("proof shared-local field identity mismatch", span);
         let block = if let Some(block) = self.qualified_slot_block(reports, input, owner, span)? {
             block
         } else if let Some(block) = self.record_dispatch_body(reports, input, owner, span)? {

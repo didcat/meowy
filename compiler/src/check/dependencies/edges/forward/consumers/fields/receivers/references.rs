@@ -123,7 +123,6 @@ pub(crate) fn shared_receiver_fields_preserve_stopped_prefixes_and_ineligible_pa
     assert_eq!(reports.slot_uses.len(), 1);
     assert_eq!(reports.field_results.len(), 1);
     for source in [
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{->$.tag}",
         "n:1;p:&n;out:{->p;->tag:=true}.{->$.tag}",
         "n:1;p:&n;out:{->p;->other:p;->tag:true}.{->$.tag}",
         "n:1;p:&n;r:{->p;->tag:true};out:(&r).{->$.tag}",

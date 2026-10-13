@@ -3887,8 +3887,14 @@ copies of receiver cells remain opaque; binary/coercion/composition paths stay s
 The descriptor helper retains the exact primary/count without changing admission.
 All 30 shared-receiver tests pass (`/tmp/meowy-receiver-local-descriptors.log`), including
 three new exact-kind/count, malformed-header and work-budget tests. Fixture issues
-are resolved; no new failures remain. Next: connect field admission after the receiver
-jump and reuse complete immutable source-layout validation.
+are resolved. Field admission now permits typed local hops only after a qualified,
+count-matched receiver jump and reuses complete immutable source-layout validation.
+All 933 Forward tests pass (`/tmp/meowy-receiver-local-links.log`). Five field tests
+cover exact slots, source/receiver/field stages, scalar kinds, stopped prefixes and
+opaque consumers. Receiver jumps stop after entering a stored initializer chain,
+preserving direct nested receivers while excluding `r.{copy:$;->copy.{->$.tag}}`.
+No failures remain. Next: late identity/layout/scope/cycle faults and missing evidence,
+then exact budgets, source conformance and final gates.
 
 Dependency-ordered commit plan:
 

@@ -11,6 +11,7 @@ pub(super) enum Target {
     Dispatch,
     Receiver,
     SharedReceiver(ScalarKind),
+    SharedReceiverLocal(SharedRecord),
     SharedLocal(SharedRecord),
 }
 
@@ -92,6 +93,7 @@ impl Checker {
         let mut seen = BTreeSet::new();
         let mut current = input;
         let mut qualified = false;
+        let mut stored = false;
         loop {
             if !self.flow.spend(
                 reports.consumers.len().checked_ilog2().unwrap_or(0) as usize
@@ -192,11 +194,15 @@ impl Checker {
                 self.read_initializer_input(reports, current, owner, span)?
             {
                 input
-            } else if let Target::SharedLocal(record) = target
-                && let Some(input) =
-                    self.read_shared_initializer_input(reports, current, owner, record, span)?
+            } else if let Some(record) = match target {
+                Target::SharedLocal(record) => Some(record),
+                Target::SharedReceiverLocal(record) if qualified => Some(record),
+                _ => None,
+            } && let Some(input) =
+                self.read_shared_initializer_input(reports, current, owner, record, span)?
             {
                 qualified = true;
+                stored = true;
                 input
             } else if let Some(input) = self.read_receiver_input(reports, current, owner, span)? {
                 input
@@ -210,6 +216,16 @@ impl Checker {
                 && let Some(input) =
                     self.shared_receiver_input(reports, current, owner, ty, span)?
             {
+                qualified = true;
+                input
+            } else if let Target::SharedReceiverLocal(record) = target
+                && !stored
+                && let Some((input, actual)) =
+                    self.shared_receiver_source(reports, current, owner, record.primary, span)?
+            {
+                if actual != record {
+                    return Err(invalid());
+                }
                 qualified = true;
                 input
             } else if let Some(input) =

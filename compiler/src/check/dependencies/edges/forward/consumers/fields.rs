@@ -1,10 +1,34 @@
 use super::*;
-use crate::check::dependencies::bodies::completion::Shape;
+use crate::check::dependencies::{
+    bodies::completion::Shape, grouped::MAX_GROUPS, operations::SharedRecord,
+};
 
 #[cfg(test)]
 mod locals;
 
 impl Checker {
+    pub(self) fn shared_receiver_field_body(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        record: SharedRecord,
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let Some(input) = self.grouped_source_limited(
+            reports,
+            input,
+            owner,
+            span,
+            MAX_GROUPS,
+            grouped::Target::SharedReceiverLocal(record),
+        )?
+        else {
+            return Ok(None);
+        };
+        self.shared_record_body(reports, input, owner, record, span)
+    }
+
     pub(super) fn field_slot(
         &mut self,
         reports: &Reports,
@@ -30,35 +54,42 @@ impl Checker {
         if *load || !operation {
             return Ok(None);
         }
-        let (block, scalar, receiver) = if let Some(block) =
-            self.slot_block(reports, *input, owner, span)?
-        {
-            (block, false, false)
-        } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
-            (block, true, false)
-        } else if let Some(block) = self.record_receiver_body(reports, *input, owner, span)? {
-            (block, true, true)
-        } else if let Some(ty) = *shared_primary
-            && let Some(primary) =
-                self.receiver_primary_shape(reports, *input, owner, Shape::SharedScalar(ty), span)?
-        {
-            (primary.block, true, true)
-        } else if let Some(primary) = *shared_primary
-            && let Some(block) = self.shared_local_body(
-                reports,
-                *input,
-                owner,
-                crate::check::dependencies::operations::SharedRecord {
-                    primary,
-                    fields: self.fields[&id].count,
-                },
-                span,
-            )?
-        {
-            (block, true, true)
-        } else {
-            return Ok(None);
-        };
+        let (block, scalar, receiver) =
+            if let Some(block) = self.slot_block(reports, *input, owner, span)? {
+                (block, false, false)
+            } else if let Some(block) = self.record_dispatch_body(reports, *input, owner, span)? {
+                (block, true, false)
+            } else if let Some(block) = self.record_receiver_body(reports, *input, owner, span)? {
+                (block, true, true)
+            } else if let Some(primary) = *shared_primary
+                && let Some(block) = self.shared_receiver_field_body(
+                    reports,
+                    *input,
+                    owner,
+                    SharedRecord {
+                        primary,
+                        fields: self.fields[&id].count,
+                    },
+                    span,
+                )?
+            {
+                (block, true, true)
+            } else if let Some(primary) = *shared_primary
+                && let Some(block) = self.shared_local_body(
+                    reports,
+                    *input,
+                    owner,
+                    SharedRecord {
+                        primary,
+                        fields: self.fields[&id].count,
+                    },
+                    span,
+                )?
+            {
+                (block, true, true)
+            } else {
+                return Ok(None);
+            };
         if !self.flow.spend(
             self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                 + self.fields.len().checked_ilog2().unwrap_or(0) as usize
