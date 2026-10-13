@@ -3687,10 +3687,10 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Current: immutable local shared-reference record source eligibility
 
-Stored reference-bearing records still lack ordinary local eligibility and initializer
-entries. `entries/locals/eligibility.rs::eligible_type` excludes every reference;
-`initializers.rs` and `effects/reads/initializers.rs` require that ordinary eligibility.
-The new receiver qualifier deliberately does not bypass those checks. Existing tests
+Shared-reference record locals now have a separate typed initializer index and owned
+scalar field links. `entries/locals/eligibility.rs::eligible_type` still excludes every
+reference; ordinary initializer/read forwarding and receiver qualification retain their
+existing checks. Composition remains separate: existing tests
 accept `n : 1; p : &n; r : { -> p; -> tag : true }; out : r.{ copy : { -> $ } }`
 but retain no composition source links through `r`.
 
@@ -3722,12 +3722,16 @@ Dependency-ordered commit plan:
    forwarding entry point. Qualified Bind/read observations, original owners/scopes,
    complete immutable layouts and source results remain required. Reference histories
    remain Unknown. Other shared local consumers and receiver copies remain opaque.
-5. Late descriptor/root/owner/operation/layout conflicts, mixed initializer/group
+5. Boundary regressions (`65a0dddc`) cover late descriptor/root/owner/operation/layout conflicts, mixed initializer/group
    cycles and unrelated lexical scopes now reject atomically across slot/result maps
    and expanded traversal. Missing type indexes, Binds, reads, source results or roots
    preserve earlier links. Five field tests and four typed-index tests pass, including
    duplicate Binds and missing observations.
-   Next validate independent stages/control, candidate forests and exact shared limits.
+   Nine field tests now pass, including independent Bind/read/field control, source
+   initialization/publication, field operation/result visits, expanded source visits,
+   exact slot-map/result-root/work budgets and combined wrapper/copy hop limits.
+   No additional graph representation was needed; existing collectors revalidate the
+   new field route. Next add required source cases and run final gates.
 6. Add required source cases, audit prior contracts/pins and run focused checks plus
    compiler/strict gates; update the guide and both handoffs before final docs checks.
 
