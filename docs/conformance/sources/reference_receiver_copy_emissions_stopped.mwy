@@ -1,0 +1,25 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("input"); -> p }
+n : 7
+mark(&n).{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}.{
+    d.print("receiver")
+    copy : $
+    first : { -> copy }
+    d.print(first.tag)
+    copy.{
+        alias : (($))
+        joined : {
+            d.print("composition")
+            -> alias
+            d.print("emitted")
+            d.panic("stop")
+        }
+        later : { -> alias }
+        d.print("unreached")
+    }
+}

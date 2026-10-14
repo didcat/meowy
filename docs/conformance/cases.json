@@ -5174,6 +5174,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "reference_receiver_copy_emissions_order",
+      "phase": "run",
+      "source": "sources/reference_receiver_copy_emissions_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\nreceiver\ncomposition\ncomposition tail\ntrue\ntrue\nnested\ncat\n7\nreceiver tail\nfunction tail\ntrue\nblock\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_receiver_copy_emissions_stopped",
+      "phase": "run",
+      "source": "sources/reference_receiver_copy_emissions_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\nreceiver\ntrue\ncomposition\nemitted\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

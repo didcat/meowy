@@ -4133,7 +4133,14 @@ independent control observations pass: exact map/work/hop limits, shared source-
 capacity for two projections, both forests' capacity/work and all 32 control combinations.
 All 24 focused receiver-copy tests pass (`/tmp/meowy-copy-emissions-limits.log`); the
 test-only Walk cloning error is resolved. No production behavior changed in these
-qualification slices. Required order/P006 source cases and the final gates are next.
+qualification slices. Two required primary-composition cases are added for copy/ascription,
+nested receiver, named target, function order and P006 after a reached composition.
+Both pass exact debug/release output and P006 after a fresh build
+(`/tmp/meowy-copy-emissions-source.log`). Metadata validates all 490 cases and 37
+reference records. The audit preserves 561 prior reference/source/pin/obligation files,
+all 488 prior cases, all reviewed hashes and previous evidence from `f26db31c`
+(`/tmp/meowy-copy-emissions-preservation.log`). The full compiler/strict gates and
+final guide/handoff validation are next.
 
 Dependency-ordered commit plan:
 
