@@ -1,7 +1,10 @@
 use super::*;
+use crate::check::dependencies::edges::forward::results::Sources;
+
+mod stages;
 
 #[test]
-pub(crate) fn shared_local_receiver_coercions_retain_owned_descriptors_before_source_admission() {
+pub(crate) fn shared_local_receiver_coercions_link_owned_primaries_with_exact_descriptors() {
     for init in ["{->p;->tag:true}", "p.{->$;->tag:true}"] {
         for stored in [false, true] {
             let prefix = if stored {
@@ -32,7 +35,17 @@ pub(crate) fn shared_local_receiver_coercions_retain_owned_descriptors_before_so
                 assert!(observed.projected && observed.result);
                 assert_eq!(observed.operation, op.kind == CoercionKind::Convert);
                 let port = Port::Projection { point: id, step: 0 };
-                assert_eq!(reports.slot_uses.contains_key(&port), !stored);
+                let (owner, slot) = reports.slot_uses[&port];
+                assert_eq!((owner, slot.index), (op.owner, 0));
+                let Layout::Slots(layout) = &checker.bodies[&slot.block].layout else {
+                    panic!()
+                };
+                assert_eq!(layout.len(), op.fields.unwrap() + 1);
+                assert_eq!(op.source, Some(layout[0].shape));
+                assert_eq!(
+                    reports.results[&slot.block].1.slots.as_ref().unwrap()[0],
+                    Sources::Unknown
+                );
                 assert_eq!(
                     checker
                         .primary_effect_inputs(

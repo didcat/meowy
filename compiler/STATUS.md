@@ -3980,7 +3980,13 @@ behavior without an optional count remains separate. Both characterization tests
 (`/tmp/meowy-receiver-coercion-characterization.log`). Five coercion-owned projections
 retain exact counts across owners while fields/compositions keep their links; binary-owned
 projections, whole-record copies and receiver-cell copies remain separate. The fixture
-annotation is repaired. Next: admit counted receiver projections with independent stages.
+annotation is repaired. Counted coercions now reuse exact receiver-body qualification
+and slot zero directly, without an extra single-caller helper. All 960 Forward tests
+pass (`/tmp/meowy-receiver-coercion-links.log`). Five focused tests cover all scalar
+referent families, independent stages, projection-only Convert observations and stopped
+prefixes. Missing counts suppress local receiver links while preserving direct fallback;
+incorrect present counts reject both. Next: late descriptors, scopes, cycles and missing
+evidence, then exact budgets/control and source conformance.
 
 Dependency-ordered commit plan:
 

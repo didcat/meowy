@@ -156,7 +156,6 @@ pub(crate) fn shared_receiver_coercions_keep_stopped_prefixes_and_opaque_storage
         reports.slot_uses
     );
     for source in [
-        "n:1;p:&n;r:{->p;->tag:true};x:r.{copy<&int32>:$}",
         "n:1;p:&n;x:{->p;->tag:=true}.{copy<&int32>:$}",
         "n:1;p:&n;x:{->p;->other:p}.{copy<&int32>:$}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{copy:$;v<&int32>:copy}",

@@ -143,7 +143,6 @@ pub(crate) fn receiver_coercion_primaries_keep_projection_initialization_and_sou
 pub(crate) fn receiver_coercion_primaries_keep_ineligible_and_unprojected_sources_opaque() {
     for source in [
         "r:{->[3];->tag:true};out:r.{copy<int32[1]>:$}",
-        "base:1;r:{->&base;->tag:true};out:r.{copy<&int32>:$}",
         "n<int32><null>:1;r:{->n;->tag:true};out:r.{copy<int32><null>:$}",
         "r:{->3;->tag:true};out:r.{copy<{-><int32>;tag<boolean>}><null>:$}",
         "r:={->3;->tag:true};out:r.{copy<int32>:$}",

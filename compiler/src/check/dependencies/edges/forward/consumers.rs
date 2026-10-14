@@ -219,23 +219,22 @@ impl Checker {
                                 self.dispatch_primary_shape(reports, input, *owner, source, span)?
                             {
                                 Some(slot)
-                            } else if let Some(slot) =
-                                self.receiver_primary_shape(reports, input, *owner, source, span)?
-                            {
-                                Some(slot)
                             } else if let Some(fields) = op.fields {
-                                self.shared_local_primary_slot(
-                                    reports,
-                                    input,
-                                    *owner,
-                                    crate::check::dependencies::operations::SharedRecord {
-                                        primary,
-                                        fields,
-                                    },
-                                    span,
-                                )?
+                                let record = crate::check::dependencies::operations::SharedRecord {
+                                    primary,
+                                    fields,
+                                };
+                                if let Some(block) = self.shared_record_receiver_body(
+                                    reports, input, *owner, record, span,
+                                )? {
+                                    Some(Slot { block, index: 0 })
+                                } else {
+                                    self.shared_local_primary_slot(
+                                        reports, input, *owner, record, span,
+                                    )?
+                                }
                             } else {
-                                None
+                                self.receiver_primary_shape(reports, input, *owner, source, span)?
                             }
                         } else {
                             None
