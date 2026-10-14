@@ -86,7 +86,7 @@ pub(crate) fn shared_receiver_copy_fields_bound_alternating_receiver_and_local_h
         let (mut checker, reports) = checked(&source);
         let (&id, op) = checker.fields.first_key_value().unwrap();
         let input = op.input;
-        let target = grouped::Target::SharedField(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary: op.shared_primary.unwrap(),
             fields: op.count,
         });

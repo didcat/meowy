@@ -4120,7 +4120,11 @@ function scopes, field links, typed initializer exclusions, Unknown reference hi
 and stopped copy initialization. Only direct sources currently link; copy projections
 remain unresolved in both forests. The focused receiver-copy check passes 13 tests
 (`/tmp/meowy-copy-emissions-characterization.log`). No implementation changed; the
-reusable qualifier extraction is next.
+characterization is committed as `bb346a5e`. The field-only helper is now moved to
+`consumers/blocks.rs::shared_copy_body`; its mode is named `SharedCopies`. Traversal,
+diagnostics, work accounting and field admission are unchanged. All 992 Forward tests
+pass (`/tmp/meowy-copy-emissions-extraction.log`), including exact field budgets and
+unchanged composition characterization. Composition admission is next.
 
 Dependency-ordered commit plan:
 
