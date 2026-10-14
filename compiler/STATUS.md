@@ -4026,7 +4026,10 @@ without behavior changes before admitting binaries. Both characterization tests 
 belong to binaries; `p != $` belongs to an earlier coercion, and whole-record equality
 has no projection. Field/composition/coercion links remain present. Older cross-family
 assertions now stay with their owning consumers; all 39 local-receiver tests pass.
-Next: extract counted primary selection without changing admission, then connect binaries.
+Counted primary selection is now extracted as `shared_record_primary_slot`, preserving
+receiver-first/local fallback ordering. All 112 coercion tests pass
+(`/tmp/meowy-receiver-binary-helper.log`), including exact work and missing-count behavior.
+Next: connect binary-owned operands and preserve independent observation stages.
 
 Dependency-ordered commit plan:
 

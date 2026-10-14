@@ -148,97 +148,90 @@ impl Checker {
                 .enumerate()
             {
                 if let Some(input) = input {
-                    let slot =
-                        if let Some(slot) = self.primary_slot(reports, input, *owner, span)? {
+                    let slot = if let Some(slot) =
+                        self.primary_slot(reports, input, *owner, span)?
+                    {
+                        Some(slot)
+                    } else if let Effect::Unary(op) = effect {
+                        if let Some(slot) =
+                            self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
+                        {
                             Some(slot)
-                        } else if let Effect::Unary(op) = effect {
-                            if let Some(slot) =
-                                self.dispatch_primary_slot(reports, input, *owner, op.ty, span)?
-                            {
-                                Some(slot)
-                            } else {
-                                self.receiver_primary_slot(reports, input, *owner, op.ty, span)?
-                            }
-                        } else if let Effect::Binary(op) = effect
-                            && let BinaryClass::Scalar(ty) = op.types.inputs[step]
+                        } else {
+                            self.receiver_primary_slot(reports, input, *owner, op.ty, span)?
+                        }
+                    } else if let Effect::Binary(op) = effect
+                        && let BinaryClass::Scalar(ty) = op.types.inputs[step]
+                    {
+                        if let Some(slot) =
+                            self.dispatch_primary_slot(reports, input, *owner, ty, span)?
                         {
-                            if let Some(slot) =
-                                self.dispatch_primary_slot(reports, input, *owner, ty, span)?
-                            {
-                                Some(slot)
-                            } else {
-                                self.receiver_primary_slot(reports, input, *owner, ty, span)?
-                            }
-                        } else if let Effect::Coercion(op) = effect
-                            && let Some(Shape::Scalar(ty)) = op.source
+                            Some(slot)
+                        } else {
+                            self.receiver_primary_slot(reports, input, *owner, ty, span)?
+                        }
+                    } else if let Effect::Coercion(op) = effect
+                        && let Some(Shape::Scalar(ty)) = op.source
+                    {
+                        if let Some(slot) =
+                            self.dispatch_primary_slot(reports, input, *owner, ty, span)?
                         {
-                            if let Some(slot) =
-                                self.dispatch_primary_slot(reports, input, *owner, ty, span)?
-                            {
-                                Some(slot)
-                            } else {
-                                self.receiver_primary_slot(reports, input, *owner, ty, span)?
-                            }
-                        } else if let Effect::Binary(op) = effect
-                            && let BinaryClass::SharedScalar(ty) = op.types.inputs[step]
-                        {
-                            if let Some(slot) = self.dispatch_primary_shape(
+                            Some(slot)
+                        } else {
+                            self.receiver_primary_slot(reports, input, *owner, ty, span)?
+                        }
+                    } else if let Effect::Binary(op) = effect
+                        && let BinaryClass::SharedScalar(ty) = op.types.inputs[step]
+                    {
+                        if let Some(slot) = self.dispatch_primary_shape(
+                            reports,
+                            input,
+                            *owner,
+                            Shape::SharedScalar(ty),
+                            span,
+                        )? {
+                            Some(slot)
+                        } else if let Some(slot) = self.receiver_primary_shape(
+                            reports,
+                            input,
+                            *owner,
+                            Shape::SharedScalar(ty),
+                            span,
+                        )? {
+                            Some(slot)
+                        } else if let Some(fields) = op.fields[step] {
+                            self.shared_local_primary_slot(
                                 reports,
                                 input,
                                 *owner,
-                                Shape::SharedScalar(ty),
-                                span,
-                            )? {
-                                Some(slot)
-                            } else if let Some(slot) = self.receiver_primary_shape(
-                                reports,
-                                input,
-                                *owner,
-                                Shape::SharedScalar(ty),
-                                span,
-                            )? {
-                                Some(slot)
-                            } else if let Some(fields) = op.fields[step] {
-                                self.shared_local_primary_slot(
-                                    reports,
-                                    input,
-                                    *owner,
-                                    crate::check::dependencies::operations::SharedRecord {
-                                        primary: ty,
-                                        fields,
-                                    },
-                                    span,
-                                )?
-                            } else {
-                                None
-                            }
-                        } else if let Effect::Coercion(op) = effect
-                            && let Some(source @ Shape::SharedScalar(primary)) = op.source
-                        {
-                            if let Some(slot) =
-                                self.dispatch_primary_shape(reports, input, *owner, source, span)?
-                            {
-                                Some(slot)
-                            } else if let Some(fields) = op.fields {
-                                let record = crate::check::dependencies::operations::SharedRecord {
-                                    primary,
+                                crate::check::dependencies::operations::SharedRecord {
+                                    primary: ty,
                                     fields,
-                                };
-                                if let Some(block) = self.shared_record_receiver_body(
-                                    reports, input, *owner, record, span,
-                                )? {
-                                    Some(Slot { block, index: 0 })
-                                } else {
-                                    self.shared_local_primary_slot(
-                                        reports, input, *owner, record, span,
-                                    )?
-                                }
-                            } else {
-                                self.receiver_primary_shape(reports, input, *owner, source, span)?
-                            }
+                                },
+                                span,
+                            )?
                         } else {
                             None
-                        };
+                        }
+                    } else if let Effect::Coercion(op) = effect
+                        && let Some(source @ Shape::SharedScalar(primary)) = op.source
+                    {
+                        if let Some(slot) =
+                            self.dispatch_primary_shape(reports, input, *owner, source, span)?
+                        {
+                            Some(slot)
+                        } else if let Some(fields) = op.fields {
+                            let record = crate::check::dependencies::operations::SharedRecord {
+                                primary,
+                                fields,
+                            };
+                            self.shared_record_primary_slot(reports, input, *owner, record, span)?
+                        } else {
+                            self.receiver_primary_shape(reports, input, *owner, source, span)?
+                        }
+                    } else {
+                        None
+                    };
                     slots[step + 1] = slot.map(|slot| (Port::Projection { point: id, step }, slot));
                 }
             }
