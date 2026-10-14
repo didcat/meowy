@@ -3,6 +3,7 @@ use crate::check::dependencies::edges::forward::results::Sources;
 
 mod boundaries;
 mod evidence;
+mod limits;
 
 pub(super) const SOURCE: &str =
     "n:1;p:&n;r:p.{->$;->z:9;->a:true};out:r.{copy:(($));alias:((copy));joined:{->alias}}";

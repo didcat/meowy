@@ -4129,7 +4129,11 @@ links and candidate inputs are rebuilt. Removed dispatch publication or target
 initialization still invalidates retained upstream results. Composition chains preserve
 multiple scalar histories and Unknown reference/aggregate histories. All 19 focused
 receiver-copy tests pass (`/tmp/meowy-copy-emissions-evidence.log`). Exact budgets and
-independent control observations are next.
+independent control observations pass: exact map/work/hop limits, shared source-cache
+capacity for two projections, both forests' capacity/work and all 32 control combinations.
+All 24 focused receiver-copy tests pass (`/tmp/meowy-copy-emissions-limits.log`); the
+test-only Walk cloning error is resolved. No production behavior changed in these
+qualification slices. Required order/P006 source cases and the final gates are next.
 
 Dependency-ordered commit plan:
 

@@ -1,5 +1,7 @@
 use super::*;
 
+mod limits;
+
 #[test]
 pub(crate) fn receiver_copy_graphs_distinguish_reference_histories_and_scalar_projection_evidence()
 {
