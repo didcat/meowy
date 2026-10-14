@@ -4040,7 +4040,12 @@ evidence, then exact budgets/control and source conformance. All eight binary re
 tests pass (`/tmp/meowy-receiver-binary-boundaries.log`). Eighteen late faults and both
 receiver/initializer sibling scopes reject atomically. Explicit receiver ascriptions at
 either operand retain earlier coercion ownership; initializer ascriptions preserve the
-binary projection. Next: missing observations, exact limits and independent control.
+binary projection. All twelve binary receiver tests pass
+(`/tmp/meowy-receiver-binary-limits.log`): thirteen missing-evidence cases preserve
+the earlier link, and exact map/work/hop limits, duplicate visits and all 32
+Bind/read/source/receiver/binary control combinations pass without new payload.
+Next: required source order/P006 cases, preservation audit and final compiler/strict
+plus guide/handoff gates.
 
 Dependency-ordered commit plan:
 
