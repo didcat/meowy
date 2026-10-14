@@ -5130,6 +5130,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_local_receiver_binary_order",
+      "phase": "run",
+      "source": "sources/reference_local_receiver_binary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\nreceiver\ntrue\nfalse\nfalse\ntrue\ntrue\nnested\ntrue\nreceiver tail\nfunction tail\ntrue\nblock\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_local_receiver_binary_stopped",
+      "phase": "run",
+      "source": "sources/reference_local_receiver_binary_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nreceiver\ntrue\nright\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

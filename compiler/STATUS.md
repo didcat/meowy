@@ -4044,8 +4044,10 @@ binary projection. All twelve binary receiver tests pass
 (`/tmp/meowy-receiver-binary-limits.log`): thirteen missing-evidence cases preserve
 the earlier link, and exact map/work/hop limits, duplicate visits and all 32
 Bind/read/source/receiver/binary control combinations pass without new payload.
-Next: required source order/P006 cases, preservation audit and final compiler/strict
-plus guide/handoff gates.
+Both required source cases pass exact debug/release output and P006
+(`/tmp/meowy-receiver-binary-source.log`). Metadata validates 486 cases and 37 unchanged
+reference hashes. Next: preservation audit, complete compiler/strict gates and final
+guide/handoff checks.
 
 Dependency-ordered commit plan:
 
