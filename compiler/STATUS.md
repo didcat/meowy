@@ -3990,7 +3990,11 @@ evidence, then exact budgets/control and source conformance. Seventeen late desc
 referent, suffix-layout and cycle faults plus receiver/initializer sibling scopes now
 reject atomically. All seven focused tests pass, including mutable, parameter and
 call-result receiver exclusions (`/tmp/meowy-receiver-coercion-boundaries.log`).
-Next: missing evidence, exact map/work/hop bounds and independent control flags.
+All eleven local-receiver coercion tests pass (`/tmp/meowy-receiver-coercion-limits.log`).
+Thirteen missing-evidence cases retain the earlier projection; exact map/work/hop
+limits, duplicate visits and all 32 independent Bind/read/source/receiver/coercion
+control combinations pass without new payload. Next: required source order/P006 cases,
+contract/pin preservation audit and final compiler/strict plus guide/handoff gates.
 
 Dependency-ordered commit plan:
 
