@@ -955,8 +955,27 @@ Bind/read/source/receiver/coercion control retain their existing bounds.
 
 Required cases preserve typed/nullable copies, returned reference identity, guarded/
 nested/function order and P006 after a reached projection. Reference histories remain
-Unknown. Binary-owned receiver projections, copies of receiver cells, ordinary local
-eligibility and loan/proof authority retain their existing boundaries.
+Unknown. Copies of receiver cells, ordinary local eligibility and loan/proof authority
+retain their existing boundaries.
+
+Binary-owned shared scalar primaries now use the same counted source selector through
+immutable local receiver inputs. Each observed operand retains its original projection
+step, record count and exact referent. Present counts must match receiver/local descriptors
+and complete immutable layouts before linking source slot zero. Missing counts suppress
+local receiver links while retaining direct receiver fallback; wrong present counts reject.
+
+Source publication, receiver initialization, operand projections and binary operation/result
+observations stay independent. Stopped expected typing can retain normal final operand
+classes without observed evaluation. Only reached projections link. Earlier coercion-owned
+operands, including explicit receiver ascriptions, keep their own ports, and full-record
+equality gains no primary projection.
+
+Late operands, counts, referents, layouts, scopes and mixed cycles reject atomically.
+Missing evidence preserves earlier links; exact map/work/hop limits, duplicate visits and
+independent Bind/read/source/receiver/binary control preserve the same bounds. Required
+cases retain reference identity, full-record comparisons, source/receiver/nested/function
+order and P006 after a reached left projection. Reference histories remain Unknown;
+copies of receiver cells and broader value, loan and proof authority remain separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

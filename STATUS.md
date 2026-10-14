@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-13. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-14. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -28,32 +28,31 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Coercion-owned shared scalar primaries now link through record receivers initialized
-from immutable local records and copies. Original counts and exact referents qualify
-receiver/local hops, complete immutable layouts and source slot zero. The
-[compiler handoff](compiler/STATUS.md#coercion-owned-primaries-through-shared-reference-receiver-local-inputs)
-records the five implementation/coverage commits and current checks.
+Binary-owned shared scalar primaries now link through record receivers initialized
+from immutable local records and copies. Binaries and coercions share exact counted
+qualification while preserving original operand steps, full immutable layouts, canonical
+storage, owners and scopes. The
+[compiler handoff](compiler/STATUS.md#binary-owned-primaries-through-shared-reference-receiver-local-inputs)
+records the six implementation/coverage commits and current checks.
 
-Source publication, receiver initialization and projection/operation/result observations
-remain independent. Projection-only Convert reports keep their existing index rules.
-Missing counts suppress local links while preserving direct receiver fallback; stale
-present counts reject. Reference histories stay Unknown, and binary-owned receiver
-projections remain separate. Two required cases preserve typed/nullable copies,
-returned reference identity, guarded/nested/function order and P006 after a reached
-projection.
+Source, receiver, projection and operation/result observations remain independent.
+Earlier coercions and full-record equality retain their own behavior; reference histories
+stay Unknown. Missing counts suppress local links while preserving direct fallback.
+Two required cases preserve reference identity, full equality, source/receiver/nested/
+function order and P006 after a reached left projection.
 
-All ten compiler checks pass: 3027 library/921 native and 62 Python tests, formatting,
-Clippy, build and 465 required conformance cases. The same 19 pinned gaps remain,
-with zero debug/release failures (`/tmp/meowy-receiver-coercion-gate.log`). Strict mode
-exits 1 only for the exact pins (`/tmp/meowy-receiver-coercion-strict.log`). The audit preserves 555 prior
-reference/source/pin/obligation files, all 482 prior cases, 19 pins and 37 hashes
-(`/tmp/meowy-receiver-coercion-preservation.log`). All four final guide/handoff checks
-pass (`/tmp/meowy-receiver-coercion-docs.log`). Full proof/release qualification remains
-incomplete.
+All ten compiler checks pass: 3038 library/921 native and 62 Python tests, formatting,
+Clippy, build and 467 required conformance cases. The same 19 pinned gaps remain,
+with zero debug/release failures (`/tmp/meowy-receiver-binary-gate.log`). Strict mode
+exits 1 only for the exact pins (`/tmp/meowy-receiver-binary-strict.log`). The audit
+preserves 557 prior reference/source/pin/obligation files, all 484 prior cases, 19 pins
+and 37 hashes
+(`/tmp/meowy-receiver-binary-preservation.log`). All four final guide/handoff checks pass
+(`/tmp/meowy-receiver-binary-docs.log`). Full proof/release qualification remains incomplete.
 
-Next: binary-owned primaries through shared-reference receivers initialized from
-immutable local records. Copies of receiver cells retain their existing boundaries.
-Unrelated `docs/programs/hey/` is preserved.
+Next: owned scalar fields through immutable copies of shared-reference receiver records,
+using a separate bounded qualifier. Existing consumer modes and ordinary eligibility
+retain their boundaries. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -1203,10 +1202,10 @@ execution was not part of this documentation edit.
    now pass their gates, including contextual-list primary consumers, shared-reference
    receiver fields/composition and immutable shared-reference local field/composition
    and coercion/binary-primary sources. Owned scalar fields now qualify shared-reference
-   receiver inputs through immutable locals, including composed-emission sources. Next
-   qualify binary-owned primaries through these receiver inputs; coercion-owned primaries
-   now qualify too. Follow the ordered compiler handoff and preserve source/capability
-   gates and the existing boundaries for copies of receiver cells.
+   receiver inputs through immutable locals, including composed-emission sources and
+   coercion/binary-owned primaries. Next characterize owned scalar fields through immutable
+   copies of shared-reference receiver records using the ordered compiler handoff.
+   Preserve source/capability gates, ordinary eligibility and other consumer boundaries.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-14. Shared-reference receiver binary qualification is in progress.
+Updated: 2026-10-14. Shared-reference receiver binary qualification is implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4010,66 +4010,81 @@ the exact pinned names/reasons (`/tmp/meowy-receiver-coercion-strict.log`). All 
 guide/handoff checks pass (`/tmp/meowy-receiver-coercion-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Current: binary-owned primaries through shared-reference receiver local inputs
+### Binary-owned primaries through shared-reference receiver local inputs
 
-`r : { -> p; -> tag : true }; out : r.{ -> $ == p }` still stops at the stored receiver
-input. `consumers.rs` handles shared-scalar `Effect::Binary` inputs through the old
-kind-only receiver path, then the ordinary shared-local path. Each owned operand already
-retains an optional original count in `op.fields[step]`. The new coercion branch shows
-how to use exact record qualification without admitting copies of receiver cells.
+Complete implementation. Observed binary-owned shared scalar primaries now resolve
+through record receivers initialized from immutable local records and copies. Binaries
+and coercions share `shared_record_primary_slot`, retaining each original count, referent
+and projection step with complete immutable layouts, canonical Bind/read roots, owners
+and scopes. No capture or report payload was added. Missing counts suppress local receiver
+links while preserving direct receiver fallback; incorrect present counts reject both.
 
-The baseline is `c3da3473`; unrelated `docs/programs/hey/` is preserved. Existing
-operand counts and receiver qualifiers need no new capture/report payload. Characterize
-actual projection ownership first, then extract the existing counted coercion route
-without behavior changes before admitting binaries. Both characterization tests pass
-(`/tmp/meowy-receiver-binary-characterization.log`): three first-operand projections
-belong to binaries; `p != $` belongs to an earlier coercion, and whole-record equality
-has no projection. Field/composition/coercion links remain present. Older cross-family
-assertions now stay with their owning consumers; all 39 local-receiver tests pass.
-Counted primary selection is now extracted as `shared_record_primary_slot`, preserving
-receiver-first/local fallback ordering. All 112 coercion tests pass
-(`/tmp/meowy-receiver-binary-helper.log`), including exact work and missing-count behavior.
-Counted binary-owned operands now use the shared qualifier, retaining original step
-indices and the legacy direct receiver fallback when counts are absent. New stage tests
-cover all scalar referents, source/receiver/projection/operation/result independence and
-stopped-left/right order. All 970 Forward tests pass (`/tmp/meowy-receiver-binary-links.log`).
-The earlier inline-borrow opacity fixture now has positive count/fallback coverage.
-Missing counts suppress local receiver links, while direct fallback remains; incorrect
-present counts reject both. Next: late operand/descriptor/scope/cycle faults and missing
-evidence, then exact budgets/control and source conformance. All eight binary receiver
-tests pass (`/tmp/meowy-receiver-binary-boundaries.log`). Eighteen late faults and both
-receiver/initializer sibling scopes reject atomically. Explicit receiver ascriptions at
-either operand retain earlier coercion ownership; initializer ascriptions preserve the
-binary projection. All twelve binary receiver tests pass
-(`/tmp/meowy-receiver-binary-limits.log`): thirteen missing-evidence cases preserve
-the earlier link, and exact map/work/hop limits, duplicate visits and all 32
-Bind/read/source/receiver/binary control combinations pass without new payload.
+Source publication, receiver initialization, operand projection and operation/result
+observations remain independent. Final normal operand types do not establish observation.
+`p != $` and explicit receiver ascriptions retain earlier coercion-owned projections;
+whole-record equality gains no primary projection. Reference histories stay Unknown.
+Mutable/parameter/call inputs and copies of receiver cells remain opaque, while existing
+field/composition/coercion links are preserved. Ordinary eligibility and pointee/loan/proof
+authority are unchanged.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `3ef38fcd` | Characterize actual binary/coercion ownership and scope family assertions |
+| `5a22b0ed` | Share counted primary qualification without changing admission |
+| `fdb8acb9` | Admit counted binary operands with independent observation stages |
+| `402bd737` | Guard operands, descriptors, layouts, scopes and mixed cycles |
+| `97d8f92d` | Preserve missing-evidence boundaries and exact budgets/control |
+| `a8a95775` | Cover reference identity, full equality, evaluation order and stopped RHS |
+
+Twelve new binary receiver tests cover scalar referent families, block/dispatch sources,
+stored copies, wrappers, guarded/nested/function owners and stopped operand prefixes.
+The old cross-family binary assertion now belongs to that coverage. Eighteen late faults
+and both receiver/initializer sibling scopes reject atomically. Thirteen missing-evidence
+cases retain earlier links. Exact map/work/hop bounds, duplicate visits and all 32
+Bind/read/source/receiver/binary control combinations pass without variable payload.
+Focused logs use `/tmp/meowy-receiver-binary-` with suffixes `characterization`, `helper`,
+`links`, `boundaries` and `limits`.
+
 Both required source cases pass exact debug/release output and P006
-(`/tmp/meowy-receiver-binary-source.log`). Metadata validates 486 cases and 37 unchanged
-reference hashes. Next: preservation audit, complete compiler/strict gates and final
-guide/handoff checks.
+(`/tmp/meowy-receiver-binary-source.log`). The audit preserves 557 prior reference/source/
+pin/obligation files, all 484 prior cases, 19 pins, 37 reviewed hashes and prior evidence
+from `c3da3473` (`/tmp/meowy-receiver-binary-preservation.log`). All ten compiler checks
+pass: 3038 library, 921 native and 62 Python tests, formatting, all-target Clippy, build,
+metadata and conformance execution (`/tmp/meowy-receiver-binary-gate.log`). The 486-case
+catalog has 467 required passes, 19 unchanged pinned gaps and zero debug/release failures.
+Strict mode exits 1 only for the exact pins (`/tmp/meowy-receiver-binary-strict.log`).
+All four final guide/handoff checks pass (`/tmp/meowy-receiver-binary-docs.log`).
+No known failures remain.
+Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: scalar fields through immutable copies of shared-reference receivers
+
+`r : { -> p; -> tag : true }; out : r.{ copy : $; -> copy.tag }` remains opaque.
+`Target::SharedLocal` cannot cross a copy initializer's receiver read.
+`Target::SharedReceiverLocal` requires a receiver jump before local hops and blocks
+further receiver jumps once `stored` is set. Those existing policies protect the completed
+field/composition/primary consumers; do not relax them as an incidental shortcut.
 
 Dependency-ordered commit plan:
 
-1. Characterize binary receiver inputs from locals in `consumers/primary/shared_receivers/`
-   and `consumers/local_binaries.rs`, with report checks in `effects/binaries/`. Inspect
-   actual ownership at both operand positions; `p != $` can belong to an earlier coercion.
-   Preserve original steps, whole-record equality, stopped prefixes and existing field,
-   composition and coercion links across guarded/nested/function owners.
-2. Connect only observed binary-owned shared scalar projections using each operand's
-   original optional count and exact referent with `shared_record_receiver_body`.
-   Reuse immutable slot-zero and complete layout validation. Keep direct receiver
-   fallback, canonical Bind/read roots, receiver initialization and source publication
-   separate. If shared routing needs extraction, keep that behavior-preserving slice
-   separate from admission and retain focused tests with each change.
-3. Cover missing descriptors/observations, wrong operand/count/referent/suffix/scope
-   identities, mixed cycles, independent source/receiver/projection/operation/result
-   stages and exact map/work/hop limits. Preserve atomic maps, duplicate visits and
-   control independence; final normal operand types do not establish observation.
-4. Add required source order/P006 cases linked to primary composition, audit prior
-   fixtures/pins/hashes and run compiler/strict plus final guide/handoff gates. Retain
-   Unknown reference histories, the existing boundaries for copies of receiver cells
-   and loan/proof authority.
+1. Characterize owned scalar field reads through stored receiver copies in
+   `consumers/fields/receivers/locals.rs`, `effects/reads/shared.rs` and
+   `effects/reads/receivers/shared.rs`. Compare direct/copied receivers, transitive local
+   copies, nested/guarded/function scopes and stopped initializers. Require original
+   Bind/read roots, exact primary/count descriptors and normal observed initialization.
+2. Design a bounded field-specific traversal mode that can qualify a copy initializer's
+   original receiver read. Validate each hop at its own lexical/receiver scope, retaining
+   exact owners, storage and complete immutable layouts. Keep generic eligibility,
+   canonical receiver-cell exclusion and existing traversal modes unchanged; separate
+   any behavior-preserving extraction from field admission and retain focused tests.
+3. Revalidate field-result/candidate/expanded paths. Prove missing evidence suppresses
+   only the affected link and stale identities, unrelated scopes, mixed local/receiver
+   cycles and exact map/root/work/hop exhaustion reject atomically. Preserve independent
+   source/copy/receiver/field stages and Unknown reference histories. Keep composition
+   and primary consumer admission through receiver copies separate.
+4. Add required source order/P006 cases linked to dispatch and ownership, audit prior
+   fixtures/pins/hashes and run compiler/strict plus final guide/handoff gates. Do not
+   grant pointee, lifetime, loan or proof authority from structural links.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
@@ -5677,9 +5692,10 @@ Composed-emission and unary-owned record-receiver sources are complete, includin
 shared-reference receiver composition and immutable shared-reference local field/composition
 and coercion/binary-primary sources. Owned scalar fields now qualify shared-reference
 receiver inputs through immutable local records, including composed-emission sources.
-Coercion-owned primaries now qualify these receiver inputs too. Next qualify
-binary-owned primaries using the ordered plan above; copies of receiver cells,
-value selection and broader aggregate provenance remain separate.
+Coercion- and binary-owned primaries now qualify these receiver inputs too. Next
+characterize owned scalar fields through immutable copies of shared-reference receiver
+records using the ordered plan above; other consumers through receiver copies, value
+selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
