@@ -978,7 +978,7 @@ order and P006 after a reached left projection. Reference histories remain Unkno
 broader value, loan and proof authority remain separate.
 
 Owned scalar fields now resolve through immutable copies of shared-reference receiver
-records. A field-specific traversal mode can alternate qualified typed-local and receiver
+records. The `SharedCopies` traversal mode can alternate qualified typed-local and receiver
 hops in either order. Each hop retains its exact primary/count descriptor, canonical
 Bind/read/storage identity and original lexical or receiver scope. A copy created under
 one receiver can be read inside another receiver's body; its source is validated where
@@ -995,8 +995,27 @@ Descriptor/storage/layout faults, crossed scopes and mixed local/receiver cycles
 atomically. Exact map/root/work/hop bounds and independent Bind/read/source/receiver/field
 control have structural regressions. Required cases preserve source/copy/ascription order,
 fields under nested receivers, function owners and P006 after reached reads. Reference
-histories remain Unknown. Composition and primary consumers through receiver copies,
-and broader value, lifetime, loan and proof authority, remain separate.
+histories remain Unknown. Primary consumers through receiver copies and broader value,
+lifetime, loan and proof authority remain separate.
+
+Composed emissions now share this bounded copy-body qualifier. Each initialized primary
+or field target uses the original `Composition` primary/count descriptor and its exact
+source slot. Full source and target layouts must agree, including unobserved suffixes,
+field names and canonical destination storage. A copy's original receiver scope remains
+independent of the scope where composition occurs.
+
+Source publication, copy binding, receiver initialization, individual target observations
+and destination completion stay independent. Candidate collection and both source forests
+revalidate the same qualifier; multiple targets reuse one bounded source-cache entry.
+Missing observations preserve earlier links. Stale candidate links must be rebuilt,
+while removed publication or target initialization also invalidates retained result reports.
+Reference and aggregate histories remain Unknown, including through composition chains.
+
+Structural checks cover stale descriptors/storage/layouts, crossed scopes, mixed cycles,
+exact map/work/hop/forest budgets and independent control observations. Required source
+cases preserve named-target composition, copy/ascription/nested/function order and P006
+after a reached composition. Canonical receiver cells remain excluded from initializer
+indexes. Generic eligibility and coercion/binary primary admission are unchanged.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
