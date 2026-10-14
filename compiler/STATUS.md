@@ -4084,7 +4084,12 @@ missing evidence and exact graph/traversal budgets. Nineteen late descriptor/sto
 layout/cycle faults reject atomically through operation maps, field results and expanded
 walks. Scope tests reject sibling copies and crossed receiver bindings while accepting
 an outer copy under a different scalar receiver (`/tmp/meowy-receiver-copy-boundaries.log`).
-Next: missing observations, stale graph rebuilding and exact budgets/control.
+All twelve receiver-copy tests pass (`/tmp/meowy-receiver-copy-evidence.log`). Fifteen
+missing-evidence cases preserve earlier links and reject stale field/expanded maps;
+removed dispatch publication still invalidates its upstream result map. Exact map/root/
+work/hop budgets and all 32 Bind/read/source/receiver/field control combinations pass.
+Next: required source order/P006 cases, preservation audit and final compiler/strict
+plus guide/handoff gates.
 
 Dependency-ordered commit plan:
 
