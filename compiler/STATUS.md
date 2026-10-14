@@ -3993,8 +3993,10 @@ call-result receiver exclusions (`/tmp/meowy-receiver-coercion-boundaries.log`).
 All eleven local-receiver coercion tests pass (`/tmp/meowy-receiver-coercion-limits.log`).
 Thirteen missing-evidence cases retain the earlier projection; exact map/work/hop
 limits, duplicate visits and all 32 independent Bind/read/source/receiver/coercion
-control combinations pass without new payload. Next: required source order/P006 cases,
-contract/pin preservation audit and final compiler/strict plus guide/handoff gates.
+control combinations pass without new payload. Both required source cases pass exact
+debug/release output and P006 (`/tmp/meowy-receiver-coercion-source.log`). Metadata
+validates 484 cases and 37 unchanged reference hashes. Next: contract/pin preservation
+audit, complete compiler/strict gates and the final guide/handoff update.
 
 Dependency-ordered commit plan:
 

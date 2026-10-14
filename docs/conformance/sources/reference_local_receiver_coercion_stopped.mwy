@@ -1,0 +1,18 @@
+d : @"debug"
+n : 7
+p : &n
+record : p.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+alias : ((record))
+alias.{
+    d.print("receiver")
+    first <&int32> : $
+    d.print(first == p)
+    d.panic("stop")
+    last <&int32><null> : $
+    d.print("unreached")
+}
