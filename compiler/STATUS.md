@@ -3963,7 +3963,7 @@ All four final guide/handoff checks pass (`/tmp/meowy-receiver-composition-docs.
 No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: coercion-owned primaries through shared-reference receiver local inputs
+### Current: coercion-owned primaries through shared-reference receiver local inputs
 
 `r : { -> p; -> tag : true }; out : r.{ copy <&int32> : $ }` still stops at the stored
 receiver input. `consumers.rs` handles `Effect::Coercion` with a shared scalar source
@@ -3971,6 +3971,16 @@ through the old kind-only receiver path, then the ordinary shared-local path. Th
 captured `op.fields` and exact source kind already provide the descriptor needed by
 `shared_record_receiver_body`; projection ownership and stage validation remain in
 `primary_effect_inputs`.
+
+The baseline is `7f33b833`; unrelated `docs/programs/hey/` is preserved. Investigation
+confirms that existing coercion counts and receiver qualification provide the needed
+metadata without new capture/report payload. Characterize ownership and observed stages
+first. Count-bearing receiver paths will use exact record qualification; direct receiver
+behavior without an optional count remains separate. Both characterization tests pass
+(`/tmp/meowy-receiver-coercion-characterization.log`). Five coercion-owned projections
+retain exact counts across owners while fields/compositions keep their links; binary-owned
+projections, whole-record copies and receiver-cell copies remain separate. The fixture
+annotation is repaired. Next: admit counted receiver projections with independent stages.
 
 Dependency-ordered commit plan:
 
