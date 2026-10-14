@@ -29,9 +29,8 @@ pub(crate) fn shared_local_fields_follow_original_block_dispatch_and_copy_source
 }
 
 #[test]
-pub(crate) fn shared_local_fields_keep_alias_load_receiver_copy_and_other_consumers_opaque() {
+pub(crate) fn shared_local_fields_keep_alias_load_and_other_consumers_opaque() {
     for tail in [
-        "out:r.{copy:$;->copy.tag}",
         "out:{->named:r;copy:named.tag}",
         "out:(&r).tag",
         "out:(*(&r)).tag",

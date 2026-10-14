@@ -4073,7 +4073,14 @@ All three characterization tests pass (`/tmp/meowy-receiver-copy-characterizatio
 Copies retain exact typed Bind rows outside generic eligibility; original receiver cells
 remain excluded from both initializer indexes. Both individual hops qualify, but current
 modes stop their composition. Transitive copies and nested/guarded/function fields stay
-opaque, while direct fields still link. Next: connect a bounded field-only traversal mode.
+opaque, while direct fields still link. `Target::SharedField` now permits both qualified
+hop families in any order, with original scopes and the existing shared limits. Only
+field admission uses it; other modes retain their policies. All 983 Forward tests pass
+(`/tmp/meowy-receiver-copy-links.log`). Six copy tests cover original slots, emitted
+consumers, all scalar referents, independent source/copy/receiver/field stages, stopped
+initializers and excluded mutable/load/parameter/nonscalar sources. Composition and
+primary consumers stay opaque. Next: stale identities, mixed cycles, per-hop scopes,
+missing evidence and exact graph/traversal budgets.
 
 Dependency-ordered commit plan:
 

@@ -1,10 +1,34 @@
 use super::*;
-use crate::check::dependencies::{bodies::completion::Shape, operations::SharedRecord};
+use crate::check::dependencies::{
+    bodies::completion::Shape, grouped::MAX_GROUPS, operations::SharedRecord,
+};
 
 #[cfg(test)]
 mod locals;
 
 impl Checker {
+    pub(self) fn shared_field_body(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        record: SharedRecord,
+        span: Span,
+    ) -> Result<Option<hir::BlockId>> {
+        let Some(input) = self.grouped_source_limited(
+            reports,
+            input,
+            owner,
+            span,
+            MAX_GROUPS,
+            grouped::Target::SharedField(record),
+        )?
+        else {
+            return Ok(None);
+        };
+        self.shared_record_body(reports, input, owner, record, span)
+    }
+
     pub(super) fn field_slot(
         &mut self,
         reports: &Reports,
@@ -38,20 +62,7 @@ impl Checker {
             } else if let Some(block) = self.record_receiver_body(reports, *input, owner, span)? {
                 (block, true, true)
             } else if let Some(primary) = *shared_primary
-                && let Some(block) = self.shared_record_receiver_body(
-                    reports,
-                    *input,
-                    owner,
-                    SharedRecord {
-                        primary,
-                        fields: self.fields[&id].count,
-                    },
-                    span,
-                )?
-            {
-                (block, true, true)
-            } else if let Some(primary) = *shared_primary
-                && let Some(block) = self.shared_local_body(
+                && let Some(block) = self.shared_field_body(
                     reports,
                     *input,
                     owner,

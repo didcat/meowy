@@ -170,14 +170,12 @@ pub(crate) fn shared_local_receiver_fields_link_stored_inputs_after_receiver_qua
 }
 
 #[test]
-pub(crate) fn shared_local_receiver_fields_keep_mutable_parameter_and_copy_inputs_opaque() {
+pub(crate) fn shared_local_receiver_fields_keep_mutable_parameter_and_aggregate_inputs_opaque() {
     for source in [
         "n:1;p:&n;r:={->p;->tag:true};out:r.{->$.tag}",
         "n:1;p:&n;r:{->p;->tag:=true};out:r.{->$.tag}",
         "n:1;p:&n;r:{->p;->other:p;->tag:true};out:r.{->$.tag}",
         "n:1;p:&n;r:{->p;->tag:true};out:(&r).{->$.tag}",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;->copy.tag}",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;->copy.{->$.tag}}",
         "n:1;p:&n;r:{->p;->inner:{->n:1}};out:r.{->$.inner}",
         "f<boolean>:(r<{-><&int32>;tag<boolean>}>){->r.{->$.tag}}",
     ] {

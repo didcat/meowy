@@ -13,6 +13,7 @@ pub(super) enum Target {
     SharedReceiver(ScalarKind),
     SharedReceiverLocal(SharedRecord),
     SharedLocal(SharedRecord),
+    SharedField(SharedRecord),
 }
 
 impl Checker {
@@ -195,7 +196,7 @@ impl Checker {
             {
                 input
             } else if let Some(record) = match target {
-                Target::SharedLocal(record) => Some(record),
+                Target::SharedLocal(record) | Target::SharedField(record) => Some(record),
                 Target::SharedReceiverLocal(record) if qualified => Some(record),
                 _ => None,
             } && let Some(input) =
@@ -218,10 +219,12 @@ impl Checker {
             {
                 qualified = true;
                 input
-            } else if let Target::SharedReceiverLocal(record) = target
-                && !stored
-                && let Some((input, actual)) =
-                    self.shared_receiver_source(reports, current, owner, record.primary, span)?
+            } else if let Some(record) = match target {
+                Target::SharedReceiverLocal(record) if !stored => Some(record),
+                Target::SharedField(record) => Some(record),
+                _ => None,
+            } && let Some((input, actual)) =
+                self.shared_receiver_source(reports, current, owner, record.primary, span)?
             {
                 if actual != record {
                     return Err(invalid());

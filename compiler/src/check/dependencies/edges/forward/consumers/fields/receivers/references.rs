@@ -129,7 +129,6 @@ pub(crate) fn shared_receiver_fields_preserve_stopped_prefixes_and_ineligible_pa
         "n:1;p:&n;r:{->p;->tag:true};out:(&r).{->(*$).tag}",
         "n:1;p:&n;out:{->p;->inner:{->n:1}}.{->$.inner}",
         "n:[1];p:&n;out:{->p;->tag:true}.{->$.tag}",
-        "n:1;p:&n;out:p.{->$;->tag:true}.{copy:$;->copy.tag}",
     ] {
         let (_, reports) = checked(source);
         assert!(reports.slot_uses.is_empty(), "{source}");
