@@ -4123,7 +4123,13 @@ candidate collection and both forests, including unobserved target suffixes. Sco
 tests reject sibling substitutions and validate the original receiver when a copy is
 read beneath a scalar receiver. All six focused composition tests pass
 (`/tmp/meowy-copy-emissions-boundaries.log`). Missing evidence, graph rebuilds and
-exact budgets follow this boundary slice.
+exact budgets follow this boundary slice (`b76c2622`).
+Seventeen missing-evidence cases preserve earlier links and reject stale graphs until
+links and candidate inputs are rebuilt. Removed dispatch publication or target
+initialization still invalidates retained upstream results. Composition chains preserve
+multiple scalar histories and Unknown reference/aggregate histories. All 19 focused
+receiver-copy tests pass (`/tmp/meowy-copy-emissions-evidence.log`). Exact budgets and
+independent control observations are next.
 
 Dependency-ordered commit plan:
 
