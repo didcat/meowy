@@ -4117,8 +4117,13 @@ nested/guarded/function scopes and both forests. Source/copy/receiver/target sta
 stopped prefixes across six scalar kinds pass all 994 Forward tests. All 512 independent
 source/copy/receiver/target stage combinations pass; mutable copies stay opaque
 (`/tmp/meowy-copy-emissions-links.log`). Baseline is `f26db31c`; unrelated
-`docs/programs/hey/` remains untouched. Next: fault injection,
-missing evidence, graph rebuilds and exact budgets after committing admission.
+`docs/programs/hey/` remains untouched. Admission is committed as `bba67bbb`.
+Twenty-one late descriptor/storage/layout/cycle faults reject atomically in slot maps,
+candidate collection and both forests, including unobserved target suffixes. Scope
+tests reject sibling substitutions and validate the original receiver when a copy is
+read beneath a scalar receiver. All six focused composition tests pass
+(`/tmp/meowy-copy-emissions-boundaries.log`). Missing evidence, graph rebuilds and
+exact budgets follow this boundary slice.
 
 Dependency-ordered commit plan:
 
