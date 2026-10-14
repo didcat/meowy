@@ -28,31 +28,32 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Composed emissions now link through shared-reference record receivers initialized
-from immutable local records and copies. Fields and emissions reuse exact receiver
-primary/count qualification, preserving full source/target layouts, canonical storage,
-owners and scopes. The
-[compiler handoff](compiler/STATUS.md#composed-emissions-through-shared-reference-receiver-local-inputs)
-records the eight validated commits and current checks.
+Coercion-owned shared scalar primaries now link through record receivers initialized
+from immutable local records and copies. Original counts and exact referents qualify
+receiver/local hops, complete immutable layouts and source slot zero. The
+[compiler handoff](compiler/STATUS.md#coercion-owned-primaries-through-shared-reference-receiver-local-inputs)
+records the five implementation/coverage commits and current checks.
 
-Source, receiver, target and destination observations remain independent. Candidate
-and expanded graphs revalidate source qualification and share a source cache. Missing
-evidence preserves earlier links; stale graphs reject until rebuilt. Reference and
-nonscalar histories stay Unknown. Two required cases preserve reference identity,
-extra fields, named/guarded/nested/function order and P006 after a reached emission.
+Source publication, receiver initialization and projection/operation/result observations
+remain independent. Projection-only Convert reports keep their existing index rules.
+Missing counts suppress local links while preserving direct receiver fallback; stale
+present counts reject. Reference histories stay Unknown, and binary-owned receiver
+projections remain separate. Two required cases preserve typed/nullable copies,
+returned reference identity, guarded/nested/function order and P006 after a reached
+projection.
 
-All ten compiler checks pass: 3016 library/921 native and 62 Python tests, formatting,
-Clippy, build and 463 required conformance cases. The same 19 pinned gaps remain,
-with zero debug/release failures (`/tmp/meowy-receiver-composition-gate.log`). Strict
-mode exits 1 only for the exact pins (`/tmp/meowy-receiver-composition-strict.log`). The audit preserves
-553 prior reference/source/pin/obligation files, all 480 prior cases, 19 pins and 37 hashes
-(`/tmp/meowy-receiver-composition-preservation.log`). All four final guide/handoff
-checks pass (`/tmp/meowy-receiver-composition-docs.log`). Full proof/release qualification
-remains incomplete.
+All ten compiler checks pass: 3027 library/921 native and 62 Python tests, formatting,
+Clippy, build and 465 required conformance cases. The same 19 pinned gaps remain,
+with zero debug/release failures (`/tmp/meowy-receiver-coercion-gate.log`). Strict mode
+exits 1 only for the exact pins (`/tmp/meowy-receiver-coercion-strict.log`). The audit preserves 555 prior
+reference/source/pin/obligation files, all 482 prior cases, 19 pins and 37 hashes
+(`/tmp/meowy-receiver-coercion-preservation.log`). All four final guide/handoff checks
+pass (`/tmp/meowy-receiver-coercion-docs.log`). Full proof/release qualification remains
+incomplete.
 
-Next: coercion-owned primaries through shared-reference receivers initialized from
-immutable local records. Binary receiver consumers and copies of receiver cells retain
-their existing boundaries. Unrelated `docs/programs/hey/` is preserved.
+Next: binary-owned primaries through shared-reference receivers initialized from
+immutable local records. Copies of receiver cells retain their existing boundaries.
+Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
@@ -1203,9 +1204,9 @@ execution was not part of this documentation edit.
    receiver fields/composition and immutable shared-reference local field/composition
    and coercion/binary-primary sources. Owned scalar fields now qualify shared-reference
    receiver inputs through immutable locals, including composed-emission sources. Next
-   qualify coercion-owned primaries through these receiver inputs using the ordered
-   compiler handoff. Preserve source/capability gates and the existing boundaries for
-   binary receiver consumers and copies of receiver cells.
+   qualify binary-owned primaries through these receiver inputs; coercion-owned primaries
+   now qualify too. Follow the ordered compiler handoff and preserve source/capability
+   gates and the existing boundaries for copies of receiver cells.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
    Required/type-only calls remain separate.

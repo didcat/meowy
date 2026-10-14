@@ -935,8 +935,28 @@ nonscalar histories remain Unknown, while multiple scalar histories stay distinc
 Exact map/cache/forest/work/hop limits, duplicate visits and independent
 Bind/read/source/receiver/emission control have structural regressions. Required source
 cases preserve reference identity, extra fields, named/guarded/nested/function order
-and P006 after a reached composition. Copies of receiver cells, binary/coercion receiver
-paths and broader value/proof authority remain separate.
+and P006 after a reached composition. Copies of receiver cells and broader value/proof
+authority remain separate.
+
+Coercion-owned shared scalar primaries also resolve through these receiver inputs.
+An observed step-zero projection uses its original optional record count and exact
+referent with the same receiver qualifier, then links immutable source slot zero.
+Present counts must agree with every receiver/local descriptor and the complete source
+layout. Missing counts suppress local receiver links while preserving existing direct
+receiver fallback; incorrect present counts reject both paths.
+
+Source publication, receiver initialization and coercion projection/operation/result
+observations remain independent. A projection-only Convert report needs no conversion
+operation registration; observed operations/results keep that requirement. Complete
+layouts, canonical Bind/read roots, owners and scopes remain mandatory. Stale counts,
+referents, suffixes, scopes and cycles reject atomically; missing evidence preserves
+earlier links. Exact map/work/hop limits, duplicate visits and independent
+Bind/read/source/receiver/coercion control retain their existing bounds.
+
+Required cases preserve typed/nullable copies, returned reference identity, guarded/
+nested/function order and P006 after a reached projection. Reference histories remain
+Unknown. Binary-owned receiver projections, copies of receiver cells, ordinary local
+eligibility and loan/proof authority retain their existing boundaries.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
