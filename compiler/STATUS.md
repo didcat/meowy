@@ -4029,7 +4029,14 @@ assertions now stay with their owning consumers; all 39 local-receiver tests pas
 Counted primary selection is now extracted as `shared_record_primary_slot`, preserving
 receiver-first/local fallback ordering. All 112 coercion tests pass
 (`/tmp/meowy-receiver-binary-helper.log`), including exact work and missing-count behavior.
-Next: connect binary-owned operands and preserve independent observation stages.
+Counted binary-owned operands now use the shared qualifier, retaining original step
+indices and the legacy direct receiver fallback when counts are absent. New stage tests
+cover all scalar referents, source/receiver/projection/operation/result independence and
+stopped-left/right order. All 970 Forward tests pass (`/tmp/meowy-receiver-binary-links.log`).
+The earlier inline-borrow opacity fixture now has positive count/fallback coverage.
+Missing counts suppress local receiver links, while direct fallback remains; incorrect
+present counts reject both. Next: late operand/descriptor/scope/cycle faults and missing
+evidence, then exact budgets/control and source conformance.
 
 Dependency-ordered commit plan:
 

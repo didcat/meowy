@@ -155,7 +155,6 @@ pub(crate) fn receiver_binary_primaries_preserve_empty_multiple_and_opaque_histo
         "r:{->3;->tag:true};p:&r;out:(*p).{x:$+1}",
         "get<{-><int32>;tag<boolean>}>:(){->3;->tag:true};out:get().{x:$+1}",
         "f:(r<{-><int32>;tag<boolean>}>){out:r.{x:$+1}}",
-        "a:1;r:{->&a;->tag:true};out:r.{x:$==&a}",
         "r:{->[1];->tag:true};out:r.{x:$==r}",
         "n<int32><null>:1;r:{->n;->tag:true};out:r.{x:$==n}",
     ] {

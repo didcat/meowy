@@ -120,7 +120,6 @@ pub(crate) fn local_reference_binaries_keep_mutable_alias_load_call_and_receiver
         "n:1;p:&n;r:{->p;->tag:true};out:{->named:r;p==named}",
         "n:1;p:&n;r:{->p;->tag:true};(*(&r))==p",
         "f<{-><&int32>;tag<boolean>}>:(p<&int32>){->p;->tag:true};n:1;p:&n;r:f(p);r==p",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{->$==p}",
     ] {
         crate::compile(source).unwrap();
         let (_, reports) = checked(source, false);

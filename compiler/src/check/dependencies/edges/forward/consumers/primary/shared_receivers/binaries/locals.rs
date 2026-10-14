@@ -1,7 +1,9 @@
 use super::*;
 
+mod stages;
+
 #[test]
-pub(crate) fn shared_local_receiver_binaries_retain_operand_counts_without_duplicate_coercions() {
+pub(crate) fn shared_local_receiver_binaries_link_owned_operands_without_duplicate_coercions() {
     for init in ["{->p;->tag:true}", "p.{->$;->tag:true}"] {
         for stored in [false, true] {
             let prefix = if stored {
@@ -38,7 +40,20 @@ pub(crate) fn shared_local_receiver_binaries_retain_operand_counts_without_dupli
                     if primary {
                         assert_eq!(step, 0);
                         let port = Port::Projection { point: id, step };
-                        assert_eq!(reports.slot_uses.contains_key(&port), !stored);
+                        let (owner, slot) = reports.slot_uses[&port];
+                        assert_eq!((owner, slot.index), (op.owner, 0));
+                        let BinaryClass::SharedScalar(kind) = op.types.inputs[step] else {
+                            panic!()
+                        };
+                        let Layout::Slots(layout) = &checker.bodies[&slot.block].layout else {
+                            panic!()
+                        };
+                        assert_eq!(layout.len(), op.fields[step].unwrap() + 1);
+                        assert_eq!(layout[0].shape, Shape::SharedScalar(kind));
+                        assert_eq!(
+                            reports.results[&slot.block].1.slots.as_ref().unwrap()[0],
+                            Sources::Unknown
+                        );
                         owners.insert(op.owner);
                         owned += 1;
                     }

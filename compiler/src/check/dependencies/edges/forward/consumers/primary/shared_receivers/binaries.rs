@@ -141,7 +141,6 @@ pub(crate) fn shared_receiver_binaries_preserve_stopped_order_and_other_consumer
             .contains_key(&Port::Projection { point: id, step: 0 })
     );
     for source in [
-        "n:1;p:&n;r:{->p;->tag:true};x:r.{->$==p}",
         "n:1;p:&n;x:{->p;->tag:=true}.{->$==p}",
         "n:1;p:&n;x:{->p;->other:p}.{->$==p}",
         "n:1;p:&n;x:p.{->$;->tag:true}.{copy:$;->copy==p}",

@@ -191,16 +191,8 @@ impl Checker {
                             span,
                         )? {
                             Some(slot)
-                        } else if let Some(slot) = self.receiver_primary_shape(
-                            reports,
-                            input,
-                            *owner,
-                            Shape::SharedScalar(ty),
-                            span,
-                        )? {
-                            Some(slot)
                         } else if let Some(fields) = op.fields[step] {
-                            self.shared_local_primary_slot(
+                            self.shared_record_primary_slot(
                                 reports,
                                 input,
                                 *owner,
@@ -211,7 +203,13 @@ impl Checker {
                                 span,
                             )?
                         } else {
-                            None
+                            self.receiver_primary_shape(
+                                reports,
+                                input,
+                                *owner,
+                                Shape::SharedScalar(ty),
+                                span,
+                            )?
                         }
                     } else if let Effect::Coercion(op) = effect
                         && let Some(source @ Shape::SharedScalar(primary)) = op.source
