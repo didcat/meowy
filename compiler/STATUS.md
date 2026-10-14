@@ -4036,7 +4036,11 @@ stopped-left/right order. All 970 Forward tests pass (`/tmp/meowy-receiver-binar
 The earlier inline-borrow opacity fixture now has positive count/fallback coverage.
 Missing counts suppress local receiver links, while direct fallback remains; incorrect
 present counts reject both. Next: late operand/descriptor/scope/cycle faults and missing
-evidence, then exact budgets/control and source conformance.
+evidence, then exact budgets/control and source conformance. All eight binary receiver
+tests pass (`/tmp/meowy-receiver-binary-boundaries.log`). Eighteen late faults and both
+receiver/initializer sibling scopes reject atomically. Explicit receiver ascriptions at
+either operand retain earlier coercion ownership; initializer ascriptions preserve the
+binary projection. Next: missing observations, exact limits and independent control.
 
 Dependency-ordered commit plan:
 

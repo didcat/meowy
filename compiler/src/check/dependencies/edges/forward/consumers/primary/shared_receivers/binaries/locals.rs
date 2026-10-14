@@ -1,6 +1,32 @@
 use super::*;
 
+mod boundaries;
 mod stages;
+
+#[test]
+pub(crate) fn shared_local_receiver_binaries_preserve_ascribed_operand_coercion_ownership() {
+    for tail in [
+        "($~<{-><&int32>;a<boolean>;z<int32>}>)!=p",
+        "p!=($~<{-><&int32>;a<boolean>;z<int32>}>)",
+    ] {
+        let source = format!("n:1;p:&n;r:{{->p;->a:true;->z:3}};out:r.{{->{tail}}}");
+        let (checker, reports) = checked(&source);
+        assert!(
+            checker
+                .binaries
+                .values()
+                .all(|op| op.plan.primary == [false; 2] && op.fields == [None; 2])
+        );
+        assert_eq!(reports.slot_uses.len(), 1);
+        let (&Port::Projection { point, step: 0 }, _) =
+            reports.slot_uses.first_key_value().unwrap()
+        else {
+            panic!()
+        };
+        assert!(checker.coercions[&point].primary);
+        assert_eq!(checker.coercions[&point].fields, Some(2));
+    }
+}
 
 #[test]
 pub(crate) fn shared_local_receiver_binaries_link_owned_operands_without_duplicate_coercions() {
