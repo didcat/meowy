@@ -156,7 +156,7 @@ pub(crate) fn shared_receiver_emissions_preserve_stopped_prefixes_and_opaque_sto
         "n:1;p:&n;out:{->p;->other:p}.{copy:{->$}}",
         "n:1;p:&n;r:{->p;->tag:true};out:(&r).{copy:{->*$}}",
         "n:[1];p:&n;out:{->p;->tag:true}.{copy:{->$}}",
-        "n:1;p:&n;out:p.{->$;->tag:true}.{alias:$;copy:{->alias}}",
+        "n:1;p:&n;out:p.{->$;->tag:true}.{alias:=$;copy:{->alias}}",
         "n:1;p:&n;out:p.{->$;->tag:true}.{copy:{->named:$}}",
         "d:@\"debug\";n:1;p:&n;out:p.{->$;->tag:true}.{d.panic(\"stop\");copy:{->$}}",
     ] {

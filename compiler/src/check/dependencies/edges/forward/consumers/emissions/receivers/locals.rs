@@ -87,15 +87,15 @@ pub(crate) fn shared_local_receiver_emissions_link_exact_slots_without_losing_fi
 }
 
 #[test]
-pub(crate) fn shared_local_receiver_emissions_keep_ineligible_storage_and_receiver_copies_opaque() {
+pub(crate) fn shared_local_receiver_emissions_keep_ineligible_storage_opaque() {
     for source in [
         "n:1;p:&n;r:={->p;->tag:true};out:r.{copy:{->$}}",
         "n:1;p:&n;r:{->p;->tag:=true};out:r.{copy:{->$}}",
         "n:1;p:&n;r:{->p;->other:p};out:r.{copy:{->$}}",
         "n:[1];p:&n;r:{->p;->tag:true};out:r.{copy:{->$}}",
         "n:1;p:&n;r:{->p;->tag:true};out:(&r).{copy:{->*$}}",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{alias:$;copy:{->alias}}",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{alias:$;inner:alias.{copy:{->$}}}",
+        "n:1;p:&n;r:{->p;->tag:true};out:r.{alias:=$;copy:{->alias}}",
+        "n:1;p:&n;r:{->p;->tag:true};out:r.{alias:=$;inner:alias.{copy:{->$}}}",
         "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:{->named:$}}",
         "f<null>:(r<{-><&int32>;tag<boolean>}>){out:r.{copy:{->$}}}",
     ] {

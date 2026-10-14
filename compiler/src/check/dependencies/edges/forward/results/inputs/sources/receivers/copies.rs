@@ -26,13 +26,9 @@ pub(crate) fn receiver_copy_graphs_distinguish_reference_histories_and_scalar_pr
         assert_eq!(projections.len(), 2);
         for (&key, &(_, candidate)) in projections {
             assert_ne!(key.1, 0);
-            assert_eq!(candidate.source.is_some(), input == "$");
+            assert!(candidate.source.is_some());
             for walk in [&reports.candidate_walk, &reports.expanded_walk] {
-                let visit = if input == "$" {
-                    Visit::Projection(key, candidate)
-                } else {
-                    Visit::Unresolved(key, candidate)
-                };
+                let visit = Visit::Projection(key, candidate);
                 assert!(walk.visits.contains(&visit));
             }
         }

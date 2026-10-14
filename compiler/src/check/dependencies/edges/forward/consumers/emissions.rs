@@ -75,20 +75,7 @@ impl Checker {
         {
             block
         } else if let Some(primary) = composed.shared_primary
-            && let Some(block) = self.shared_record_receiver_body(
-                reports,
-                observed.input,
-                owner,
-                SharedRecord {
-                    primary,
-                    fields: composed.count,
-                },
-                span,
-            )?
-        {
-            block
-        } else if let Some(primary) = composed.shared_primary
-            && let Some(block) = self.shared_local_body(
+            && let Some(block) = self.shared_copy_body(
                 reports,
                 observed.input,
                 owner,

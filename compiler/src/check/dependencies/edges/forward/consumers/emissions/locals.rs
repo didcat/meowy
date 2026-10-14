@@ -133,7 +133,7 @@ pub(crate) fn shared_local_emissions_keep_stopped_prefixes_and_excluded_storage_
         "n:1;p:&n;r:{->p;->tag:true};out:{->*(&r)}",
         "n:1;p:&n;r:{->p;->tag:true};out:{->named:r}",
         "n:1;p:&n;r:{->p;->tag:true};out:{->named:r;copy:{->named}}",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{alias:$;copy:{->alias}}",
+        "n:1;p:&n;r:{->p;->tag:true};out:r.{alias:=$;copy:{->alias}}",
         "f<{-><&int32>;tag<boolean>}>:(p<&int32>){->p;->tag:true};n:1;r:f(&n);out:{->r}",
         "d:@\"debug\";n:1;p:&n;r:{->p;->tag:true};out:{d.panic(\"stop\");->r}",
     ] {

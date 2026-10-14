@@ -107,12 +107,11 @@ pub(crate) fn shared_receiver_copy_fields_link_original_slots_across_scopes_and_
 }
 
 #[test]
-pub(crate) fn shared_receiver_copies_keep_composition_and_primary_consumers_separate() {
+pub(crate) fn shared_receiver_copies_keep_primary_consumers_opaque() {
     let (checker, reports) = checked(
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;cmp:copy==p;view<&int32>:copy;joined:{->copy};nested:copy.{a:$==p;b<&int32>:$;whole:{->$}}}",
+        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;cmp:copy==p;view<&int32>:copy;nested:copy.{a:$==p;b<&int32>:$}}",
     );
     assert!(checker.binaries.values().any(|op| op.plan.primary[0]));
     assert!(checker.coercions.values().any(|op| op.primary));
-    assert!(checker.emissions.values().any(|op| op.composed.is_some()));
     assert!(reports.slot_uses.is_empty());
 }

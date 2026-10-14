@@ -4105,26 +4105,20 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Current: composed emissions through immutable copies of shared-reference receivers
 
-`r : { -> p; -> tag : true }; out : r.{ copy : $; joined : { -> copy } }` remains opaque.
-`consumers/emissions.rs` still uses the receiver-first and local-only modes. The new
-field-specific helper can alternate the required hops, but only field admission calls it.
-`Composition` already retains the exact primary/count descriptor needed for qualification.
+Characterization (`bb346a5e`) passed 13 focused tests. The behavior-preserving qualifier
+extraction (`691b97ad`) passed all 992 Forward tests, including exact field budgets.
+Logs: `/tmp/meowy-copy-emissions-{characterization,extraction}.log`.
 
-Investigation confirms that copy Bind rows and original receiver reads already retain
-all required identities. Reuse the bounded field traversal after a behavior-preserving
-extraction; no new capture/report payload or generic eligibility change is needed.
-The source and target layouts remain separate qualification stages. Baseline is
-`f26db31c`; only unrelated `docs/programs/hey/` is untracked and remains untouched.
-Three characterization tests compare direct/copy/transitive composition, guarded and
-function scopes, field links, typed initializer exclusions, Unknown reference histories
-and stopped copy initialization. Only direct sources currently link; copy projections
-remain unresolved in both forests. The focused receiver-copy check passes 13 tests
-(`/tmp/meowy-copy-emissions-characterization.log`). No implementation changed; the
-characterization is committed as `bb346a5e`. The field-only helper is now moved to
-`consumers/blocks.rs::shared_copy_body`; its mode is named `SharedCopies`. Traversal,
-diagnostics, work accounting and field admission are unchanged. All 992 Forward tests
-pass (`/tmp/meowy-copy-emissions-extraction.log`), including exact field budgets and
-unchanged composition characterization. Composition admission is next.
+Composition now uses `consumers/blocks.rs::shared_copy_body` and `SharedCopies`, with
+the original `Composition` primary/count descriptor and complete source/target layouts.
+No capture/report payload or generic eligibility changed. Binary/coercion modes remain
+separate. Focused tests now require links through direct, copied and transitive inputs,
+nested/guarded/function scopes and both forests. Source/copy/receiver/target stages and
+stopped prefixes across six scalar kinds pass all 994 Forward tests. All 512 independent
+source/copy/receiver/target stage combinations pass; mutable copies stay opaque
+(`/tmp/meowy-copy-emissions-links.log`). Baseline is `f26db31c`; unrelated
+`docs/programs/hey/` remains untouched. Next: fault injection,
+missing evidence, graph rebuilds and exact budgets after committing admission.
 
 Dependency-ordered commit plan:
 
