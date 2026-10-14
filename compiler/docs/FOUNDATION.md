@@ -975,7 +975,28 @@ Missing evidence preserves earlier links; exact map/work/hop limits, duplicate v
 independent Bind/read/source/receiver/binary control preserve the same bounds. Required
 cases retain reference identity, full-record comparisons, source/receiver/nested/function
 order and P006 after a reached left projection. Reference histories remain Unknown;
-copies of receiver cells and broader value, loan and proof authority remain separate.
+broader value, loan and proof authority remain separate.
+
+Owned scalar fields now resolve through immutable copies of shared-reference receiver
+records. A field-specific traversal mode can alternate qualified typed-local and receiver
+hops in either order. Each hop retains its exact primary/count descriptor, canonical
+Bind/read/storage identity and original lexical or receiver scope. A copy created under
+one receiver can be read inside another receiver's body; its source is validated where
+the copy was initialized. Canonical receiver cells remain excluded from local initializer
+indexes, and generic eligibility and the other traversal modes remain unchanged.
+
+Source publication, copy binding observation, receiver initialization and field operation/
+result visits stay independent. The final source must retain a complete immutable layout,
+including unselected suffixes. Field-result maps and expanded forests revalidate the same
+qualifier. Missing observations preserve earlier links, while stale maps reject until
+rebuilt; removed dispatch publication also invalidates retained upstream result reports.
+
+Descriptor/storage/layout faults, crossed scopes and mixed local/receiver cycles reject
+atomically. Exact map/root/work/hop bounds and independent Bind/read/source/receiver/field
+control have structural regressions. Required cases preserve source/copy/ascription order,
+fields under nested receivers, function owners and P006 after reached reads. Reference
+histories remain Unknown. Composition and primary consumers through receiver copies,
+and broader value, lifetime, loan and proof authority, remain separate.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
