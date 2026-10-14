@@ -4088,8 +4088,10 @@ All twelve receiver-copy tests pass (`/tmp/meowy-receiver-copy-evidence.log`). F
 missing-evidence cases preserve earlier links and reject stale field/expanded maps;
 removed dispatch publication still invalidates its upstream result map. Exact map/root/
 work/hop budgets and all 32 Bind/read/source/receiver/field control combinations pass.
-Next: required source order/P006 cases, preservation audit and final compiler/strict
-plus guide/handoff gates.
+Both required source cases pass exact debug/release output and P006
+(`/tmp/meowy-receiver-copy-source.log`). Metadata validates 488 cases and 37 unchanged
+reference hashes. Next: preservation audit, complete compiler/strict gates and final
+guide/handoff checks.
 
 Dependency-ordered commit plan:
 
