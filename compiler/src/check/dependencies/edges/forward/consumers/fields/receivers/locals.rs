@@ -186,10 +186,3 @@ pub(crate) fn shared_local_receiver_fields_keep_mutable_parameter_and_copy_input
         assert!(reports.field_results.is_empty(), "{source}");
     }
 }
-
-#[test]
-pub(crate) fn shared_local_receiver_consumers_keep_binary_primary_paths_separate() {
-    let (checker, reports) = checked("n:1;p:&n;r:{->p;->tag:true};out:r.{a:$==p;->true}");
-    assert!(reports.slot_uses.is_empty());
-    assert!(checker.binaries.values().any(|op| op.plan.primary[0]));
-}

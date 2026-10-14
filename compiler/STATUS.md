@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-13. Shared-reference receiver composition is implemented and validated.
+Updated: 2026-10-14. Shared-reference receiver binary qualification is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4010,13 +4010,23 @@ the exact pinned names/reasons (`/tmp/meowy-receiver-coercion-strict.log`). All 
 guide/handoff checks pass (`/tmp/meowy-receiver-coercion-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: binary-owned primaries through shared-reference receiver local inputs
+### Current: binary-owned primaries through shared-reference receiver local inputs
 
 `r : { -> p; -> tag : true }; out : r.{ -> $ == p }` still stops at the stored receiver
 input. `consumers.rs` handles shared-scalar `Effect::Binary` inputs through the old
 kind-only receiver path, then the ordinary shared-local path. Each owned operand already
 retains an optional original count in `op.fields[step]`. The new coercion branch shows
 how to use exact record qualification without admitting copies of receiver cells.
+
+The baseline is `c3da3473`; unrelated `docs/programs/hey/` is preserved. Existing
+operand counts and receiver qualifiers need no new capture/report payload. Characterize
+actual projection ownership first, then extract the existing counted coercion route
+without behavior changes before admitting binaries. Both characterization tests pass
+(`/tmp/meowy-receiver-binary-characterization.log`): three first-operand projections
+belong to binaries; `p != $` belongs to an earlier coercion, and whole-record equality
+has no projection. Field/composition/coercion links remain present. Older cross-family
+assertions now stay with their owning consumers; all 39 local-receiver tests pass.
+Next: extract counted primary selection without changing admission, then connect binaries.
 
 Dependency-ordered commit plan:
 

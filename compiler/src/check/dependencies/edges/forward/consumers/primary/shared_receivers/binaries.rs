@@ -1,6 +1,8 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod locals;
+
 #[test]
 pub(crate) fn shared_receiver_binaries_link_types_and_guarded_owners() {
     for (ty, value) in [
