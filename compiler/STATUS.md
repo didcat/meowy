@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-14. Shared-reference receiver binary qualification is implemented and validated.
+Updated: 2026-10-14. Shared-reference receiver-copy field qualification is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4057,13 +4057,23 @@ All four final guide/handoff checks pass (`/tmp/meowy-receiver-binary-docs.log`)
 No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: scalar fields through immutable copies of shared-reference receivers
+### Current: scalar fields through immutable copies of shared-reference receivers
 
 `r : { -> p; -> tag : true }; out : r.{ copy : $; -> copy.tag }` remains opaque.
 `Target::SharedLocal` cannot cross a copy initializer's receiver read.
 `Target::SharedReceiverLocal` requires a receiver jump before local hops and blocks
 further receiver jumps once `stored` is set. Those existing policies protect the completed
 field/composition/primary consumers; do not relax them as an incidental shortcut.
+
+The baseline is `995fc119`; unrelated `docs/programs/hey/` is preserved. Existing
+typed-local and receiver qualifiers already validate separate original read scopes.
+Characterize copy rows and those individual hops before adding a field-specific mode
+that can alternate them. No new capture/report payload or ordinary eligibility is planned.
+All three characterization tests pass (`/tmp/meowy-receiver-copy-characterization.log`).
+Copies retain exact typed Bind rows outside generic eligibility; original receiver cells
+remain excluded from both initializer indexes. Both individual hops qualify, but current
+modes stop their composition. Transitive copies and nested/guarded/function fields stay
+opaque, while direct fields still link. Next: connect a bounded field-only traversal mode.
 
 Dependency-ordered commit plan:
 
