@@ -2,6 +2,7 @@ use super::super::graph::Visit;
 use super::{super::super::tests::checked, *};
 
 mod boundaries;
+mod copies;
 mod locals;
 mod references;
 

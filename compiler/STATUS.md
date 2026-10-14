@@ -4103,12 +4103,24 @@ mode exits 1 only for the exact pins (`/tmp/meowy-receiver-copy-strict.log`). Al
 guide/handoff checks pass (`/tmp/meowy-receiver-copy-docs.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: composed emissions through immutable copies of shared-reference receivers
+### Current: composed emissions through immutable copies of shared-reference receivers
 
 `r : { -> p; -> tag : true }; out : r.{ copy : $; joined : { -> copy } }` remains opaque.
 `consumers/emissions.rs` still uses the receiver-first and local-only modes. The new
 field-specific helper can alternate the required hops, but only field admission calls it.
 `Composition` already retains the exact primary/count descriptor needed for qualification.
+
+Investigation confirms that copy Bind rows and original receiver reads already retain
+all required identities. Reuse the bounded field traversal after a behavior-preserving
+extraction; no new capture/report payload or generic eligibility change is needed.
+The source and target layouts remain separate qualification stages. Baseline is
+`f26db31c`; only unrelated `docs/programs/hey/` is untracked and remains untouched.
+Three characterization tests compare direct/copy/transitive composition, guarded and
+function scopes, field links, typed initializer exclusions, Unknown reference histories
+and stopped copy initialization. Only direct sources currently link; copy projections
+remain unresolved in both forests. The focused receiver-copy check passes 13 tests
+(`/tmp/meowy-copy-emissions-characterization.log`). No implementation changed; the
+reusable qualifier extraction is next.
 
 Dependency-ordered commit plan:
 
