@@ -4080,7 +4080,11 @@ field admission uses it; other modes retain their policies. All 983 Forward test
 consumers, all scalar referents, independent source/copy/receiver/field stages, stopped
 initializers and excluded mutable/load/parameter/nonscalar sources. Composition and
 primary consumers stay opaque. Next: stale identities, mixed cycles, per-hop scopes,
-missing evidence and exact graph/traversal budgets.
+missing evidence and exact graph/traversal budgets. Nineteen late descriptor/storage/
+layout/cycle faults reject atomically through operation maps, field results and expanded
+walks. Scope tests reject sibling copies and crossed receiver bindings while accepting
+an outer copy under a different scalar receiver (`/tmp/meowy-receiver-copy-boundaries.log`).
+Next: missing observations, stale graph rebuilding and exact budgets/control.
 
 Dependency-ordered commit plan:
 
