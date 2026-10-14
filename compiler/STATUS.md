@@ -3986,7 +3986,11 @@ pass (`/tmp/meowy-receiver-coercion-links.log`). Five focused tests cover all sc
 referent families, independent stages, projection-only Convert observations and stopped
 prefixes. Missing counts suppress local receiver links while preserving direct fallback;
 incorrect present counts reject both. Next: late descriptors, scopes, cycles and missing
-evidence, then exact budgets/control and source conformance.
+evidence, then exact budgets/control and source conformance. Seventeen late descriptor,
+referent, suffix-layout and cycle faults plus receiver/initializer sibling scopes now
+reject atomically. All seven focused tests pass, including mutable, parameter and
+call-result receiver exclusions (`/tmp/meowy-receiver-coercion-boundaries.log`).
+Next: missing evidence, exact map/work/hop bounds and independent control flags.
 
 Dependency-ordered commit plan:
 

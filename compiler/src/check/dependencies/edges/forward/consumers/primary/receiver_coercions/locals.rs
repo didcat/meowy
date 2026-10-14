@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod boundaries;
 mod stages;
 
 #[test]
@@ -94,6 +95,15 @@ pub(crate) fn shared_local_receiver_coercions_keep_binary_ownership_and_receiver
     ] {
         let source = format!("n:1;p:&n;r:{{->p;->tag:true}};{tail}");
         let (_, reports) = checked(&source);
+        assert!(reports.slot_uses.is_empty(), "{source}");
+    }
+    for source in [
+        "n:1;p:&n;r:={->p;->tag:true};out:r.{copy<&int32>:$}",
+        "n:1;p:&n;r:{->p;->tag:=true};out:r.{copy<&int32>:$}",
+        "f<null>:(r<{-><&int32>;tag<boolean>}>){out:r.{copy<&int32>:$}}",
+        "f<{-><&int32>;tag<boolean>}>:(p<&int32>){->p;->tag:true};n:1;out:f(&n).{copy<&int32>:$}",
+    ] {
+        let (_, reports) = checked(source);
         assert!(reports.slot_uses.is_empty(), "{source}");
     }
     let (checker, reports) =
