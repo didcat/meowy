@@ -1,0 +1,11 @@
+#!| [[<10.4>]], [[<10.1e+2>]], [[10.5]], and [[10.4]]. |!#
+d : @"debug"
+10 : @"./types.mwy"
+2api : 10
+x <10.4> : 10.5(7)
+y <2api.4> : x
+flag <10.1e+2> : true
+d.print(x)
+d.print(y)
+d.print(10.4)
+d.print(flag)

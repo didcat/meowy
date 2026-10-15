@@ -63,8 +63,11 @@ Number highlighting. Both editors exposed a binding pattern that crossed a state
 newline into a following type alias; its outside-annotation spacing now matches the
 parser. Annotated ordinary names now use the same Binding group as numeric names.
 All six editor/repository checks now pass in Vim and Neovim
-(`/tmp/meowy-digit-names-editor.log`), including the newline boundary regressions.
-Module source coverage and the final contract/gates follow.
+(`/tmp/meowy-digit-names-editor.log`), including the newline boundary regressions
+(`11608832`). Required module/link execution, dotted type-alias rejection and the
+numeric-syntax escape all pass debug/release (`/tmp/meowy-digit-names-integration.log`).
+The companion metadata is corrected, and the 500-case catalog/coverage validation passes.
+No focused failures remain. Next: final contract, preservation audit and combined gates.
 `core.literal` and proof work are unchanged.
 
 ### Completed numeric member lookup

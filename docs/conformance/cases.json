@@ -5269,6 +5269,39 @@
         "accepted": true
       },
       "reference": "../reference/documentation.md#semantic-links"
+    },
+    {
+      "id": "digit_leading_module_names",
+      "phase": "run",
+      "source": "sources/modules/digit_leading_names/main.mwy",
+      "companions": [
+        "sources/modules/digit_leading_names/types.mwy"
+      ],
+      "expected": {
+        "accepted": true,
+        "stdout": "8\n8\n9\ntrue\n"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "numeric_dotted_type_name",
+      "phase": "check",
+      "source": "sources/numeric_dotted_type_name.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E004"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "digit_name_literal_escape",
+      "phase": "check",
+      "source": "sources/digit_name_literal_escape.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-numeric-literals"
     }
   ]
 }
