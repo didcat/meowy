@@ -201,6 +201,7 @@ pub(crate) fn receiver_copy_binaries_reject_stale_counts_referents_layouts_and_c
                 }
                 _ => unreachable!(),
             }
+            super::super::lookup::check_inputs(&mut checker, &reports);
             let before = format!("{reports:?}{:?}", checker.edge_counts());
             let error = checker
                 .slot_uses(&reports, Span::default())
@@ -244,6 +245,7 @@ pub(crate) fn receiver_copy_binaries_revalidate_original_local_and_receiver_scop
         };
         *local = other;
         *storage = other;
+        super::super::lookup::check_inputs(&mut checker, &reports);
         let before = format!("{reports:?}{:?}", checker.edge_counts());
         assert!(
             checker
@@ -270,6 +272,7 @@ pub(crate) fn receiver_copy_binaries_revalidate_original_local_and_receiver_scop
     };
     *local = cells[1];
     *storage = cells[1];
+    super::super::lookup::check_inputs(&mut checker, &reports);
     let before = format!("{reports:?}{:?}", checker.edge_counts());
     assert!(
         checker

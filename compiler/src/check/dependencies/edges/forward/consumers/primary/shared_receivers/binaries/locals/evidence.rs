@@ -93,6 +93,7 @@ pub(crate) fn shared_local_receiver_binaries_preserve_earlier_links_when_evidenc
         let mut expected = reports.slot_uses.clone();
         expected.remove(&port);
         assert_eq!(expected.len(), 1);
+        super::super::lookup::check_inputs(&mut checker, &reports);
         let before = format!("{reports:?}{:?}", checker.edge_counts());
         assert_eq!(
             checker.slot_uses(&reports, Span::default()).unwrap(),

@@ -144,6 +144,7 @@ pub(crate) fn shared_local_receiver_binaries_reject_stale_operands_counts_layout
             }
             _ => unreachable!(),
         }
+        super::super::lookup::check_inputs(&mut checker, &reports);
         let before = format!("{reports:?}{:?}", checker.edge_counts());
         let error = checker
             .slot_uses(&reports, Span::default())
@@ -183,6 +184,7 @@ pub(crate) fn shared_local_receiver_binaries_revalidate_receiver_and_initializer
         };
         *local = other;
         *storage = other;
+        super::super::lookup::check_inputs(&mut checker, &reports);
         let before = format!("{reports:?}{:?}", checker.edge_counts());
         let error = checker.slot_uses(&reports, Span::default()).unwrap_err();
         assert!(error.message.contains("scope identity"), "{error:?}");

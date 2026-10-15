@@ -4317,7 +4317,13 @@ function scopes and opaque mutable/parameter/call inputs
 (`/tmp/meowy-binary-lookup-characterization.log`). Source links match exactly.
 Representative old/new lookup charges are local 579/379, copied 2476/1429 and direct
 receiver 759/796; this is structural work accounting, not a runtime timing claim.
-Production lookup is unchanged. Next compare absent evidence and identity diagnostics.
+Production lookup is unchanged (`d334a76c`). The comparison now also runs inside the
+existing copied/local binary corruption, missing-evidence and crossed-scope tests, plus
+30 direct-receiver evidence/diagnostic cases. All 29 focused binary tests pass; outcomes
+and complete diagnostics agree (`/tmp/meowy-binary-lookup-boundaries.log`).
+A liveness audit also finds `shared_local_body` has no production caller outside this
+fallback chain. Its local-only traversal mode has four budget-test callers. Retire both
+obsolete modes, with local-only and receiver-first test migrations in separate commits.
 
 The binary path still tries receiver-first/local-only lookup before `SharedCopies`.
 This preserves earlier paths and kept the admission commit focused, but can traverse
@@ -4329,12 +4335,13 @@ Dependency-ordered commit plan:
    in `consumers.rs`, `primary.rs`, `blocks.rs` and `grouped.rs`. Cover direct/local/copied
    sources, both operand ports, missing observations, malformed descriptors and original
    scopes. Compare links, diagnostic ordering and charged work before changing lookup.
-2. Migrate obsolete receiver-first test callers to the retained copy/local modes, with
-   the same scope, receiver-cell exclusion and exact-hop assertions. Keep this prerequisite
-   separate from production lookup changes.
+2. Migrate the four local-only budget tests to `SharedCopies`, then the four receiver-first
+   budget tests and two copy-boundary callers. Keep generic eligibility/receiver-cell
+   exclusions and exact-hop assertions, using ordinary block/receiver qualifiers for
+   the remaining opacity checks. Keep these prerequisites separate from production changes.
 3. Consolidate only if those identity/observation boundaries agree. Retire unused helpers
    and receiver-first traversal machinery with focused regression tests.
-   Preserve generic eligibility, other traversal modes and missing-count direct fallback;
+   Preserve generic eligibility, block/dispatch/ordinary-receiver modes and missing-count fallback;
    record any changed work costs and retain exact map/work/hop exhaustion checks.
 4. Run the compiler/strict gates and preservation audit. Broader value provenance,
    function results, restart propagation, E225 and proof outcomes remain separate.

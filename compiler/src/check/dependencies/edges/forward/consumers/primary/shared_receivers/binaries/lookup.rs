@@ -1,7 +1,9 @@
 use super::*;
 use crate::check::dependencies::operations::SharedRecord;
 
-pub(super) fn compare(
+mod boundaries;
+
+pub(super) fn lookup(
     checker: &mut Checker,
     reports: &Reports,
     input: PointId,
@@ -30,6 +32,24 @@ pub(super) fn compare(
     );
     assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
     (actual, old, work)
+}
+
+pub(super) fn check_inputs(checker: &mut Checker, reports: &Reports) {
+    for op in checker.binaries.values().cloned().collect::<Vec<_>>() {
+        for step in 0..2 {
+            if let Some(fields) = op.fields[step]
+                && let BinaryClass::SharedScalar(primary) = op.types.inputs[step]
+            {
+                let _ = lookup(
+                    checker,
+                    reports,
+                    op.inputs[step],
+                    op.owner,
+                    SharedRecord { primary, fields },
+                );
+            }
+        }
+    }
 }
 
 #[test]
@@ -91,7 +111,7 @@ pub(crate) fn counted_binary_lookup_preserves_sources_scopes_and_opaque_inputs()
                         let BinaryClass::SharedScalar(primary) = op.types.inputs[step] else {
                             panic!()
                         };
-                        let (actual, old, work) = compare(
+                        let (actual, old, work) = lookup(
                             &mut checker,
                             &reports,
                             op.inputs[step],
