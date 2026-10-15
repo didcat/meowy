@@ -1,0 +1,23 @@
+d : @"debug"
+right <never> : () { d.print("right"); d.panic("stop") }
+n : 7
+p : &n
+record : p.{
+    d.print("source")
+    -> $
+    -> tag : true
+    d.print("source tail")
+}
+record.{
+    d.print("receiver")
+    copy : $
+    d.print(copy == p)
+    copy.{
+        d.print("nested")
+        next : $
+        alias : ((next))
+        d.print(p == alias)
+        -> alias == right()
+        d.print("unreached")
+    }
+}

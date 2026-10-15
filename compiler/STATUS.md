@@ -4228,7 +4228,14 @@ Bind/read/receiver/source/count/projection observations on both ports while pres
 an earlier valid copy link and existing reports (`cf727720`). All twelve focused tests
 pass (`/tmp/meowy-copy-binaries-limits.log`), including exact map/work/hop limits,
 duplicate observations and 32 independent control combinations. No focused failures
-remain. Next: required source cases, preservation audit and final gates.
+remain (`85535a31`). Two required primary-composition fixtures now cover address
+identity, both binary ports, full-record equality, ascribed coercion ownership,
+nested/function order and P006 after a reached left projection. Both pass exact
+debug/release outcomes (`/tmp/meowy-copy-binaries-source.log`). Catalog/coverage
+validation passes. The audit preserves 565 prior reference/source/pin/obligation files,
+492 prior cases, 19 pins, 37 hashes and prior evidence from `d9d4c82c`
+(`/tmp/meowy-copy-binaries-preservation.log`). Full compiler/strict and final guide
+checks are pending.
 
 Only the counted binary shared-scalar branch in `consumers.rs` changes admission;
 ascribed operands retain earlier coercion ownership, and full-record comparisons
