@@ -4209,13 +4209,17 @@ Characterization passes all three focused `receiver_copy_binaries` tests
 to the binary; ascribed operands project in earlier coercions. Direct/copy/transitive
 sources, guarded/nested/function scopes, whole-record equality, existing field/emission
 links and stopped prefixes retain their identities. The copy qualifier resolves the
-expected sources, while binary copy admission remains unchanged. Next: slice 2.
+expected sources (`6e6b9a66`). Slice 2 now adds the copy qualifier as the counted
+binary branch's fallback after existing direct/local paths. Focused tests now
+require copy links on both ports, retaining mutable-copy and full-record exclusions.
+All 1017 Forward tests now pass (`/tmp/meowy-copy-binaries-links.log`), including
+coercion, field and composition gates. Split review keeps existing helpers/traversal
+in place; retirement would affect independent narrow traversal tests and remains
+separate. No focused failures remain. Next: independent stages, identities and bounds.
 
-`r : { -> p; -> tag : true }; out : r.{ copy : $; -> copy == p }` remains opaque
-in structural binary-primary maps. The binary counted shared-scalar branch in
-`consumers.rs` still uses `primary.rs::shared_record_primary_slot` and the receiver-first/
-local-only modes. The bounded copy qualifier is available. Ascribed operands can already
-belong to an earlier coercion; full-record comparisons require no scalar primary link.
+Only the counted binary shared-scalar branch in `consumers.rs` changes admission;
+ascribed operands retain earlier coercion ownership, and full-record comparisons
+require no scalar primary link. No capture payload or generic eligibility changed.
 
 Dependency-ordered commit plan:
 
@@ -4223,7 +4227,7 @@ Dependency-ordered commit plan:
    including left/right ownership, direct/copy/transitive sources, nested/guarded/function
    scopes and stopped right operands. Preserve existing coercion, field and composition
    links; do not duplicate earlier coercion-owned projections or full-record comparisons.
-2. Extend only the counted binary shared-primary selector with the bounded copy qualifier.
+2. Complete: extend only the counted binary shared-primary selector with the bounded copy qualifier.
    Match each operand's original `fields[step]`, scalar kind and projection port; preserve
    missing-count direct fallback, exact layouts, canonical storage and original scopes.
    Keep focused admission regressions with the behavior change; review helper retirement

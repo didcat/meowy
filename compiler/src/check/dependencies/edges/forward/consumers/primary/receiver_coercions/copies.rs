@@ -70,7 +70,7 @@ pub(crate) fn receiver_copy_coercions_retain_owned_projection_descriptors_across
                     3
                 );
                 assert!(checker.binaries.values().any(|op| op.plan.primary[0]));
-                assert!(!reports.slot_uses.keys().any(|port| matches!(port, Port::Projection { point, .. } if checker.binaries.contains_key(point))));
+                assert_eq!(reports.slot_uses.keys().filter(|port| matches!(port, Port::Projection { point, .. } if checker.binaries.contains_key(point))).count(), 1);
                 assert_eq!(
                     checker.slot_uses(&reports, Span::default()).unwrap(),
                     reports.slot_uses
@@ -81,7 +81,7 @@ pub(crate) fn receiver_copy_coercions_retain_owned_projection_descriptors_across
 }
 
 #[test]
-pub(crate) fn receiver_copy_coercions_keep_the_binary_primary_selector_separate() {
+pub(crate) fn receiver_copy_coercions_keep_the_receiver_first_primary_selector_separate() {
     let (mut checker, reports) =
         checked("n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;view<&int32>:copy}");
     let op = checker.coercions.values().find(|op| op.primary).unwrap();

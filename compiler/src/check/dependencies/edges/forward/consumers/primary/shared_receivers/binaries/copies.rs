@@ -73,7 +73,7 @@ pub(crate) fn receiver_copy_binaries_retain_operand_ownership_across_scopes() {
                 }
             }
             assert_eq!((owned, records), (4, 1));
-            assert_eq!(linked, if input == "$" { 3 } else { 0 });
+            assert_eq!(linked, 4);
             assert_eq!(owners, std::collections::BTreeSet::from([0, 1]));
             let coercions: Vec<_> = checker
                 .coercions
@@ -147,6 +147,6 @@ pub(crate) fn receiver_copy_binaries_capture_stopped_operand_prefixes() {
             assert_eq!(observed.projected, [true, false]);
             assert!(!observed.operation && !observed.result);
         }
-        assert!(reports.slot_uses.is_empty());
+        assert_eq!(reports.slot_uses.len(), usize::from(!tail.starts_with('d')));
     }
 }

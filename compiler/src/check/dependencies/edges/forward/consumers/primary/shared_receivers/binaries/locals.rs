@@ -121,10 +121,10 @@ pub(crate) fn shared_local_receiver_binaries_link_owned_operands_without_duplica
 }
 
 #[test]
-pub(crate) fn shared_local_receiver_binaries_keep_receiver_copies_and_full_records_opaque() {
+pub(crate) fn shared_local_receiver_binaries_keep_mutable_copies_and_full_records_opaque() {
     for source in [
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;->copy==p}",
-        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;inner:copy.{->$==p}}",
+        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:=$;->copy==p}",
+        "n:1;p:&n;r:{->p;->tag:true};out:r.{copy:=$;inner:copy.{->$==p}}",
         "n:1;p:&n;r:{->p;->tag:true};out:r.{->$==$}",
         "n:1;p:&n;r:={->p;->tag:true};out:r.{->$==p}",
         "n:1;p:&n;r:{->p;->tag:=true};out:r.{->$==p}",
