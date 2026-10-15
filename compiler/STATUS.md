@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-15. Receiver-copy binary primaries are implemented and validated.
+Updated: 2026-10-15. Uniform digit-leading names pass the compiler/editor gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -9,75 +9,57 @@ records the plan. Keep this handoff current; Git holds history. Do not recreate 
 
 ### Current uniform-name correction
 
-The user requires digit-leading names everywhere: names share one rule across values,
-parameters, functions, fields, types and scope labels. The original `2_or_more_cats`
-lexer rejection in `docs/programs/hey/main.mwy` is repaired; the source stays untouched.
-Existing numeric-name checks pass: 25 library and six native tests
-(`/tmp/meowy-numeric-name-audit.log`). The user's untracked program remains untouched.
-The former type/label exclusions below are superseded by this requested correction.
+Complete implementation. Names use the same spelling rule across bindings, parameters,
+functions, fields, types and scope labels. Digit-leading ASCII words such as
+`2_or_more_cats`, `12cat` and `1__0` are ordinary names. The parser and checked links
+share `Token::is_name`; complete undotted numeric spellings remain valid names too.
+Namespaces, fixed types, mutation, ownership and scope behavior are preserved.
 
-Dependency-ordered commit plan:
+Complete signed exponents remain one token; `2name+4` and `1e+cats` retain the ordinary
+operator. Unbound nonnumeric words report E201, unknown types E202, and `core.literal`
+rejects nonnumeric name operands with E207. Dots remain path separators: `<10.4>` can
+select a numeric module export, while dotted type-alias declarations report E004.
+The older qualified-export B001 parser expectation was replaced with this syntax rule.
 
-1. Tokenize digit-leading ASCII words as names when they are not complete numbers.
-   Preserve valid numeric spelling, decimal/member boundaries and exponent operators.
-   Keep focused lexical/parser/diagnostic regressions with this change.
-2. Apply the same name rule to type and scope parsing and checked documentation links.
-   Keep declaration/read/storage/owner behavior and dotted declaration rejection intact;
-   verify numeric/mixed names in each namespace and qualified exports.
-3. Update Vim/Neovim names, functions, types, labels and focused highlighting tests.
-4. Specify the unified contract, add required execution/error/module source cases,
-   explicitly review the former malformed-number fixture, update coverage evidence/hashes
-   and teaching docs. Run the compiler/editor gate, strict audit and final docs checks.
+Vim and Neovim recognize digit-leading bindings, functions, calls, types, labels and
+lexical task-group names. Numeric type names use Type highlighting; list extents retain
+Number highlighting. Binding recognition cannot cross a statement newline into a later
+type alias. This does not implement gated generic or task execution.
 
-The lexer now classifies complete numbers first and otherwise retains digit-leading
-ASCII words as names. Signed exponents join only when complete, so `2name+4` and
-`1e+cats` preserve ordinary operators. All 3088 library tests, seven numeric native
-tests and the CLI diagnostic regression pass (`/tmp/meowy-digit-names-lexer-lib.log`,
-`/tmp/meowy-digit-names-lexer-native.log`). Both affected source cases pass debug/release
-(`/tmp/meowy-digit-names-lexer-source.log`), and catalog/coverage validation passes.
-The CLI keeps E001 coverage with an invalid character and checks E201 for unbound
-`1__0`. The unchanged `invalid_separator.mwy` now expects E201 for the undefined
-name instead of E001; the new required `digit_leading_names` case binds that exact
-spelling successfully. The source bytes and all other prior expectations are preserved.
-The lexer/value slice is committed as `d09dc41e`. Type and scope parsing now share
-the same name predicate, including undotted numeric spellings. Unknown numeric types
-produce E202 through ordinary type lookup. All 3089 library tests pass
-(`/tmp/meowy-digit-names-namespaces-lib.log`). The namespace case passes debug/release
-(`/tmp/meowy-digit-names-namespaces-source.log`), including separate value/type namespaces,
-numeric function labels and named restart/leave. Catalog/coverage validation passes.
-Namespace parsing is committed as `45471f11`. Qualified numeric type paths now retain
-their components, including `<10.4>` and `<10.1e+2>`, and generic-call recognition accepts
-those type names. Type-alias declarations require one component: the old qualified-export
-B001 unit expectation becomes E004, matching the existing dotted value-name restriction.
-All 3090 library and eight exported-type native tests pass
-(`/tmp/meowy-digit-names-paths-lib.log`, `/tmp/meowy-digit-names-paths-native.log`).
-Type paths are committed as `8ff838bb`; required module source coverage follows in the
-integration slice. Checked links now share the parser's token-name predicate, including
-numeric and digit-leading type names. All 29 documentation-focused tests pass
-(`/tmp/meowy-digit-names-links.log`). The required link case and an untouched temporary
-copy of `docs/programs/hey/main.mwy` pass debug/release with exact expected output
-(`/tmp/meowy-digit-names-links-source.log`); catalog/coverage checks pass (`5ec5d72c`).
-Vim/Neovim now use digit-leading names for bindings, calls, functions, types, labels and
-task groups. Numeric type names retain Type highlighting while extent values retain
-Number highlighting. Both editors exposed a binding pattern that crossed a statement
-newline into a following type alias; its outside-annotation spacing now matches the
-parser. Annotated ordinary names now use the same Binding group as numeric names.
-All six editor/repository checks now pass in Vim and Neovim
-(`/tmp/meowy-digit-names-editor.log`), including the newline boundary regressions
-(`11608832`). Required module/link execution, dotted type-alias rejection and the
-numeric-syntax escape all pass debug/release (`/tmp/meowy-digit-names-integration.log`).
-The companion metadata is corrected, and the 500-case catalog/coverage validation passes.
-No focused failures remain (`3cc120df`). Syntax, documentation links, the literal
-intrinsic reference and the numeric guide now describe the unified rule. Source evidence
-and the proof-obligation map have been reviewed; no proof obligation changes are needed.
-The three owning hashes and coverage report are updated. All four repository checks
-pass (`/tmp/meowy-digit-names-contract.log`), and all four numeric-guide examples check
-in debug/release (`/tmp/meowy-digit-names-guide-examples.log`). The audit preserves 564
-prior source/reference/pin/obligation files and all 494 prior cases except the intentional
-`invalid_separator` E001-to-E201 expectation change; all 19 pins, 34 other document
-records and prior evidence are preserved (`/tmp/meowy-digit-names-preservation.log`).
-Next: the combined compiler/editor gate, strict pin audit and final handoff.
-`core.literal` and proof work are unchanged.
+| Commit | Reviewable slice |
+| --- | --- |
+| `d09dc41e` | Tokenize digit-leading names and preserve numeric/operator boundaries |
+| `45471f11` | Apply one name rule to types, parameters and scope labels |
+| `8ff838bb` | Resolve numeric type paths and separate declaration names |
+| `5ec5d72c` | Share name validation with checked documentation links |
+| `11608832` | Update Vim/Neovim highlighting and boundary tests |
+| `3cc120df` | Cover module exports, links, dotted aliases and literal escape |
+| `100def52` | Specify the unified contract and update reviewed evidence |
+
+All 12 checks in `python3 -B tools/verify.py --compiler --editor both` pass: 3091 library,
+923 native and 62 Python tests, formatting, all-target Clippy, build, both editors,
+metadata and source execution (`/tmp/meowy-digit-names-gate.log`). The 500-case catalog
+has 481 required passes, 19 unchanged pinned gaps and zero debug/release failures.
+Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-digit-names-strict.log`). All four final handoff checks pass
+(`/tmp/meowy-digit-names-final-docs.log`).
+
+Six new required cases cover value/type/label names, checked links and module paths,
+plus dotted type-alias and literal-escape errors. Four numeric-guide examples check
+in both profiles (`/tmp/meowy-digit-names-guide-examples.log`). An untouched temporary
+copy of the user's `docs/programs/hey/main.mwy` runs with exact expected output in both
+profiles (`/tmp/meowy-digit-names-links-source.log`). The untracked directory, including
+user additions made during this work, is excluded from commits.
+
+The audit preserves 564 prior reference/source/pin/obligation files and all 494 prior
+case records except the intentional `invalid_separator` E001-to-E201 change: `1__0`
+is now an undefined name, and the source bytes are unchanged. Three owning reference
+hashes were reviewed; the other 34 document records, prior evidence, all 19 pins and
+the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
+No known failures remain. Nothing was pushed or published.
+
+Next: resume the ordered counted-binary-source consolidation handoff below.
+Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
 

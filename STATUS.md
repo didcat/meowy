@@ -10,11 +10,17 @@ Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete
 Digit-leading names now work across bindings, parameters, functions, fields, types,
 scope labels, module paths and checked documentation links. The unchanged
 `docs/programs/hey/main.mwy` runs correctly in debug/release. Vim and Neovim recognize
-the same names, preserving literal and extent highlighting; all six editor/repository
-checks pass (`/tmp/meowy-digit-names-editor.log`). The
-[compiler handoff](compiler/STATUS.md#current-uniform-name-correction) records focused
-validation and commits. Reference updates, module source coverage and the final combined
-gate remain pending. Proof work and release qualification remain separate.
+the same names, preserving literal and extent highlighting. The
+[compiler handoff](compiler/STATUS.md#current-uniform-name-correction) records seven
+implementation/coverage commits and the exact contract migration.
+
+All 12 compiler/editor checks pass: 3091 library, 923 native and 62 Python tests,
+plus 481 required conformance cases. The same 19 pinned gaps remain, with zero
+failures in debug/release (`/tmp/meowy-digit-names-gate.log`). The audit preserves
+all prior conformance source bytes and changes only the expected E001-to-E201 diagnostic
+for unbound `1__0`; three owning reference hashes are reviewed. Strict mode exits 1 only
+for the exact pins (`/tmp/meowy-digit-names-strict.log`). All four final handoff checks
+pass (`/tmp/meowy-digit-names-final-docs.log`). Proof/release qualification remains separate.
 
 ## Numeric member lookup
 
