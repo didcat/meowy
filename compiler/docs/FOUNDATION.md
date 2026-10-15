@@ -1037,8 +1037,9 @@ eligibility and receiver-cell exclusions remain unchanged.
 These links add no value, lifetime, loan or proof authority.
 
 Binary-owned shared scalar primaries also resolve through immutable receiver copies.
-The counted binary branch uses the bounded copy qualifier after its existing direct/local
-paths. Each operand retains its original field count, referent kind and projection port.
+The counted binary branch uses one bounded copy traversal after the ordinary block and
+dispatch checks. Each operand retains its original field count, referent kind and
+projection port.
 Raw left and right operands can own projections; grouped or ascribed operands may already
 project through an earlier coercion. Full-record equality retains the complete shape and
 gains no scalar primary link. Missing counts suppress copy links while preserving direct
@@ -1056,6 +1057,18 @@ preserves earlier links, and late failures leave existing reports and edge count
 Required source cases preserve address identity, full-record equality, ascription ownership,
 copy/nested/function order and P006 after a reached left projection. Reference histories
 remain Unknown; generic eligibility and receiver-cell exclusions remain unchanged.
+
+The obsolete local-only and receiver-first traversal modes and their four wrappers
+are removed. The shared copy qualifier retains the same source links, identity checks,
+original scopes and missing-observation behavior. Ordinary block/dispatch/receiver modes
+and missing-count direct receiver fallback are preserved. Mutable, parameter and call
+sources remain opaque, and reference histories remain Unknown.
+
+Work charges follow the traversal that runs. Representative isolated lookup charges
+change from 579 to 379 for a local, 2476 to 1429 for a copy, and 759 to 796 for a receiver
+read; the receiver path now checks shared-local eligibility too. These are structural
+work units, not runtime timings. Exact work limits on both operand ports, shared map/hop
+limits, duplicate visits and atomic failures retain dedicated regression checks.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

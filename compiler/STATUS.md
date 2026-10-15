@@ -4024,7 +4024,7 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 Complete implementation. Observed coercion-owned shared scalar primaries now resolve
 through record receivers initialized from immutable local records and copies. Existing
 optional field counts and exact referent kinds qualify receiver/local hops through
-`shared_record_receiver_body`, then link immutable source slot zero. No capture or report
+`shared_copy_body`, then link immutable source slot zero. No capture or report
 payload was added. Present counts must agree with receiver descriptors and complete
 source layouts. Missing counts suppress local receiver links while preserving direct
 receiver fallback; incorrect present counts reject both paths.
@@ -4070,7 +4070,7 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 Complete implementation. Observed binary-owned shared scalar primaries now resolve
 through record receivers initialized from immutable local records and copies. Binaries
-and coercions share `shared_record_primary_slot`, retaining each original count, referent
+and coercions share `shared_copies_primary_slot`, retaining each original count, referent
 and projection step with complete immutable layouts, canonical Bind/read roots, owners
 and scopes. No capture or report payload was added. Missing counts suppress local receiver
 links while preserving direct receiver fallback; incorrect present counts reject both.
@@ -4305,69 +4305,82 @@ the exact pinned names/reasons (`/tmp/meowy-copy-binaries-strict.log`). Final gu
 checks pass (`/tmp/meowy-copy-binaries-docs.log`). No known failures remain. Unrelated
 `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: consolidate counted binary source lookup
+### Counted binary source lookup
 
-In progress from `20133a4e`; unrelated `docs/programs/hey/` remains excluded.
-The counted binary branch is the sole production caller of the receiver-first primary
-helper. Its dedicated traversal mode also appears in four budget tests and two older
-copy-boundary tests. Preserve those invariants while migrating the tests before removing
-the production helpers. The first characterization passes 120 source programs across
-six referent kinds, both producer forms, both operand ports, copied/nested/guarded/
-function scopes and opaque mutable/parameter/call inputs
-(`/tmp/meowy-binary-lookup-characterization.log`). Source links match exactly.
-Representative old/new lookup charges are local 579/379, copied 2476/1429 and direct
-receiver 759/796; this is structural work accounting, not a runtime timing claim.
-Production lookup is unchanged (`d334a76c`). The comparison now also runs inside the
-existing copied/local binary corruption, missing-evidence and crossed-scope tests, plus
-30 direct-receiver evidence/diagnostic cases. All 29 focused binary tests pass; outcomes
-and complete diagnostics agree (`/tmp/meowy-binary-lookup-boundaries.log`).
-A liveness audit also finds `shared_local_body` has no production caller outside this
-fallback chain. Its local-only traversal mode has four budget-test callers. Retire both
-obsolete modes, with local-only and receiver-first test migrations in separate commits.
-Equivalence coverage is committed as `8dfdaf93`. The four local-only hop tests now
-exercise `SharedCopies`; source/owner assertions and exact added-group costs are intact.
-All 93 focused shared-local tests pass (`/tmp/meowy-binary-lookup-local-tests.log`).
-The local test migration is committed as `372e0fc6`. Four receiver-first hop tests now
-exercise `SharedCopies`; copy-boundary tests retain ordinary block/receiver opacity,
-canonical receiver-cell exclusions and positive copy-source identity. All 1028 Forward
-tests pass (`/tmp/meowy-binary-lookup-receiver-tests.log`, commit `9730f8c3`).
-The counted binary selector now uses one `SharedCopies` lookup. Four unused wrappers,
-the local-only/receiver-first modes and their `stored` state are removed. The same source,
-missing-evidence and corruption matrices remain, with exact work-limit checks on both
-ports for local/receiver/copy/opaque inputs. All 1029 Forward tests pass
-(`/tmp/meowy-binary-lookup-unified.log`). Explicit opacity/Unknown-history assertions
-and both-port coverage are retained after removing the comparison oracle. All three
-focused lookup tests pass, and all 20 measured cost sets match the pre-change candidate
-(`/tmp/meowy-binary-lookup-costs.log`). The final focused run and all-target Clippy pass
-(`/tmp/meowy-binary-lookup-focused.log`, `/tmp/meowy-binary-lookup-clippy.log`). No stale
-wrapper/mode references remain in compiler source. Next update implementation evidence,
-audit preservation and run the full compiler gate.
+Complete implementation; final compiler/strict gates are pending. The counted binary
+shared-scalar selector now calls `shared_copies_primary_slot` once after ordinary
+block/dispatch checks. Four unused wrappers and the `SharedLocal`/`SharedReceiverLocal`
+traversal modes are removed. Generic eligibility, receiver-cell exclusions, other
+traversal modes and missing-count direct fallback remain unchanged. Mutable, parameter
+and direct-call inputs remain opaque; reference histories remain Unknown.
 
-The binary path still tries receiver-first/local-only lookup before `SharedCopies`.
-This preserves earlier paths and kept the admission commit focused, but can traverse
-an unresolved input repeatedly. Consolidation is separate from new source admission.
+Before changing lookup, 120 source programs compared both selectors across six referent
+kinds, both producer forms/operand ports and local/copied/nested/guarded/function scopes.
+The existing corruption/missing-evidence/scope matrices plus 30 direct-receiver cases
+matched outcomes and complete identity diagnostics with sufficient work available.
+The same cases retain explicit source/opacity/Unknown-history and atomicity assertions.
 
-Dependency-ordered commit plan:
+Work charges follow the traversal that actually runs. Representative isolated lookup
+charges are shown below; these are structural work units, not runtime timings.
+The receiver read path now checks shared-local eligibility too. All 20 measured
+post-change cost sets match the candidate measurements taken before consolidation.
+Exact work limits on both ports and the existing map/hop limits remain checked.
 
-1. Characterize the existing fallback chain against direct `SharedCopies` qualification
-   in `consumers.rs`, `primary.rs`, `blocks.rs` and `grouped.rs`. Cover direct/local/copied
-   sources, both operand ports, missing observations, malformed descriptors and original
-   scopes. Compare links, diagnostic ordering and charged work before changing lookup.
-2. Migrate the four local-only budget tests to `SharedCopies`, then the four receiver-first
-   budget tests and two copy-boundary callers. Keep generic eligibility/receiver-cell
-   exclusions and exact-hop assertions, using ordinary block/receiver qualifiers for
-   the remaining opacity checks. Keep these prerequisites separate from production changes.
-3. Consolidate only if those identity/observation boundaries agree. Retire unused helpers
-   and receiver-first traversal machinery with focused regression tests.
-   Preserve generic eligibility, block/dispatch/ordinary-receiver modes and missing-count fallback;
-   record any changed work costs and retain exact map/work/hop exhaustion checks.
-4. Run the compiler/strict gates and preservation audit. Broader value provenance,
-   function results, restart propagation, E225 and proof outcomes remain separate.
+| Representative input | Prior work | Current work |
+| --- | --- | --- |
+| Local record | 579 | 379 |
+| Receiver copy | 2476 | 1429 |
+| Receiver read | 759 | 796 |
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `d334a76c` | Characterize source identity, opacity and lookup work |
+| `8dfdaf93` | Compare missing evidence and complete identity diagnostics |
+| `372e0fc6` | Exercise shared-copy traversal in local budget tests |
+| `9730f8c3` | Preserve receiver boundaries and migrate receiver budget tests |
+| `1f4ac417` | Consolidate the counted selector and retire unused modes/wrappers |
+
+All 1029 Forward tests pass (`/tmp/meowy-binary-lookup-unified.log`). The final three
+focused lookup tests and all-target Clippy pass (`/tmp/meowy-binary-lookup-focused.log`,
+`/tmp/meowy-binary-lookup-clippy.log`). Baseline/cost logs are
+`/tmp/meowy-binary-lookup-characterization.log`, `/tmp/meowy-binary-lookup-boundaries.log`
+and `/tmp/meowy-binary-lookup-costs.log`; test-migration logs end in `local-tests` and
+`receiver-tests`. All four guide/evidence checks pass (`/tmp/meowy-binary-lookup-docs.log`).
+The full compiler/strict gate and final handoff checks remain pending.
+
+The preservation audit retains all 574 prior reference/source/pin/obligation files,
+500 case records, 19 exact capability pins, 37 reviewed hashes and prior evidence from
+`20133a4e` (`/tmp/meowy-binary-lookup-preservation.log`). No language contract or source
+expectation changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+### Next: direct-call operation and result observations
+
+`effects.rs` currently collects `Effect::Call` only at `Port::Operation`; the report
+retains exact call/function/argument identity, `may_return` and control. It does not
+retain independent operation/result observations. `may_return` is a checked possibility,
+not observed completion. Call result-source links and callee summaries remain separate.
+
+Dependency-ordered commit plan after the current final gates:
+
+1. Characterize direct/aliased/dispatch calls in `effects/calls.rs` and
+   `effects/calls/reports.rs`: operation/normal ports, stopped arguments, Never returns,
+   recursion, guarded calls and independent owners. Preserve argument order and the
+   existing operation-only behavior before changing reports.
+2. Add bounded stage qualification and independent operation/result aggregation using
+   original CallId/FunctionId/PointId, argument identities, owners and registered edges.
+   Charge retained argument payload once and keep empty/mismatched reports atomic.
+   Keep capture, aggregation and integration independently reviewable where practical.
+3. Cover partial/missing observations, duplicate visits, control, map/payload/work limits
+   and unchanged call-order/stopped source behavior; run compiler/strict and final docs
+   gates. Structural normal observations grant no runtime completion, value, loan or proof
+   authority. Do not cross caller/callee ownership or enable result sources yet.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
 `reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`;
-it is a capability gap, not successful language rejection. Full v0.0.1 is not qualified.
+it is a capability gap, not successful language rejection. Broader value provenance,
+callee summaries, restart propagation, E225 and proof outcomes remain separate.
+Full v0.0.1 is not qualified.
 
 ## Documentation conventions and layout
 
