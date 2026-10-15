@@ -1,6 +1,20 @@
 use super::*;
 use crate::check::dependencies::{edges::forward::results::Sources, operations::SharedRecord};
 
+mod stages;
+
+pub(super) fn copy_read(checker: &Checker, reports: &Reports, id: PointId) -> PointId {
+    *checker
+        .local_reads
+        .iter()
+        .find(|(read, op)| {
+            checker.points[**read].site == checker.points[id].site
+                && reports.shared_initializers.contains_key(&op.local)
+        })
+        .unwrap()
+        .0
+}
+
 #[test]
 pub(crate) fn receiver_copy_coercions_retain_owned_projection_descriptors_across_scopes() {
     for input in ["$", "copy", "alias"] {

@@ -4169,15 +4169,15 @@ existing field/composition links and excluded binary projections
 (`/tmp/meowy-copy-coercions-characterization.log`). The copy qualifier resolves these
 source bodies while the shared binary selector remains opaque. Characterization is
 committed as `05e94b82`.
-Coercion admission now uses `shared_copies_primary_slot` only in the counted shared-scalar
-coercion branch. Its direct/copy/transitive Forward/Convert regressions remain with the
-behavior change. The larger observation matrix, scalar-kind/stopped cases and missing-count
-fallback tests are a separate validation slice in the currently unregistered `copies/stages.rs`.
-This keeps admission within eight files while preserving independently reviewable tests.
-The initial Forward run found a legacy copy exclusion and an empty-observation test error.
-The old exclusion now tests mutable copies; empty retained reports still must reject.
-All 1005 admission-only Forward tests pass (`/tmp/meowy-copy-coercions-links.log`).
-No admission failures remain; register and validate the additional stage slice next.
+Coercion admission (`8c1d96bc`) uses `shared_copies_primary_slot` only in the counted
+shared-scalar coercion branch. Its direct/copy/transitive Forward/Convert regressions
+pass all 1005 Forward tests (`/tmp/meowy-copy-coercions-links.log`). No admission failures
+remain. The separately registered `copies/stages.rs` now checks the larger observation
+matrix, scalar-kind/stopped prefixes and missing-count fallback. Empty retained reports
+must still reject; the existing report validator is unchanged. All five focused coercion
+tests pass (`/tmp/meowy-copy-coercions-stages.log`), including 320 valid stage combinations
+and 64 empty-report rejections. Next: stale descriptors, complete suffix layouts, original
+scopes, mixed cycles, missing observations and exact budgets.
 
 Dependency-ordered commit plan:
 
