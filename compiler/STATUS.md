@@ -4307,6 +4307,18 @@ checks pass (`/tmp/meowy-copy-binaries-docs.log`). No known failures remain. Unr
 
 ### Next: consolidate counted binary source lookup
 
+In progress from `20133a4e`; unrelated `docs/programs/hey/` remains excluded.
+The counted binary branch is the sole production caller of the receiver-first primary
+helper. Its dedicated traversal mode also appears in four budget tests and two older
+copy-boundary tests. Preserve those invariants while migrating the tests before removing
+the production helpers. The first characterization passes 120 source programs across
+six referent kinds, both producer forms, both operand ports, copied/nested/guarded/
+function scopes and opaque mutable/parameter/call inputs
+(`/tmp/meowy-binary-lookup-characterization.log`). Source links match exactly.
+Representative old/new lookup charges are local 579/379, copied 2476/1429 and direct
+receiver 759/796; this is structural work accounting, not a runtime timing claim.
+Production lookup is unchanged. Next compare absent evidence and identity diagnostics.
+
 The binary path still tries receiver-first/local-only lookup before `SharedCopies`.
 This preserves earlier paths and kept the admission commit focused, but can traverse
 an unresolved input repeatedly. Consolidation is separate from new source admission.
@@ -4317,11 +4329,14 @@ Dependency-ordered commit plan:
    in `consumers.rs`, `primary.rs`, `blocks.rs` and `grouped.rs`. Cover direct/local/copied
    sources, both operand ports, missing observations, malformed descriptors and original
    scopes. Compare links, diagnostic ordering and charged work before changing lookup.
-2. Consolidate only if those identity/observation boundaries agree. Retire unused helpers
-   and receiver-first traversal machinery in reviewable slices with their focused tests.
+2. Migrate obsolete receiver-first test callers to the retained copy/local modes, with
+   the same scope, receiver-cell exclusion and exact-hop assertions. Keep this prerequisite
+   separate from production lookup changes.
+3. Consolidate only if those identity/observation boundaries agree. Retire unused helpers
+   and receiver-first traversal machinery with focused regression tests.
    Preserve generic eligibility, other traversal modes and missing-count direct fallback;
    record any changed work costs and retain exact map/work/hop exhaustion checks.
-3. Run the compiler/strict gates and preservation audit. Broader value provenance,
+4. Run the compiler/strict gates and preservation audit. Broader value provenance,
    function results, restart propagation, E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.

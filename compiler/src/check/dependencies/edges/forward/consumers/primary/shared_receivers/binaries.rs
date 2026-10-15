@@ -3,6 +3,7 @@ use crate::check::dependencies::edges::forward::results::Sources;
 
 mod copies;
 mod locals;
+mod lookup;
 
 #[test]
 pub(crate) fn shared_receiver_binaries_link_types_and_guarded_owners() {
