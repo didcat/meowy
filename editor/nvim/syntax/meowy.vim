@@ -10,18 +10,18 @@ syntax case match
 " Explicit clusters keep task/comparison operators out of type arguments while
 " allowing full expressions, including nested strings, inside interpolation.
 syntax cluster meowyCode contains=meowyIdentifier,meowyReceiver,meowyBuiltinValue,meowyBinding,meowyCall,meowyFunction,meowyNumber,meowyFloat,meowyOperator,meowyAscription,meowyEmit,meowyTaskOperator,meowyBorrow,meowyUnchecked,meowyDispatch,meowyScope,meowyTaskGroup,meowyPunctuation,meowyBlock,meowyParen,meowyList,meowyType,meowyString,meowyImport,meowyComment,meowyDocComment,meowyModuleDoc
-syntax cluster meowyTypeBody contains=meowyTypeName,meowyTypeArguments,meowyTypeRecord,meowyTypeParameters,meowyTypeExtent,meowyTypeOperator,meowyTypePunctuation,meowyNumber,meowyString,meowyComment,meowyDocComment,meowyModuleDoc
+syntax cluster meowyTypeBody contains=meowyTypeName,meowyNumericTypeName,meowyTypeArguments,meowyTypeRecord,meowyTypeParameters,meowyTypeExtent,meowyTypeOperator,meowyTypePunctuation,meowyNumber,meowyString,meowyComment,meowyDocComment,meowyModuleDoc
 
-syntax match meowyIdentifier /\<[A-Za-z_][A-Za-z0-9_]*\>/
+syntax match meowyIdentifier /\<[A-Za-z0-9_]\+\>/
 syntax match meowyReceiver /\$/
 " This is optional lexical emphasis, not a claim about name resolution.
 if get(g:, 'meowy_highlight_builtin_values', 1)
   syntax match meowyBuiltinValue /\<\%(true\|false\|null\)\>/
 endif
-syntax match meowyBinding /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*:\%(:\)\@!/
-syntax match meowyCall /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*(/
-syntax match meowyCall /\<[A-Za-z_][A-Za-z0-9_]*\>\ze\s*<[^"#{};|=]\+>\s*(/
-syntax match meowyCall /\%(\.\_s*(\_s*\%([A-Za-z_][A-Za-z0-9_]*\_s*\.\_s*\)*\)\@<=[A-Za-z_][A-Za-z0-9_]*\ze\_s*[,)]/
+syntax match meowyBinding /\<[A-Za-z0-9_]\+\>\ze\s*:\%(:\)\@!/
+syntax match meowyCall /\<[A-Za-z0-9_]\+\>\ze\s*(/
+syntax match meowyCall /\<[A-Za-z0-9_]\+\>\ze\s*<[^"#{};|=]\+>\s*(/
+syntax match meowyCall /\%(\.\_s*(\_s*\%([A-Za-z0-9_]\+\_s*\.\_s*\)*\)\@<=[A-Za-z0-9_]\+\ze\_s*[,)]/
 
 
 syntax match meowyOperator /[-+*\/%=<>!&|:]/
@@ -32,8 +32,7 @@ syntax match meowyTaskOperator />>\|<</
 syntax match meowyBorrow /\%(&\)\@<!&\%(&\)\@!\%(!\)\?/
 syntax match meowyUnchecked /!\ze\s*{/
 syntax match meowyDispatch /\./
-syntax match meowyScope /'[A-Za-z_][A-Za-z0-9_]*/
-syntax match meowyTaskGroup /\%(\%(^\|[({,:;=+*\/%!?&|<>-]\|\[\)\s*\)\@<=%[A-Za-z_][A-Za-z0-9_]*/
+syntax match meowyScope /'[A-Za-z0-9_]\+/
 syntax match meowyPunctuation /[,;]/
 
 syntax match meowyNumber /\<\d\%(_\?\d\)*\>/
@@ -44,7 +43,8 @@ syntax match meowyFloat /\<\d\%(_\?\d\)*[eE][+-]\?\d\%(_\?\d\)*\>/
 
 let s:digits = '\d\%(_\?\d\)*'
 let s:number = '\%(0[xX][0-9A-Fa-f]\%(_\?[0-9A-Fa-f]\)*\|0[bB][01]\%(_\?[01]\)*\|' . s:digits . '\%([eE][+-]\?' . s:digits . '\)\?\)'
-let s:name = '\%([A-Za-z_][A-Za-z0-9_]*\|' . s:number . '\)'
+let s:name = '\%(' . s:number . '\|[A-Za-z0-9_]\+\)'
+let s:path = s:name . '\%(\.' . s:name . '\)*'
 let s:start = '\%(\.\|[eE][+-]\)\@<!\<'
 let s:text = '"\%(\\.\|\_[^"\\]\)*"'
 let s:type = '<\%(->\|' . s:text . '\|\_[^<>#"]\)*>'
@@ -53,12 +53,13 @@ for s:depth in range(1, 7)
   let s:type = '<\%(->\|' . s:text . '\|\_[^<>#"]\|' . s:type . '\)*>'
   let s:params = '(\%(' . s:text . '\|\_[^()#"]\|' . s:params . '\)*)'
 endfor
-execute 'syntax match meowyBinding /' . s:start . s:number . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\%(:\)\@!/'
-execute 'syntax match meowyCall /' . s:start . s:number . '\>\ze\s*(/'
-execute 'syntax match meowyCall /' . s:start . s:number . '\>\ze\s*<[^"#{};|=]\+>\s*(/'
+execute 'syntax match meowyBinding /' . s:start . s:name . '\>\ze\s*\%(' . s:type . '\s*\)*:\%(:\)\@!/'
+execute 'syntax match meowyCall /' . s:start . s:name . '\>\ze\s*(/'
+execute 'syntax match meowyCall /' . s:start . s:name . '\>\ze\s*<[^"#{};|=]\+>\s*(/'
 let s:head = '\%((\_s*\%()\|' . s:name . '\_s*<\)\)\@=' . s:params
-execute 'syntax match meowyFunction /' . s:start . s:name . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\_s*' . s:head . '\_s*\%(''[A-Za-z_][A-Za-z0-9_]*\_s*\)\?!\?\_s*{/'
-unlet s:text s:type s:params s:depth s:head s:digits s:number s:name s:start
+execute 'syntax match meowyFunction /' . s:start . s:name . '\>\ze\_s*\%(' . s:type . '\_s*\)*:\_s*' . s:head . '\_s*\%(''' . s:name . '\_s*\)\?!\?\_s*{/'
+execute 'syntax match meowyScope /''' . s:name . '\>/'
+execute 'syntax match meowyTaskGroup /\%(\%(^\|[({,:;=+*\/%!?&|<>-]\|\[\)\s*\)\@<=%' . s:name . '\>/'
 
 syntax region meowyBlock matchgroup=meowyDelimiter start=/{/ end=/}/ transparent fold contains=@meowyCode
 syntax region meowyParen matchgroup=meowyDelimiter start=/(/ end=/)/ transparent contains=@meowyCode
@@ -67,11 +68,11 @@ syntax region meowyList matchgroup=meowyDelimiter start=/\[/ end=/\]/ transparen
 " Spaces do not select predicates, ascriptions, or generic specialization.
 " A named outer type must reach a type delimiter. In particular, '< limit'
 " and '<< task' must not start a region that consumes the rest of the file.
-syntax region meowyType matchgroup=meowyTypeDelimiter start=/\%(<\)\@<!<\ze\_s*\%([:&*!({"]\|>\|[A-Za-z_][A-Za-z0-9_]*\%(\.[A-Za-z_][A-Za-z0-9_]*\)*\_s*\%([><]\|\[\)\)/ end=/\%(-\)\@<!>/ contains=@meowyTypeBody
+execute 'syntax region meowyType matchgroup=meowyTypeDelimiter start=/\%(<\)\@<!<\ze\_s*\%([:&*!({"]\|>\|' . s:path . '\_s*\%([><]\|\[\)\)/ end=/\%(-\)\@<!>/ contains=@meowyTypeBody'
 " A bare first argument can instead reach a comma. Require a closed list and
 " following punctuation so call(x<limit,other>0) keeps comparison highlighting.
 " Nested named arguments and extents remain valid with or without whitespace.
-syntax region meowyType matchgroup=meowyTypeDelimiter start=/\%(<\)\@<!<\ze\_s*[A-Za-z_][A-Za-z0-9_]*\%(\.[A-Za-z_][A-Za-z0-9_]*\)*\_s*,\%(\_s\|[A-Za-z0-9_.,<>:&*!]\|\[\|\]\)*>\_s*\%((\|)\|\]\|[,:;.}>|]\|$\)/ end=/\%(-\)\@<!>/ contains=@meowyTypeBody
+execute 'syntax region meowyType matchgroup=meowyTypeDelimiter start=/\%(<\)\@<!<\ze\_s*' . s:path . '\_s*,\%(\_s\|[A-Za-z0-9_.,<>:&*!+-]\|\[\|\]\)*>\_s*\%((\|)\|\]\|[,:;.}>|]\|$\)/ end=/\%(-\)\@<!>/ contains=@meowyTypeBody'
 " Once inside a type, angle brackets nest; adjacent '>>' close two levels.
 " The '>' in a function arrow never closes either region.
 syntax region meowyTypeArguments matchgroup=meowyTypeDelimiter start=/</ end=/\%(-\)\@<!>/ contained contains=@meowyTypeBody
@@ -79,7 +80,9 @@ syntax region meowyTypeRecord matchgroup=meowyTypeDelimiter start=/{/ end=/}/ co
 " Parenthesized types cover both function parameters and computed annotations.
 syntax region meowyTypeParameters matchgroup=meowyTypeDelimiter start=/(/ end=/)/ contained transparent contains=@meowyTypeBody,meowyCall,meowyOperator,meowyFloat,meowyImport
 syntax region meowyTypeExtent matchgroup=meowyTypeDelimiter start=/\[/ end=/\]/ contained contains=meowyNumber,meowyTypeName
-syntax match meowyTypeName /\<[A-Za-z_][A-Za-z0-9_]*\>/ contained
+execute 'syntax match meowyTypeName /\<\%(' . s:number . '\>\)\@![A-Za-z0-9_]\+\>/ contained'
+execute 'syntax match meowyNumericTypeName /\<' . s:number . '\>/ contained'
+unlet s:text s:type s:params s:depth s:head s:digits s:number s:name s:path s:start
 syntax match meowyTypeOperator /[&*!:]\|->/ contained
 syntax match meowyTypePunctuation /[,.;]/ contained
 
@@ -118,6 +121,7 @@ highlight default link meowyPunctuation Delimiter
 highlight default link meowyDelimiter Delimiter
 highlight default link meowyTypeDelimiter Delimiter
 highlight default link meowyTypeName Type
+highlight default link meowyNumericTypeName Type
 highlight default link meowyTypeOperator Operator
 highlight default link meowyTypePunctuation Delimiter
 highlight default link meowyComment Comment

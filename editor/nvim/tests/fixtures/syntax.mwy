@@ -274,5 +274,25 @@ numeric_chain : 10.4.5
 numeric_named_member : 10.4.value()
 numeric_intrinsic : @"core".literal(10.4)
 
+2_or_more_cats <uint32> : 4
+mixed_read : 2_or_more_cats
+2double <10> : (3value <10>) '20 { -> 3value }
+2result : 2double(4)
+2call <10> : (3arg <10>) '1e+2 { -> 3arg }
+2obj.3method(7)
+<2Type> : <10>
+<1e+2> : <boolean>
+typed_numeric <10.4> : value
+typed_exponent <10.1e+2> : value
+typed_extents <2Type[16]> : []
+typed_named_extent <2Type[2_count]> : []
+'2_loop { '2_loop.leave() }
+'1e+2 { '1e+2.leave() }
+%2jobs <tasks.Outcome<uint32>[4]>
+operator_names : 2name+4
+numeric_type_call : build<1e+2>(4)
+2read : 2value
+<3Type> : <int32>
+
 #||| unclosed documentation
 ||# still unclosed documentation

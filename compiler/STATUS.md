@@ -10,8 +10,8 @@ records the plan. Keep this handoff current; Git holds history. Do not recreate 
 ### Current uniform-name correction
 
 The user requires digit-leading names everywhere: names share one rule across values,
-parameters, functions, fields, types and scope labels. `2_or_more_cats` currently fails
-in the lexer before parameter parsing (`docs/programs/hey/main.mwy`, lines 16/17).
+parameters, functions, fields, types and scope labels. The original `2_or_more_cats`
+lexer rejection in `docs/programs/hey/main.mwy` is repaired; the source stays untouched.
 Existing numeric-name checks pass: 25 library and six native tests
 (`/tmp/meowy-numeric-name-audit.log`). The user's untracked program remains untouched.
 The former type/label exclusions below are superseded by this requested correction.
@@ -56,8 +56,15 @@ integration slice. Checked links now share the parser's token-name predicate, in
 numeric and digit-leading type names. All 29 documentation-focused tests pass
 (`/tmp/meowy-digit-names-links.log`). The required link case and an untouched temporary
 copy of `docs/programs/hey/main.mwy` pass debug/release with exact expected output
-(`/tmp/meowy-digit-names-links-source.log`); catalog/coverage checks pass. Next:
-Vim/Neovim highlighting, module source coverage and the final contract/gates.
+(`/tmp/meowy-digit-names-links-source.log`); catalog/coverage checks pass (`5ec5d72c`).
+Vim/Neovim now use digit-leading names for bindings, calls, functions, types, labels and
+task groups. Numeric type names retain Type highlighting while extent values retain
+Number highlighting. Both editors exposed a binding pattern that crossed a statement
+newline into a following type alias; its outside-annotation spacing now matches the
+parser. Annotated ordinary names now use the same Binding group as numeric names.
+All six editor/repository checks now pass in Vim and Neovim
+(`/tmp/meowy-digit-names-editor.log`), including the newline boundary regressions.
+Module source coverage and the final contract/gates follow.
 `core.literal` and proof work are unchanged.
 
 ### Completed numeric member lookup

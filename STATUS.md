@@ -5,6 +5,17 @@ Updated: 2026-10-15. This is the current project handoff; Git retains prior work
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
 
+## Uniform names
+
+Digit-leading names now work across bindings, parameters, functions, fields, types,
+scope labels, module paths and checked documentation links. The unchanged
+`docs/programs/hey/main.mwy` runs correctly in debug/release. Vim and Neovim recognize
+the same names, preserving literal and extent highlighting; all six editor/repository
+checks pass (`/tmp/meowy-digit-names-editor.log`). The
+[compiler handoff](compiler/STATUS.md#current-uniform-name-correction) records focused
+validation and commits. Reference updates, module source coverage and the final combined
+gate remain pending. Proof work and release qualification remain separate.
+
 ## Numeric member lookup
 
 Numeric lookup now follows the agreed root-first rule: `10.4` selects a member
