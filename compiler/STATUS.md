@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-15. Uniform digit-leading names pass the compiler/editor gate.
+Updated: 2026-10-15. Counted binary lookup consolidation passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: resume the ordered counted-binary-source consolidation handoff below.
+Next: follow the direct-call observation handoff below; counted binary lookup is consolidated.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4260,9 +4260,9 @@ Strict mode exits 1 only for the exact pinned names and reasons
 
 ### Binary-owned primary sources through immutable receiver copies
 
-Complete implementation; the compiler gate passes. Only the counted binary
-shared-scalar branch in `consumers.rs` adds `shared_copies_primary_slot` after its
-existing direct/local paths. Both operand ports preserve the original field count,
+Complete implementation; the compiler gate passes. The counted binary shared-scalar
+branch in `consumers.rs` uses `shared_copies_primary_slot`, preserving ordinary
+block/dispatch precedence. Both operand ports preserve the original field count,
 referent kind, canonical Bind/read/storage and each original lexical/receiver scope.
 Complete immutable layouts include unselected suffixes. Missing counts suppress copy
 links while retaining direct receiver fallback. No capture payload or generic eligibility
@@ -4307,7 +4307,7 @@ checks pass (`/tmp/meowy-copy-binaries-docs.log`). No known failures remain. Unr
 
 ### Counted binary source lookup
 
-Complete implementation; final compiler/strict gates are pending. The counted binary
+Complete implementation; the full compiler gate passes. The counted binary
 shared-scalar selector now calls `shared_copies_primary_slot` once after ordinary
 block/dispatch checks. Four unused wrappers and the `SharedLocal`/`SharedReceiverLocal`
 traversal modes are removed. Generic eligibility, receiver-cell exclusions, other
@@ -4339,6 +4339,7 @@ Exact work limits on both ports and the existing map/hop limits remain checked.
 | `372e0fc6` | Exercise shared-copy traversal in local budget tests |
 | `9730f8c3` | Preserve receiver boundaries and migrate receiver budget tests |
 | `1f4ac417` | Consolidate the counted selector and retire unused modes/wrappers |
+| `c4bbd32e` | Document the unified traversal and measured work costs |
 
 All 1029 Forward tests pass (`/tmp/meowy-binary-lookup-unified.log`). The final three
 focused lookup tests and all-target Clippy pass (`/tmp/meowy-binary-lookup-focused.log`,
@@ -4346,7 +4347,12 @@ focused lookup tests and all-target Clippy pass (`/tmp/meowy-binary-lookup-focus
 `/tmp/meowy-binary-lookup-characterization.log`, `/tmp/meowy-binary-lookup-boundaries.log`
 and `/tmp/meowy-binary-lookup-costs.log`; test-migration logs end in `local-tests` and
 `receiver-tests`. All four guide/evidence checks pass (`/tmp/meowy-binary-lookup-docs.log`).
-The full compiler/strict gate and final handoff checks remain pending.
+All ten compiler checks pass: 3094 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source conformance (`/tmp/meowy-binary-lookup-gate.log`).
+The 500-case catalog has 481 required passes, 19 unchanged pinned gaps and zero
+debug/release failures. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-binary-lookup-strict.log`). All four final handoff checks pass
+(`/tmp/meowy-binary-lookup-final-docs.log`). No known failures remain.
 
 The preservation audit retains all 574 prior reference/source/pin/obligation files,
 500 case records, 19 exact capability pins, 37 reviewed hashes and prior evidence from
@@ -4360,7 +4366,7 @@ retains exact call/function/argument identity, `may_return` and control. It does
 retain independent operation/result observations. `may_return` is a checked possibility,
 not observed completion. Call result-source links and callee summaries remain separate.
 
-Dependency-ordered commit plan after the current final gates:
+Dependency-ordered commit plan:
 
 1. Characterize direct/aliased/dispatch calls in `effects/calls.rs` and
    `effects/calls/reports.rs`: operation/normal ports, stopped arguments, Never returns,
@@ -5984,9 +5990,9 @@ and coercion/binary-primary sources. Owned scalar fields now qualify shared-refe
 receiver inputs through immutable local records, including composed-emission sources.
 Coercion- and binary-owned primaries now qualify these receiver inputs too. Owned scalar
 fields, composed emissions and coercion/binary-owned primaries also qualify immutable
-copies of shared-reference receiver records. Next consolidate counted binary source
-lookup using the ordered plan above. Value selection and broader aggregate provenance
-remain separate.
+copies of shared-reference receiver records. Counted binary lookup is consolidated.
+Next qualify independent direct-call operation/result observations using the ordered
+plan above. Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6657,7 +6663,8 @@ remain separate.
    reports (`876262fa`), test scopes (`86097270`), links (`284eb11f`), boundaries
    (`052a1e1b`), limits (`111b65ad`) and source cases (`f622cdd3`) pass the compiler gate.
    Shared-reference receiver local inputs and immutable copies are qualified above.
-   Next consolidate counted binary source lookup using the current ordered handoff.
+   Counted binary lookup is consolidated; next qualify direct-call observation stages
+   using the current ordered handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

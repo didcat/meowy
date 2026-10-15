@@ -45,29 +45,23 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Binary-owned shared scalar primaries now link through immutable copies of receiver
-records. Both operand ports retain exact counts, referents, storage and original scopes.
-The [compiler handoff](compiler/STATUS.md#binary-owned-primary-sources-through-immutable-receiver-copies)
-records seven implementation/coverage commits and current validation.
+Counted binary shared-scalar source lookup now uses one shared-copy traversal.
+The receiver-first/local-only modes and four unused wrappers are retired. Source
+identity, original scopes, missing-count direct fallback, generic eligibility and
+Unknown reference histories are preserved. The
+[compiler handoff](compiler/STATUS.md#counted-binary-source-lookup) records the six
+implementation/evidence commits, equivalence checks and changed work charges.
 
-Source publication, copy bindings, receiver initialization and projection/operation/result
-observations remain independent. Missing evidence suppresses only its link; late faults
-preserve existing maps and edges. Earlier coercion ownership and full-record equality
-are preserved. Reference histories remain Unknown; generic eligibility and receiver-cell
-exclusions remain unchanged.
+All ten compiler checks pass: 3094 library, 923 native and 62 Python tests, formatting,
+Clippy, build, metadata and 481 required conformance cases. The same 19 pinned gaps
+remain, with zero debug/release failures (`/tmp/meowy-binary-lookup-gate.log`). The audit
+preserves 574 reference/source/pin/obligation files, all 500 case records, 19 pins and
+37 reviewed hashes from `20133a4e` (`/tmp/meowy-binary-lookup-preservation.log`). Strict
+mode exits 1 only for the exact pins (`/tmp/meowy-binary-lookup-strict.log`). All four
+final handoff checks pass (`/tmp/meowy-binary-lookup-final-docs.log`).
 
-All twelve focused tests and both new source cases pass, including exact debug/release
-output and P006. The audit preserves 565 prior reference/source/pin/obligation files,
-492 prior cases, 19 pins and 37 hashes from `d9d4c82c`
-(`/tmp/meowy-copy-binaries-preservation.log`). All ten compiler checks pass: formatting,
-Clippy, 3087 library/921 native and 62 Python tests, build, metadata and 475 required
-conformance cases. The same 19 pinned gaps remain, with zero debug/release failures
-(`/tmp/meowy-copy-binaries-gate.log`). Strict mode exits 1 only for the exact pins
-(`/tmp/meowy-copy-binaries-strict.log`). All four final guide/handoff checks pass
-(`/tmp/meowy-copy-binaries-docs.log`).
-
-Next: consolidate counted binary source lookup using the compiler
-handoff. Full proof/release qualification remains incomplete. Unrelated
+Next: direct-call operation/result observations, before callee summaries or call result
+sources. Full proof/release qualification remains incomplete. Unrelated
 `docs/programs/hey/` is preserved.
 
 ## Host toolchain
@@ -1220,8 +1214,8 @@ execution was not part of this documentation edit.
    and coercion/binary-primary sources. Owned scalar fields now qualify shared-reference
    receiver inputs through immutable locals, including composed-emission sources and
    coercion/binary-owned primaries. Owned scalar fields, composed emissions and coercion/binary-owned
-   primaries now qualify immutable copies of shared-reference receiver records. Next consolidate
-   counted binary source lookup using the ordered compiler handoff.
+   primaries now qualify immutable copies of shared-reference receiver records. Counted binary
+   lookup is consolidated; next qualify direct-call observation stages using the compiler handoff.
    Preserve source/capability gates, ordinary eligibility and projection ownership.
    Callee summaries, backedge data propagation and proof outcomes remain separate.
    Other contextual builders remain separate.
