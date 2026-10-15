@@ -2,13 +2,33 @@ use super::*;
 
 #[test]
 pub(crate) fn numeric_value_names_preserve_their_spelling_and_token_kind() {
-    for name in ["1", "01", "0x1", "0Xf", "0b10", "1_000", "1e+2", "1e-2"] {
+    for name in [
+        "1",
+        "01",
+        "0x1",
+        "0Xf",
+        "0b10",
+        "1_000",
+        "1e+2",
+        "1e-2",
+        "2_or_more_cats",
+        "12cat",
+        "1__0",
+        "0x_ff",
+        "0b102",
+        "0x",
+        "1e",
+    ] {
         let block = parse(&format!("{name}<int32>:=7;{name}=8;-> {name}:9")).unwrap();
         assert!(matches!(&block.stmts[0].kind,
             StmtKind::Bind { name: actual, mutable: true, .. } if actual == name));
         assert!(matches!(&block.stmts[1].kind,
-            StmtKind::Assign { target, .. }
-                if matches!(&target.kind, ExprKind::Int(actual) | ExprKind::Float(actual) if actual.text == name)));
+        StmtKind::Assign { target, .. }
+            if match &target.kind {
+                ExprKind::Name(actual) => actual == name,
+                ExprKind::Int(actual) | ExprKind::Float(actual) => actual.text == name,
+                _ => false,
+            }));
         assert!(matches!(&block.stmts[2].kind,
             StmtKind::Emit { name: Some(actual), .. } if actual == name));
     }
@@ -106,7 +126,7 @@ pub(crate) fn numeric_roots_retain_decimal_syntax_for_resolution_and_escape() {
 
 #[test]
 pub(crate) fn numeric_value_names_do_not_relax_tokens_types_or_labels() {
-    for source in ["12cat:1", "1__0:1", "0x_ff:1"] {
+    for source in ["2café:1", "1?0:1", "0x\\ff:1"] {
         assert_eq!(parse(source).unwrap_err()[0].code, "E001");
     }
     for source in ["<1>:<int32>", "x<1>:2", "'1{}", "-1:2"] {

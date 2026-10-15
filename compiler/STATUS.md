@@ -7,6 +7,43 @@ records the plan. Keep this handoff current; Git holds history. Do not recreate 
 
 ## Numeric shadowing implementation
 
+### Current uniform-name correction
+
+The user requires digit-leading names everywhere: names share one rule across values,
+parameters, functions, fields, types and scope labels. `2_or_more_cats` currently fails
+in the lexer before parameter parsing (`docs/programs/hey/main.mwy`, lines 16/17).
+Existing numeric-name checks pass: 25 library and six native tests
+(`/tmp/meowy-numeric-name-audit.log`). The user's untracked program remains untouched.
+The former type/label exclusions below are superseded by this requested correction.
+
+Dependency-ordered commit plan:
+
+1. Tokenize digit-leading ASCII words as names when they are not complete numbers.
+   Preserve valid numeric spelling, decimal/member boundaries and exponent operators.
+   Keep focused lexical/parser/diagnostic regressions with this change.
+2. Apply the same name rule to type and scope parsing and checked documentation links.
+   Keep declaration/read/storage/owner behavior and dotted declaration rejection intact;
+   verify numeric/mixed names in each namespace and qualified exports.
+3. Update Vim/Neovim names, functions, types, labels and focused highlighting tests.
+4. Specify the unified contract, add required execution/error/module source cases,
+   explicitly review the former malformed-number fixture, update coverage evidence/hashes
+   and teaching docs. Run the compiler/editor gate, strict audit and final docs checks.
+
+The lexer now classifies complete numbers first and otherwise retains digit-leading
+ASCII words as names. Signed exponents join only when complete, so `2name+4` and
+`1e+cats` preserve ordinary operators. All 3088 library tests, seven numeric native
+tests and the CLI diagnostic regression pass (`/tmp/meowy-digit-names-lexer-lib.log`,
+`/tmp/meowy-digit-names-lexer-native.log`). Both affected source cases pass debug/release
+(`/tmp/meowy-digit-names-lexer-source.log`), and catalog/coverage validation passes.
+The CLI keeps E001 coverage with an invalid character and checks E201 for unbound
+`1__0`. The unchanged `invalid_separator.mwy` now expects E201 for the undefined
+name instead of E001; the new required `digit_leading_names` case binds that exact
+spelling successfully. The source bytes and all other prior expectations are preserved.
+`core.literal` remains the explicit numeric-syntax escape. Next: unify numeric type
+and scope parsing, then checked links. Proof work is unchanged.
+
+### Completed numeric member lookup
+
 Complete. Dotted spellings are expressions, never declaration names. A bound
 numeric root makes `10.4` select member `4`; missing/private members and scalar
 receivers report ordinary errors without retrying a decimal. An unbound root

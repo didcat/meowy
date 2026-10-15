@@ -19,7 +19,8 @@ pub fn checking_never_runs_application_effects() {
 pub fn rejection_codes_and_original_byte_spans_are_stable() {
     for (source, code) in [
         ("x<int8>:-(128)", "E216"),
-        ("value:1__0", "E001"),
+        ("value:?", "E001"),
+        ("value:1__0", "E201"),
         ("x:missing", "E201"),
         ("x:1;x:2", "E203"),
         ("x:{->1;->2}", "E205"),

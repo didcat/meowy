@@ -29,7 +29,7 @@
       "source": "sources/invalid_separator.mwy",
       "expected": {
         "accepted": false,
-        "code": "E001"
+        "code": "E201"
       },
       "reference": "../reference/syntax.md#literals-values-and-comments"
     },
@@ -5240,6 +5240,16 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "digit_leading_names",
+      "phase": "run",
+      "source": "sources/digit_leading_names.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "6\n9\n17\n10\n12\n100\n"
+      },
+      "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
     }
   ]
 }

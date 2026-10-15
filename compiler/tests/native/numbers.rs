@@ -1,6 +1,33 @@
 use super::Case;
 
 #[test]
+pub(crate) fn digit_leading_names_keep_bindings_parameters_fields_and_operators() {
+    Case::new(
+        r#"
+d:@"debug"
+2_or_more_cats<int32>:=4
+2_or_more_cats=5
+2name:2_or_more_cats
+d.print(2name+1)
+1e:7
+cats:2
+d.print(1e+cats)
+1__0:8
+0x_ff:9
+d.print(1__0+0x_ff)
+2double<int32>:(3value<int32>){->3value*2}
+4row<{5field<int32>}>:{->5field:2double(2_or_more_cats)}
+d.print(4row.5field)
+10:{->2cats:=11}
+10.2cats=12
+d.print(10.2cats)
+d.print(1e+2)
+"#,
+    )
+    .runs(b"6\n9\n17\n10\n12\n100\n");
+}
+
+#[test]
 pub(crate) fn numeric_names_resolve_lexically_in_both_profiles() {
     Case::new(
         r#"

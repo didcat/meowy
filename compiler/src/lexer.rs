@@ -59,12 +59,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
                 TokenKind::String
             }
             b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
-                pos += 1;
-                while pos < bytes.len()
-                    && (bytes[pos].is_ascii_alphanumeric() || bytes[pos] == b'_')
-                {
-                    pos += 1;
-                }
+                pos = scan_word(source, start);
                 TokenKind::Name
             }
             b'0'..=b'9' => {
@@ -77,17 +72,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
                         pos = end;
                     }
                 }
-                match number_kind(&source[start..pos]) {
-                    Some(kind) => kind,
-                    None => {
-                        errors.push(Diagnostic::new(
-                            "E001",
-                            "malformed numeric literal",
-                            Span::new(start, pos),
-                        ));
-                        TokenKind::Int
-                    }
-                }
+                number_kind(&source[start..pos]).unwrap_or(TokenKind::Name)
             }
             byte if b"{}()[]<>:;,.|+-*/%&^!~=@'$".contains(&byte) => {
                 pos += 1;
@@ -141,16 +126,23 @@ pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
 
 pub(crate) fn scan_number(source: &str, start: usize) -> usize {
     let bytes = source.as_bytes();
-    let radix = bytes.get(start) == Some(&b'0')
-        && matches!(bytes.get(start + 1), Some(b'x' | b'X' | b'b' | b'B'));
-    let mut pos = start + 1;
-    while pos < bytes.len()
-        && (bytes[pos].is_ascii_alphanumeric()
-            || bytes[pos] == b'_'
-            || (!radix
-                && matches!(bytes[pos], b'+' | b'-')
-                && matches!(bytes.get(pos - 1), Some(b'e' | b'E'))))
+    let pos = scan_word(source, start);
+    if matches!(bytes.get(pos), Some(b'+' | b'-'))
+        && matches!(bytes.get(pos - 1), Some(b'e' | b'E'))
+        && digits(&source[start..pos - 1], 10)
     {
+        let end = scan_word(source, pos + 1);
+        if digits(&source[pos + 1..end], 10) {
+            return end;
+        }
+    }
+    pos
+}
+
+pub(crate) fn scan_word(source: &str, start: usize) -> usize {
+    let bytes = source.as_bytes();
+    let mut pos = start;
+    while pos < bytes.len() && (bytes[pos].is_ascii_alphanumeric() || bytes[pos] == b'_') {
         pos += 1;
     }
     pos
@@ -335,10 +327,44 @@ mod tests {
         ] {
             assert!(lex(text).is_ok(), "{text}");
         }
-        for text in ["1__0", "0x_ff", "0b102", "12cat", "1e+", "0x"] {
-            assert_eq!(lex(text).unwrap_err()[0].code, "E001", "{text}");
+        for text in ["1__0", "0x_ff", "0b102", "12cat", "1e", "0x"] {
+            assert_eq!(number_kind(text), None, "{text}");
+            let tokens = lex(text).unwrap();
+            assert_eq!(tokens[0].kind, TokenKind::Name, "{text}");
+            assert_eq!(tokens[0].text, text);
         }
         assert_eq!(lex("1.(f)").unwrap()[0].text, "1");
+    }
+
+    #[test]
+    pub(crate) fn digit_leading_names_preserve_operators_and_numeric_exponents() {
+        for (source, expected) in [
+            ("2_or_more_cats", vec!["2_or_more_cats"]),
+            ("2name+4", vec!["2name", "+", "4"]),
+            ("2E_name-4", vec!["2E_name", "-", "4"]),
+            ("1e+cats", vec!["1e", "+", "cats"]),
+            ("1e-2cats", vec!["1e", "-", "2cats"]),
+            ("1e+", vec!["1e", "+"]),
+            ("1e+2", vec!["1e+2"]),
+            ("1.0e-2", vec!["1.0e-2"]),
+            ("0x1e+2", vec!["0x1e", "+", "2"]),
+            ("2cats.3kittens", vec!["2cats", ".", "3kittens"]),
+            ("10.2cats", vec!["10", ".", "2cats"]),
+        ] {
+            let tokens = lex(source).unwrap();
+            assert_eq!(
+                tokens
+                    .iter()
+                    .filter(|token| token.kind != TokenKind::Eof)
+                    .map(|token| token.text.as_str())
+                    .collect::<Vec<_>>(),
+                expected,
+                "{source}"
+            );
+            for token in tokens {
+                assert_eq!(&source[token.span.start..token.span.end], token.text);
+            }
+        }
     }
 
     #[test]
