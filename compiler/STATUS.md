@@ -4222,7 +4222,10 @@ initialization (`13c4aec0`). All eight focused tests pass
 (`/tmp/meowy-copy-binaries-boundaries.log`), including 48 late identity faults across
 both ports and original local/receiver scope checks. Copy/receiver cycles, canonical
 storage and unselected suffix faults leave existing maps and edge counts unchanged.
-Next: missing evidence and exact bounds.
+Identity/scope checks are committed as `7edb75b3`. All nine focused tests pass
+(`/tmp/meowy-copy-binaries-evidence.log`): 38 missing-evidence cases remove late
+Bind/read/receiver/source/count/projection observations on both ports while preserving
+an earlier valid copy link and existing reports. Next: exact budgets and control.
 
 Only the counted binary shared-scalar branch in `consumers.rs` changes admission;
 ascribed operands retain earlier coercion ownership, and full-record comparisons
