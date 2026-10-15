@@ -51,9 +51,14 @@ those type names. Type-alias declarations require one component: the old qualifi
 B001 unit expectation becomes E004, matching the existing dotted value-name restriction.
 All 3090 library and eight exported-type native tests pass
 (`/tmp/meowy-digit-names-paths-lib.log`, `/tmp/meowy-digit-names-paths-native.log`).
-Required module source coverage and checked links follow in the integration slice.
-Vim/Neovim highlighting remains explicitly required by the user. `core.literal` and
-proof work are unchanged.
+Type paths are committed as `8ff838bb`; required module source coverage follows in the
+integration slice. Checked links now share the parser's token-name predicate, including
+numeric and digit-leading type names. All 29 documentation-focused tests pass
+(`/tmp/meowy-digit-names-links.log`). The required link case and an untouched temporary
+copy of `docs/programs/hey/main.mwy` pass debug/release with exact expected output
+(`/tmp/meowy-digit-names-links-source.log`); catalog/coverage checks pass. Next:
+Vim/Neovim highlighting, module source coverage and the final contract/gates.
+`core.literal` and proof work are unchanged.
 
 ### Completed numeric member lookup
 

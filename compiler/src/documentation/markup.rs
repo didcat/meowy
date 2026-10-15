@@ -197,11 +197,10 @@ pub(crate) fn analyze(entry: &mut Entry) -> Result<()> {
         } else {
             !name.is_empty()
                 && name.split('.').all(|part| {
-                    let mut bytes = part.bytes();
-                    bytes
-                        .next()
-                        .is_some_and(|byte| byte.is_ascii_alphabetic() || byte == b'_')
-                        && bytes.all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
+                    let Ok(tokens) = crate::lexer::lex(part) else {
+                        return false;
+                    };
+                    matches!(tokens.as_slice(), [name, end] if name.is_name() && end.kind == crate::lexer::TokenKind::Eof)
                 })
         };
         let span = at(entry, start..end + 2);

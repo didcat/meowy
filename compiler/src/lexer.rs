@@ -26,6 +26,15 @@ pub struct Token {
     pub span: Span,
 }
 
+impl Token {
+    pub(crate) fn is_name(&self) -> bool {
+        matches!(
+            self.kind,
+            TokenKind::Name | TokenKind::Int | TokenKind::Float
+        ) && !self.text.contains('.')
+    }
+}
+
 pub fn lex(source: &str) -> Result<Vec<Token>, Vec<Diagnostic>> {
     let mut tokens = Vec::new();
     let mut errors = Vec::new();

@@ -182,10 +182,7 @@ impl Parser {
     }
 
     pub(crate) fn at_value_name(&self) -> bool {
-        matches!(
-            self.token().kind,
-            TokenKind::Name | TokenKind::Int | TokenKind::Float
-        ) && !self.token().text.contains('.')
+        self.token().is_name()
     }
 
     pub(crate) fn value_name(&mut self) -> ParseResult<Token> {

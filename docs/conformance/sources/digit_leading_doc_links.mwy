@@ -1,0 +1,8 @@
+#!| [[2cats]], [[<2Type>]], [[10]], [[<10>]], [[1e+2]], [[<1e+2>]], [[2row.3field]]. |!#
+<2Type> : <int32>
+2cats <2Type> : 7
+<10> : <int32>
+10 : 8
+<1e+2> : <boolean>
+1e+2 : true
+2row : { -> 3field : 9 }

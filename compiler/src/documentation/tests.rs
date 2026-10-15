@@ -287,6 +287,36 @@ f<int32>:(#| Input. |#0x1<int32>){->0x1}"#;
 }
 
 #[test]
+pub(crate) fn digit_leading_documentation_links_keep_value_and_type_namespaces() {
+    let source = r#"#!| [[2cats]], [[<2Type>]], [[10]], [[<10>]], [[1e+2]], [[<1e+2>]], [[2row.3field]]. |!#
+<2Type>:<int32>;2cats<2Type>:7
+<10>:<int32>;10:8
+<1e+2>:<boolean>;1e+2:true
+2row:{->3field:9}"#;
+    let (_, model) = checked(source, true).unwrap();
+    let model = model.unwrap();
+    let links = &model.entries[0].links;
+    let names: Vec<_> = links
+        .iter()
+        .map(|link| model.entries[link.resolved.unwrap()].name.as_str())
+        .collect();
+    assert_eq!(
+        names,
+        ["2cats", "2Type", "10", "10", "1e+2", "1e+2", "3field"]
+    );
+    assert_ne!(links[2].resolved, links[3].resolved);
+    assert_ne!(links[4].resolved, links[5].resolved);
+    for target in ["<1e+cats>", "<2Type..3>", "<-10>", "<(10)>"] {
+        let source = format!("#!| [[{target}]] |!#\n<10>:<int32>");
+        assert_eq!(
+            checked(&source, true).unwrap_err()[0].code,
+            "E802",
+            "{target}"
+        );
+    }
+}
+
+#[test]
 pub(crate) fn numeric_documentation_paths_follow_members_without_literal_fallback() {
     let source = r#"#!| [[10.4.5]] and [[10.name]]. |!#
 #| Root. |#

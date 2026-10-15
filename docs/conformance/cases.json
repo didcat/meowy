@@ -5260,6 +5260,15 @@
         "stdout": "4\n5\n6\ntrue\n"
       },
       "reference": "../reference/syntax.md#names-and-scopes"
+    },
+    {
+      "id": "digit_leading_doc_links",
+      "phase": "check",
+      "source": "sources/digit_leading_doc_links.mwy",
+      "expected": {
+        "accepted": true
+      },
+      "reference": "../reference/documentation.md#semantic-links"
     }
   ]
 }
