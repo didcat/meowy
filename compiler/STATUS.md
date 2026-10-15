@@ -4215,7 +4215,10 @@ require copy links on both ports, retaining mutable-copy and full-record exclusi
 All 1017 Forward tests now pass (`/tmp/meowy-copy-binaries-links.log`), including
 coercion, field and composition gates. Split review keeps existing helpers/traversal
 in place; retirement would affect independent narrow traversal tests and remains
-separate. No focused failures remain. Next: independent stages, identities and bounds.
+separate. Admission is committed as `7cf0676e`. All six focused tests pass
+(`/tmp/meowy-copy-binaries-stages.log`): 448 valid stage combinations, 64 empty-report
+rejections, both operand counts/direct fallback, six referent kinds and stopped copy
+initialization. Next: late identity/scope faults, missing evidence and exact bounds.
 
 Only the counted binary shared-scalar branch in `consumers.rs` changes admission;
 ascribed operands retain earlier coercion ownership, and full-record comparisons
