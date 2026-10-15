@@ -170,7 +170,7 @@ impl Parser {
     }
 
     pub(crate) fn name(&mut self) -> ParseResult<Token> {
-        if self.token().kind == TokenKind::Name {
+        if self.at_value_name() {
             Ok(self.bump())
         } else {
             Err(Diagnostic::new(
@@ -189,11 +189,7 @@ impl Parser {
     }
 
     pub(crate) fn value_name(&mut self) -> ParseResult<Token> {
-        if self.at_value_name() {
-            Ok(self.bump())
-        } else {
-            self.name()
-        }
+        self.name()
     }
 
     pub(crate) fn newlines(&mut self) {

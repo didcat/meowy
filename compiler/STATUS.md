@@ -39,8 +39,14 @@ The CLI keeps E001 coverage with an invalid character and checks E201 for unboun
 `1__0`. The unchanged `invalid_separator.mwy` now expects E201 for the undefined
 name instead of E001; the new required `digit_leading_names` case binds that exact
 spelling successfully. The source bytes and all other prior expectations are preserved.
-`core.literal` remains the explicit numeric-syntax escape. Next: unify numeric type
-and scope parsing, then checked links. Proof work is unchanged.
+The lexer/value slice is committed as `d09dc41e`. Type and scope parsing now share
+the same name predicate, including undotted numeric spellings. Unknown numeric types
+produce E202 through ordinary type lookup. All 3089 library tests pass
+(`/tmp/meowy-digit-names-namespaces-lib.log`). The namespace case passes debug/release
+(`/tmp/meowy-digit-names-namespaces-source.log`), including separate value/type namespaces,
+numeric function labels and named restart/leave. Catalog/coverage validation passes.
+Qualified numeric type paths and checked links follow separately. `core.literal` remains
+the explicit numeric-syntax escape. Proof work is unchanged.
 
 ### Completed numeric member lookup
 

@@ -80,7 +80,7 @@ mod tests {
             ("kind<Type>:({->true})!<null>", "E207"),
             ("kind<Type>:<int32>!<Missing>", "E202"),
             ("core:@\"core\";kind<Type>:<int32>!<core.error>", "B001"),
-            ("kind<Type>:<int32>!<1>", "E004"),
+            ("kind<Type>:<int32>!<1>", "E202"),
             ("v<int32><null>:null;present<(v<>!<null>)>:v", "E207"),
             ("f<int32>:(v<int32><null>){n<(v<>!<null>)>:v;->n}", "E207"),
         ] {

@@ -125,11 +125,38 @@ pub(crate) fn numeric_roots_retain_decimal_syntax_for_resolution_and_escape() {
 }
 
 #[test]
-pub(crate) fn numeric_value_names_do_not_relax_tokens_types_or_labels() {
+pub(crate) fn numeric_names_preserve_invalid_characters_signs_and_dotted_labels() {
     for source in ["2café:1", "1?0:1", "0x\\ff:1"] {
         assert_eq!(parse(source).unwrap_err()[0].code, "E001");
     }
-    for source in ["<1>:<int32>", "x<1>:2", "'1{}", "-1:2"] {
+    for source in ["'10.4{}", "-1:2"] {
         assert_eq!(parse(source).unwrap_err()[0].code, "E004");
+    }
+}
+
+#[test]
+pub(crate) fn numeric_names_share_type_parameter_and_scope_rules() {
+    for name in [
+        "10",
+        "01",
+        "0x1",
+        "1e+2",
+        "1e-2",
+        "2_Type",
+        "2_or_more_cats",
+    ] {
+        let source = format!(
+            "<{name}>:<int32>;x<{name}>:2;f<{name}>:({name}<{name}>)'{name}{{'{name}->{name};'{name}.leave()}};'{name}{{'{name}.leave()}}"
+        );
+        let block = parse(&source).unwrap();
+        assert!(
+            matches!(&block.stmts[0].kind, StmtKind::TypeAlias { name: actual, .. } if actual == name)
+        );
+        assert!(
+            matches!(&block.stmts[2].kind, StmtKind::Bind { value, .. } if matches!(&value.kind, ExprKind::Function { params, body } if params[0].name == name && body.label.as_deref() == Some(name)))
+        );
+        assert!(
+            matches!(&block.stmts[3].kind, StmtKind::Expr(expr) if matches!(&expr.kind, ExprKind::Block(body) if body.label.as_deref() == Some(name)))
+        );
     }
 }

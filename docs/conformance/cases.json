@@ -5250,6 +5250,16 @@
         "stdout": "6\n9\n17\n10\n12\n100\n"
       },
       "reference": "../reference/syntax.md#numeric-names-and-intrinsic-literals"
+    },
+    {
+      "id": "digit_leading_namespaces",
+      "phase": "run",
+      "source": "sources/digit_leading_namespaces.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "4\n5\n6\ntrue\n"
+      },
+      "reference": "../reference/syntax.md#names-and-scopes"
     }
   ]
 }

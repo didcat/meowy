@@ -1,0 +1,24 @@
+d : @"debug"
+<10> : <int32>
+<2_Type> : <10>
+10 <2_Type> := 3
+'20 {
+    10 = 10 + 1
+    '20.leave()
+    10 = 99
+}
+d.print(10)
+2fn <10> : (3param <2_Type>) '40 {
+    | 3param == 0 | { '40 -> 5; '40.leave() }
+    -> 3param
+}
+d.print(2fn(0))
+'50 {
+    10 = 10 + 1
+    | 10 < 6 | '50.restart()
+    '50.leave()
+}
+d.print(10)
+<1e+2> : <boolean>
+2flag <1e+2> : true
+d.print(2flag)
