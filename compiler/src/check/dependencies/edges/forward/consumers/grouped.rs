@@ -11,8 +11,6 @@ pub(super) enum Target {
     Dispatch,
     Receiver,
     SharedReceiver(ScalarKind),
-    SharedReceiverLocal(SharedRecord),
-    SharedLocal(SharedRecord),
     SharedCopies(SharedRecord),
 }
 
@@ -94,7 +92,6 @@ impl Checker {
         let mut seen = BTreeSet::new();
         let mut current = input;
         let mut qualified = false;
-        let mut stored = false;
         loop {
             if !self.flow.spend(
                 reports.consumers.len().checked_ilog2().unwrap_or(0) as usize
@@ -195,15 +192,11 @@ impl Checker {
                 self.read_initializer_input(reports, current, owner, span)?
             {
                 input
-            } else if let Some(record) = match target {
-                Target::SharedLocal(record) | Target::SharedCopies(record) => Some(record),
-                Target::SharedReceiverLocal(record) if qualified => Some(record),
-                _ => None,
-            } && let Some(input) =
-                self.read_shared_initializer_input(reports, current, owner, record, span)?
+            } else if let Target::SharedCopies(record) = target
+                && let Some(input) =
+                    self.read_shared_initializer_input(reports, current, owner, record, span)?
             {
                 qualified = true;
-                stored = true;
                 input
             } else if let Some(input) = self.read_receiver_input(reports, current, owner, span)? {
                 input
@@ -219,12 +212,9 @@ impl Checker {
             {
                 qualified = true;
                 input
-            } else if let Some(record) = match target {
-                Target::SharedReceiverLocal(record) if !stored => Some(record),
-                Target::SharedCopies(record) => Some(record),
-                _ => None,
-            } && let Some((input, actual)) =
-                self.shared_receiver_source(reports, current, owner, record.primary, span)?
+            } else if let Target::SharedCopies(record) = target
+                && let Some((input, actual)) =
+                    self.shared_receiver_source(reports, current, owner, record.primary, span)?
             {
                 if actual != record {
                     return Err(invalid());

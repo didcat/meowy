@@ -4330,8 +4330,18 @@ All 93 focused shared-local tests pass (`/tmp/meowy-binary-lookup-local-tests.lo
 The local test migration is committed as `372e0fc6`. Four receiver-first hop tests now
 exercise `SharedCopies`; copy-boundary tests retain ordinary block/receiver opacity,
 canonical receiver-cell exclusions and positive copy-source identity. All 1028 Forward
-tests pass (`/tmp/meowy-binary-lookup-receiver-tests.log`). Next remove the redundant
-fallbacks and their four wrappers/two modes; production lookup is still unchanged.
+tests pass (`/tmp/meowy-binary-lookup-receiver-tests.log`, commit `9730f8c3`).
+The counted binary selector now uses one `SharedCopies` lookup. Four unused wrappers,
+the local-only/receiver-first modes and their `stored` state are removed. The same source,
+missing-evidence and corruption matrices remain, with exact work-limit checks on both
+ports for local/receiver/copy/opaque inputs. All 1029 Forward tests pass
+(`/tmp/meowy-binary-lookup-unified.log`). Explicit opacity/Unknown-history assertions
+and both-port coverage are retained after removing the comparison oracle. All three
+focused lookup tests pass, and all 20 measured cost sets match the pre-change candidate
+(`/tmp/meowy-binary-lookup-costs.log`). The final focused run and all-target Clippy pass
+(`/tmp/meowy-binary-lookup-focused.log`, `/tmp/meowy-binary-lookup-clippy.log`). No stale
+wrapper/mode references remain in compiler source. Next update implementation evidence,
+audit preservation and run the full compiler gate.
 
 The binary path still tries receiver-first/local-only lookup before `SharedCopies`.
 This preserves earlier paths and kept the admission commit focused, but can traverse

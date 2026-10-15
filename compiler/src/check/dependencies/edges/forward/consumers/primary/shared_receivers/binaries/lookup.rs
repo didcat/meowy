@@ -9,29 +9,13 @@ pub(super) fn lookup(
     input: PointId,
     owner: usize,
     record: SharedRecord,
-) -> (Result<Option<Slot>>, usize, usize) {
+) -> (Result<Option<Slot>>, usize) {
     let before = format!("{reports:?}{:?}", checker.edge_counts());
     let start = checker.flow.work;
-    let prior = checker
-        .shared_record_primary_slot(reports, input, owner, record, Span::default())
-        .and_then(|slot| {
-            if slot.is_some() {
-                Ok(slot)
-            } else {
-                checker.shared_copies_primary_slot(reports, input, owner, record, Span::default())
-            }
-        });
-    let old = checker.flow.work - start;
-    checker.flow.work = start;
-    checker.flow.full = false;
     let actual = checker.shared_copies_primary_slot(reports, input, owner, record, Span::default());
     let work = checker.flow.work - start;
-    assert_eq!(
-        actual.as_ref().map_err(|error| format!("{error:?}")),
-        prior.as_ref().map_err(|error| format!("{error:?}"))
-    );
     assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
-    (actual, old, work)
+    (actual, work)
 }
 
 pub(super) fn check_inputs(checker: &mut Checker, reports: &Reports) {
@@ -111,7 +95,7 @@ pub(crate) fn counted_binary_lookup_preserves_sources_scopes_and_opaque_inputs()
                         let BinaryClass::SharedScalar(primary) = op.types.inputs[step] else {
                             panic!()
                         };
-                        let (actual, old, work) = lookup(
+                        let (actual, work) = lookup(
                             &mut checker,
                             &reports,
                             op.inputs[step],
@@ -119,19 +103,35 @@ pub(crate) fn counted_binary_lookup_preserves_sources_scopes_and_opaque_inputs()
                             SharedRecord { primary, fields },
                         );
                         let port = Port::Projection { point: id, step };
+                        let actual = actual.unwrap();
                         assert_eq!(
-                            actual.unwrap(),
+                            actual.is_none(),
+                            matches!(name, "mutable" | "parameter" | "call"),
+                            "{source}"
+                        );
+                        if let Some(slot) = actual {
+                            assert_eq!(
+                                (slot.index, checker.bodies[&slot.block].owner),
+                                (0, op.owner)
+                            );
+                            assert_eq!(
+                                reports.results[&slot.block].1.slots.as_ref().unwrap()[0],
+                                Sources::Unknown
+                            );
+                        }
+                        assert_eq!(
+                            actual,
                             reports.slot_uses.get(&port).map(|(_, slot)| *slot),
                             "{source}"
                         );
-                        assert!(old > 0 && work > 0);
-                        costs.insert((old, work));
+                        assert!(work > 0);
+                        costs.insert(work);
                         count += 1;
                     }
                 }
                 assert!(count > 0, "{source}");
                 if ty == "int8" {
-                    eprintln!("{name} {init}: old/new work {costs:?}");
+                    eprintln!("{name} {init}: work {costs:?}");
                 }
             }
         }

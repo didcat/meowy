@@ -196,15 +196,7 @@ impl Checker {
                                 primary: ty,
                                 fields,
                             };
-                            if let Some(slot) = self
-                                .shared_record_primary_slot(reports, input, *owner, record, span)?
-                            {
-                                Some(slot)
-                            } else {
-                                self.shared_copies_primary_slot(
-                                    reports, input, *owner, record, span,
-                                )?
-                            }
+                            self.shared_copies_primary_slot(reports, input, *owner, record, span)?
                         } else {
                             self.receiver_primary_shape(
                                 reports,

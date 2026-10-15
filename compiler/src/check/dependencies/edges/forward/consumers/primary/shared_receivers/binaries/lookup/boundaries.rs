@@ -93,7 +93,7 @@ pub(crate) fn counted_binary_lookup_preserves_direct_receiver_evidence_and_diagn
                 }
                 _ => unreachable!(),
             }
-            let (actual, _, _) = lookup(&mut checker, &reports, input, owner, record);
+            let (actual, _) = lookup(&mut checker, &reports, input, owner, record);
             match fault {
                 0 => assert_eq!(actual.unwrap(), Some(slot)),
                 1..=6 => assert_eq!(actual.unwrap(), None, "fault {fault}"),
@@ -104,5 +104,57 @@ pub(crate) fn counted_binary_lookup_preserves_direct_receiver_evidence_and_diagn
                 }
             }
         }
+    }
+}
+
+#[test]
+pub(crate) fn counted_binary_lookup_bounds_exact_work_for_both_operands() {
+    for frame in [
+        "a:r==p;b:p!=r",
+        "out:r.{a:$==p;b:p!=$}",
+        "out:r.{copy:$;a:copy==p;b:p!=copy}",
+        "out:r.{copy:=$;a:copy==p;b:p!=copy}",
+    ] {
+        let source = format!("n:1;p:&n;r:{{->p;->tag:true}};{frame}");
+        let (mut checker, reports) = checked(&source);
+        let mut seen = [false; 2];
+        for op in checker.binaries.values().cloned().collect::<Vec<_>>() {
+            for (step, fields) in op.fields.into_iter().enumerate() {
+                let Some(fields) = fields else {
+                    continue;
+                };
+                let BinaryClass::SharedScalar(primary) = op.types.inputs[step] else {
+                    panic!()
+                };
+                let record = SharedRecord { primary, fields };
+                seen[step] = true;
+                let input = op.inputs[step];
+                let start = checker.flow.work;
+                let (expected, work) = lookup(&mut checker, &reports, input, op.owner, record);
+                let expected = expected.unwrap();
+                assert!(work > 0);
+                let before = format!("{reports:?}{:?}", checker.edge_counts());
+                for short in [0, 1] {
+                    checker.flow.work = crate::flow::MAX_PROOF_WORK - work + short;
+                    checker.flow.full = false;
+                    let actual = checker.shared_copies_primary_slot(
+                        &reports,
+                        input,
+                        op.owner,
+                        record,
+                        Span::default(),
+                    );
+                    if short == 0 {
+                        assert_eq!(actual.unwrap(), expected);
+                    } else {
+                        assert!(actual.unwrap_err().message.contains("budget"));
+                    }
+                }
+                assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+                checker.flow.work = start;
+                checker.flow.full = false;
+            }
+        }
+        assert_eq!(seen, [true; 2]);
     }
 }

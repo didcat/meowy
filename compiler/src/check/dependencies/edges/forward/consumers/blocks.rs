@@ -24,28 +24,6 @@ impl Checker {
         self.shared_record_body(reports, input, owner, record, span)
     }
 
-    pub(super) fn shared_record_receiver_body(
-        &mut self,
-        reports: &Reports,
-        input: PointId,
-        owner: usize,
-        record: SharedRecord,
-        span: Span,
-    ) -> Result<Option<hir::BlockId>> {
-        let Some(input) = self.grouped_source_limited(
-            reports,
-            input,
-            owner,
-            span,
-            MAX_GROUPS,
-            grouped::Target::SharedReceiverLocal(record),
-        )?
-        else {
-            return Ok(None);
-        };
-        self.shared_record_body(reports, input, owner, record, span)
-    }
-
     pub(super) fn shared_receiver_body(
         &mut self,
         reports: &Reports,

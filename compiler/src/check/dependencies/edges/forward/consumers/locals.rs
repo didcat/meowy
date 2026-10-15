@@ -1,31 +1,7 @@
 use super::*;
-use crate::check::dependencies::{
-    bodies::Completion, grouped::MAX_GROUPS, operations::SharedRecord,
-};
+use crate::check::dependencies::{bodies::Completion, operations::SharedRecord};
 
 impl Checker {
-    pub(super) fn shared_local_body(
-        &mut self,
-        reports: &Reports,
-        input: PointId,
-        owner: usize,
-        record: SharedRecord,
-        span: Span,
-    ) -> Result<Option<hir::BlockId>> {
-        let Some(input) = self.grouped_source_limited(
-            reports,
-            input,
-            owner,
-            span,
-            MAX_GROUPS,
-            grouped::Target::SharedLocal(record),
-        )?
-        else {
-            return Ok(None);
-        };
-        self.shared_record_body(reports, input, owner, record, span)
-    }
-
     pub(super) fn shared_record_body(
         &mut self,
         reports: &Reports,
