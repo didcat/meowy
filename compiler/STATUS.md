@@ -4324,6 +4324,10 @@ and complete diagnostics agree (`/tmp/meowy-binary-lookup-boundaries.log`).
 A liveness audit also finds `shared_local_body` has no production caller outside this
 fallback chain. Its local-only traversal mode has four budget-test callers. Retire both
 obsolete modes, with local-only and receiver-first test migrations in separate commits.
+Equivalence coverage is committed as `8dfdaf93`. The four local-only hop tests now
+exercise `SharedCopies`; source/owner assertions and exact added-group costs are intact.
+All 93 focused shared-local tests pass (`/tmp/meowy-binary-lookup-local-tests.log`).
+Next migrate receiver-first callers; production lookup is unchanged.
 
 The binary path still tries receiver-first/local-only lookup before `SharedCopies`.
 This preserves earlier paths and kept the admission commit focused, but can traverse

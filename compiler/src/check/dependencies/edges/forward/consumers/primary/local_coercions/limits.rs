@@ -107,7 +107,7 @@ pub(crate) fn shared_local_coercions_share_exact_hop_limits_across_stored_copy_w
         let Some(Shape::SharedScalar(primary)) = op.source else {
             panic!()
         };
-        let target = grouped::Target::SharedLocal(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary,
             fields: op.fields.unwrap(),
         });

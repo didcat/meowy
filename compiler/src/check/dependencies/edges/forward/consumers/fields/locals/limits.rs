@@ -207,7 +207,7 @@ pub(crate) fn shared_local_fields_share_exact_hop_limits_across_copy_chains() {
         let (mut checker, reports) = checked(&source);
         let (&id, op) = checker.fields.first_key_value().unwrap();
         let input = op.input;
-        let target = grouped::Target::SharedLocal(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary: op.shared_primary.unwrap(),
             fields: op.count,
         });

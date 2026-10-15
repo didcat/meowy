@@ -109,7 +109,7 @@ pub(crate) fn shared_local_binaries_share_exact_hop_limits_at_both_operand_posit
             let BinaryClass::SharedScalar(primary) = op.types.inputs[step] else {
                 panic!()
             };
-            let target = grouped::Target::SharedLocal(SharedRecord {
+            let target = grouped::Target::SharedCopies(SharedRecord {
                 primary,
                 fields: op.fields[step].unwrap(),
             });

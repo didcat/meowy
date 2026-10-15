@@ -154,7 +154,7 @@ pub(crate) fn shared_local_emissions_share_exact_hop_limits_across_copy_wrappers
         let input = op.input;
         let block = reports.slot_uses[&Port::Emission(op.targets[0].id)].1.block;
         let expected = reports.results[&block].1.consumer;
-        let target = grouped::Target::SharedLocal(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary: composed.shared_primary.unwrap(),
             fields: composed.count,
         });
