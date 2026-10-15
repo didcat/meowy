@@ -112,12 +112,12 @@ pub(crate) fn shared_local_coercions_preserve_source_and_projection_conversion_r
 }
 
 #[test]
-pub(crate) fn shared_local_coercions_keep_stopped_prefixes_and_binary_receiver_boundaries() {
+pub(crate) fn shared_local_coercions_keep_stopped_prefixes_and_whole_record_boundaries() {
     let (_, reports) = checked(
         "d:@\"debug\";n:1;p:&n;r:{->p;->tag:true};copy<&int32>:r;d.panic(\"stop\");later<&int32>:r",
     );
     assert_eq!(reports.slot_uses.len(), 1);
-    for tail in ["out:r==r", "out:r.{alias:$;copy<&int32>:alias}"] {
+    for tail in ["out:r==r", "out:r.{alias:=$;copy<&int32>:alias}"] {
         let source = format!("n:1;p:&n;r:{{->p;->tag:true}};{tail}");
         crate::compile(&source).unwrap();
         let (_, reports) = checked(&source);

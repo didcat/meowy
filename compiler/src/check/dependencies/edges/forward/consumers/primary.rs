@@ -2,6 +2,18 @@ use super::*;
 use crate::check::dependencies::{ScalarKind, bodies::completion::Shape};
 
 impl Checker {
+    pub(super) fn shared_copies_primary_slot(
+        &mut self,
+        reports: &Reports,
+        input: PointId,
+        owner: usize,
+        record: crate::check::dependencies::operations::SharedRecord,
+        span: Span,
+    ) -> Result<Option<Slot>> {
+        self.shared_copy_body(reports, input, owner, record, span)
+            .map(|block| block.map(|block| Slot { block, index: 0 }))
+    }
+
     pub(super) fn shared_record_primary_slot(
         &mut self,
         reports: &Reports,

@@ -4155,11 +4155,10 @@ Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
 ### Current: coercion-owned primary sources through immutable receiver copies
 
-`r : { -> p; -> tag : true }; out : r.{ copy : $; view <&int32> : copy }` remains opaque
-in structural primary-source maps. The counted coercion branch in `consumers.rs` calls
-`primary.rs::shared_record_primary_slot`, whose receiver-first/local-only traversal
-excludes receiver copies. `shared_copy_body` can resolve these chains, but binary-owned
-admission uses the same old primary helper and must remain separate for this slice.
+`r : { -> p; -> tag : true }; out : r.{ copy : $; view <&int32> : copy }` now resolves
+its structural primary source through `shared_copy_body`. Only the counted coercion
+branch in `consumers.rs` uses the new primary adapter. Binary-owned admission retains
+`primary.rs::shared_record_primary_slot` and excludes receiver copies.
 
 Investigation confirms that coercion reports already retain exact source kind/count and
 independent projection/operation/result observations. No capture or eligibility change
@@ -4168,7 +4167,17 @@ untracked work and stays untouched. Two characterization tests pass for direct/c
 transitive Forward and Convert inputs, guarded/nested/function scopes, exact descriptors,
 existing field/composition links and excluded binary projections
 (`/tmp/meowy-copy-coercions-characterization.log`). The copy qualifier resolves these
-source bodies while the shared binary selector remains opaque. Coercion admission is next.
+source bodies while the shared binary selector remains opaque. Characterization is
+committed as `05e94b82`.
+Coercion admission now uses `shared_copies_primary_slot` only in the counted shared-scalar
+coercion branch. Its direct/copy/transitive Forward/Convert regressions remain with the
+behavior change. The larger observation matrix, scalar-kind/stopped cases and missing-count
+fallback tests are a separate validation slice in the currently unregistered `copies/stages.rs`.
+This keeps admission within eight files while preserving independently reviewable tests.
+The initial Forward run found a legacy copy exclusion and an empty-observation test error.
+The old exclusion now tests mutable copies; empty retained reports still must reject.
+All 1005 admission-only Forward tests pass (`/tmp/meowy-copy-coercions-links.log`).
+No admission failures remain; register and validate the additional stage slice next.
 
 Dependency-ordered commit plan:
 

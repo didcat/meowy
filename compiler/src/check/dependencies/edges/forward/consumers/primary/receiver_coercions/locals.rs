@@ -88,10 +88,10 @@ pub(crate) fn shared_local_receiver_coercions_link_owned_primaries_with_exact_de
 }
 
 #[test]
-pub(crate) fn shared_local_receiver_coercions_keep_whole_records_and_receiver_copies_separate() {
+pub(crate) fn shared_local_receiver_coercions_keep_whole_records_and_mutable_copies_separate() {
     for tail in [
-        "out:r.{copy:$;v<&int32>:copy}",
-        "out:r.{copy:$;nested:copy.{v<&int32>:$}}",
+        "out:r.{copy:=$;v<&int32>:copy}",
+        "out:r.{copy:=$;nested:copy.{v<&int32>:$}}",
         "out:(&r).{v<&int32>:*$}",
     ] {
         let source = format!("n:1;p:&n;r:{{->p;->tag:true}};{tail}");

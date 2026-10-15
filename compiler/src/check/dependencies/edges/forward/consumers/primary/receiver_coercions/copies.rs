@@ -41,7 +41,7 @@ pub(crate) fn receiver_copy_coercions_retain_owned_projection_descriptors_across
                     count += 1;
                 }
                 assert_eq!(count, 3);
-                assert_eq!(linked, if input == "$" { 2 } else { 0 });
+                assert_eq!(linked, 3);
                 assert_eq!(owners, BTreeSet::from([0, 1]));
                 assert_eq!(reports.field_results.len(), 1);
                 assert_eq!(

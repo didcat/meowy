@@ -223,7 +223,7 @@ impl Checker {
                                 primary,
                                 fields,
                             };
-                            self.shared_record_primary_slot(reports, input, *owner, record, span)?
+                            self.shared_copies_primary_slot(reports, input, *owner, record, span)?
                         } else {
                             self.receiver_primary_shape(reports, input, *owner, source, span)?
                         }
