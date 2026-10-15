@@ -2,6 +2,7 @@ use super::*;
 
 mod boundaries;
 mod evidence;
+mod limits;
 mod stages;
 
 pub(super) fn copy_read(checker: &Checker, reports: &Reports, id: PointId) -> PointId {

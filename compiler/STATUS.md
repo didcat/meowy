@@ -4225,7 +4225,10 @@ storage and unselected suffix faults leave existing maps and edge counts unchang
 Identity/scope checks are committed as `7edb75b3`. All nine focused tests pass
 (`/tmp/meowy-copy-binaries-evidence.log`): 38 missing-evidence cases remove late
 Bind/read/receiver/source/count/projection observations on both ports while preserving
-an earlier valid copy link and existing reports. Next: exact budgets and control.
+an earlier valid copy link and existing reports (`cf727720`). All twelve focused tests
+pass (`/tmp/meowy-copy-binaries-limits.log`), including exact map/work/hop limits,
+duplicate observations and 32 independent control combinations. No focused failures
+remain. Next: required source cases, preservation audit and final gates.
 
 Only the counted binary shared-scalar branch in `consumers.rs` changes admission;
 ascribed operands retain earlier coercion ownership, and full-record comparisons
@@ -4242,7 +4245,7 @@ Dependency-ordered commit plan:
    missing-count direct fallback, exact layouts, canonical storage and original scopes.
    Keep focused admission regressions with the behavior change; review helper retirement
    or traversal consolidation separately if needed.
-3. Qualify late operand/count/referent/layout/scope faults, mixed cycles and missing
+3. Complete: qualify late operand/count/referent/layout/scope faults, mixed cycles and missing
    evidence with atomic maps, independent operand/operation/result stages, exact map/work/
    hop limits and independent control. Split additional boundary and budget tests into
    reviewable slices, retaining the current coercion and composition gates.
