@@ -1,0 +1,41 @@
+d : @"debug"
+mark <&int32> : (p <&int32>) { d.print("input"); -> p }
+read <&int32> : (p <&int32>) {
+    choose := true
+    record : mark(p).{
+        d.print("source")
+        -> $
+        -> tag : true
+        -> z : 7
+        d.print("source tail")
+    }
+    -> record.{
+        d.print("receiver")
+        copy : (($))
+        alias : ((copy~<{ -> <&int32>; tag <boolean>; z <int32> }>))
+        same <&int32> : alias
+        maybe <&int32><null> : copy
+        d.print(same == p)
+        | maybe<&int32> | d.print((maybe~<&int32>) == p)
+        | choose | 3.{
+            d.print("nested")
+            view <&int32> : copy
+            d.print(view == p)
+        }
+        copy.{
+            next : $
+            view <&int32> : next
+            d.print(view == p)
+        }
+        joined : { -> copy }
+        d.print(joined.tag)
+        -> copy
+        d.print("receiver tail")
+    }
+    d.print("function tail")
+}
+n : 7
+p : &n
+d.print(read(p) == p)
+local : { d.print("block"); -> &n; -> tag : true }
+local.{ copy : $; view <&int32> : copy; d.print(view == p) }

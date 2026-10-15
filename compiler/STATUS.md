@@ -4183,8 +4183,14 @@ including copies read beneath a different scalar receiver. All seven focused tes
 their own link, preserving earlier links and existing reports. All eight focused tests
 pass (`/tmp/meowy-copy-coercions-evidence.log`). Exact map/work/hop limits, duplicate visits
 and all 32 Bind/read/source/receiver/coercion control combinations pass. All eleven focused
-tests pass (`/tmp/meowy-copy-coercions-limits.log`). Required source order/P006 cases and
-the complete gates are next; no known failures remain.
+tests pass (`/tmp/meowy-copy-coercions-limits.log`). Two required primary-composition cases
+now cover copied reference identity, nullable conversion, ascriptions, nested receivers,
+function order and P006 after reached projections. Both pass exact debug/release output
+and P006 after a fresh build (`/tmp/meowy-copy-coercions-source.log`). Metadata validates
+492 cases and 37 reference records. The audit preserves 563 prior reference/source/pin/
+obligation files, all 490 prior cases, 19 pins, 37 reviewed hashes and previous evidence
+from `f8341bff` (`/tmp/meowy-copy-coercions-preservation.log`). Full compiler/strict and
+final guide/handoff checks are next.
 
 Dependency-ordered commit plan:
 

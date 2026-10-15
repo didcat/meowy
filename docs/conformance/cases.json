@@ -5196,6 +5196,28 @@
         "exit": 1
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_receiver_copy_coercion_order",
+      "phase": "run",
+      "source": "sources/reference_receiver_copy_coercion_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "input\nsource\nsource tail\nreceiver\ntrue\ntrue\nnested\ntrue\ntrue\ntrue\nreceiver tail\nfunction tail\ntrue\nblock\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "reference_receiver_copy_coercion_stopped",
+      "phase": "run",
+      "source": "sources/reference_receiver_copy_coercion_stopped.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\nsource tail\nreceiver\ntrue\nnested\ntrue\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }
