@@ -4201,7 +4201,15 @@ Strict mode exits 1 only for the exact pinned names and reasons
 (`/tmp/meowy-copy-coercions-docs.log`). No known failures remain. Unrelated
 `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: binary-owned primary sources through immutable receiver copies
+### Binary-owned primary sources through immutable receiver copies
+
+In progress from `d9d4c82c`; unrelated `docs/programs/hey/` is excluded.
+Characterization passes all three focused `receiver_copy_binaries` tests
+(`/tmp/meowy-copy-binaries-characterization.log`). Raw left and right operands belong
+to the binary; ascribed operands project in earlier coercions. Direct/copy/transitive
+sources, guarded/nested/function scopes, whole-record equality, existing field/emission
+links and stopped prefixes retain their identities. The copy qualifier resolves the
+expected sources, while binary copy admission remains unchanged. Next: slice 2.
 
 `r : { -> p; -> tag : true }; out : r.{ copy : $; -> copy == p }` remains opaque
 in structural binary-primary maps. The binary counted shared-scalar branch in
@@ -4211,7 +4219,7 @@ belong to an earlier coercion; full-record comparisons require no scalar primary
 
 Dependency-ordered commit plan:
 
-1. Characterize raw and ascribed copied operands in `primary/shared_receivers/binaries/`,
+1. Complete: characterize raw and ascribed copied operands in `primary/shared_receivers/binaries/`,
    including left/right ownership, direct/copy/transitive sources, nested/guarded/function
    scopes and stopped right operands. Preserve existing coercion, field and composition
    links; do not duplicate earlier coercion-owned projections or full-record comparisons.

@@ -1,6 +1,7 @@
 use super::*;
 use crate::check::dependencies::edges::forward::results::Sources;
 
+mod copies;
 mod locals;
 
 #[test]
