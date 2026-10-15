@@ -4327,7 +4327,11 @@ obsolete modes, with local-only and receiver-first test migrations in separate c
 Equivalence coverage is committed as `8dfdaf93`. The four local-only hop tests now
 exercise `SharedCopies`; source/owner assertions and exact added-group costs are intact.
 All 93 focused shared-local tests pass (`/tmp/meowy-binary-lookup-local-tests.log`).
-Next migrate receiver-first callers; production lookup is unchanged.
+The local test migration is committed as `372e0fc6`. Four receiver-first hop tests now
+exercise `SharedCopies`; copy-boundary tests retain ordinary block/receiver opacity,
+canonical receiver-cell exclusions and positive copy-source identity. All 1028 Forward
+tests pass (`/tmp/meowy-binary-lookup-receiver-tests.log`). Next remove the redundant
+fallbacks and their four wrappers/two modes; production lookup is still unchanged.
 
 The binary path still tries receiver-first/local-only lookup before `SharedCopies`.
 This preserves earlier paths and kept the admission commit focused, but can traverse

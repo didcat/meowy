@@ -50,15 +50,15 @@ pub(crate) fn shared_receiver_copies_retain_typed_bindings_and_original_receiver
     );
     assert_eq!(
         checker
-            .shared_local_body(&reports, input, 0, row.record, Span::default())
+            .record_receiver_body(&reports, input, 0, Span::default())
             .unwrap(),
         None
     );
     assert_eq!(
         checker
-            .shared_record_receiver_body(&reports, input, 0, row.record, Span::default())
+            .shared_copy_body(&reports, input, 0, row.record, Span::default())
             .unwrap(),
-        None
+        Some(reports.slot_uses[&Port::Operation(id)].1.block)
     );
     assert_eq!(reports.slot_uses.len(), 1);
 }

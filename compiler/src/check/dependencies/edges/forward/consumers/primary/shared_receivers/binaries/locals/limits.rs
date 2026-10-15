@@ -108,7 +108,7 @@ pub(crate) fn shared_local_receiver_binaries_share_exact_hops_across_nested_rece
             panic!()
         };
         let input = op.inputs[0];
-        let target = grouped::Target::SharedReceiverLocal(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary,
             fields: op.fields[0].unwrap(),
         });

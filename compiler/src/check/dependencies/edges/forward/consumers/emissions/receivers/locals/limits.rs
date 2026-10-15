@@ -69,7 +69,7 @@ pub(crate) fn shared_local_receiver_emissions_share_hop_limits_across_receiver_a
             .unwrap();
         let input = op.input;
         let composed = op.composed.unwrap();
-        let target = grouped::Target::SharedReceiverLocal(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary: composed.shared_primary.unwrap(),
             fields: composed.count,
         });

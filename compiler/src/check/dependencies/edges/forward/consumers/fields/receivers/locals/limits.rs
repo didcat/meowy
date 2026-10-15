@@ -87,7 +87,7 @@ pub(crate) fn shared_local_receiver_fields_share_hop_limits_across_receivers_and
         let (mut checker, reports) = checked(&source);
         let (&id, op) = checker.fields.first_key_value().unwrap();
         let input = op.input;
-        let target = grouped::Target::SharedReceiverLocal(SharedRecord {
+        let target = grouped::Target::SharedCopies(SharedRecord {
             primary: op.shared_primary.unwrap(),
             fields: op.count,
         });

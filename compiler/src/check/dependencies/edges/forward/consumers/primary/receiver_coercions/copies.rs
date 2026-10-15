@@ -81,7 +81,7 @@ pub(crate) fn receiver_copy_coercions_retain_owned_projection_descriptors_across
 }
 
 #[test]
-pub(crate) fn receiver_copy_coercions_keep_the_receiver_first_primary_selector_separate() {
+pub(crate) fn receiver_copy_coercions_keep_generic_primary_sources_separate() {
     let (mut checker, reports) =
         checked("n:1;p:&n;r:{->p;->tag:true};out:r.{copy:$;view<&int32>:copy}");
     let op = checker.coercions.values().find(|op| op.primary).unwrap();
@@ -95,7 +95,7 @@ pub(crate) fn receiver_copy_coercions_keep_the_receiver_first_primary_selector_s
     };
     assert_eq!(
         checker
-            .shared_record_primary_slot(&reports, input, owner, record, Span::default())
+            .primary_slot(&reports, input, owner, Span::default())
             .unwrap(),
         None
     );
