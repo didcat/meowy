@@ -1,5 +1,6 @@
 use super::*;
 
+mod boundaries;
 mod stages;
 
 pub(super) fn copy_read(checker: &Checker, reports: &Reports, id: PointId) -> PointId {

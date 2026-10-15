@@ -4218,7 +4218,11 @@ in place; retirement would affect independent narrow traversal tests and remains
 separate. Admission is committed as `7cf0676e`. All six focused tests pass
 (`/tmp/meowy-copy-binaries-stages.log`): 448 valid stage combinations, 64 empty-report
 rejections, both operand counts/direct fallback, six referent kinds and stopped copy
-initialization. Next: late identity/scope faults, missing evidence and exact bounds.
+initialization (`13c4aec0`). All eight focused tests pass
+(`/tmp/meowy-copy-binaries-boundaries.log`), including 48 late identity faults across
+both ports and original local/receiver scope checks. Copy/receiver cycles, canonical
+storage and unselected suffix faults leave existing maps and edge counts unchanged.
+Next: missing evidence and exact bounds.
 
 Only the counted binary shared-scalar branch in `consumers.rs` changes admission;
 ascribed operands retain earlier coercion ownership, and full-record comparisons
