@@ -4176,8 +4176,10 @@ remain. The separately registered `copies/stages.rs` now checks the larger obser
 matrix, scalar-kind/stopped prefixes and missing-count fallback. Empty retained reports
 must still reject; the existing report validator is unchanged. All five focused coercion
 tests pass (`/tmp/meowy-copy-coercions-stages.log`), including 320 valid stage combinations
-and 64 empty-report rejections. Next: stale descriptors, complete suffix layouts, original
-scopes, mixed cycles, missing observations and exact budgets.
+and 64 empty-report rejections. Twenty-one late count/type/storage/layout/cycle faults
+reject atomically. Original copy and receiver scopes reject sibling substitutions,
+including copies read beneath a different scalar receiver. All seven focused tests pass
+(`/tmp/meowy-copy-coercions-boundaries.log`). Missing observations and exact budgets follow.
 
 Dependency-ordered commit plan:
 
