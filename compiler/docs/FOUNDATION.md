@@ -995,7 +995,7 @@ Descriptor/storage/layout faults, crossed scopes and mixed local/receiver cycles
 atomically. Exact map/root/work/hop bounds and independent Bind/read/source/receiver/field
 control have structural regressions. Required cases preserve source/copy/ascription order,
 fields under nested receivers, function owners and P006 after reached reads. Reference
-histories remain Unknown. Primary consumers through receiver copies and broader value,
+histories remain Unknown. Binary-owned primaries through receiver copies and broader value,
 lifetime, loan and proof authority remain separate.
 
 Composed emissions now share this bounded copy-body qualifier. Each initialized primary
@@ -1015,7 +1015,27 @@ Structural checks cover stale descriptors/storage/layouts, crossed scopes, mixed
 exact map/work/hop/forest budgets and independent control observations. Required source
 cases preserve named-target composition, copy/ascription/nested/function order and P006
 after a reached composition. Canonical receiver cells remain excluded from initializer
-indexes. Generic eligibility and coercion/binary primary admission are unchanged.
+indexes. Generic eligibility and binary-owned primary admission are unchanged.
+
+Coercion-owned shared scalar primaries now resolve through immutable receiver copies.
+Only the counted coercion branch uses `shared_copies_primary_slot`, which selects source
+slot zero through the same bounded copy qualifier. Each hop retains the original source
+kind/count, canonical Bind/read/storage identity and lexical or receiver scope. The full
+immutable layout must agree, including unselected suffixes. Missing counts suppress copy
+links while retaining direct receiver fallback.
+
+Source publication, copy binding observations, receiver initialization, projection,
+conversion and result observations remain independent. Projection-only Convert reports
+need no operation registration; conversion or result observations still require it.
+A retained coercion report with no observed stage rejects. Missing evidence suppresses
+only its source link, preserving earlier links and existing reports.
+
+Structural checks cover stale counts/referents/storage/layouts, crossed scopes, mixed
+cycles, exact map/work/hop limits, duplicate visits and independent control. Required
+cases preserve reference identity, nullable conversion, copy/ascription/nested/function
+order and P006 after reached projections. Reference histories remain Unknown; generic
+eligibility, receiver-cell exclusions and binary-owned copy projections remain separate.
+These links add no value, lifetime, loan or proof authority.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent

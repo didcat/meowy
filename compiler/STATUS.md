@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-14. Shared-reference receiver-copy composition is implemented and validated.
+Updated: 2026-10-15. Receiver-copy coercion primaries are implemented and validated.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4072,9 +4072,9 @@ result visits remain independent. Copies can be read under a different nested re
 without changing the original receiver identity. Field-result maps and expanded forests
 revalidate the same qualifier. Missing observations preserve earlier links; stale graphs
 reject until rebuilt, and removed dispatch publication still invalidates upstream results.
-Reference histories remain Unknown. Primary consumers through receiver copies remain
-opaque; composition qualification follows below. Structural links add no value, lifetime,
-loan or proof authority.
+Reference histories remain Unknown. Binary-owned primaries through receiver copies remain
+opaque; composition and coercion qualification follow below. Structural links add no
+value, lifetime, loan or proof authority.
 
 | Commit | Reviewable slice |
 | --- | --- |
@@ -4111,7 +4111,7 @@ copies of shared-reference receiver records. `consumers/blocks.rs::shared_copy_b
 and `Target::SharedCopies` reuse the field qualifier with original `Composition`
 primary/count descriptors, canonical Bind/read/storage, each original lexical/receiver
 scope and complete source/target layouts. Field behavior, generic eligibility, canonical
-receiver exclusions and binary/coercion primary modes are unchanged. No new payload
+receiver exclusions and binary-owned primary modes are unchanged. No new payload
 was added; reference and aggregate histories remain Unknown.
 
 Source publication, copy bindings, receiver initialization, target observations and
@@ -4153,61 +4153,80 @@ final guide/handoff checks pass (`/tmp/meowy-copy-emissions-docs.log`). No known
 remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Current: coercion-owned primary sources through immutable receiver copies
+### Coercion-owned primary sources through immutable receiver copies
 
-`r : { -> p; -> tag : true }; out : r.{ copy : $; view <&int32> : copy }` now resolves
-its structural primary source through `shared_copy_body`. Only the counted coercion
-branch in `consumers.rs` uses the new primary adapter. Binary-owned admission retains
-`primary.rs::shared_record_primary_slot` and excludes receiver copies.
+Complete implementation. The counted shared-scalar coercion branch now uses
+`primary.rs::shared_copies_primary_slot` over `shared_copy_body`. Original source kind/count,
+canonical Bind/read/storage, each original lexical/receiver scope and complete immutable
+layouts qualify source slot zero. Missing counts suppress copy links while retaining
+existing direct receiver fallback. No capture/report payload or generic eligibility
+changed. Canonical receiver cells remain excluded from initializer indexes; binary-owned
+copy projections remain opaque. Field and composition source links are preserved.
 
-Investigation confirms that coercion reports already retain exact source kind/count and
-independent projection/operation/result observations. No capture or eligibility change
-is needed. Baseline is `f8341bff` on `main`; unrelated `docs/programs/hey/` is the only
-untracked work and stays untouched. Two characterization tests pass for direct/copied/
-transitive Forward and Convert inputs, guarded/nested/function scopes, exact descriptors,
-existing field/composition links and excluded binary projections
-(`/tmp/meowy-copy-coercions-characterization.log`). The copy qualifier resolves these
-source bodies while the shared binary selector remains opaque. Characterization is
-committed as `05e94b82`.
-Coercion admission (`8c1d96bc`) uses `shared_copies_primary_slot` only in the counted
-shared-scalar coercion branch. Its direct/copy/transitive Forward/Convert regressions
-pass all 1005 Forward tests (`/tmp/meowy-copy-coercions-links.log`). No admission failures
-remain. The separately registered `copies/stages.rs` now checks the larger observation
-matrix, scalar-kind/stopped prefixes and missing-count fallback. Empty retained reports
-must still reject; the existing report validator is unchanged. All five focused coercion
-tests pass (`/tmp/meowy-copy-coercions-stages.log`), including 320 valid stage combinations
-and 64 empty-report rejections. Twenty-one late count/type/storage/layout/cycle faults
-reject atomically. Original copy and receiver scopes reject sibling substitutions,
-including copies read beneath a different scalar receiver. All seven focused tests pass
-(`/tmp/meowy-copy-coercions-boundaries.log`). All 19 missing-observation cases drop only
-their own link, preserving earlier links and existing reports. All eight focused tests
-pass (`/tmp/meowy-copy-coercions-evidence.log`). Exact map/work/hop limits, duplicate visits
-and all 32 Bind/read/source/receiver/coercion control combinations pass. All eleven focused
-tests pass (`/tmp/meowy-copy-coercions-limits.log`). Two required primary-composition cases
-now cover copied reference identity, nullable conversion, ascriptions, nested receivers,
-function order and P006 after reached projections. Both pass exact debug/release output
-and P006 after a fresh build (`/tmp/meowy-copy-coercions-source.log`). Metadata validates
-492 cases and 37 reference records. The audit preserves 563 prior reference/source/pin/
-obligation files, all 490 prior cases, 19 pins, 37 reviewed hashes and previous evidence
-from `f8341bff` (`/tmp/meowy-copy-coercions-preservation.log`). Full compiler/strict and
-final guide/handoff checks are next.
+Source publication, copy bindings, receiver initialization and projection/conversion/result
+observations remain independent. Projection-only Convert needs no operation registration;
+conversion/result observations still require it. Empty retained reports reject. Copies can
+project beneath a different receiver while retaining their original receiver identity.
+Missing evidence suppresses only the affected link; late faults preserve existing maps
+and edge counts. Reference histories remain Unknown; no value/lifetime/loan/proof
+or broader function-result authority was added.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `05e94b82` | Characterize owned copy projections and separate binary selection |
+| `8c1d96bc` | Admit copied coercion primaries with focused regression checks |
+| `dcaca127` | Qualify observation stages, stopped prefixes and count fallback |
+| `2cb4cf62` | Guard exact identities, suffix layouts, original scopes and cycles |
+| `49928b3c` | Preserve earlier links when late observations disappear |
+| `f4d5b51c` | Bound map/work/hop limits, duplicates and independent control |
+| `f9435a66` | Cover reference identity, conversion order and stopped projections |
+
+Eleven focused tests cover direct/copied/transitive Forward and Convert sources, six
+scalar referents, guarded/nested/function scopes and stopped copy initialization. All
+320 valid stage combinations, 64 empty-report rejections, 21 late corruption cases,
+19 missing-observation cases and 32 independent control combinations pass. Exact budgets
+and duplicate visits pass. Logs use `/tmp/meowy-copy-coercions-` with suffixes
+`characterization`, `links`, `stages`, `boundaries`, `evidence` and `limits`. No focused
+failures remain; admission passed all 1005 then-current Forward tests.
+
+Both required primary-composition cases pass exact debug/release output and P006
+(`/tmp/meowy-copy-coercions-source.log`). The audit preserves 563 prior reference/source/
+pin/obligation files, all 490 prior cases, 19 pins, 37 reviewed hashes and previous evidence
+from `f8341bff` (`/tmp/meowy-copy-coercions-preservation.log`). All ten compiler checks
+pass: 3075 library, 921 native and 62 Python tests, formatting, all-target Clippy, build,
+metadata and conformance execution (`/tmp/meowy-copy-coercions-gate.log`). The 492-case
+catalog has 473 required passes, 19 unchanged pinned gaps and zero debug/release failures.
+Strict mode exits 1 only for the exact pinned names and reasons
+(`/tmp/meowy-copy-coercions-strict.log`). All four final guide/handoff checks pass
+(`/tmp/meowy-copy-coercions-docs.log`). No known failures remain. Unrelated
+`docs/programs/hey/` is preserved; nothing was pushed or published.
+
+### Next: binary-owned primary sources through immutable receiver copies
+
+`r : { -> p; -> tag : true }; out : r.{ copy : $; -> copy == p }` remains opaque
+in structural binary-primary maps. The binary counted shared-scalar branch in
+`consumers.rs` still uses `primary.rs::shared_record_primary_slot` and the receiver-first/
+local-only modes. The bounded copy qualifier is available. Ascribed operands can already
+belong to an earlier coercion; full-record comparisons require no scalar primary link.
 
 Dependency-ordered commit plan:
 
-1. Characterize coercion-owned copy projections in `primary/receiver_coercions/`,
-   comparing direct/copy/transitive inputs, Forward/Convert, original/nested/guarded/
-   function scopes and stopped initialization. Preserve field/composition links and
-   binary-owned copy boundaries. Use the existing source checker and stage tests.
-2. Add a narrowly scoped primary-slot adapter over `shared_copy_body` and connect only
-   the counted shared-scalar coercion branch. Validate the original source kind/count,
-   full immutable layout, canonical copy storage and scopes. Preserve missing-count
-   fallback, projection/operation/result independence, and distinct binary ownership.
-3. Qualify stale descriptors/suffixes, mixed cycles, missing evidence, exact map/work/
-   hop budgets and independent control. Include the implementation's focused regressions
-   with admission; keep additional fault/budget scenarios independently reviewable.
-4. Add required order/P006 source cases linked to primary composition, audit existing
-   fixtures/pins/hashes and run compiler/strict plus final guide/handoff gates. Retain
-   Unknown reference histories and existing value/lifetime/loan/proof boundaries.
+1. Characterize raw and ascribed copied operands in `primary/shared_receivers/binaries/`,
+   including left/right ownership, direct/copy/transitive sources, nested/guarded/function
+   scopes and stopped right operands. Preserve existing coercion, field and composition
+   links; do not duplicate earlier coercion-owned projections or full-record comparisons.
+2. Extend only the counted binary shared-primary selector with the bounded copy qualifier.
+   Match each operand's original `fields[step]`, scalar kind and projection port; preserve
+   missing-count direct fallback, exact layouts, canonical storage and original scopes.
+   Keep focused admission regressions with the behavior change; review helper retirement
+   or traversal consolidation separately if needed.
+3. Qualify late operand/count/referent/layout/scope faults, mixed cycles and missing
+   evidence with atomic maps, independent operand/operation/result stages, exact map/work/
+   hop limits and independent control. Split additional boundary and budget tests into
+   reviewable slices, retaining the current coercion and composition gates.
+4. Add required reference-identity/order/P006 source cases linked to primary composition,
+   audit prior fixtures/pins/hashes and run compiler/strict plus final guide/handoff checks.
+   Keep reference histories Unknown and generic eligibility and proof authority unchanged.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
@@ -5816,9 +5835,9 @@ shared-reference receiver composition and immutable shared-reference local field
 and coercion/binary-primary sources. Owned scalar fields now qualify shared-reference
 receiver inputs through immutable local records, including composed-emission sources.
 Coercion- and binary-owned primaries now qualify these receiver inputs too. Owned scalar
-fields and composed emissions also qualify immutable copies of shared-reference receiver
-records. Next qualify coercion-owned primary sources through receiver copies using the
-ordered plan above. Binary-owned primaries, value selection and broader aggregate
+fields, composed emissions and coercion-owned primaries also qualify immutable copies of
+shared-reference receiver records. Next qualify binary-owned primary sources through
+receiver copies using the ordered plan above. Value selection and broader aggregate
 provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
