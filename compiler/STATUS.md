@@ -4179,7 +4179,10 @@ tests pass (`/tmp/meowy-copy-coercions-stages.log`), including 320 valid stage c
 and 64 empty-report rejections. Twenty-one late count/type/storage/layout/cycle faults
 reject atomically. Original copy and receiver scopes reject sibling substitutions,
 including copies read beneath a different scalar receiver. All seven focused tests pass
-(`/tmp/meowy-copy-coercions-boundaries.log`). Missing observations and exact budgets follow.
+(`/tmp/meowy-copy-coercions-boundaries.log`). All 19 missing-observation cases drop only
+their own link, preserving earlier links and existing reports. All eight focused tests
+pass (`/tmp/meowy-copy-coercions-evidence.log`). Exact map/work/hop limits, duplicate visits
+and independent control qualification are next.
 
 Dependency-ordered commit plan:
 
