@@ -995,8 +995,7 @@ Descriptor/storage/layout faults, crossed scopes and mixed local/receiver cycles
 atomically. Exact map/root/work/hop bounds and independent Bind/read/source/receiver/field
 control have structural regressions. Required cases preserve source/copy/ascription order,
 fields under nested receivers, function owners and P006 after reached reads. Reference
-histories remain Unknown. Binary-owned primaries through receiver copies and broader value,
-lifetime, loan and proof authority remain separate.
+histories remain Unknown. Broader value, lifetime, loan and proof authority remain separate.
 
 Composed emissions now share this bounded copy-body qualifier. Each initialized primary
 or field target uses the original `Composition` primary/count descriptor and its exact
@@ -1015,10 +1014,10 @@ Structural checks cover stale descriptors/storage/layouts, crossed scopes, mixed
 exact map/work/hop/forest budgets and independent control observations. Required source
 cases preserve named-target composition, copy/ascription/nested/function order and P006
 after a reached composition. Canonical receiver cells remain excluded from initializer
-indexes. Generic eligibility and binary-owned primary admission are unchanged.
+indexes. Generic eligibility is unchanged.
 
 Coercion-owned shared scalar primaries now resolve through immutable receiver copies.
-Only the counted coercion branch uses `shared_copies_primary_slot`, which selects source
+The counted coercion branch uses `shared_copies_primary_slot`, which selects source
 slot zero through the same bounded copy qualifier. Each hop retains the original source
 kind/count, canonical Bind/read/storage identity and lexical or receiver scope. The full
 immutable layout must agree, including unselected suffixes. Missing counts suppress copy
@@ -1034,8 +1033,29 @@ Structural checks cover stale counts/referents/storage/layouts, crossed scopes, 
 cycles, exact map/work/hop limits, duplicate visits and independent control. Required
 cases preserve reference identity, nullable conversion, copy/ascription/nested/function
 order and P006 after reached projections. Reference histories remain Unknown; generic
-eligibility, receiver-cell exclusions and binary-owned copy projections remain separate.
+eligibility and receiver-cell exclusions remain unchanged.
 These links add no value, lifetime, loan or proof authority.
+
+Binary-owned shared scalar primaries also resolve through immutable receiver copies.
+The counted binary branch uses the bounded copy qualifier after its existing direct/local
+paths. Each operand retains its original field count, referent kind and projection port.
+Raw left and right operands can own projections; grouped or ascribed operands may already
+project through an earlier coercion. Full-record equality retains the complete shape and
+gains no scalar primary link. Missing counts suppress copy links while preserving direct
+receiver fallback.
+
+Source publication, copy bindings, receiver initialization and operand/operation/result
+observations remain independent. Projection-only observations require no operation
+registration; operation/result observations still require it. Empty retained reports
+reject. A copy used beneath another receiver retains its original scope and storage.
+Full immutable layouts include every suffix, even when only the primary is selected.
+
+Structural tests cover both ports, stale operands/counts/referents/layouts, canonical
+storage, crossed scopes, mixed cycles and exact map/work/hop limits. Missing evidence
+preserves earlier links, and late failures leave existing reports and edge counts intact.
+Required source cases preserve address identity, full-record equality, ascription ownership,
+copy/nested/function order and P006 after a reached left projection. Reference histories
+remain Unknown; generic eligibility and receiver-cell exclusions remain unchanged.
 
 The shared map cap also covers the reverse index and slot links. These fixed-size
 records consume no variable payload; shared work charges validators and subsequent
