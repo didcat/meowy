@@ -4182,7 +4182,9 @@ including copies read beneath a different scalar receiver. All seven focused tes
 (`/tmp/meowy-copy-coercions-boundaries.log`). All 19 missing-observation cases drop only
 their own link, preserving earlier links and existing reports. All eight focused tests
 pass (`/tmp/meowy-copy-coercions-evidence.log`). Exact map/work/hop limits, duplicate visits
-and independent control qualification are next.
+and all 32 Bind/read/source/receiver/coercion control combinations pass. All eleven focused
+tests pass (`/tmp/meowy-copy-coercions-limits.log`). Required source order/P006 cases and
+the complete gates are next; no known failures remain.
 
 Dependency-ordered commit plan:
 
