@@ -3,6 +3,7 @@ use crate::check::dependencies::CoercionKind;
 use std::collections::BTreeSet;
 
 mod boundaries;
+mod copies;
 mod locals;
 mod references;
 

@@ -4153,13 +4153,22 @@ final guide/handoff checks pass (`/tmp/meowy-copy-emissions-docs.log`). No known
 remain.
 Unrelated `docs/programs/hey/` is preserved; nothing was pushed or published.
 
-### Next: coercion-owned primary sources through immutable receiver copies
+### Current: coercion-owned primary sources through immutable receiver copies
 
 `r : { -> p; -> tag : true }; out : r.{ copy : $; view <&int32> : copy }` remains opaque
 in structural primary-source maps. The counted coercion branch in `consumers.rs` calls
 `primary.rs::shared_record_primary_slot`, whose receiver-first/local-only traversal
 excludes receiver copies. `shared_copy_body` can resolve these chains, but binary-owned
 admission uses the same old primary helper and must remain separate for this slice.
+
+Investigation confirms that coercion reports already retain exact source kind/count and
+independent projection/operation/result observations. No capture or eligibility change
+is needed. Baseline is `f8341bff` on `main`; unrelated `docs/programs/hey/` is the only
+untracked work and stays untouched. Two characterization tests pass for direct/copied/
+transitive Forward and Convert inputs, guarded/nested/function scopes, exact descriptors,
+existing field/composition links and excluded binary projections
+(`/tmp/meowy-copy-coercions-characterization.log`). The copy qualifier resolves these
+source bodies while the shared binary selector remains opaque. Coercion admission is next.
 
 Dependency-ordered commit plan:
 
