@@ -134,13 +134,15 @@ Qualified paths are allowed, such as `[[json.decode]]` and
 `[[<json.Document>]]`. `[[target|label]]` supplies display text without changing
 the target. Labels are text, not nested expressions or links.
 
-Value targets also accept exact undotted numeric names, such as `[[1]]` and
-`[[1e0]]`, and member paths such as `[[10.4]]` or `[[record.1.0]]`. The last selects
+Value and type targets use the same name spellings, including `[[2cats]]`,
+`[[1]]`, `[[1e0]]`, `[[<2Type>]]` and `[[<1e+2>]]`. Qualified type paths such as
+`[[<10.4>]]` retain their namespace. Value member paths such as `[[10.4]]` or
+`[[record.1.0]]` also retain every component. The last selects
 field `1`, then `0`; there is no declaration named `1.0`. Parentheses remain
 ordinary grouping, so `[[(10).4]]` names the same member. Link roots must resolve
 to declarations and never fall back to numeric literals; missing roots or members
-report `E802`. Numeric declarations, parameters and fields accept documentation
-attachments normally. Type links retain identifier paths.
+report `E802`. Digit-leading and numeric declarations, parameters, fields and types
+accept documentation attachments normally.
 
 Targets are name/member paths, optionally enclosed in type brackets, not
 arbitrary expressions, calls or type-helper evaluation. A generic declaration is

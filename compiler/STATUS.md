@@ -67,7 +67,16 @@ All six editor/repository checks now pass in Vim and Neovim
 (`11608832`). Required module/link execution, dotted type-alias rejection and the
 numeric-syntax escape all pass debug/release (`/tmp/meowy-digit-names-integration.log`).
 The companion metadata is corrected, and the 500-case catalog/coverage validation passes.
-No focused failures remain. Next: final contract, preservation audit and combined gates.
+No focused failures remain (`3cc120df`). Syntax, documentation links, the literal
+intrinsic reference and the numeric guide now describe the unified rule. Source evidence
+and the proof-obligation map have been reviewed; no proof obligation changes are needed.
+The three owning hashes and coverage report are updated. All four repository checks
+pass (`/tmp/meowy-digit-names-contract.log`), and all four numeric-guide examples check
+in debug/release (`/tmp/meowy-digit-names-guide-examples.log`). The audit preserves 564
+prior source/reference/pin/obligation files and all 494 prior cases except the intentional
+`invalid_separator` E001-to-E201 expectation change; all 19 pins, 34 other document
+records and prior evidence are preserved (`/tmp/meowy-digit-names-preservation.log`).
+Next: the combined compiler/editor gate, strict pin audit and final handoff.
 `core.literal` and proof work are unchanged.
 
 ### Completed numeric member lookup

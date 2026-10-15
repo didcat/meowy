@@ -46,7 +46,9 @@ The single argument must be a valid integer or floating-point token, optionally
 preceded directly by unary `-`; intervening whitespace and comments are allowed.
 The operand is syntax: it is neither looked up nor evaluated as an expression.
 `literal(name)`, `literal(1 + 2)` and `literal((1))` are invalid (`E207`). Missing
-or extra arguments are `E212`. Malformed numeric tokens remain lexical errors.
+or extra arguments are `E212`. A digit-leading name that is not a valid numeric token,
+such as `1__0` or `2cats`, is also invalid here (`E207`), even when it is bound.
+Invalid source characters remain lexical errors.
 
 The result follows ordinary literal defaults, contextual widths, range checks
 and floating-point rounding. A value outside its expected range is `E216`.

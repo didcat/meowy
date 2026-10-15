@@ -22,8 +22,9 @@ broader accounting remains open.
 public input lifetimes through immutable values, mutable handles/tagged records,
 field writes, shared-reference members, restart headers and shared snapshots. Owning-string
 storage and constructors remain gated.
-[Numeric value names](docs/NUMBERS.md) use undotted spellings and exact lexical
-lookup in ordinary and required expressions. `10.4` selects a member when `10`
+[Names and numeric literals](docs/NUMBERS.md) use exact spellings across values,
+types and labels. Names such as `2_or_more_cats` may start with digits. Ordinary
+and required numeric reads use lexical lookup. `10.4` selects a member when `10`
 is bound and otherwise remains a decimal. Failed member access never falls back
 to a literal. `@"core".literal(number)` bypasses this lookup while preserving
 literal typing; numeric bindings retain fixed types.

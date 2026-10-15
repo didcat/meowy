@@ -2,11 +2,13 @@
 
 [Documentation index](../README.md)
 
-Source files use UTF-8 and the `.mwy` extension. Names are case-sensitive. The
-portable identifier set is ASCII letters, digits, and `_`, with a letter or `_`
-first. Value names may also use a complete undotted numeric token, as described below.
-Type names and scope labels retain the identifier rule. Non-ASCII text remains
-valid in strings and comments. Type aliases conventionally start with an uppercase letter.
+Source files use UTF-8 and the `.mwy` extension. Names are case-sensitive and use
+nonempty sequences of ASCII letters, digits, and `_`, with no first-character
+restriction. `2_or_more_cats` is a name just like `cats`. Complete undotted numeric
+tokens, including exponents with signs, may also be names as described below.
+The same spelling rules apply to bindings, parameters, functions, fields, types,
+scope labels and task groups. Non-ASCII text remains valid in strings and comments.
+Type aliases conventionally start with an uppercase letter; this is not a restriction.
 
 Outside strings/comments, whitespace is ASCII space, tab, LF, or CRLF. CRLF is
 one statement-ending newline; a bare CR, a leading UTF-8 BOM, and other Unicode
@@ -58,12 +60,18 @@ actually contains that intrinsic value.
 
 ## Numeric names and intrinsic literals
 
-An undotted numeric token can name an ordinary value binding, parameter, function
-or named emission. Integers and undotted exponents are allowed. Lookup uses exact
+Digit-leading words and undotted numeric tokens are valid in every name position.
+Integers and undotted exponents are allowed. Lookup uses exact
 spelling: `1`, `01`, `0x1`, `0X1`, `0b1` and `1e0` are independent names, as are
 `1_000` and `1000`. A leading `-` is an operator, never part of a binding name.
-Dotted declaration names such as `10.4 : "4"` or `-> 10.4 : value` are syntax
-errors (`E004`), regardless of which names are already bound.
+Dotted declaration names such as `10.4 : "4"`, `-> 10.4 : value` or
+`<10.4> : <int32>` are syntax errors (`E004`), regardless of which names are bound.
+Dots separate path components; they are never part of a declared name.
+
+Names that resemble incomplete or invalid numbers, such as `12cat`, `1__0`, `0x_ff`
+and `0b102`, are ordinary names. They must resolve to a declaration; an unbound value
+name reports `E201`. A complete signed exponent is one token: `1e+2` retains its
+numeric spelling, while `2name+4` and `1e+cats` contain the ordinary `+` operator.
 
 In a decimal-shaped expression such as `10.4`, resolve the numeric root `10`
 first. If it is bound, select member `4` through ordinary field rules. A missing
@@ -90,9 +98,11 @@ Numeric bindings keep ordinary fixed types, mutability, borrowing, duplicate-nam
 and scope rules. They can hold any value. `1 <uint8> : @"core".literal(1)` creates
 a `uint8` binding; later reads do not receive a different contextual width.
 Initializers use preceding bindings before introducing the new name. Function
-self names and forward groups retain their ordinary reservation rules. Numeric
-value names do not introduce numeric type names or scope labels. Required values,
-list capacities, indices and interpolation use the same root lookup.
+self names and forward groups retain their ordinary reservation rules. Namespaces
+remain separate: `<10>` refers to a type, `10` to a value, and `'10` to a scope label.
+Type and label positions perform ordinary name lookup without numeric literal fallback.
+In a type path such as `<10.4>`, `10` identifies the module and `4` its exported type.
+Required values, list capacities, indices and interpolation use the same value lookup.
 
 Dots after an explicit receiver always select separate members. `row.1.0` selects
 `1`, then `0`; `10.4.5` continues through the result of `10.4`. Numeric receivers
@@ -144,9 +154,9 @@ base. Decimal leading zeroes are decimal, not octal. Hexadecimal prefixes are
 digits on both sides of `.` and/or an `e`/`E` exponent with optional sign and at
 least one decimal digit. `1.`, `.5`, `1__0`, and `0x_ff` are not numeric literals;
 there are no numeric suffixes. A trailing member dot such as `1.` is incomplete
-syntax (`E004`); `1._2` selects the ordinary member `_2`. A digit-starting
-malformed numeric component such as `12cat`
-is one invalid token, not a number followed by a name. `1.(f)` is instead an
+syntax (`E004`); `1._2` selects the ordinary member `_2`. A digit-leading word such
+as `12cat` or `1__0` is a name, not a numeric literal or separate number/name tokens.
+`1.(f)` is instead an
 integer followed by dispatch. Float literals round once to the expected binary
 precision, ties to even; overflow to infinity is `E216`, and underflow to a
 subnormal or signed zero is allowed.

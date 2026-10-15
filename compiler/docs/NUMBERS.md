@@ -2,8 +2,9 @@
 
 The bootstrap implements [numeric value names](../../docs/reference/syntax.md#numeric-names-and-intrinsic-literals)
 and the [`core.literal` intrinsic](../../docs/reference/stdlib/core.md#intrinsic-numeric-literals).
-Undotted numeric spellings can name bindings, parameters, functions and fields.
-This includes integers and exponents such as `1e2`. Ordinary undotted numeric
+Names can start with digits in bindings, parameters, functions, fields, types and
+scope labels. This includes words such as `2_or_more_cats` and complete undotted
+numeric spellings such as `10`, `0x1` and `1e+2`. Ordinary undotted numeric
 expressions first look for that exact value name; an unbound spelling retains its
 normal literal behavior. Dotted declaration names are syntax errors (`E004`).
 
@@ -16,7 +17,17 @@ normal literal behavior. Dotted declaration names are syntax errors (`E004`).
 These declarations create ordinary `int32` bindings. An annotation can choose a
 different supported type at declaration; later reads retain that fixed type.
 `1`, `01`, `0x1` and `1e0` remain independent spellings. Signs are operators.
-Type names and scope labels continue to use identifier syntax.
+Types, values and scope labels keep separate namespaces with the same name syntax:
+
+```meowy
+<2Count> : <uint32>
+2_or_more_cats <2Count> : 3
+'2_scope { '2_scope.leave() }
+```
+
+Words such as `1__0`, `0x_ff` and `12cat` are names. An unbound value name reports
+E201; `core.literal(1__0)` reports E207 because that spelling is not a numeric token.
+`2name+4` uses ordinary addition, while the complete exponent `1e+2` is one token.
 
 ## Numeric members
 
@@ -40,6 +51,8 @@ permits decimal fallback. `core.literal` always requests the intrinsic number.
 `10.name`, `10.4.5` and `row.1.0` use ordinary member paths; the last expression
 selects field `1`, then field `0`. Parentheses remain ordinary grouping, so
 `(10).4` is also valid. Named fields still require `->` to be visible externally.
+In type positions `<10.4>` and `<10.1e+2>` select exported types from the module
+named `10`; there is no decimal fallback. Type-alias declarations require one name.
 
 ## Shadowing and escape
 
@@ -66,8 +79,9 @@ Numeric storage uses ordinary mutation, borrowing, narrowing and scope rules.
 Required expressions, list capacities and list inference retain binding types and
 input eligibility. Escaped numbers receive ordinary literal context. Fields and
 file exports preserve exact undotted names. Checked documentation supports
-`[[1e0]]` and `[[10.4]]`; member links require a declaration and never resolve to
-a decimal literal. Vim/Neovim highlight undotted numeric declarations and calls.
+`[[2cats]]`, `[[1e0]]`, `[[10.4]]` and `[[<10.4>]]`; value and type links keep their
+namespaces, require declarations and never resolve to decimal literals. Vim/Neovim
+highlight digit-leading declarations, calls, types and labels.
 Other occurrences keep lexical number colors: `10.4` stays Float even when scope
 resolution makes it a field access.
 
@@ -91,4 +105,8 @@ Required conformance sources cover [lookup and escape](../../docs/conformance/so
 [checked links](../../docs/conformance/sources/numeric_doc_links.mwy) and
 [file facades](../../docs/conformance/sources/modules/numeric_exports/main.mwy).
 The catalog also pins duplicate, type, write, borrow and intrinsic-argument errors.
+Required cases cover [digit-leading words](../../docs/conformance/sources/digit_leading_names.mwy),
+[types and labels](../../docs/conformance/sources/digit_leading_namespaces.mwy),
+[checked links](../../docs/conformance/sources/digit_leading_doc_links.mwy) and
+[numeric module namespaces](../../docs/conformance/sources/modules/digit_leading_names/main.mwy).
 [STATUS](../STATUS.md#numeric-shadowing-implementation) records final validation.
