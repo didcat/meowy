@@ -141,9 +141,10 @@ impl Parser {
                 alias.span,
             ));
         };
-        if exported && name.contains('.') {
-            return Err(Diagnostic::unsupported(
-                "qualified exported type names",
+        if name.contains('.') {
+            return Err(Diagnostic::new(
+                "E004",
+                "type alias requires a single name",
                 alias.span,
             ));
         }

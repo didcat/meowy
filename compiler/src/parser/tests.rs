@@ -271,7 +271,7 @@ pub(crate) fn exported_types_parse_distinct_namespace_flags_and_shifted_spans() 
 pub(crate) fn exported_types_keep_invalid_and_labeled_declarations_gated() {
     assert!(parse("-><T>:=<int32>").is_err());
     assert!(parse("-><T><U>:<int32>").is_err());
-    assert_eq!(parse("-><m.T>:<int32>").unwrap_err()[0].code, "B001");
+    assert_eq!(parse("-><m.T>:<int32>").unwrap_err()[0].code, "E004");
     assert_eq!(
         parse("'out{'out-><T>:<int32>}").unwrap_err()[0].code,
         "B001"

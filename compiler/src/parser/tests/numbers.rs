@@ -160,3 +160,25 @@ pub(crate) fn numeric_names_share_type_parameter_and_scope_rules() {
         );
     }
 }
+
+#[test]
+pub(crate) fn numeric_type_paths_keep_components_and_single_name_declarations() {
+    for name in ["10.4", "10.1e+2", "2api.4", "mod.10.4", "mod.2_Type"] {
+        let block = parse(&format!("x<{name}>:1")).unwrap();
+        assert!(
+            matches!(&block.stmts[0].kind, StmtKind::Bind { ty: Some(ty), .. } if matches!(&ty.kind, TypeKind::Name(actual) if actual == name))
+        );
+        for prefix in ["", "->"] {
+            assert_eq!(
+                parse(&format!("{prefix}<{name}>:<int32>")).unwrap_err()[0].code,
+                "E004"
+            );
+        }
+    }
+    for ty in ["1e+2", "10.4", "2_Type"] {
+        let expr = value(&format!("call<{ty}>()"));
+        assert!(
+            matches!(expr.kind, ExprKind::Call { callee, .. } if matches!(callee.kind, ExprKind::Specialize { .. }))
+        );
+    }
+}

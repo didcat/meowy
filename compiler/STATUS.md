@@ -45,8 +45,15 @@ produce E202 through ordinary type lookup. All 3089 library tests pass
 (`/tmp/meowy-digit-names-namespaces-lib.log`). The namespace case passes debug/release
 (`/tmp/meowy-digit-names-namespaces-source.log`), including separate value/type namespaces,
 numeric function labels and named restart/leave. Catalog/coverage validation passes.
-Qualified numeric type paths and checked links follow separately. `core.literal` remains
-the explicit numeric-syntax escape. Proof work is unchanged.
+Namespace parsing is committed as `45471f11`. Qualified numeric type paths now retain
+their components, including `<10.4>` and `<10.1e+2>`, and generic-call recognition accepts
+those type names. Type-alias declarations require one component: the old qualified-export
+B001 unit expectation becomes E004, matching the existing dotted value-name restriction.
+All 3090 library and eight exported-type native tests pass
+(`/tmp/meowy-digit-names-paths-lib.log`, `/tmp/meowy-digit-names-paths-native.log`).
+Required module source coverage and checked links follow in the integration slice.
+Vim/Neovim highlighting remains explicitly required by the user. `core.literal` and
+proof work are unchanged.
 
 ### Completed numeric member lookup
 

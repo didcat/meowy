@@ -1,6 +1,15 @@
 use super::file_modules::case;
 
 #[test]
+pub(crate) fn numeric_module_paths_preserve_value_and_type_namespaces() {
+    case(
+        "d:@\"debug\";10:@\"./types.mwy\";2api:10;x<10.4>:10.5(7);y<2api.4>:x;flag<10.1e+2>:true;d.print(x);d.print(y);d.print(10.4);d.print(flag)",
+        &[("types.mwy", "-><4>:<int32>;-><1e+2>:<boolean>;->4:9;->5<4>:(6<4>){->6+1}")],
+    )
+    .runs(b"8\n8\n9\ntrue\n");
+}
+
+#[test]
 pub(crate) fn exported_types_preserve_transparent_facades_and_computed_type_values() {
     case("d:@\"debug\";api:@\"./api.mwy\";other:@\"./other.mwy\";p<other.Point>:{->x:3;->y:4};q<api.Point>:api.copy(p);d.print(q.x);d.print(q.y)", &[
         ("types.mwy", "d:@\"debug\";d.print(\"types\");<Private>:<{x<int32>;y<int32>}>;-><Point>:<Private>;->copy<Point>:(p<Point>){->p}"),

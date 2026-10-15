@@ -1,6 +1,7 @@
 use super::{ParseResult, Parser};
 use crate::ast::{Expr, ExprKind, Span, TypeExpr, TypeKind};
 use crate::diagnostic::Diagnostic;
+use crate::lexer::TokenKind;
 
 impl Parser {
     pub(crate) fn type_union(&mut self) -> ParseResult<TypeExpr> {
@@ -196,11 +197,7 @@ impl Parser {
                 TypeKind::Computed(Box::new(value))
             }
         } else {
-            let mut name = self.name()?.text;
-            while self.take(".") {
-                name.push('.');
-                name.push_str(&self.name()?.text);
-            }
+            let name = self.type_name()?;
             if self.at("<") {
                 return Err(Diagnostic::unsupported(
                     "generic type arguments",
@@ -230,6 +227,22 @@ impl Parser {
             };
         }
         Ok(ty)
+    }
+
+    pub(crate) fn type_name(&mut self) -> ParseResult<String> {
+        let mut name = String::new();
+        loop {
+            let token = if self.token().kind == TokenKind::Float {
+                self.bump()
+            } else {
+                self.name()?
+            };
+            name.push_str(&token.text);
+            if !self.take(".") {
+                return Ok(name);
+            }
+            name.push('.');
+        }
     }
 
     pub(crate) fn function_type_params(&mut self) -> ParseResult<Vec<TypeExpr>> {

@@ -416,7 +416,7 @@ impl Parser {
                 _ if parens > 0 || brackets > 0 || braces > 0 => {}
                 _ if matches!(
                     token.kind,
-                    TokenKind::Name | TokenKind::Int | TokenKind::Newline
+                    TokenKind::Name | TokenKind::Int | TokenKind::Float | TokenKind::Newline
                 ) => {}
                 _ => return false,
             }
