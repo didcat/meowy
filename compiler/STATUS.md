@@ -4359,12 +4359,15 @@ The preservation audit retains all 574 prior reference/source/pin/obligation fil
 `20133a4e` (`/tmp/meowy-binary-lookup-preservation.log`). No language contract or source
 expectation changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Next: direct-call operation and result observations
+### Current: direct-call operation and result observations
 
 `effects.rs` currently collects `Effect::Call` only at `Port::Operation`; the report
 retains exact call/function/argument identity, `may_return` and control. It does not
 retain independent operation/result observations. `may_return` is a checked possibility,
-not observed completion. Call result-source links and callee summaries remain separate.
+not observed completion. The call graph currently consumes every Call report, so result-only
+reports must not silently become operation observations there. Call result-source links
+and callee summaries remain separate. Work starts from `2a020936`; the tracked tree is
+clean and unrelated `docs/programs/hey/` is excluded.
 
 Dependency-ordered commit plan:
 
@@ -4372,14 +4375,27 @@ Dependency-ordered commit plan:
    `effects/calls/reports.rs`: operation/normal ports, stopped arguments, Never returns,
    recursion, guarded calls and independent owners. Preserve argument order and the
    existing operation-only behavior before changing reports.
-2. Add bounded stage qualification and independent operation/result aggregation using
+2. Extract the existing bounded call validation for reuse, preserving operation-only
+   reports, argument-copy charges and diagnostics in a separately checked refactor.
+3. Add bounded stage qualification and independent operation/result aggregation using
    original CallId/FunctionId/PointId, argument identities, owners and registered edges.
    Charge retained argument payload once and keep empty/mismatched reports atomic.
    Keep capture, aggregation and integration independently reviewable where practical.
-3. Cover partial/missing observations, duplicate visits, control, map/payload/work limits
-   and unchanged call-order/stopped source behavior; run compiler/strict and final docs
-   gates. Structural normal observations grant no runtime completion, value, loan or proof
-   authority. Do not cross caller/callee ownership or enable result sources yet.
+4. Cover partial/missing observations, duplicate visits, control, map/payload/work limits
+   and graph consumption in a separate boundary slice. Keep argument identity and
+   registration checks bounded before copying or publishing reports.
+5. Add source evidence for unchanged argument order and stopped calls; update the owning
+   guide/evidence inventory, then run compiler/strict and final docs gates. Structural
+   normal observations grant no runtime completion, value, loan or proof authority.
+   Do not cross caller/callee ownership or enable result sources yet.
+
+Characterization is complete: all ten focused call-effect tests pass
+(`/tmp/meowy-call-stages-characterization.log`), including sparse/reordered/duplicate
+ports, guarded aliases/dispatch, recursive owners, conditional returns and stopped
+arguments. Call effects still use the operation-only collector. Existing field stages
+provide the independent-observation pattern; invocation metadata already captures exact
+argument and conditional Returned edges. No new capture or reference-contract change is
+needed. Next is the behavior-preserving validation extraction, then stage aggregation.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly
