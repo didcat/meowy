@@ -1758,15 +1758,24 @@ empty snapshots, and
 duplicate operation ports copy origins once. Owner mismatches and exhausted budgets
 return no partial collection and preserve reports and conservative marks.
 Direct calls retain a Call effect with exact call/callee IDs, ordered argument
-roots, captured control and the declared return boundary. A bounded lookup maps
-operation points to registered CallIds. Capture validates the independently
-registered callee entry/body and checked argument owners/parents, plus the original
+roots, captured control, the declared return boundary and independent operation/result
+observations. A bounded lookup maps points to registered CallIds. Qualification validates
+the independently registered callee entry/body and checked argument owners/parents, plus the original
 argument-order and conditional Returned edges. Function HIR need not remain in the
 checker. Callee effects stay opaque; capture never traverses bodies or changes edges.
 Argument copies obey per-call and shared payload bounds and are charged once for
-repeated operation ports. Stopped argument evaluation excludes the call and later
-arguments from the caller's report; unused/recursive bodies retain independent
-entry reports. Return metadata does not prove that a call returns or terminates.
+repeated operation or result ports. Result-only reports do not imply an operation visit;
+empty reports, mismatched headers and Normal visits for declared Never calls are rejected.
+Every retained report is revalidated before call-graph use, and only operation
+observations create graph sites. Capacity, payload and work failures leave existing
+reports unchanged, including failures after earlier calls were collected.
+Stopped argument evaluation excludes the call and later arguments from the caller's
+report when the declared argument boundary has no normal successor. A function with
+a returning signature can still panic: its conditional Normal edge can be visited
+structurally even when its body never returns at runtime. Unused/recursive bodies
+retain independent entry reports. Neither return metadata nor observed stages prove
+runtime completion, termination, values, loan authority or proof outcomes. Call result
+sources and callee summaries remain separate.
 Print/panic effects now aggregate the prefix, projection, streamed-part and terminal
 ports actually encountered by each structural walk. Records retain panic/control
 flags, checked total/stopped metadata and exact input roots or literal None markers.

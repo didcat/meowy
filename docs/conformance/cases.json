@@ -5302,6 +5302,28 @@
         "code": "E207"
       },
       "reference": "../reference/stdlib/core.md#intrinsic-numeric-literals"
+    },
+    {
+      "id": "call_observation_guarded_dispatch",
+      "phase": "run",
+      "source": "sources/call_observation_guarded_dispatch.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "1\n2\nbody\n3\nafter\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "call_observation_conditional_return",
+      "phase": "run",
+      "source": "sources/call_observation_conditional_return.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first\nfail\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
     }
   ]
 }

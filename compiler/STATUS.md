@@ -4408,8 +4408,17 @@ Identity boundaries are committed as `7da5f465`. All 19 focused call-effect test
 copy-once duplicate stages, exact map/payload/work admission, late failures and bounded
 validation of result-only call-graph reports. The existing shared path/argument test
 still passes. No partial map or allowance changes survive rejection.
-Next: add guarded-call and declared-return-but-panicking source evidence alongside
-the existing order/stopped-argument cases, then update the guide/inventory and run gates.
+Limits are committed as `ff01f1c3`. Two new source cases cover skipped guarded dispatch
+and a returning signature whose body panics. Both cases and five existing call-order,
+stopped-argument, recursion, arity and borrow cases pass in debug/release
+(`/tmp/meowy-call-stages-source.log`). The matching structural test confirms that a
+conditional result observation does not inspect callee completion
+(`/tmp/meowy-call-stages-callee.log`). The rebuilt compiler and all four guide/inventory
+checks pass (`/tmp/meowy-call-stages-build.log`, `/tmp/meowy-call-stages-docs.log`).
+The 502-case catalog retains all 500 prior expectations. All 574 protected files, 19
+pins, 37 reference hashes/prior evidence and eight user files are unchanged
+(`/tmp/meowy-call-stages-preservation.log`). Next: full compiler gate, strict pin audit,
+and final handoff. The complete proof/release gate remains separate.
 The preservation baseline records 574 protected files, 500 cases, 37 document rows and
 eight unrelated user files (`/tmp/meowy-call-stages-baseline.json`).
 

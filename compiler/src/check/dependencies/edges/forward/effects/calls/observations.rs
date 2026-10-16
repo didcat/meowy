@@ -141,6 +141,37 @@ pub(crate) fn call_observations_reject_nonreturning_results_and_foreign_owners()
 }
 
 #[test]
+pub(crate) fn call_result_observations_do_not_inspect_callee_completion() {
+    let source = "d:@\"debug\";fail<int32>:(){d.panic(\"stop\")};sum<int32>:(a<int32>,b<int32>){->a+b};x:sum(fail(),2)";
+    let (checker, reports) = checked(source, false);
+    assert_eq!(checker.invocations.len(), 2);
+    for call in checker.invocations.values() {
+        assert!(matches!(
+            reports.effects[&call.point].1,
+            Effect::Call {
+                may_return: true,
+                operation: true,
+                result: true,
+                ..
+            }
+        ));
+        assert!(reports.calls.sites.contains_key(&call.site));
+        if call.args.is_empty() {
+            let (body, walk) = &reports.entries[&(call.function + 1)];
+            assert!(!walk.ports.contains(&Port::BlockNormal(*body)));
+            assert!(!walk.ports.contains(&Port::BlockResult(*body)));
+        } else {
+            assert!(
+                reports.entries[&call.owner]
+                    .1
+                    .ports
+                    .contains(&Port::Normal(call.args[1]))
+            );
+        }
+    }
+}
+
+#[test]
 pub(crate) fn call_observations_stop_before_later_arguments_and_outer_operation() {
     let source = "d:@\"debug\";stop<never>:(){d.panic(\"stop\")};f<int32>:(a<int32>,b<int32>){->a+b};x:f(stop(),{d.print(\"later\");->2})";
     let (checker, reports) = checked(source, false);
