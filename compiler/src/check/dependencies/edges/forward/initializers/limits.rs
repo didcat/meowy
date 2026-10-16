@@ -88,7 +88,12 @@ pub(crate) fn initializer_index_filters_special_local_identities_after_qualifica
                 alias.root = local;
                 checker.proofs.aliases.insert(local, alias);
             }
-            1 => program.functions[0].params.push(local),
+            1 => {
+                program.functions[0].params.push(local);
+                reports.signatures = checker
+                    .function_signatures(&program, &reports, Span::default())
+                    .unwrap();
+            }
             2 => {
                 checker.proofs.receivers.insert(local);
             }

@@ -4530,16 +4530,33 @@ The preservation audit retains 584 protected files, all 510 prior case records, 
 (`/tmp/meowy-signatures-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Next: reuse retained parameter context in initializer qualification
+### Retained parameter context in initializer qualification
 
 `initializers.rs::binding_initializers_limited` and `initializers/shared.rs::shared_initializers`
 still rebuild parameter sets through `initializer_parameters`. Signature construction
 also uses that validator, while Reports now retains validated reverse parameter lookup.
 Consolidate these consumers without widening local eligibility or crossing ownership.
+Investigation confirms both collectors validate the borrowed Program, so replacing
+their sets with unchecked cache membership would lose stale-HIR rejection. Keep a
+bounded source/header comparison and exact reverse positions in the signature module.
+Construction can enforce uniqueness directly in its retained maps, eliminating its
+temporary parameter/owner sets. Consumer validation still needs bounded owner scratch
+to detect duplicate FunctionIds independently of HIR vector order.
+
+Baseline: tracked tree clean at `d6c52f59`; 588 protected files, 514 case records,
+37 reference rows and eight user files are captured in
+`/tmp/meowy-parameter-context-baseline.json`. All 23 initializer tests pass, including
+two new characterizations of transferred/reordered HIR, unused/nested/forward functions,
+typed exports and shared parameter/special-cell exclusions
+(`/tmp/meowy-parameter-context-characterization.log`). Existing synthetic parameter
+exclusion now refreshes its signature context before consumption. Recorded work charges
+will be compared after consolidation; initializer maps and payloads are unchanged.
+Next: move parameter validation into signatures and enforce construction identities
+without rebuilding parameter scratch. `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
-1. Characterize old parameter collection versus retained-index membership across ordinary
+1. Complete: characterize old parameter collection versus retained-index membership across ordinary
    and shared initializers, unused/nested/forward functions, reversed HIR and typed exports.
    Pin exclusions for parameters, aliases, receivers, temporaries and mutable/reference
    storage; cover stale Program/report identities and exact work/payload bounds.

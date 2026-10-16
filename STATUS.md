@@ -62,7 +62,9 @@ all 510 prior case records, 19 pins, 37 hashes/prior evidence and eight user fil
 exact pins (`/tmp/meowy-signatures-strict.log`, `/tmp/meowy-signatures-strict-audit.log`).
 All four final handoff checks pass (`/tmp/meowy-signatures-final-docs.log`).
 
-Next: reuse retained parameter context in ordinary/shared initializer qualification.
+In progress: reuse retained parameter context in ordinary/shared initializer qualification.
+The investigation preserves source-HIR validation and all existing eligibility exclusions;
+focused characterization precedes removing duplicate parameter sets.
 Full proof/release qualification remains incomplete. Unrelated `docs/programs/hey/`
 is preserved.
 
