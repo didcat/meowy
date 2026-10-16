@@ -200,3 +200,6 @@ mod observations;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod limits;
