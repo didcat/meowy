@@ -1876,6 +1876,27 @@ hop and work limits remain checked. Stale argument or producer metadata and exha
 limits publish no partial source report. This adds no parameter values, cross-owner
 origins, initializer eligibility, callee summaries, loan authority or proof outcomes.
 
+Stored argument sources have a bounded borrowed view. It revalidates retained argument
+rows, then requires exactly one descriptor for every retained Normal row, including
+explicit unknowns. Caller owner, original point and the full Direct descriptor must
+match fresh source qualification. Missing, extra, stale or mixed descriptors reject
+before exposure. Conservative omitted rows/flags require matching omitted source keys;
+omitted field-result or block-consumer links require matching unknown descriptors.
+
+The view shares one Lookup cache and charges its work and cache storage before
+publication. It copies no argument vectors or source rows and reserves no additional
+row payload. Entry reports validate the view before returning, charging scratch cache
+storage against remaining shared parts. Oversized maps reject before reconstruction;
+exact work/payload exhaustion leaves reports and edges unchanged.
+
+Forest-entry characterization confirms that qualified field/block/dispatch slots can
+use the existing candidate/direct walker with caller owners, repeated sources, unknown
+histories and stopped prefixes intact. Argument roots retain their PointId keys; forest
+candidates keep their `(block, slot, position)` keys. Source-view qualification alone
+does not validate candidate/direct maps, so traversal must also qualify those graphs.
+A retained argument forest and argument-identity visits remain a separate integration
+step. These checks are structural evidence; source behavior and proof coverage are unchanged.
+
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region

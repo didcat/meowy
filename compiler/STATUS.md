@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Stored argument-source qualification is in progress.
+Updated: 2026-10-16. Stored argument-source views pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: qualify retained argument-source views for traversal using the handoff below.
+Next: retain argument source forests using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4730,54 +4730,70 @@ paths each. Reviewed gaps still apply to callee values/origins, summaries and pr
 outcomes. No reference contract or expected source outcome changed. Unrelated
 `docs/programs/hey/` remains untouched and excluded.
 
-### Next: qualify retained argument-source views for traversal
+### Qualified retained argument-source views
 
-`argument_sources` constructs validated descriptors; future consumers must revalidate
-the stored map before traversal. Reuse the pattern in
-`results/inputs/direct/qualified.rs::direct_graph` without copying argument vectors or
-mixing argument roots with result-candidate keys.
+Complete. `argument_source_view` borrows the
+stored source map after revalidating argument rows and exact Normal-row membership,
+caller owners, original points and full Direct descriptors. Unknown inputs retain
+explicit descriptors. Missing/extra/stale entries and producer identities reject
+atomically. Conservative omitted observations require matching source omissions;
+omitted field-result or block-consumer links require matching unknown descriptors.
 
-Investigation: the source map is keyed by original argument PointId, while candidate
-forests use `(block, slot, position)` keys. Existing `direct_graph` revalidates stored
-descriptors with one Lookup cache. Argument validation accepts conservative missing
-rows/flags, so the view must match exactly the retained Normal rows, including unknowns.
-The current tree contains only unrelated untracked `docs/programs/hey/`; preserve it.
+One Lookup cache is shared across the view. Work and scratch cache storage are charged;
+borrowed source rows reserve no repeated payload and argument vectors are not copied.
+Entry reports qualify the view before publication against remaining shared parts.
+Exact work/payload thresholds and oversized maps are covered. Existing eligibility,
+caller/callee ownership, reference histories and independent observations are preserved.
+
+Forest-entry characterization reuses existing candidate/direct traversal from qualified
+argument source slots, including repeated sources, independent owners, unknown mutable
+histories and stopped calls. Argument PointIds and candidate `(block, slot, position)`
+keys stay distinct. A scalar-block descriptor can remain valid while its candidate/direct
+map is stale: future traversal must also qualify those graphs before exposing visits.
+No retained argument forest or parameter values/origins are introduced.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `e7d3fc7e` | Qualify the installed LLVM 23.1.3 patch pin independently |
+| `995dfc1e` | Characterize exact retained Normal-row source keys and observations |
+| `cb6c0427` | Qualify the borrowed source view before report publication |
+| `ffcecee0` | Bound shared caches, work/payload and stale producer evidence |
+| `af71976e` | Characterize qualified argument slots at existing forest entry |
+
+All three source-map characterization, eight source-view and three forest-entry tests
+pass. Logs: `/tmp/meowy-argument-view-characterization.log`,
+`/tmp/meowy-argument-view-boundaries.log`, `/tmp/meowy-argument-view-forest.log`.
+Fourteen new tests are structural evidence. No reference contract, expected source
+outcome, capability pin or proof-obligation record changes. Five structural evidence
+paths are added to the existing proof/types/values inventory rows; their gaps remain.
+Preservation audit passes: all 597 protected files (including eight user files),
+514 case records, 19 pins, 37 reference hashes/gaps/prior evidence and the proof map
+are unchanged from `b2ef64ea` (`/tmp/meowy-argument-view-preservation.log`).
+All ten compiler checks pass: formatting, Clippy, 3199 library, 923 native and
+62 Python tests, build, metadata and source execution (`/tmp/meowy-argument-view-gate.log`).
+The 514-case catalog has 495 required passes, 19 unchanged gaps and zero failures
+in debug/release. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-argument-view-strict.log`, `/tmp/meowy-argument-view-strict-audit.log`).
+All four documentation/evidence checks pass (`/tmp/meowy-argument-view-docs.log`).
+No known failures remain. Unrelated `docs/programs/hey/` is untouched and excluded.
+Nothing was pushed or published.
+
+### Next: retain argument source forests
 
 Dependency-ordered commit plan:
 
-0. Complete: `e7d3fc7e` qualifies LLVM/Clang/LLD/ar 23.1.3; compiler/runtime gates
-   pass and exact-version checks remain enabled.
-1. Complete (`995dfc1e`): three characterization tests preserve exact Normal-row keys, explicit
-   unknowns, sparse observations, distinct caller owners and absent call effects.
-2. Complete (`cb6c0427`): borrowed view checks exact keys/owners/points/descriptors and rejects
-   stale maps atomically, with one shared Lookup cache. Entry publication uses the view.
-3. Complete (`ffcecee0`): producer faults, shared cache reuse and exact map/payload/work limits
-   pass, including no repeated source-row reservation and oversized-map rejection.
-4. Complete: three forest-entry characterization tests preserve caller roots,
-   shared candidates, unknown histories and stopped prefixes.
-5. Document structural evidence, run the compiler gate, audit strict pins and preserved
-   fixtures, and leave the next traversal integration step. No parameter values/origins,
-   callee summaries, restart propagation, E225 or proof outcomes are added.
-
-The borrowed `argument_source_view` now revalidates retained argument rows and exact
-source-map membership, caller owner, original point and full Direct descriptor. One
-Lookup cache is shared, with charged work/cache storage and no second source-row copy.
-Entry reports qualify this view before publication, charging its scratch cache against
-remaining parts. Forest traversal stays unchanged. Three focused tests cover borrowed
-identity, thirteen stale-map faults, sparse observations and stopped prefixes.
-
-Validation: all eight `argument_source_view` tests pass, including the five new
-boundary checks (`/tmp/meowy-argument-view-boundaries.log`); formatting passes. Late
-field/block/dispatch faults reject atomically. Missing producer evidence requires an
-unknown descriptor at the same key. Shared field cache storage is charged once per
-qualifier; borrowed source rows add no payload charge. Exact work/payload thresholds
-and oversized maps reject without mutating reports or edges. No known failures remain.
-Three forest-entry characterization tests now exercise qualified argument slots
-through the existing walker, including repeated sources, two caller owners, unknown
-mutable histories and stopped prefixes. A scalar-block argument descriptor alone
-does not qualify candidate/direct maps; traversal must validate those separately.
-All three focused tests pass (`/tmp/meowy-argument-view-forest.log`).
-Next: commit the characterization, document evidence and run final gates.
+1. In `results/inputs/graph/walk.rs` and `arguments/sources`, expose a bounded borrowed
+   argument-forest entry that validates both `argument_source_view` and `direct_graph`
+   under shared work/payload budgets. Reuse existing graph traversal without copying
+   argument vectors or mixing argument PointIds with result-candidate keys.
+2. Retain original argument identities and explicit unknown descriptors in traversal
+   reports, alongside caller-owned field/block/dispatch roots. Preserve shared/cyclic
+   candidate histories and stopped prefixes; never infer runtime completion or values.
+3. Integrate the report into `entries.rs`, with atomic stale-map/cross-owner and exact
+   payload/work regressions. Keep source observations independent of Call stages and
+   parameter associations. Update structural evidence and run compiler, strict-pin and
+   final documentation gates. Callee values/origins/summaries, restart propagation,
+   E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6391,7 +6407,8 @@ Direct-call observations, argument-source ownership, declared result shapes and 
 function-signature context are qualified. Initializer qualification reuses validated
 retained parameter membership. Bounded call-argument/parameter associations and individual
 argument observations are qualified, including caller-side direct sources for normally
-observed arguments. Next qualify retained argument-source views using the ordered handoff.
+observed arguments. Retained source views are qualified. Next retain argument source
+forests using the ordered handoff.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7066,8 +7083,8 @@ Value selection and broader aggregate provenance remain separate.
    Counted binary lookup, direct-call observations, argument-source ownership, declared
    result shapes, function-signature context, initializer parameter reuse and borrowed
    call-parameter associations and individual argument observations are qualified. Reports
-   retain caller-side sources for normally observed arguments. Qualify their stored views
-   for traversal next, using the current handoff.
+   retain caller-side sources for normally observed arguments, and stored source views
+   are qualified. Retain argument source forests next, using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
