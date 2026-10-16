@@ -4587,8 +4587,13 @@ ordinary/shared work and combined parameter/call/shared-record payload. All 32
 parameter-filtered library tests pass (`/tmp/meowy-parameter-context-boundaries.log`).
 The combined payload regression includes existing record-operation payload and confirms
 the default two-record parameter reservation without widening collector visibility.
-No known failures remain. Next: refresh the guide/evidence inventory and run the final
-compiler gate.
+No known failures remain. The foundation guide now describes source/header validation
+and borrowed parameter membership. Three owning reference rows gain structural links
+for construction, initializer equivalence and parameter-context limits. The existing
+call-limit evidence covers combined payload; no language contract, case expectation or
+capability/proof inventory changes. All four documentation checks pass
+(`/tmp/meowy-parameter-context-docs.log`). The final compiler gate, strict-pin audit
+and preservation audit remain pending.
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
@@ -4600,11 +4605,11 @@ Dependency-ordered commit plan:
 2. Complete: consolidate authoritative entry/body/parameter validation in the signature path using
    existing checks. Keep validation refactoring separate from consumer changes where
    practical; retain a checked relationship to the source HIR when a consumer needs it.
-3. Integrated: reuse retained parameter membership in ordinary and shared initializer qualification.
+3. Complete: reuse retained parameter membership in ordinary and shared initializer qualification.
    Remove duplicate collection only after all callers and boundary tests are migrated.
    Preserve initializer maps, missing-source behavior, Unknown histories, failure atomicity
    and the existing two-record parameter reservation. Record actual work-charge changes.
-4. Update guide/evidence paths if helpers move, preserve required source expectations and
+4. In progress: update guide/evidence paths if helpers move, preserve required source expectations and
    run compiler/strict/final docs gates. Argument-value transfer, callee summaries,
    call-result provenance, restart propagation, E225 and proof outcomes remain separate.
 

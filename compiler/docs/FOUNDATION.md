@@ -1161,9 +1161,14 @@ Entry reports now index qualified ordinary initializers by LocalId, retaining on
 statement, owner and optional outer input root. Eligible immutable locals must be
 their own canonical storage and have no alias, parameter, receiver or temporary-cell
 classification. Every Storage header is qualified before filtering, preserving
-validation even for excluded Binds and writes. The signature module collects function
-parameters from the borrowed Program with bounded scratch/work; FunctionIds and entry-body
-identities preserve ownership when the function table is reordered.
+validation even for excluded Binds and writes. Both ordinary and shared initializer
+collectors borrow parameter membership from retained function signatures. Before use,
+the signature module validates the borrowed Program's root, local count, function/body
+identities, ordered parameters and shallow result shapes against that context. Exact
+reverse positions and registered parameter bindings remain checked. Bounded FunctionId
+scratch rejects duplicate source owners independently of function-table order; parameter
+sets are no longer rebuilt. These checks preserve existing local eligibility and leave
+reference and aggregate histories Unknown.
 
 A second statement for one admitted LocalId is a conflict, even if its owner/input
 agrees. Missing roots remain indexed unknowns; absent observations create no entry.
@@ -1800,14 +1805,18 @@ unused, nested and recursive functions remain present; HIR vector order does not
 owners. Supported typed export aliases keep exact signatures. Local annotated identity
 bindings retain their existing B001 capability gate.
 
-The signature module's parameter validator qualifies entry/body identities, local
-bounds and global uniqueness before headers are copied. Header count is capped at
-65,535 and each parameter list at 65,536. Ordered entries and reverse-index records
+Signature construction qualifies root/entry/body identities, local bounds and registered
+parameters directly, using its retained maps for global uniqueness. No temporary owner
+or parameter set is built. Header count is capped at 65,535 and each parameter list at
+65,536 before copying. Ordered entries and reverse-index records
 charge two retained payload records per parameter against the shared 262,144 allowance
 before operation effects are collected. Duplicate call visits copy argument payloads
 once. No parameter type tree is copied. Retained-context validation checks header/body
 and reverse-position consistency, including unused parameters; missing, extra, foreign,
 reordered or oversized metadata rejects atomically under charged work limits.
+Initializer rebuilds borrow this context without reserving parameter payload again;
+shared-record initializers still charge their own retained descriptors. Source/header
+agreement and full retained validation share Flow work, including exact-bound failures.
 
 Every captured call must agree with its header's arity and result shape, including calls
 after a Never boundary. Individual observations and graph reports revalidate callee
