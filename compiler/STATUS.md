@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-15. Existing call-argument source qualification passes the compiler gate.
+Updated: 2026-10-16. Declared call-result shapes pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: follow the declared call-result shape handoff below; call-argument ownership is qualified.
+Next: follow the bounded function-signature context handoff below; call-result shapes are retained.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4446,75 +4446,74 @@ changes are confined to test modules and their `cfg(test)` registration
 (`/tmp/meowy-call-inputs-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Current: declared call-result shapes
+### Declared call-result shapes
 
-Invocation now retains a declared result-shape descriptor alongside `may_return`.
-`check/functions.rs` has the signature result before outer coercion, and
-`dependencies/bodies/completion.rs` already provides bounded shallow Shape/Completion
-classification. The proof contract gives call results their full declared result domain;
-callee-body completion or returned values must not narrow that domain. Work starts
-from `9f6e3920`; the tracked tree is clean and unrelated `docs/programs/hey/` is excluded.
-The signature can be explicit or inferred for a local function. The result shape must
-be captured before outer coercion, and a returning signature must remain returning even
-when its body panics. Shape/Completion classification is shallow and already bounds
-scalar widths and aggregate counts. No per-call type clone or body inspection is needed.
-All ten invocation tests pass (`/tmp/meowy-call-shapes-characterization.log`). Three new
-regressions pin explicit/inferred scalar, reference, record, list, union and Never
-signatures; aliases/dispatch/recursion before outer conversions; and panicking bodies
-whose signatures still permit return. Next: capture and validate the fixed-size Shape
-on Invocation, then propagate it through stage/report qualification.
-Characterization is committed as `948733f7`. Invocation now classifies the checked
-signature through a small factory while keeping the `bodies` module private. Registration
-charges and validates shape bounds and agreement with `may_return` before publication.
-All twelve invocation tests pass (`/tmp/meowy-call-shapes-capture.log`), including invalid
-width/count/return metadata, stale retained shapes and exact-work atomicity. No known
-failures remain. Next: stage/report propagation and call-graph revalidation.
-Capture is committed as `05cd1f2e`. Call stages and retained effects now copy the fixed
-shape, and index/stage/report/graph checks validate bounds, return agreement and exact
-matches to captured metadata. All 1069 Forward tests and all-target Clippy pass
-(`/tmp/meowy-call-shapes-reports.log`, `/tmp/meowy-call-shapes-reports-clippy.log`). New
-report tests cover transferred function HIR, independent/duplicate observations,
-panicking bodies and mismatched stages/reports. Shape storage adds no argument payload
-charge. Next: broader malformed/partial/limit boundaries and source conformance.
-Report integration is committed as `cc23b803`. All 28 call-effect tests pass
-(`/tmp/meowy-call-shapes-boundaries.log`). Invalid widths/counts/Never agreement reject
-at index, stage, aggregation and graph boundaries, including unobserved calls after a
-Never call. Valid but stale partial report shapes also reject. Exact stage/work/map and
-argument-payload tests retain atomic failure and copy-once behavior. No known failures
-remain. Next: source cases, guide/evidence updates and the full compiler gate.
-Boundary coverage is committed as `02ab5a8e`. Four new required cases and four existing
-call-order/stop/guard/conditional-return cases pass in debug/release
-(`/tmp/meowy-call-shapes-source.log`). New cases cover scalar/inferred/recursive results,
-record/list/union/reference results, record-return panic propagation and incompatible
-outer typing (E207). Build and all four catalog/tooling checks pass
-(`/tmp/meowy-call-shapes-build.log`, `/tmp/meowy-call-shapes-source-docs.log`).
-The catalog now has 510 cases. Next: guide/evidence updates and final gates.
-Source cases are committed as `deecd04f`. The guide and four owning evidence rows now
-describe shallow signature classification and its limits; full-domain fact transfer,
-values and callee summaries remain separate. All four documentation/tooling checks pass
-(`/tmp/meowy-call-shapes-docs.log`). The preservation audit retains 580 protected files,
-all 506 prior case records, 19 pins, 37 hashes/prior evidence and eight user files
-(`/tmp/meowy-call-shapes-preservation.log`). Next: full compiler gate and strict pin audit,
-then record the final handoff. No reference contract or prior expectation changed.
+Complete. Invocation, call stages and retained Call effects carry a bounded shallow
+Shape from the checked signature before outer coercion. Explicit and inferred local
+results retain scalar kind/width/signedness, shared-scalar referent, reference category,
+record field count, list capacity, union member count or opaque Other. Classification
+reuses Shape/Completion through an Invocation factory; the bodies module stays private.
+No type tree is copied and no callee-body result or completion is used as evidence.
+
+Registration, indexing, stage qualification, aggregation and graph checks validate shape
+bounds, agreement with `may_return` and matches to captured metadata. Shape is a fixed
+header field; argument payload is still copied once. Work is charged before validation
+and publication. Partial/missing/duplicate observations retain their original meanings.
+Invalid or stale metadata and exhausted limits reject atomically, including invalid
+captured shapes on unobserved calls. A returning signature keeps its shape when the body
+panics; declared Never has no normal result. Values, list lengths, field contents,
+full-domain fact transfer, call-result provenance and callee summaries remain separate.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `948733f7` | Characterize signature shapes, outer conversions and panicking bodies |
+| `05cd1f2e` | Capture bounded checked result shapes and validate return agreement |
+| `cc23b803` | Retain shapes in stages/reports and revalidate graph consumption |
+| `02ab5a8e` | Reject invalid/stale shapes and enforce exact map/work/payload limits |
+| `deecd04f` | Add four required scalar/aggregate/panic/outer-type source cases |
+| `9165f8c1` | Document shallow classification and link structural coverage |
+
+All ten compiler checks pass: 3133 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-shapes-gate.log`).
+The 510-case catalog has 491 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-call-shapes-strict.log`, `/tmp/meowy-call-shapes-strict-audit.log`).
+All four final handoff checks pass (`/tmp/meowy-call-shapes-final-docs.log`).
+Eight focused source cases pass in both profiles (`/tmp/meowy-call-shapes-source.log`).
+Thirteen new structural tests cover capture, reporting, invalid/stale descriptors,
+independent observations and exact limits. No known failures remain.
+
+The preservation audit retains 580 protected files, all 506 prior case records, 19 pins,
+37 reference hashes/prior evidence and eight user files from `9f6e3920`
+(`/tmp/meowy-call-shapes-preservation.log`). No reference contract or prior expected
+outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+### Next: bounded function-signature context
+
+`entry_reports` receives the transferred Program, including FunctionId, ordered parameter
+LocalIds, checked result type and body identity. Reports currently retain the total local
+count and independent entry/body owners, while CallGraph nodes retain bodies and targets.
+The next prerequisite is to qualify the signature context needed to connect call sites
+to function parameters without selecting callee values or granting borrow authority.
 
 Dependency-ordered commit plan:
 
-1. Characterize direct/aliased/dispatched and recursive call results in `functions.rs`,
-   `invocations.rs` and `edges/forward/effects/calls/`. Cover scalar, shared-reference,
-   record, list, union and Never signatures, including returning signatures with panicking
-   bodies and separate outer conversions. Pin exact CallId/FunctionId/PointId and owners.
-2. Capture a bounded shallow descriptor from the declared signature using existing
-   completion/shape rules. Keep capture and report propagation independently reviewable,
-   with focused tests for source-kind bounds and agreement with `may_return`.
-3. Carry and revalidate the descriptor through call stages, retained reports and graph
-   qualification. Preserve independent operation/result flags, argument order and shared
-   payload/work limits. Missing or stale descriptors must fail atomically; do not read
-   callee-body layouts or infer call-result provenance.
-4. Add malformed/partial/limit cases as a separate boundary slice, retaining argument
-   payload charges and original call graph ownership. Validate each completed slice.
-5. Cover source execution and update guide/evidence rows,
-   then run compiler/strict/final docs gates. Call result values, callee effect summaries,
-   restart propagation, E225 enforcement and proof outcomes remain separate.
+1. Characterize `check/functions.rs`, `hir::Function`, `edges/forward/entries.rs` and
+   `entries/locals.rs`: exact parameter order/LocalIds, empty/unused/recursive/forward
+   functions, transferred/reordered HIR and typed aliases. Establish existing signature
+   agreement rules before enforcing comparisons with per-call result shapes.
+2. Reuse existing metadata where possible; retain only missing bounded function headers
+   keyed by original FunctionId/owner, with body, ordered parameters and shallow checked
+   result shape. Keep capture/indexing independently reviewable and charge header/parameter
+   storage and work before publication. Avoid cloned type trees.
+3. Qualify call arity, callee entry and signature metadata against those headers while
+   preserving caller/callee ownership and independent operation/result observations.
+   Do not connect argument values or origins across owners, infer callee effects, or
+   specialize call-result domains from body contents.
+4. Cover missing/duplicate/foreign identities, parameter/shape mismatches, partial calls,
+   exact map/payload/work limits and unchanged source order. Update guide/evidence and
+   run compiler/strict/final docs gates. Call summaries, result-value provenance, restart
+   propagation, E225 enforcement and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6124,8 +6123,8 @@ receiver inputs through immutable local records, including composed-emission sou
 Coercion- and binary-owned primaries now qualify these receiver inputs too. Owned scalar
 fields, composed emissions and coercion/binary-owned primaries also qualify immutable
 copies of shared-reference receiver records. Counted binary lookup is consolidated.
-Independent direct-call operation/result observations and existing argument-source
-ownership are qualified. Next capture declared call-result shapes using the ordered
+Independent direct-call observations, argument-source ownership and declared result
+shapes are qualified. Next retain bounded function-signature context using the ordered
 plan above. Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -6797,8 +6796,8 @@ plan above. Value selection and broader aggregate provenance remain separate.
    reports (`876262fa`), test scopes (`86097270`), links (`284eb11f`), boundaries
    (`052a1e1b`), limits (`111b65ad`) and source cases (`f622cdd3`) pass the compiler gate.
    Shared-reference receiver local inputs and immutable copies are qualified above.
-   Counted binary lookup, independent direct-call observations and call-argument source
-   ownership are qualified. Next retain declared call-result shapes using the current handoff.
+   Counted binary lookup, direct-call observations, argument-source ownership and declared
+   result shapes are qualified. Next retain bounded function-signature context using the handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

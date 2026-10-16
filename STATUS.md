@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-15. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-16. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -45,26 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Call-argument source ownership is qualified using the existing coercion/emission
-machinery. Grouped arguments and block emissions retain their exact projection owners;
-source slots stay in caller scope, and earlier links survive stopped later arguments.
-Eleven structural regressions cover ownership, missing observations, stale identities,
-independent control and exact bounds. No production metadata or source-link change was
-needed. The [compiler handoff](compiler/STATUS.md#direct-call-argument-source-ownership)
-records five qualification/evidence commits and the remaining opaque boundaries.
+Direct-call reports now retain bounded shallow result shapes from checked signatures
+before outer coercion. Capture and report/graph validation preserve exact identities,
+return agreement, independent observations and atomic budget failures. Returning
+signatures remain distinct from panicking body completion. The
+[compiler handoff](compiler/STATUS.md#declared-call-result-shapes) records six
+implementation/evidence commits. Shapes provide no concrete values, callee summaries
+or proof outcomes.
 
-All ten compiler checks pass: 3120 library, 923 native and 62 Python tests, formatting,
-Clippy, build, metadata and 487 required conformance cases. The same 19 pinned gaps
-remain, with zero debug/release failures (`/tmp/meowy-call-inputs-gate.log`). Four new
-required cases cover argument order, reference identity, P006 stopping and E212.
-The audit preserves 576 protected files, all 502 prior case records, 19 pins, 37 hashes/
-prior evidence and eight user files from `e5021b9c`; compiler source changes are limited
-to test modules (`/tmp/meowy-call-inputs-preservation.log`). Strict mode exits 1 only for
-the exact pins (`/tmp/meowy-call-inputs-strict.log`, `/tmp/meowy-call-inputs-strict-audit.log`).
-All four final handoff checks pass (`/tmp/meowy-call-inputs-final-docs.log`).
+All ten compiler checks pass: 3133 library, 923 native and 62 Python tests, formatting,
+Clippy, build, metadata and 491 required conformance cases. The same 19 pinned gaps
+remain, with zero debug/release failures (`/tmp/meowy-call-shapes-gate.log`). Four new
+required cases cover scalar/aggregate/reference results, record panic and outer-type E207.
+The audit preserves 580 protected files, all 506 prior case records, 19 pins, 37 hashes/
+prior evidence and eight user files from `9f6e3920`
+(`/tmp/meowy-call-shapes-preservation.log`). Strict mode exits 1 only for the exact pins
+(`/tmp/meowy-call-shapes-strict.log`, `/tmp/meowy-call-shapes-strict-audit.log`). All four
+final handoff checks pass (`/tmp/meowy-call-shapes-final-docs.log`).
 
-Next: retain declared call-result shapes while keeping call values and callee summaries
-opaque. Full proof/release qualification remains incomplete. Unrelated
+Next: bounded function-signature context for call qualification, preserving ownership
+and opaque call values. Full proof/release qualification remains incomplete. Unrelated
 `docs/programs/hey/` is preserved.
 
 ## Host toolchain
