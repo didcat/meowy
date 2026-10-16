@@ -4555,7 +4555,14 @@ Parameter validation and its three boundary tests now live under `signatures/par
 the helper's behavior, diagnostics and charges are unchanged. Guide/evidence paths move
 with it. All three parameter tests and four documentation checks pass
 (`/tmp/meowy-parameter-context-move.log`, `/tmp/meowy-parameter-context-move-docs.log`).
-Next: enforce construction identities without rebuilding parameter scratch.
+Construction now uses retained function/parameter maps for uniqueness and shares root
+entry validation with retained-context checks. Local counts/bounds, registered bindings,
+independent bodies and exact entries remain required. Twenty corruption scenarios cover
+atomic source rejection, including duplicate empty functions and invalid root owners.
+All 28 signature-filtered library tests pass, including the new twenty-case construction
+regression (`/tmp/meowy-parameter-context-construction.log`). Shallow classification
+remains unchanged, including its Other fallback. No known failures remain.
+Next: qualify retained parameter membership against HIR for both initializer collectors.
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:

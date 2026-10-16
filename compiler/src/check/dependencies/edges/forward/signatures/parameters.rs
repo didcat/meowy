@@ -12,9 +12,7 @@ impl Checker {
             || Diagnostic::unsupported("proof initializer parameter budget exhausted", span);
         let invalid =
             || Diagnostic::unsupported("proof initializer parameter identity mismatch", span);
-        if program.functions.len() >= MAX_ENTRIES
-            || !self.flow.spend(program.functions.len() + 1)
-        {
+        if program.functions.len() >= MAX_ENTRIES || !self.flow.spend(program.functions.len() + 1) {
             return Err(budget());
         }
         if program.locals.len() != reports.locals

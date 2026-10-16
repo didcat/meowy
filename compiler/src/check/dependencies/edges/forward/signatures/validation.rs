@@ -1,6 +1,37 @@
 use super::*;
 
 impl Checker {
+    pub(super) fn signature_root(
+        &mut self,
+        reports: &Reports,
+        count: usize,
+        span: Span,
+    ) -> Result<hir::BlockId> {
+        let budget = || Diagnostic::unsupported("proof function-signature budget exhausted", span);
+        let invalid =
+            || Diagnostic::unsupported("proof function-signature identity mismatch", span);
+        if count >= MAX_ENTRIES
+            || !self.flow.spend(
+                count
+                    + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
+                    + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
+                    + 5,
+            )
+        {
+            return Err(budget());
+        }
+        let root = reports.entries.get(&0).ok_or_else(invalid)?.0;
+        if reports.entries.len() != count + 1
+            || !self
+                .bodies
+                .get(&root)
+                .is_some_and(|body| body.owner == 0 && body.parent.is_none())
+        {
+            return Err(invalid());
+        }
+        Ok(root)
+    }
+
     pub(in super::super) fn validate_function_signatures(
         &mut self,
         reports: &Reports,
@@ -10,26 +41,10 @@ impl Checker {
         let invalid =
             || Diagnostic::unsupported("proof function-signature identity mismatch", span);
         let index = &reports.signatures;
-        if index.functions.len() >= MAX_ENTRIES
-            || index.params.len() > MAX_EDGES / 2
-            || !self.flow.spend(
-                index.functions.len()
-                    + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
-                    + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
-                    + 5,
-            )
-        {
+        if index.params.len() > MAX_EDGES / 2 {
             return Err(budget());
         }
-        let root = reports.entries.get(&0).ok_or_else(invalid)?.0;
-        if reports.entries.len() != index.functions.len() + 1
-            || !self
-                .bodies
-                .get(&root)
-                .is_some_and(|body| body.owner == 0 && body.parent.is_none())
-        {
-            return Err(invalid());
-        }
+        self.signature_root(reports, index.functions.len(), span)?;
         let mut count = 0usize;
         for &function in index.functions.keys() {
             let header = self.checked_function_signature(reports, function, span)?;

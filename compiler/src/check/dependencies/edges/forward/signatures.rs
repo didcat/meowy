@@ -63,13 +63,15 @@ impl Checker {
                 .filter(|count| *count <= parts.min(MAX_EDGES) / 2)
                 .ok_or_else(budget)?;
         }
-        if self.initializer_parameters(program, reports, span)?.len() != count {
+        let root = self.signature_root(reports, program.functions.len(), span)?;
+        if program.locals.len() != reports.locals || program.body.id != root {
             return Err(invalid());
         }
         let mut index = Index::default();
         for function in &program.functions {
             if !self.flow.spend(
                 index.functions.len().checked_ilog2().unwrap_or(0) as usize * 2
+                    + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
                     + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
                     + function.params.len()
                     + 8,
@@ -87,6 +89,7 @@ impl Checker {
                 result: header.shape,
             })
             .valid()
+                || reports.entries.get(&owner).map(|(body, _)| *body) != Some(header.body)
                 || !self
                     .bodies
                     .get(&header.body)
@@ -102,7 +105,8 @@ impl Checker {
                 ) {
                     return Err(budget());
                 }
-                if !self.proofs.bindings.contains_key(&local)
+                if local >= reports.locals
+                    || !self.proofs.bindings.contains_key(&local)
                     || index
                         .params
                         .insert(local, (function.id, position))
@@ -127,3 +131,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod construction;
