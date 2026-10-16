@@ -25,7 +25,7 @@ pub(super) struct Stage {
 }
 
 impl Checker {
-    pub(super) fn call_effect_index(
+    pub(in super::super) fn call_effect_index(
         &mut self,
         span: Span,
     ) -> Result<BTreeMap<PointId, hir::CallId>> {

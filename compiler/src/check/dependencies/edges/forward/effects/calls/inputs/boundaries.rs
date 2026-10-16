@@ -1,6 +1,56 @@
 use super::{super::super::tests::checked, *};
 
 #[test]
+pub(crate) fn call_parameter_pairs_require_registered_caller_roots() {
+    for module in [false, true] {
+        for fault in 0..4 {
+            let (mut checker, mut reports) = checked("f:(a<int32>){};g:(){f(1)};g()", false);
+            let call = checker
+                .invocations
+                .values()
+                .find(|call| (call.owner == 0) == module)
+                .unwrap()
+                .clone();
+            let root = reports.entries[&call.owner].0;
+            match fault {
+                0 => {
+                    reports.entries.remove(&call.owner);
+                }
+                1 => {
+                    reports.entries.get_mut(&call.owner).unwrap().0 =
+                        reports.entries[&(call.function + 1)].0
+                }
+                2 => checker.bodies.get_mut(&root).unwrap().owner = usize::MAX,
+                3 => checker.bodies.get_mut(&root).unwrap().parent = Some(call.point),
+                _ => unreachable!(),
+            }
+            let before = format!(
+                "{reports:?}{:?}{:?}{:?}",
+                checker.bodies,
+                checker.invocations,
+                checker.edge_counts()
+            );
+            assert!(
+                checker
+                    .checked_call_inputs(&reports, call.site, Span::default())
+                    .unwrap_err()
+                    .message
+                    .contains("call-effect identity")
+            );
+            assert_eq!(
+                format!(
+                    "{reports:?}{:?}{:?}{:?}",
+                    checker.bodies,
+                    checker.invocations,
+                    checker.edge_counts()
+                ),
+                before
+            );
+        }
+    }
+}
+
+#[test]
 pub(crate) fn call_parameter_pairs_reject_stale_positions_owners_and_headers_atomically() {
     for fault in 0..18 {
         let (mut checker, mut reports) = checked(

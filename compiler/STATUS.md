@@ -4665,7 +4665,11 @@ tip. `/tmp/meowy-argument-observations-baseline.json` captures 588 protected fil
 characterizations pass: wrapped receiver order, stopped first/middle argument prefixes,
 and independence from call/callee completion. Partial-port expectations are now pinned
 as explicit Entry/Normal pairs; all three focused checks pass
-(`/tmp/meowy-argument-observations-characterization.log`). Caller-root preparation is next;
+(`/tmp/meowy-argument-observations-characterization.log`). The call qualifier now validates
+registered independent caller roots as well as callee roots, with charged lookups. Existing
+helpers are visible only within Forward for collector reuse. Eight caller-root corruption
+scenarios cover module and function owners; all 41 call-effect tests pass
+(`/tmp/meowy-argument-observations-callers.log`). Next: retain sparse argument observations;
 `docs/programs/hey/` remains excluded. No push is authorized.
 
 Dependency-ordered commit plan:

@@ -1,16 +1,16 @@
 use super::*;
 
 #[derive(Debug)]
-pub(in super::super) struct Inputs<'a> {
-    pub(super) call: &'a Invocation,
-    pub(super) pairs: std::iter::Zip<
+pub(in super::super::super) struct Inputs<'a> {
+    pub(in super::super::super) call: &'a Invocation,
+    pub(in super::super::super) pairs: std::iter::Zip<
         std::iter::Copied<std::slice::Iter<'a, hir::LocalId>>,
         std::iter::Copied<std::slice::Iter<'a, PointId>>,
     >,
 }
 
 impl Checker {
-    pub(in super::super) fn checked_call_inputs<'a>(
+    pub(in super::super::super) fn checked_call_inputs<'a>(
         &'a mut self,
         reports: &'a Reports,
         site: hir::CallId,
@@ -29,16 +29,17 @@ impl Checker {
         if call.args.len() > crate::check::dependencies::sequences::MAX_ITEMS
             || !self.flow.spend(
                 call.args.len() * (call.args.len().checked_ilog2().unwrap_or(0) as usize + 4)
-                    + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
+                    + reports.entries.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
-                    + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
-                    + 8,
+                    + self.bodies.len().checked_ilog2().unwrap_or(0) as usize * 2
+                    + 10,
             )
         {
             return Err(budget());
         }
         let owner = call.function.checked_add(1).ok_or_else(invalid)?;
         let (body, _) = reports.entries.get(&owner).ok_or_else(invalid)?;
+        let (caller, _) = reports.entries.get(&call.owner).ok_or_else(invalid)?;
         let point = self.points.get(call.point).ok_or_else(invalid)?;
         if !call.valid_result()
             || call.site != site
@@ -53,6 +54,10 @@ impl Checker {
                 .bodies
                 .get(body)
                 .is_some_and(|body| body.owner == owner && body.parent.is_none())
+            || !self
+                .bodies
+                .get(caller)
+                .is_some_and(|body| body.owner == call.owner && body.parent.is_none())
             || call.edges.len() != call.args.len() + 1 + usize::from(call.may_return)
         {
             return Err(invalid());
