@@ -4793,10 +4793,10 @@ Dependency-ordered commit plan:
    under shared work/payload limits; all three identity/budget tests pass.
 3. Complete (`2871eaa9`): typed argument visits retain known/unknown descriptors in entry reports;
    four owner/opaque/shared/stopped-prefix tests pass.
-4. Complete: four raw traversal tests cover sharing/cycles, deep peak storage,
+4. Complete (`f7a67bf7`): four raw traversal tests cover sharing/cycles, deep peak storage,
    unknown rows, oversized maps and seven late identity faults.
-5. Cover independent observations and exact combined report/publication budgets,
-   preserving earlier reports and edges on failure.
+5. Complete: all nine source-forest tests pass, including independent observations,
+   unknown/empty/multiple histories and exact report/publication budgets.
 6. Update structural evidence and handoffs; run compiler, strict-pin, preservation and
    final documentation gates. Parameter values/origins, callee summaries, restart
    propagation, E225 and proof outcomes remain separate.
@@ -4809,10 +4809,14 @@ retain the prior validation path. No argument vectors or intermediate root list 
 copied. Formatting and all four focused report tests pass
 (`/tmp/meowy-argument-forest-reports.log`). No known failures remain. Next: cover
 independent observations, late identity faults and exact traversal budgets.
-Four raw traversal tests now compare known-source visits with the existing walker,
-cover mixed cycles/shared roots and unknown markers, exact work and 2048-node peak
-storage, oversized maps and seven late identity faults. Formatting and all four checks
-pass (`/tmp/meowy-argument-forest-walk-bounds.log`). No known failures remain.
+All four raw traversal and nine source-forest checks pass, including mixed cycles,
+shared sources, 2048-node exact peak storage, independent Call/argument/source flags,
+unknown/empty/multiple candidate histories, late faults and exact combined work/payload.
+Logs: `/tmp/meowy-argument-forest-walk-bounds.log` and
+`/tmp/meowy-argument-forest-report-bounds.log`. Unknown argument visits each charge
+one retained item in addition to graph qualification storage. Formatting passes and
+no known failures remain. Next: document evidence and run the full compiler gate.
+
 Unrelated `docs/programs/hey/` is preserved; baseline is `6602c45a`.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.

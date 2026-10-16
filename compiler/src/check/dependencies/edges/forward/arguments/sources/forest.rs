@@ -2,6 +2,8 @@ use super::{super::tests::context, *};
 use crate::check::dependencies::edges::forward::results::inputs::graph::Visit;
 use std::collections::BTreeSet;
 
+mod boundaries;
+
 #[test]
 pub(crate) fn argument_forest_retains_original_roots_and_descriptors_across_callers() {
     let (mut checker, reports) = context(
@@ -123,6 +125,49 @@ pub(crate) fn argument_forest_keeps_opaque_inputs_without_source_roots() {
         assert_eq!(
             (direct.source, direct.block, direct.dispatch),
             (None, None, None)
+        );
+    }
+}
+
+#[test]
+pub(crate) fn argument_forest_keeps_unknown_empty_and_multiple_candidate_histories() {
+    for (source, count) in [
+        ("f:(a<int32>){};f({->n:=1}.n)", None),
+        ("f:(a<null>){};r<{n<null>}>:{};f(r.n)", Some(0)),
+        (
+            "f:(a<int32>){};flag:=false;r:{|flag|->n:1;|!flag|->n:2};f(r.n)",
+            Some(2),
+        ),
+    ] {
+        let (_, reports) = context(source);
+        let visits = &reports.argument_walk.visits;
+        assert_eq!(
+            visits
+                .iter()
+                .filter(|visit| matches!(visit, Visit::Argument(..)))
+                .count(),
+            1
+        );
+        assert_eq!(
+            visits
+                .iter()
+                .filter(|visit| matches!(visit, Visit::Value(..)))
+                .count(),
+            count.unwrap_or(0)
+        );
+        assert_eq!(
+            visits
+                .iter()
+                .filter(|visit| matches!(visit, Visit::Unknown(_)))
+                .count(),
+            usize::from(count.is_none())
+        );
+        assert_eq!(
+            visits
+                .iter()
+                .filter(|visit| matches!(visit, Visit::Empty(_)))
+                .count(),
+            usize::from(count == Some(0))
         );
     }
 }
