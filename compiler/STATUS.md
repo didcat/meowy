@@ -4523,6 +4523,12 @@ Forward tests and all-target Clippy pass (`/tmp/meowy-signatures-calls.log`,
 expect the earlier signature-validation diagnostic; their B001/atomicity checks remain.
 Next: additional missing/foreign/oversized context and exact-work boundaries, then source
 conformance and final gates. No known failures remain.
+Call qualification is committed as `57e911eb`. All eleven signature-index tests pass
+(`/tmp/meowy-signatures-boundaries.log`). New boundaries cover missing/extra/reordered/
+foreign parameters, header/body/shape faults, absent registrations, overflow identities,
+oversized parameter vectors and valid-but-incompatible unobserved calls after Never.
+Exact context/call-validation work limits and shared payload charges preserve existing
+reports on failure. Next: source conformance, guide/evidence updates and final gates.
 
 Dependency-ordered commit plan:
 
