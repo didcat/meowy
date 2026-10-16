@@ -4613,7 +4613,14 @@ for the mixed/empty/recursive calls before the new iterator. Next: extract the e
 call validator unchanged, then add the borrowed association view.
 The validator now lives in `effects/calls/inputs.rs`; an exact-body comparison confirms
 unchanged logic and effective visibility. All 31 call-effect tests pass
-(`/tmp/meowy-call-parameters-move.log`). Next: add and consume the borrowed iterator;
+(`/tmp/meowy-call-parameters-move.log`). The qualifier now returns the borrowed call
+and exact parameter/argument iterator after charging `count + 1` work. Stage counts and
+retained-report comparisons use the view; no payload is retained. New regressions pin
+wrapped/reference roots and forward/empty functions. All 33 call-effect tests pass
+(`/tmp/meowy-call-parameters-inputs.log`). The characterization now charges 81/39/52
+work units for mixed/empty/recursive calls, exactly `argument count + 1` above baseline
+(`/tmp/meowy-call-parameters-work.log`). No new payload or known failures remain.
+Next: cover stale association metadata and exact work/payload boundaries;
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:

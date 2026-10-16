@@ -1,12 +1,21 @@
 use super::*;
 
+#[derive(Debug)]
+pub(in super::super) struct Inputs<'a> {
+    pub(super) call: &'a Invocation,
+    pub(super) pairs: std::iter::Zip<
+        std::iter::Copied<std::slice::Iter<'a, hir::LocalId>>,
+        std::iter::Copied<std::slice::Iter<'a, PointId>>,
+    >,
+}
+
 impl Checker {
-    pub(in super::super) fn checked_call_effect(
-        &mut self,
-        reports: &Reports,
+    pub(in super::super) fn checked_call_inputs<'a>(
+        &'a mut self,
+        reports: &'a Reports,
         site: hir::CallId,
         span: Span,
-    ) -> Result<&Invocation> {
+    ) -> Result<Inputs<'a>> {
         let budget = || Diagnostic::unsupported("proof call-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof call-effect identity mismatch", span);
         if !self.flow.spend(
@@ -82,6 +91,16 @@ impl Checker {
         if header.params.len() != count || header.shape != shape {
             return Err(invalid());
         }
-        Ok(self.invocations.get(&site).expect("validated call"))
+        if !self.flow.spend(count + 1) {
+            return Err(budget());
+        }
+        let call = self.invocations.get(&site).expect("validated call");
+        Ok(Inputs {
+            call,
+            pairs: header.params.iter().copied().zip(call.args.iter().copied()),
+        })
     }
 }
+
+#[cfg(test)]
+mod tests;

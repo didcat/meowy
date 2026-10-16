@@ -1,11 +1,15 @@
 use super::*;
 
-pub(super) fn matches(call: &Invocation, effect: &Effect) -> bool {
+pub(super) fn matches(
+    call: &Invocation,
+    effect: &Effect,
+    inputs: impl Iterator<Item = PointId>,
+) -> bool {
     matches!(effect, Effect::Call {
         site, function, args, shape, may_return, control, operation, result,
     } if *site == call.site
         && *function == call.function
-        && *args == call.args
+        && inputs.eq(args.iter().copied())
         && *shape == call.shape
         && *may_return == call.may_return
         && *control == call.control
@@ -26,8 +30,12 @@ impl Checker {
         let Effect::Call { site, .. } = effect else {
             return Err(invalid());
         };
-        let call = self.checked_call_effect(reports, *site, span)?;
-        if call.point != id || call.owner != owner || !matches(call, effect) {
+        let inputs = self.checked_call_inputs(reports, *site, span)?;
+        let call = inputs.call;
+        if call.point != id
+            || call.owner != owner
+            || !matches(call, effect, inputs.pairs.map(|(_, arg)| arg))
+        {
             return Err(invalid());
         }
         Ok(())
@@ -70,7 +78,7 @@ impl Checker {
             return Err(invalid());
         }
         let fresh = if let Some((owner, prior)) = effects.get(&stage.point) {
-            if *owner != stage.owner || !matches(call, prior) {
+            if *owner != stage.owner || !matches(call, prior, call.args.iter().copied()) {
                 return Err(invalid());
             }
             false

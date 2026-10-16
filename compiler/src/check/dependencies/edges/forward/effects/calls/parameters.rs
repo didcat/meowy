@@ -14,8 +14,9 @@ pub(crate) fn call_parameter_context_keeps_original_order_after_hir_transfer() {
     for site in sites {
         let start = checker.flow.work;
         let call = checker
-            .checked_call_effect(&reports, site, Span::default())
+            .checked_call_inputs(&reports, site, Span::default())
             .unwrap()
+            .call
             .clone();
         let function = program
             .functions
@@ -72,11 +73,16 @@ pub(crate) fn call_parameter_context_preserves_partial_reports_and_stopped_argum
             .contains(&Port::Entry(outer.args[1]))
     );
     let before = format!("{reports:?}{:?}", checker.edge_counts());
-    let call = checker
-        .checked_call_effect(&reports, outer.site, Span::default())
+    let inputs = checker
+        .checked_call_inputs(&reports, outer.site, Span::default())
         .unwrap();
+    let call = inputs.call;
     assert_eq!(call, &outer);
     assert_eq!(reports.signatures.functions[&call.function].params.len(), 2);
+    assert_eq!(
+        inputs.pairs.map(|(_, arg)| arg).collect::<Vec<_>>(),
+        outer.args
+    );
     assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
     for (operation, result) in [(true, false), (false, true), (true, true)] {
         let effect = Effect::Call {
@@ -103,7 +109,7 @@ pub(crate) fn call_parameter_context_preserves_partial_reports_and_stopped_argum
         .swap(0, 1);
     assert!(
         checker
-            .checked_call_effect(&reports, outer.site, Span::default())
+            .checked_call_inputs(&reports, outer.site, Span::default())
             .unwrap_err()
             .message
             .contains("function-signature identity")

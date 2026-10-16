@@ -57,7 +57,8 @@ impl Checker {
         let Some(&site) = calls.get(&id) else {
             return Ok(None);
         };
-        let call = self.checked_call_effect(reports, site, span)?;
+        let inputs = self.checked_call_inputs(reports, site, span)?;
+        let call = inputs.call;
         if call.point != id || call.owner != owner || (kind == Kind::Result && !call.may_return) {
             return Err(Diagnostic::unsupported(
                 "proof call-effect identity mismatch",
@@ -69,7 +70,7 @@ impl Checker {
             owner,
             site,
             function: call.function,
-            count: call.args.len(),
+            count: inputs.pairs.len(),
             shape: call.shape,
             may_return: call.may_return,
             control: call.control,

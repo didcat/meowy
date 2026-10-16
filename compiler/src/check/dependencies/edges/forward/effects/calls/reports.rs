@@ -171,7 +171,7 @@ pub(crate) fn call_effects_bound_shared_path_argument_storage_and_charge_copies_
         vec![call.args[0]; crate::check::dependencies::sequences::MAX_ITEMS + 1];
     assert!(
         checker
-            .checked_call_effect(&reports, site, Span::default())
+            .checked_call_inputs(&reports, site, Span::default())
             .unwrap_err()
             .message
             .contains("budget")
