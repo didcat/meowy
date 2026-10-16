@@ -136,6 +136,7 @@ impl Checker {
         reports.order = reports.condensed.analysis_order(&mut self.flow, span)?;
         (reports.arguments, reports.parts) =
             self.call_arguments(&reports, span, MAX_EDGES, reports.parts)?;
+        self.validate_call_arguments(&reports, span)?;
         Ok(reports)
     }
 }

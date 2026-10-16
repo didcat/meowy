@@ -5,6 +5,7 @@ use super::{
 use crate::hir;
 
 mod index;
+mod validation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct Argument {

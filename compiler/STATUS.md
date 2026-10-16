@@ -4711,7 +4711,12 @@ Baseline `dd7afdc0` has a clean tracked tree except the excluded `docs/programs/
 forms and independent callers, including missing field evidence
 (`/tmp/meowy-argument-sources-characterization.log`). Existing field/block/dispatch
 qualification works at argument roots; projected/changed-type/call/load/mutable/parameter
-inputs stay opaque. The test import is corrected. Retained-row validation is next.
+inputs stay opaque. Retained-row validation now reconstructs bounded call/port evidence
+and checks exact identities with conservative flag subsets. Missing rows/flags remain
+absent; forged observations and empty rows reject. Entry-report publication runs this
+check without reserving retained payload again. Three regressions cover omissions,
+twelve stale/invented cases and exact work. All 11 argument-module tests pass
+(`/tmp/meowy-argument-sources-validation.log`). Source-report integration is next.
 
 Dependency-ordered commit plan:
 
