@@ -45,27 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Direct-call reports now retain bounded shallow result shapes from checked signatures
-before outer coercion. Capture and report/graph validation preserve exact identities,
-return agreement, independent observations and atomic budget failures. Returning
-signatures remain distinct from panicking body completion. The
-[compiler handoff](compiler/STATUS.md#declared-call-result-shapes) records six
-implementation/evidence commits. Shapes provide no concrete values, callee summaries
-or proof outcomes.
+Entry reports now retain bounded function headers and reverse parameter positions.
+Calls are checked against their callee's arity, declared result shape and body identity,
+including partial/unobserved calls and unused functions. Parameter storage shares the
+existing payload allowance, with atomic identity/budget failures. The
+[compiler handoff](compiler/STATUS.md#bounded-function-signature-context) records six
+implementation/evidence commits. Values and borrow authority remain within their owners.
 
-All ten compiler checks pass: 3133 library, 923 native and 62 Python tests, formatting,
-Clippy, build, metadata and 491 required conformance cases. The same 19 pinned gaps
-remain, with zero debug/release failures (`/tmp/meowy-call-shapes-gate.log`). Four new
-required cases cover scalar/aggregate/reference results, record panic and outer-type E207.
-The audit preserves 580 protected files, all 506 prior case records, 19 pins, 37 hashes/
-prior evidence and eight user files from `9f6e3920`
-(`/tmp/meowy-call-shapes-preservation.log`). Strict mode exits 1 only for the exact pins
-(`/tmp/meowy-call-shapes-strict.log`, `/tmp/meowy-call-shapes-strict-audit.log`). All four
-final handoff checks pass (`/tmp/meowy-call-shapes-final-docs.log`).
+All ten compiler checks pass: 3147 library, 923 native and 62 Python tests, formatting,
+Clippy, build, metadata and 495 required conformance cases. The same 19 pinned gaps
+remain, with zero debug/release failures (`/tmp/meowy-signatures-gate.log`). Four new
+required cases cover typed export alias order, forward/nested functions, reference
+identity and required unused-argument E212. The audit preserves 584 protected files,
+all 510 prior case records, 19 pins, 37 hashes/prior evidence and eight user files from
+`0148e491` (`/tmp/meowy-signatures-preservation.log`). Strict mode exits 1 only for the
+exact pins (`/tmp/meowy-signatures-strict.log`, `/tmp/meowy-signatures-strict-audit.log`).
+All four final handoff checks pass (`/tmp/meowy-signatures-final-docs.log`).
 
-Next: bounded function-signature context for call qualification, preserving ownership
-and opaque call values. Full proof/release qualification remains incomplete. Unrelated
-`docs/programs/hey/` is preserved.
+Next: reuse retained parameter context in ordinary/shared initializer qualification.
+Full proof/release qualification remains incomplete. Unrelated `docs/programs/hey/`
+is preserved.
 
 ## Host toolchain
 

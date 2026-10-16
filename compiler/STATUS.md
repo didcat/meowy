@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Declared call-result shapes pass the compiler gate.
+Updated: 2026-10-16. Bounded function-signature context passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: follow the bounded function-signature context handoff below; call-result shapes are retained.
+Next: reuse retained parameter context in initializer qualification using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4488,81 +4488,71 @@ The preservation audit retains 580 protected files, all 506 prior case records, 
 (`/tmp/meowy-call-shapes-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Current: bounded function-signature context
+### Bounded function-signature context
 
-`entry_reports` receives the transferred Program, including FunctionId, ordered parameter
-LocalIds, checked result type and body identity. Reports currently retain the total local
-count and independent entry/body owners, while CallGraph nodes retain bodies and targets.
-The next prerequisite is to qualify the signature context needed to connect call sites
-to function parameters without selecting callee values or granting borrow authority.
-Work starts from `0148e491`; the tracked tree is clean and `docs/programs/hey/` is excluded.
-Investigation found the existing `initializer_parameters` validator, which already checks
-entry/body owners, local bounds and global parameter uniqueness. Reuse it when building
-ordered headers and a parameter-to-function/position index. Parameter IDs remain distinct
-from call argument PointIds. No type tree or callee value needs to be copied.
-All three characterization tests pass (`/tmp/meowy-signatures-characterization.log`):
-parameter order/unused IDs survive reordered HIR, forward recursion preserves owners,
-and supported typed export aliases require exact signatures. Local annotated identity
-aliases retain their existing B001 capability gate; it is not a language rejection pass.
-Next: retain bounded headers and reverse parameter positions, reusing entry qualification
-and reserving two payload records per parameter before collecting operation effects.
-Characterization is committed as `7869d674`. Entry reports now retain bounded function
-headers and reverse parameter positions, using the existing parameter validator. Header
-count/per-function inputs/total payload/work are checked before publication; two retained
-parameter records share the operation payload allowance. Empty/unused functions and
-panicking declared results are retained without consulting body completion. All 1079
-Forward tests and all-target Clippy pass (`/tmp/meowy-signatures-index.log`,
-`/tmp/meowy-signatures-index-clippy.log`). Only the HIR-transfer test fixture visibility
-was widened for reuse. Next: validate retained context and qualify call arity/shape/body.
-Header retention is committed as `080b6c5b`. Full retained-context validation now checks
-root/entry/body identity, shape bounds and reverse parameter positions before effect
-collection. Captured calls must match header arity/result shape; observed call reports
-and graphs revalidate their callee headers, including result-only reports. All 1082
-Forward tests and all-target Clippy pass (`/tmp/meowy-signatures-calls.log`,
-`/tmp/meowy-signatures-calls-clippy.log`). Three existing callee-corruption assertions now
-expect the earlier signature-validation diagnostic; their B001/atomicity checks remain.
-Next: additional missing/foreign/oversized context and exact-work boundaries, then source
-conformance and final gates. No known failures remain.
-Call qualification is committed as `57e911eb`. All eleven signature-index tests pass
-(`/tmp/meowy-signatures-boundaries.log`). New boundaries cover missing/extra/reordered/
-foreign parameters, header/body/shape faults, absent registrations, overflow identities,
-oversized parameter vectors and valid-but-incompatible unobserved calls after Never.
-Exact context/call-validation work limits and shared payload charges preserve existing
-reports on failure. Next: source conformance, guide/evidence updates and final gates.
-Boundary coverage is committed as `194275e0`. Four new required source cases and four
-existing forward/call-result/stop cases pass in debug/release
-(`/tmp/meowy-signatures-source.log`). They preserve typed export alias order, unused
-parameters, reversed forward definitions with nested functions, reference identity and
-required-argument E212. Build and all four catalog/tooling checks pass
-(`/tmp/meowy-signatures-build.log`, `/tmp/meowy-signatures-source-docs.log`). The catalog
-now has 514 cases. Next: guide/evidence updates and final compiler/strict checks.
-Source cases are committed as `4f677a17`. The guide and four owning evidence rows now
-describe bounded header/reverse-index retention and call qualification. All four docs/
-tooling checks pass (`/tmp/meowy-signatures-docs.log`). The preservation audit retains
-584 protected files, all 510 prior case records, 19 pins, 37 hashes/prior evidence and
-eight user files (`/tmp/meowy-signatures-preservation.log`). No contract or prior source
-expectation changed. Next: full compiler gate, strict pin audit and final handoff.
+Complete. Entry reports retain original FunctionId/body identity, ordered parameter
+LocalIds, shallow checked result shape and reverse function/position lookup. Construction
+reuses the existing parameter validator and preserves empty/unused/nested/recursive
+functions after transferred or reordered HIR. Supported typed export aliases require
+exact signatures. Annotated local identity bindings retain their existing B001 capability
+gate; that structural regression is not a successful language-conformance rejection.
+
+Header count, per-function parameter count, retained payload and shared work are bounded
+before publication. Ordered and reverse records charge two payload entries per parameter
+before operation effects; argument copies remain once per call. Retained validation checks
+root/entry/body identity, shape bounds, parameter registration, local bounds and exact
+reverse positions. Calls must match header arity/result shape, including unobserved calls
+after Never. Individual call reports and graphs revalidate callee headers, including
+result-only reports. Missing, foreign, stale or oversized metadata and exhausted budgets
+reject atomically. No values, origins or loan authority cross caller/callee ownership.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `7869d674` | Characterize parameter order, transferred HIR and alias compatibility |
+| `080b6c5b` | Retain bounded headers/reverse positions and reserve shared payload |
+| `57e911eb` | Validate retained context and qualify call arity/result/body identity |
+| `194275e0` | Cover missing/foreign/oversized identities and exact work/payload limits |
+| `4f677a17` | Add four required alias/forward/reference/unused-arity source cases |
+| `467e2d3c` | Document signature context and link structural coverage evidence |
+
+All ten compiler checks pass: 3147 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution (`/tmp/meowy-signatures-gate.log`).
+The 514-case catalog has 495 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-signatures-strict.log`, `/tmp/meowy-signatures-strict-audit.log`).
+All four final handoff checks pass (`/tmp/meowy-signatures-final-docs.log`).
+Eight focused source cases pass in both profiles (`/tmp/meowy-signatures-source.log`).
+Fourteen new structural tests cover context capture, call qualification and boundaries.
+No known failures remain.
+
+The preservation audit retains 584 protected files, all 510 prior case records, 19 pins,
+37 reference hashes/prior evidence and eight user files from `0148e491`
+(`/tmp/meowy-signatures-preservation.log`). No reference contract or prior expected
+outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+### Next: reuse retained parameter context in initializer qualification
+
+`initializers.rs::binding_initializers_limited` and `initializers/shared.rs::shared_initializers`
+still rebuild parameter sets through `initializer_parameters`. Signature construction
+also uses that validator, while Reports now retains validated reverse parameter lookup.
+Consolidate these consumers without widening local eligibility or crossing ownership.
 
 Dependency-ordered commit plan:
 
-1. Characterize `check/functions.rs`, `hir::Function`, `edges/forward/entries.rs` and
-   `entries/locals.rs`: exact parameter order/LocalIds, empty/unused/recursive/forward
-   functions, transferred/reordered HIR and typed aliases. Establish existing signature
-   agreement rules before enforcing comparisons with per-call result shapes.
-2. Reuse parameter qualification and retain only missing bounded function headers
-   keyed by original FunctionId/owner, with body, ordered parameters and shallow checked
-   result shape. Keep capture/indexing independently reviewable and charge header/parameter
-   storage and work before publication. Avoid cloned type trees.
-3. Reserve retained header/parameter storage in entry reports, keeping the signature
-   index and effect payload accounting independently reviewable where practical.
-4. Qualify call arity, callee entry and signature metadata against those headers while
-   preserving caller/callee ownership and independent operation/result observations.
-   Do not connect argument values or origins across owners, infer callee effects, or
-   specialize call-result domains from body contents.
-5. Cover missing/duplicate/foreign identities, parameter/shape mismatches, partial calls,
-   exact map/payload/work limits and unchanged source order. Update guide/evidence and
-   run compiler/strict/final docs gates. Call summaries, result-value provenance, restart
-   propagation, E225 enforcement and proof outcomes remain separate.
+1. Characterize old parameter collection versus retained-index membership across ordinary
+   and shared initializers, unused/nested/forward functions, reversed HIR and typed exports.
+   Pin exclusions for parameters, aliases, receivers, temporaries and mutable/reference
+   storage; cover stale Program/report identities and exact work/payload bounds.
+2. Consolidate authoritative entry/body/parameter validation in the signature path using
+   existing checks. Keep validation refactoring separate from consumer changes where
+   practical; retain a checked relationship to the source HIR when a consumer needs it.
+3. Reuse retained parameter membership in ordinary and shared initializer qualification.
+   Remove duplicate collection only after all callers and boundary tests are migrated.
+   Preserve initializer maps, missing-source behavior, Unknown histories, failure atomicity
+   and the existing two-record parameter reservation. Record actual work-charge changes.
+4. Update guide/evidence paths if helpers move, preserve required source expectations and
+   run compiler/strict/final docs gates. Argument-value transfer, callee summaries,
+   call-result provenance, restart propagation, E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6172,9 +6162,10 @@ receiver inputs through immutable local records, including composed-emission sou
 Coercion- and binary-owned primaries now qualify these receiver inputs too. Owned scalar
 fields, composed emissions and coercion/binary-owned primaries also qualify immutable
 copies of shared-reference receiver records. Counted binary lookup is consolidated.
-Independent direct-call observations, argument-source ownership and declared result
-shapes are qualified. Next retain bounded function-signature context using the ordered
-plan above. Value selection and broader aggregate provenance remain separate.
+Direct-call observations, argument-source ownership, declared result shapes and bounded
+function-signature context are qualified. Next reuse retained parameter context in
+initializer qualification using the ordered handoff. Value selection and broader
+aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6845,8 +6836,9 @@ plan above. Value selection and broader aggregate provenance remain separate.
    reports (`876262fa`), test scopes (`86097270`), links (`284eb11f`), boundaries
    (`052a1e1b`), limits (`111b65ad`) and source cases (`f622cdd3`) pass the compiler gate.
    Shared-reference receiver local inputs and immutable copies are qualified above.
-   Counted binary lookup, direct-call observations, argument-source ownership and declared
-   result shapes are qualified. Next retain bounded function-signature context using the handoff.
+   Counted binary lookup, direct-call observations, argument-source ownership, declared
+   result shapes and function-signature context are qualified. Next consolidate initializer
+   parameter qualification around retained context using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
