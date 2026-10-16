@@ -1,7 +1,6 @@
 use super::{effects::Effect, entries::Reports, *};
 use crate::hir;
 
-mod parameters;
 pub(super) mod shared;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

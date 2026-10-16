@@ -4551,8 +4551,12 @@ typed exports and shared parameter/special-cell exclusions
 (`/tmp/meowy-parameter-context-characterization.log`). Existing synthetic parameter
 exclusion now refreshes its signature context before consumption. Recorded work charges
 will be compared after consolidation; initializer maps and payloads are unchanged.
-Next: move parameter validation into signatures and enforce construction identities
-without rebuilding parameter scratch. `docs/programs/hey/` remains excluded.
+Parameter validation and its three boundary tests now live under `signatures/parameters`;
+the helper's behavior, diagnostics and charges are unchanged. Guide/evidence paths move
+with it. All three parameter tests and four documentation checks pass
+(`/tmp/meowy-parameter-context-move.log`, `/tmp/meowy-parameter-context-move-docs.log`).
+Next: enforce construction identities without rebuilding parameter scratch.
+`docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 

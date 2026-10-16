@@ -11,6 +11,7 @@ use crate::{
     hir,
 };
 
+mod parameters;
 mod validation;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]

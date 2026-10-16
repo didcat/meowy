@@ -1161,8 +1161,8 @@ Entry reports now index qualified ordinary initializers by LocalId, retaining on
 statement, owner and optional outer input root. Eligible immutable locals must be
 their own canonical storage and have no alias, parameter, receiver or temporary-cell
 classification. Every Storage header is qualified before filtering, preserving
-validation even for excluded Binds and writes. Function parameters are collected
-from the borrowed Program with bounded scratch/work; FunctionIds and entry-body
+validation even for excluded Binds and writes. The signature module collects function
+parameters from the borrowed Program with bounded scratch/work; FunctionIds and entry-body
 identities preserve ownership when the function table is reordered.
 
 A second statement for one admitted LocalId is a conflict, even if its owner/input
@@ -1800,7 +1800,7 @@ unused, nested and recursive functions remain present; HIR vector order does not
 owners. Supported typed export aliases keep exact signatures. Local annotated identity
 bindings retain their existing B001 capability gate.
 
-The existing initializer parameter validator qualifies entry/body identities, local
+The signature module's parameter validator qualifies entry/body identities, local
 bounds and global uniqueness before headers are copied. Header count is capped at
 65,535 and each parameter list at 65,536. Ordered entries and reverse-index records
 charge two retained payload records per parameter against the shared 262,144 allowance
