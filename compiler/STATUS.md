@@ -4398,8 +4398,14 @@ observations. No new capture or reference-contract change is needed.
 All 1043 Forward tests and all-target Clippy pass (`/tmp/meowy-call-stages-aggregation.log`,
 `/tmp/meowy-call-stages-aggregation-clippy.log`); the additional call-graph operation-only,
 result-only and empty-report regression passes (`/tmp/meowy-call-stages-graph.log`).
-Next: identity/budget boundary tests, source conformance evidence, then final gates.
-The characterization/refactor logs retain their corresponding focused checks.
+Aggregation/graph integration is committed as `b520fe00`. All 15 focused call-effect
+tests pass (`/tmp/meowy-call-stages-boundaries.log`), including result-stage callee,
+argument, block and return-edge faults; conflicting partial headers; changed stages;
+and original site/span/operation registration during graph validation. Failures retain
+the original maps, argument allowance and graph metadata. No failures remain.
+Next: exact payload/map/work boundaries, source evidence, then final gates.
+The preservation baseline records 574 protected files, 500 cases, 37 document rows and
+eight unrelated user files (`/tmp/meowy-call-stages-baseline.json`).
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly

@@ -197,3 +197,6 @@ mod reports;
 
 #[cfg(test)]
 mod observations;
+
+#[cfg(test)]
+mod boundaries;
