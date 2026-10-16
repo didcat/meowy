@@ -4751,10 +4751,10 @@ Dependency-ordered commit plan:
    unknowns, sparse observations, distinct caller owners and absent call effects.
 2. Complete (`cb6c0427`): borrowed view checks exact keys/owners/points/descriptors and rejects
    stale maps atomically, with one shared Lookup cache. Entry publication uses the view.
-3. Complete: producer faults, shared cache reuse and exact map/payload/work limits
+3. Complete (`ffcecee0`): producer faults, shared cache reuse and exact map/payload/work limits
    pass, including no repeated source-row reservation and oversized-map rejection.
-4. Characterize candidate/direct forest entry from qualified argument source slots,
-   preserving caller identity, unknown histories and independent observations.
+4. Complete: three forest-entry characterization tests preserve caller roots,
+   shared candidates, unknown histories and stopped prefixes.
 5. Document structural evidence, run the compiler gate, audit strict pins and preserved
    fixtures, and leave the next traversal integration step. No parameter values/origins,
    callee summaries, restart propagation, E225 or proof outcomes are added.
@@ -4772,7 +4772,12 @@ field/block/dispatch faults reject atomically. Missing producer evidence require
 unknown descriptor at the same key. Shared field cache storage is charged once per
 qualifier; borrowed source rows add no payload charge. Exact work/payload thresholds
 and oversized maps reject without mutating reports or edges. No known failures remain.
-Next: characterize existing forest entry from qualified argument slots.
+Three forest-entry characterization tests now exercise qualified argument slots
+through the existing walker, including repeated sources, two caller owners, unknown
+mutable histories and stopped prefixes. A scalar-block argument descriptor alone
+does not qualify candidate/direct maps; traversal must validate those separately.
+All three focused tests pass (`/tmp/meowy-argument-view-forest.log`).
+Next: commit the characterization, document evidence and run final gates.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

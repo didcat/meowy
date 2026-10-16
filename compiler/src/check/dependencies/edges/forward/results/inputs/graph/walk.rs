@@ -278,3 +278,6 @@ mod dispatch;
 
 #[cfg(test)]
 mod dispatch_limits;
+
+#[cfg(test)]
+mod arguments;
