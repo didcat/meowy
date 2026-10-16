@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Retained initializer parameter context passes the compiler gate.
+Updated: 2026-10-16. Borrowed call-parameter associations pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: qualify bounded call-argument/parameter associations using the handoff below.
+Next: qualify individual call-argument observations using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4592,64 +4592,79 @@ characterizations retain identical initializer maps and payloads
 
 ### Bounded call-argument and parameter associations
 
-`effects/calls.rs` validates original caller argument roots against retained callee
-arity/result shape. `signatures` retains ordered parameter LocalIds and exact reverse
-positions. Qualify their positional association without transferring values or origins.
+Complete. `effects/calls/inputs.rs::checked_call_inputs` validates the captured call and
+retained callee header before returning a borrowed Invocation and iterator of exact
+`(parameter LocalId, caller PointId)` pairs. Arity, reverse positions, registered
+bindings, body identity, caller ownership, argument parents/blocks and original edges
+remain checked. Call-stage counts and retained-report argument comparison consume the
+view. It adds no retained payload or argument vector, and charges `argument count + 1`
+shared work units before exposure.
 
-Investigation: `checked_call_effect` already validates the captured call and target
-signature. Extract that qualification unchanged, then return the borrowed Invocation
-with a bounded iterator over `(parameter LocalId, caller PointId)`. Call-stage counts
-and retained-report argument comparison will consume this view. Keep invocation/report
-argument copies, original outer roots, independent observations and owner boundaries.
-No new retained report payload is needed.
+Zero/unused/mixed/reference parameters, receiver-first typed exports, recursion, forward
+definitions and reordered HIR retain their identities. Grouped/coerced arguments keep
+their original outer roots. Associations are structural: unobserved/stopped arguments
+remain associated without gaining observations, and result-only reports create no
+operation visit. Stale/oversized metadata and exact late budget exhaustion reject
+atomically. Parameter values, initializer eligibility, source histories, callee summaries,
+loan authority, call-result provenance and proof outcomes remain unchanged.
 
-Baseline `8cbcd8d5` has a clean tracked tree. The snapshot at
-`/tmp/meowy-call-parameters-baseline.json` preserves 588 protected files, 514 cases,
-37 reference rows and eight user files. Both new characterizations pass after fixing
-a test-only borrow conflict (`/tmp/meowy-call-parameters-characterization.log`). They
-pin receiver-first typed exports, unused/mixed/empty parameters, recursion, reversed
-HIR, stopped inputs and partial reports. Qualification charges 77/38/50 work units
-for the mixed/empty/recursive calls before the new iterator. Next: extract the existing
-call validator unchanged, then add the borrowed association view.
-The validator now lives in `effects/calls/inputs.rs`; an exact-body comparison confirms
-unchanged logic and effective visibility. All 31 call-effect tests pass
-(`/tmp/meowy-call-parameters-move.log`). The qualifier now returns the borrowed call
-and exact parameter/argument iterator after charging `count + 1` work. Stage counts and
-retained-report comparisons use the view; no payload is retained. New regressions pin
-wrapped/reference roots and forward/empty functions. All 33 call-effect tests pass
-(`/tmp/meowy-call-parameters-inputs.log`). The characterization now charges 81/39/52
-work units for mixed/empty/recursive calls, exactly `argument count + 1` above baseline
-(`/tmp/meowy-call-parameters-work.log`). No new payload or known failures remain.
-Four boundary regressions now cover eighteen stale identity scenarios, coherent arity
-mismatches, oversized captured/header vectors before exposure, exact late work exhaustion,
-unchanged parameter/argument payload and shorter/longer result-only reports. All 37
-call-effect tests pass (`/tmp/meowy-call-parameters-boundaries.log`). The dedicated
-budget fixture isolates parameter/call payload while retaining complete report snapshots;
-existing emission and downstream index charges are preserved. No known failures remain.
-The foundation guide now documents the borrowed association, original outer roots,
-independent observations and explicit work charge. Three owning reference rows gain
-structural links for characterization, qualifier behavior and boundary tests. Existing
-typed-export/forward/reference/stopped-call cases remain the source-execution evidence;
-no language contract, source expectation, capability pin or proof obligation changes.
-All four documentation checks pass (`/tmp/meowy-call-parameters-docs.log`).
-Compiler/strict/preservation gates are next;
-`docs/programs/hey/` remains excluded.
+| Commit | Reviewable slice |
+| --- | --- |
+| `1e745c38` | Characterize positional identity, transferred HIR and partial observations |
+| `bc4c1585` | Extract the existing call validator with unchanged logic and visibility |
+| `bfbb81db` | Return borrowed associations and integrate stage/report consumers |
+| `1166f1e2` | Cover stale identities, arity, oversized vectors and exact work/payload bounds |
+| `0d74f587` | Document the qualifier and link structural coverage evidence |
+
+All ten compiler checks pass: 3161 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-parameters-gate.log`).
+The unchanged 514-case catalog has 495 required passes, 19 unchanged pinned gaps and
+zero failures in debug/release. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-call-parameters-strict.log`, `/tmp/meowy-call-parameters-strict-audit.log`).
+All four guide/evidence and final handoff checks pass
+(`/tmp/meowy-call-parameters-docs.log`, `/tmp/meowy-call-parameters-final-docs.log`).
+Eight new structural regressions and all 37 call-effect tests pass,
+including eighteen stale identity scenarios and shorter/longer result-only reports
+(`/tmp/meowy-call-parameters-boundaries.log`). No known failures remain.
+
+The preservation audit retains all 588 protected files, 514 case records, 19 pins,
+37 reference hashes/gaps/prior evidence and eight user files from `8cbcd8d5`
+(`/tmp/meowy-call-parameters-preservation.log`). Three owning reference rows add
+characterization/qualifier/boundary evidence. Existing typed-export, forward, reference
+and stopped-call cases remain the execution evidence; no contract or expected outcome
+changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+Qualification adds exactly `argument count + 1` logical work units. Characterizations
+retain reports, edges and payloads (`/tmp/meowy-call-parameters-characterization.log`,
+`/tmp/meowy-call-parameters-work.log`). These are logical charges, not runtime timings.
+
+| Call | Arguments | Work before/after |
+| --- | --- | --- |
+| Mixed typed export | 3 | 77 / 81 |
+| Empty function | 0 | 38 / 39 |
+| Recursive function | 1 | 50 / 52 |
+
+### Next: qualify individual call-argument observations
+
+The borrowed associations identify all checked arguments, including unobserved suffixes.
+Before using any argument evidence, qualify its exact Entry/Normal observations in the
+caller's entry walk independently of call Operation/Result observations.
 
 Dependency-ordered commit plan:
 
-1. Characterize associations across zero/unused/mixed parameters, receiver-first calls,
-   typed exports, recursion, reversed HIR and partial/result-only observations. Reuse
-   `effects/calls` and signature fixtures; pin original outer argument roots, separate
-   caller/callee owners and missing/stopped input behavior before adding a qualifier.
-2. Extract `checked_call_effect` into `effects/calls/inputs.rs` with unchanged behavior,
-   diagnostics and work. Validate and commit that preparation separately.
-3. Return a borrowed call/association iterator from the qualifier; use its length for
-   call stages and its original roots for report comparison. Charge traversal work
-   before exposure, retain per-call bounds and avoid another argument copy.
-4. Cover stale position/owner/header identities, exact budgets and failure atomicity;
-   preserve required source expectations, update guide/evidence and run compiler,
-   strict-pin and final documentation gates. Argument-value transfer, callee summaries,
-   call-result provenance, restart propagation, E225 and proof outcomes remain separate.
+1. Characterize caller argument ports in `effects/calls` and `entries` across receiver-first
+   calls, wrappers, zero/unused parameters, stopped first/middle inputs and partial/result-only
+   call reports. Pin original roots, independent caller/callee owners and absent observations.
+   A returning signature with a panicking body must retain structural observation semantics.
+2. Reuse the existing call qualifier and walk/port representations for bounded observation
+   lookup. Avoid scanning a whole owner walk once per parameter; decide whether a bounded
+   per-owner lookup is needed from the characterization. Separate lookup preparation from
+   report consumption and charge its work/storage before publication.
+3. Cover conflicting owner/root/port identities, duplicate/missing observations, exact
+   budgets and failure atomicity. Preserve required source expectations, update guide/evidence,
+   and run compiler, strict-pin and final documentation gates. No argument-value or origin
+   transfer, parameter initializer links, callee summaries, restart propagation, E225 or
+   proof outcomes are admitted by observation metadata.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6261,8 +6276,9 @@ fields, composed emissions and coercion/binary-owned primaries also qualify immu
 copies of shared-reference receiver records. Counted binary lookup is consolidated.
 Direct-call observations, argument-source ownership, declared result shapes and bounded
 function-signature context are qualified. Initializer qualification reuses validated
-retained parameter membership. Next qualify bounded call-argument/parameter associations
-using the ordered handoff. Value selection and broader aggregate provenance remain separate.
+retained parameter membership. Bounded call-argument/parameter associations are qualified.
+Next qualify individual argument observations using the ordered handoff. Value selection
+and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6934,8 +6950,9 @@ using the ordered handoff. Value selection and broader aggregate provenance rema
    (`052a1e1b`), limits (`111b65ad`) and source cases (`f622cdd3`) pass the compiler gate.
    Shared-reference receiver local inputs and immutable copies are qualified above.
    Counted binary lookup, direct-call observations, argument-source ownership, declared
-   result shapes and function-signature context are qualified. Next consolidate initializer
-   parameter qualification around retained context using the current handoff.
+   result shapes, function-signature context, initializer parameter reuse and borrowed
+   call-parameter associations are qualified. Next qualify individual argument observations
+   using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

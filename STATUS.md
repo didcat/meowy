@@ -45,27 +45,25 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Ordinary and shared initializer qualification now reuse retained parameter membership.
-Signature construction no longer builds temporary parameter sets; consumers validate
-source/header identities and reverse positions before borrowing the retained map.
-Eligibility, initializer/source maps, ownership boundaries and the existing two-record
-parameter reservation are preserved. The
-[compiler handoff](compiler/STATUS.md#retained-parameter-context-in-initializer-qualification)
-records six implementation/evidence commits and actual logical work-charge changes.
+Call qualification now exposes borrowed associations between callee parameters and
+original caller argument roots. Stage counts and report comparison use the validated
+view, preserving identities, independent observations and owner boundaries. It adds no
+retained argument vector; bounded traversal charges `argument count + 1` work units.
+The [compiler handoff](compiler/STATUS.md#bounded-call-argument-and-parameter-associations)
+records five implementation/evidence commits and measured logical charges.
 
-All ten compiler checks pass: 3153 library, 923 native and 62 Python tests, formatting,
+All ten compiler checks pass: 3161 library, 923 native and 62 Python tests, formatting,
 Clippy, build, metadata and 495 required conformance cases. The same 19 pinned gaps
-remain, with zero debug/release failures (`/tmp/meowy-parameter-context-gate.log`).
-The audit preserves all 588 protected files, 514 case records, 37 reference hashes/gaps
-and eight user files from `d6c52f59`; prior evidence follows the reviewed parameter-test
-move (`/tmp/meowy-parameter-context-preservation.log`). Strict mode exits 1 only for the
-exact pins (`/tmp/meowy-parameter-context-strict.log`,
-`/tmp/meowy-parameter-context-strict-audit.log`). All four final handoff checks pass
-(`/tmp/meowy-parameter-context-final-docs.log`).
+remain, with zero debug/release failures (`/tmp/meowy-call-parameters-gate.log`).
+The audit preserves all 588 protected files, 514 case records, 37 reference hashes/gaps/
+prior evidence and eight user files from `8cbcd8d5`
+(`/tmp/meowy-call-parameters-preservation.log`). Strict mode exits 1 only for the exact
+pins (`/tmp/meowy-call-parameters-strict.log`, `/tmp/meowy-call-parameters-strict-audit.log`).
+All four final handoff checks pass (`/tmp/meowy-call-parameters-final-docs.log`).
 
-In progress: qualify bounded call-argument/parameter associations through a borrowed
-view used by call-stage and report validation. Full proof/release
-qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved.
+Next: qualify individual call-argument observations before using argument evidence.
+Full proof/release qualification remains incomplete. Unrelated `docs/programs/hey/`
+is preserved.
 
 ## Host toolchain
 
