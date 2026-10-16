@@ -3,7 +3,7 @@ use super::{
     *,
 };
 
-pub(self) fn arguments(targets: &[Option<usize>]) -> Arguments {
+pub(super) fn arguments(targets: &[Option<usize>]) -> Arguments {
     targets
         .iter()
         .enumerate()
