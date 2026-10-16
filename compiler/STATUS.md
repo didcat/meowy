@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Argument-source forest integration is in progress.
+Updated: 2026-10-16. Argument-source forests pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: retain argument source forests using the handoff below.
+Next: qualify per-call argument forest access using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4750,7 +4750,7 @@ argument source slots, including repeated sources, independent owners, unknown m
 histories and stopped calls. Argument PointIds and candidate `(block, slot, position)`
 keys stay distinct. A scalar-block descriptor can remain valid while its candidate/direct
 map is stale: future traversal must also qualify those graphs before exposing visits.
-No retained argument forest or parameter values/origins are introduced.
+The view transfers no parameter values/origins; retained forest integration is below.
 
 | Commit | Reviewable slice |
 | --- | --- |
@@ -4778,46 +4778,74 @@ All four documentation/evidence checks pass (`/tmp/meowy-argument-view-docs.log`
 No known failures remain. Unrelated `docs/programs/hey/` is untouched and excluded.
 Nothing was pushed or published.
 
-### Next: retain argument source forests
+### Retained argument source forests
 
-Investigation: the existing walker owns shared/cycle state across roots, but its
-single-root expansion is embedded in `walk_sources`. Extract that operation unchanged
-before adding argument starts. Argument sources use PointId keys; candidate/direct
-maps keep `(block, slot, position)` keys. Preserve both identities and explicit unknowns.
+Complete. `Reports.argument_walk` retains
+`Visit::Argument(owner, Direct)` for every normally observed argument, preserving its
+original PointId and known/unknown descriptor. Known field/block/dispatch slots reuse
+the existing iterative walker with one shared/cycle state across arguments. Repeated
+sources do not merge argument identities. Unknown, empty and multiple histories remain
+distinct; no value or runtime completion is inferred from visits or inventory order.
+
+`argument_graph` validates the source view and expanded candidate/direct graph with
+shared work/payload limits. Empty source maps keep argument-row validation. Traversal
+copies no argument vectors or intermediate roots, and charges visits, seen roots and
+pending-frame peak storage. Each unknown argument reserves a visit, in addition to
+qualification cache costs. Late identity/owner failures and exhausted budgets publish
+no partial report or changes to earlier reports/edges. Call, argument and source flags
+remain independent, including stopped prefixes and conservative omitted observations.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `482f0b69` | Extract single-root traversal without changing visits or accounting |
+| `b05b2f4b` | Qualify combined borrowed argument and candidate/direct graphs |
+| `2871eaa9` | Retain original argument visits and their source forests |
+| `f7a67bf7` | Bound sharing, cycles, deep storage and late traversal faults |
+| `532809d1` | Validate independent observations and atomic report budgets |
+| `3b80c8ae` | Use explicit module visibility for the test helper |
+
+All 31 existing graph/walk tests pass after extraction. Three combined-view, four raw
+traversal and nine source-forest tests pass, including 2048-node exact peak storage and
+exact work/payload boundaries. Logs: `/tmp/meowy-argument-forest-extraction.log`,
+`/tmp/meowy-argument-forest-graph.log`, `/tmp/meowy-argument-forest-walk-bounds.log`,
+`/tmp/meowy-argument-forest-report-bounds.log`. Sixteen new tests are structural evidence.
+No reference contract, source expectation, capability pin or proof-obligation record
+changes. Four structural paths are added to the existing proof/types/values rows;
+reviewed gaps still apply. Preservation audit passes for all 597 protected files,
+514 cases, 19 pins and prior reference evidence (`/tmp/meowy-argument-forest-preservation.log`).
+All-target Clippy and all four traversal tests pass after using explicit module
+visibility for the test helper (`/tmp/meowy-argument-forest-lint.log`,
+`/tmp/meowy-argument-forest-lint-tests.log`). All ten compiler checks pass: formatting,
+Clippy, 3215 library, 923 native and 62 Python tests, build, metadata and source execution
+(`/tmp/meowy-argument-forest-gate.log`). The 514-case catalog has 495 required passes,
+19 unchanged gaps and zero debug/release failures. Strict mode exits 1 only for the
+exact pinned names/reasons (`/tmp/meowy-argument-forest-strict.log`,
+`/tmp/meowy-argument-forest-strict-audit.log`). No known failures remain.
+All four documentation/evidence checks pass (`/tmp/meowy-argument-forest-docs.log`).
+Unrelated `docs/programs/hey/` remains untouched and excluded. Nothing was pushed
+or published.
+
+### Next: qualify per-call argument forest access
+
+The forest retains caller-side source history. Before call analysis consumes it, expose
+bounded per-call associations without selecting parameter values or transferring origins.
+Reuse `effects/calls/inputs.rs::checked_call_inputs`, `Reports.arguments` and the retained
+forest; a `Shared` visit can refer to history under an earlier argument and is not an
+independent closed subtree.
 
 Dependency-ordered commit plan:
 
-1. Complete (`482f0b69`): single-root expansion and shared state construction/finalization are
-   extracted unchanged; all 31 existing graph/walk tests pass.
-2. Complete (`b05b2f4b`): the borrowed argument-graph entry validates both source and direct graphs
-   under shared work/payload limits; all three identity/budget tests pass.
-3. Complete (`2871eaa9`): typed argument visits retain known/unknown descriptors in entry reports;
-   four owner/opaque/shared/stopped-prefix tests pass.
-4. Complete (`f7a67bf7`): four raw traversal tests cover sharing/cycles, deep peak storage,
-   unknown rows, oversized maps and seven late identity faults.
-5. Complete: all nine source-forest tests pass, including independent observations,
-   unknown/empty/multiple histories and exact report/publication budgets.
-6. Update structural evidence and handoffs; run compiler, strict-pin, preservation and
-   final documentation gates. Parameter values/origins, callee summaries, restart
-   propagation, E225 and proof outcomes remain separate.
-
-`Visit::Argument(owner, Direct)` now retains each original argument point and source
-kind, including explicit unknowns. Known slots reuse single-root expansion with one
-shared/cycle state across arguments. `Reports.argument_walk` is published only after
-source and candidate/direct qualification plus bounded traversal; empty source maps
-retain the prior validation path. No argument vectors or intermediate root list are
-copied. Formatting and all four focused report tests pass
-(`/tmp/meowy-argument-forest-reports.log`). No known failures remain. Next: cover
-independent observations, late identity faults and exact traversal budgets.
-All four raw traversal and nine source-forest checks pass, including mixed cycles,
-shared sources, 2048-node exact peak storage, independent Call/argument/source flags,
-unknown/empty/multiple candidate histories, late faults and exact combined work/payload.
-Logs: `/tmp/meowy-argument-forest-walk-bounds.log` and
-`/tmp/meowy-argument-forest-report-bounds.log`. Unknown argument visits each charge
-one retained item in addition to graph qualification storage. Formatting passes and
-no known failures remain. Next: document evidence and run the full compiler gate.
-
-Unrelated `docs/programs/hey/` is preserved; baseline is `6602c45a`.
+1. Characterize per-call association of parameter LocalIds, original argument PointIds
+   and forest markers, including absent/Entry-only rows, explicit unknowns, duplicate
+   source slots, distinct callers and stopped calls. Keep parameter and caller owners
+   separate and never interpret PointId order as runtime evaluation.
+2. Qualify retained forest membership under bounded work/storage before returning a
+   borrowed per-call view. Reject stale, missing, extra or cross-owner argument markers
+   and source visits atomically; preserve shared/cycle references without copying
+   argument vectors or treating a partial subtree as a complete source history.
+3. Cover exact map/work/payload limits and independent observations, update structural
+   evidence, and run compiler, strict-pin and final documentation gates. Callee values,
+   origins and summaries, restart propagation, E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6431,8 +6459,8 @@ Direct-call observations, argument-source ownership, declared result shapes and 
 function-signature context are qualified. Initializer qualification reuses validated
 retained parameter membership. Bounded call-argument/parameter associations and individual
 argument observations are qualified, including caller-side direct sources for normally
-observed arguments. Retained source views are qualified. Next retain argument source
-forests using the ordered handoff.
+observed arguments. Retained source views and argument forests are qualified. Next
+qualify per-call forest access using the ordered handoff.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7108,7 +7136,7 @@ Value selection and broader aggregate provenance remain separate.
    result shapes, function-signature context, initializer parameter reuse and borrowed
    call-parameter associations and individual argument observations are qualified. Reports
    retain caller-side sources for normally observed arguments, and stored source views
-   are qualified. Retain argument source forests next, using the current handoff.
+   and their forests are qualified. Qualify per-call access next, using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

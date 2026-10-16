@@ -45,27 +45,28 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Stored call-argument sources now have a bounded borrowed view that revalidates exact
-Normal-row keys, caller owners, original points and field/block/dispatch descriptors.
-Missing or stale entries reject atomically; unknown inputs remain explicit. One shared
-cache charges work/storage without copying argument vectors or reserving source rows
-again. Entry reports qualify the view before publication. The
-[compiler handoff](compiler/STATUS.md#qualified-retained-argument-source-views) records
-the reviewable commits and next integration step.
+Entry reports now retain caller argument-source forests after validating both source
+and candidate/direct graphs. Each argument keeps its original PointId and known/unknown
+descriptor. Shared and cyclic source histories reuse the existing walker without merging
+argument identities or selecting values. Qualification caches, visits and pending frames
+share bounded budgets, and failures publish no partial report. The
+[compiler handoff](compiler/STATUS.md#retained-argument-source-forests) records the commits
+and next per-call access step.
 
-Fourteen new structural tests cover sparse/stopped observations, stale producer metadata,
-shared caches, exact work/payload limits and entry into existing candidate/direct forests.
-All ten compiler checks pass: 3199 library, 923 native, 62 Python and 495 required
-conformance tests, with 19 unchanged gaps and no debug/release failures
-(`/tmp/meowy-argument-view-gate.log`). Strict mode exits 1 only for the exact 19
-pinned names/reasons (`/tmp/meowy-argument-view-strict-audit.log`).
-The preservation audit retains all 597 protected files, including eight user files,
-514 case records, 37 reference hashes/gaps/prior evidence and proof obligations
-(`/tmp/meowy-argument-view-preservation.log`). All four documentation/evidence checks
-pass (`/tmp/meowy-argument-view-docs.log`). Nothing was pushed or published.
+Sixteen new structural tests cover borrowed identity, sparse/stopped observations,
+unknown/empty/multiple histories, cycles/sharing, stale metadata and exact work/peak
+storage limits. All ten compiler checks pass: 3215 library, 923 native, 62 Python and
+495 required conformance tests, with 19 unchanged gaps and no debug/release failures
+(`/tmp/meowy-argument-forest-gate.log`). Preservation audit passes for all 597 protected
+files, including eight user files, the 514-case catalog, 19 capability pins, all 37
+reference hashes/gaps/prior evidence and proof obligations
+(`/tmp/meowy-argument-forest-preservation.log`). Strict mode exits 1 only for the exact
+19 pinned names/reasons (`/tmp/meowy-argument-forest-strict-audit.log`). All four
+documentation/evidence checks pass (`/tmp/meowy-argument-forest-docs.log`). Nothing
+was pushed or published.
 
-Next: retain argument source forests while preserving argument identity and caller
-ownership. Parameter values/origins, callee summaries and proof/release qualification
+Next: qualify per-call access to retained argument forests while preserving caller and
+parameter ownership. Callee values/origins/summaries and full proof/release qualification
 remain incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

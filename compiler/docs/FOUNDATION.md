@@ -1889,13 +1889,28 @@ row payload. Entry reports validate the view before returning, charging scratch 
 storage against remaining shared parts. Oversized maps reject before reconstruction;
 exact work/payload exhaustion leaves reports and edges unchanged.
 
-Forest-entry characterization confirms that qualified field/block/dispatch slots can
-use the existing candidate/direct walker with caller owners, repeated sources, unknown
-histories and stopped prefixes intact. Argument roots retain their PointId keys; forest
-candidates keep their `(block, slot, position)` keys. Source-view qualification alone
-does not validate candidate/direct maps, so traversal must also qualify those graphs.
-A retained argument forest and argument-identity visits remain a separate integration
-step. These checks are structural evidence; source behavior and proof coverage are unchanged.
+Entry reports now retain a separate argument source forest. Nonempty source maps first
+qualify both the argument-source view and the expanded candidate/direct graph under one
+remaining work/payload budget. Empty source maps still validate argument-row agreement;
+a missing map cannot hide normally observed arguments. No argument vectors or intermediate
+root list are copied.
+
+Each `Visit::Argument(owner, Direct)` retains its original argument PointId and descriptor,
+including explicit unknowns. Known field/block/dispatch slots enter the existing iterative
+walker. One shared/cycle state spans all arguments, so repeated source slots share their
+history without merging argument identities. Unknown, empty and multiple candidate
+histories stay distinct; no candidate value is selected. Candidate keys remain
+`(block, slot, position)`, separate from argument PointIds. Deterministic map iteration
+is structural inventory order, not an execution-order or runtime-completion claim.
+
+Argument visits, source visits, seen roots and pending frames share bounded storage;
+each unknown argument still reserves a visit. Qualification caches and traversal consume
+the same remaining budget. Oversized maps, late identity/owner faults and exact work or
+peak-storage exhaustion reject without publishing a partial forest or changing prior
+reports/edges. Sparse argument and source observations remain independent of Call stages,
+including reached prefixes of stopped calls. Per-call access to retained forests remains
+a separate step. This is structural evidence; source behavior, parameter values/origins,
+callee summaries, loan authority and proof outcomes are unchanged.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
