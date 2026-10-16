@@ -4620,7 +4620,13 @@ wrapped/reference roots and forward/empty functions. All 33 call-effect tests pa
 (`/tmp/meowy-call-parameters-inputs.log`). The characterization now charges 81/39/52
 work units for mixed/empty/recursive calls, exactly `argument count + 1` above baseline
 (`/tmp/meowy-call-parameters-work.log`). No new payload or known failures remain.
-Next: cover stale association metadata and exact work/payload boundaries;
+Four boundary regressions now cover eighteen stale identity scenarios, coherent arity
+mismatches, oversized captured/header vectors before exposure, exact late work exhaustion,
+unchanged parameter/argument payload and shorter/longer result-only reports. All 37
+call-effect tests pass (`/tmp/meowy-call-parameters-boundaries.log`). The dedicated
+budget fixture isolates parameter/call payload while retaining complete report snapshots;
+existing emission and downstream index charges are preserved. No known failures remain.
+Next: update guide/evidence links and run compiler, strict-pin and preservation gates;
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
