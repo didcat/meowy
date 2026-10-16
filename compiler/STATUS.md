@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Stored argument-source views pass the compiler gate.
+Updated: 2026-10-16. Argument-source forest integration is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4780,20 +4780,31 @@ Nothing was pushed or published.
 
 ### Next: retain argument source forests
 
+Investigation: the existing walker owns shared/cycle state across roots, but its
+single-root expansion is embedded in `walk_sources`. Extract that operation unchanged
+before adding argument starts. Argument sources use PointId keys; candidate/direct
+maps keep `(block, slot, position)` keys. Preserve both identities and explicit unknowns.
+
 Dependency-ordered commit plan:
 
-1. In `results/inputs/graph/walk.rs` and `arguments/sources`, expose a bounded borrowed
-   argument-forest entry that validates both `argument_source_view` and `direct_graph`
-   under shared work/payload budgets. Reuse existing graph traversal without copying
-   argument vectors or mixing argument PointIds with result-candidate keys.
-2. Retain original argument identities and explicit unknown descriptors in traversal
-   reports, alongside caller-owned field/block/dispatch roots. Preserve shared/cyclic
-   candidate histories and stopped prefixes; never infer runtime completion or values.
-3. Integrate the report into `entries.rs`, with atomic stale-map/cross-owner and exact
-   payload/work regressions. Keep source observations independent of Call stages and
-   parameter associations. Update structural evidence and run compiler, strict-pin and
-   final documentation gates. Callee values/origins/summaries, restart propagation,
-   E225 and proof outcomes remain separate.
+1. Complete: single-root expansion and shared state construction/finalization are
+   extracted unchanged; all 31 existing graph/walk tests pass.
+2. Add a bounded borrowed argument-graph entry that validates argument-source and direct
+   graphs under one remaining work/payload budget. Cover stale maps and exact limits.
+3. Add typed argument visits and reuse single-root expansion for known source slots;
+   retain the forest in entry reports with focused owner/unknown/stopped-prefix tests.
+4. Cover shared/cyclic histories, independent observations, late faults and exact
+   traversal/publication budgets, preserving earlier reports and edges on failure.
+5. Update structural evidence and handoffs; run compiler, strict-pin, preservation and
+   final documentation gates. Parameter values/origins, callee summaries, restart
+   propagation, E225 and proof outcomes remain separate.
+
+Single-root expansion now lives in `graph/walk/expand.rs`; `State::new`/`finish`
+share existing initialization and accounting. The original loop body, diagnostics
+and work charges are unchanged. Formatting and all 31 graph/walk regressions pass
+(`/tmp/meowy-argument-forest-extraction.log`), including exact work/peak-storage tests.
+No known failures remain. Next: qualify the combined borrowed view. Unrelated `docs/programs/hey/`
+is preserved; baseline is `6602c45a`, with LLVM still pinned to 23.1.3.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
