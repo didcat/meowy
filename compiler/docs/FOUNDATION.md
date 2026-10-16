@@ -1908,9 +1908,32 @@ each unknown argument still reserves a visit. Qualification caches and traversal
 the same remaining budget. Oversized maps, late identity/owner faults and exact work or
 peak-storage exhaustion reject without publishing a partial forest or changing prior
 reports/edges. Sparse argument and source observations remain independent of Call stages,
-including reached prefixes of stopped calls. Per-call access to retained forests remains
-a separate step. This is structural evidence; source behavior, parameter values/origins,
-callee summaries, loan authority and proof outcomes are unchanged.
+including reached prefixes of stopped calls. This is structural evidence; source
+behavior, parameter values/origins, loan authority and proof outcomes are unchanged.
+
+Per-call access first validates the complete retained argument walk against bounded
+reconstruction. Missing, extra, reordered or stale argument/source visits reject before
+exposure. A bounded marker-position index retains one entry per normally observed
+argument. The context borrows the original report and complete walk; Shared references
+to history under earlier arguments or calls remain available. An isolated slice is not
+a complete source history.
+
+Each call exposes its canonical invocation and an exact-size borrowed iterator in
+parameter order. Entries keep the parameter LocalId, original caller PointId, optional
+argument observation and optional marker position. Missing rows, Entry-only rows,
+normal unknown sources and normal known sources remain distinct. Call/header and every
+selected association are checked before returning; caller and parameter owners stay
+separate. Conservative row/source omissions remain independent of Call effects.
+
+Complete-walk comparison/scanning, reconstruction storage and marker-index payload are
+charged before publication. Iterator validation and lookup work are prepaid even if the
+iterator is not consumed. Entry publication qualifies one context and reuses it across
+all captured calls, without copying argument vectors or reserving per-call payload.
+Oversized walks/argument lists, late identity faults and exact work/map/payload exhaustion
+reject atomically. Function facts still start from declared parameter domains; call
+results keep their full declared domain without inspecting callee bodies. These
+associations grant no value specialization, origin transfer, mutation authority or proof
+outcomes. Declared parameter descriptors and conservative call invalidation remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

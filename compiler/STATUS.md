@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Per-call argument forest access is in progress.
+Updated: 2026-10-16. Per-call forest access passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: qualify per-call argument forest access using the handoff below.
+Next: characterize declared parameter descriptors using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4825,57 +4825,72 @@ All four documentation/evidence checks pass (`/tmp/meowy-argument-forest-docs.lo
 Unrelated `docs/programs/hey/` remains untouched and excluded. Nothing was pushed
 or published.
 
-### Next: qualify per-call argument forest access
+### Qualified per-call argument forest access
 
-The forest retains caller-side source history. Before call analysis consumes it, expose
-bounded per-call associations without selecting parameter values or transferring origins.
-Reuse `effects/calls/inputs.rs::checked_call_inputs`, `Reports.arguments` and the retained
-forest; a `Shared` visit can refer to history under an earlier argument and is not an
-independent closed subtree.
+Complete. `argument_forest_view` validates
+all retained argument/source visits against bounded reconstruction before exposing
+borrowed Reports/Walk and a marker-position index. Missing/extra/reordered/stale visits
+reject atomically. Complete comparison/scanning work, reconstruction storage and one
+index entry per normal argument share bounded budgets. Oversized walks reject before
+reconstruction. Shared history under earlier arguments/calls stays available globally.
 
-Investigation: `checked_call_inputs` already borrows ordered parameter/argument pairs.
-The retained forest is global; Shared visits can refer to earlier arguments or calls.
-Validate its complete walk against bounded reconstruction once, then build a bounded
-marker-position index. Per-call iterators must keep access to the complete borrowed
-walk rather than copying argument vectors or presenting isolated slices as full histories.
+`call_argument_forest` exposes canonical call identity and an exact-size borrowed
+iterator in parameter order: LocalId, original PointId, optional observation row and
+optional marker position. Absent, Entry-only, normal unknown and normal known inputs
+stay distinct. Fresh call/header identity and every selected association are validated
+before exposure. Iterator lookup work is prepaid even when unconsumed. Entry publication
+reuses one qualified context across calls, with no argument-vector copy or per-call
+payload reservation. Late faults and exact aggregate exhaustion leave reports/edges intact.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `d5bd8f15` | Characterize per-call parameter/argument/forest associations |
+| `0df6b56c` | Qualify retained walks and index original argument markers |
+| `1882808f` | Expose borrowed per-call access and reuse one qualified context |
+| `e338c8a4` | Reject late marker/call faults and preserve conservative observations |
+| `7b15dd42` | Bound prepaid iterator work and aggregate qualification budgets |
+
+Three association, four retained-view, four access, three identity/observation and
+three budget tests pass. Logs: `/tmp/meowy-call-forest-pairs.log`,
+`/tmp/meowy-call-forest-view.log`, `/tmp/meowy-call-forest-access.log`,
+`/tmp/meowy-call-forest-boundaries.log`, `/tmp/meowy-call-forest-limits.log`.
+All-target Clippy passed for the access implementation. Seventeen new tests provide
+structural evidence. No reference contract, source expectation, capability pin or
+proof-obligation record changes. Five structural paths are added to the existing
+proof/types/values evidence rows; reviewed gaps remain. Preservation audit passes
+for all 597 protected files, including eight user files, 514 cases, 19 pins and all
+37 reference hashes/gaps/prior evidence (`/tmp/meowy-call-forest-preservation.log`).
+All ten compiler checks pass: formatting, Clippy, 3232 library, 923 native and
+62 Python tests, build, metadata and source execution (`/tmp/meowy-call-forest-gate.log`).
+The 514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release
+failures. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-call-forest-strict.log`, `/tmp/meowy-call-forest-strict-audit.log`).
+All four documentation/evidence checks pass (`/tmp/meowy-call-forest-docs.log`).
+No known failures remain. Unrelated `docs/programs/hey/` is untouched and excluded;
+nothing was pushed or published.
+
+### Next: characterize declared parameter descriptors
+
+Per-call access exposes source associations, not facts specialized from callers.
+`docs/reference/stdlib/proof.md#transfers-and-guards` requires declared parameter
+domains and full declared call-result domains without inspecting callee bodies.
+Before conservative call invalidation can consume argument metadata, retain the
+relevant declared parameter categories independently of caller source availability.
 
 Dependency-ordered commit plan:
 
-1. Complete (`d5bd8f15`): all three association tests pass, covering sparse/stopped rows, shared
-   history across calls and distinct caller/parameter identities.
-2. Complete (`0df6b56c`): retained-walk validation and the borrowed marker index pass four tests;
-   exact work/map/payload limits and stale visits are checked before publication.
-3. Complete (`1882808f`): borrowed per-call access preserves all four observation/source states,
-   caller identity and shared history. One forest/index serves all calls.
-4. Complete (`e338c8a4`): three boundary checks cover late marker/call identity faults and
-   conservative observations without publishing partial access.
-5. Complete: all three budget checks pass for prepaid iterator work, one shared
-   context, oversized inputs and exact aggregate work/payload limits.
-6. Document structural evidence and run compiler, strict-pin, preservation and final
-   documentation gates. Parameter values/origins, callee summaries, restart propagation,
-   E225 and proof outcomes remain separate.
-
-`call_argument_forest` now borrows canonical call identity and an exact-size iterator
-of parameter LocalId, original PointId, optional observation row and optional marker
-position. It validates every selected association before returning and precharges both
-validation and iterator lookup work. The full qualified walk stays available for Shared
-history. Entry report publication qualifies the forest/index once, then reuses it for
-all calls without copying argument vectors or reserving per-call payload.
-Four focused tests cover distinct callers, sparse/stopped states, shared history and
-empty parameter lists. All four tests and all-target Clippy pass
-(`/tmp/meowy-call-forest-access.log`, `/tmp/meowy-call-forest-access-lint.log`).
-Three boundary checks now cover six late marker-index faults, five current-call
-identity faults and conservative rows/source omissions without Call effects. Formatting
-and all three checks pass (`/tmp/meowy-call-forest-boundaries.log`). No known
-failures remain. All three budget checks pass after ending the test iterator Result
-scope before inspecting Checker. Iterator work is charged even when unconsumed;
-per-call access reserves no extra payload, and aggregate publication reuses one
-qualified forest/index (`/tmp/meowy-call-forest-limits.log`). Formatting passes.
-Next: document structural evidence and run final gates. The proof contract keeps
-functions at declared parameter domains and call results at full declared domains;
-caller associations must not specialize callee facts.
-
-Unrelated `docs/programs/hey/` is preserved.
+1. Characterize `signatures.rs::function_signatures`, checked call inputs and per-call
+   forest access for scalar, shared/exclusive reference and aggregate parameters,
+   including unused/stopped arguments. Identify compact declared-type evidence needed
+   for conservative invalidation; keep unsupported alias relationships unknown.
+2. Capture bounded shallow parameter descriptors alongside original LocalIds using
+   checked parameter types. Reuse existing shape/borrow representations where exact;
+   do not copy recursive type trees. Preserve signature, owner and reverse-position
+   identity, shared payload/work limits and the ordered borrowed pair API.
+3. Revalidate descriptors at call access, add identity/limit/source-boundary regressions,
+   update structural evidence and run compiler/strict-pin/docs gates. Do not specialize
+   function facts, inspect callee bodies for call-result values, grant loan authority
+   or implement invalidation/propagation without their separate qualification.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6489,8 +6504,8 @@ Direct-call observations, argument-source ownership, declared result shapes and 
 function-signature context are qualified. Initializer qualification reuses validated
 retained parameter membership. Bounded call-argument/parameter associations and individual
 argument observations are qualified, including caller-side direct sources for normally
-observed arguments. Retained source views and argument forests are qualified. Next
-qualify per-call forest access using the ordered handoff.
+observed arguments. Retained forests and per-call access are qualified. Next characterize
+declared parameter descriptors using the ordered handoff.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7166,7 +7181,8 @@ Value selection and broader aggregate provenance remain separate.
    result shapes, function-signature context, initializer parameter reuse and borrowed
    call-parameter associations and individual argument observations are qualified. Reports
    retain caller-side sources for normally observed arguments, and stored source views
-   and their forests are qualified. Qualify per-call access next, using the current handoff.
+   and their forests/per-call access are qualified. Characterize declared parameter
+   descriptors next, using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

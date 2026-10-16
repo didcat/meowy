@@ -45,29 +45,30 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Entry reports now retain caller argument-source forests after validating both source
-and candidate/direct graphs. Each argument keeps its original PointId and known/unknown
-descriptor. Shared and cyclic source histories reuse the existing walker without merging
-argument identities or selecting values. Qualification caches, visits and pending frames
-share bounded budgets, and failures publish no partial report. The
-[compiler handoff](compiler/STATUS.md#retained-argument-source-forests) records the commits
-and next per-call access step.
+Per-call access now borrows canonical call identity, ordered parameter/argument pairs,
+optional observations and original forest-marker positions. Complete retained-walk
+validation and one bounded index preserve shared history across calls. Absent,
+Entry-only, normal unknown and normal known inputs stay distinct. Work is prepaid;
+entry publication reuses one qualified context without copying argument vectors or
+reserving per-call payload. The
+[compiler handoff](compiler/STATUS.md#qualified-per-call-argument-forest-access) records
+the commits and next declared-parameter step.
 
-Sixteen new structural tests cover borrowed identity, sparse/stopped observations,
-unknown/empty/multiple histories, cycles/sharing, stale metadata and exact work/peak
-storage limits. All ten compiler checks pass: 3215 library, 923 native, 62 Python and
-495 required conformance tests, with 19 unchanged gaps and no debug/release failures
-(`/tmp/meowy-argument-forest-gate.log`). Preservation audit passes for all 597 protected
-files, including eight user files, the 514-case catalog, 19 capability pins, all 37
-reference hashes/gaps/prior evidence and proof obligations
-(`/tmp/meowy-argument-forest-preservation.log`). Strict mode exits 1 only for the exact
-19 pinned names/reasons (`/tmp/meowy-argument-forest-strict-audit.log`). All four
-documentation/evidence checks pass (`/tmp/meowy-argument-forest-docs.log`). Nothing
-was pushed or published.
+Seventeen new structural tests cover associations, retained-walk identity, sparse/stopped
+observations, shared history and exact map/work/payload limits. All ten compiler checks
+pass: 3232 library, 923 native, 62 Python and 495 required conformance tests, with
+19 unchanged gaps and no debug/release failures (`/tmp/meowy-call-forest-gate.log`).
+The preservation audit retains all 597 protected files, including eight user files,
+514 cases, 19 pins, all 37 reference hashes/gaps/prior evidence and proof obligations
+(`/tmp/meowy-call-forest-preservation.log`). Strict mode exits 1 only for the exact
+19 pinned names/reasons (`/tmp/meowy-call-forest-strict-audit.log`). All four
+documentation/evidence checks pass (`/tmp/meowy-call-forest-docs.log`). Nothing was
+pushed or published.
 
-Next: qualify per-call access to retained argument forests while preserving caller and
-parameter ownership. Callee values/origins/summaries and full proof/release qualification
-remain incomplete. Unrelated `docs/programs/hey/` is preserved.
+Next: characterize declared parameter descriptors for conservative call analysis.
+Functions retain declared parameter domains, and call results retain full declared
+domains. Call invalidation, restart propagation and proof/release qualification remain
+separate. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
