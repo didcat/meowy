@@ -4745,10 +4745,10 @@ The current tree contains only unrelated untracked `docs/programs/hey/`; preserv
 
 Dependency-ordered commit plan:
 
-0. Complete: LLVM/Clang/LLD/ar 23.1.3 passes the isolated compiler and runtime gates;
-   retain exact-version checks and commit the pin/docs as a separate prerequisite.
-1. Characterize exact Normal-row source keys, unknowns, omitted observations, caller
-   owners and independent producer/call observations in source-report tests.
+0. Complete: `e7d3fc7e` qualifies LLVM/Clang/LLD/ar 23.1.3; compiler/runtime gates
+   pass and exact-version checks remain enabled.
+1. Complete: three characterization tests preserve exact Normal-row keys, explicit
+   unknowns, sparse observations, distinct caller owners and absent call effects.
 2. Add a bounded borrowed argument-source view with exact key/owner/point/descriptor
    validation and focused stale-map regressions. Share Lookup; keep forest wiring separate.
 3. Cover producer faults, shared cache reuse and exact map/payload/work limits.
@@ -4758,12 +4758,10 @@ Dependency-ordered commit plan:
    fixtures, and leave the next traversal integration step. No parameter values/origins,
    callee summaries, restart propagation, E225 or proof outcomes are added.
 
-Validation: three source-map characterization tests are written; formatting passes.
-The installed LLVM/Clang/LLD/ar is 23.1.3; Rust remains 1.99.0. An isolated
-`b2ef64ea` baseline passes all ten compiler checks with 495 required cases, 19 unchanged
-gaps and zero failures. All runtime debug/release/sanitizer and 15 Python tests pass, with the complete
-sanitizer rerun outside ptrace. No host packages changed. The first new-test compile found a missing BTreeSet
-import; it is repaired and awaits rerun.
+Validation: all three `retained_argument_source` library tests pass with LLVM 23.1.3
+(`/tmp/meowy-argument-view-characterization.log`); formatting passes. Missing producer
+evidence keeps the argument key with an unknown descriptor. No known failure remains.
+Next: implement borrowed source-map qualification and stale-map regression checks.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
