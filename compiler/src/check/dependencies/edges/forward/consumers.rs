@@ -20,6 +20,9 @@ mod primary;
 pub(super) mod scalars;
 
 #[cfg(test)]
+mod calls;
+
+#[cfg(test)]
 mod outputs;
 
 #[cfg(test)]

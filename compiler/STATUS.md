@@ -4403,12 +4403,25 @@ capability pins, 37 reference hashes/prior evidence and eight user files from `2
 (`/tmp/meowy-call-stages-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Next: direct-call argument source ownership
+### Current: direct-call argument source ownership
 
 `check/functions.rs` checks arguments with parameter hints before recording their original
 PointIds in `dependencies/invocations.rs`. Existing coercions can own primary extraction;
 Call operation/result observations alone do not identify a projected argument source.
-The next slice must establish that ownership before adding source links.
+The current slice starts from `e5021b9c` with no tracked changes. Initial tracing confirms
+that each ordinary argument's expected-type root owns its coercion, while Invocation
+retains that outer root in original argument order. Shared forwarding/reborrowing has
+its existing separate boundary. The next tests must establish which source links are
+already complete before adding metadata. Unrelated `docs/programs/hey/` is excluded.
+All four characterization tests pass: owned/shared primaries already link through direct,
+aliased, dispatched and function-local arguments, including grouped/ascribed inputs and
+receiver copies. Scalar hints pass through groups, so inline named fields retain E212;
+explicit record ascription supplies the record context. Grouped arguments can project at
+an inner coercion while outer Forward/shared-region boundaries remain separate. Test
+lookup follows captured group/region/coercion identities. Existing E212 diagnostics are
+preserved (`/tmp/meowy-call-inputs-characterization.log`). No additional descriptors are
+needed for these paths. Next: qualify partial/stopped observations and opaque sources;
+production code is unchanged.
 
 Dependency-ordered commit plan:
 
@@ -4417,14 +4430,16 @@ Dependency-ordered commit plan:
    aliased and dispatched calls; scalar/record primaries, shared references, unchanged
    wrappers and stopped arguments. Pin original argument order, caller scope and the
    exact coercion/projection owner in focused tests.
-2. Reuse existing coercion-owned links where present. Add only missing bounded source
-   descriptors justified by characterization, with capture and report qualification in
-   independently reviewable slices. Keep CallId/PointId/argument identity and the
-   signature's return possibility separate from observation flags.
-3. Qualify any additional argument-source links only from matching checked descriptors
-   and observed stages. Cover missing/partial evidence, duplicate visits, identity,
-   scope and exact map/payload/work limits; preserve source order in required cases and
-   run compiler/strict/final docs gates. Keep call results and callee summaries opaque.
+2. Qualify the existing links across partial/missing observations, stopped arguments and
+   opaque call-result/parameter sources. Characterization found no need for additional
+   descriptors or call-owned projection ports; keep capture unchanged unless a concrete
+   missing supported path is demonstrated.
+3. Cover malformed argument-source identity, caller scope, duplicate visits and exact
+   map/work limits in a separate boundary slice. Preserve the shared payload allowance
+   and Unknown reference histories without crossing into callee bodies.
+4. Add required source cases for order, shared identity and stopping, update the owning
+   guide/evidence inventory, and run compiler/strict/final docs gates. Keep call result
+   sources, callee summaries and proof outcomes opaque.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
