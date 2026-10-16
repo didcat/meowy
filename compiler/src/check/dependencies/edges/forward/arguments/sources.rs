@@ -5,6 +5,8 @@ use crate::check::dependencies::edges::forward::{
 
 pub(crate) type Sources = BTreeMap<PointId, (usize, Direct)>;
 
+mod qualified;
+
 impl Checker {
     pub(in super::super) fn argument_sources(
         &mut self,

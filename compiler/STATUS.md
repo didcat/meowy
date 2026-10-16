@@ -4747,10 +4747,10 @@ Dependency-ordered commit plan:
 
 0. Complete: `e7d3fc7e` qualifies LLVM/Clang/LLD/ar 23.1.3; compiler/runtime gates
    pass and exact-version checks remain enabled.
-1. Complete: three characterization tests preserve exact Normal-row keys, explicit
+1. Complete (`995dfc1e`): three characterization tests preserve exact Normal-row keys, explicit
    unknowns, sparse observations, distinct caller owners and absent call effects.
-2. Add a bounded borrowed argument-source view with exact key/owner/point/descriptor
-   validation and focused stale-map regressions. Share Lookup; keep forest wiring separate.
+2. Complete: borrowed view checks exact keys/owners/points/descriptors and rejects
+   stale maps atomically, with one shared Lookup cache. Entry publication uses the view.
 3. Cover producer faults, shared cache reuse and exact map/payload/work limits.
 4. Characterize candidate/direct forest entry from qualified argument source slots,
    preserving caller identity, unknown histories and independent observations.
@@ -4758,10 +4758,16 @@ Dependency-ordered commit plan:
    fixtures, and leave the next traversal integration step. No parameter values/origins,
    callee summaries, restart propagation, E225 or proof outcomes are added.
 
-Validation: all three `retained_argument_source` library tests pass with LLVM 23.1.3
-(`/tmp/meowy-argument-view-characterization.log`); formatting passes. Missing producer
-evidence keeps the argument key with an unknown descriptor. No known failure remains.
-Next: implement borrowed source-map qualification and stale-map regression checks.
+The borrowed `argument_source_view` now revalidates retained argument rows and exact
+source-map membership, caller owner, original point and full Direct descriptor. One
+Lookup cache is shared, with charged work/cache storage and no second source-row copy.
+Entry reports qualify this view before publication, charging its scratch cache against
+remaining parts. Forest traversal stays unchanged. Three focused tests cover borrowed
+identity, thirteen stale-map faults, sparse observations and stopped prefixes.
+
+Validation: all 16 `argument_source` focused tests pass, including the three new view
+checks (`/tmp/meowy-argument-view-focused.log`); formatting passes. No known failures
+remain. Next: exact-budget and independent-producer boundary tests.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
