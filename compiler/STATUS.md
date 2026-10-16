@@ -4723,7 +4723,11 @@ remaining payload unit per source row plus existing cache charges. Three integra
 tests cover field/block/dispatch roots, independent flags/unknowns and stopped prefixes.
 All 77 argument-filtered tests pass (`/tmp/meowy-argument-sources-integration.log`).
 The field-reference fixture now uses the documented `r.&n` syntax. No known failures
-remain. Next: cover source-cache reuse, exact bounds and atomic stale-producer failures.
+remain. Four boundary regressions now cover seven stale row/producer cases, shared field
+cache reuse, exact row/payload/work limits, reference/aggregate/parameter opacity,
+missing field evidence and oversized row rejection before lookup. All seven source-report
+tests pass (`/tmp/meowy-argument-sources-boundaries.log`). No known failures remain.
+Next: document the report/cache contract, link structural evidence and run final gates.
 
 Dependency-ordered commit plan:
 
