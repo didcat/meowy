@@ -1,0 +1,10 @@
+d:@"debug"
+f:(a<&int32>,b<&int32><null>){|b<&int32>|d.print(a==b~<&int32>);d.print(*a)}
+n:7
+p:&n
+r:{->p;->tag:true}
+alias:f
+out:r.{copy:$;inner:copy.{next:$;next.(alias,((next)))}}
+outer:(p<&int32>){r:p.{->$;->tag:true};f(r,((r)))}
+outer(p)
+d.print(r.tag)

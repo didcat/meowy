@@ -4435,6 +4435,13 @@ duplicate visits without another argument payload copy. Stale storage is checked
 the captured local-read point beneath unchanged narrowing. The all-target Clippy check
 passes (`/tmp/meowy-call-inputs-clippy.log`). No known failures remain. Next: source-level
 order/shared-identity/stop cases and guide/evidence updates, then final gates.
+Boundary qualification is committed as `d6c710df`. Four new required cases and four
+existing call order/stop/arity/borrow cases pass in debug/release
+(`/tmp/meowy-call-inputs-source.log`). Block-argument projection ownership is also
+verified at the inner expected emission (`/tmp/meowy-call-inputs-blocks.log`). Compiler
+build and all four catalog/tooling checks pass (`/tmp/meowy-call-inputs-build.log`,
+`/tmp/meowy-call-inputs-source-docs.log`). The catalog now has 506 cases; prior expectations
+are unchanged. Next: document the existing reuse, link structural evidence, then final gates.
 
 Dependency-ordered commit plan:
 

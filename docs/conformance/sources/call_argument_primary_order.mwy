@@ -1,0 +1,8 @@
+d:@"debug"
+f:(a<int32>,b<int32><null>){d.print("body");d.print(a);d.print(b)}
+r:7.{d.print("source");->$;->tag:true;d.print("tail")}
+alias:f
+({d.print("left");->((r))}).(alias,{d.print("right");->r})
+alias(((r)),r~<{-><int32>;tag<boolean>}>)
+d.print(r.tag)
+d.print("after")

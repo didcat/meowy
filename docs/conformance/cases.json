@@ -5324,6 +5324,48 @@
         "exit": 1
       },
       "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_argument_primary_order",
+      "phase": "run",
+      "source": "sources/call_argument_primary_order.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "source\ntail\nleft\nright\nbody\n7\n7\nbody\n7\n7\ntrue\nafter\n"
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_argument_shared_identity",
+      "phase": "run",
+      "source": "sources/call_argument_shared_identity.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\n7\ntrue\n7\ntrue\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "call_argument_primary_stop",
+      "phase": "run",
+      "source": "sources/call_argument_primary_stop.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "first\nstop\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_argument_primary_type",
+      "phase": "check",
+      "source": "sources/call_argument_primary_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
     }
   ]
 }

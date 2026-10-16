@@ -1,0 +1,5 @@
+d:@"debug"
+f:(a<int32>,b<int32>,c<int32>){d.print("body")}
+r:{->7;->tag:true}
+f({d.print("first");->r},{d.print("stop");d.panic("stop")},{d.print("last");->r})
+d.print("after")

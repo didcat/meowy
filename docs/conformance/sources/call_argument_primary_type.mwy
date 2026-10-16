@@ -1,0 +1,3 @@
+f:(a<int32>){}
+r:{->false;->tag:true}
+f(r)

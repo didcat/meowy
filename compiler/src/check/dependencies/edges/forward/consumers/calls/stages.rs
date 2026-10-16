@@ -112,6 +112,47 @@ pub(crate) fn call_argument_links_keep_earlier_projections_before_stopped_later_
 }
 
 #[test]
+pub(crate) fn call_argument_blocks_keep_primary_projection_at_the_inner_emission() {
+    let (checker, reports) = checked("f:(a<int32>,b<int32>){};r:{->7;->tag:true};f({->r},{->r})");
+    let call = checker.invocations.first_key_value().unwrap().1;
+    assert_eq!(reports.slot_uses.len(), 2);
+    let mut sources = BTreeSet::new();
+    for arg in &call.args {
+        let op = &checker.coercions[arg];
+        assert!(!op.primary);
+        let (&block, _) = checker
+            .bodies
+            .iter()
+            .find(|(_, body)| body.parent == Some(op.input))
+            .unwrap();
+        let (&id, _) = checker
+            .coercions
+            .iter()
+            .find(|(id, op)| op.primary && checker.points[**id].block == Some(block))
+            .unwrap();
+        let port = Port::Projection { point: id, step: 0 };
+        let (owner, slot) = reports.slot_uses[&port];
+        assert_eq!((owner, slot.index), (call.owner, 0));
+        assert_ne!(id, *arg);
+        assert_ne!(slot.block, block);
+        let ports = &reports.entries[&owner].1.ports;
+        assert!(
+            ports.iter().position(|seen| *seen == port).unwrap()
+                < ports
+                    .iter()
+                    .position(|seen| *seen == Port::Normal(*arg))
+                    .unwrap()
+        );
+        assert!(!reports.slot_uses.contains_key(&Port::Projection {
+            point: *arg,
+            step: 0
+        }));
+        sources.insert(slot.block);
+    }
+    assert_eq!(sources.len(), 1);
+}
+
+#[test]
 pub(crate) fn call_argument_links_keep_parameters_call_results_and_reference_loads_opaque() {
     for source in [
         "f:(a<int32>){};outer:(r<{-><int32>;tag<boolean>}>){f(r)}",
