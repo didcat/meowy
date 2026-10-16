@@ -4841,11 +4841,10 @@ walk rather than copying argument vectors or presenting isolated slices as full 
 
 Dependency-ordered commit plan:
 
-1. Complete: all three association tests pass, covering sparse/stopped rows, shared
+1. Complete (`d5bd8f15`): all three association tests pass, covering sparse/stopped rows, shared
    history across calls and distinct caller/parameter identities.
-2. Qualify the complete retained forest and build a bounded marker-position index.
-   Return a borrowed forest context only after exact walk comparison; cover stale
-   visits and exact work/map/payload limits. Integrate validation before report publication.
+2. Complete: retained-walk validation and the borrowed marker index pass four tests;
+   exact work/map/payload limits and stale visits are checked before publication.
 3. Add borrowed per-call access using `checked_call_inputs`, preserving absent,
    Entry-only, explicit unknown and known sources. Reuse one qualified forest/index
    across calls and precharge iterator lookup work; cover ownership and shared history.
@@ -4855,11 +4854,15 @@ Dependency-ordered commit plan:
    documentation gates. Parameter values/origins, callee summaries, restart propagation,
    E225 and proof outcomes remain separate.
 
-Three characterization tests now cover parameter/caller identity, shared history
-under an earlier call, and absent/Entry-only/unknown/known argument states. Formatting
-and all three focused checks pass (`/tmp/meowy-call-forest-pairs.log`). No known
-failures remain. Next: qualify the retained forest and marker index.
-Baseline `8216cb92` preserves unrelated `docs/programs/hey/`; LLVM remains 23.1.3.
+`argument_forest_view` now compares the complete retained walk against bounded
+reconstruction, then creates one marker-position index entry per normal argument.
+The returned context borrows the original Reports/Walk. Comparison/scanning work,
+reconstruction storage and index payload are charged before publication; oversized
+walks reject before reconstruction. Entry reports now validate the retained walk.
+Four focused tests cover borrowed identity, eight stale-visit faults and exact
+map/payload/work bounds. Formatting and all four focused tests pass
+(`/tmp/meowy-call-forest-view.log`). No known failures remain. Next: expose per-call
+iterators using one shared forest/index. Unrelated `docs/programs/hey/` is preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

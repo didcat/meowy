@@ -4,6 +4,7 @@ use super::{
 };
 use crate::hir;
 
+mod forests;
 mod index;
 pub(super) mod sources;
 mod validation;
