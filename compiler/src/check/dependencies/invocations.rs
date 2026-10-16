@@ -95,6 +95,9 @@ impl Checker {
 mod order;
 
 #[cfg(test)]
+mod results;
+
+#[cfg(test)]
 mod tests {
     use super::*;
 

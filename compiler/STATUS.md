@@ -4446,13 +4446,23 @@ changes are confined to test modules and their `cfg(test)` registration
 (`/tmp/meowy-call-inputs-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Next: declared call-result shapes
+### Current: declared call-result shapes
 
 Invocation currently retains `may_return` without a declared result-shape descriptor.
 `check/functions.rs` has the signature result before outer coercion, and
 `dependencies/bodies/completion.rs` already provides bounded shallow Shape/Completion
 classification. The proof contract gives call results their full declared result domain;
-callee-body completion or returned values must not narrow that domain.
+callee-body completion or returned values must not narrow that domain. Work starts
+from `9f6e3920`; the tracked tree is clean and unrelated `docs/programs/hey/` is excluded.
+The signature can be explicit or inferred for a local function. The result shape must
+be captured before outer coercion, and a returning signature must remain returning even
+when its body panics. Shape/Completion classification is shallow and already bounds
+scalar widths and aggregate counts. No per-call type clone or body inspection is needed.
+All ten invocation tests pass (`/tmp/meowy-call-shapes-characterization.log`). Three new
+regressions pin explicit/inferred scalar, reference, record, list, union and Never
+signatures; aliases/dispatch/recursion before outer conversions; and panicking bodies
+whose signatures still permit return. Next: capture and validate the fixed-size Shape
+on Invocation, then propagate it through stage/report qualification.
 
 Dependency-ordered commit plan:
 
@@ -4467,7 +4477,9 @@ Dependency-ordered commit plan:
    qualification. Preserve independent operation/result flags, argument order and shared
    payload/work limits. Missing or stale descriptors must fail atomically; do not read
    callee-body layouts or infer call-result provenance.
-4. Cover source execution and malformed/partial/limit cases, update guide/evidence rows,
+4. Add malformed/partial/limit cases as a separate boundary slice, retaining argument
+   payload charges and original call graph ownership. Validate each completed slice.
+5. Cover source execution and update guide/evidence rows,
    then run compiler/strict/final docs gates. Call result values, callee effect summaries,
    restart propagation, E225 enforcement and proof outcomes remain separate.
 
