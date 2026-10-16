@@ -4419,6 +4419,12 @@ The 502-case catalog retains all 500 prior expectations. All 574 protected files
 pins, 37 reference hashes/prior evidence and eight user files are unchanged
 (`/tmp/meowy-call-stages-preservation.log`). Next: full compiler gate, strict pin audit,
 and final handoff. The complete proof/release gate remains separate.
+The first full gate passes with 3108 library/923 native/62 Python tests and 483 required
+cases. Final review's missing-caller regression failed before the fix
+(`/tmp/meowy-call-stages-caller-before.log`) and now passes: caller membership is checked
+and charged before result-only filtering. All seven call-graph tests pass
+(`/tmp/meowy-call-stages-caller-after.log`), including exact work limits. No known failures
+remain; the final compiler gate must be rerun for this correction.
 The preservation baseline records 574 protected files, 500 cases, 37 document rows and
 eight unrelated user files (`/tmp/meowy-call-stages-baseline.json`).
 

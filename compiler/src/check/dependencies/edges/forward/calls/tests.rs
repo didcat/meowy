@@ -77,6 +77,23 @@ pub(crate) fn call_graph_requires_operation_observations_and_rejects_empty_repor
 }
 
 #[test]
+pub(crate) fn call_graph_rejects_result_only_reports_without_a_caller_entry() {
+    let (mut checker, mut reports) = checked("g<int32>:(){->1};f<int32>:(){->g()};x:0");
+    let call = checker.invocations.first_key_value().unwrap().1;
+    assert_ne!(call.owner, 0);
+    let Effect::Call { operation, .. } = &mut reports.effects.get_mut(&call.point).unwrap().1
+    else {
+        panic!()
+    };
+    *operation = false;
+    reports.entries.remove(&call.owner);
+    let before = format!("{reports:?}{:?}", checker.edge_counts());
+    let error = checker.call_graph(&reports, Span::default()).unwrap_err();
+    assert!(error.message.contains("call-graph identity"));
+    assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+}
+
+#[test]
 pub(crate) fn call_graph_preserves_empty_entries_stopped_calls_and_exact_boundaries() {
     let (_, empty) = checked("");
     assert_eq!(empty.calls.nodes.len(), 1);

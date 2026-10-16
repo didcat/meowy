@@ -113,13 +113,22 @@ impl Checker {
             else {
                 continue;
             };
+            if !self
+                .flow
+                .spend(graph.nodes.len().checked_ilog2().unwrap_or(0) as usize + 1)
+            {
+                return Err(budget());
+            }
+            if !graph.nodes.contains_key(caller) {
+                return Err(invalid());
+            }
             self.validate_call_report(reports, point, *caller, effect, span)?;
             if !operation {
                 continue;
             }
             if graph.sites.len() >= sites
                 || !self.flow.spend(
-                    graph.nodes.len().checked_ilog2().unwrap_or(0) as usize * 3
+                    graph.nodes.len().checked_ilog2().unwrap_or(0) as usize * 2
                         + graph.sites.len().checked_ilog2().unwrap_or(0) as usize * 2
                         + self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                         + reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize
@@ -131,7 +140,6 @@ impl Checker {
             let callee = function.checked_add(1).ok_or_else(invalid)?;
             let call = self.invocations.get(site).ok_or_else(invalid)?;
             if !graph.nodes.contains_key(&callee)
-                || !graph.nodes.contains_key(caller)
                 || reports.index.operations.get(&point) != Some(caller)
                 || call.site != *site
                 || call.point != point
