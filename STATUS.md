@@ -45,24 +45,27 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Counted binary shared-scalar source lookup now uses one shared-copy traversal.
-The receiver-first/local-only modes and four unused wrappers are retired. Source
-identity, original scopes, missing-count direct fallback, generic eligibility and
-Unknown reference histories are preserved. The
-[compiler handoff](compiler/STATUS.md#counted-binary-source-lookup) records the six
-implementation/evidence commits, equivalence checks and changed work charges.
+Direct-call reports now retain independent operation/result observations while preserving
+exact identities, argument order, control and conditional return boundaries. Argument
+payloads are copied once; invalid partial reports and exhausted limits reject atomically.
+The call graph validates both owners and creates sites only for operation observations.
+The [compiler handoff](compiler/STATUS.md#direct-call-operation-and-result-observations)
+records seven implementation/evidence commits. Call results and callee summaries remain
+opaque; structural observations do not establish runtime completion or proof answers.
 
-All ten compiler checks pass: 3094 library, 923 native and 62 Python tests, formatting,
-Clippy, build, metadata and 481 required conformance cases. The same 19 pinned gaps
-remain, with zero debug/release failures (`/tmp/meowy-binary-lookup-gate.log`). The audit
-preserves 574 reference/source/pin/obligation files, all 500 case records, 19 pins and
-37 reviewed hashes from `20133a4e` (`/tmp/meowy-binary-lookup-preservation.log`). Strict
-mode exits 1 only for the exact pins (`/tmp/meowy-binary-lookup-strict.log`). All four
-final handoff checks pass (`/tmp/meowy-binary-lookup-final-docs.log`).
+All ten compiler checks pass: 3109 library, 923 native and 62 Python tests, formatting,
+Clippy, build, metadata and 483 required conformance cases. The same 19 pinned gaps
+remain, with zero debug/release failures (`/tmp/meowy-call-stages-final-gate.log`). Two
+new cases cover skipped guarded dispatch and a returning signature whose body panics.
+The audit preserves 574 prior reference/source/pin/obligation files, all 500 prior case
+records, 19 pins, 37 hashes/prior evidence and eight user files from `2a020936`
+(`/tmp/meowy-call-stages-preservation.log`). Strict mode exits 1 only for the exact pins
+(`/tmp/meowy-call-stages-strict.log`, `/tmp/meowy-call-stages-strict-audit.log`). All four
+final handoff checks pass (`/tmp/meowy-call-stages-final-docs.log`).
 
-Next: direct-call operation/result observations, before callee summaries or call result
-sources. Full proof/release qualification remains incomplete. Unrelated
-`docs/programs/hey/` is preserved.
+Next: characterize direct-call argument source ownership, reusing existing coercion
+projections before adding source links. Full proof/release qualification remains
+incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
