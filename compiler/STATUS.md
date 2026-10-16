@@ -4691,12 +4691,27 @@ The preservation audit retains all 588 protected files, 514 case records, 19 pin
 characterization/report/boundary evidence. No reference contract or expected source outcome
 changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Next: qualify caller-side sources for observed arguments
+### Caller-side sources for observed arguments
 
 `Reports.arguments` now identifies exact observed roots. Existing
 `results/inputs/direct.rs::direct_source` qualifies caller-owned field/block/dispatch
 sources through the existing eligibility and observation rules. Characterize their use
 at argument roots before publishing any additional source association.
+
+Investigation: reuse the existing Direct descriptor and Lookup cache; retain an original
+argument root even when its direct source is unknown. Validate retained argument rows
+against bounded call/port reconstruction before lookup. Missing rows or omitted flags
+remain conservative; recorded flags cannot exceed actual observations. Source publication
+requires the argument's own Normal flag and keeps the existing field/block/dispatch rules.
+No caller/callee value transfer, new generic eligibility or projected-input bypass.
+
+Baseline `dd7afdc0` has a clean tracked tree except the excluded `docs/programs/hey/`.
+`/tmp/meowy-argument-sources-baseline.json` captures 588 protected files, 514 cases,
+37 reference rows and eight user files. Both characterizations pass across eleven source
+forms and independent callers, including missing field evidence
+(`/tmp/meowy-argument-sources-characterization.log`). Existing field/block/dispatch
+qualification works at argument roots; projected/changed-type/call/load/mutable/parameter
+inputs stay opaque. The test import is corrected. Retained-row validation is next.
 
 Dependency-ordered commit plan:
 
@@ -4707,7 +4722,7 @@ Dependency-ordered commit plan:
 2. Validate retained argument rows against the checked call/parameter association before
    source lookup: exact site, position, parameter, root and owner, with independent flags.
    Missing observations remain absent; call visits must not supply them. Keep this
-   preparation separate from source-report integration when independently reviewable.
+   preparation in a separate validated commit before source-report integration.
 3. Reuse the bounded source lookup/cache for qualified caller roots, with exact row/payload/
    hop/work limits and atomic failures. Keep sources in the caller and preserve existing
    generic eligibility and Unknown histories. Update structural/source evidence and run

@@ -110,3 +110,6 @@ mod blocks;
 
 #[cfg(test)]
 mod block_limits;
+
+#[cfg(test)]
+mod arguments;

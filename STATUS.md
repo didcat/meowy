@@ -63,7 +63,8 @@ exact pins (`/tmp/meowy-argument-observations-strict.log`,
 `/tmp/meowy-argument-observations-strict-audit.log`). All four final handoff checks pass
 (`/tmp/meowy-argument-observations-final-docs.log`).
 
-Next: qualify caller-side sources for observed arguments. Full proof/release
+In progress: qualify sources for normally observed arguments using the existing
+direct-source resolver and validated argument rows. Full proof/release
 qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
