@@ -4361,13 +4361,12 @@ expectation changed. Unrelated `docs/programs/hey/` remains untouched and exclud
 
 ### Current: direct-call operation and result observations
 
-`effects.rs` currently collects `Effect::Call` only at `Port::Operation`; the report
-retains exact call/function/argument identity, `may_return` and control. It does not
-retain independent operation/result observations. `may_return` is a checked possibility,
-not observed completion. The call graph currently consumes every Call report, so result-only
-reports must not silently become operation observations there. Call result-source links
-and callee summaries remain separate. Work starts from `2a020936`; the tracked tree is
-clean and unrelated `docs/programs/hey/` is excluded.
+`Effect::Call` now retains independent Operation/Normal observations alongside exact
+call/function/argument identity, `may_return` and control. Result-only observations do
+not create call-graph sites; empty or conflicting retained reports are rejected.
+`may_return` remains a checked possibility, not observed completion. Call result-source
+links and callee summaries remain separate. Work starts from `2a020936`; unrelated
+`docs/programs/hey/` is excluded.
 
 Dependency-ordered commit plan:
 
@@ -4389,16 +4388,18 @@ Dependency-ordered commit plan:
    normal observations grant no runtime completion, value, loan or proof authority.
    Do not cross caller/callee ownership or enable result sources yet.
 
-Characterization is complete: all ten focused call-effect tests pass
-(`/tmp/meowy-call-stages-characterization.log`), including sparse/reordered/duplicate
-ports, guarded aliases/dispatch, recursive owners, conditional returns and stopped
-arguments. Call effects still use the operation-only collector. Existing field stages
-provide the independent-observation pattern; invocation metadata already captures exact
-argument and conditional Returned edges. No new capture or reference-contract change is
-needed. Validation extraction now returns the original borrowed Invocation, retaining
-the same checks, budget order and copy charges. All 1042 Forward tests pass
-(`/tmp/meowy-call-stages-refactor.log`). Next is stage aggregation and call-graph gating;
-the report representation and observable behavior are unchanged so far.
+Characterization (`58211edd`) and the borrowed-validator refactor (`819861c9`) are
+complete. Fixed-size stages now reuse checked invocation metadata; aggregation copies
+ordered arguments once under the shared payload allowance and validates repeated headers
+before merging flags. Never results, foreign owners and missing operation registration
+are rejected. The call graph revalidates retained reports before accepting operation
+observations. No new capture or reference-contract change is needed.
+
+All 1043 Forward tests and all-target Clippy pass (`/tmp/meowy-call-stages-aggregation.log`,
+`/tmp/meowy-call-stages-aggregation-clippy.log`); the additional call-graph operation-only,
+result-only and empty-report regression passes (`/tmp/meowy-call-stages-graph.log`).
+Next: identity/budget boundary tests, source conformance evidence, then final gates.
+The characterization/refactor logs retain their corresponding focused checks.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly

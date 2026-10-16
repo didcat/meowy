@@ -76,6 +76,8 @@ pub(crate) enum Effect {
         args: Vec<PointId>,
         may_return: bool,
         control: bool,
+        operation: bool,
+        result: bool,
     },
     Output(outputs::Observed),
     Index(indices::Observed),
@@ -268,6 +270,10 @@ impl Checker {
                     self.record_field_effect(stage, &mut effects, limit, span)?;
                     continue;
                 }
+                if let Some(stage) = self.call_effect_stage(reports, &calls, owner, port, span)? {
+                    self.record_call_effect(stage, &mut effects, limit, &mut parts, span)?;
+                    continue;
+                }
                 let Port::Operation(id) = port else {
                     continue;
                 };
@@ -278,8 +284,6 @@ impl Checker {
                         + self.derefs.len().checked_ilog2().unwrap_or(0) as usize
                         + self.paths.len().checked_ilog2().unwrap_or(0) as usize
                         + self.stores.len().checked_ilog2().unwrap_or(0) as usize
-                        + calls.len().checked_ilog2().unwrap_or(0) as usize
-                        + self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                         + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
                         + 8,
                 ) {
@@ -350,11 +354,6 @@ impl Checker {
                         origins: op.origins.clone(),
                         control: op.control,
                     }
-                } else if let Some(site) = calls.get(&id) {
-                    if self.invocations[site].owner != owner {
-                        return Err(invalid());
-                    }
-                    self.call_effect(reports, *site, &mut parts, span)?
                 } else {
                     Effect::Unknown
                 };

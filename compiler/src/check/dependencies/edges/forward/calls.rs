@@ -104,9 +104,19 @@ impl Checker {
             );
         }
         for (&point, (caller, effect)) in &reports.effects {
-            let Effect::Call { site, function, .. } = effect else {
+            let Effect::Call {
+                site,
+                function,
+                operation,
+                ..
+            } = effect
+            else {
                 continue;
             };
+            self.validate_call_report(reports, point, *caller, effect, span)?;
+            if !operation {
+                continue;
+            }
             if graph.sites.len() >= sites
                 || !self.flow.spend(
                     graph.nodes.len().checked_ilog2().unwrap_or(0) as usize * 3

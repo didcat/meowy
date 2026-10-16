@@ -41,6 +41,42 @@ pub(crate) fn call_graph_keeps_exact_sites_alias_targets_and_independent_owners(
 }
 
 #[test]
+pub(crate) fn call_graph_requires_operation_observations_and_rejects_empty_reports() {
+    for (operation, result) in [(true, false), (false, true), (true, true), (false, false)] {
+        let (mut checker, mut reports) = checked("f<int32>:(n<int32>){->f(n)};alias:f;x:alias(1)");
+        for (_, effect) in reports.effects.values_mut() {
+            if let Effect::Call {
+                operation: op,
+                result: end,
+                ..
+            } = effect
+            {
+                *op = operation;
+                *end = result;
+            }
+        }
+        let before = format!("{reports:?}{:?}", checker.edge_counts());
+        let graph = checker.call_graph(&reports, Span::default());
+        if operation {
+            assert_eq!(graph.unwrap(), reports.calls);
+        } else if result {
+            let graph = graph.unwrap();
+            assert_eq!(graph.nodes.len(), reports.calls.nodes.len());
+            assert!(graph.sites.is_empty());
+            for (owner, node) in &graph.nodes {
+                assert!(node.targets.is_empty());
+                assert_eq!(node.body, reports.calls.nodes[owner].body);
+                assert_eq!(node.missing, reports.calls.nodes[owner].missing);
+                assert_eq!(node.backedges, reports.calls.nodes[owner].backedges);
+            }
+        } else {
+            assert!(graph.unwrap_err().message.contains("call-effect identity"));
+        }
+        assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+    }
+}
+
+#[test]
 pub(crate) fn call_graph_preserves_empty_entries_stopped_calls_and_exact_boundaries() {
     let (_, empty) = checked("");
     assert_eq!(empty.calls.nodes.len(), 1);

@@ -2,6 +2,26 @@ use super::*;
 use crate::check::dependencies::Invocation;
 use crate::hir;
 
+mod stages;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Kind {
+    Operation,
+    Result,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct Stage {
+    pub(super) point: PointId,
+    pub(super) owner: usize,
+    pub(super) site: hir::CallId,
+    pub(super) function: hir::FunctionId,
+    pub(super) count: usize,
+    pub(super) may_return: bool,
+    pub(super) control: bool,
+    pub(super) kind: Kind,
+}
+
 impl Checker {
     pub(super) fn call_effect_index(
         &mut self,
@@ -10,42 +30,67 @@ impl Checker {
         self.call_effect_index_limited(span, MAX_EDGES)
     }
 
-    pub(super) fn call_effect(
+    pub(super) fn call_effect_stage(
         &mut self,
         reports: &Reports,
-        site: hir::CallId,
-        parts: &mut usize,
+        calls: &BTreeMap<PointId, hir::CallId>,
+        owner: usize,
+        port: Port,
         span: Span,
-    ) -> Result<Effect> {
-        let call = self.checked_call_effect(reports, site, *parts, span)?;
-        *parts -= call.args.len();
-        Ok(Effect::Call {
+    ) -> Result<Option<Stage>> {
+        let (id, kind) = match port {
+            Port::Operation(id) => (id, Kind::Operation),
+            Port::Normal(id) => (id, Kind::Result),
+            _ => return Ok(None),
+        };
+        if !self
+            .flow
+            .spend(calls.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof call-effect budget exhausted",
+                span,
+            ));
+        }
+        let Some(&site) = calls.get(&id) else {
+            return Ok(None);
+        };
+        let call = self.checked_call_effect(reports, site, span)?;
+        if call.point != id || call.owner != owner || (kind == Kind::Result && !call.may_return) {
+            return Err(Diagnostic::unsupported(
+                "proof call-effect identity mismatch",
+                span,
+            ));
+        }
+        Ok(Some(Stage {
+            point: id,
+            owner,
             site,
             function: call.function,
-            args: call.args.clone(),
+            count: call.args.len(),
             may_return: call.may_return,
             control: call.control,
-        })
+            kind,
+        }))
     }
 
     pub(super) fn checked_call_effect(
         &mut self,
         reports: &Reports,
         site: hir::CallId,
-        parts: usize,
         span: Span,
     ) -> Result<&Invocation> {
         let budget = || Diagnostic::unsupported("proof call-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof call-effect identity mismatch", span);
-        if !self
-            .flow
-            .spend(self.invocations.len().checked_ilog2().unwrap_or(0) as usize + 1)
-        {
+        if !self.flow.spend(
+            self.invocations.len().checked_ilog2().unwrap_or(0) as usize
+                + self.proofs.calls.len().checked_ilog2().unwrap_or(0) as usize
+                + 3,
+        ) {
             return Err(budget());
         }
         let call = self.invocations.get(&site).ok_or_else(invalid)?;
         if call.args.len() > crate::check::dependencies::sequences::MAX_ITEMS
-            || call.args.len() > parts
             || !self.flow.spend(
                 call.args.len() * (call.args.len().checked_ilog2().unwrap_or(0) as usize + 4)
                     + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
@@ -60,10 +105,13 @@ impl Checker {
         let (body, _) = reports.entries.get(&owner).ok_or_else(invalid)?;
         let point = self.points.get(call.point).ok_or_else(invalid)?;
         if call.site != site
+            || site >= self.calls
+            || !self.proofs.calls.contains_key(&site)
             || reports.index.operations.get(&call.point) != Some(&call.owner)
             || !point.complete
             || point.kind != PointKind::Expr
             || point.owner != call.owner
+            || point.span != call.span
             || !self
                 .bodies
                 .get(body)

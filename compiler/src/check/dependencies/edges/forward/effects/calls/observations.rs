@@ -1,7 +1,7 @@
 use super::{super::tests::checked, *};
 
 #[test]
-pub(crate) fn call_observations_currently_require_operation_visits() {
+pub(crate) fn call_observations_keep_operation_and_result_visits_independent() {
     let source = "f<int32>:(a<int32>,b<int32>){->a+b};alias:f;x:f(1,2);y:3.(alias,4);recur<int32>:(n<int32>){->recur(n)}";
     let (mut checker, mut reports) = checked(source, true);
     let expected = reports.effects.clone();
@@ -21,7 +21,9 @@ pub(crate) fn call_observations_currently_require_operation_visits() {
             vec![Port::Normal(id), Port::Operation(id)],
             vec![Port::Operation(id), Port::Normal(id), Port::Operation(id)],
         ] {
-            let observed = ports.contains(&Port::Operation(id));
+            let operation = ports.contains(&Port::Operation(id));
+            let result = ports.contains(&Port::Normal(id));
+            let observed = operation || result;
             for (_, walk) in reports.entries.values_mut() {
                 walk.ports.clear();
             }
@@ -30,7 +32,18 @@ pub(crate) fn call_observations_currently_require_operation_visits() {
                 .operation_effects(&reports, Span::default())
                 .unwrap();
             assert_eq!(effects.len(), usize::from(observed));
-            assert_eq!(effects.get(&id), observed.then(|| &expected[&id]));
+            let mut expected_call = expected[&id].clone();
+            let Effect::Call {
+                operation: op,
+                result: end,
+                ..
+            } = &mut expected_call.1
+            else {
+                panic!()
+            };
+            *op = operation;
+            *end = result;
+            assert_eq!(effects.get(&id), observed.then_some(&expected_call));
             assert_eq!(reports.effects, expected);
         }
     }
@@ -79,6 +92,52 @@ pub(crate) fn call_observations_keep_conditional_returns_and_independent_owners(
         }));
     }
     assert_eq!(observed, 3);
+}
+
+#[test]
+pub(crate) fn call_observations_reject_nonreturning_results_and_foreign_owners() {
+    for fault in 0..3 {
+        let (mut checker, mut reports) =
+            checked("stop<never>:(){'loop{'loop.restart()}};stop()", false);
+        let call = checker.invocations.first_key_value().unwrap().1;
+        let (id, owner) = (call.point, call.owner);
+        for (_, walk) in reports.entries.values_mut() {
+            walk.ports.clear();
+        }
+        match fault {
+            0 => reports
+                .entries
+                .get_mut(&owner)
+                .unwrap()
+                .1
+                .ports
+                .push(Port::Normal(id)),
+            1 => reports
+                .entries
+                .get_mut(&(owner + 1))
+                .unwrap()
+                .1
+                .ports
+                .push(Port::Operation(id)),
+            2 => {
+                reports
+                    .entries
+                    .get_mut(&owner)
+                    .unwrap()
+                    .1
+                    .ports
+                    .push(Port::Operation(id));
+                reports.index.operations.remove(&id);
+            }
+            _ => unreachable!(),
+        }
+        let before = format!("{reports:?}{:?}", checker.edge_counts());
+        let error = checker
+            .operation_effects(&reports, Span::default())
+            .unwrap_err();
+        assert!(error.message.contains("call-effect identity"), "{error:?}");
+        assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
+    }
 }
 
 #[test]

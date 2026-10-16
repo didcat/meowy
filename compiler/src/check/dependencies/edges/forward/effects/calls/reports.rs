@@ -20,7 +20,9 @@ pub(crate) fn call_effects_keep_exact_alias_recursion_control_and_return_metadat
                 function: call.function,
                 args: call.args.clone(),
                 may_return: call.may_return,
-                control: call.control
+                control: call.control,
+                operation: true,
+                result: call.may_return,
             }
         );
         let callee = reports.entries[&(call.function + 1)].0;
@@ -166,14 +168,12 @@ pub(crate) fn call_effects_bound_shared_path_argument_storage_and_charge_copies_
     let (&site, call) = checker.invocations.first_key_value().unwrap();
     checker.invocations.get_mut(&site).unwrap().args =
         vec![call.args[0]; crate::check::dependencies::sequences::MAX_ITEMS + 1];
-    let mut parts = MAX_EDGES;
     assert!(
         checker
-            .call_effect(&reports, site, &mut parts, Span::default())
+            .checked_call_effect(&reports, site, Span::default())
             .unwrap_err()
             .message
             .contains("budget")
     );
-    assert_eq!(parts, MAX_EDGES);
     assert_eq!(reports.effects, expected);
 }
