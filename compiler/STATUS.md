@@ -4395,7 +4395,10 @@ ports, guarded aliases/dispatch, recursive owners, conditional returns and stopp
 arguments. Call effects still use the operation-only collector. Existing field stages
 provide the independent-observation pattern; invocation metadata already captures exact
 argument and conditional Returned edges. No new capture or reference-contract change is
-needed. Next is the behavior-preserving validation extraction, then stage aggregation.
+needed. Validation extraction now returns the original borrowed Invocation, retaining
+the same checks, budget order and copy charges. All 1042 Forward tests pass
+(`/tmp/meowy-call-stages-refactor.log`). Next is stage aggregation and call-graph gating;
+the report representation and observable behavior are unchanged so far.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The existing contextual-list probe reports exactly

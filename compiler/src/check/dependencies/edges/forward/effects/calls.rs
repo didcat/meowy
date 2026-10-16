@@ -1,4 +1,5 @@
 use super::*;
+use crate::check::dependencies::Invocation;
 use crate::hir;
 
 impl Checker {
@@ -16,6 +17,24 @@ impl Checker {
         parts: &mut usize,
         span: Span,
     ) -> Result<Effect> {
+        let call = self.checked_call_effect(reports, site, *parts, span)?;
+        *parts -= call.args.len();
+        Ok(Effect::Call {
+            site,
+            function: call.function,
+            args: call.args.clone(),
+            may_return: call.may_return,
+            control: call.control,
+        })
+    }
+
+    pub(super) fn checked_call_effect(
+        &mut self,
+        reports: &Reports,
+        site: hir::CallId,
+        parts: usize,
+        span: Span,
+    ) -> Result<&Invocation> {
         let budget = || Diagnostic::unsupported("proof call-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof call-effect identity mismatch", span);
         if !self
@@ -26,7 +45,7 @@ impl Checker {
         }
         let call = self.invocations.get(&site).ok_or_else(invalid)?;
         if call.args.len() > crate::check::dependencies::sequences::MAX_ITEMS
-            || call.args.len() > *parts
+            || call.args.len() > parts
             || !self.flow.spend(
                 call.args.len() * (call.args.len().checked_ilog2().unwrap_or(0) as usize + 4)
                     + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
@@ -82,14 +101,7 @@ impl Checker {
         {
             return Err(invalid());
         }
-        *parts -= call.args.len();
-        Ok(Effect::Call {
-            site,
-            function: call.function,
-            args: call.args.clone(),
-            may_return: call.may_return,
-            control: call.control,
-        })
+        Ok(call)
     }
 
     pub(self) fn call_effect_index_limited(
