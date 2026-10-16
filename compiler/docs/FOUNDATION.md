@@ -1776,6 +1776,27 @@ structurally even when its body never returns at runtime. Unused/recursive bodie
 retain independent entry reports. Neither return metadata nor observed stages prove
 runtime completion, termination, values, loan authority or proof outcomes. Call result
 sources and callee summaries remain separate.
+Direct-call argument sources reuse the existing expected-expression boundaries and
+coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
+can place primary extraction at an inner coercion, with outer Forward or shared-region
+wrappers; a block argument can place it at an expected emission inside that block.
+The existing projection port identifies the source slot in the caller's scope. Owned
+scalar primaries and counted shared-reference primaries already qualify through ordinary
+locals, dispatch receivers and immutable receiver copies, including nullable conversions.
+Whole-record and scalar arguments need no primary extraction. Direct shared forwarding
+retains its region boundary, and exclusive-to-shared input retains its reborrow.
+
+Each argument projection and source publication is independent of call operation/result
+observations. Earlier argument links survive a later stopped input. Missing projection
+or source evidence removes only its link; stale identities, caller scopes, canonical
+storage and exhausted map/work budgets reject without partial publication. Duplicate
+visits copy argument payloads once under the existing shared allowance. Call, coercion
+and receiver control flags remain independent. Parameter/mutable-record/reference-load
+and call-result sources retain their existing opacity, and shared-reference histories
+remain Unknown. Qualification reuses existing descriptors and ports; it grants no
+callee-derived values, loan authority or proof answers. Scalar-hinted inline blocks
+retain their existing E212 named-field diagnostic, including through groups; explicit
+record ascription supplies the record context.
 Print/panic effects now aggregate the prefix, projection, streamed-part and terminal
 ports actually encountered by each structural walk. Records retain panic/control
 flags, checked total/stopped metadata and exact input roots or literal None markers.

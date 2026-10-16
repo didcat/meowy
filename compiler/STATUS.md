@@ -4442,6 +4442,15 @@ verified at the inner expected emission (`/tmp/meowy-call-inputs-blocks.log`). C
 build and all four catalog/tooling checks pass (`/tmp/meowy-call-inputs-build.log`,
 `/tmp/meowy-call-inputs-source-docs.log`). The catalog now has 506 cases; prior expectations
 are unchanged. Next: document the existing reuse, link structural evidence, then final gates.
+Source evidence is committed as `91365ea5`. The guide and three owning coverage rows now
+describe the existing coercion/emission ownership and its structural limits. All four
+documentation/tooling checks pass (`/tmp/meowy-call-inputs-docs.log`). The preservation
+audit retains 576 protected files, all 502 prior case records, 19 pins, 37 reference
+hashes/prior evidence and eight user files; compiler source changes are confined to test
+modules and their `cfg(test)` registration (`/tmp/meowy-call-inputs-preservation.log`).
+Next: full compiler gate, strict pin audit and final handoff. Declared call-result shapes
+are a separate next prerequisite: current Invocation retains only `may_return`, while
+the proof contract requires the full declared result domain without inspecting a callee.
 
 Dependency-ordered commit plan:
 
