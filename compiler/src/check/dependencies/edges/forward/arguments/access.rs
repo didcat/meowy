@@ -86,3 +86,6 @@ mod tests;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod limits;

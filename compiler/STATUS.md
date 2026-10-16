@@ -4847,9 +4847,10 @@ Dependency-ordered commit plan:
    exact work/map/payload limits and stale visits are checked before publication.
 3. Complete (`1882808f`): borrowed per-call access preserves all four observation/source states,
    caller identity and shared history. One forest/index serves all calls.
-4. Complete: three boundary checks cover late marker/call identity faults and
+4. Complete (`e338c8a4`): three boundary checks cover late marker/call identity faults and
    conservative observations without publishing partial access.
-5. Cover oversized inputs and exact access/aggregate work and payload budgets.
+5. Complete: all three budget checks pass for prepaid iterator work, one shared
+   context, oversized inputs and exact aggregate work/payload limits.
 6. Document structural evidence and run compiler, strict-pin, preservation and final
    documentation gates. Parameter values/origins, callee summaries, restart propagation,
    E225 and proof outcomes remain separate.
@@ -4866,7 +4867,14 @@ empty parameter lists. All four tests and all-target Clippy pass
 Three boundary checks now cover six late marker-index faults, five current-call
 identity faults and conservative rows/source omissions without Call effects. Formatting
 and all three checks pass (`/tmp/meowy-call-forest-boundaries.log`). No known
-failures remain. Next: exact access and aggregate work/payload limits.
+failures remain. All three budget checks pass after ending the test iterator Result
+scope before inspecting Checker. Iterator work is charged even when unconsumed;
+per-call access reserves no extra payload, and aggregate publication reuses one
+qualified forest/index (`/tmp/meowy-call-forest-limits.log`). Formatting passes.
+Next: document structural evidence and run final gates. The proof contract keeps
+functions at declared parameter domains and call results at full declared domains;
+caller associations must not specialize callee facts.
+
 Unrelated `docs/programs/hey/` is preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
