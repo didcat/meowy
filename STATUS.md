@@ -45,27 +45,27 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Direct-call reports now retain independent operation/result observations while preserving
-exact identities, argument order, control and conditional return boundaries. Argument
-payloads are copied once; invalid partial reports and exhausted limits reject atomically.
-The call graph validates both owners and creates sites only for operation observations.
-The [compiler handoff](compiler/STATUS.md#direct-call-operation-and-result-observations)
-records seven implementation/evidence commits. Call results and callee summaries remain
-opaque; structural observations do not establish runtime completion or proof answers.
+Call-argument source ownership is qualified using the existing coercion/emission
+machinery. Grouped arguments and block emissions retain their exact projection owners;
+source slots stay in caller scope, and earlier links survive stopped later arguments.
+Eleven structural regressions cover ownership, missing observations, stale identities,
+independent control and exact bounds. No production metadata or source-link change was
+needed. The [compiler handoff](compiler/STATUS.md#direct-call-argument-source-ownership)
+records five qualification/evidence commits and the remaining opaque boundaries.
 
-All ten compiler checks pass: 3109 library, 923 native and 62 Python tests, formatting,
-Clippy, build, metadata and 483 required conformance cases. The same 19 pinned gaps
-remain, with zero debug/release failures (`/tmp/meowy-call-stages-final-gate.log`). Two
-new cases cover skipped guarded dispatch and a returning signature whose body panics.
-The audit preserves 574 prior reference/source/pin/obligation files, all 500 prior case
-records, 19 pins, 37 hashes/prior evidence and eight user files from `2a020936`
-(`/tmp/meowy-call-stages-preservation.log`). Strict mode exits 1 only for the exact pins
-(`/tmp/meowy-call-stages-strict.log`, `/tmp/meowy-call-stages-strict-audit.log`). All four
-final handoff checks pass (`/tmp/meowy-call-stages-final-docs.log`).
+All ten compiler checks pass: 3120 library, 923 native and 62 Python tests, formatting,
+Clippy, build, metadata and 487 required conformance cases. The same 19 pinned gaps
+remain, with zero debug/release failures (`/tmp/meowy-call-inputs-gate.log`). Four new
+required cases cover argument order, reference identity, P006 stopping and E212.
+The audit preserves 576 protected files, all 502 prior case records, 19 pins, 37 hashes/
+prior evidence and eight user files from `e5021b9c`; compiler source changes are limited
+to test modules (`/tmp/meowy-call-inputs-preservation.log`). Strict mode exits 1 only for
+the exact pins (`/tmp/meowy-call-inputs-strict.log`, `/tmp/meowy-call-inputs-strict-audit.log`).
+All four final handoff checks pass (`/tmp/meowy-call-inputs-final-docs.log`).
 
-Next: characterize direct-call argument source ownership, reusing existing coercion
-projections before adding source links. Full proof/release qualification remains
-incomplete. Unrelated `docs/programs/hey/` is preserved.
+Next: retain declared call-result shapes while keeping call values and callee summaries
+opaque. Full proof/release qualification remains incomplete. Unrelated
+`docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

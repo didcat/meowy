@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-15. Independent direct-call observations pass the compiler gate.
+Updated: 2026-10-15. Existing call-argument source qualification passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: follow the direct-call argument-source handoff below; call observations are complete.
+Next: follow the declared call-result shape handoff below; call-argument ownership is qualified.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4403,77 +4403,77 @@ capability pins, 37 reference hashes/prior evidence and eight user files from `2
 (`/tmp/meowy-call-stages-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Current: direct-call argument source ownership
+### Direct-call argument source ownership
 
-`check/functions.rs` checks arguments with parameter hints before recording their original
-PointIds in `dependencies/invocations.rs`. Existing coercions can own primary extraction;
-Call operation/result observations alone do not identify a projected argument source.
-The current slice starts from `e5021b9c` with no tracked changes. Initial tracing confirms
-that each ordinary argument's expected-type root owns its coercion, while Invocation
-retains that outer root in original argument order. Shared forwarding/reborrowing has
-its existing separate boundary. The next tests must establish which source links are
-already complete before adding metadata. Unrelated `docs/programs/hey/` is excluded.
-All four characterization tests pass: owned/shared primaries already link through direct,
-aliased, dispatched and function-local arguments, including grouped/ascribed inputs and
-receiver copies. Scalar hints pass through groups, so inline named fields retain E212;
-explicit record ascription supplies the record context. Grouped arguments can project at
-an inner coercion while outer Forward/shared-region boundaries remain separate. Test
-lookup follows captured group/region/coercion identities. Existing E212 diagnostics are
-preserved (`/tmp/meowy-call-inputs-characterization.log`). No additional descriptors are
-needed for these paths. Next: qualify partial/stopped observations and opaque sources;
-production code is unchanged.
-Characterization is committed as `df87c5e6`. All seven call-argument tests pass
-(`/tmp/meowy-call-inputs-stages.log`): each argument needs its own observed projection
-and source publication, independent of Call operation/result presence. Earlier links
-survive a later stopped argument; later arguments and the call remain unobserved.
-Parameter, mutable-record, reference-load, returned-call and projected-Never boundaries
-retain their existing opacity. Next: malformed identity, scope and exact limits.
-Observation/stopping coverage is committed as `852c2270`. All ten call-argument tests
-pass (`/tmp/meowy-call-inputs-boundaries.log`), including late source identity and caller
-scope faults, independent call/coercion/receiver control, exact map/work bounds and
-duplicate visits without another argument payload copy. Stale storage is checked at
-the captured local-read point beneath unchanged narrowing. The all-target Clippy check
-passes (`/tmp/meowy-call-inputs-clippy.log`). No known failures remain. Next: source-level
-order/shared-identity/stop cases and guide/evidence updates, then final gates.
-Boundary qualification is committed as `d6c710df`. Four new required cases and four
-existing call order/stop/arity/borrow cases pass in debug/release
-(`/tmp/meowy-call-inputs-source.log`). Block-argument projection ownership is also
-verified at the inner expected emission (`/tmp/meowy-call-inputs-blocks.log`). Compiler
-build and all four catalog/tooling checks pass (`/tmp/meowy-call-inputs-build.log`,
-`/tmp/meowy-call-inputs-source-docs.log`). The catalog now has 506 cases; prior expectations
-are unchanged. Next: document the existing reuse, link structural evidence, then final gates.
-Source evidence is committed as `91365ea5`. The guide and three owning coverage rows now
-describe the existing coercion/emission ownership and its structural limits. All four
-documentation/tooling checks pass (`/tmp/meowy-call-inputs-docs.log`). The preservation
-audit retains 576 protected files, all 502 prior case records, 19 pins, 37 reference
-hashes/prior evidence and eight user files; compiler source changes are confined to test
-modules and their `cfg(test)` registration (`/tmp/meowy-call-inputs-preservation.log`).
-Next: full compiler gate, strict pin audit and final handoff. Declared call-result shapes
-are a separate next prerequisite: current Invocation retains only `may_return`, while
-the proof contract requires the full declared result domain without inspecting a callee.
+Complete qualification. Existing coercion/emission descriptors already cover supported
+call-argument primary sources; no production capture or source-link change was needed.
+Invocation arguments retain outer PointIds in evaluation order. Groups can project at
+an inner coercion beneath Forward/shared-region wrappers; block arguments can project at
+an expected emission. Source slots stay in caller scope across direct/aliased/dispatched
+calls, independent function bodies and immutable shared-reference receiver copies.
+Scalar/whole-record arguments, direct shared forwarding and reborrows keep their distinct
+boundaries. Scalar-hinted inline named fields retain E212, including through groups;
+explicit record ascription supplies the record context.
+
+Eleven structural regressions cover exact ownership, independent projection/source/call
+observations, stopped suffixes, stale identity/storage, caller scopes, independent
+control, duplicate visits and exact map/work/payload bounds. Parameter, mutable-record,
+reference-load and call-result sources remain opaque; shared-reference histories remain
+Unknown. Source tests cover order, address identity, P006 stopping and incompatible-primary
+E212. These checks grant no values, loan authority, runtime reachability or proof answers.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `df87c5e6` | Characterize existing call-argument projection owners and type boundaries |
+| `852c2270` | Qualify independent observations, stopped arguments and opaque sources |
+| `d6c710df` | Reject identity/scope faults and enforce exact work/map/payload bounds |
+| `91365ea5` | Add block-emission regression and four required source cases |
+| `9edeffaf` | Document existing reuse and link structural coverage evidence |
+
+All ten compiler checks pass: 3120 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-inputs-gate.log`).
+The 506-case catalog has 487 required passes, 19 unchanged pinned gaps and zero
+debug/release failures. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-call-inputs-strict.log`, `/tmp/meowy-call-inputs-strict-audit.log`).
+All four final handoff checks pass (`/tmp/meowy-call-inputs-final-docs.log`).
+Eight focused source cases pass in both profiles (`/tmp/meowy-call-inputs-source.log`);
+focused structural logs end in `characterization`, `stages`, `boundaries` and `blocks`.
+No known failures remain.
+
+The preservation audit retains 576 protected files, all 502 prior case records, 19 pins,
+37 reference hashes/prior evidence and eight user files from `e5021b9c`. Compiler source
+changes are confined to test modules and their `cfg(test)` registration
+(`/tmp/meowy-call-inputs-preservation.log`). No reference contract or prior expected
+outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+### Next: declared call-result shapes
+
+Invocation currently retains `may_return` without a declared result-shape descriptor.
+`check/functions.rs` has the signature result before outer coercion, and
+`dependencies/bodies/completion.rs` already provides bounded shallow Shape/Completion
+classification. The proof contract gives call results their full declared result domain;
+callee-body completion or returned values must not narrow that domain.
 
 Dependency-ordered commit plan:
 
-1. Characterize argument preparation in `functions.rs`, `invocations.rs`,
-   `edges/forward/effects/coercions.rs` and `edges/forward/consumers.rs`. Cover direct,
-   aliased and dispatched calls; scalar/record primaries, shared references, unchanged
-   wrappers and stopped arguments. Pin original argument order, caller scope and the
-   exact coercion/projection owner in focused tests.
-2. Qualify the existing links across partial/missing observations, stopped arguments and
-   opaque call-result/parameter sources. Characterization found no need for additional
-   descriptors or call-owned projection ports; keep capture unchanged unless a concrete
-   missing supported path is demonstrated.
-3. Cover malformed argument-source identity, caller scope, duplicate visits and exact
-   map/work limits in a separate boundary slice. Preserve the shared payload allowance
-   and Unknown reference histories without crossing into callee bodies.
-4. Add required source cases for order, shared identity and stopping, update the owning
-   guide/evidence inventory, and run compiler/strict/final docs gates. Keep call result
-   sources, callee summaries and proof outcomes opaque.
+1. Characterize direct/aliased/dispatched and recursive call results in `functions.rs`,
+   `invocations.rs` and `edges/forward/effects/calls/`. Cover scalar, shared-reference,
+   record, list, union and Never signatures, including returning signatures with panicking
+   bodies and separate outer conversions. Pin exact CallId/FunctionId/PointId and owners.
+2. Capture a bounded shallow descriptor from the declared signature using existing
+   completion/shape rules. Keep capture and report propagation independently reviewable,
+   with focused tests for source-kind bounds and agreement with `may_return`.
+3. Carry and revalidate the descriptor through call stages, retained reports and graph
+   qualification. Preserve independent operation/result flags, argument order and shared
+   payload/work limits. Missing or stale descriptors must fail atomically; do not read
+   callee-body layouts or infer call-result provenance.
+4. Cover source execution and malformed/partial/limit cases, update guide/evidence rows,
+   then run compiler/strict/final docs gates. Call result values, callee effect summaries,
+   restart propagation, E225 enforcement and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
 `reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`.
-Broader value provenance, restart propagation, E225 and proof outcomes remain separate.
 Full v0.0.1 is not qualified.
 
 ## Documentation conventions and layout
@@ -6079,9 +6079,9 @@ receiver inputs through immutable local records, including composed-emission sou
 Coercion- and binary-owned primaries now qualify these receiver inputs too. Owned scalar
 fields, composed emissions and coercion/binary-owned primaries also qualify immutable
 copies of shared-reference receiver records. Counted binary lookup is consolidated.
-Independent direct-call operation/result observations are complete. Next characterize
-direct-call argument source ownership using the ordered plan above. Value selection
-and broader aggregate provenance remain separate.
+Independent direct-call operation/result observations and existing argument-source
+ownership are qualified. Next capture declared call-result shapes using the ordered
+plan above. Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6752,8 +6752,8 @@ and broader aggregate provenance remain separate.
    reports (`876262fa`), test scopes (`86097270`), links (`284eb11f`), boundaries
    (`052a1e1b`), limits (`111b65ad`) and source cases (`f622cdd3`) pass the compiler gate.
    Shared-reference receiver local inputs and immutable copies are qualified above.
-   Counted binary lookup and independent direct-call observation stages are complete.
-   Next characterize call-argument source ownership using the current ordered handoff.
+   Counted binary lookup, independent direct-call observations and call-argument source
+   ownership are qualified. Next retain declared call-result shapes using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
