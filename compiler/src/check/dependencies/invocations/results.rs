@@ -4,6 +4,8 @@ use crate::check::dependencies::{
     bodies::{Completion, completion::Shape},
 };
 
+mod boundaries;
+
 #[test]
 pub(crate) fn call_signatures_keep_exact_scalar_reference_and_aggregate_result_shapes() {
     for (source, shape) in [
@@ -58,6 +60,8 @@ pub(crate) fn call_signatures_keep_exact_scalar_reference_and_aggregate_result_s
         let completion = Completion::of(&function.result);
         assert_eq!(function.id, call.function);
         assert_eq!(completion.result, shape, "{source}");
+        assert_eq!(call.shape, shape);
+        assert!(call.valid_result());
         assert!(completion.valid());
         assert_eq!(call.may_return, completion.normal);
         assert_eq!(checker.points[call.point].owner, call.owner);
@@ -99,6 +103,7 @@ pub(crate) fn call_signature_results_precede_outer_conversions_aliases_and_recur
             }
         );
         assert_eq!(coercion.owner, call.owner);
+        assert_eq!(call.shape, Completion::of(&function.result).result);
         assert!(call.may_return);
         owners.insert(call.owner);
     }
@@ -127,6 +132,7 @@ pub(crate) fn call_return_boundaries_follow_signatures_when_bodies_never_complet
         let call = checker.invocations.first_key_value().unwrap().1;
         let function = checker.functions[call.function].as_ref().unwrap();
         assert_eq!(Completion::of(&function.result).result, shape);
+        assert_eq!(call.shape, shape);
         assert_eq!(call.may_return, may_return);
         assert_eq!(
             checker.bodies[&function.body.id].completion.result,

@@ -4448,7 +4448,7 @@ outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
 ### Current: declared call-result shapes
 
-Invocation currently retains `may_return` without a declared result-shape descriptor.
+Invocation now retains a declared result-shape descriptor alongside `may_return`.
 `check/functions.rs` has the signature result before outer coercion, and
 `dependencies/bodies/completion.rs` already provides bounded shallow Shape/Completion
 classification. The proof contract gives call results their full declared result domain;
@@ -4463,6 +4463,12 @@ regressions pin explicit/inferred scalar, reference, record, list, union and Nev
 signatures; aliases/dispatch/recursion before outer conversions; and panicking bodies
 whose signatures still permit return. Next: capture and validate the fixed-size Shape
 on Invocation, then propagate it through stage/report qualification.
+Characterization is committed as `948733f7`. Invocation now classifies the checked
+signature through a small factory while keeping the `bodies` module private. Registration
+charges and validates shape bounds and agreement with `may_return` before publication.
+All twelve invocation tests pass (`/tmp/meowy-call-shapes-capture.log`), including invalid
+width/count/return metadata, stale retained shapes and exact-work atomicity. No known
+failures remain. Next: stage/report propagation and call-graph revalidation.
 
 Dependency-ordered commit plan:
 

@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod signatures;
 
+use super::dependencies::Invocation;
 use super::{Checker, Result, Scope, Spec, Value};
 use crate::ast::{self, ExprKind, Span, StmtKind};
 use crate::diagnostic::Diagnostic;
@@ -442,12 +443,13 @@ impl Checker {
                 let site = self.calls;
                 self.calls += 1;
                 self.proofs.calls.insert(site, self.reach);
-                self.invocation(super::dependencies::Invocation {
+                self.invocation(Invocation {
                     point: self.point.expect("call expression"),
                     owner: self.owner,
                     function: id,
                     site,
                     args: points,
+                    shape: Invocation::result_shape(&result),
                     may_return: result != Type::Never,
                     control: self.control,
                     span,

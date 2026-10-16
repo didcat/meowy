@@ -1,5 +1,6 @@
 use super::{
     PointKind,
+    bodies::{Completion, completion::Shape},
     edges::{Edge, Port, Route},
 };
 use crate::{
@@ -17,10 +18,25 @@ pub(crate) struct Invocation {
     pub(crate) function: hir::FunctionId,
     pub(crate) site: hir::CallId,
     pub(crate) args: Vec<hir::PointId>,
+    pub(crate) shape: Shape,
     pub(crate) may_return: bool,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: Vec<Edge>,
+}
+
+impl Invocation {
+    pub(crate) fn result_shape(ty: &hir::Type) -> Shape {
+        Completion::of(ty).result
+    }
+
+    pub(crate) fn valid_result(&self) -> bool {
+        Completion {
+            normal: self.may_return,
+            result: self.shape,
+        }
+        .valid()
+    }
 }
 
 impl Checker {
@@ -32,13 +48,14 @@ impl Checker {
                 call.args.len() * (call.args.len().checked_ilog2().unwrap_or(0) as usize + 2)
                     + self.invocations.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.calls.len().checked_ilog2().unwrap_or(0) as usize
-                    + 4,
+                    + 8,
             )
         {
             return Err(budget());
         }
         let point = self.points.get(call.point).ok_or_else(invalid)?;
-        if point.kind != PointKind::Expr
+        if !call.valid_result()
+            || point.kind != PointKind::Expr
             || point.owner != self.owner
             || call.owner != self.owner
             || (!point.complete && self.point != Some(call.point))
