@@ -2,6 +2,8 @@ use super::{tests::checked, *};
 use crate::check::dependencies::{CoercionKind, edges::forward::results::Sources};
 use std::collections::BTreeSet;
 
+mod boundaries;
+mod limits;
 mod stages;
 
 pub(super) fn projection(checker: &Checker, arg: PointId) -> PointId {

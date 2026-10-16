@@ -4428,6 +4428,13 @@ and source publication, independent of Call operation/result presence. Earlier l
 survive a later stopped argument; later arguments and the call remain unobserved.
 Parameter, mutable-record, reference-load, returned-call and projected-Never boundaries
 retain their existing opacity. Next: malformed identity, scope and exact limits.
+Observation/stopping coverage is committed as `852c2270`. All ten call-argument tests
+pass (`/tmp/meowy-call-inputs-boundaries.log`), including late source identity and caller
+scope faults, independent call/coercion/receiver control, exact map/work bounds and
+duplicate visits without another argument payload copy. Stale storage is checked at
+the captured local-read point beneath unchanged narrowing. The all-target Clippy check
+passes (`/tmp/meowy-call-inputs-clippy.log`). No known failures remain. Next: source-level
+order/shared-identity/stop cases and guide/evidence updates, then final gates.
 
 Dependency-ordered commit plan:
 
