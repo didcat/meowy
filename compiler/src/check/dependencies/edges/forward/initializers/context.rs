@@ -18,7 +18,7 @@ pub(crate) fn initializer_context_preserves_maps_after_hir_transfer_and_reorderi
         let params = reports.signatures.params.keys().copied().collect::<BTreeSet<_>>();
         let start = checker.flow.work;
         assert_eq!(
-            checker.initializer_parameters(&program, &reports, Span::default()).unwrap(),
+            checker.program_signatures(&program, &reports, Span::default()).unwrap().params.keys().copied().collect::<BTreeSet<_>>(),
             params
         );
         let collection = checker.flow.work - start;

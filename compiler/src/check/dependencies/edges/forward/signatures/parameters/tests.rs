@@ -19,7 +19,7 @@ pub(super) fn checked() -> (Checker, hir::Program, Reports) {
 }
 
 #[test]
-pub(crate) fn initializer_parameters_follow_function_ids_in_reversed_order() {
+pub(crate) fn program_signatures_follow_function_ids_in_reversed_order() {
     let (mut checker, mut program, reports) = checked();
     let expected = program
         .functions
@@ -30,15 +30,19 @@ pub(crate) fn initializer_parameters_follow_function_ids_in_reversed_order() {
     program.functions.reverse();
     assert_eq!(
         checker
-            .initializer_parameters(&program, &reports, Span::default())
-            .unwrap(),
+            .program_signatures(&program, &reports, Span::default())
+            .unwrap()
+            .params
+            .keys()
+            .copied()
+            .collect::<BTreeSet<_>>(),
         expected
     );
 }
 
 #[test]
-pub(crate) fn initializer_parameters_reject_owner_body_and_local_corruption() {
-    for fault in 0..13 {
+pub(crate) fn program_signatures_reject_owner_body_and_local_corruption() {
+    for fault in 0..19 {
         let (mut checker, mut program, mut reports) = checked();
         let id = program.functions[0].body.id;
         match fault {
@@ -65,39 +69,80 @@ pub(crate) fn initializer_parameters_reject_owner_body_and_local_corruption() {
             12 => {
                 checker.bodies.remove(&id);
             }
+            13 => program.functions[0].params.swap(0, 1),
+            14 => program.functions[0].result = hir::Type::Bool,
+            15 => program.functions[1] = program.functions[0].clone(),
+            16 => {
+                reports
+                    .signatures
+                    .params
+                    .remove(&program.functions[0].params[0]);
+            }
+            17 => {
+                reports
+                    .signatures
+                    .params
+                    .get_mut(&program.functions[0].params[0])
+                    .unwrap()
+                    .1 = 1;
+            }
+            18 => {
+                reports
+                    .signatures
+                    .params
+                    .insert(0, (program.functions[0].id, 2));
+            }
             _ => unreachable!(),
         }
-        let edges = checker.edge_counts();
-        let parts = reports.parts;
+        let before = format!("{program:?}{reports:?}{:?}", checker.edge_counts());
         assert!(
             checker
-                .initializer_parameters(&program, &reports, Span::default())
+                .program_signatures(&program, &reports, Span::default())
                 .unwrap_err()
                 .message
-                .contains("parameter identity")
+                .contains("function-signature identity")
         );
-        assert_eq!(checker.edge_counts(), edges);
-        assert_eq!(reports.parts, parts);
+        assert!(
+            checker
+                .binding_initializers(&program, &reports, Span::default())
+                .is_err(),
+            "ordinary fault {fault}"
+        );
+        assert!(
+            checker
+                .shared_initializers(&program, &reports, Span::default(), MAX_EDGES, MAX_EDGES)
+                .is_err(),
+            "shared fault {fault}"
+        );
+        assert_eq!(
+            format!("{program:?}{reports:?}{:?}", checker.edge_counts()),
+            before
+        );
     }
 }
 
 #[test]
-pub(crate) fn initializer_parameters_charge_exact_shared_work() {
+pub(crate) fn program_signatures_charge_exact_shared_work() {
     let (mut checker, program, reports) = checked();
     let before = checker.flow.work;
     let expected = checker
-        .initializer_parameters(&program, &reports, Span::default())
+        .program_signatures(&program, &reports, Span::default())
         .unwrap();
     let work = checker.flow.work - before;
     for spare in [0, 1] {
         checker.flow = crate::flow::Flow::new();
         checker.flow.work = crate::flow::MAX_PROOF_WORK - work + spare;
-        let result = checker.initializer_parameters(&program, &reports, Span::default());
+        let result = checker.program_signatures(&program, &reports, Span::default());
         if spare == 0 {
             assert_eq!(result.unwrap(), expected);
             assert_eq!(checker.flow.work, crate::flow::MAX_PROOF_WORK);
         } else {
-            assert!(result.unwrap_err().message.contains("parameter budget"));
+            assert!(
+                result
+                    .unwrap_err()
+                    .message
+                    .contains("function-signature budget")
+            );
             assert!(checker.flow.exceeded());
         }
     }

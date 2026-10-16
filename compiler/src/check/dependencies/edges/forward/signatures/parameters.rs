@@ -2,78 +2,57 @@ use super::*;
 use std::collections::BTreeSet;
 
 impl Checker {
-    pub(in super::super) fn initializer_parameters(
+    pub(in super::super) fn program_signatures<'a>(
         &mut self,
         program: &hir::Program,
-        reports: &Reports,
+        reports: &'a Reports,
         span: Span,
-    ) -> Result<BTreeSet<hir::LocalId>> {
-        let budget =
-            || Diagnostic::unsupported("proof initializer parameter budget exhausted", span);
+    ) -> Result<&'a Index> {
+        let budget = || Diagnostic::unsupported("proof function-signature budget exhausted", span);
         let invalid =
-            || Diagnostic::unsupported("proof initializer parameter identity mismatch", span);
-        if program.functions.len() >= MAX_ENTRIES || !self.flow.spend(program.functions.len() + 1) {
+            || Diagnostic::unsupported("proof function-signature identity mismatch", span);
+        let index = &reports.signatures;
+        if index.params.len() > MAX_EDGES / 2 {
             return Err(budget());
         }
+        let root = self.signature_root(reports, program.functions.len(), span)?;
         if program.locals.len() != reports.locals
-            || reports.entries.len() != program.functions.len() + 1
+            || program.body.id != root
+            || program.functions.len() != index.functions.len()
         {
             return Err(invalid());
         }
-        let limit = reports.locals.min(MAX_EDGES);
-        let mut params = BTreeSet::new();
         let mut owners = BTreeSet::new();
-        let entries = std::iter::once((None, program.body.id, &[][..])).chain(
-            program.functions.iter().map(|function| {
-                (
-                    Some(function.id),
-                    function.body.id,
-                    function.params.as_slice(),
+        let mut count = 0usize;
+        for function in &program.functions {
+            if function.params.len() > MAX_ITEMS
+                || !self.flow.spend(
+                    function.params.len()
+                        + owners.len().checked_ilog2().unwrap_or(0) as usize * 2
+                        + 3,
                 )
-            }),
-        );
-        for (function, block, inputs) in entries {
-            if !self.flow.spend(
-                reports.entries.len().checked_ilog2().unwrap_or(0) as usize
-                    + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
-                    + owners.len().checked_ilog2().unwrap_or(0) as usize * 2
-                    + 6,
-            ) {
+            {
                 return Err(budget());
             }
-            let owner = match function {
-                Some(id) => id.checked_add(1).ok_or_else(invalid)?,
-                None => 0,
-            };
-            if !reports
-                .entries
-                .get(&owner)
-                .is_some_and(|(entry, _)| *entry == block)
-                || !self
-                    .bodies
-                    .get(&block)
-                    .is_some_and(|body| body.owner == owner)
-                || !owners.insert(owner)
+            if !owners.insert(function.id) {
+                return Err(invalid());
+            }
+            let header = self.checked_function_signature(reports, function.id, span)?;
+            if header.body != function.body.id
+                || header.params != function.params
+                || header.shape != Invocation::result_shape(&function.result)
             {
                 return Err(invalid());
             }
-            for &local in inputs {
-                if !self
-                    .flow
-                    .spend(params.len().checked_ilog2().unwrap_or(0) as usize * 2 + 3)
-                {
-                    return Err(budget());
-                }
-                if local >= reports.locals || params.contains(&local) {
-                    return Err(invalid());
-                }
-                if params.len() >= limit {
-                    return Err(budget());
-                }
-                params.insert(local);
-            }
+            count = count
+                .checked_add(header.params.len())
+                .filter(|count| *count <= index.params.len())
+                .ok_or_else(invalid)?;
         }
-        Ok(params)
+        if count != index.params.len() {
+            return Err(invalid());
+        }
+        Ok(index)
     }
 }
 

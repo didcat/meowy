@@ -4562,7 +4562,26 @@ atomic source rejection, including duplicate empty functions and invalid root ow
 All 28 signature-filtered library tests pass, including the new twenty-case construction
 regression (`/tmp/meowy-parameter-context-construction.log`). Shallow classification
 remains unchanged, including its Other fallback. No known failures remain.
-Next: qualify retained parameter membership against HIR for both initializer collectors.
+Both initializer collectors now borrow retained parameter membership after bounded
+source/header validation. The old parameter-set collector is removed; only bounded
+FunctionId scratch remains for source uniqueness. Source body/parameter/result shape,
+root/local count and every retained reverse position must agree. Nineteen corruption
+cases now exercise the shared validator and both consumers; exact work tests migrate
+with it. All 1,090 Forward tests pass (`/tmp/meowy-parameter-context-reuse.log`).
+The characterization still produces identical initializer maps and payloads
+(`/tmp/meowy-parameter-context-work.log`). Construction spends less work; consumers
+spend more on explicit source/header/reverse validation. These are logical charges,
+not runtime performance measurements:
+
+| Input | Header work before/after | Ordinary before/after | Shared before/after |
+| --- | --- | --- | --- |
+| Empty program | 8 / 6 | 8 / 6 | 8 / 6 |
+| Ordinary/unused/empty functions | 121 / 80 | 206 / 233 | 176 / 203 |
+| Nested functions/shared records | 94 / 63 | 451 / 475 | 444 / 468 |
+| Forward definitions | 72 / 48 | 187 / 205 | 159 / 177 |
+| Typed export | 50 / 35 | 168 / 181 | 140 / 153 |
+
+Next: review remaining context/budget boundaries and refresh the guide/evidence inventory.
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
@@ -4571,10 +4590,10 @@ Dependency-ordered commit plan:
    and shared initializers, unused/nested/forward functions, reversed HIR and typed exports.
    Pin exclusions for parameters, aliases, receivers, temporaries and mutable/reference
    storage; cover stale Program/report identities and exact work/payload bounds.
-2. Consolidate authoritative entry/body/parameter validation in the signature path using
+2. Complete: consolidate authoritative entry/body/parameter validation in the signature path using
    existing checks. Keep validation refactoring separate from consumer changes where
    practical; retain a checked relationship to the source HIR when a consumer needs it.
-3. Reuse retained parameter membership in ordinary and shared initializer qualification.
+3. Integrated: reuse retained parameter membership in ordinary and shared initializer qualification.
    Remove duplicate collection only after all callers and boundary tests are migrated.
    Preserve initializer maps, missing-source behavior, Unknown histories, failure atomicity
    and the existing two-record parameter reservation. Record actual work-charge changes.

@@ -43,7 +43,7 @@ impl Checker {
             .and_then(|room| room.checked_sub(reports.slot_uses.len()))
             .and_then(|room| room.checked_sub(reports.eligible.len()))
             .ok_or_else(budget)?;
-        let params = self.initializer_parameters(program, reports, span)?;
+        let params = &self.program_signatures(program, reports, span)?.params;
         let mut index = Initializers::new();
         for (&id, (owner, effect)) in &reports.effects {
             if !matches!(effect, Effect::Storage { .. }) {
@@ -72,7 +72,7 @@ impl Checker {
                 || self.proofs.aliases.contains_key(&local)
                 || self.proofs.receivers.contains(&local)
                 || self.proofs.temporaries.contains_key(&local)
-                || params.contains(&local)
+                || params.contains_key(&local)
             {
                 continue;
             }

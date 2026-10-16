@@ -38,15 +38,16 @@ pub(crate) fn function_context_keeps_parameter_order_and_identity_after_hir_tran
     );
     program.functions.reverse();
     let reports = checker.entry_reports(&program, Span::default()).unwrap();
-    let params = checker
-        .initializer_parameters(&program, &reports, Span::default())
-        .unwrap();
+    let params = &checker
+        .program_signatures(&program, &reports, Span::default())
+        .unwrap()
+        .params;
     let mut seen = BTreeSet::new();
     for function in &program.functions {
         assert_eq!(reports.entries[&(function.id + 1)].0, function.body.id);
         for local in &function.params {
             assert!(seen.insert(*local));
-            assert!(params.contains(local));
+            assert!(params.contains_key(local));
             assert!(!reports.initializers.contains_key(local));
             assert!(checker.proofs.bindings.contains_key(local));
         }
@@ -60,7 +61,7 @@ pub(crate) fn function_context_keeps_parameter_order_and_identity_after_hir_tran
         assert_eq!(call.args.len(), function.params.len());
         assert_eq!(call.shape, Invocation::result_shape(&function.result));
     }
-    assert_eq!(params, seen);
+    assert_eq!(params.keys().copied().collect::<BTreeSet<_>>(), seen);
     assert_eq!(reports.entries.len(), program.functions.len() + 1);
     assert_eq!(
         program

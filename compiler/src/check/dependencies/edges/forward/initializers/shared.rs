@@ -24,7 +24,7 @@ impl Checker {
         if reports.effects.len() > MAX_EDGES || !self.flow.spend(reports.effects.len() + 1) {
             return Err(budget());
         }
-        let params = self.initializer_parameters(program, reports, span)?;
+        let params = &self.program_signatures(program, reports, span)?.params;
         let mut index = Index::new();
         for (&id, (owner, effect)) in &reports.effects {
             if !matches!(effect, Effect::Storage { .. }) {
@@ -64,7 +64,7 @@ impl Checker {
                 || self.proofs.aliases.contains_key(&local)
                 || self.proofs.receivers.contains(&local)
                 || self.proofs.temporaries.contains_key(&local)
-                || params.contains(&local)
+                || params.contains_key(&local)
             {
                 continue;
             }
