@@ -4678,7 +4678,12 @@ All 64 argument-filtered tests pass (`/tmp/meowy-argument-observations-integrati
 An empty argument lookup now returns without scanning unrelated walks; a fourth test
 covers empty programs/calls and unused parameters. All four observation tests pass
 (`/tmp/meowy-argument-observations-empty.log`). Next: qualify exact capacity/work
-limits and reject stale owner/root/parameter metadata atomically;
+limits and reject stale owner/root/parameter metadata atomically. Four additional tests
+cover twelve corruption cases, duplicate visits, exact index/row/payload/work limits,
+oversized input/walk rejection before scanning, and declared-return observations through
+panicking callees with original wrapped roots. All eight observation tests pass
+(`/tmp/meowy-argument-observations-boundaries.log`). No known failures remain.
+Next: document the sparse report/budgets, link structural evidence and run final gates;
 `docs/programs/hey/` remains excluded. No push is authorized.
 
 Dependency-ordered commit plan:
