@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Bounded function-signature context passes the compiler gate.
+Updated: 2026-10-16. Retained initializer parameter context passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: reuse retained parameter context in initializer qualification using the handoff below.
+Next: qualify bounded call-argument/parameter associations using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4492,7 +4492,7 @@ outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
 Complete. Entry reports retain original FunctionId/body identity, ordered parameter
 LocalIds, shallow checked result shape and reverse function/position lookup. Construction
-reuses the existing parameter validator and preserves empty/unused/nested/recursive
+qualifies identities in the signature module and preserves empty/unused/nested/recursive
 functions after transferred or reordered HIR. Supported typed export aliases require
 exact signatures. Annotated local identity bindings retain their existing B001 capability
 gate; that structural regression is not a successful language-conformance rejection.
@@ -4532,46 +4532,55 @@ outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
 ### Retained parameter context in initializer qualification
 
-`initializers.rs::binding_initializers_limited` and `initializers/shared.rs::shared_initializers`
-still rebuild parameter sets through `initializer_parameters`. Signature construction
-also uses that validator, while Reports now retains validated reverse parameter lookup.
-Consolidate these consumers without widening local eligibility or crossing ownership.
-Investigation confirms both collectors validate the borrowed Program, so replacing
-their sets with unchecked cache membership would lose stale-HIR rejection. Keep a
-bounded source/header comparison and exact reverse positions in the signature module.
-Construction can enforce uniqueness directly in its retained maps, eliminating its
-temporary parameter/owner sets. Consumer validation still needs bounded owner scratch
-to detect duplicate FunctionIds independently of HIR vector order.
+Complete. Ordinary and shared initializer collectors borrow parameter membership from
+retained function signatures. The signature module validates the source Program's root,
+local count, function/body identities, ordered parameters and shallow result shapes
+against those headers, including exact reverse positions and registered bindings.
+Bounded FunctionId scratch rejects duplicate source owners independently of HIR order.
+Signature construction enforces uniqueness in its retained maps without temporary owner
+or parameter sets. The obsolete parameter-set collector is removed.
 
-Baseline: tracked tree clean at `d6c52f59`; 588 protected files, 514 case records,
-37 reference rows and eight user files are captured in
-`/tmp/meowy-parameter-context-baseline.json`. All 23 initializer tests pass, including
-two new characterizations of transferred/reordered HIR, unused/nested/forward functions,
-typed exports and shared parameter/special-cell exclusions
-(`/tmp/meowy-parameter-context-characterization.log`). Existing synthetic parameter
-exclusion now refreshes its signature context before consumption. Recorded work charges
-will be compared after consolidation; initializer maps and payloads are unchanged.
-Parameter validation and its three boundary tests now live under `signatures/parameters`;
-the helper's behavior, diagnostics and charges are unchanged. Guide/evidence paths move
-with it. All three parameter tests and four documentation checks pass
-(`/tmp/meowy-parameter-context-move.log`, `/tmp/meowy-parameter-context-move-docs.log`).
-Construction now uses retained function/parameter maps for uniqueness and shares root
-entry validation with retained-context checks. Local counts/bounds, registered bindings,
-independent bodies and exact entries remain required. Twenty corruption scenarios cover
-atomic source rejection, including duplicate empty functions and invalid root owners.
-All 28 signature-filtered library tests pass, including the new twenty-case construction
-regression (`/tmp/meowy-parameter-context-construction.log`). Shallow classification
-remains unchanged, including its Other fallback. No known failures remain.
-Both initializer collectors now borrow retained parameter membership after bounded
-source/header validation. The old parameter-set collector is removed; only bounded
-FunctionId scratch remains for source uniqueness. Source body/parameter/result shape,
-root/local count and every retained reverse position must agree. Nineteen corruption
-cases now exercise the shared validator and both consumers; exact work tests migrate
-with it. All 1,090 Forward tests pass (`/tmp/meowy-parameter-context-reuse.log`).
-The characterization still produces identical initializer maps and payloads
-(`/tmp/meowy-parameter-context-work.log`). Construction spends less work; consumers
-spend more on explicit source/header/reverse validation. These are logical charges,
-not runtime performance measurements:
+Generic eligibility remains closed. Parameters, aliases, receiver/temporary cells,
+mutable storage and reference-bearing ordinary locals keep their exclusions. Shared
+records retain their separate fixed descriptors and qualifier. Initializer maps, missing
+roots, Unknown histories and original owner/storage/input identities are preserved.
+Two retained records per parameter still reserve payload once before operation effects;
+initializer rebuilds borrow that context and shared records charge only their own entries.
+Stale/oversized source or cached metadata and exhausted work reject atomically.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `81083e56` | Characterize transferred/reordered HIR, initializer maps and exclusions |
+| `55bee5d0` | Move parameter validation/tests into signatures and migrate evidence paths |
+| `0256845b` | Enforce construction identities directly without parameter scratch |
+| `36001da0` | Validate source/header agreement and reuse retained parameter membership |
+| `8a53a1bf` | Cover oversized/stale context and exact combined payload/work boundaries |
+| `ab560b14` | Document retained initializer context and link structural evidence |
+
+All ten compiler checks pass: 3153 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution
+(`/tmp/meowy-parameter-context-gate.log`). The unchanged 514-case catalog has 495
+required passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict
+mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-parameter-context-strict.log`, `/tmp/meowy-parameter-context-strict-audit.log`).
+All four guide/evidence and final handoff checks pass
+(`/tmp/meowy-parameter-context-docs.log`, `/tmp/meowy-parameter-context-final-docs.log`).
+Six new structural tests plus migrated/extended tests
+cover construction, unused/nested/forward functions, typed exports, stale source/header
+agreement, exclusions and exact bounds. All 1,090 Forward tests passed after integration;
+all 32 parameter-filtered tests passed with the final boundary cases. No known failures remain.
+
+The preservation audit retains all 588 protected files, all 514 case records, 19 pins,
+37 reference hashes/gaps and eight user files from `d6c52f59`. Prior evidence is preserved
+with the reviewed `initializers/parameters/tests.rs` to `signatures/parameters/tests.rs`
+move; three owning rows add construction/context/limit evidence
+(`/tmp/meowy-parameter-context-preservation.log`). No reference contract or expected
+source outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+Construction uses fewer logical work units; consumers charge additional source/header
+and reverse-index validation. These are logical charges, not runtime timings. The five
+characterizations retain identical initializer maps and payloads
+(`/tmp/meowy-parameter-context-characterization.log`, `/tmp/meowy-parameter-context-work.log`).
 
 | Input | Header work before/after | Ordinary before/after | Shared before/after |
 | --- | --- | --- | --- |
@@ -4581,36 +4590,25 @@ not runtime performance measurements:
 | Forward definitions | 72 / 48 | 187 / 205 | 159 / 177 |
 | Typed export | 50 / 35 | 168 / 181 | 140 / 153 |
 
-Three additional regressions exercise oversized source/cached parameter context before
-scanning, coherent but source-stale headers and duplicate empty functions, plus exact
-ordinary/shared work and combined parameter/call/shared-record payload. All 32
-parameter-filtered library tests pass (`/tmp/meowy-parameter-context-boundaries.log`).
-The combined payload regression includes existing record-operation payload and confirms
-the default two-record parameter reservation without widening collector visibility.
-No known failures remain. The foundation guide now describes source/header validation
-and borrowed parameter membership. Three owning reference rows gain structural links
-for construction, initializer equivalence and parameter-context limits. The existing
-call-limit evidence covers combined payload; no language contract, case expectation or
-capability/proof inventory changes. All four documentation checks pass
-(`/tmp/meowy-parameter-context-docs.log`). The final compiler gate, strict-pin audit
-and preservation audit remain pending.
-`docs/programs/hey/` remains excluded.
+### Next: qualify bounded call-argument and parameter associations
+
+`effects/calls.rs` validates original caller argument roots against retained callee
+arity/result shape. `signatures` retains ordered parameter LocalIds and exact reverse
+positions. Qualify their positional association without transferring values or origins.
 
 Dependency-ordered commit plan:
 
-1. Complete: characterize old parameter collection versus retained-index membership across ordinary
-   and shared initializers, unused/nested/forward functions, reversed HIR and typed exports.
-   Pin exclusions for parameters, aliases, receivers, temporaries and mutable/reference
-   storage; cover stale Program/report identities and exact work/payload bounds.
-2. Complete: consolidate authoritative entry/body/parameter validation in the signature path using
-   existing checks. Keep validation refactoring separate from consumer changes where
-   practical; retain a checked relationship to the source HIR when a consumer needs it.
-3. Complete: reuse retained parameter membership in ordinary and shared initializer qualification.
-   Remove duplicate collection only after all callers and boundary tests are migrated.
-   Preserve initializer maps, missing-source behavior, Unknown histories, failure atomicity
-   and the existing two-record parameter reservation. Record actual work-charge changes.
-4. In progress: update guide/evidence paths if helpers move, preserve required source expectations and
-   run compiler/strict/final docs gates. Argument-value transfer, callee summaries,
+1. Characterize associations across zero/unused/mixed parameters, receiver-first calls,
+   typed exports, recursion, reversed HIR and partial/result-only observations. Reuse
+   `effects/calls` and signature fixtures; pin original outer argument roots, separate
+   caller/callee owners and missing/stopped input behavior before adding a qualifier.
+2. Add the smallest borrowed qualifier in `effects/calls.rs`, reusing existing checked
+   call and signature validation. Bound traversal/work before exposing each parameter
+   LocalId and matching caller PointId; avoid another retained argument copy. Keep
+   signature/context preparation separate from any consuming report changes.
+3. Cover stale position/owner/header identities, exact budgets and failure atomicity;
+   preserve required source expectations, update guide/evidence and run compiler,
+   strict-pin and final documentation gates. Argument-value transfer, callee summaries,
    call-result provenance, restart propagation, E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
@@ -6222,9 +6220,9 @@ Coercion- and binary-owned primaries now qualify these receiver inputs too. Owne
 fields, composed emissions and coercion/binary-owned primaries also qualify immutable
 copies of shared-reference receiver records. Counted binary lookup is consolidated.
 Direct-call observations, argument-source ownership, declared result shapes and bounded
-function-signature context are qualified. Next reuse retained parameter context in
-initializer qualification using the ordered handoff. Value selection and broader
-aggregate provenance remain separate.
+function-signature context are qualified. Initializer qualification reuses validated
+retained parameter membership. Next qualify bounded call-argument/parameter associations
+using the ordered handoff. Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
