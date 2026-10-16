@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Individual call-argument observations pass the compiler gate.
+Updated: 2026-10-16. Caller sources for observed arguments pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: qualify caller-side sources for observed arguments using the handoff below.
+Next: qualify retained argument-source views for traversal using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4693,62 +4693,70 @@ changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
 ### Caller-side sources for observed arguments
 
-`Reports.arguments` now identifies exact observed roots. Existing
-`results/inputs/direct.rs::direct_source` qualifies caller-owned field/block/dispatch
-sources through the existing eligibility and observation rules. Characterize their use
-at argument roots before publishing any additional source association.
+Complete. Reports retain the existing Direct descriptor for each validated normally
+observed argument, preserving its original root and caller owner. Field, scalar-block
+and scalar-dispatch sources reuse the existing qualifiers through groups, non-projecting
+Forward coercions, unchanged ascriptions and eligible immutable locals. Opaque inputs
+retain explicit unknown descriptors. Missing or Entry-only observations produce no source
+row; earlier sources survive a stopped later input without requiring a Call effect.
 
-Investigation: reuse the existing Direct descriptor and Lookup cache; retain an original
-argument root even when its direct source is unknown. Validate retained argument rows
-against bounded call/port reconstruction before lookup. Missing rows or omitted flags
-remain conservative; recorded flags cannot exceed actual observations. Source publication
-requires the argument's own Normal flag and keeps the existing field/block/dispatch rules.
-No caller/callee value transfer, new generic eligibility or projected-input bypass.
+Retained argument rows are checked against bounded call/port reconstruction before source
+lookup. Site, position, parameter, root and owner must agree. Missing rows and omitted flags
+remain conservative; forged flags, empty rows and stale identities reject. One Lookup cache
+is shared across source rows, reusing checked fields and their source forest. Each output
+row reserves one remaining shared payload unit plus existing cache charges. Exact row,
+payload and work exhaustion and stale producer metadata fail atomically. Existing hop
+bounds, generic eligibility, Unknown histories and caller/callee ownership remain intact;
+no parameter values/origins, callee summaries or proof outcomes are transferred.
 
-Baseline `dd7afdc0` has a clean tracked tree except the excluded `docs/programs/hey/`.
-`/tmp/meowy-argument-sources-baseline.json` captures 588 protected files, 514 cases,
-37 reference rows and eight user files. Both characterizations pass across eleven source
-forms and independent callers, including missing field evidence
-(`/tmp/meowy-argument-sources-characterization.log`). Existing field/block/dispatch
-qualification works at argument roots; projected/changed-type/call/load/mutable/parameter
-inputs stay opaque. Retained-row validation now reconstructs bounded call/port evidence
-and checks exact identities with conservative flag subsets. Missing rows/flags remain
-absent; forged observations and empty rows reject. Entry-report publication runs this
-check without reserving retained payload again. Three regressions cover omissions,
-twelve stale/invented cases and exact work. All 11 argument-module tests pass
-(`/tmp/meowy-argument-sources-validation.log`). Reports now retain a Direct descriptor
-for each validated normally observed argument, including explicit unknown descriptors.
-The collector owns row validation, shares one existing Lookup cache, and reserves one
-remaining payload unit per source row plus existing cache charges. Three integration
-tests cover field/block/dispatch roots, independent flags/unknowns and stopped prefixes.
-All 77 argument-filtered tests pass (`/tmp/meowy-argument-sources-integration.log`).
-The field-reference fixture now uses the documented `r.&n` syntax. No known failures
-remain. Four boundary regressions now cover seven stale row/producer cases, shared field
-cache reuse, exact row/payload/work limits, reference/aggregate/parameter opacity,
-missing field evidence and oversized row rejection before lookup. All seven source-report
-tests pass (`/tmp/meowy-argument-sources-boundaries.log`). No known failures remain.
-The foundation guide now documents conservative row validation, Normal-gated descriptors,
-explicit unknowns and shared cache/payload accounting. Three owning reference rows gain
-four structural evidence paths each. Reviewed gaps still apply to callee values/origins,
-summaries and proof outcomes; reference hashes, fixtures, pins and obligations stay unchanged.
-All four documentation checks pass (`/tmp/meowy-argument-sources-docs.log`).
-Final compiler/strict/preservation gates are next.
+| Commit | Reviewable slice |
+| --- | --- |
+| `38e8ce8c` | Characterize direct sources and opaque cases at original argument roots |
+| `54ffa289` | Revalidate retained argument identities and conservative observations |
+| `05c3e483` | Retain caller source descriptors using the shared bounded Lookup cache |
+| `4ee16569` | Cover stale metadata, cache reuse, exact budgets and opaque inputs |
+| `6c1ee465` | Document the source report and link structural coverage evidence |
+
+All ten compiler checks pass: 3185 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution (`/tmp/meowy-argument-sources-gate.log`).
+The unchanged 514-case catalog has 495 required passes, 19 unchanged pinned gaps and zero
+failures in debug/release. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-argument-sources-strict.log`, `/tmp/meowy-argument-sources-strict-audit.log`).
+All four guide/evidence and final handoff checks pass
+(`/tmp/meowy-argument-sources-docs.log`, `/tmp/meowy-argument-sources-final-docs.log`).
+Twelve new structural tests cover eleven source forms, independent
+owners/observations, unknowns, stopped prefixes, stale rows/producers and exact bounds.
+All seven source-report tests pass, including cache reuse and oversized-row rejection
+before lookup (`/tmp/meowy-argument-sources-boundaries.log`). No known failures remain.
+
+The preservation audit retains all 588 protected files, 514 case records, 19 pins,
+37 reference hashes/gaps/prior evidence and eight user files from `dd7afdc0`
+(`/tmp/meowy-argument-sources-preservation.log`). Three owning rows add four structural
+paths each. Reviewed gaps still apply to callee values/origins, summaries and proof
+outcomes. No reference contract or expected source outcome changed. Unrelated
+`docs/programs/hey/` remains untouched and excluded.
+
+### Next: qualify retained argument-source views for traversal
+
+`argument_sources` constructs validated descriptors; future consumers must revalidate
+the stored map before traversal. Reuse the pattern in
+`results/inputs/direct/qualified.rs::direct_graph` without copying argument vectors or
+mixing argument roots with result-candidate keys.
 
 Dependency-ordered commit plan:
 
-1. Characterize normally observed argument roots against the existing direct-source
-   qualifier and `consumers/calls` fixtures. Cover groups, non-projecting Forward coercions,
-   unchanged ascriptions and eligible immutable locals, plus stopped/missing observations,
-   projected inputs, calls and reference loads. Preserve each existing opaque boundary.
-2. Validate retained argument rows against the checked call/parameter association before
-   source lookup: exact site, position, parameter, root and owner, with independent flags.
-   Missing observations remain absent; call visits must not supply them. Keep this
-   preparation in a separate validated commit before source-report integration.
-3. Reuse the bounded source lookup/cache for qualified caller roots, with exact row/payload/
-   hop/work limits and atomic failures. Keep sources in the caller and preserve existing
-   generic eligibility and Unknown histories. Update structural/source evidence and run
-   compiler, strict-pin and final documentation gates. Parameter-value/origin transfer,
-   callee summaries, restart propagation, E225 and proof outcomes remain separate.
+1. Characterize the complete source-map key set for normally observed argument rows,
+   including explicit unknowns and conservative omitted observations. Cover field/block/
+   dispatch descriptors, caller owners, stale producer evidence and partial call reports.
+2. Add a bounded borrowed view that checks exact keys, caller owners, original points and
+   stored descriptors against the existing argument validation and direct-source resolver.
+   Share one Lookup cache, charge work/cache storage before publication, and reject missing,
+   extra or stale descriptors atomically. Keep this validation separate from forest wiring.
+3. Characterize the existing candidate/direct forest entry points for argument source slots
+   before adding traversal. Preserve unknowns, original argument identities, independent
+   source observations and caller ownership. Update evidence and run compiler, strict-pin
+   and final documentation gates. Parameter-value/origin transfer, callee summaries,
+   restart propagation, E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6361,8 +6369,9 @@ copies of shared-reference receiver records. Counted binary lookup is consolidat
 Direct-call observations, argument-source ownership, declared result shapes and bounded
 function-signature context are qualified. Initializer qualification reuses validated
 retained parameter membership. Bounded call-argument/parameter associations and individual
-argument observations are qualified. Next qualify caller-side sources for observed arguments
-using the ordered handoff. Value selection and broader aggregate provenance remain separate.
+argument observations are qualified, including caller-side direct sources for normally
+observed arguments. Next qualify retained argument-source views using the ordered handoff.
+Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -7035,8 +7044,9 @@ using the ordered handoff. Value selection and broader aggregate provenance rema
    Shared-reference receiver local inputs and immutable copies are qualified above.
    Counted binary lookup, direct-call observations, argument-source ownership, declared
    result shapes, function-signature context, initializer parameter reuse and borrowed
-   call-parameter associations and individual argument observations are qualified. Next
-   qualify caller-side sources for observed arguments using the current handoff.
+   call-parameter associations and individual argument observations are qualified. Reports
+   retain caller-side sources for normally observed arguments. Qualify their stored views
+   for traversal next, using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
