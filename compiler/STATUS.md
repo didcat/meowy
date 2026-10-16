@@ -4789,24 +4789,25 @@ Dependency-ordered commit plan:
 
 1. Complete (`482f0b69`): single-root expansion and shared state construction/finalization are
    extracted unchanged; all 31 existing graph/walk tests pass.
-2. Complete: the borrowed argument-graph entry validates both source and direct graphs
+2. Complete (`b05b2f4b`): the borrowed argument-graph entry validates both source and direct graphs
    under shared work/payload limits; all three identity/budget tests pass.
-3. Add typed argument visits and reuse single-root expansion for known source slots;
-   retain the forest in entry reports with focused owner/unknown/stopped-prefix tests.
+3. Complete: typed argument visits retain known/unknown descriptors in entry reports;
+   four owner/opaque/shared/stopped-prefix tests pass.
 4. Cover shared/cyclic histories, independent observations, late faults and exact
    traversal/publication budgets, preserving earlier reports and edges on failure.
 5. Update structural evidence and handoffs; run compiler, strict-pin, preservation and
    final documentation gates. Parameter values/origins, callee summaries, restart
    propagation, E225 and proof outcomes remain separate.
 
-`argument_graph` now borrows the original argument map and expanded candidate/direct
-view after validating both under shared work/payload limits. Entry reports use it when
-argument sources exist; empty source sets retain the existing argument-only validation.
-Three focused tests cover borrowed identities, stale argument/candidate/direct maps
-and exact combined work/cache budgets. Formatting and all three focused checks pass
-(`/tmp/meowy-argument-forest-graph.log`). No known failures remain. Next: add argument
-visits and retain the forest. Unrelated `docs/programs/hey/` is preserved;
-baseline is `6602c45a`, with LLVM still pinned to 23.1.3.
+`Visit::Argument(owner, Direct)` now retains each original argument point and source
+kind, including explicit unknowns. Known slots reuse single-root expansion with one
+shared/cycle state across arguments. `Reports.argument_walk` is published only after
+source and candidate/direct qualification plus bounded traversal; empty source maps
+retain the prior validation path. No argument vectors or intermediate root list are
+copied. Formatting and all four focused report tests pass
+(`/tmp/meowy-argument-forest-reports.log`). No known failures remain. Next: cover
+independent observations, late identity faults and exact traversal budgets.
+Unrelated `docs/programs/hey/` is preserved; baseline is `6602c45a`.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

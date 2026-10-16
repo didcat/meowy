@@ -1,4 +1,4 @@
-use super::super::direct::Directs;
+use super::super::direct::{Direct, Directs};
 use super::*;
 use crate::check::dependencies::edges::forward::consumers::{
     dispatch::Source as Dispatch, field_results::lookup::narrowing::Source,
@@ -7,6 +7,7 @@ use crate::check::dependencies::edges::forward::consumers::{
 use crate::flow::Flow;
 
 mod expand;
+mod starts;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) struct Root {
@@ -16,6 +17,7 @@ pub(crate) struct Root {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Visit {
+    Argument(usize, Direct),
     Root(Root),
     Slot(Root),
     Unknown(Root),

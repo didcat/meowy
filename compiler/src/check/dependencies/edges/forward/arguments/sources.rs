@@ -49,3 +49,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod retained;
+
+#[cfg(test)]
+mod forest;

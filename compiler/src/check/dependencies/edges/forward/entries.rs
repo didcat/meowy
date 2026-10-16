@@ -18,6 +18,7 @@ pub(crate) struct Reports {
     pub(crate) effects: super::effects::Effects,
     pub(crate) arguments: super::arguments::Arguments,
     pub(crate) argument_sources: super::arguments::sources::Sources,
+    pub(crate) argument_walk: super::results::inputs::graph::Walk,
     pub(crate) parts: usize,
     pub(crate) blocks: super::blocks::Blocks,
     pub(crate) results: super::results::Results,
@@ -69,6 +70,7 @@ impl Checker {
             effects: BTreeMap::new(),
             arguments: BTreeMap::new(),
             argument_sources: BTreeMap::new(),
+            argument_walk: super::results::inputs::graph::Walk::default(),
             parts: 0,
             blocks: BTreeMap::new(),
             results: BTreeMap::new(),
@@ -140,11 +142,8 @@ impl Checker {
             self.call_arguments(&reports, span, MAX_EDGES, reports.parts)?;
         (reports.argument_sources, reports.parts) =
             self.argument_sources(&reports, span, MAX_EDGES, reports.parts)?;
-        reports.parts = if reports.argument_sources.is_empty() {
-            self.argument_source_view(&reports, span, reports.parts)?.1
-        } else {
-            self.argument_graph(&reports, span, reports.parts)?.2
-        };
+        (reports.argument_walk, reports.parts) =
+            self.argument_walk_report(&reports, span, reports.parts)?;
         Ok(reports)
     }
 }
