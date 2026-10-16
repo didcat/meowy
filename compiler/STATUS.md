@@ -4488,13 +4488,24 @@ The preservation audit retains 580 protected files, all 506 prior case records, 
 (`/tmp/meowy-call-shapes-preservation.log`). No reference contract or prior expected
 outcome changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
 
-### Next: bounded function-signature context
+### Current: bounded function-signature context
 
 `entry_reports` receives the transferred Program, including FunctionId, ordered parameter
 LocalIds, checked result type and body identity. Reports currently retain the total local
 count and independent entry/body owners, while CallGraph nodes retain bodies and targets.
 The next prerequisite is to qualify the signature context needed to connect call sites
 to function parameters without selecting callee values or granting borrow authority.
+Work starts from `0148e491`; the tracked tree is clean and `docs/programs/hey/` is excluded.
+Investigation found the existing `initializer_parameters` validator, which already checks
+entry/body owners, local bounds and global parameter uniqueness. Reuse it when building
+ordered headers and a parameter-to-function/position index. Parameter IDs remain distinct
+from call argument PointIds. No type tree or callee value needs to be copied.
+All three characterization tests pass (`/tmp/meowy-signatures-characterization.log`):
+parameter order/unused IDs survive reordered HIR, forward recursion preserves owners,
+and supported typed export aliases require exact signatures. Local annotated identity
+aliases retain their existing B001 capability gate; it is not a language rejection pass.
+Next: retain bounded headers and reverse parameter positions, reusing entry qualification
+and reserving two payload records per parameter before collecting operation effects.
 
 Dependency-ordered commit plan:
 
@@ -4502,15 +4513,17 @@ Dependency-ordered commit plan:
    `entries/locals.rs`: exact parameter order/LocalIds, empty/unused/recursive/forward
    functions, transferred/reordered HIR and typed aliases. Establish existing signature
    agreement rules before enforcing comparisons with per-call result shapes.
-2. Reuse existing metadata where possible; retain only missing bounded function headers
+2. Reuse parameter qualification and retain only missing bounded function headers
    keyed by original FunctionId/owner, with body, ordered parameters and shallow checked
    result shape. Keep capture/indexing independently reviewable and charge header/parameter
    storage and work before publication. Avoid cloned type trees.
-3. Qualify call arity, callee entry and signature metadata against those headers while
+3. Reserve retained header/parameter storage in entry reports, keeping the signature
+   index and effect payload accounting independently reviewable where practical.
+4. Qualify call arity, callee entry and signature metadata against those headers while
    preserving caller/callee ownership and independent operation/result observations.
    Do not connect argument values or origins across owners, infer callee effects, or
    specialize call-result domains from body contents.
-4. Cover missing/duplicate/foreign identities, parameter/shape mismatches, partial calls,
+5. Cover missing/duplicate/foreign identities, parameter/shape mismatches, partial calls,
    exact map/payload/work limits and unchanged source order. Update guide/evidence and
    run compiler/strict/final docs gates. Call summaries, result-value provenance, restart
    propagation, E225 enforcement and proof outcomes remain separate.
