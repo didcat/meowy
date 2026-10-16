@@ -1,6 +1,9 @@
 use super::{super::tests::checked, *};
 use crate::check::dependencies::ScalarKind;
 
+mod boundaries;
+mod limits;
+
 #[test]
 pub(crate) fn call_result_reports_keep_signature_shapes_after_function_hir_is_transferred() {
     let source = "f<uint8>:(n<uint8>){->n};alias:f;a<uint8><null>:f(1);b<uint8><null>:2.(alias);shared<&int32>:(p<&int32>){->p};n:1;p:shared(&n);row<{tag<boolean>}>:(){->tag:true};r:row();list<int32[3]>:(){->[1]};xs:list();choice<int32><null>:(){->null};u:choice();recur<uint8>:(n<uint8>){->recur(n)}";

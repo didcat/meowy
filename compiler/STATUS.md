@@ -4476,6 +4476,12 @@ matches to captured metadata. All 1069 Forward tests and all-target Clippy pass
 report tests cover transferred function HIR, independent/duplicate observations,
 panicking bodies and mismatched stages/reports. Shape storage adds no argument payload
 charge. Next: broader malformed/partial/limit boundaries and source conformance.
+Report integration is committed as `cc23b803`. All 28 call-effect tests pass
+(`/tmp/meowy-call-shapes-boundaries.log`). Invalid widths/counts/Never agreement reject
+at index, stage, aggregation and graph boundaries, including unobserved calls after a
+Never call. Valid but stale partial report shapes also reject. Exact stage/work/map and
+argument-payload tests retain atomic failure and copy-once behavior. No known failures
+remain. Next: source cases, guide/evidence updates and the full compiler gate.
 
 Dependency-ordered commit plan:
 
