@@ -140,7 +140,11 @@ impl Checker {
             self.call_arguments(&reports, span, MAX_EDGES, reports.parts)?;
         (reports.argument_sources, reports.parts) =
             self.argument_sources(&reports, span, MAX_EDGES, reports.parts)?;
-        reports.parts = self.argument_source_view(&reports, span, reports.parts)?.1;
+        reports.parts = if reports.argument_sources.is_empty() {
+            self.argument_source_view(&reports, span, reports.parts)?.1
+        } else {
+            self.argument_graph(&reports, span, reports.parts)?.2
+        };
         Ok(reports)
     }
 }

@@ -4787,10 +4787,10 @@ maps keep `(block, slot, position)` keys. Preserve both identities and explicit 
 
 Dependency-ordered commit plan:
 
-1. Complete: single-root expansion and shared state construction/finalization are
+1. Complete (`482f0b69`): single-root expansion and shared state construction/finalization are
    extracted unchanged; all 31 existing graph/walk tests pass.
-2. Add a bounded borrowed argument-graph entry that validates argument-source and direct
-   graphs under one remaining work/payload budget. Cover stale maps and exact limits.
+2. Complete: the borrowed argument-graph entry validates both source and direct graphs
+   under shared work/payload limits; all three identity/budget tests pass.
 3. Add typed argument visits and reuse single-root expansion for known source slots;
    retain the forest in entry reports with focused owner/unknown/stopped-prefix tests.
 4. Cover shared/cyclic histories, independent observations, late faults and exact
@@ -4799,12 +4799,14 @@ Dependency-ordered commit plan:
    final documentation gates. Parameter values/origins, callee summaries, restart
    propagation, E225 and proof outcomes remain separate.
 
-Single-root expansion now lives in `graph/walk/expand.rs`; `State::new`/`finish`
-share existing initialization and accounting. The original loop body, diagnostics
-and work charges are unchanged. Formatting and all 31 graph/walk regressions pass
-(`/tmp/meowy-argument-forest-extraction.log`), including exact work/peak-storage tests.
-No known failures remain. Next: qualify the combined borrowed view. Unrelated `docs/programs/hey/`
-is preserved; baseline is `6602c45a`, with LLVM still pinned to 23.1.3.
+`argument_graph` now borrows the original argument map and expanded candidate/direct
+view after validating both under shared work/payload limits. Entry reports use it when
+argument sources exist; empty source sets retain the existing argument-only validation.
+Three focused tests cover borrowed identities, stale argument/candidate/direct maps
+and exact combined work/cache budgets. Formatting and all three focused checks pass
+(`/tmp/meowy-argument-forest-graph.log`). No known failures remain. Next: add argument
+visits and retain the forest. Unrelated `docs/programs/hey/` is preserved;
+baseline is `6602c45a`, with LLVM still pinned to 23.1.3.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
