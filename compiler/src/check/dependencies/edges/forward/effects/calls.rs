@@ -215,3 +215,6 @@ mod limits;
 
 #[cfg(test)]
 mod shapes;
+
+#[cfg(test)]
+mod parameters;

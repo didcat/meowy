@@ -63,7 +63,8 @@ exact pins (`/tmp/meowy-parameter-context-strict.log`,
 `/tmp/meowy-parameter-context-strict-audit.log`). All four final handoff checks pass
 (`/tmp/meowy-parameter-context-final-docs.log`).
 
-Next: qualify bounded call-argument/parameter associations. Full proof/release
+In progress: qualify bounded call-argument/parameter associations through a borrowed
+view used by call-stage and report validation. Full proof/release
 qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain

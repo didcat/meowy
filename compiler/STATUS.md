@@ -4590,11 +4590,28 @@ characterizations retain identical initializer maps and payloads
 | Forward definitions | 72 / 48 | 187 / 205 | 159 / 177 |
 | Typed export | 50 / 35 | 168 / 181 | 140 / 153 |
 
-### Next: qualify bounded call-argument and parameter associations
+### Bounded call-argument and parameter associations
 
 `effects/calls.rs` validates original caller argument roots against retained callee
 arity/result shape. `signatures` retains ordered parameter LocalIds and exact reverse
 positions. Qualify their positional association without transferring values or origins.
+
+Investigation: `checked_call_effect` already validates the captured call and target
+signature. Extract that qualification unchanged, then return the borrowed Invocation
+with a bounded iterator over `(parameter LocalId, caller PointId)`. Call-stage counts
+and retained-report argument comparison will consume this view. Keep invocation/report
+argument copies, original outer roots, independent observations and owner boundaries.
+No new retained report payload is needed.
+
+Baseline `8cbcd8d5` has a clean tracked tree. The snapshot at
+`/tmp/meowy-call-parameters-baseline.json` preserves 588 protected files, 514 cases,
+37 reference rows and eight user files. Both new characterizations pass after fixing
+a test-only borrow conflict (`/tmp/meowy-call-parameters-characterization.log`). They
+pin receiver-first typed exports, unused/mixed/empty parameters, recursion, reversed
+HIR, stopped inputs and partial reports. Qualification charges 77/38/50 work units
+for the mixed/empty/recursive calls before the new iterator. Next: extract the existing
+call validator unchanged, then add the borrowed association view;
+`docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
 
@@ -4602,11 +4619,12 @@ Dependency-ordered commit plan:
    typed exports, recursion, reversed HIR and partial/result-only observations. Reuse
    `effects/calls` and signature fixtures; pin original outer argument roots, separate
    caller/callee owners and missing/stopped input behavior before adding a qualifier.
-2. Add the smallest borrowed qualifier in `effects/calls.rs`, reusing existing checked
-   call and signature validation. Bound traversal/work before exposing each parameter
-   LocalId and matching caller PointId; avoid another retained argument copy. Keep
-   signature/context preparation separate from any consuming report changes.
-3. Cover stale position/owner/header identities, exact budgets and failure atomicity;
+2. Extract `checked_call_effect` into `effects/calls/inputs.rs` with unchanged behavior,
+   diagnostics and work. Validate and commit that preparation separately.
+3. Return a borrowed call/association iterator from the qualifier; use its length for
+   call stages and its original roots for report comparison. Charge traversal work
+   before exposure, retain per-call bounds and avoid another argument copy.
+4. Cover stale position/owner/header identities, exact budgets and failure atomicity;
    preserve required source expectations, update guide/evidence and run compiler,
    strict-pin and final documentation gates. Argument-value transfer, callee summaries,
    call-result provenance, restart propagation, E225 and proof outcomes remain separate.
