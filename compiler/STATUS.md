@@ -4489,6 +4489,13 @@ record/list/union/reference results, record-return panic propagation and incompa
 outer typing (E207). Build and all four catalog/tooling checks pass
 (`/tmp/meowy-call-shapes-build.log`, `/tmp/meowy-call-shapes-source-docs.log`).
 The catalog now has 510 cases. Next: guide/evidence updates and final gates.
+Source cases are committed as `deecd04f`. The guide and four owning evidence rows now
+describe shallow signature classification and its limits; full-domain fact transfer,
+values and callee summaries remain separate. All four documentation/tooling checks pass
+(`/tmp/meowy-call-shapes-docs.log`). The preservation audit retains 580 protected files,
+all 506 prior case records, 19 pins, 37 hashes/prior evidence and eight user files
+(`/tmp/meowy-call-shapes-preservation.log`). Next: full compiler gate and strict pin audit,
+then record the final handoff. No reference contract or prior expectation changed.
 
 Dependency-ordered commit plan:
 

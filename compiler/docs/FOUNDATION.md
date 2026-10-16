@@ -1776,6 +1776,23 @@ structurally even when its body never returns at runtime. Unused/recursive bodie
 retain independent entry reports. Neither return metadata nor observed stages prove
 runtime completion, termination, values, loan authority or proof outcomes. Call result
 sources and callee summaries remain separate.
+Each invocation and Call report also retains a bounded shallow result shape from its
+checked signature, including inferred local function results. Capture precedes outer
+coercion and reuses the existing Shape/Completion rules. It retains exact scalar kinds,
+widths and signedness, shared-scalar referents, reference category, record field count,
+list capacity, union member count or an opaque Other category. Runtime values, field
+contents and list lengths remain unknown. This fixed-size header survives transfer of
+function HIR without copying a type tree or reading the callee body's completion/layout.
+
+Shape validity and `may_return` agreement are checked before invocation publication and
+at call indexing, stage qualification, aggregation and graph validation. Stage and
+retained-report shapes must match the captured descriptor. Invalid widths/counts/Never
+agreement reject even for unobserved calls; stale partial reports reject atomically.
+Work is charged before validation and publication. Shape copies use the fixed header,
+and argument payload copies still occur once across duplicate observations. A returning
+signature retains its shape when its body panics, while declared Never has no result
+observation. Full-domain fact transfer, call-result provenance, callee summaries and
+proof outcomes remain separate.
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region
