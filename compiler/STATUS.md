@@ -4843,26 +4843,27 @@ Dependency-ordered commit plan:
 
 1. Complete (`d5bd8f15`): all three association tests pass, covering sparse/stopped rows, shared
    history across calls and distinct caller/parameter identities.
-2. Complete: retained-walk validation and the borrowed marker index pass four tests;
+2. Complete (`0df6b56c`): retained-walk validation and the borrowed marker index pass four tests;
    exact work/map/payload limits and stale visits are checked before publication.
-3. Add borrowed per-call access using `checked_call_inputs`, preserving absent,
-   Entry-only, explicit unknown and known sources. Reuse one qualified forest/index
-   across calls and precharge iterator lookup work; cover ownership and shared history.
-4. Cover late identity faults, conservative observations, empty/oversized inputs and
-   exact aggregate budgets without mutating reports/edges on failure.
-5. Document structural evidence and run compiler, strict-pin, preservation and final
+3. Complete: borrowed per-call access preserves all four observation/source states,
+   caller identity and shared history. One forest/index serves all calls.
+4. Cover late marker/call identity faults and conservative observations atomically.
+5. Cover oversized inputs and exact access/aggregate work and payload budgets.
+6. Document structural evidence and run compiler, strict-pin, preservation and final
    documentation gates. Parameter values/origins, callee summaries, restart propagation,
    E225 and proof outcomes remain separate.
 
-`argument_forest_view` now compares the complete retained walk against bounded
-reconstruction, then creates one marker-position index entry per normal argument.
-The returned context borrows the original Reports/Walk. Comparison/scanning work,
-reconstruction storage and index payload are charged before publication; oversized
-walks reject before reconstruction. Entry reports now validate the retained walk.
-Four focused tests cover borrowed identity, eight stale-visit faults and exact
-map/payload/work bounds. Formatting and all four focused tests pass
-(`/tmp/meowy-call-forest-view.log`). No known failures remain. Next: expose per-call
-iterators using one shared forest/index. Unrelated `docs/programs/hey/` is preserved.
+`call_argument_forest` now borrows canonical call identity and an exact-size iterator
+of parameter LocalId, original PointId, optional observation row and optional marker
+position. It validates every selected association before returning and precharges both
+validation and iterator lookup work. The full qualified walk stays available for Shared
+history. Entry report publication qualifies the forest/index once, then reuses it for
+all calls without copying argument vectors or reserving per-call payload.
+Four focused tests cover distinct callers, sparse/stopped states, shared history and
+empty parameter lists. All four tests and all-target Clippy pass
+(`/tmp/meowy-call-forest-access.log`, `/tmp/meowy-call-forest-access-lint.log`).
+No known failures remain. Next: late identity faults and conservative observations.
+Unrelated `docs/programs/hey/` is preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

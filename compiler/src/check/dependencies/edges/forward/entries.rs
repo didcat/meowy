@@ -144,9 +144,7 @@ impl Checker {
             self.argument_sources(&reports, span, MAX_EDGES, reports.parts)?;
         (reports.argument_walk, reports.parts) =
             self.argument_walk_report(&reports, span, reports.parts)?;
-        reports.parts = self
-            .argument_forest_view(&reports, span, MAX_EDGES, reports.parts)?
-            .1;
+        reports.parts = self.qualify_call_forests(&reports, span, reports.parts)?;
         Ok(reports)
     }
 }
