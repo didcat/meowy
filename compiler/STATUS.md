@@ -4669,7 +4669,16 @@ as explicit Entry/Normal pairs; all three focused checks pass
 registered independent caller roots as well as callee roots, with charged lookups. Existing
 helpers are visible only within Forward for collector reuse. Eight caller-root corruption
 scenarios cover module and function owners; all 41 call-effect tests pass
-(`/tmp/meowy-argument-observations-callers.log`). Next: retain sparse argument observations;
+(`/tmp/meowy-argument-observations-callers.log`). Reports now retain sparse argument
+observations after existing analysis. A bounded temporary lookup reuses checked calls;
+one scan of entry walks merges independent flags and drops unobserved rows. Each observed
+root reserves one remaining shared payload unit, once across duplicates. Three integration
+tests cover exact sites/positions/owners, stopped prefixes and partial/absent call visits.
+All 64 argument-filtered tests pass (`/tmp/meowy-argument-observations-integration.log`).
+An empty argument lookup now returns without scanning unrelated walks; a fourth test
+covers empty programs/calls and unused parameters. All four observation tests pass
+(`/tmp/meowy-argument-observations-empty.log`). Next: qualify exact capacity/work
+limits and reject stale owner/root/parameter metadata atomically;
 `docs/programs/hey/` remains excluded. No push is authorized.
 
 Dependency-ordered commit plan:

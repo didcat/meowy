@@ -16,6 +16,7 @@ pub(crate) struct Reports {
     pub(crate) receivers: super::receivers::Receivers,
     pub(crate) entries: BTreeMap<usize, (crate::hir::BlockId, Walk)>,
     pub(crate) effects: super::effects::Effects,
+    pub(crate) arguments: super::arguments::Arguments,
     pub(crate) parts: usize,
     pub(crate) blocks: super::blocks::Blocks,
     pub(crate) results: super::results::Results,
@@ -65,6 +66,7 @@ impl Checker {
             receivers: BTreeMap::new(),
             entries: BTreeMap::new(),
             effects: BTreeMap::new(),
+            arguments: BTreeMap::new(),
             parts: 0,
             blocks: BTreeMap::new(),
             results: BTreeMap::new(),
@@ -132,6 +134,8 @@ impl Checker {
             .calls
             .condense(&reports.groups, &mut self.flow, span)?;
         reports.order = reports.condensed.analysis_order(&mut self.flow, span)?;
+        (reports.arguments, reports.parts) =
+            self.call_arguments(&reports, span, MAX_EDGES, reports.parts)?;
         Ok(reports)
     }
 }
