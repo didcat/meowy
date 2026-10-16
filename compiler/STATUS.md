@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Argument-source forests pass the compiler gate.
+Updated: 2026-10-16. Per-call argument forest access is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4833,19 +4833,33 @@ Reuse `effects/calls/inputs.rs::checked_call_inputs`, `Reports.arguments` and th
 forest; a `Shared` visit can refer to history under an earlier argument and is not an
 independent closed subtree.
 
+Investigation: `checked_call_inputs` already borrows ordered parameter/argument pairs.
+The retained forest is global; Shared visits can refer to earlier arguments or calls.
+Validate its complete walk against bounded reconstruction once, then build a bounded
+marker-position index. Per-call iterators must keep access to the complete borrowed
+walk rather than copying argument vectors or presenting isolated slices as full histories.
+
 Dependency-ordered commit plan:
 
-1. Characterize per-call association of parameter LocalIds, original argument PointIds
-   and forest markers, including absent/Entry-only rows, explicit unknowns, duplicate
-   source slots, distinct callers and stopped calls. Keep parameter and caller owners
-   separate and never interpret PointId order as runtime evaluation.
-2. Qualify retained forest membership under bounded work/storage before returning a
-   borrowed per-call view. Reject stale, missing, extra or cross-owner argument markers
-   and source visits atomically; preserve shared/cycle references without copying
-   argument vectors or treating a partial subtree as a complete source history.
-3. Cover exact map/work/payload limits and independent observations, update structural
-   evidence, and run compiler, strict-pin and final documentation gates. Callee values,
-   origins and summaries, restart propagation, E225 and proof outcomes remain separate.
+1. Complete: all three association tests pass, covering sparse/stopped rows, shared
+   history across calls and distinct caller/parameter identities.
+2. Qualify the complete retained forest and build a bounded marker-position index.
+   Return a borrowed forest context only after exact walk comparison; cover stale
+   visits and exact work/map/payload limits. Integrate validation before report publication.
+3. Add borrowed per-call access using `checked_call_inputs`, preserving absent,
+   Entry-only, explicit unknown and known sources. Reuse one qualified forest/index
+   across calls and precharge iterator lookup work; cover ownership and shared history.
+4. Cover late identity faults, conservative observations, empty/oversized inputs and
+   exact aggregate budgets without mutating reports/edges on failure.
+5. Document structural evidence and run compiler, strict-pin, preservation and final
+   documentation gates. Parameter values/origins, callee summaries, restart propagation,
+   E225 and proof outcomes remain separate.
+
+Three characterization tests now cover parameter/caller identity, shared history
+under an earlier call, and absent/Entry-only/unknown/known argument states. Formatting
+and all three focused checks pass (`/tmp/meowy-call-forest-pairs.log`). No known
+failures remain. Next: qualify the retained forest and marker index.
+Baseline `8216cb92` preserves unrelated `docs/programs/hey/`; LLVM remains 23.1.3.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

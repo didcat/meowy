@@ -1,5 +1,7 @@
 use super::{super::entries::tests::checked, *};
 
+mod forests;
+
 pub(super) fn context(source: &str) -> (Checker, Reports) {
     let (mut checker, program) = checked(source);
     let reports = checker.entry_reports(&program, Span::default()).unwrap();
