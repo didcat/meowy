@@ -4727,7 +4727,12 @@ remain. Four boundary regressions now cover seven stale row/producer cases, shar
 cache reuse, exact row/payload/work limits, reference/aggregate/parameter opacity,
 missing field evidence and oversized row rejection before lookup. All seven source-report
 tests pass (`/tmp/meowy-argument-sources-boundaries.log`). No known failures remain.
-Next: document the report/cache contract, link structural evidence and run final gates.
+The foundation guide now documents conservative row validation, Normal-gated descriptors,
+explicit unknowns and shared cache/payload accounting. Three owning reference rows gain
+four structural evidence paths each. Reviewed gaps still apply to callee values/origins,
+summaries and proof outcomes; reference hashes, fixtures, pins and obligations stay unchanged.
+All four documentation checks pass (`/tmp/meowy-argument-sources-docs.log`).
+Final compiler/strict/preservation gates are next.
 
 Dependency-ordered commit plan:
 

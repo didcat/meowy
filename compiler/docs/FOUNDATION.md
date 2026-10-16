@@ -1855,6 +1855,27 @@ identities and exhausted limits reject atomically, preserving reports and edges.
 flag records a visited port, not runtime completion, argument values or loan authority;
 returning signatures retain their structural observations even when their bodies panic.
 
+Before argument source lookup, retained rows are revalidated against bounded call and
+port reconstruction. CallId, position, parameter, root and caller owner must agree.
+Missing rows and omitted Entry/Normal flags remain conservative; retained flags cannot
+exceed actual observations, and a row with neither flag rejects. Revalidation uses charged
+scratch work without reserving retained argument payload again.
+
+Normally observed arguments receive the existing Direct descriptor at their original
+root and caller owner. Field, scalar-block and scalar-dispatch sources reuse the existing
+qualifiers through groups, non-projecting Forward coercions, unchanged ascriptions and
+eligible immutable locals. Opaque inputs retain an explicit unknown descriptor; missing
+or Entry-only argument observations produce no source row. Source evidence remains
+independent of argument observations, so missing field evidence removes only that link.
+Earlier argument sources survive a stopped later input without requiring a Call effect.
+
+One bounded Lookup cache is shared across argument rows. Repeated reads of the same
+eligible field source reuse its checked descriptor and source forest. Each output row
+reserves one shared payload unit in addition to existing cache charges; row, payload,
+hop and work limits remain checked. Stale argument or producer metadata and exhausted
+limits publish no partial source report. This adds no parameter values, cross-owner
+origins, initializer eligibility, callee summaries, loan authority or proof outcomes.
+
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region
