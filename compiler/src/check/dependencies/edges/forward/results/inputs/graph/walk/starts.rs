@@ -38,3 +38,6 @@ impl Graph<'_> {
         Ok(state.finish())
     }
 }
+
+#[cfg(test)]
+mod tests;

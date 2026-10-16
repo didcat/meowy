@@ -4791,11 +4791,13 @@ Dependency-ordered commit plan:
    extracted unchanged; all 31 existing graph/walk tests pass.
 2. Complete (`b05b2f4b`): the borrowed argument-graph entry validates both source and direct graphs
    under shared work/payload limits; all three identity/budget tests pass.
-3. Complete: typed argument visits retain known/unknown descriptors in entry reports;
+3. Complete (`2871eaa9`): typed argument visits retain known/unknown descriptors in entry reports;
    four owner/opaque/shared/stopped-prefix tests pass.
-4. Cover shared/cyclic histories, independent observations, late faults and exact
-   traversal/publication budgets, preserving earlier reports and edges on failure.
-5. Update structural evidence and handoffs; run compiler, strict-pin, preservation and
+4. Complete: four raw traversal tests cover sharing/cycles, deep peak storage,
+   unknown rows, oversized maps and seven late identity faults.
+5. Cover independent observations and exact combined report/publication budgets,
+   preserving earlier reports and edges on failure.
+6. Update structural evidence and handoffs; run compiler, strict-pin, preservation and
    final documentation gates. Parameter values/origins, callee summaries, restart
    propagation, E225 and proof outcomes remain separate.
 
@@ -4807,6 +4809,10 @@ retain the prior validation path. No argument vectors or intermediate root list 
 copied. Formatting and all four focused report tests pass
 (`/tmp/meowy-argument-forest-reports.log`). No known failures remain. Next: cover
 independent observations, late identity faults and exact traversal budgets.
+Four raw traversal tests now compare known-source visits with the existing walker,
+cover mixed cycles/shared roots and unknown markers, exact work and 2048-node peak
+storage, oversized maps and seven late identity faults. Formatting and all four checks
+pass (`/tmp/meowy-argument-forest-walk-bounds.log`). No known failures remain.
 Unrelated `docs/programs/hey/` is preserved; baseline is `6602c45a`.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
