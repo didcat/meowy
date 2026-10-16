@@ -1823,6 +1823,20 @@ after a Never boundary. Individual observations and graph reports revalidate cal
 headers; result-only reports remain independent of operation sites. Ordinary argument
 typing, coercion and borrow rules keep their existing checks. This context transfers no
 argument values or origins between owners and grants no loan authority or proof outcome.
+
+Call qualification exposes a borrowed positional association between each callee parameter
+LocalId and its original caller argument PointId. It validates the entire call/header
+relationship before returning the iterator, including exact arity, reverse positions,
+body identity and caller-owned argument roots. Grouped and coerced arguments keep their
+outer roots. Zero and unused parameters, typed exports, recursion and reordered HIR keep
+their original identities. The view adds no retained payload or argument copy; its
+bounded traversal charges `argument count + 1` shared work units before exposure.
+Call-stage counts and report argument comparisons consume the view. Missing/stopped
+observations remain independent: an association can describe an unobserved argument,
+and a result-only report does not create an operation visit. Stale identities and exact
+work exhaustion reject without publishing a partial view or changing reports/edges.
+The association supplies no parameter values, callee summaries or new initializer links.
+
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region

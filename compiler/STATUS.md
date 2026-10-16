@@ -4626,7 +4626,13 @@ unchanged parameter/argument payload and shorter/longer result-only reports. All
 call-effect tests pass (`/tmp/meowy-call-parameters-boundaries.log`). The dedicated
 budget fixture isolates parameter/call payload while retaining complete report snapshots;
 existing emission and downstream index charges are preserved. No known failures remain.
-Next: update guide/evidence links and run compiler, strict-pin and preservation gates;
+The foundation guide now documents the borrowed association, original outer roots,
+independent observations and explicit work charge. Three owning reference rows gain
+structural links for characterization, qualifier behavior and boundary tests. Existing
+typed-export/forward/reference/stopped-call cases remain the source-execution evidence;
+no language contract, source expectation, capability pin or proof obligation changes.
+All four documentation checks pass (`/tmp/meowy-call-parameters-docs.log`).
+Compiler/strict/preservation gates are next;
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
