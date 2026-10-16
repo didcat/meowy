@@ -169,6 +169,7 @@ impl Checker {
                 },
             );
         }
+        self.validate_function_signatures(reports, span)?;
         Ok(graph)
     }
 }

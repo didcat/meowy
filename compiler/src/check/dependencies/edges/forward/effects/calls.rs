@@ -85,7 +85,7 @@ impl Checker {
         let budget = || Diagnostic::unsupported("proof call-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof call-effect identity mismatch", span);
         if !self.flow.spend(
-            self.invocations.len().checked_ilog2().unwrap_or(0) as usize
+            self.invocations.len().checked_ilog2().unwrap_or(0) as usize * 2
                 + self.proofs.calls.len().checked_ilog2().unwrap_or(0) as usize
                 + 6,
         ) {
@@ -152,7 +152,12 @@ impl Checker {
         {
             return Err(invalid());
         }
-        Ok(call)
+        let (function, count, shape) = (call.function, call.args.len(), call.shape);
+        let header = self.checked_function_signature(reports, function, span)?;
+        if header.params.len() != count || header.shape != shape {
+            return Err(invalid());
+        }
+        Ok(self.invocations.get(&site).expect("validated call"))
     }
 
     pub(self) fn call_effect_index_limited(

@@ -70,10 +70,12 @@ pub(crate) fn call_result_stages_reject_invalid_arguments_callees_and_return_edg
             .operation_effects(&reports, Span::default())
             .unwrap_err();
         assert_eq!(error.code, "B001");
-        assert!(
-            error.message.contains("call-effect identity"),
-            "fault {fault}: {error:?}"
-        );
+        let family = if (1..=3).contains(&fault) {
+            "function-signature identity"
+        } else {
+            "call-effect identity"
+        };
+        assert!(error.message.contains(family), "fault {fault}: {error:?}");
         assert_eq!(
             format!(
                 "{reports:?}{:?}{:?}",

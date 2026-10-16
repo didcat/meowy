@@ -11,6 +11,8 @@ use crate::{
     hir,
 };
 
+mod validation;
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub(crate) struct Index {
     pub(crate) functions: BTreeMap<hir::FunctionId, Signature>,

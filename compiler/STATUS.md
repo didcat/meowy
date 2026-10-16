@@ -4514,6 +4514,15 @@ panicking declared results are retained without consulting body completion. All 
 Forward tests and all-target Clippy pass (`/tmp/meowy-signatures-index.log`,
 `/tmp/meowy-signatures-index-clippy.log`). Only the HIR-transfer test fixture visibility
 was widened for reuse. Next: validate retained context and qualify call arity/shape/body.
+Header retention is committed as `080b6c5b`. Full retained-context validation now checks
+root/entry/body identity, shape bounds and reverse parameter positions before effect
+collection. Captured calls must match header arity/result shape; observed call reports
+and graphs revalidate their callee headers, including result-only reports. All 1082
+Forward tests and all-target Clippy pass (`/tmp/meowy-signatures-calls.log`,
+`/tmp/meowy-signatures-calls-clippy.log`). Three existing callee-corruption assertions now
+expect the earlier signature-validation diagnostic; their B001/atomicity checks remain.
+Next: additional missing/foreign/oversized context and exact-work boundaries, then source
+conformance and final gates. No known failures remain.
 
 Dependency-ordered commit plan:
 

@@ -150,7 +150,9 @@ impl Checker {
         if !self.flow.spend(reports.entries.len() + 1) {
             return Err(budget());
         }
+        self.validate_function_signatures(reports, span)?;
         let calls = self.call_effect_index(span)?;
+        self.validate_signature_calls(reports, span)?;
         let mut effects = BTreeMap::new();
         for (&owner, (_, walk)) in &reports.entries {
             for &port in &walk.ports {
