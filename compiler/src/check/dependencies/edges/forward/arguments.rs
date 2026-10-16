@@ -5,6 +5,7 @@ use super::{
 use crate::hir;
 
 mod index;
+pub(super) mod sources;
 mod validation;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -72,7 +72,7 @@ impl Checker {
         Ok((sources, ctx.parts))
     }
 
-    pub(super) fn direct_source(
+    pub(in super::super::super) fn direct_source(
         &mut self,
         ctx: &mut Lookup<'_>,
         point: PointId,

@@ -4716,7 +4716,14 @@ and checks exact identities with conservative flag subsets. Missing rows/flags r
 absent; forged observations and empty rows reject. Entry-report publication runs this
 check without reserving retained payload again. Three regressions cover omissions,
 twelve stale/invented cases and exact work. All 11 argument-module tests pass
-(`/tmp/meowy-argument-sources-validation.log`). Source-report integration is next.
+(`/tmp/meowy-argument-sources-validation.log`). Reports now retain a Direct descriptor
+for each validated normally observed argument, including explicit unknown descriptors.
+The collector owns row validation, shares one existing Lookup cache, and reserves one
+remaining payload unit per source row plus existing cache charges. Three integration
+tests cover field/block/dispatch roots, independent flags/unknowns and stopped prefixes.
+All 77 argument-filtered tests pass (`/tmp/meowy-argument-sources-integration.log`).
+The field-reference fixture now uses the documented `r.&n` syntax. No known failures
+remain. Next: cover source-cache reuse, exact bounds and atomic stale-producer failures.
 
 Dependency-ordered commit plan:
 
