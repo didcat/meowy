@@ -10,6 +10,7 @@ mod entries;
 mod initializers;
 mod receivers;
 mod results;
+mod signatures;
 mod walk;
 
 #[derive(Debug, Default, PartialEq, Eq)]

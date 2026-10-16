@@ -116,7 +116,12 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<(Effects, usize)> {
-        self.operation_effects_with_room(reports, span, MAX_EDGES, MAX_EDGES, MAX_EDGES)
+        let parts = MAX_EDGES
+            .checked_sub(reports.signatures.params.len().saturating_mul(2))
+            .ok_or_else(|| {
+                Diagnostic::unsupported("proof operation-effect budget exhausted", span)
+            })?;
+        self.operation_effects_with_room(reports, span, MAX_EDGES, parts, MAX_EDGES)
     }
 
     #[cfg(test)]

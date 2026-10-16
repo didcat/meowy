@@ -4506,6 +4506,14 @@ and supported typed export aliases require exact signatures. Local annotated ide
 aliases retain their existing B001 capability gate; it is not a language rejection pass.
 Next: retain bounded headers and reverse parameter positions, reusing entry qualification
 and reserving two payload records per parameter before collecting operation effects.
+Characterization is committed as `7869d674`. Entry reports now retain bounded function
+headers and reverse parameter positions, using the existing parameter validator. Header
+count/per-function inputs/total payload/work are checked before publication; two retained
+parameter records share the operation payload allowance. Empty/unused functions and
+panicking declared results are retained without consulting body completion. All 1079
+Forward tests and all-target Clippy pass (`/tmp/meowy-signatures-index.log`,
+`/tmp/meowy-signatures-index-clippy.log`). Only the HIR-transfer test fixture visibility
+was widened for reuse. Next: validate retained context and qualify call arity/shape/body.
 
 Dependency-ordered commit plan:
 

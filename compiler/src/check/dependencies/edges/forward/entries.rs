@@ -9,6 +9,7 @@ pub(crate) const MAX_REPORT_ITEMS: usize = MAX_EDGES * 3 + MAX_ENTRIES * 2;
 pub(crate) struct Reports {
     pub(crate) index: ForwardIndex,
     pub(crate) locals: usize,
+    pub(crate) signatures: super::signatures::Index,
     pub(crate) eligible: std::collections::BTreeSet<crate::hir::LocalId>,
     pub(crate) initializers: super::initializers::Initializers,
     pub(crate) shared_initializers: super::initializers::shared::Index,
@@ -57,6 +58,7 @@ impl Checker {
         let mut reports = Reports {
             index: self.forward_index(span)?,
             locals,
+            signatures: super::signatures::Index::default(),
             eligible: std::collections::BTreeSet::new(),
             initializers: BTreeMap::new(),
             shared_initializers: BTreeMap::new(),
@@ -107,6 +109,7 @@ impl Checker {
             reports.items += walk.len();
             reports.entries.insert(owner, (block, walk));
         }
+        reports.signatures = self.function_signatures(program, &reports, span)?;
         (reports.effects, reports.parts) = self.operation_effects_budgeted(&reports, span)?;
         reports.blocks = self.block_effects(&reports, span)?;
         (reports.results, reports.parts) = self.result_sources(&reports, span)?;
@@ -134,7 +137,7 @@ impl Checker {
 }
 
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;
 
 #[cfg(test)]
 mod signatures;

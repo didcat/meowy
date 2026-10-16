@@ -1,6 +1,6 @@
 use super::*;
 
-pub(super) fn checked(source: &str) -> (Checker, crate::hir::Program) {
+pub(in super::super) fn checked(source: &str) -> (Checker, crate::hir::Program) {
     let ast = crate::parser::parse(source).unwrap();
     let mut checker = Checker::new();
     let body = checker.block(&ast, None, None).unwrap();
