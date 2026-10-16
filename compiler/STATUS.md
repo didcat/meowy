@@ -4610,7 +4610,10 @@ a test-only borrow conflict (`/tmp/meowy-call-parameters-characterization.log`).
 pin receiver-first typed exports, unused/mixed/empty parameters, recursion, reversed
 HIR, stopped inputs and partial reports. Qualification charges 77/38/50 work units
 for the mixed/empty/recursive calls before the new iterator. Next: extract the existing
-call validator unchanged, then add the borrowed association view;
+call validator unchanged, then add the borrowed association view.
+The validator now lives in `effects/calls/inputs.rs`; an exact-body comparison confirms
+unchanged logic and effective visibility. All 31 call-effect tests pass
+(`/tmp/meowy-call-parameters-move.log`). Next: add and consume the borrowed iterator;
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
