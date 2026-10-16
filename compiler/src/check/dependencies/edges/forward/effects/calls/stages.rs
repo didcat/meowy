@@ -2,10 +2,11 @@ use super::*;
 
 pub(super) fn matches(call: &Invocation, effect: &Effect) -> bool {
     matches!(effect, Effect::Call {
-        site, function, args, may_return, control, operation, result,
+        site, function, args, shape, may_return, control, operation, result,
     } if *site == call.site
         && *function == call.function
         && *args == call.args
+        && *shape == call.shape
         && *may_return == call.may_return
         && *control == call.control
         && (*operation || *result)
@@ -45,7 +46,7 @@ impl Checker {
         if !self.flow.spend(
             self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                 + effects.len().checked_ilog2().unwrap_or(0) as usize * 2
-                + 10,
+                + 14,
         ) {
             return Err(budget());
         }
@@ -55,11 +56,13 @@ impl Checker {
         {
             return Err(budget());
         }
-        if call.point != stage.point
+        if !call.valid_result()
+            || call.point != stage.point
             || call.owner != stage.owner
             || call.site != stage.site
             || call.function != stage.function
             || call.args.len() != stage.count
+            || call.shape != stage.shape
             || call.may_return != stage.may_return
             || call.control != stage.control
             || (stage.kind == Kind::Result && !stage.may_return)
@@ -89,6 +92,7 @@ impl Checker {
                     site: call.site,
                     function: call.function,
                     args: call.args.clone(),
+                    shape: call.shape,
                     may_return: call.may_return,
                     control: call.control,
                     operation: false,

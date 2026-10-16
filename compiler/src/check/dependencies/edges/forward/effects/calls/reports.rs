@@ -19,6 +19,7 @@ pub(crate) fn call_effects_keep_exact_alias_recursion_control_and_return_metadat
                 site: call.site,
                 function: call.function,
                 args: call.args.clone(),
+                shape: call.shape,
                 may_return: call.may_return,
                 control: call.control,
                 operation: true,

@@ -107,6 +107,7 @@ pub(crate) fn call_reports_reject_conflicting_partial_headers_in_aggregation_and
             control,
             operation,
             result,
+            ..
         } = effect
         else {
             panic!()

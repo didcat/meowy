@@ -74,6 +74,7 @@ pub(crate) enum Effect {
         site: crate::hir::CallId,
         function: crate::hir::FunctionId,
         args: Vec<PointId>,
+        shape: crate::check::dependencies::bodies::completion::Shape,
         may_return: bool,
         control: bool,
         operation: bool,

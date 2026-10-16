@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::Invocation;
+use crate::check::dependencies::{Invocation, bodies::completion::Shape};
 use crate::hir;
 
 mod stages;
@@ -17,6 +17,7 @@ pub(super) struct Stage {
     pub(super) site: hir::CallId,
     pub(super) function: hir::FunctionId,
     pub(super) count: usize,
+    pub(super) shape: Shape,
     pub(super) may_return: bool,
     pub(super) control: bool,
     pub(super) kind: Kind,
@@ -68,6 +69,7 @@ impl Checker {
             site,
             function: call.function,
             count: call.args.len(),
+            shape: call.shape,
             may_return: call.may_return,
             control: call.control,
             kind,
@@ -85,7 +87,7 @@ impl Checker {
         if !self.flow.spend(
             self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                 + self.proofs.calls.len().checked_ilog2().unwrap_or(0) as usize
-                + 3,
+                + 6,
         ) {
             return Err(budget());
         }
@@ -104,7 +106,8 @@ impl Checker {
         let owner = call.function.checked_add(1).ok_or_else(invalid)?;
         let (body, _) = reports.entries.get(&owner).ok_or_else(invalid)?;
         let point = self.points.get(call.point).ok_or_else(invalid)?;
-        if call.site != site
+        if !call.valid_result()
+            || call.site != site
             || site >= self.calls
             || !self.proofs.calls.contains_key(&site)
             || reports.index.operations.get(&call.point) != Some(&call.owner)
@@ -167,11 +170,12 @@ impl Checker {
             if !self.flow.spend(
                 calls.len().checked_ilog2().unwrap_or(0) as usize * 2
                     + self.proofs.calls.len().checked_ilog2().unwrap_or(0) as usize
-                    + 6,
+                    + 9,
             ) {
                 return Err(budget());
             }
-            if site != call.site
+            if !call.valid_result()
+                || site != call.site
                 || site >= self.calls
                 || !self.proofs.calls.contains_key(&site)
                 || !self.points.get(call.point).is_some_and(|point| {
@@ -203,3 +207,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod shapes;

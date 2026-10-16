@@ -4469,6 +4469,13 @@ charges and validates shape bounds and agreement with `may_return` before public
 All twelve invocation tests pass (`/tmp/meowy-call-shapes-capture.log`), including invalid
 width/count/return metadata, stale retained shapes and exact-work atomicity. No known
 failures remain. Next: stage/report propagation and call-graph revalidation.
+Capture is committed as `05cd1f2e`. Call stages and retained effects now copy the fixed
+shape, and index/stage/report/graph checks validate bounds, return agreement and exact
+matches to captured metadata. All 1069 Forward tests and all-target Clippy pass
+(`/tmp/meowy-call-shapes-reports.log`, `/tmp/meowy-call-shapes-reports-clippy.log`). New
+report tests cover transferred function HIR, independent/duplicate observations,
+panicking bodies and mismatched stages/reports. Shape storage adds no argument payload
+charge. Next: broader malformed/partial/limit boundaries and source conformance.
 
 Dependency-ordered commit plan:
 
