@@ -1793,6 +1793,27 @@ and argument payload copies still occur once across duplicate observations. A re
 signature retains its shape when its body panics, while declared Never has no result
 observation. Full-domain fact transfer, call-result provenance, callee summaries and
 proof outcomes remain separate.
+Entry reports now retain function-signature context from transferred checked HIR. Each
+original FunctionId maps to its independent body, ordered parameter LocalIds and shallow
+result shape. A reverse index maps each parameter to its function and position. Empty,
+unused, nested and recursive functions remain present; HIR vector order does not assign
+owners. Supported typed export aliases keep exact signatures. Local annotated identity
+bindings retain their existing B001 capability gate.
+
+The existing initializer parameter validator qualifies entry/body identities, local
+bounds and global uniqueness before headers are copied. Header count is capped at
+65,535 and each parameter list at 65,536. Ordered entries and reverse-index records
+charge two retained payload records per parameter against the shared 262,144 allowance
+before operation effects are collected. Duplicate call visits copy argument payloads
+once. No parameter type tree is copied. Retained-context validation checks header/body
+and reverse-position consistency, including unused parameters; missing, extra, foreign,
+reordered or oversized metadata rejects atomically under charged work limits.
+
+Every captured call must agree with its header's arity and result shape, including calls
+after a Never boundary. Individual observations and graph reports revalidate callee
+headers; result-only reports remain independent of operation sites. Ordinary argument
+typing, coercion and borrow rules keep their existing checks. This context transfers no
+argument values or origins between owners and grants no loan authority or proof outcome.
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region

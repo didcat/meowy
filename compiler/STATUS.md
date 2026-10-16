@@ -4536,6 +4536,12 @@ parameters, reversed forward definitions with nested functions, reference identi
 required-argument E212. Build and all four catalog/tooling checks pass
 (`/tmp/meowy-signatures-build.log`, `/tmp/meowy-signatures-source-docs.log`). The catalog
 now has 514 cases. Next: guide/evidence updates and final compiler/strict checks.
+Source cases are committed as `4f677a17`. The guide and four owning evidence rows now
+describe bounded header/reverse-index retention and call qualification. All four docs/
+tooling checks pass (`/tmp/meowy-signatures-docs.log`). The preservation audit retains
+584 protected files, all 510 prior case records, 19 pins, 37 hashes/prior evidence and
+eight user files (`/tmp/meowy-signatures-preservation.log`). No contract or prior source
+expectation changed. Next: full compiler gate, strict pin audit and final handoff.
 
 Dependency-ordered commit plan:
 
