@@ -4749,9 +4749,10 @@ Dependency-ordered commit plan:
    pass and exact-version checks remain enabled.
 1. Complete (`995dfc1e`): three characterization tests preserve exact Normal-row keys, explicit
    unknowns, sparse observations, distinct caller owners and absent call effects.
-2. Complete: borrowed view checks exact keys/owners/points/descriptors and rejects
+2. Complete (`cb6c0427`): borrowed view checks exact keys/owners/points/descriptors and rejects
    stale maps atomically, with one shared Lookup cache. Entry publication uses the view.
-3. Cover producer faults, shared cache reuse and exact map/payload/work limits.
+3. Complete: producer faults, shared cache reuse and exact map/payload/work limits
+   pass, including no repeated source-row reservation and oversized-map rejection.
 4. Characterize candidate/direct forest entry from qualified argument source slots,
    preserving caller identity, unknown histories and independent observations.
 5. Document structural evidence, run the compiler gate, audit strict pins and preserved
@@ -4765,9 +4766,13 @@ Entry reports qualify this view before publication, charging its scratch cache a
 remaining parts. Forest traversal stays unchanged. Three focused tests cover borrowed
 identity, thirteen stale-map faults, sparse observations and stopped prefixes.
 
-Validation: all 16 `argument_source` focused tests pass, including the three new view
-checks (`/tmp/meowy-argument-view-focused.log`); formatting passes. No known failures
-remain. Next: exact-budget and independent-producer boundary tests.
+Validation: all eight `argument_source_view` tests pass, including the five new
+boundary checks (`/tmp/meowy-argument-view-boundaries.log`); formatting passes. Late
+field/block/dispatch faults reject atomically. Missing producer evidence requires an
+unknown descriptor at the same key. Shared field cache storage is charged once per
+qualifier; borrowed source rows add no payload charge. Exact work/payload thresholds
+and oversized maps reject without mutating reports or edges. No known failures remain.
+Next: characterize existing forest entry from qualified argument slots.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
