@@ -1,0 +1,6 @@
+d:@"debug"
+record<{tag<boolean>}>:(){d.print("record");d.panic("stop")}
+d.print("before")
+r:record()
+d.print(r.tag)
+d.print("after")

@@ -1,0 +1,17 @@
+d:@"debug"
+tiny<uint8>:(n<uint8>){d.print("tiny");->n}
+alias:tiny
+a<uint8><null>:7.(alias)
+d.print(a)
+inferred:(){->true}
+d.print(inferred())
+wide<int64>:(){->-4}
+d.print(wide())
+fraction<float32>:(){->1.5}
+d.print(fraction())
+text<string>:(){->"value"}
+d.print(text())
+nothing:(){}
+d.print(nothing())
+count<uint8>:(n<uint8>)'out{|n==0|{'out->0;'out.leave()};->1+count(n-1)}
+d.print(count(3))

@@ -5366,6 +5366,48 @@
         "code": "E212"
       },
       "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "call_result_scalar_shapes",
+      "phase": "run",
+      "source": "sources/call_result_scalar_shapes.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "tiny\n7\ntrue\n-4\n1.5\nvalue\nnull\n3\n"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "call_result_aggregate_shapes",
+      "phase": "run",
+      "source": "sources/call_result_aggregate_shapes.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "row\n7\ntrue\n2\n7\nnull\ntrue\n9\n3\n"
+      },
+      "reference": "../reference/values-and-blocks.md#primary-composition"
+    },
+    {
+      "id": "call_result_record_panic",
+      "phase": "run",
+      "source": "sources/call_result_record_panic.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "before\nrecord\n",
+        "panic": "P006",
+        "exit": 1
+      },
+      "reference": "../reference/syntax.md#operators-and-evaluation-order"
+    },
+    {
+      "id": "call_result_outer_type",
+      "phase": "check",
+      "source": "sources/call_result_outer_type.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
     }
   ]
 }

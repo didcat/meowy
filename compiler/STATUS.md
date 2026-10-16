@@ -4482,6 +4482,13 @@ at index, stage, aggregation and graph boundaries, including unobserved calls af
 Never call. Valid but stale partial report shapes also reject. Exact stage/work/map and
 argument-payload tests retain atomic failure and copy-once behavior. No known failures
 remain. Next: source cases, guide/evidence updates and the full compiler gate.
+Boundary coverage is committed as `02ab5a8e`. Four new required cases and four existing
+call-order/stop/guard/conditional-return cases pass in debug/release
+(`/tmp/meowy-call-shapes-source.log`). New cases cover scalar/inferred/recursive results,
+record/list/union/reference results, record-return panic propagation and incompatible
+outer typing (E207). Build and all four catalog/tooling checks pass
+(`/tmp/meowy-call-shapes-build.log`, `/tmp/meowy-call-shapes-source-docs.log`).
+The catalog now has 510 cases. Next: guide/evidence updates and final gates.
 
 Dependency-ordered commit plan:
 
