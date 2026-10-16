@@ -197,3 +197,65 @@ pub(crate) fn call_graph_charges_validation_work_for_result_only_reports() {
         assert_eq!(format!("{reports:?}{:?}", checker.edge_counts()), before);
     }
 }
+
+#[test]
+pub(crate) fn initializer_context_shares_parameter_payload_and_exact_consumer_work() {
+    let (mut checker, program) = super::super::super::entries::tests::checked(
+        "f:(a<int32>,b<boolean>){};f(1,true);n:1;p:&n;r:{->p;->tag:true};copy:r",
+    );
+    let reports = checker.entry_reports(&program, Span::default()).unwrap();
+    let (_, parts) = checker
+        .operation_effects_budgeted(&reports, Span::default())
+        .unwrap();
+    let (_, unreserved) = checker
+        .operation_effects_with_room(&reports, Span::default(), MAX_EDGES, MAX_EDGES, MAX_EDGES)
+        .unwrap();
+    assert_eq!(reports.signatures.params.len(), 2);
+    assert_eq!(parts, unreserved - 4);
+    let count = reports.shared_initializers.len();
+    assert_eq!(count, 2);
+    let before = format!("{program:?}{reports:?}{:?}", checker.edge_counts());
+    let start = checker.flow.work;
+    assert_eq!(
+        checker
+            .binding_initializers(&program, &reports, Span::default())
+            .unwrap(),
+        reports.initializers
+    );
+    let ordinary = checker.flow.work - start;
+    let start = checker.flow.work;
+    assert_eq!(
+        checker
+            .shared_initializers(&program, &reports, Span::default(), count, parts)
+            .unwrap(),
+        (reports.shared_initializers.clone(), parts - count)
+    );
+    let shared = checker.flow.work - start;
+    for short in [0, 1] {
+        checker.flow = crate::flow::Flow::new();
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - ordinary + short;
+        let result = checker.binding_initializers(&program, &reports, Span::default());
+        if short == 0 {
+            assert_eq!(result.unwrap(), reports.initializers);
+            assert_eq!(checker.flow.work, crate::flow::MAX_PROOF_WORK);
+        } else {
+            assert!(result.unwrap_err().message.contains("budget"));
+        }
+        checker.flow = crate::flow::Flow::new();
+        checker.flow.work = crate::flow::MAX_PROOF_WORK - shared + short;
+        let result = checker.shared_initializers(&program, &reports, Span::default(), count, parts);
+        if short == 0 {
+            assert_eq!(
+                result.unwrap(),
+                (reports.shared_initializers.clone(), parts - count)
+            );
+            assert_eq!(checker.flow.work, crate::flow::MAX_PROOF_WORK);
+        } else {
+            assert!(result.unwrap_err().message.contains("budget"));
+        }
+        assert_eq!(
+            format!("{program:?}{reports:?}{:?}", checker.edge_counts()),
+            before
+        );
+    }
+}

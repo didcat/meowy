@@ -4581,7 +4581,14 @@ not runtime performance measurements:
 | Forward definitions | 72 / 48 | 187 / 205 | 159 / 177 |
 | Typed export | 50 / 35 | 168 / 181 | 140 / 153 |
 
-Next: review remaining context/budget boundaries and refresh the guide/evidence inventory.
+Three additional regressions exercise oversized source/cached parameter context before
+scanning, coherent but source-stale headers and duplicate empty functions, plus exact
+ordinary/shared work and combined parameter/call/shared-record payload. All 32
+parameter-filtered library tests pass (`/tmp/meowy-parameter-context-boundaries.log`).
+The combined payload regression includes existing record-operation payload and confirms
+the default two-record parameter reservation without widening collector visibility.
+No known failures remain. Next: refresh the guide/evidence inventory and run the final
+compiler gate.
 `docs/programs/hey/` remains excluded.
 
 Dependency-ordered commit plan:
