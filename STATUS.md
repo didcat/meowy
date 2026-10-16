@@ -67,14 +67,14 @@ qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
-The bootstrap now pins LLVM/Clang/LLD/ar 23.1.1 and Rust 1.99.0 (`712afe6`). The
-isolated compiler baseline passes all ten checks, including 2249 library/914 native
-tests and 217 required conformance cases (`/tmp/meowy-llvm23-compiler.log`). All 15
-runtime harness groups and native debug/release/ASan/UBSan/LSan checks pass; the
-sanitizer run required execution outside ptrace (`/tmp/meowy-llvm23-runtime.log`).
-Owning diagnostic sizes are unchanged. This is host qualification, not full release
-or minimum-OS qualification. The current compiler series above uses these tools.
-All four final documentation checks pass (`/tmp/meowy-llvm23-docs.log`).
+The bootstrap pins installed LLVM/Clang/LLD/ar 23.1.3; Rust remains 1.99.0. The
+isolated `b2ef64ea` baseline passes all ten compiler checks: 3185 library, 923 native,
+62 Python and 495 required conformance tests, with 19 unchanged gaps and no failures
+(`/tmp/meowy-llvm23-patch-compiler.log`). All 15 runtime harness groups and native
+debug/release/ASan/UBSan/LSan checks pass; sanitizers required execution outside
+ptrace (`/tmp/meowy-llvm23-patch-runtime.log`). Owning diagnostic sizes are unchanged.
+Exact version checks remain enabled and no host packages changed. This is host
+qualification; the complete release and minimum OS/libc baseline remain unqualified.
 
 ## Documentation conventions
 

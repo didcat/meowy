@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parent
-VERSION = "23.1.1"
+VERSION = "23.1.3"
 CASES = 14
 DIAGNOSTIC_CASES = 7
 STACK_CASES = 10

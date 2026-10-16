@@ -50,9 +50,9 @@ class CheckTests(unittest.TestCase):
                     check.check_truncated_panic(subprocess.CompletedProcess(["binary"], code, out, text))
 
     def test_wrong_toolchain_fails_before_build(self):
-        result = subprocess.CompletedProcess(["clang"], 0, "clang version 22.1.8\n", "")
+        result = subprocess.CompletedProcess(["clang"], 0, "clang version 23.1.1\n", "")
         with mock.patch.object(check, "invoke", return_value=result) as invoke:
-            with self.assertRaisesRegex(RuntimeError, "requires Clang 23.1.1"):
+            with self.assertRaisesRegex(RuntimeError, "requires Clang 23.1.3"):
                 check.check("clang", Path("/tmp"))
         invoke.assert_called_once_with(["clang", "--version"])
 

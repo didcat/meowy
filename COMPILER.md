@@ -96,12 +96,12 @@ Adopt more elaborate incremental machinery when measurements justify it.
 
 ## Pin a toolchain, not somebody's workstation
 
-Use **LLVM 23.1.1** as the backend candidate, with Clang, LLD, compiler-rt,
-and libunwind from the same `llvmorg-23.1.1` source release. This is a proposed
+Use **LLVM 23.1.3** as the backend candidate, with Clang, LLD, compiler-rt,
+and libunwind from the same `llvmorg-23.1.3` source release. This is a proposed
 baseline to qualify, not a claim that a complete meowy distribution has passed
 qualification. Record the resolved revision, archive checksums, build options,
 patches, and resulting payload digests. The upstream
-[release](https://github.com/llvm/llvm-project/releases/tag/llvmorg-23.1.1)
+[release](https://github.com/llvm/llvm-project/releases/tag/llvmorg-23.1.3)
 provides source archives and verification material.
 
 Choose an exact stable Rust release when establishing the bootstrap, test that

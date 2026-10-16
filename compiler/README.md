@@ -351,7 +351,7 @@ list storage with ordered index effects and a disjoint shared header. The
 a shared header and an exclusive scalar sibling.
 
 The bootstrap is pinned to Rust **1.99.0** and LLVM, Clang, LLD, and LLVM ar
-**23.1.1**. Cargo retains its separate Rust 1.98.1 compatibility floor.
+**23.1.3**. Cargo retains its separate Rust 1.98.1 compatibility floor.
 Standalone [documentation tooling](../docs/reference/documentation.md#implemented-bootstrap-profile)
 now supports structural attachment, checked links, derived signatures, doc check/build,
 safe local API pages and checked/opt-in examples. Ordinary CLI check/build/run
