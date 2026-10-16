@@ -4845,9 +4845,10 @@ Dependency-ordered commit plan:
    history across calls and distinct caller/parameter identities.
 2. Complete (`0df6b56c`): retained-walk validation and the borrowed marker index pass four tests;
    exact work/map/payload limits and stale visits are checked before publication.
-3. Complete: borrowed per-call access preserves all four observation/source states,
+3. Complete (`1882808f`): borrowed per-call access preserves all four observation/source states,
    caller identity and shared history. One forest/index serves all calls.
-4. Cover late marker/call identity faults and conservative observations atomically.
+4. Complete: three boundary checks cover late marker/call identity faults and
+   conservative observations without publishing partial access.
 5. Cover oversized inputs and exact access/aggregate work and payload budgets.
 6. Document structural evidence and run compiler, strict-pin, preservation and final
    documentation gates. Parameter values/origins, callee summaries, restart propagation,
@@ -4862,7 +4863,10 @@ all calls without copying argument vectors or reserving per-call payload.
 Four focused tests cover distinct callers, sparse/stopped states, shared history and
 empty parameter lists. All four tests and all-target Clippy pass
 (`/tmp/meowy-call-forest-access.log`, `/tmp/meowy-call-forest-access-lint.log`).
-No known failures remain. Next: late identity faults and conservative observations.
+Three boundary checks now cover six late marker-index faults, five current-call
+identity faults and conservative rows/source omissions without Call effects. Formatting
+and all three checks pass (`/tmp/meowy-call-forest-boundaries.log`). No known
+failures remain. Next: exact access and aggregate work/payload limits.
 Unrelated `docs/programs/hey/` is preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
