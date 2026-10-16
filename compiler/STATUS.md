@@ -4683,7 +4683,12 @@ cover twelve corruption cases, duplicate visits, exact index/row/payload/work li
 oversized input/walk rejection before scanning, and declared-return observations through
 panicking callees with original wrapped roots. All eight observation tests pass
 (`/tmp/meowy-argument-observations-boundaries.log`). No known failures remain.
-Next: document the sparse report/budgets, link structural evidence and run final gates;
+The foundation guide now documents caller-root qualification, sparse observations,
+single-pass lookup, independent flags and exact storage caps. Three owning reference
+rows gain structural links for characterization/report/boundary tests; prior reference
+contracts, source outcomes, capability pins and proof obligations remain unchanged.
+All four documentation checks pass (`/tmp/meowy-argument-observations-docs.log`).
+Final compiler/strict/preservation gates are next;
 `docs/programs/hey/` remains excluded. No push is authorized.
 
 Dependency-ordered commit plan:

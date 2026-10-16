@@ -1827,7 +1827,8 @@ argument values or origins between owners and grants no loan authority or proof 
 Call qualification exposes a borrowed positional association between each callee parameter
 LocalId and its original caller argument PointId. It validates the entire call/header
 relationship before returning the iterator, including exact arity, reverse positions,
-body identity and caller-owned argument roots. Grouped and coerced arguments keep their
+registered independent caller/callee bodies and caller-owned argument roots. Grouped and
+coerced arguments keep their
 outer roots. Zero and unused parameters, typed exports, recursion and reordered HIR keep
 their original identities. The view adds no retained payload or argument copy; its
 bounded traversal charges `argument count + 1` shared work units before exposure.
@@ -1836,6 +1837,23 @@ observations remain independent: an association can describe an unobserved argum
 and a result-only report does not create an operation visit. Stale identities and exact
 work exhaustion reject without publishing a partial view or changing reports/edges.
 The association supplies no parameter values, callee summaries or new initializer links.
+
+Entry reports also retain sparse argument observations by original PointId. Each row keeps
+its CallId, parameter position/LocalId, caller owner and independent Entry/Normal flags.
+One bounded lookup qualifies all captured arguments; each entry walk is scanned once,
+and duplicate ports merge without another row or payload charge. Unobserved roots are
+omitted. Empty argument sets need no walk scan. Stopped prefixes remain recorded even
+when the outer call has no effect/site, while call Operation/Result visits do not create
+argument observations. Wrapped roots and declared-return boundaries stay unchanged.
+
+The temporary lookup is capped at 262,144 arguments across calls, with the existing
+65,536 per-call bound. Total scanned walk ports are capped at 917,504. Each retained
+argument row reserves one unit from the remaining shared payload after existing analysis;
+parameter headers and call argument vectors keep their existing reservations. Work is
+charged before lookup construction, scanning and publication. Stale owner/root/parameter
+identities and exhausted limits reject atomically, preserving reports and edges. A Normal
+flag records a visited port, not runtime completion, argument values or loan authority;
+returning signatures retain their structural observations even when their bodies panic.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
