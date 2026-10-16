@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Borrowed call-parameter associations pass the compiler gate.
+Updated: 2026-10-16. Individual call-argument observations pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: qualify individual call-argument observations using the handoff below.
+Next: qualify caller-side sources for observed arguments using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4646,67 +4646,73 @@ retain reports, edges and payloads (`/tmp/meowy-call-parameters-characterization
 
 ### Individual call-argument observations
 
-The borrowed associations identify all checked arguments, including unobserved suffixes.
-Before using any argument evidence, qualify its exact Entry/Normal observations in the
-caller's entry walk independently of call Operation/Result observations.
+Complete. Reports retain sparse argument observations by original PointId, with exact
+CallId, parameter position/LocalId, caller owner and independent Entry/Normal flags.
+The existing call qualifier now checks registered independent caller and callee roots.
+A bounded temporary argument lookup reuses that qualifier, then scans each entry walk
+once. Duplicate ports merge; unobserved roots are removed; empty argument sets need no
+walk scan. Stopped prefixes survive without an outer Call effect or graph site, while
+call Operation/Result observations create no argument flags.
 
-Investigation: stopped inputs preserve an observed prefix without a Call effect, so
-argument observations need a separate sparse report. Prepare one bounded PointId lookup
-from the checked call/parameter associations, then scan each entry walk once. Merge exact
-Entry/Normal flags only for matching arguments; retain original call/position/parameter/
-caller identities. Reserve one shared payload record per observed root, once across
-duplicate visits. No per-parameter whole-walk scans or new value/initializer links.
-The existing qualifier checks the callee root but not the caller entry; qualify that
-caller root before sharing the helper with the new collector.
+The lookup is capped at MAX_EDGES total arguments and each call at MAX_ITEMS; scanned
+ports are capped at MAX_REPORT_ITEMS. Each observed root reserves one remaining shared
+payload unit after existing analysis. Parameter/header and argument-vector reservations
+remain unchanged. Work is charged before construction, scanning and publication. Missing
+caller roots, stale parameters/roots/owners and exhausted limits fail atomically. Original
+wrapped roots and declared-return semantics remain intact, including a returning callee
+whose body panics. Flags describe structural visits, not runtime completion or values.
+No initializer links, argument/origin transfer, callee summaries or loan authority are added.
 
-Baseline `29c0001a` has a clean tracked tree and is at the local origin/main tracking
-tip. `/tmp/meowy-argument-observations-baseline.json` captures 588 protected files,
-514 case records, 37 reference rows and eight user files. All three initial
-characterizations pass: wrapped receiver order, stopped first/middle argument prefixes,
-and independence from call/callee completion. Partial-port expectations are now pinned
-as explicit Entry/Normal pairs; all three focused checks pass
-(`/tmp/meowy-argument-observations-characterization.log`). The call qualifier now validates
-registered independent caller roots as well as callee roots, with charged lookups. Existing
-helpers are visible only within Forward for collector reuse. Eight caller-root corruption
-scenarios cover module and function owners; all 41 call-effect tests pass
-(`/tmp/meowy-argument-observations-callers.log`). Reports now retain sparse argument
-observations after existing analysis. A bounded temporary lookup reuses checked calls;
-one scan of entry walks merges independent flags and drops unobserved rows. Each observed
-root reserves one remaining shared payload unit, once across duplicates. Three integration
-tests cover exact sites/positions/owners, stopped prefixes and partial/absent call visits.
-All 64 argument-filtered tests pass (`/tmp/meowy-argument-observations-integration.log`).
-An empty argument lookup now returns without scanning unrelated walks; a fourth test
-covers empty programs/calls and unused parameters. All four observation tests pass
-(`/tmp/meowy-argument-observations-empty.log`). Next: qualify exact capacity/work
-limits and reject stale owner/root/parameter metadata atomically. Four additional tests
-cover twelve corruption cases, duplicate visits, exact index/row/payload/work limits,
-oversized input/walk rejection before scanning, and declared-return observations through
-panicking callees with original wrapped roots. All eight observation tests pass
+| Commit | Reviewable slice |
+| --- | --- |
+| `3419be69` | Characterize argument ports, stopped prefixes and independent observations |
+| `eb836942` | Validate caller roots and share existing bounded call helpers within Forward |
+| `9f90add7` | Retain sparse argument observations with one lookup and one scan per walk |
+| `5782d49c` | Cover stale identities and exact index/row/payload/work limits |
+| `219e7cdd` | Document the report and budgets and link structural coverage |
+
+All ten compiler checks pass: 3173 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution
+(`/tmp/meowy-argument-observations-gate.log`). The unchanged 514-case catalog has 495
+required passes, 19 unchanged pinned gaps and zero failures in debug/release. Strict
+mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-argument-observations-strict.log`, `/tmp/meowy-argument-observations-strict-audit.log`).
+All four guide/evidence and final handoff checks pass
+(`/tmp/meowy-argument-observations-docs.log`, `/tmp/meowy-argument-observations-final-docs.log`).
+Twelve new structural tests cover caller-root qualification,
+wrapped/receiver-first/empty calls, unused parameters, multiple owners, stopped prefixes,
+partial reports, duplicates and exact bounds. All eight observation tests pass, including
+late foreign-owner rejection and early oversized input/walk failures
 (`/tmp/meowy-argument-observations-boundaries.log`). No known failures remain.
-The foundation guide now documents caller-root qualification, sparse observations,
-single-pass lookup, independent flags and exact storage caps. Three owning reference
-rows gain structural links for characterization/report/boundary tests; prior reference
-contracts, source outcomes, capability pins and proof obligations remain unchanged.
-All four documentation checks pass (`/tmp/meowy-argument-observations-docs.log`).
-Final compiler/strict/preservation gates are next;
-`docs/programs/hey/` remains excluded. No push is authorized.
+
+The preservation audit retains all 588 protected files, 514 case records, 19 pins,
+37 reference hashes/gaps/prior evidence and eight user files from `29c0001a`
+(`/tmp/meowy-argument-observations-preservation.log`). Three owning reference rows add
+characterization/report/boundary evidence. No reference contract or expected source outcome
+changed. Unrelated `docs/programs/hey/` remains untouched and excluded.
+
+### Next: qualify caller-side sources for observed arguments
+
+`Reports.arguments` now identifies exact observed roots. Existing
+`results/inputs/direct.rs::direct_source` qualifies caller-owned field/block/dispatch
+sources through the existing eligibility and observation rules. Characterize their use
+at argument roots before publishing any additional source association.
 
 Dependency-ordered commit plan:
 
-1. Characterize caller argument ports in `effects/calls` and `entries` across receiver-first
-   calls, wrappers, zero/unused parameters, stopped first/middle inputs and partial/result-only
-   call reports. Pin original roots, independent caller/callee owners and absent observations.
-   A returning signature with a panicking body must retain structural observation semantics.
-2. Qualify caller-entry identity and expose existing bounded call helpers within Forward,
-   with focused caller-root regressions. Commit this preparation separately.
-3. Add the bounded argument lookup and single-pass sparse observation collector, then
-   retain its result in Reports using remaining shared payload. Keep call effects/sites
-   and all value/source consumers unchanged; include focused integration tests.
-4. Cover conflicting owner/root/port identities, duplicate/missing observations, exact
-   budgets and failure atomicity. Preserve required source expectations, update guide/evidence,
-   and run compiler, strict-pin and final documentation gates. No argument-value or origin
-   transfer, parameter initializer links, callee summaries, restart propagation, E225 or
-   proof outcomes are admitted by observation metadata.
+1. Characterize normally observed argument roots against the existing direct-source
+   qualifier and `consumers/calls` fixtures. Cover groups, non-projecting Forward coercions,
+   unchanged ascriptions and eligible immutable locals, plus stopped/missing observations,
+   projected inputs, calls and reference loads. Preserve each existing opaque boundary.
+2. Validate retained argument rows against the checked call/parameter association before
+   source lookup: exact site, position, parameter, root and owner, with independent flags.
+   Missing observations remain absent; call visits must not supply them. Keep this
+   preparation separate from source-report integration when independently reviewable.
+3. Reuse the bounded source lookup/cache for qualified caller roots, with exact row/payload/
+   hop/work limits and atomic failures. Keep sources in the caller and preserve existing
+   generic eligibility and Unknown histories. Update structural/source evidence and run
+   compiler, strict-pin and final documentation gates. Parameter-value/origin transfer,
+   callee summaries, restart propagation, E225 and proof outcomes remain separate.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6318,9 +6324,9 @@ fields, composed emissions and coercion/binary-owned primaries also qualify immu
 copies of shared-reference receiver records. Counted binary lookup is consolidated.
 Direct-call observations, argument-source ownership, declared result shapes and bounded
 function-signature context are qualified. Initializer qualification reuses validated
-retained parameter membership. Bounded call-argument/parameter associations are qualified.
-Next qualify individual argument observations using the ordered handoff. Value selection
-and broader aggregate provenance remain separate.
+retained parameter membership. Bounded call-argument/parameter associations and individual
+argument observations are qualified. Next qualify caller-side sources for observed arguments
+using the ordered handoff. Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
    direct local and owned-path writes now retain conservative whole-owner marks.
@@ -6993,8 +6999,8 @@ and broader aggregate provenance remain separate.
    Shared-reference receiver local inputs and immutable copies are qualified above.
    Counted binary lookup, direct-call observations, argument-source ownership, declared
    result shapes, function-signature context, initializer parameter reuse and borrowed
-   call-parameter associations are qualified. Next qualify individual argument observations
-   using the current handoff.
+   call-parameter associations and individual argument observations are qualified. Next
+   qualify caller-side sources for observed arguments using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

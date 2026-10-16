@@ -45,26 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Call qualification now exposes borrowed associations between callee parameters and
-original caller argument roots. Stage counts and report comparison use the validated
-view, preserving identities, independent observations and owner boundaries. It adds no
-retained argument vector; bounded traversal charges `argument count + 1` work units.
-The [compiler handoff](compiler/STATUS.md#bounded-call-argument-and-parameter-associations)
-records five implementation/evidence commits and measured logical charges.
+Entry reports now retain sparse, independent Entry/Normal observations for each call
+argument, preserving its original root, call, parameter position and caller owner.
+A bounded lookup and one scan per entry walk retain stopped prefixes without inventing
+call effects. Duplicate visits share one payload record per observed root; caller/callee
+roots and failure atomicity are checked. The
+[compiler handoff](compiler/STATUS.md#individual-call-argument-observations) records five
+implementation/evidence commits. Values and ownership authority remain within their owners.
 
-All ten compiler checks pass: 3161 library, 923 native and 62 Python tests, formatting,
+All ten compiler checks pass: 3173 library, 923 native and 62 Python tests, formatting,
 Clippy, build, metadata and 495 required conformance cases. The same 19 pinned gaps
-remain, with zero debug/release failures (`/tmp/meowy-call-parameters-gate.log`).
+remain, with zero debug/release failures (`/tmp/meowy-argument-observations-gate.log`).
 The audit preserves all 588 protected files, 514 case records, 37 reference hashes/gaps/
-prior evidence and eight user files from `8cbcd8d5`
-(`/tmp/meowy-call-parameters-preservation.log`). Strict mode exits 1 only for the exact
-pins (`/tmp/meowy-call-parameters-strict.log`, `/tmp/meowy-call-parameters-strict-audit.log`).
-All four final handoff checks pass (`/tmp/meowy-call-parameters-final-docs.log`).
+prior evidence and eight user files from `29c0001a`
+(`/tmp/meowy-argument-observations-preservation.log`). Strict mode exits 1 only for the
+exact pins (`/tmp/meowy-argument-observations-strict.log`,
+`/tmp/meowy-argument-observations-strict-audit.log`). All four final handoff checks pass
+(`/tmp/meowy-argument-observations-final-docs.log`).
 
-In progress: qualify individual call-argument observations separately from call effects,
-using one bounded argument lookup and a single scan of each entry walk.
-Full proof/release qualification remains incomplete. Unrelated `docs/programs/hey/`
-is preserved.
+Next: qualify caller-side sources for observed arguments. Full proof/release
+qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 
