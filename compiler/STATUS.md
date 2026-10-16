@@ -4644,11 +4644,29 @@ retain reports, edges and payloads (`/tmp/meowy-call-parameters-characterization
 | Empty function | 0 | 38 / 39 |
 | Recursive function | 1 | 50 / 52 |
 
-### Next: qualify individual call-argument observations
+### Individual call-argument observations
 
 The borrowed associations identify all checked arguments, including unobserved suffixes.
 Before using any argument evidence, qualify its exact Entry/Normal observations in the
 caller's entry walk independently of call Operation/Result observations.
+
+Investigation: stopped inputs preserve an observed prefix without a Call effect, so
+argument observations need a separate sparse report. Prepare one bounded PointId lookup
+from the checked call/parameter associations, then scan each entry walk once. Merge exact
+Entry/Normal flags only for matching arguments; retain original call/position/parameter/
+caller identities. Reserve one shared payload record per observed root, once across
+duplicate visits. No per-parameter whole-walk scans or new value/initializer links.
+The existing qualifier checks the callee root but not the caller entry; qualify that
+caller root before sharing the helper with the new collector.
+
+Baseline `29c0001a` has a clean tracked tree and is at the local origin/main tracking
+tip. `/tmp/meowy-argument-observations-baseline.json` captures 588 protected files,
+514 case records, 37 reference rows and eight user files. All three initial
+characterizations pass: wrapped receiver order, stopped first/middle argument prefixes,
+and independence from call/callee completion. Partial-port expectations are now pinned
+as explicit Entry/Normal pairs; all three focused checks pass
+(`/tmp/meowy-argument-observations-characterization.log`). Caller-root preparation is next;
+`docs/programs/hey/` remains excluded. No push is authorized.
 
 Dependency-ordered commit plan:
 
@@ -4656,11 +4674,12 @@ Dependency-ordered commit plan:
    calls, wrappers, zero/unused parameters, stopped first/middle inputs and partial/result-only
    call reports. Pin original roots, independent caller/callee owners and absent observations.
    A returning signature with a panicking body must retain structural observation semantics.
-2. Reuse the existing call qualifier and walk/port representations for bounded observation
-   lookup. Avoid scanning a whole owner walk once per parameter; decide whether a bounded
-   per-owner lookup is needed from the characterization. Separate lookup preparation from
-   report consumption and charge its work/storage before publication.
-3. Cover conflicting owner/root/port identities, duplicate/missing observations, exact
+2. Qualify caller-entry identity and expose existing bounded call helpers within Forward,
+   with focused caller-root regressions. Commit this preparation separately.
+3. Add the bounded argument lookup and single-pass sparse observation collector, then
+   retain its result in Reports using remaining shared payload. Keep call effects/sites
+   and all value/source consumers unchanged; include focused integration tests.
+4. Cover conflicting owner/root/port identities, duplicate/missing observations, exact
    budgets and failure atomicity. Preserve required source expectations, update guide/evidence,
    and run compiler, strict-pin and final documentation gates. No argument-value or origin
    transfer, parameter initializer links, callee summaries, restart propagation, E225 or

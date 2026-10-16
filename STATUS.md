@@ -61,7 +61,8 @@ prior evidence and eight user files from `8cbcd8d5`
 pins (`/tmp/meowy-call-parameters-strict.log`, `/tmp/meowy-call-parameters-strict-audit.log`).
 All four final handoff checks pass (`/tmp/meowy-call-parameters-final-docs.log`).
 
-Next: qualify individual call-argument observations before using argument evidence.
+In progress: qualify individual call-argument observations separately from call effects,
+using one bounded argument lookup and a single scan of each entry walk.
 Full proof/release qualification remains incomplete. Unrelated `docs/programs/hey/`
 is preserved.
 
