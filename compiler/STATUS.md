@@ -4422,6 +4422,12 @@ lookup follows captured group/region/coercion identities. Existing E212 diagnost
 preserved (`/tmp/meowy-call-inputs-characterization.log`). No additional descriptors are
 needed for these paths. Next: qualify partial/stopped observations and opaque sources;
 production code is unchanged.
+Characterization is committed as `df87c5e6`. All seven call-argument tests pass
+(`/tmp/meowy-call-inputs-stages.log`): each argument needs its own observed projection
+and source publication, independent of Call operation/result presence. Earlier links
+survive a later stopped argument; later arguments and the call remain unobserved.
+Parameter, mutable-record, reference-load, returned-call and projected-Never boundaries
+retain their existing opacity. Next: malformed identity, scope and exact limits.
 
 Dependency-ordered commit plan:
 
