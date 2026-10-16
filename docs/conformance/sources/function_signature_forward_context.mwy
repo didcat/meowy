@@ -1,0 +1,7 @@
+d:@"debug"
+even<(uint32)->boolean>;
+odd<(uint32)->boolean>;
+odd<boolean>:(n<uint32>)'out{inner:(ghost<boolean>){};|n==0|{'out->false;'out.leave()};->even(n-1)}
+even<boolean>:(n<uint32>)'out{|n==0|{'out->true;'out.leave()};->odd(n-1)}
+d.print(even(4))
+d.print(odd(4))

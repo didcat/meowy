@@ -1,0 +1,9 @@
+d:@"debug"
+take<&int32>:(first<&int32>,unused<boolean>,second<&int32>){->second}
+->alias<(&int32,boolean,&int32)->&int32>:take
+a:1
+b:2
+p:&b
+selected:(&a).(alias,false,p)
+d.print(selected==p)
+d.print(*selected)

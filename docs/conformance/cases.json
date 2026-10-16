@@ -5408,6 +5408,46 @@
         "code": "E207"
       },
       "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "function_signature_context",
+      "phase": "run",
+      "source": "sources/function_signature_context.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "7\nflag\n9\n9\n7\nempty\n"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "function_signature_forward_context",
+      "phase": "run",
+      "source": "sources/function_signature_forward_context.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\nfalse\n"
+      },
+      "reference": "../reference/syntax.md#forward-function-groups"
+    },
+    {
+      "id": "function_signature_reference_context",
+      "phase": "run",
+      "source": "sources/function_signature_reference_context.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\n2\n"
+      },
+      "reference": "../reference/values-and-blocks.md#dispatch"
+    },
+    {
+      "id": "function_signature_unused_arity",
+      "phase": "check",
+      "source": "sources/function_signature_unused_arity.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E212"
+      },
+      "reference": "../reference/types.md#functions-and-generics"
     }
   ]
 }

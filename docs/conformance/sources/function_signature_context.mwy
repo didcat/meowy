@@ -1,0 +1,11 @@
+d:@"debug"
+pick<uint8>:(left<uint8>,ignored<boolean>,right<int32>){d.print(right);->left}
+->alias<(uint8,boolean,int32)->uint8>:pick
+mark8<uint8>:(n<uint8>){d.print(n);->n}
+flag<boolean>:(){d.print("flag");->true}
+mark32<int32>:(n<int32>){d.print(n);->n}
+out:mark8(7).(alias,flag(),mark32(9))
+d.print(out)
+unused:(spare<int32>,ignored<boolean>){}
+empty:(){d.print("empty")}
+empty()

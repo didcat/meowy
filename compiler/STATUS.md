@@ -4529,6 +4529,13 @@ foreign parameters, header/body/shape faults, absent registrations, overflow ide
 oversized parameter vectors and valid-but-incompatible unobserved calls after Never.
 Exact context/call-validation work limits and shared payload charges preserve existing
 reports on failure. Next: source conformance, guide/evidence updates and final gates.
+Boundary coverage is committed as `194275e0`. Four new required source cases and four
+existing forward/call-result/stop cases pass in debug/release
+(`/tmp/meowy-signatures-source.log`). They preserve typed export alias order, unused
+parameters, reversed forward definitions with nested functions, reference identity and
+required-argument E212. Build and all four catalog/tooling checks pass
+(`/tmp/meowy-signatures-build.log`, `/tmp/meowy-signatures-source-docs.log`). The catalog
+now has 514 cases. Next: guide/evidence updates and final compiler/strict checks.
 
 Dependency-ordered commit plan:
 

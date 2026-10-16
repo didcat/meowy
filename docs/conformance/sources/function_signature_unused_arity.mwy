@@ -1,0 +1,2 @@
+f:(used<int32>,unused<boolean>){}
+f(1)
