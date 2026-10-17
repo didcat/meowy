@@ -5020,7 +5020,14 @@ Dependency-ordered commit plan:
 Snapshot headers now embed CallId and each retained State carries its original argument
 position. All eleven snapshot tests pass with the unchanged exact record/work budgets
 (`/tmp/meowy-call-bridge-identities.log`); formatting and diff checks pass. HIR indexing
-and snapshot qualification are next. Unrelated `docs/programs/hey/` remains excluded.
+and snapshot qualification are next. Identity prerequisite committed as `64aea7b5`.
+The bounded borrowed HIR call index now traverses wrappers, block/dispatch bodies,
+conditions, stores and indexed paths without evaluating them. It checks every CallId,
+callee, caller root, arity and declared result against retained qualifiers, including
+unreached/nested calls. Three index tests pass (`/tmp/meowy-call-bridge-hir.log`);
+all 3265 library tests pass (`/tmp/meowy-call-bridge-hir-library.log`), with formatting
+and diff checks clean. Snapshot association is next. Unrelated `docs/programs/hey/`
+remains excluded.
 
 ### Subsequent snapshot qualification constraints
 
