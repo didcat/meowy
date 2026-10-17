@@ -26,3 +26,15 @@ pub(crate) fn declared_access_keeps_full_parameter_domains_without_calls() {
             .is_err()
     );
 }
+
+mod views;
+
+pub(super) fn context(source: &str) -> (Checker, Program, Reports, crate::borrow::Facts) {
+    crate::compile(source).unwrap();
+    let (mut checker, program) = checked(source);
+    checker.proofs.conditions = std::mem::take(&mut checker.guards);
+    checker.proofs.tags = std::mem::take(&mut checker.tags);
+    let facts = crate::borrow::check(&program, &mut checker.flow, &checker.proofs).unwrap();
+    let reports = checker.entry_reports(&program, Span::default()).unwrap();
+    (checker, program, reports, facts)
+}

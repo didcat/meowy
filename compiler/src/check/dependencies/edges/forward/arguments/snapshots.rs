@@ -8,6 +8,8 @@ mod payload;
 
 pub(in super::super) struct Snapshots<'a> {
     pub(super) calls: Calls<'a>,
+    pub(super) program: &'a Program,
+    pub(super) access: super::mutations::Accesses,
     pub(super) facts: &'a Facts,
     pub(super) reports: &'a Reports,
 }
@@ -29,12 +31,15 @@ impl Checker {
             return Err(payload::budget(span));
         }
         let calls = self.program_calls(program, reports, span, parts)?;
-        let mut parts = parts
+        let parts = parts
             .min(MAX_EDGES)
             .checked_sub(calls.len())
             .ok_or_else(|| payload::budget(span))?;
+        let (access, mut parts) = self.declared_access(program, reports, span, parts)?;
         let view = Snapshots {
             calls,
+            program,
+            access,
             facts,
             reports,
         };
@@ -135,10 +140,9 @@ impl Checker {
         facts: &Facts,
         span: Span,
     ) -> Result<()> {
-        self.declared_access(program, reports, span, MAX_EDGES)?;
         let (view, _) = self.call_snapshots(program, reports, facts, span, MAX_EDGES)?;
         for &site in view.calls.keys() {
-            let _ = self.call_borrow_inputs(&view, site, span)?;
+            let _ = self.call_mutation_inputs(&view, site, span)?;
         }
         Ok(())
     }

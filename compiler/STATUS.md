@@ -5063,7 +5063,13 @@ Dependency-ordered commit plan for declared access:
 Four focused classifier/map tests pass (`/tmp/meowy-call-access-classifier.log`), including
 complete record/list/union traversal and exact work/payload limits. The declaration fixture
 uses separate supported functions for exclusive and aggregate inputs. All four focused tests, all-target Clippy, formatting and diff checks pass
-(`/tmp/meowy-call-access-clippy.log`). Borrowed-view integration is next. `docs/programs/hey/` remains excluded.
+(`/tmp/meowy-call-access-clippy.log`). Classifier committed as `b6020ca3`. The snapshot view now borrows Program and retains the
+bounded declared-access map under its combined allowance. Per-call mutation-input access
+rechecks full declared types before exposing access beside original parameter/PointId/state
+references. All seven classifier/map/view tests pass (`/tmp/meowy-call-access-view.log`), including
+exclusive-to-shared arguments, reference unions and stopped/unvisited inputs. All 3280 library tests pass
+(`/tmp/meowy-call-access-library.log`), including the existing combined view-budget
+regressions. Stale-cache and accessor-work boundary tests are next. `docs/programs/hey/` remains excluded.
 
 ### Subsequent conservative mutation-input work
 
