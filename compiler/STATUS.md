@@ -4976,7 +4976,17 @@ milestone. The detailed representation and qualification constraints below still
 The behavior-preserving extraction passes all five characterization tests and the
 borrow test suite (`/tmp/meowy-call-snapshots-extract.log`,
 `/tmp/meowy-call-snapshots-extract-borrow.log`); formatting and diff checks pass.
-Snapshot retention and its boundary tests are next.
+Extraction committed as `336d38a6`. Snapshot retention now owns the evaluated prefix;
+normal is its continuing-prefix length, separate from the call guard. Result states,
+return transfers and snapshots publish after one shared fact-budget reservation. Replay
+merges snapshots only from converged passes. Five new capture/payload/work/prefix tests
+pass (`/tmp/meowy-call-snapshots-capture.log`); a test-only unused import is removed.
+Prefix validation checks the constructed snapshot after budgeted allocation and before
+publication. All-target Clippy, formatting and all 296 borrow tests pass
+(`/tmp/meowy-call-snapshots-clippy.log`, `/tmp/meowy-call-snapshots-borrow.log`).
+The five earlier characterization tests also pass after integration
+(`/tmp/meowy-call-snapshots-characterization.log`). Additional alias/guard/restart/bounds
+scenarios and complete-series validation remain; the bridge is unimplemented.
 
 ### Planned snapshot representation and subsequent bridge
 

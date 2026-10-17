@@ -110,6 +110,7 @@ pub(crate) fn check(program: &Program, guards: &mut Guards, proofs: &Proofs) -> 
             + next.locals.len()
             + next.blocks.len()
             + next.calls.len()
+            + next.call_inputs.len()
             + next.returns.len()
             + next.reborrows.len()
             + next.headers.len()
@@ -130,6 +131,7 @@ pub(crate) fn check(program: &Program, guards: &mut Guards, proofs: &Proofs) -> 
         facts.locals.extend(next.locals);
         facts.blocks.extend(next.blocks);
         facts.calls.extend(next.calls);
+        facts.call_inputs.extend(next.call_inputs);
         facts.returns.extend(next.returns);
         facts.reborrows.extend(next.reborrows);
         facts.headers.extend(next.headers);
