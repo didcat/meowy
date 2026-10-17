@@ -15,7 +15,7 @@ pub(crate) fn call_input_snapshots_keep_nested_calls_and_unused_function_frames_
     for snapshot in facts.call_inputs.values() {
         assert_eq!(snapshot.header.function, program.functions[0].id);
         assert_eq!(snapshot.normal, 1);
-        let source = &snapshot.args[0].origins[0].source;
+        let source = &snapshot.args[0].1.origins[0].source;
         if snapshot.header.body == program.body.id {
             outer += 1;
             assert!(matches!(source, Source::Local { .. }));
@@ -36,7 +36,7 @@ pub(crate) fn call_input_snapshots_preserve_guarded_union_alternatives() {
     let snapshot = facts.call_inputs.first_key_value().unwrap().1;
     assert_ne!(snapshot.header.entered, TRUE);
     assert_ne!(snapshot.header.entered, FALSE);
-    let state = &snapshot.args[0];
+    let state = &snapshot.args[0].1;
     assert_eq!(state.active.len(), 2);
     assert!(
         state
@@ -57,7 +57,7 @@ pub(crate) fn call_input_snapshots_preserve_alias_storage_and_caller_body() {
     let (program, facts) = checked("sink:(p<&int32>){};r:{->n:1;sink(&n)}");
     let snapshot = facts.call_inputs.first_key_value().unwrap().1;
     assert_eq!(snapshot.header.body, program.body.id);
-    let Source::Slot { target, fields, .. } = &snapshot.args[0].origins[0].source else {
+    let Source::Slot { target, fields, .. } = &snapshot.args[0].1.origins[0].source else {
         panic!()
     };
     assert_ne!(*target, program.body.id);
@@ -74,6 +74,7 @@ pub(crate) fn call_input_snapshots_publish_converged_restart_origins_once() {
     let snapshot = facts.call_inputs.first_key_value().unwrap().1;
     assert_eq!(snapshot.header.body, program.body.id);
     let roots = snapshot.args[0]
+        .1
         .origins
         .iter()
         .map(|origin| {
@@ -105,7 +106,7 @@ pub(crate) fn call_input_snapshots_keep_abstract_allocator_bounds_without_invent
         .values()
         .find(|snapshot| snapshot.header.function == program.functions[1].id)
         .unwrap();
-    let state = &snapshot.args[0];
+    let state = &snapshot.args[0].1;
     assert!(state.origins.is_empty());
     assert_eq!(state.bounds.len(), 1);
     assert!(

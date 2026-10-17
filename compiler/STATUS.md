@@ -4995,7 +4995,34 @@ This is structural capture; reference behavior and pins are unchanged.
 Baseline `15ade25f` is preserved in `/tmp/meowy-call-snapshots-baseline.json`.
 Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Next: qualify borrow snapshots against caller points
+### Borrow snapshot identity bridge in progress
+
+Baseline `690c2593`; `/tmp/meowy-call-bridge-baseline.json` preserves source/reference,
+case/pin/proof inventories, evidence and user files. HIR Call stores CallId/function and
+ordered argument expressions; Invocation owns the original PointIds. `functions::call`
+constructs both arrays in one ordered loop, including wrapper/coercion boundaries.
+CallId plus position is the identity route; spans are diagnostic locations only.
+Snapshots currently lack an embedded site/position, so the bridge must first retain
+those identities to detect swapped rows or reordered captured states.
+
+Dependency-ordered commit plan:
+
+1. Retain explicit CallId and per-state positions in snapshots with focused regressions;
+   keep the existing record budget and borrow behavior.
+2. Build a bounded borrowed HIR call index, checking caller root/function/count against
+   existing invocation/signature qualifiers. Cover wrappers, nested/unreached calls,
+   duplicate/foreign sites and exact limits without replaying borrow analysis.
+3. Qualify snapshot identity/prefix/payload against that context and expose borrowed
+   parameter/PointId/state associations. Integrate after borrow analysis and entry reports;
+   add corruption/observation/budget tests with the behavior change.
+4. Update evidence/handoff and run compiler, strict-pin, preservation and docs gates.
+
+Snapshot headers now embed CallId and each retained State carries its original argument
+position. All eleven snapshot tests pass with the unchanged exact record/work budgets
+(`/tmp/meowy-call-bridge-identities.log`); formatting and diff checks pass. HIR indexing
+and snapshot qualification are next. Unrelated `docs/programs/hey/` remains excluded.
+
+### Subsequent snapshot qualification constraints
 
 Snapshot capture is complete. The dependency-ordered bridge plan is:
 

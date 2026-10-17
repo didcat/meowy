@@ -1,10 +1,11 @@
 use crate::ast::Span;
 use crate::borrow::{BlockId, Guards, MAX_FACT_ORIGINS, Result, State, Type};
 use crate::flow::Guard;
-use crate::hir::FunctionId;
+use crate::hir::{CallId, FunctionId};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) struct Header {
+    pub(crate) site: CallId,
     pub(crate) function: FunctionId,
     pub(crate) body: BlockId,
     pub(crate) count: usize,
@@ -14,7 +15,7 @@ pub(crate) struct Header {
 pub(crate) struct Inputs {
     pub(crate) header: Header,
     pub(crate) normal: usize,
-    pub(crate) args: Vec<State>,
+    pub(crate) args: Vec<(usize, State)>,
 }
 
 impl Inputs {
@@ -49,7 +50,11 @@ impl Inputs {
         let result = Self {
             header,
             normal,
-            args: args.into_iter().map(|(_, state)| state).collect(),
+            args: args
+                .into_iter()
+                .enumerate()
+                .map(|(position, (_, state))| (position, state))
+                .collect(),
         };
         if result.args.len() > result.header.count
             || result.normal > result.args.len()

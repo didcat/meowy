@@ -39,9 +39,11 @@ pub(crate) fn call_input_snapshots_retain_unused_primitive_reference_and_aggrega
         assert_eq!(snapshot.header.function, program.functions[0].id);
         assert_eq!(snapshot.header.body, program.body.id);
         assert_eq!(snapshot.header.count, 1);
+        assert_eq!(snapshot.header.site, site);
+        assert_eq!(snapshot.args[0].0, 0);
         assert_eq!(snapshot.normal, 1);
         assert_eq!(snapshot.args.len(), 1);
-        assert_eq!(!snapshot.args[0].origins.is_empty(), borrowed);
+        assert_eq!(!snapshot.args[0].1.origins.is_empty(), borrowed);
         assert!(facts.calls[&site].origins.is_empty());
     }
 }
@@ -56,7 +58,7 @@ pub(crate) fn call_input_snapshots_freeze_before_later_argument_writes() {
     assert_eq!(snapshot.args.len(), 2);
     assert_eq!(snapshot.normal, 2);
     assert_eq!(
-        snapshot.args[0].origins[0].source,
+        snapshot.args[0].1.origins[0].source,
         Source::Local { id, fields: vec![] }
     );
 }

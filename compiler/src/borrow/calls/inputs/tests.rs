@@ -4,6 +4,7 @@ use crate::flow::{MAX_PROOF_WORK, TRUE};
 
 pub(super) fn header(count: usize) -> Header {
     Header {
+        site: 3,
         function: 0,
         body: 1,
         count,
@@ -40,6 +41,15 @@ pub(crate) fn call_input_capture_precharges_exact_payload_and_work() {
     assert_eq!(cost, 5);
     assert_eq!(snapshot.args.len(), 2);
     assert_eq!(snapshot.normal, 2);
+    assert_eq!(snapshot.header.site, 3);
+    assert_eq!(
+        snapshot
+            .args
+            .iter()
+            .map(|(position, _)| *position)
+            .collect::<Vec<_>>(),
+        [0, 1]
+    );
     let work = flow.work;
     for (limit, remaining, succeeds) in [(4, work, false), (5, work - 1, false), (5, work, true)] {
         let mut flow = Guards::new();
