@@ -14,7 +14,7 @@ use crate::{
 mod parameters;
 mod validation;
 
-pub(super) const PARAM_PARTS: usize = 2;
+pub(super) const PARAM_PARTS: usize = 3;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub(crate) struct Index {
@@ -26,6 +26,7 @@ pub(crate) struct Index {
 pub(crate) struct Signature {
     pub(crate) body: hir::BlockId,
     pub(crate) params: Vec<hir::LocalId>,
+    pub(crate) inputs: Vec<Shape>,
     pub(crate) shape: Shape,
 }
 
@@ -51,6 +52,7 @@ impl Checker {
         let invalid =
             || Diagnostic::unsupported("proof function-signature identity mismatch", span);
         if program.functions.len() > limit.min(MAX_ENTRIES - 1)
+            || self.parameters.len() > MAX_EDGES
             || !self.flow.spend(program.functions.len() + 1)
         {
             return Err(budget());
@@ -66,7 +68,10 @@ impl Checker {
                 .ok_or_else(budget)?;
         }
         let root = self.signature_root(reports, program.functions.len(), span)?;
-        if program.locals.len() != reports.locals || program.body.id != root {
+        if program.locals.len() != reports.locals
+            || program.body.id != root
+            || self.parameters.len() != count
+        {
             return Err(invalid());
         }
         let mut index = Index::default();
@@ -80,9 +85,10 @@ impl Checker {
             ) {
                 return Err(budget());
             }
-            let header = Signature {
+            let mut header = Signature {
                 body: function.body.id,
                 params: function.params.clone(),
+                inputs: Vec::with_capacity(function.params.len()),
                 shape: Invocation::result_shape(&function.result),
             };
             let owner = function.id.checked_add(1).ok_or_else(invalid)?;
@@ -107,7 +113,10 @@ impl Checker {
                 ) {
                     return Err(budget());
                 }
-                if local >= reports.locals
+                let shape = self.parameter_shape(local, function.id, position, span)?;
+                let ty = program.locals.get(local).ok_or_else(invalid)?;
+                if shape != Completion::of(ty).result
+                    || local >= reports.locals
                     || !self.proofs.bindings.contains_key(&local)
                     || index
                         .params
@@ -116,12 +125,46 @@ impl Checker {
                 {
                     return Err(invalid());
                 }
+                header.inputs.push(shape);
             }
             if index.functions.insert(function.id, header).is_some() {
                 return Err(invalid());
             }
         }
         Ok(index)
+    }
+
+    pub(self) fn parameter_shape(
+        &mut self,
+        local: hir::LocalId,
+        function: hir::FunctionId,
+        position: usize,
+        span: Span,
+    ) -> Result<Shape> {
+        let invalid =
+            || Diagnostic::unsupported("proof function-signature identity mismatch", span);
+        if self.parameters.len() > MAX_EDGES
+            || !self
+                .flow
+                .spend(self.parameters.len().checked_ilog2().unwrap_or(0) as usize + 4)
+        {
+            return Err(Diagnostic::unsupported(
+                "proof function-signature budget exhausted",
+                span,
+            ));
+        }
+        let param = self.parameters.get(&local).ok_or_else(invalid)?;
+        if param.function != function
+            || param.position != position
+            || !(Completion {
+                normal: param.shape != Shape::Never,
+                result: param.shape,
+            })
+            .valid()
+        {
+            return Err(invalid());
+        }
+        Ok(param.shape)
     }
 }
 
@@ -139,3 +182,6 @@ mod construction;
 
 #[cfg(test)]
 mod shapes;
+
+#[cfg(test)]
+mod input_shapes;

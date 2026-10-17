@@ -41,8 +41,11 @@ impl Checker {
         let invalid =
             || Diagnostic::unsupported("proof function-signature identity mismatch", span);
         let index = &reports.signatures;
-        if index.params.len() > MAX_EDGES / PARAM_PARTS {
+        if index.params.len() > MAX_EDGES / PARAM_PARTS || self.parameters.len() > MAX_EDGES {
             return Err(budget());
+        }
+        if index.params.len() != self.parameters.len() {
+            return Err(invalid());
         }
         self.signature_root(reports, index.functions.len(), span)?;
         let mut count = 0usize;
@@ -79,6 +82,7 @@ impl Checker {
         }
         let header = index.functions.get(&function).ok_or_else(invalid)?;
         if header.params.len() > MAX_ITEMS
+            || header.inputs.len() > MAX_ITEMS
             || !self.flow.spend(
                 header.params.len()
                     * (index.params.len().checked_ilog2().unwrap_or(0) as usize
@@ -89,11 +93,12 @@ impl Checker {
             return Err(budget());
         }
         let owner = function.checked_add(1).ok_or_else(invalid)?;
-        if !(Completion {
-            normal: header.shape != Shape::Never,
-            result: header.shape,
-        })
-        .valid()
+        if header.inputs.len() != header.params.len()
+            || !(Completion {
+                normal: header.shape != Shape::Never,
+                result: header.shape,
+            })
+            .valid()
             || reports.entries.get(&owner).map(|(body, _)| *body) != Some(header.body)
             || !self
                 .bodies
@@ -106,6 +111,8 @@ impl Checker {
             if *local >= reports.locals
                 || !self.proofs.bindings.contains_key(local)
                 || index.params.get(local) != Some(&(function, position))
+                || header.inputs[position]
+                    != self.parameter_shape(*local, function, position, span)?
             {
                 return Err(invalid());
             }

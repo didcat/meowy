@@ -51,6 +51,14 @@ pub(crate) fn signature_calls_reject_coherent_arity_and_result_shape_mismatches(
                     .pop()
                     .unwrap();
                 reports.signatures.params.remove(&local);
+                reports
+                    .signatures
+                    .functions
+                    .get_mut(&function)
+                    .unwrap()
+                    .inputs
+                    .pop();
+                checker.parameters.remove(&local);
             }
             _ => unreachable!(),
         }

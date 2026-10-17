@@ -9,7 +9,7 @@ pub(crate) fn program_signatures_bound_oversized_source_and_retained_parameter_c
             0 => program.functions[0].params = vec![0; MAX_ITEMS + 1],
             1 => reports.signatures.functions.get_mut(&id).unwrap().params = vec![0; MAX_ITEMS + 1],
             2 => {
-                reports.signatures.params = (0..=MAX_EDGES / 2)
+                reports.signatures.params = (0..=MAX_EDGES / PARAM_PARTS)
                     .map(|local| (local, (id, local)))
                     .collect()
             }
@@ -67,6 +67,22 @@ pub(crate) fn program_signatures_reject_duplicate_empty_functions_and_coherent_s
                     .params
                     .push(0);
                 reports.signatures.params.insert(0, (id, 0));
+                let shape = Completion::of(&program.locals[0]).result;
+                reports
+                    .signatures
+                    .functions
+                    .get_mut(&id)
+                    .unwrap()
+                    .inputs
+                    .push(shape);
+                checker.parameters.insert(
+                    0,
+                    crate::check::dependencies::Parameter {
+                        function: id,
+                        position: 0,
+                        shape,
+                    },
+                );
             }
             2 => reports.signatures.functions.get_mut(&id).unwrap().shape = Shape::Never,
             _ => unreachable!(),

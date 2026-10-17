@@ -4889,30 +4889,28 @@ Dependency-ordered commit plan:
    parameters, unused/stopped inputs, forward declarations and computed list extents.
 2. Complete (`716d48f9`): checked parameter capture survives HIR transfer, with three passing
    source/identity/budget tests and atomic publication.
-3. Complete: `PARAM_PARTS = 2` centralizes the existing cost without changing behavior;
+3. Complete (`495ede7e`): `PARAM_PARTS = 2` centralized the prior cost without behavior changes;
    signature and initializer/effect budget regressions pass.
-4. Retain ordered shallow input shapes beside signature LocalIds, reserve three report
-   payload records per parameter, and validate header/HIR agreement against capture.
-   Keep the borrowed pair API unchanged and adapt exact-budget regressions.
+4. Complete: ordered input shapes, three-record report reservation and captured/HIR
+   agreement pass 48 signature tests plus initializer and existing per-call checks.
 5. Revalidate and expose declared shapes at per-call access without caller-derived facts;
    cover stale identities, aggregate opacity, empty/unused/stopped inputs and bounds.
 6. Update structural evidence and run compiler, strict-pin, preservation and final
    documentation gates. Invalidation, value/origin transfer, restart propagation,
    E225 and proof outcomes remain separate.
 
-Function checking now captures a bounded LocalId-keyed Parameter record after checking
-the body, before HIR transfer. It retains function, position and shallow Shape. The
-entire batch is validated and charged before publication, preserving earlier records
-on late identity or work/map failure. This source metadata has its own bounded map;
-the forthcoming report input vector adds a third shared report record per parameter.
-Three focused capture tests cover nested/forward/unused functions, HIR transfer,
-late faults and exact bounds. Formatting and all three checks pass
-(`/tmp/meowy-parameter-shapes-capture.log`). No known failures remain. `PARAM_PARTS = 2` now centralizes the existing header/reverse-index report cost.
-Construction, retained/program validation and effect reservation share it; exact-budget
-tests preserve their previous exact boundaries. Formatting, all signature-focused
-tests and the initializer/effect payload test pass
-(`/tmp/meowy-parameter-shapes-accounting.log`). Next: add ordered header input shapes
-and validate them against captured declarations. Unrelated user files remain preserved.
+Signature headers now retain ordered `inputs: Vec<Shape>` beside unchanged LocalIds.
+`PARAM_PARTS = 3` reserves IDs, input descriptors and reverse entries once before effect
+collection. Construction and retained validation compare function/position/shape against
+checked captures; Program validation additionally checks the current HIR local types.
+Both existing coherent-stale fixtures now seed the matching input/capture metadata so
+their original call-arity/Program mismatch checks remain meaningful.
+New tests cover ten descriptor/capture faults, stale unused HIR types and oversized
+input vectors. Source characterization verifies retained shapes. Formatting, all 48
+signature tests, the initializer payload check and all ten per-call access tests pass
+(`/tmp/meowy-parameter-shapes-headers.log`, `/tmp/meowy-parameter-shapes-integration.log`).
+No known failures remain. Next: explicit per-call shape and aggregate-opacity regressions.
+Unrelated `docs/programs/hey/` is preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

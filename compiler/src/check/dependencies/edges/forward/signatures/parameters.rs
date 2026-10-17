@@ -27,7 +27,7 @@ impl Checker {
         for function in &program.functions {
             if function.params.len() > MAX_ITEMS
                 || !self.flow.spend(
-                    function.params.len()
+                    function.params.len() * 3
                         + owners.len().checked_ilog2().unwrap_or(0) as usize * 2
                         + 3,
                 )
@@ -43,6 +43,16 @@ impl Checker {
                 || header.shape != Invocation::result_shape(&function.result)
             {
                 return Err(invalid());
+            }
+            for (&local, &shape) in header.params.iter().zip(&header.inputs) {
+                if program
+                    .locals
+                    .get(local)
+                    .map(|ty| Completion::of(ty).result)
+                    != Some(shape)
+                {
+                    return Err(invalid());
+                }
             }
             count = count
                 .checked_add(header.params.len())

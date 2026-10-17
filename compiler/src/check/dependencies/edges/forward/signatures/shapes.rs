@@ -56,6 +56,7 @@ pub(crate) fn declared_parameter_shapes_follow_checked_types_and_original_call_p
             .map(|&local| Completion::of(&program.locals[local]).result)
             .collect::<Vec<_>>();
         assert_eq!(actual, shapes, "{source}");
+        assert_eq!(header.inputs, shapes, "{source}");
         let (forest, _) = checker
             .argument_forest_view(&reports, Span::default(), MAX_EDGES, MAX_EDGES)
             .unwrap();
@@ -89,6 +90,7 @@ pub(crate) fn declared_parameter_shapes_survive_unused_stopped_and_shadowed_inpu
             let header = &reports.signatures.functions[&function.id];
             for (position, &local) in header.params.iter().enumerate() {
                 let shape = Completion::of(&program.locals[local]).result;
+                assert_eq!(header.inputs[position], shape);
                 assert!(
                     Completion {
                         normal: shape != Shape::Never,
