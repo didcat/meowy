@@ -86,3 +86,33 @@ pub(crate) fn hir_call_index_bounds_rows_and_exact_work() {
         );
     }
 }
+
+#[test]
+pub(crate) fn hir_call_index_bounds_deep_wrappers_and_rejects_missing_calls() {
+    for deep in [false, true] {
+        let (mut checker, mut program) = checked("f<int32>:(){->1};f()");
+        let reports = checker.entry_reports(&program, Span::default()).unwrap();
+        let Stmt::Expr(mut expr) = program.body.stmts.pop().unwrap() else {
+            panic!()
+        };
+        if deep {
+            for _ in 0..256 {
+                expr = hir::Expr {
+                    ty: expr.ty.clone(),
+                    span: expr.span,
+                    kind: ExprKind::Coerce {
+                        value: Box::new(expr),
+                    },
+                };
+            }
+            program.body.stmts.push(Stmt::Expr(expr));
+        }
+        let before = format!("{reports:?}{:?}", checker.edge_counts());
+        assert!(
+            checker
+                .program_calls(&program, &reports, Span::default(), MAX_EDGES)
+                .is_err()
+        );
+        assert_eq!(before, format!("{reports:?}{:?}", checker.edge_counts()));
+    }
+}

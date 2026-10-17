@@ -5038,7 +5038,12 @@ tests and all-target Clippy pass (`/tmp/meowy-call-bridge-view.log`,
 `/tmp/meowy-call-bridge-library.log`, `/tmp/meowy-call-bridge-clippy.log`). Exact combined
 view budgets, stale-view corruption and retained guard/payload boundaries are next. This
 checks association and safe metadata bounds; semantic origin eligibility and mutation
-access classification remain separate.
+access classification remain separate. Bridge integration committed as `08e32246`.
+Five additional boundary tests now cover combined budgets, all guard payload categories,
+foreign snapshots, live source revalidation, missing graph/input evidence and HIR depth
+or missing-call failures. All seven bridge tests and all four HIR index tests pass
+(`/tmp/meowy-call-bridge-boundaries.log`, `/tmp/meowy-call-bridge-hir-final.log`);
+formatting and diff checks pass. Evidence updates and complete-series gates are next.
 
 ### Subsequent snapshot qualification constraints
 
