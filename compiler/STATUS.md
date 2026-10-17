@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Per-call forest access passes the compiler gate.
+Updated: 2026-10-16. Declared parameter descriptor work is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -4877,20 +4877,32 @@ domains and full declared call-result domains without inspecting callee bodies.
 Before conservative call invalidation can consume argument metadata, retain the
 relevant declared parameter categories independently of caller source availability.
 
+Investigation: existing `Shape` captures scalar kind/width, shared scalar referents,
+reference mode, record field count, list capacity and union member count without
+recursive copies. Aggregate interiors and exclusive referent types remain opaque.
+`Program` takes the checker's locals/functions before entry reports, so retained
+headers need an independent checked parameter snapshot for later revalidation.
+
 Dependency-ordered commit plan:
 
-1. Characterize `signatures.rs::function_signatures`, checked call inputs and per-call
-   forest access for scalar, shared/exclusive reference and aggregate parameters,
-   including unused/stopped arguments. Identify compact declared-type evidence needed
-   for conservative invalidation; keep unsupported alias relationships unknown.
-2. Capture bounded shallow parameter descriptors alongside original LocalIds using
-   checked parameter types. Reuse existing shape/borrow representations where exact;
-   do not copy recursive type trees. Preserve signature, owner and reverse-position
-   identity, shared payload/work limits and the ordered borrowed pair API.
-3. Revalidate descriptors at call access, add identity/limit/source-boundary regressions,
-   update structural evidence and run compiler/strict-pin/docs gates. Do not specialize
-   function facts, inspect callee bodies for call-result values, grant loan authority
-   or implement invalidation/propagation without their separate qualification.
+1. Complete: two source characterization tests cover scalar/shared/exclusive/aggregate
+   parameters, unused/stopped inputs, forward declarations and computed list extents.
+2. Capture bounded atomic `(function, position, Shape)` metadata by LocalId during
+   function checking. Preserve it across HIR transfer; add source/capture-boundary tests.
+3. Retain ordered shallow input shapes beside signature LocalIds, reserve three report
+   payload records per parameter, and validate header/HIR agreement against capture.
+   Keep the borrowed pair API unchanged and adapt exact-budget regressions.
+4. Revalidate and expose declared shapes at per-call access without caller-derived facts;
+   cover stale identities, aggregate opacity, empty/unused/stopped inputs and bounds.
+5. Update structural evidence and run compiler, strict-pin, preservation and final
+   documentation gates. Invalidation, value/origin transfer, restart propagation,
+   E225 and proof outcomes remain separate.
+
+Formatting and both `declared_parameter_shapes` tests pass
+(`/tmp/meowy-parameter-shapes-characterization.log`). Checked parameter locals retain
+the declared shapes even when arguments are absent/stopped or the body shadows extent
+names. Next: capture independent checked descriptors before HIR transfer. Baseline
+`ccd3f37d` preserves unrelated `docs/programs/hey/`; LLVM remains 23.1.3.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

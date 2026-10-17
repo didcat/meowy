@@ -134,3 +134,6 @@ mod limits;
 
 #[cfg(test)]
 mod construction;
+
+#[cfg(test)]
+mod shapes;
