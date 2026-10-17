@@ -4885,24 +4885,30 @@ headers need an independent checked parameter snapshot for later revalidation.
 
 Dependency-ordered commit plan:
 
-1. Complete: two source characterization tests cover scalar/shared/exclusive/aggregate
+1. Complete (`77f1e426`): two source characterization tests cover scalar/shared/exclusive/aggregate
    parameters, unused/stopped inputs, forward declarations and computed list extents.
-2. Capture bounded atomic `(function, position, Shape)` metadata by LocalId during
-   function checking. Preserve it across HIR transfer; add source/capture-boundary tests.
-3. Retain ordered shallow input shapes beside signature LocalIds, reserve three report
+2. Complete: checked parameter capture survives HIR transfer, with three passing
+   source/identity/budget tests and atomic publication.
+3. Centralize the existing two-record signature payload accounting without behavior
+   changes, retaining its exact-budget regressions.
+4. Retain ordered shallow input shapes beside signature LocalIds, reserve three report
    payload records per parameter, and validate header/HIR agreement against capture.
    Keep the borrowed pair API unchanged and adapt exact-budget regressions.
-4. Revalidate and expose declared shapes at per-call access without caller-derived facts;
+5. Revalidate and expose declared shapes at per-call access without caller-derived facts;
    cover stale identities, aggregate opacity, empty/unused/stopped inputs and bounds.
-5. Update structural evidence and run compiler, strict-pin, preservation and final
+6. Update structural evidence and run compiler, strict-pin, preservation and final
    documentation gates. Invalidation, value/origin transfer, restart propagation,
    E225 and proof outcomes remain separate.
 
-Formatting and both `declared_parameter_shapes` tests pass
-(`/tmp/meowy-parameter-shapes-characterization.log`). Checked parameter locals retain
-the declared shapes even when arguments are absent/stopped or the body shadows extent
-names. Next: capture independent checked descriptors before HIR transfer. Baseline
-`ccd3f37d` preserves unrelated `docs/programs/hey/`; LLVM remains 23.1.3.
+Function checking now captures a bounded LocalId-keyed Parameter record after checking
+the body, before HIR transfer. It retains function, position and shallow Shape. The
+entire batch is validated and charged before publication, preserving earlier records
+on late identity or work/map failure. This source metadata has its own bounded map;
+the forthcoming report input vector adds a third shared report record per parameter.
+Three focused capture tests cover nested/forward/unused functions, HIR transfer,
+late faults and exact bounds. Formatting and all three checks pass
+(`/tmp/meowy-parameter-shapes-capture.log`). No known failures remain. Next: centralize the
+existing signature payload cost before extending report headers. Unrelated user files remain preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

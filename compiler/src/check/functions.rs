@@ -335,6 +335,7 @@ impl Checker {
         }
         let block = self.block(body, result.clone(), None)?;
         let result = result.unwrap_or_else(|| block.ty.clone());
+        self.capture_parameters(id, &ids, span)?;
         self.functions[id] = Some(hir::Function {
             id,
             name: name.into(),

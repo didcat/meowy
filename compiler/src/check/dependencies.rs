@@ -333,6 +333,9 @@ pub(crate) use store_operations::Operation as StoreOperation;
 mod invocations;
 pub(crate) use invocations::Invocation;
 
+mod parameters;
+pub(crate) use parameters::Parameter;
+
 mod indices;
 pub(crate) use indices::{Access as IndexAccess, Index};
 
