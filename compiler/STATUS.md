@@ -4954,80 +4954,72 @@ exits 1 only for the exact 19 pinned names/reasons (`/tmp/meowy-call-inputs-stri
 (`/tmp/meowy-call-inputs-docs.log`). No known failures remain. No production behavior
 changes; `docs/programs/hey/` remains excluded. Nothing was pushed or published.
 
-### Bounded borrow call-input snapshots in progress
+### Bounded borrow call-input snapshots
 
-Baseline: `15ade25f`; preservation snapshot `/tmp/meowy-call-snapshots-baseline.json`.
-Only unrelated `docs/programs/hey/` is untracked. Inspection confirms the Call arm owns
-transient argument states and replay publishes only converged Facts. No downstream
-consumer yet has a call-input snapshot. Preserve that boundary during this milestone.
+`Facts.call_inputs` now owns the evaluated argument prefix by CallId. Headers preserve
+callee FunctionId, caller root BlockId, declared count and the existing call-entry guard.
+Each argument retains its full State: origins, bounds, active variants and present/proof
+guards. The normal count records how many prefix arguments continued evaluation; a
+final stopped argument is retained and untouched suffixes are absent. Borrow completion
+and call guards remain independent of graph Operation/Normal observations.
 
-Current dependency-ordered commit plan:
+Capture moves the existing transient states after call-contract checking. Later argument
+writes cannot replace earlier snapshots. No HIR type clones or origin recomputation.
+One header record, one record per evaluated argument and all State weights share the
+borrow-fact allowance. Allocation/prefix validation precede publication; result states,
+return transfers and inputs publish only after their combined reservation succeeds.
+Repeated sites must retain the same header. Replay discards intermediate-pass snapshots
+and merges only converged function facts, including bounded merge work.
 
-1. Extract the Call arm into `borrow/calls.rs` without changing behavior; run the five
-   existing call-input characterization tests and borrow tests before committing.
-2. Retain bounded full argument states, completion flags and call/body identity in Facts;
-   integrate capture and converged replay merging. Keep source-driven timing/stopping
-   regressions and exact budget/atomic publication tests with the implementation.
-3. Add independently useful alias/guard/restart/opaque-input scenarios, update evidence
-   and documentation, and run the complete compiler/strict-pin/preservation/docs gates.
+| Commit | Review question |
+| --- | --- |
+| `336d38a6` | Isolate call evaluation without changing behavior |
+| `52c8da05` | Retain bounded argument snapshots with call results |
+| `aff10422` | Preserve guards, aliases, frames and converged restart inputs |
 
-The checked Program-to-PointId bridge and mutation classification remain the following
-milestone. The detailed representation and qualification constraints below still apply.
-The behavior-preserving extraction passes all five characterization tests and the
-borrow test suite (`/tmp/meowy-call-snapshots-extract.log`,
-`/tmp/meowy-call-snapshots-extract-borrow.log`); formatting and diff checks pass.
-Extraction committed as `336d38a6`. Snapshot retention now owns the evaluated prefix;
-normal is its continuing-prefix length, separate from the call guard. Result states,
-return transfers and snapshots publish after one shared fact-budget reservation. Replay
-merges snapshots only from converged passes. Five new capture/payload/work/prefix tests
-pass (`/tmp/meowy-call-snapshots-capture.log`); a test-only unused import is removed.
-Prefix validation checks the constructed snapshot after budgeted allocation and before
-publication. All-target Clippy, formatting and all 296 borrow tests pass
-(`/tmp/meowy-call-snapshots-clippy.log`, `/tmp/meowy-call-snapshots-borrow.log`).
-The five earlier characterization tests also pass after integration
-(`/tmp/meowy-call-snapshots-characterization.log`). Additional alias/guard/restart/bounds
-scenarios and complete-series validation remain; the bridge is unimplemented.
-Capture committed as `52c8da05`. All eleven new tests pass, including the six context
-scenarios for nested calls/unused frames, guarded union variants, alias storage,
-converged restart origins, abstract allocator call bounds and exact shared body budgets
-(`/tmp/meowy-call-snapshots-contexts.log`). No known focused failures remain.
-Documentation/evidence updates and the full compiler/strict-pin gates are next.
+Eleven new tests cover primitive/shared/exclusive/aggregate inputs, later argument writes,
+stopped prefixes, empty calls, exact work/payload/body budgets, invalid prefixes, nested
+calls and unused frames, guarded variants, alias storage, abstract allocator call bounds
+and restart convergence (`/tmp/meowy-call-snapshots-contexts.log`). All five original
+characterization tests also pass (`/tmp/meowy-call-snapshots-characterization.log`).
+The preservation audit passes for all 597 protected files, including eight user files,
+and all 37 reference hashes/gaps/prior evidence (`/tmp/meowy-call-snapshots-preservation.log`).
+All ten compiler checks pass: formatting, Clippy, 3262 library, 923 native and 62 Python
+tests, build, metadata and source execution (`/tmp/meowy-call-snapshots-gate.log`).
+The 514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release
+failures. Strict mode exits 1 only for the exact 19 pinned names/reasons
+(`/tmp/meowy-call-snapshots-strict.log`, `/tmp/meowy-call-snapshots-strict-audit.log`).
+All four documentation/evidence checks pass (`/tmp/meowy-call-snapshots-docs.log`).
+No known failures remain.
+This is structural capture; reference behavior and pins are unchanged.
+Baseline `15ade25f` is preserved in `/tmp/meowy-call-snapshots-baseline.json`.
+Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Planned snapshot representation and subsequent bridge
+### Next: qualify borrow snapshots against caller points
 
-The capture boundary is `borrow/value.rs::expression`'s Call arm, not dependency origin
-lookup after argument evaluation. The following dependency-ordered slices are planned:
+Snapshot capture is complete. The dependency-ordered bridge plan is:
 
-1. Add a bounded call-input representation beside `borrow/state.rs`, retaining CallId,
-   callee FunctionId, caller body identity, declared argument count and the evaluated
-   argument prefix. Each position retains its full State (origins, bounds, active variants,
-   present/proof guards) and whether evaluation continued. Keep call entry separate from
-   argument completion and from graph Operation/Normal observations. Reuse state weights;
-   precharge row/payload/work before allocation or publication, with exact-limit and late
-   failure tests. Do not clone HIR types or recompute origins from current reference cells.
-2. Capture those existing transient states during argument evaluation, then transfer them
-   into Facts after result-contract checking. Preserve stopped arguments and omitted
-   suffixes. Integrate converged replay and function-fact merging in `borrow/replay.rs`,
-   including their payload/work accounting. Test later-argument writes, no-result calls,
-   unused functions/parameters, nested calls, guards, aliases, unknown bounds and restarts.
-   This capture does not change existing guard invalidation or loan behavior.
-3. In a separate bridge, use the checked Program plus existing invocation/signature
-   qualifiers to bind snapshots to original caller PointIds and parameter positions.
-   `check.rs` already computes borrow Facts before entry reports; do not rerun the borrow
-   pass. Validate exact call/function/body/count/order and retained-source identities
-   before borrowing a view; spans alone are not identities. Keep opaque or unavailable
-   metadata conservative, and reject stale/foreign descriptors atomically. Do not equate
-   borrow reachability guards with structural argument or Call observations.
-4. Qualify the bridge with corruption/observation/budget regressions, update evidence and
-   run compiler/strict-pin/docs gates. Actual scalar-fact invalidation, mutation access
-   classification, restart propagation, E225 and proof outcomes remain later slices.
+1. Characterize the checked HIR Call traversal and existing invocation/signature
+   qualifiers, including outer coercions/groups and nested calls. Establish exact
+   CallId/function/body/count/order agreement and original argument PointIds without
+   treating spans as identities. Borrow Facts are already computed before entry reports
+   in `check.rs`; do not run the borrow pass again or infer inputs from final maps.
+2. Add a narrow bounded borrowed view that associates retained snapshots with parameter
+   positions and original caller points. Preserve normal-prefix/call-entry distinctions,
+   missing snapshots for unreached calls, abstract sources and independent graph
+   observations. Revalidate retained-source/header identity, argument ordering, caller
+   and callee owners, and complete payload bounds before exposure. A source's presence
+   does not establish mutation access, and its absence does not establish purity.
+3. Qualify the bridge with stale/foreign/late-identity corruption, stopped/guarded/replayed
+   contexts and exact work/payload limits. Reject atomically; update structural evidence
+   and run compiler/strict-pin/preservation/docs gates. Keep actual access classification,
+   scalar-fact invalidation, restart propagation, E225 and proof outcomes separate.
 
-A Source is provenance evidence, not permission to mutate. Source::Input, expired or
-unknown bounded origins cannot become concrete caller storage; nested references and
-aggregate components require their declared access domains. Preserve all alternatives,
-unknown alias relationships, source-forest opacity and caller/callee separation. Neither
-scalar forests nor shallow aggregate counts establish reference-free layout. No caller
-specialization or callee-body result analysis is authorized by these snapshots.
+Source::Input, expired or unknown bounded origins cannot become concrete caller storage.
+Nested references and aggregate components require declared access domains. Preserve
+all alternatives, unknown aliases, source-forest opacity and caller/callee separation.
+Neither scalar forests nor shallow aggregate counts establish reference-free layout.
+No caller specialization or callee-body result analysis is authorized by these snapshots.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

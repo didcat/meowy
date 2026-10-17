@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-16. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-17. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -45,27 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Call-input characterization now establishes why conservative invalidation needs borrow
-states captured during argument evaluation. Five structural tests cover primitive and
-reference-bearing inputs, storage projections, reference cells, later argument writes,
-unused parameters and stopped prefixes. Dependency root sets lose paths; final maps can
-see replacements written by later arguments; call-result states can contain no origins.
-The [compiler handoff](compiler/STATUS.md#conservative-call-input-characterization)
-records `d0df4eb8`, the evidence and the ordered capture/qualification plan.
+The borrow pass now retains bounded argument-state snapshots in evaluation order.
+Later arguments cannot retarget earlier snapshots. Stopped prefixes, full guarded
+origins/bounds, alias slots, caller frames and converged restart inputs are preserved.
+Result states, return transfers and snapshots share one reservation before publication.
+The [compiler handoff](compiler/STATUS.md#bounded-borrow-call-input-snapshots) records
+`336d38a6`, `52c8da05`, `aff10422`, validation and the next bridge plan.
 
-The five focused tests pass (`/tmp/meowy-call-inputs-focused.log`). The audit preserves
-all 597 protected files and 37 reference hashes/gaps/prior evidence. All ten compiler
-checks pass: 3251 library, 923 native, 62 Python and 495 required conformance tests,
-with 19 unchanged gaps and zero debug/release failures (`/tmp/meowy-call-inputs-gate.log`).
-Strict mode exits 1 only for the exact pinned names/reasons
-(`/tmp/meowy-call-inputs-strict-audit.log`); all four documentation checks pass
-(`/tmp/meowy-call-inputs-docs.log`). Production behavior, language contracts and pins
-are unchanged. LLVM remains 23.1.3; this slice needs no toolchain update.
+Eleven new snapshot tests pass. All ten compiler checks pass: 3262 library, 923 native,
+62 Python and 495 required conformance tests, with 19 unchanged gaps and no debug/release
+failures (`/tmp/meowy-call-snapshots-gate.log`). The audit preserves all 597 protected
+files and all 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-call-snapshots-preservation.log`). Strict mode reports only the exact pinned
+names/reasons (`/tmp/meowy-call-snapshots-strict-audit.log`); all four documentation
+checks pass (`/tmp/meowy-call-snapshots-docs.log`). Language contracts and pins are
+unchanged. LLVM remains 23.1.3; no toolchain update is needed.
 
-Next: retain bounded borrow call-input snapshots, then qualify their association with
-original caller points and declared parameter positions. Actual invalidation, restart
-propagation, caller specialization and proof/release qualification remain separate.
-Unrelated `docs/programs/hey/` is preserved. Nothing was pushed or published.
+Next: qualify snapshots against checked HIR calls, original caller PointIds and declared
+parameter positions. Mutation classification, fact invalidation, caller specialization
+and proof/release qualification remain separate. Unrelated `docs/programs/hey/` is
+preserved. Nothing was pushed or published.
 
 ## Host toolchain
 

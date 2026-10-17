@@ -1974,10 +1974,31 @@ all origins despite reference-bearing arguments. Stopped prefixes and argument N
 observations remain independent of Call effects. Unused parameter origins still refer
 to declared Input components rather than concrete caller storage.
 
-These tests characterize existing metadata only. No argument-state snapshot or mutation
-input bridge is implemented yet. Future retention must reuse bounded borrow states,
-preserve unknown bounds and guards, and qualify caller/callee identity separately from
-observations before exposing any conservative invalidation input.
+The borrow pass now retains these states in Facts.call_inputs by CallId. Each snapshot
+keeps its callee FunctionId, caller root body, declared argument count and existing call
+entry guard. It owns the evaluated argument prefix, including a final stopped argument;
+unvisited suffixes are absent. The normal count identifies the continuing prefix. This
+count describes borrow evaluation and is independent of graph Normal/Operation visits.
+
+Snapshots move the existing full States after call-contract checking, preserving origins,
+bounds, active variants and present/proof guards. They do not clone HIR types, re-evaluate
+arguments or replace abstract Input/Slot provenance with concrete locals. Nested calls
+and unused function frames retain distinct sites and callers. Restart replay publishes
+snapshots only from its converged pass and charges their function-fact merge work.
+
+Each snapshot reserves one header record, one per evaluated argument and the existing
+State weights in the shared borrow-fact budget. Allocation and publication are preceded
+by bounded work/payload checks. Result states, return transfers and snapshots share one
+final reservation; a snapshot failure cannot partially publish that call's maps. Exact
+payload/work/body limits, invalid prefixes, later argument writes, stopping, guarded
+union alternatives, alias slots, allocator bounds and restart convergence have structural
+tests. Existing source contracts and capability pins remain unchanged.
+
+The checked Program-to-PointId bridge is still unimplemented. Retained headers and states
+must be qualified against original caller points and declared parameter positions before
+exposing conservative invalidation inputs. Provenance is not mutation permission;
+unknown bounds, alias alternatives and abstract sources remain conservative. Actual
+fact invalidation, access classification and proof outcomes remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
