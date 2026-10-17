@@ -4987,6 +4987,11 @@ publication. All-target Clippy, formatting and all 296 borrow tests pass
 The five earlier characterization tests also pass after integration
 (`/tmp/meowy-call-snapshots-characterization.log`). Additional alias/guard/restart/bounds
 scenarios and complete-series validation remain; the bridge is unimplemented.
+Capture committed as `52c8da05`. All eleven new tests pass, including the six context
+scenarios for nested calls/unused frames, guarded union variants, alias storage,
+converged restart origins, abstract allocator call bounds and exact shared body budgets
+(`/tmp/meowy-call-snapshots-contexts.log`). No known focused failures remain.
+Documentation/evidence updates and the full compiler/strict-pin gates are next.
 
 ### Planned snapshot representation and subsequent bridge
 

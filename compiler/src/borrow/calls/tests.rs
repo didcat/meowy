@@ -1,7 +1,9 @@
 use crate::borrow::{Facts, Source};
 use crate::hir::{Program, Stmt};
 
-pub(super) fn checked(source: &str) -> (Program, Facts) {
+mod contexts;
+
+pub(super) fn prepared(source: &str) -> (Program, crate::check::Checker) {
     crate::compile(source).unwrap();
     let ast = crate::parser::parse(source).unwrap();
     let mut checker = crate::check::Checker::new();
@@ -15,6 +17,11 @@ pub(super) fn checked(source: &str) -> (Program, Facts) {
         locals: std::mem::take(&mut checker.locals),
     };
     checker.proofs.conditions = checker.guards.clone();
+    (program, checker)
+}
+
+pub(super) fn checked(source: &str) -> (Program, Facts) {
+    let (program, mut checker) = prepared(source);
     let facts = crate::borrow::check(&program, &mut checker.flow, &checker.proofs).unwrap();
     (program, facts)
 }
