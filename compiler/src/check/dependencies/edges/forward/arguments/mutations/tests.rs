@@ -27,6 +27,7 @@ pub(crate) fn declared_access_keeps_full_parameter_domains_without_calls() {
     );
 }
 
+mod boundaries;
 mod views;
 
 pub(super) fn context(source: &str) -> (Checker, Program, Reports, crate::borrow::Facts) {

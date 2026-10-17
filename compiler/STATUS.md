@@ -5069,7 +5069,11 @@ rechecks full declared types before exposing access beside original parameter/Po
 references. All seven classifier/map/view tests pass (`/tmp/meowy-call-access-view.log`), including
 exclusive-to-shared arguments, reference unions and stopped/unvisited inputs. All 3280 library tests pass
 (`/tmp/meowy-call-access-library.log`), including the existing combined view-budget
-regressions. Stale-cache and accessor-work boundary tests are next. `docs/programs/hey/` remains excluded.
+regressions. Integration committed as `fbc96cf7`. Five additional boundary tests now
+cover missing/extra/stale descriptors, equal shallow shapes with different interiors,
+exact map/accessor budgets and empty-call contexts. All twelve access tests pass
+(`/tmp/meowy-call-access-boundaries.log`); formatting and diff checks pass.
+Documentation/evidence updates and complete-series validation are next. `docs/programs/hey/` remains excluded.
 
 ### Subsequent conservative mutation-input work
 
