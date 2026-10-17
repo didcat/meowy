@@ -4954,7 +4954,31 @@ exits 1 only for the exact 19 pinned names/reasons (`/tmp/meowy-call-inputs-stri
 (`/tmp/meowy-call-inputs-docs.log`). No known failures remain. No production behavior
 changes; `docs/programs/hey/` remains excluded. Nothing was pushed or published.
 
-### Next: retain bounded borrow call-input snapshots
+### Bounded borrow call-input snapshots in progress
+
+Baseline: `15ade25f`; preservation snapshot `/tmp/meowy-call-snapshots-baseline.json`.
+Only unrelated `docs/programs/hey/` is untracked. Inspection confirms the Call arm owns
+transient argument states and replay publishes only converged Facts. No downstream
+consumer yet has a call-input snapshot. Preserve that boundary during this milestone.
+
+Current dependency-ordered commit plan:
+
+1. Extract the Call arm into `borrow/calls.rs` without changing behavior; run the five
+   existing call-input characterization tests and borrow tests before committing.
+2. Retain bounded full argument states, completion flags and call/body identity in Facts;
+   integrate capture and converged replay merging. Keep source-driven timing/stopping
+   regressions and exact budget/atomic publication tests with the implementation.
+3. Add independently useful alias/guard/restart/opaque-input scenarios, update evidence
+   and documentation, and run the complete compiler/strict-pin/preservation/docs gates.
+
+The checked Program-to-PointId bridge and mutation classification remain the following
+milestone. The detailed representation and qualification constraints below still apply.
+The behavior-preserving extraction passes all five characterization tests and the
+borrow test suite (`/tmp/meowy-call-snapshots-extract.log`,
+`/tmp/meowy-call-snapshots-extract-borrow.log`); formatting and diff checks pass.
+Snapshot retention and its boundary tests are next.
+
+### Planned snapshot representation and subsequent bridge
 
 The capture boundary is `borrow/value.rs::expression`'s Call arm, not dependency origin
 lookup after argument evaluation. The following dependency-ordered slices are planned:

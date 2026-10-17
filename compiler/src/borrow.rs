@@ -1,6 +1,7 @@
 pub(crate) mod activity;
 pub(crate) mod aliases;
 pub(crate) mod branches;
+pub(crate) mod calls;
 pub(crate) mod carried;
 pub(crate) mod changing;
 pub(crate) mod control;
