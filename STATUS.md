@@ -45,26 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-The borrow pass now retains bounded argument-state snapshots in evaluation order.
-Later arguments cannot retarget earlier snapshots. Stopped prefixes, full guarded
-origins/bounds, alias slots, caller frames and converged restart inputs are preserved.
-Result states, return transfers and snapshots share one reservation before publication.
-The [compiler handoff](compiler/STATUS.md#bounded-borrow-call-input-snapshots) records
-`336d38a6`, `52c8da05`, `aff10422`, validation and the next bridge plan.
+Borrow snapshots now have qualified associations with original caller PointIds and
+parameter positions. Explicit call/argument identities and bounded HIR traversal handle
+wrappers, nested/unreached calls and stopped prefixes. The view borrows existing states,
+revalidates live call metadata and checks payload/guard bounds without replaying analysis.
+The [compiler handoff](compiler/STATUS.md#borrow-snapshot-identity-bridge) records
+`64aea7b5`, `03ec58d7`, `08e32246`, `8bea99fc` and the next classification step.
 
-Eleven new snapshot tests pass. All ten compiler checks pass: 3262 library, 923 native,
-62 Python and 495 required conformance tests, with 19 unchanged gaps and no debug/release
-failures (`/tmp/meowy-call-snapshots-gate.log`). The audit preserves all 597 protected
-files and all 37 reference hashes/gaps/prior evidence
-(`/tmp/meowy-call-snapshots-preservation.log`). Strict mode reports only the exact pinned
-names/reasons (`/tmp/meowy-call-snapshots-strict-audit.log`); all four documentation
-checks pass (`/tmp/meowy-call-snapshots-docs.log`). Language contracts and pins are
-unchanged. LLVM remains 23.1.3; no toolchain update is needed.
+All eleven new HIR/bridge tests pass. All ten compiler checks pass: 3273 library,
+923 native, 62 Python and 495 required conformance tests, with 19 unchanged gaps and
+zero debug/release failures (`/tmp/meowy-call-bridge-gate.log`). The audit preserves
+all 597 protected files and 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-call-bridge-preservation.log`). Strict mode reports only the exact pinned
+names/reasons (`/tmp/meowy-call-bridge-strict-audit.log`); all four documentation checks
+pass (`/tmp/meowy-call-bridge-docs.log`). Language contracts and pins are unchanged.
+LLVM remains 23.1.3.
 
-Next: qualify snapshots against checked HIR calls, original caller PointIds and declared
-parameter positions. Mutation classification, fact invalidation, caller specialization
-and proof/release qualification remain separate. Unrelated `docs/programs/hey/` is
-preserved. Nothing was pushed or published.
+Next: classify declared call access and qualify candidate origin storage before building
+conservative mutation inputs. Actual fact invalidation and proof/release qualification
+remain separate. Unrelated `docs/programs/hey/` is preserved. Nothing was pushed or
+published.
 
 ## Host toolchain
 

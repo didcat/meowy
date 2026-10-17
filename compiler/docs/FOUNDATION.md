@@ -1994,11 +1994,30 @@ payload/work/body limits, invalid prefixes, later argument writes, stopping, gua
 union alternatives, alias slots, allocator bounds and restart convergence have structural
 tests. Existing source contracts and capability pins remain unchanged.
 
-The checked Program-to-PointId bridge is still unimplemented. Retained headers and states
-must be qualified against original caller points and declared parameter positions before
-exposing conservative invalidation inputs. Provenance is not mutation permission;
-unknown bounds, alias alternatives and abstract sources remain conservative. Actual
-fact invalidation, access classification and proof outcomes remain separate.
+Snapshot headers now embed CallId and each State carries its argument position. A bounded
+borrowed HIR index traverses wrappers, nested blocks, conditions and indexed paths without
+evaluating them. It checks CallId, callee, caller root, arity and declared result against
+existing invocation/signature qualifiers, including calls not reached by borrow evaluation.
+Original caller PointIds come from that checked CallId/position pair, never span matching.
+
+The snapshot view validates embedded identities, evaluated-prefix shape, complete payload
+weights and guard handles. It borrows Program, Reports and Facts; no arguments or States
+are copied and borrow analysis is not repeated. Each per-call access revalidates live
+invocation/signature identity before returning parameter LocalId, original caller PointId
+and an optional borrowed State with its borrow-completion flag. Missing snapshots and
+unvisited suffixes remain absent, independently of graph argument and Call observations.
+
+Index records and snapshot payload share a bounded validation allowance; traversal depth,
+pending items, map sizes and work are bounded before exposure. Late corruption or budget
+failure returns no partial view and leaves source reports/edge counts unchanged. The
+checker qualifies this view after borrow analysis and entry reports. Reordered states,
+foreign sites, stale caller metadata, invalid guards, deep wrappers and exact limits
+have structural regressions.
+
+This validates associations and metadata bounds; it does not re-prove semantic origin
+eligibility or classify mutation access. Abstract Input sources, alias alternatives,
+allocator bounds and unknown histories remain conservative. Actual fact invalidation,
+access classification and proof outcomes remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

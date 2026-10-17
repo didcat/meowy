@@ -4995,81 +4995,67 @@ This is structural capture; reference behavior and pins are unchanged.
 Baseline `15ade25f` is preserved in `/tmp/meowy-call-snapshots-baseline.json`.
 Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Borrow snapshot identity bridge in progress
+### Borrow snapshot identity bridge
 
-Baseline `690c2593`; `/tmp/meowy-call-bridge-baseline.json` preserves source/reference,
-case/pin/proof inventories, evidence and user files. HIR Call stores CallId/function and
-ordered argument expressions; Invocation owns the original PointIds. `functions::call`
-constructs both arrays in one ordered loop, including wrapper/coercion boundaries.
-CallId plus position is the identity route; spans are diagnostic locations only.
-Snapshots currently lack an embedded site/position, so the bridge must first retain
-those identities to detect swapped rows or reordered captured states.
+Snapshots now retain embedded CallId and per-State positions. A bounded borrowed HIR
+index covers wrappers, nested blocks, conditions, stores and indexed paths without
+executing them. Existing invocation/signature qualifiers establish exact CallId, callee,
+caller root, arity and declared-result agreement. CallId plus position resolves original
+argument PointIds; spans are not identities. Unreached HIR calls remain in the index.
 
-Dependency-ordered commit plan:
+The borrowed view validates snapshot header/site/position, evaluated-prefix shape,
+complete State payload bounds and guard handles. Per-call access revalidates the live
+invocation/signature before exposing parameter LocalId, original caller PointId and an
+optional borrowed State/completion flag. It copies no arguments or States and reuses
+Facts after entry reports without running borrow analysis again. Missing snapshots and
+unvisited suffixes remain absent; graph argument/Call observations are independent.
 
-1. Retain explicit CallId and per-state positions in snapshots with focused regressions;
-   keep the existing record budget and borrow behavior.
-2. Build a bounded borrowed HIR call index, checking caller root/function/count against
-   existing invocation/signature qualifiers. Cover wrappers, nested/unreached calls,
-   duplicate/foreign sites and exact limits without replaying borrow analysis.
-3. Qualify snapshot identity/prefix/payload against that context and expose borrowed
-   parameter/PointId/state associations. Integrate after borrow analysis and entry reports;
-   add corruption/observation/budget tests with the behavior change.
-4. Update evidence/handoff and run compiler, strict-pin, preservation and docs gates.
+Index records and snapshot payload use one bounded validation allowance. Work, map,
+traversal depth and pending-item bounds reject before exposure. Late failures leave
+reports and edge counts unchanged. This validates association and safe metadata bounds;
+it does not re-prove semantic source eligibility or grant mutation permission.
 
-Snapshot headers now embed CallId and each retained State carries its original argument
-position. All eleven snapshot tests pass with the unchanged exact record/work budgets
-(`/tmp/meowy-call-bridge-identities.log`); formatting and diff checks pass. HIR indexing
-and snapshot qualification are next. Identity prerequisite committed as `64aea7b5`.
-The bounded borrowed HIR call index now traverses wrappers, block/dispatch bodies,
-conditions, stores and indexed paths without evaluating them. It checks every CallId,
-callee, caller root, arity and declared result against retained qualifiers, including
-unreached/nested calls. Three index tests pass (`/tmp/meowy-call-bridge-hir.log`);
-all 3265 library tests pass (`/tmp/meowy-call-bridge-hir-library.log`), with formatting
-and diff checks clean. Snapshot association is next. Unrelated `docs/programs/hey/`
-remains excluded. HIR indexing committed as `03ec58d7`.
+| Commit | Review question |
+| --- | --- |
+| `64aea7b5` | Retain original call and argument identities in snapshots |
+| `03ec58d7` | Validate bounded HIR calls against checked invocations |
+| `08e32246` | Expose qualified borrowed parameter/point/state associations |
+| `8bea99fc` | Reject corruption and bound combined view/traversal work |
 
-The borrowed snapshot view now validates indexed HIR headers, embedded site/position,
-call guards, prefixes and complete State payload/guard bounds before exposing original
-parameter/PointId/state references. It reuses Facts after entry reports, without rerunning
-borrow analysis or copying states. Missing snapshots remain conservative and graph
-observations remain independent. All three identity/association tests, all 3268 library
-tests and all-target Clippy pass (`/tmp/meowy-call-bridge-view.log`,
-`/tmp/meowy-call-bridge-library.log`, `/tmp/meowy-call-bridge-clippy.log`). Exact combined
-view budgets, stale-view corruption and retained guard/payload boundaries are next. This
-checks association and safe metadata bounds; semantic origin eligibility and mutation
-access classification remain separate. Bridge integration committed as `08e32246`.
-Five additional boundary tests now cover combined budgets, all guard payload categories,
-foreign snapshots, live source revalidation, missing graph/input evidence and HIR depth
-or missing-call failures. All seven bridge tests and all four HIR index tests pass
-(`/tmp/meowy-call-bridge-boundaries.log`, `/tmp/meowy-call-bridge-hir-final.log`);
-formatting and diff checks pass. Evidence updates and complete-series gates are next.
+All eleven new tests pass: four HIR index tests and seven bridge tests, including exact
+limits, late corruption, invalid guard payloads, wrappers, nested/unreached calls and
+independent missing graph/input evidence (`/tmp/meowy-call-bridge-hir-final.log`,
+`/tmp/meowy-call-bridge-boundaries.log`). All ten compiler checks pass: formatting,
+Clippy, 3273 library, 923 native and 62 Python tests, build, metadata and source execution
+(`/tmp/meowy-call-bridge-gate.log`). The 514-case catalog has 495 required passes,
+19 unchanged gaps and zero debug/release failures. The preservation audit passes for
+all 597 protected files, including eight user files, and all 37 reference hashes/gaps/
+prior evidence (`/tmp/meowy-call-bridge-preservation.log`). Strict mode exits 1 only for
+the exact 19 pinned names/reasons (`/tmp/meowy-call-bridge-strict.log`,
+`/tmp/meowy-call-bridge-strict-audit.log`). All four documentation/evidence checks pass
+(`/tmp/meowy-call-bridge-docs.log`). No known failures remain; reference behavior and
+pins are unchanged.
+Baseline `690c2593` is recorded in `/tmp/meowy-call-bridge-baseline.json`.
+Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Subsequent snapshot qualification constraints
+### Next: classify conservative call mutation inputs
 
-Snapshot capture is complete. The dependency-ordered bridge plan is:
+1. Add a bounded declared-access classifier using checked Program parameter types and
+   existing type traversal budgets. Distinguish primitive values, shared/exclusive scalar
+   references and opaque reference-bearing aggregates. Shallow counts or Unknown forests
+   do not prove reference-free layout or call purity. Keep classifier tests with this slice.
+2. Qualify candidate origin storage separately before consuming it: verify caller-local
+   identity, aliases and projection paths against the existing checked borrow/place facts.
+   Preserve guarded alternatives and abstract Input/expired/temporary sources; allocator
+   bounds are not physical loans. Treat unsupported or unproved storage conservatively.
+   Reuse the borrowed bridge; do not reconstruct argument state from final dependency maps.
+3. Combine access and eligible origins into bounded conservative mutation-input metadata,
+   with exact budgets, stale-source/late-failure tests and no partial publication. Preserve
+   stopped prefixes and keep borrow guards distinct from graph Operation/Normal evidence.
+   Update evidence and run compiler/strict-pin/preservation/docs gates.
 
-1. Characterize the checked HIR Call traversal and existing invocation/signature
-   qualifiers, including outer coercions/groups and nested calls. Establish exact
-   CallId/function/body/count/order agreement and original argument PointIds without
-   treating spans as identities. Borrow Facts are already computed before entry reports
-   in `check.rs`; do not run the borrow pass again or infer inputs from final maps.
-2. Add a narrow bounded borrowed view that associates retained snapshots with parameter
-   positions and original caller points. Preserve normal-prefix/call-entry distinctions,
-   missing snapshots for unreached calls, abstract sources and independent graph
-   observations. Revalidate retained-source/header identity, argument ordering, caller
-   and callee owners, and complete payload bounds before exposure. A source's presence
-   does not establish mutation access, and its absence does not establish purity.
-3. Qualify the bridge with stale/foreign/late-identity corruption, stopped/guarded/replayed
-   contexts and exact work/payload limits. Reject atomically; update structural evidence
-   and run compiler/strict-pin/preservation/docs gates. Keep actual access classification,
-   scalar-fact invalidation, restart propagation, E225 and proof outcomes separate.
-
-Source::Input, expired or unknown bounded origins cannot become concrete caller storage.
-Nested references and aggregate components require declared access domains. Preserve
-all alternatives, unknown aliases, source-forest opacity and caller/callee separation.
-Neither scalar forests nor shallow aggregate counts establish reference-free layout.
-No caller specialization or callee-body result analysis is authorized by these snapshots.
+Actual scalar-fact invalidation, restart propagation, E225 and proof outcomes remain
+separate. Caller specialization and callee-body result analysis remain disallowed.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
