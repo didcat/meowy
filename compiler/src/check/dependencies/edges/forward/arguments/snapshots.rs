@@ -135,6 +135,7 @@ impl Checker {
         facts: &Facts,
         span: Span,
     ) -> Result<()> {
+        self.declared_access(program, reports, span, MAX_EDGES)?;
         let (view, _) = self.call_snapshots(program, reports, facts, span, MAX_EDGES)?;
         for &site in view.calls.keys() {
             let _ = self.call_borrow_inputs(&view, site, span)?;

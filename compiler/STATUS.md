@@ -5038,7 +5038,34 @@ pins are unchanged.
 Baseline `690c2593` is recorded in `/tmp/meowy-call-bridge-baseline.json`.
 Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Next: classify conservative call mutation inputs
+### Declared call access in progress
+
+Baseline `d1910f46`; `/tmp/meowy-call-access-baseline.json` preserves the protected source,
+reference, case/pin/proof inventories, prior evidence and user files. Full parameter types
+are available through Program.locals; shallow signature counts cannot classify aggregate
+interiors. Existing type_weight bounds complete traversal before classification. Physical
+origin qualification additionally needs canonical caller storage, alias and projection
+checks; place-borrow metadata has those identities but does not itself establish a
+snapshot's live mutation access. Keep that as the next independently validated milestone.
+
+Dependency-ordered commit plan for declared access:
+
+1. Add bounded classification and a checked parameter map: reference-free Value,
+   Shared scalar, Exclusive scalar, and Unknown. Cover all aggregate components, opaque
+   types, malformed scalar kinds and exact work/map limits with the implementation.
+2. Integrate the declared map into the borrowed snapshot view and expose access beside
+   parameter/PointId/state associations. Revalidate cached descriptors before access,
+   preserving unused/stopped inputs, declared domains and independent observations.
+3. Add stale-context and combined-budget regressions, update structural evidence and
+   handoff, and run compiler/strict-pin/preservation/docs gates. Candidate origin storage
+   and actual invalidation remain separate; no call-purity or callee-body inference.
+
+Four focused classifier/map tests pass (`/tmp/meowy-call-access-classifier.log`), including
+complete record/list/union traversal and exact work/payload limits. The declaration fixture
+uses separate supported functions for exclusive and aggregate inputs. All four focused tests, all-target Clippy, formatting and diff checks pass
+(`/tmp/meowy-call-access-clippy.log`). Borrowed-view integration is next. `docs/programs/hey/` remains excluded.
+
+### Subsequent conservative mutation-input work
 
 1. Add a bounded declared-access classifier using checked Program parameter types and
    existing type traversal budgets. Distinguish primitive values, shared/exclusive scalar
