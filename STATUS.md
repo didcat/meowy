@@ -45,26 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Borrow snapshots now have qualified associations with original caller PointIds and
-parameter positions. Explicit call/argument identities and bounded HIR traversal handle
-wrappers, nested/unreached calls and stopped prefixes. The view borrows existing states,
-revalidates live call metadata and checks payload/guard bounds without replaying analysis.
-The [compiler handoff](compiler/STATUS.md#borrow-snapshot-identity-bridge) records
-`64aea7b5`, `03ec58d7`, `08e32246`, `8bea99fc` and the next classification step.
+Declared parameter access now accompanies borrowed call snapshots. Full types distinguish
+reference-free values, shared/exclusive scalar references and opaque inputs. Cached access
+is revalidated before exposure, preserving declared domains, original PointIds, state
+references and stopped/unvisited arguments. The
+[compiler handoff](compiler/STATUS.md#declared-call-access) records `b6020ca3`, `fbc96cf7`,
+`963abce9` and the next storage-qualification step.
 
-All eleven new HIR/bridge tests pass. All ten compiler checks pass: 3273 library,
-923 native, 62 Python and 495 required conformance tests, with 19 unchanged gaps and
-zero debug/release failures (`/tmp/meowy-call-bridge-gate.log`). The audit preserves
-all 597 protected files and 37 reference hashes/gaps/prior evidence
-(`/tmp/meowy-call-bridge-preservation.log`). Strict mode reports only the exact pinned
-names/reasons (`/tmp/meowy-call-bridge-strict-audit.log`); all four documentation checks
-pass (`/tmp/meowy-call-bridge-docs.log`). Language contracts and pins are unchanged.
+All twelve new access tests pass. All ten compiler checks pass: 3285 library, 923 native,
+62 Python and 495 required conformance tests, with 19 unchanged gaps and zero debug/release
+failures (`/tmp/meowy-call-access-gate.log`). The audit preserves all 597 protected files
+and 37 reference hashes/gaps/prior evidence (`/tmp/meowy-call-access-preservation.log`).
+Strict mode reports only the exact pinned names/reasons
+(`/tmp/meowy-call-access-strict-audit.log`); all four documentation checks pass
+(`/tmp/meowy-call-access-docs.log`). Language contracts and pins are unchanged.
 LLVM remains 23.1.3.
 
-Next: classify declared call access and qualify candidate origin storage before building
-conservative mutation inputs. Actual fact invalidation and proof/release qualification
-remain separate. Unrelated `docs/programs/hey/` is preserved. Nothing was pushed or
-published.
+Next: qualify candidate caller storage and alias/projection identities before constructing
+conservative mutation targets. Declared access does not establish call purity or authorize
+invalidation. Actual fact invalidation and proof/release qualification remain separate.
+Unrelated `docs/programs/hey/` is preserved. Nothing was pushed or published.
 
 ## Host toolchain
 

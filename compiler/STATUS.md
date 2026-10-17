@@ -5038,61 +5038,68 @@ pins are unchanged.
 Baseline `690c2593` is recorded in `/tmp/meowy-call-bridge-baseline.json`.
 Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Declared call access in progress
+### Declared call access
 
-Baseline `d1910f46`; `/tmp/meowy-call-access-baseline.json` preserves the protected source,
-reference, case/pin/proof inventories, prior evidence and user files. Full parameter types
-are available through Program.locals; shallow signature counts cannot classify aggregate
-interiors. Existing type_weight bounds complete traversal before classification. Physical
-origin qualification additionally needs canonical caller storage, alias and projection
-checks; place-borrow metadata has those identities but does not itself establish a
-snapshot's live mutation access. Keep that as the next independently validated milestone.
+Full checked Program parameter types now classify as Value, Shared(kind), Exclusive(kind)
+or Unknown after bounded complete type traversal. Value includes supported primitives and
+reference-free record/list/union interiors, including primaries and mutable owned fields.
+Direct shared scalar references keep their referent kind; direct exclusive bool/int/float
+references keep their exclusive kind. Nested references, reference-bearing aggregates,
+opaque foundation types and unsupported scalar kinds remain Unknown. This classifies
+passed parameter storage, not call purity or arbitrary callee effects.
 
-Dependency-ordered commit plan for declared access:
+The borrowed snapshot context retains one access record per declared parameter, including
+unused parameters, under its combined index/parameter/snapshot allowance. Per-call access
+revalidates selected descriptors from the borrowed Program before exposing original
+parameter/PointId/access/state associations. Exact lookup/revalidation work is prepaid
+before returning the iterator. State references and independent borrow/graph observations
+are preserved; no state copying, caller specialization or callee-body analysis.
 
-1. Add bounded classification and a checked parameter map: reference-free Value,
-   Shared scalar, Exclusive scalar, and Unknown. Cover all aggregate components, opaque
-   types, malformed scalar kinds and exact work/map limits with the implementation.
-2. Integrate the declared map into the borrowed snapshot view and expose access beside
-   parameter/PointId/state associations. Revalidate cached descriptors before access,
-   preserving unused/stopped inputs, declared domains and independent observations.
-3. Add stale-context and combined-budget regressions, update structural evidence and
-   handoff, and run compiler/strict-pin/preservation/docs gates. Candidate origin storage
-   and actual invalidation remain separate; no call-purity or callee-body inference.
+| Commit | Review question |
+| --- | --- |
+| `b6020ca3` | Classify complete declared parameter types with bounded work |
+| `fbc96cf7` | Expose revalidated declared access beside borrowed call inputs |
+| `963abce9` | Reject stale descriptors and bound map/accessor work |
 
-Four focused classifier/map tests pass (`/tmp/meowy-call-access-classifier.log`), including
-complete record/list/union traversal and exact work/payload limits. The declaration fixture
-uses separate supported functions for exclusive and aggregate inputs. All four focused tests, all-target Clippy, formatting and diff checks pass
-(`/tmp/meowy-call-access-clippy.log`). Classifier committed as `b6020ca3`. The snapshot view now borrows Program and retains the
-bounded declared-access map under its combined allowance. Per-call mutation-input access
-rechecks full declared types before exposing access beside original parameter/PointId/state
-references. All seven classifier/map/view tests pass (`/tmp/meowy-call-access-view.log`), including
-exclusive-to-shared arguments, reference unions and stopped/unvisited inputs. All 3280 library tests pass
-(`/tmp/meowy-call-access-library.log`), including the existing combined view-budget
-regressions. Integration committed as `fbc96cf7`. Five additional boundary tests now
-cover missing/extra/stale descriptors, equal shallow shapes with different interiors,
-exact map/accessor budgets and empty-call contexts. All twelve access tests pass
-(`/tmp/meowy-call-access-boundaries.log`); formatting and diff checks pass.
-Documentation/evidence updates and complete-series validation are next. `docs/programs/hey/` remains excluded.
+All twelve new tests pass: scalar modes, complete aggregate traversal, opaque boundaries,
+unused/stopped inputs, shared contracts for exclusive arguments, declared reference unions,
+equal shallow shapes with different interiors, stale/extra/missing caches, empty calls and
+exact work/payload limits (`/tmp/meowy-call-access-boundaries.log`). All ten compiler
+checks pass: formatting, Clippy, 3285 library, 923 native and 62 Python tests, build,
+metadata and source execution (`/tmp/meowy-call-access-gate.log`). The 514-case catalog
+has 495 required passes, 19 unchanged gaps and zero debug/release failures. The preservation
+audit passes for all 597 protected files, including eight user files, and all 37 reference
+hashes/gaps/prior evidence (`/tmp/meowy-call-access-preservation.log`). Strict mode exits 1
+only for the exact 19 pinned names/reasons (`/tmp/meowy-call-access-strict.log`,
+`/tmp/meowy-call-access-strict-audit.log`). All four documentation/evidence checks pass
+(`/tmp/meowy-call-access-docs.log`). No known failures remain. This is structural access
+metadata; reference behavior and pins are unchanged.
+Baseline `d1910f46` is preserved in `/tmp/meowy-call-access-baseline.json`.
+Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Subsequent conservative mutation-input work
+### Next: qualify candidate call-origin storage
 
-1. Add a bounded declared-access classifier using checked Program parameter types and
-   existing type traversal budgets. Distinguish primitive values, shared/exclusive scalar
-   references and opaque reference-bearing aggregates. Shallow counts or Unknown forests
-   do not prove reference-free layout or call purity. Keep classifier tests with this slice.
-2. Qualify candidate origin storage separately before consuming it: verify caller-local
-   identity, aliases and projection paths against the existing checked borrow/place facts.
-   Preserve guarded alternatives and abstract Input/expired/temporary sources; allocator
-   bounds are not physical loans. Treat unsupported or unproved storage conservatively.
-   Reuse the borrowed bridge; do not reconstruct argument state from final dependency maps.
-3. Combine access and eligible origins into bounded conservative mutation-input metadata,
-   with exact budgets, stale-source/late-failure tests and no partial publication. Preserve
-   stopped prefixes and keep borrow guards distinct from graph Operation/Normal evidence.
-   Update evidence and run compiler/strict-pin/preservation/docs gates.
+1. Start with exclusive scalar inputs and ordinary caller-local origins. Reuse
+   `effects/borrows.rs::validate_place_borrow` and checked place metadata, then validate
+   current Program local identity/type, exact field paths/counts and scalar referent kind.
+   The existing place qualifier checks captured graph identities, not current full type
+   layout; do not treat it alone as a complete origin qualifier. Keep source components
+   (including Deref/Slot) distinct from storage Field/Element projections.
+2. Qualify alias target/root/view identities separately before admitting Source::Slot.
+   Respect the selected field's mutation permission even when the containing owned
+   binding is immutable. Preserve guarded alternatives; abstract Input, expired, temporary
+   and unsupported projected origins remain conservative unless independently proved.
+   Allocator bounds are not physical loans. Do not infer storage from Unknown forests,
+   shallow counts, missing origins or final dependency maps.
+3. Combine declared access and qualified candidate origins into bounded mutation-input
+   metadata. Preserve missing/stopped states and full call-entry/completion distinctions;
+   one normally evaluated argument does not establish that the call ran. Add stale-source,
+   projection/alias, exact-budget and late-failure tests with each behavior slice.
+4. Update evidence and run compiler/strict-pin/preservation/docs gates. Actual scalar-fact
+   invalidation, restart propagation, E225 and proof outcomes remain subsequent work.
 
-Actual scalar-fact invalidation, restart propagation, E225 and proof outcomes remain
-separate. Caller specialization and callee-body result analysis remain disallowed.
+Caller specialization and callee-body result analysis remain disallowed. Unknown access
+or unproved storage must not become a no-mutation claim.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

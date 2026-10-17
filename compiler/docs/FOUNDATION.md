@@ -2014,10 +2014,29 @@ checker qualifies this view after borrow analysis and entry reports. Reordered s
 foreign sites, stale caller metadata, invalid guards, deep wrappers and exact limits
 have structural regressions.
 
-This validates associations and metadata bounds; it does not re-prove semantic origin
-eligibility or classify mutation access. Abstract Input sources, alias alternatives,
-allocator bounds and unknown histories remain conservative. Actual fact invalidation,
-access classification and proof outcomes remain separate.
+Declared access now uses full Program parameter types after signature validation.
+The existing bounded type traversal checks the complete type before classification.
+Primitive values and fully reference-free records, lists and unions classify as Value;
+record primaries and every field/element/alternative are included. Direct shared scalar
+references retain Shared(kind), and supported exclusive boolean/integer/float references
+retain Exclusive(kind). Nested references, reference-bearing aggregates, opaque foundation
+types and unsupported scalar kinds remain Unknown. Value describes only the parameter's
+passed storage; it does not establish call purity or absence of other effects.
+
+The snapshot context borrows Program and retains one bounded access record per declared
+parameter, including unused parameters. These records share its validation allowance with
+HIR calls and snapshot payload. Per-call mutation-input access recomputes the selected
+declared classifications before returning parameter LocalId, original caller PointId,
+access and the optional borrowed State/completion flag. Revalidation and iterator lookup
+work are prepaid even when the iterator is not consumed. Stale/missing/extra records and
+late budget failures expose no partial result and leave source reports unchanged.
+
+Classification never specializes a declared union from a concrete argument. An exclusive
+argument passed to a shared parameter retains the shared contract; stopped or unvisited
+arguments retain their declared access without inventing State or Call observations.
+These are structural descriptors. Semantic origin/storage eligibility, alias projections,
+physical mutation targets, fact invalidation and proof outcomes remain separate. Abstract
+Input sources, allocator bounds and unknown histories remain conservative.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
