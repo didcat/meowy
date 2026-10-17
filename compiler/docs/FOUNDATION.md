@@ -1799,8 +1799,8 @@ signature retains its shape when its body panics, while declared Never has no re
 observation. Full-domain fact transfer, call-result provenance, callee summaries and
 proof outcomes remain separate.
 Entry reports now retain function-signature context from transferred checked HIR. Each
-original FunctionId maps to its independent body, ordered parameter LocalIds and shallow
-result shape. A reverse index maps each parameter to its function and position. Empty,
+original FunctionId maps to its independent body, ordered parameter LocalIds, shallow
+input shapes and result shape. A reverse index maps each parameter to its function and position. Empty,
 unused, nested and recursive functions remain present; HIR vector order does not assign
 owners. Supported typed export aliases keep exact signatures. Local annotated identity
 bindings retain their existing B001 capability gate.
@@ -1808,8 +1808,8 @@ bindings retain their existing B001 capability gate.
 Signature construction qualifies root/entry/body identities, local bounds and registered
 parameters directly, using its retained maps for global uniqueness. No temporary owner
 or parameter set is built. Header count is capped at 65,535 and each parameter list at
-65,536 before copying. Ordered entries and reverse-index records
-charge two retained payload records per parameter against the shared 262,144 allowance
+65,536 before copying. Ordered IDs, input shapes and reverse-index records
+charge three retained payload records per parameter against the shared 262,144 allowance
 before operation effects are collected. Duplicate call visits copy argument payloads
 once. No parameter type tree is copied. Retained-context validation checks header/body
 and reverse-position consistency, including unused parameters; missing, extra, foreign,
@@ -1817,6 +1817,30 @@ reordered or oversized metadata rejects atomically under charged work limits.
 Initializer rebuilds borrow this context without reserving parameter payload again;
 shared-record initializers still charge their own retained descriptors. Source/header
 agreement and full retained validation share Flow work, including exact-bound failures.
+
+Function checking separately captures each parameter's original LocalId, FunctionId,
+position and shallow Shape after checking its body and before transferring HIR. One
+bounded source map retains the descriptors when the checker relinquishes its local-type
+table. A complete parameter batch validates and charges work before publication;
+duplicate, missing or foreign identities and exhausted source-map/work limits leave
+previous captures unchanged. No recursive type tree is copied or type expression replayed.
+
+Header construction checks shapes against both these captures and checked HIR local
+types. Retained header and call access validate exact descriptor length, source identity,
+position, shape validity and captured shape equality, including unused/stopped parameters.
+Program-based initializer access also rechecks HIR type agreement. Empty functions and
+empty programs still check captured-map bounds and cardinality; an empty iteration cannot
+hide extra source metadata. Signature payload is reserved once, and initializer/per-call
+views keep borrowing it without another descriptor allocation.
+
+Shapes retain supported scalar kind/width/signedness, shared scalar referent kind,
+top-level reference mode, record field count, list capacity and union member count.
+Unsupported shallow forms remain Other. Aggregate interiors and exclusive referent
+types remain opaque: equal counts do not establish equal layouts or reference-free
+storage. Declared shapes remain independent of caller values and source observations;
+stopped arguments retain their declarations without acquiring Normal observations.
+The existing LocalId/PointId pair and per-call forest APIs are unchanged. No new
+initializer eligibility, alias/mutation facts, loan authority or proof outcomes follow.
 
 Every captured call must agree with its header's arity and result shape, including calls
 after a Never boundary. Individual observations and graph reports revalidate callee

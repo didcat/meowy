@@ -45,30 +45,29 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Per-call access now borrows canonical call identity, ordered parameter/argument pairs,
-optional observations and original forest-marker positions. Complete retained-walk
-validation and one bounded index preserve shared history across calls. Absent,
-Entry-only, normal unknown and normal known inputs stay distinct. Work is prepaid;
-entry publication reuses one qualified context without copying argument vectors or
-reserving per-call payload. The
-[compiler handoff](compiler/STATUS.md#qualified-per-call-argument-forest-access) records
-the commits and next declared-parameter step.
+Declared parameter shapes now survive HIR transfer in checked snapshots and ordered
+signature headers. Header, Program and per-call validation check function/position/shape
+agreement, including unused/stopped parameters and empty contexts. Three shared report
+records per parameter are reserved once; source capture and lookup work remain bounded.
+Borrowed pair/forest APIs and caller ownership are preserved. The
+[compiler handoff](compiler/STATUS.md#declared-parameter-descriptors) records the commits
+and next conservative call-analysis step.
 
-Seventeen new structural tests cover associations, retained-walk identity, sparse/stopped
-observations, shared history and exact map/work/payload limits. All ten compiler checks
-pass: 3232 library, 923 native, 62 Python and 495 required conformance tests, with
-19 unchanged gaps and no debug/release failures (`/tmp/meowy-call-forest-gate.log`).
-The preservation audit retains all 597 protected files, including eight user files,
-514 cases, 19 pins, all 37 reference hashes/gaps/prior evidence and proof obligations
-(`/tmp/meowy-call-forest-preservation.log`). Strict mode exits 1 only for the exact
-19 pinned names/reasons (`/tmp/meowy-call-forest-strict-audit.log`). All four
-documentation/evidence checks pass (`/tmp/meowy-call-forest-docs.log`). Nothing was
-pushed or published.
+Fourteen new structural tests cover type categories, HIR transfer, atomic capture,
+stale descriptors, exact budgets, empty contexts and aggregate opacity. All ten compiler
+checks pass: 3246 library, 923 native, 62 Python and 495 required conformance tests,
+with 19 unchanged gaps and no debug/release failures (`/tmp/meowy-parameter-shapes-gate.log`).
+The audit preserves all 597 protected files, including eight user files, 514 case records,
+19 pins, all 37 reference hashes/gaps/prior evidence and proof obligations
+(`/tmp/meowy-parameter-shapes-preservation.log`). Strict mode exits 1 only for the
+exact 19 pinned names/reasons (`/tmp/meowy-parameter-shapes-strict-audit.log`). All four
+documentation/evidence checks pass (`/tmp/meowy-parameter-shapes-docs.log`). Nothing
+was pushed or published.
 
-Next: characterize declared parameter descriptors for conservative call analysis.
-Functions retain declared parameter domains, and call results retain full declared
-domains. Call invalidation, restart propagation and proof/release qualification remain
-separate. Unrelated `docs/programs/hey/` is preserved.
+Next: characterize authoritative inputs for conservative call invalidation. Aggregate
+interiors and alias relationships remain opaque where unqualified. Caller specialization,
+mutation authority, restart propagation and proof/release qualification remain separate.
+Unrelated `docs/programs/hey/` is preserved.
 
 ## Host toolchain
 

@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Declared parameter descriptor work is in progress.
+Updated: 2026-10-16. Declared parameter descriptors pass the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: characterize declared parameter descriptors using the handoff below.
+Next: characterize conservative call invalidation inputs using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -4492,7 +4492,7 @@ exact signatures. Annotated local identity bindings retain their existing B001 c
 gate; that structural regression is not a successful language-conformance rejection.
 
 Header count, per-function parameter count, retained payload and shared work are bounded
-before publication. Ordered and reverse records charge two payload entries per parameter
+before publication. Ordered IDs, input shapes and reverse records now charge three payload entries per parameter
 before operation effects; argument copies remain once per call. Retained validation checks
 root/entry/body identity, shape bounds, parameter registration, local bounds and exact
 reverse positions. Calls must match header arity/result shape, including unobserved calls
@@ -4538,7 +4538,7 @@ Generic eligibility remains closed. Parameters, aliases, receiver/temporary cell
 mutable storage and reference-bearing ordinary locals keep their exclusions. Shared
 records retain their separate fixed descriptors and qualifier. Initializer maps, missing
 roots, Unknown histories and original owner/storage/input identities are preserved.
-Two retained records per parameter still reserve payload once before operation effects;
+The current input-shape extension reserves three records per parameter before effects;
 initializer rebuilds borrow that context and shared records charge only their own entries.
 Stale/oversized source or cached metadata and exhausted work reject atomically.
 
@@ -4869,54 +4869,79 @@ All four documentation/evidence checks pass (`/tmp/meowy-call-forest-docs.log`).
 No known failures remain. Unrelated `docs/programs/hey/` is untouched and excluded;
 nothing was pushed or published.
 
-### Next: characterize declared parameter descriptors
+### Declared parameter descriptors
 
-Per-call access exposes source associations, not facts specialized from callers.
-`docs/reference/stdlib/proof.md#transfers-and-guards` requires declared parameter
-domains and full declared call-result domains without inspecting callee bodies.
-Before conservative call invalidation can consume argument metadata, retain the
-relevant declared parameter categories independently of caller source availability.
+Complete. Function checking atomically captures
+LocalId-keyed `(function, position, Shape)` metadata after body checking, before HIR
+transfer. The bounded source map survives removal of Checker locals/functions. It copies
+no recursive type trees and replays no type expressions. Whole-batch map/work checks and
+late identity rejection preserve earlier captures.
 
-Investigation: existing `Shape` captures scalar kind/width, shared scalar referents,
-reference mode, record field count, list capacity and union member count without
-recursive copies. Aggregate interiors and exclusive referent types remain opaque.
-`Program` takes the checker's locals/functions before entry reports, so retained
-headers need an independent checked parameter snapshot for later revalidation.
+Signature headers retain ordered `inputs: Vec<Shape>` beside unchanged LocalIds. IDs,
+shapes and reverse records reserve three shared payload units per parameter once before
+effects. Construction compares checked HIR types and captured identities/shapes; retained
+and per-call validation recheck the capture and descriptor bounds. Initializer Program
+access also verifies current HIR type agreement. Empty contexts check map bounds/counts
+before iteration, closing the two reproduced empty-context gaps.
+
+Supported scalar kind/width/signedness, shared scalar referent, top-level reference mode,
+record count, list capacity and union count are retained. Aggregate interiors, exclusive
+referent types and unsupported shallow forms remain opaque. Unused/stopped inputs keep
+their declarations independently of observations. The borrowed pair and forest APIs,
+generic eligibility, owner boundaries and declared-domain proof rules remain unchanged.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `77f1e426` | Characterize declared shapes through HIR and per-call associations |
+| `716d48f9` | Capture checked parameter identities/shapes atomically |
+| `495ede7e` | Centralize prior signature payload accounting without behavior changes |
+| `ba499a80` | Retain ordered input shapes and validate captured/HIR agreement |
+| `ec324b05` | Revalidate call boundaries and repair empty-context capture checks |
+| `cd803fcd` | Preserve existing fixture contracts with complete parameter metadata |
+
+Two characterization, three capture, three header and six per-call tests pass: fourteen
+new structural tests. All 49 signature-focused checks, the initializer payload check
+and existing per-call tests pass. Logs: `/tmp/meowy-parameter-shapes-characterization.log`,
+`/tmp/meowy-parameter-shapes-capture.log`, `/tmp/meowy-parameter-shapes-headers.log`,
+`/tmp/meowy-parameter-shapes-integration.log`, `/tmp/meowy-parameter-shapes-calls.log`.
+The two empty-context regressions failed before the fix and now pass. No reference
+contract, source expectation, capability pin or proof-obligation changes. Four structural
+paths are added to the existing proof/types/values evidence rows; reviewed gaps remain.
+Preservation audit passes for all 597 protected files, including eight user files,
+514 cases, 19 pins and all 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-parameter-shapes-preservation.log`). Formatting and all-target Clippy
+pass. Three older fixtures now include the new record cost/captured metadata; their
+original pair-work, parameter-exclusion and control-mismatch assertions all pass
+(`/tmp/meowy-parameter-shapes-fixtures.log`). All ten compiler checks pass: formatting,
+Clippy, 3246 library, 923 native and 62 Python tests, build, metadata and source execution
+(`/tmp/meowy-parameter-shapes-gate.log`). The 514-case catalog has 495 required passes,
+19 unchanged gaps and zero debug/release failures. Strict mode exits 1 only for the
+exact pinned names/reasons (`/tmp/meowy-parameter-shapes-strict.log`,
+`/tmp/meowy-parameter-shapes-strict-audit.log`). All four documentation/evidence checks
+pass (`/tmp/meowy-parameter-shapes-docs.log`). No known failures remain. Unrelated
+`docs/programs/hey/` is untouched and excluded; nothing was pushed or published.
+
+### Next: characterize conservative call invalidation inputs
+
+Declared parameter shapes and caller source forests are available, but they do not
+identify mutable caller storage or prove absence of aliases. Reference/aggregate source
+histories remain Unknown. The proof contract uses declared parameter domains and full
+call-result domains without inspecting callee bodies; preserve that boundary.
 
 Dependency-ordered commit plan:
 
-1. Complete (`77f1e426`): two source characterization tests cover scalar/shared/exclusive/aggregate
-   parameters, unused/stopped inputs, forward declarations and computed list extents.
-2. Complete (`716d48f9`): checked parameter capture survives HIR transfer, with three passing
-   source/identity/budget tests and atomic publication.
-3. Complete (`495ede7e`): `PARAM_PARTS = 2` centralized the prior cost without behavior changes;
-   signature and initializer/effect budget regressions pass.
-4. Complete (`ba499a80`): ordered input shapes, three-record report reservation and captured/HIR
-   agreement pass 48 signature tests plus initializer and existing per-call checks.
-5. Complete: per-call revalidation covers declared domains, aggregate opacity, stopped
-   exclusive inputs and empty contexts; six call-shape and 49 signature checks pass.
-6. Update structural evidence and run compiler, strict-pin, preservation and final
-   documentation gates. Invalidation, value/origin transfer, restart propagation,
-   E225 and proof outcomes remain separate.
-
-Signature headers now retain ordered `inputs: Vec<Shape>` beside unchanged LocalIds.
-`PARAM_PARTS = 3` reserves IDs, input descriptors and reverse entries once before effect
-collection. Construction and retained validation compare function/position/shape against
-checked captures; Program validation additionally checks the current HIR local types.
-Both existing coherent-stale fixtures now seed the matching input/capture metadata so
-their original call-arity/Program mismatch checks remain meaningful.
-New tests cover ten descriptor/capture faults, stale unused HIR types and oversized
-input vectors. Source characterization verifies retained shapes. Formatting, all 48
-signature tests, the initializer payload check and all ten per-call access tests pass
-(`/tmp/meowy-parameter-shapes-headers.log`, `/tmp/meowy-parameter-shapes-integration.log`).
-All six per-call shape tests pass, including declared unions across calls, stopped
-exclusive inputs, opaque aggregate interiors, late unused-parameter changes and empty
-contexts. The two empty-context regressions failed before O(1) captured-map bounds/
-cardinality checks and now pass. All 49 signature-focused tests pass too
-(`/tmp/meowy-parameter-shapes-calls.log`); formatting passes. No known failures remain.
-Next: update structural evidence and run full compiler/strict-pin/documentation gates.
-
-Unrelated `docs/programs/hey/` is preserved.
+1. Characterize `check/functions.rs::call`, existing borrow/origin metadata and per-call
+   access for primitive values, shared/exclusive references and reference-bearing
+   aggregates. Cover unused/stopped arguments and independent Call observations. Identify
+   authoritative caller storage/origin evidence and its exact unknown boundaries.
+2. Record a narrow bounded representation plan for conservative call-mutation inputs
+   before implementation. Reuse existing checked borrow/origin facts; do not derive
+   storage authority from scalar forests, aggregate counts or missing source links.
+   Preserve unknown alias relationships, original PointIds and caller/callee owners.
+3. Qualify any captured input metadata with identity, observation, atomicity and exact
+   budget regressions, then update evidence and run compiler/strict-pin/docs gates.
+   Actual fact invalidation, restart propagation, E225 and proof outcomes remain separate;
+   no caller specialization or callee-body result analysis is authorized by these links.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6530,8 +6555,8 @@ Direct-call observations, argument-source ownership, declared result shapes and 
 function-signature context are qualified. Initializer qualification reuses validated
 retained parameter membership. Bounded call-argument/parameter associations and individual
 argument observations are qualified, including caller-side direct sources for normally
-observed arguments. Retained forests and per-call access are qualified. Next characterize
-declared parameter descriptors using the ordered handoff.
+observed arguments. Retained forests, per-call access and declared parameter descriptors
+are qualified. Next characterize conservative call invalidation inputs using the handoff.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7207,8 +7232,8 @@ Value selection and broader aggregate provenance remain separate.
    result shapes, function-signature context, initializer parameter reuse and borrowed
    call-parameter associations and individual argument observations are qualified. Reports
    retain caller-side sources for normally observed arguments, and stored source views
-   and their forests/per-call access are qualified. Characterize declared parameter
-   descriptors next, using the current handoff.
+   and their forests/per-call access are qualified, including declared parameter descriptors.
+   Characterize conservative call invalidation inputs next, using the current handoff.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.
