@@ -4921,27 +4921,35 @@ exact pinned names/reasons (`/tmp/meowy-parameter-shapes-strict.log`,
 pass (`/tmp/meowy-parameter-shapes-docs.log`). No known failures remain. Unrelated
 `docs/programs/hey/` is untouched and excluded; nothing was pushed or published.
 
-### Next: characterize conservative call invalidation inputs
+### Conservative call-input characterization
 
-Declared parameter shapes and caller source forests are available, but they do not
-identify mutable caller storage or prove absence of aliases. Reference/aggregate source
-histories remain Unknown. The proof contract uses declared parameter domains and full
-call-result domains without inspecting callee bodies; preserve that boundary.
+Investigation: `borrow/value.rs::expression` evaluates arguments in order and keeps
+full `borrow_value::State` inputs temporarily. These preserve guarded origins, bounds,
+aggregate component paths and reference-cell identity. `Facts.calls` stores result
+states only; `Facts.locals` and final dependency maps are not call-time snapshots.
+`dependencies::Origins` retains root sets without projection paths; aggregate/source
+forest opacity must not be interpreted as absence of mutation or aliasing. The existing
+`functions.rs::call` guard invalidation recognizes top-level exclusive parameters only.
+No invalidation behavior is changed by this characterization.
 
 Dependency-ordered commit plan:
 
-1. Characterize `check/functions.rs::call`, existing borrow/origin metadata and per-call
-   access for primitive values, shared/exclusive references and reference-bearing
-   aggregates. Cover unused/stopped arguments and independent Call observations. Identify
-   authoritative caller storage/origin evidence and its exact unknown boundaries.
-2. Record a narrow bounded representation plan for conservative call-mutation inputs
-   before implementation. Reuse existing checked borrow/origin facts; do not derive
-   storage authority from scalar forests, aggregate counts or missing source links.
-   Preserve unknown alias relationships, original PointIds and caller/callee owners.
-3. Qualify any captured input metadata with identity, observation, atomicity and exact
-   budget regressions, then update evidence and run compiler/strict-pin/docs gates.
-   Actual fact invalidation, restart propagation, E225 and proof outcomes remain separate;
-   no caller specialization or callee-body result analysis is authorized by these links.
+1. Add source-driven structural characterization beside argument access: primitive,
+   shared/exclusive and reference-bearing aggregate inputs; storage projections/cells;
+   later argument writes; stopped prefixes and independent Call observations. Verify
+   which existing facts can support a future snapshot and which cannot.
+2. Record the bounded capture/qualification plan, update structural evidence and root
+   handoff, then run compiler, strict-pin, preservation and documentation gates.
+   Implementing capture is the following milestone, after these boundaries are fixed.
+
+Baseline: `f50672af`; `/tmp/meowy-call-inputs-baseline.json` snapshots reference/source
+bytes, cases, pins, proof obligations, document evidence and user files. All five new
+structural tests pass (`/tmp/meowy-call-inputs-focused.log`); formatting and diff checks
+pass. Nested references retain both the cell at an empty component and the referent
+below Deref; record field components reserve Slot(0) for the primary. Declared parameter
+origins remain Input descriptors even for unused parameters with concrete callers.
+No production behavior changes. Evidence and complete-series validation are next.
+`docs/programs/hey/` remains excluded.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
