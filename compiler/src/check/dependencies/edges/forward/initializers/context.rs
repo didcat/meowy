@@ -61,7 +61,19 @@ pub(crate) fn initializer_context_keeps_shared_parameter_and_special_cell_exclus
         let statement = row.init.statement;
         match state {
             0 => {
-                program.functions[0].params.push(local);
+                let function = &mut program.functions[0];
+                checker.parameters.insert(
+                    local,
+                    crate::check::dependencies::Parameter {
+                        function: function.id,
+                        position: function.params.len(),
+                        shape: crate::check::dependencies::bodies::completion::Completion::of(
+                            &program.locals[local],
+                        )
+                        .result,
+                    },
+                );
+                function.params.push(local);
                 reports.signatures = checker
                     .function_signatures(&program, &reports, Span::default())
                     .unwrap();

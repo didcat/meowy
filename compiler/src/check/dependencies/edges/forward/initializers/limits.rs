@@ -89,7 +89,19 @@ pub(crate) fn initializer_index_filters_special_local_identities_after_qualifica
                 checker.proofs.aliases.insert(local, alias);
             }
             1 => {
-                program.functions[0].params.push(local);
+                let function = &mut program.functions[0];
+                checker.parameters.insert(
+                    local,
+                    crate::check::dependencies::Parameter {
+                        function: function.id,
+                        position: function.params.len(),
+                        shape: crate::check::dependencies::bodies::completion::Completion::of(
+                            &program.locals[local],
+                        )
+                        .result,
+                    },
+                );
+                function.params.push(local);
                 reports.signatures = checker
                     .function_signatures(&program, &reports, Span::default())
                     .unwrap();

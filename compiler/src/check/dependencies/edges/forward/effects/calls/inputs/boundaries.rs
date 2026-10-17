@@ -1,4 +1,5 @@
 use super::{super::super::tests::checked, *};
+use crate::check::dependencies::edges::forward::signatures::PARAM_PARTS;
 
 #[test]
 pub(crate) fn call_parameter_pairs_require_registered_caller_roots() {
@@ -186,7 +187,7 @@ pub(crate) fn call_parameter_pairs_bound_exact_work_without_reserving_payload() 
     let (_, parts) = checker
         .operation_effects_budgeted(&reports, Span::default())
         .unwrap();
-    assert_eq!(parts, MAX_EDGES - 6);
+    assert_eq!(parts, MAX_EDGES - 2 * PARAM_PARTS - 2);
     let before = format!(
         "{reports:?}{:?}{:?}",
         checker.invocations,
