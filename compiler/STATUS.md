@@ -4891,10 +4891,10 @@ Dependency-ordered commit plan:
    source/identity/budget tests and atomic publication.
 3. Complete (`495ede7e`): `PARAM_PARTS = 2` centralized the prior cost without behavior changes;
    signature and initializer/effect budget regressions pass.
-4. Complete: ordered input shapes, three-record report reservation and captured/HIR
+4. Complete (`ba499a80`): ordered input shapes, three-record report reservation and captured/HIR
    agreement pass 48 signature tests plus initializer and existing per-call checks.
-5. Revalidate and expose declared shapes at per-call access without caller-derived facts;
-   cover stale identities, aggregate opacity, empty/unused/stopped inputs and bounds.
+5. Complete: per-call revalidation covers declared domains, aggregate opacity, stopped
+   exclusive inputs and empty contexts; six call-shape and 49 signature checks pass.
 6. Update structural evidence and run compiler, strict-pin, preservation and final
    documentation gates. Invalidation, value/origin transfer, restart propagation,
    E225 and proof outcomes remain separate.
@@ -4909,7 +4909,13 @@ New tests cover ten descriptor/capture faults, stale unused HIR types and oversi
 input vectors. Source characterization verifies retained shapes. Formatting, all 48
 signature tests, the initializer payload check and all ten per-call access tests pass
 (`/tmp/meowy-parameter-shapes-headers.log`, `/tmp/meowy-parameter-shapes-integration.log`).
-No known failures remain. Next: explicit per-call shape and aggregate-opacity regressions.
+All six per-call shape tests pass, including declared unions across calls, stopped
+exclusive inputs, opaque aggregate interiors, late unused-parameter changes and empty
+contexts. The two empty-context regressions failed before O(1) captured-map bounds/
+cardinality checks and now pass. All 49 signature-focused tests pass too
+(`/tmp/meowy-parameter-shapes-calls.log`); formatting passes. No known failures remain.
+Next: update structural evidence and run full compiler/strict-pin/documentation gates.
+
 Unrelated `docs/programs/hey/` is preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.

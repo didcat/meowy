@@ -12,13 +12,14 @@ impl Checker {
         let invalid =
             || Diagnostic::unsupported("proof function-signature identity mismatch", span);
         let index = &reports.signatures;
-        if index.params.len() > MAX_EDGES / PARAM_PARTS {
+        if index.params.len() > MAX_EDGES / PARAM_PARTS || self.parameters.len() > MAX_EDGES {
             return Err(budget());
         }
         let root = self.signature_root(reports, program.functions.len(), span)?;
         if program.locals.len() != reports.locals
             || program.body.id != root
             || program.functions.len() != index.functions.len()
+            || self.parameters.len() != index.params.len()
         {
             return Err(invalid());
         }

@@ -89,3 +89,6 @@ mod boundaries;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod shapes;

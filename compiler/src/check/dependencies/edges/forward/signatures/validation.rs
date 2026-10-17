@@ -72,13 +72,19 @@ impl Checker {
         let invalid =
             || Diagnostic::unsupported("proof function-signature identity mismatch", span);
         let index = &reports.signatures;
+        if index.params.len() > MAX_EDGES / PARAM_PARTS || self.parameters.len() > MAX_EDGES {
+            return Err(budget());
+        }
         if !self.flow.spend(
             index.functions.len().checked_ilog2().unwrap_or(0) as usize
                 + reports.entries.len().checked_ilog2().unwrap_or(0) as usize
                 + self.bodies.len().checked_ilog2().unwrap_or(0) as usize
-                + 8,
+                + 10,
         ) {
             return Err(budget());
+        }
+        if index.params.len() != self.parameters.len() {
+            return Err(invalid());
         }
         let header = index.functions.get(&function).ok_or_else(invalid)?;
         if header.params.len() > MAX_ITEMS
