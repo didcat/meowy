@@ -4932,24 +4932,63 @@ forest opacity must not be interpreted as absence of mutation or aliasing. The e
 `functions.rs::call` guard invalidation recognizes top-level exclusive parameters only.
 No invalidation behavior is changed by this characterization.
 
-Dependency-ordered commit plan:
-
-1. Add source-driven structural characterization beside argument access: primitive,
-   shared/exclusive and reference-bearing aggregate inputs; storage projections/cells;
-   later argument writes; stopped prefixes and independent Call observations. Verify
-   which existing facts can support a future snapshot and which cannot.
-2. Record the bounded capture/qualification plan, update structural evidence and root
-   handoff, then run compiler, strict-pin, preservation and documentation gates.
-   Implementing capture is the following milestone, after these boundaries are fixed.
+Characterization commit: `d0df4eb8` (five source-driven structural tests). Primitive,
+shared/exclusive and reference-bearing aggregate arguments can all have empty call-result
+origins and Unknown source forests. Borrow states distinguish storage field projections,
+reference cells and Deref referents, and aggregate Slot(index + 1) components. The
+later-argument-write probe retains the earlier reference in the borrow call result while
+final dependency lookup sees the replacement. Unused parameter origins remain declared
+Input descriptors; stopped prefixes retain observations without a Call effect.
 
 Baseline: `f50672af`; `/tmp/meowy-call-inputs-baseline.json` snapshots reference/source
-bytes, cases, pins, proof obligations, document evidence and user files. All five new
-structural tests pass (`/tmp/meowy-call-inputs-focused.log`); formatting and diff checks
-pass. Nested references retain both the cell at an empty component and the referent
-below Deref; record field components reserve Slot(0) for the primary. Declared parameter
-origins remain Input descriptors even for unused parameters with concrete callers.
-No production behavior changes. Evidence and complete-series validation are next.
-`docs/programs/hey/` remains excluded.
+bytes, cases, pins, proof obligations, document evidence and user files. All five tests
+pass (`/tmp/meowy-call-inputs-focused.log`); formatting and diff checks pass. Structural
+evidence is linked from proof/types/values without changing reference hashes or gaps.
+The preservation audit passes for 597 protected files and all 37 reference hashes,
+gaps and prior evidence (`/tmp/meowy-call-inputs-preservation.log`). All ten compiler
+checks pass: formatting, Clippy, 3251 library, 923 native and 62 Python tests, build,
+metadata and source execution (`/tmp/meowy-call-inputs-gate.log`). The 514-case catalog
+has 495 required passes, 19 unchanged gaps and zero debug/release failures. Strict mode
+exits 1 only for the exact 19 pinned names/reasons (`/tmp/meowy-call-inputs-strict.log`,
+`/tmp/meowy-call-inputs-strict-audit.log`). All four documentation/evidence checks pass
+(`/tmp/meowy-call-inputs-docs.log`). No known failures remain. No production behavior
+changes; `docs/programs/hey/` remains excluded. Nothing was pushed or published.
+
+### Next: retain bounded borrow call-input snapshots
+
+The capture boundary is `borrow/value.rs::expression`'s Call arm, not dependency origin
+lookup after argument evaluation. The following dependency-ordered slices are planned:
+
+1. Add a bounded call-input representation beside `borrow/state.rs`, retaining CallId,
+   callee FunctionId, caller body identity, declared argument count and the evaluated
+   argument prefix. Each position retains its full State (origins, bounds, active variants,
+   present/proof guards) and whether evaluation continued. Keep call entry separate from
+   argument completion and from graph Operation/Normal observations. Reuse state weights;
+   precharge row/payload/work before allocation or publication, with exact-limit and late
+   failure tests. Do not clone HIR types or recompute origins from current reference cells.
+2. Capture those existing transient states during argument evaluation, then transfer them
+   into Facts after result-contract checking. Preserve stopped arguments and omitted
+   suffixes. Integrate converged replay and function-fact merging in `borrow/replay.rs`,
+   including their payload/work accounting. Test later-argument writes, no-result calls,
+   unused functions/parameters, nested calls, guards, aliases, unknown bounds and restarts.
+   This capture does not change existing guard invalidation or loan behavior.
+3. In a separate bridge, use the checked Program plus existing invocation/signature
+   qualifiers to bind snapshots to original caller PointIds and parameter positions.
+   `check.rs` already computes borrow Facts before entry reports; do not rerun the borrow
+   pass. Validate exact call/function/body/count/order and retained-source identities
+   before borrowing a view; spans alone are not identities. Keep opaque or unavailable
+   metadata conservative, and reject stale/foreign descriptors atomically. Do not equate
+   borrow reachability guards with structural argument or Call observations.
+4. Qualify the bridge with corruption/observation/budget regressions, update evidence and
+   run compiler/strict-pin/docs gates. Actual scalar-fact invalidation, mutation access
+   classification, restart propagation, E225 and proof outcomes remain later slices.
+
+A Source is provenance evidence, not permission to mutate. Source::Input, expired or
+unknown bounded origins cannot become concrete caller storage; nested references and
+aggregate components require their declared access domains. Preserve all alternatives,
+unknown alias relationships, source-forest opacity and caller/callee separation. Neither
+scalar forests nor shallow aggregate counts establish reference-free layout. No caller
+specialization or callee-body result analysis is authorized by these snapshots.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

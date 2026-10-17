@@ -1957,7 +1957,27 @@ Oversized walks/argument lists, late identity faults and exact work/map/payload 
 reject atomically. Function facts still start from declared parameter domains; call
 results keep their full declared domain without inspecting callee bodies. These
 associations grant no value specialization, origin transfer, mutation authority or proof
-outcomes. Declared parameter descriptors and conservative call invalidation remain separate.
+outcomes. Declared parameter descriptors are retained and validated; conservative call
+invalidation remains separate.
+
+Call-input characterization identifies the borrow pass's per-argument State as the
+candidate capture boundary. It preserves guarded origins, bounds and component paths.
+A reference cell and its referent have distinct paths; record fields use Slot(index + 1),
+while storage projections use Field(index). Dependency root sets omit those paths, and
+Unknown scalar-source histories do not prove absence of references or mutation.
+
+Argument states must be retained when each argument finishes evaluation. A later
+argument can reassign a reference cell while the earlier argument still holds its old
+reference. Final dependency maps and binding facts therefore cannot reconstruct call
+inputs. Existing Facts.calls records describe call results; null results can discard
+all origins despite reference-bearing arguments. Stopped prefixes and argument Normal
+observations remain independent of Call effects. Unused parameter origins still refer
+to declared Input components rather than concrete caller storage.
+
+These tests characterize existing metadata only. No argument-state snapshot or mutation
+input bridge is implemented yet. Future retention must reuse bounded borrow states,
+preserve unknown bounds and guards, and qualify caller/callee identity separately from
+observations before exposing any conservative invalidation input.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
