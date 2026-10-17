@@ -117,7 +117,13 @@ impl Checker {
         span: Span,
     ) -> Result<(Effects, usize)> {
         let parts = MAX_EDGES
-            .checked_sub(reports.signatures.params.len().saturating_mul(2))
+            .checked_sub(
+                reports
+                    .signatures
+                    .params
+                    .len()
+                    .saturating_mul(super::signatures::PARAM_PARTS),
+            )
             .ok_or_else(|| {
                 Diagnostic::unsupported("proof operation-effect budget exhausted", span)
             })?;

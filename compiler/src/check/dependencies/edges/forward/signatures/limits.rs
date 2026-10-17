@@ -48,7 +48,7 @@ pub(crate) fn signature_context_counts_unused_parameters_and_duplicate_calls_onc
     let (expected, parts) = checker
         .operation_effects_budgeted(&reports, Span::default())
         .unwrap();
-    assert_eq!(parts, MAX_EDGES - 10);
+    assert_eq!(parts, MAX_EDGES - 3 * PARAM_PARTS - 4);
     let before = reports.signatures.clone();
     for (_, walk) in reports.entries.values_mut() {
         walk.ports.extend(walk.ports.clone());

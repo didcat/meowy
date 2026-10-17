@@ -1,4 +1,5 @@
 use super::{super::tests::checked, *};
+use crate::check::dependencies::edges::forward::signatures::PARAM_PARTS;
 
 #[test]
 pub(crate) fn call_stage_limits_charge_arguments_once_and_keep_failed_updates_atomic() {
@@ -211,7 +212,7 @@ pub(crate) fn initializer_context_shares_parameter_payload_and_exact_consumer_wo
         .operation_effects_with_room(&reports, Span::default(), MAX_EDGES, MAX_EDGES, MAX_EDGES)
         .unwrap();
     assert_eq!(reports.signatures.params.len(), 2);
-    assert_eq!(parts, unreserved - 4);
+    assert_eq!(parts, unreserved - 2 * PARAM_PARTS);
     let count = reports.shared_initializers.len();
     assert_eq!(count, 2);
     let before = format!("{program:?}{reports:?}{:?}", checker.edge_counts());

@@ -46,11 +46,12 @@ pub(crate) fn signature_headers_bound_header_parameter_and_work_storage_atomical
     let reports = checker.entry_reports(&program, Span::default()).unwrap();
     let before = format!("{reports:?}{:?}", checker.edge_counts());
     let start = checker.flow.work;
+    let parts = 2 * PARAM_PARTS;
     let expected = checker
-        .function_signatures_limited(&program, &reports, Span::default(), 2, 4)
+        .function_signatures_limited(&program, &reports, Span::default(), 2, parts)
         .unwrap();
     let work = checker.flow.work - start;
-    for (limit, parts) in [(1, 4), (2, 3)] {
+    for (limit, parts) in [(1, parts), (2, parts - 1)] {
         assert!(
             checker
                 .function_signatures_limited(&program, &reports, Span::default(), limit, parts)
@@ -62,7 +63,8 @@ pub(crate) fn signature_headers_bound_header_parameter_and_work_storage_atomical
     for short in [0, 1] {
         checker.flow.work = crate::flow::MAX_PROOF_WORK - work + short;
         checker.flow.full = false;
-        let result = checker.function_signatures_limited(&program, &reports, Span::default(), 2, 4);
+        let result =
+            checker.function_signatures_limited(&program, &reports, Span::default(), 2, parts);
         if short == 0 {
             assert_eq!(result.unwrap(), expected);
         } else {
@@ -79,7 +81,7 @@ pub(crate) fn signature_parameter_payload_is_reserved_once_before_call_arguments
     let (expected, parts) = checker
         .operation_effects_budgeted(&reports, Span::default())
         .unwrap();
-    assert_eq!(parts, MAX_EDGES - 6);
+    assert_eq!(parts, MAX_EDGES - 2 * PARAM_PARTS - 2);
     for (_, walk) in reports.entries.values_mut() {
         walk.ports.extend(walk.ports.clone());
     }

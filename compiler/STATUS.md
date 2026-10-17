@@ -4887,10 +4887,10 @@ Dependency-ordered commit plan:
 
 1. Complete (`77f1e426`): two source characterization tests cover scalar/shared/exclusive/aggregate
    parameters, unused/stopped inputs, forward declarations and computed list extents.
-2. Complete: checked parameter capture survives HIR transfer, with three passing
+2. Complete (`716d48f9`): checked parameter capture survives HIR transfer, with three passing
    source/identity/budget tests and atomic publication.
-3. Centralize the existing two-record signature payload accounting without behavior
-   changes, retaining its exact-budget regressions.
+3. Complete: `PARAM_PARTS = 2` centralizes the existing cost without changing behavior;
+   signature and initializer/effect budget regressions pass.
 4. Retain ordered shallow input shapes beside signature LocalIds, reserve three report
    payload records per parameter, and validate header/HIR agreement against capture.
    Keep the borrowed pair API unchanged and adapt exact-budget regressions.
@@ -4907,8 +4907,12 @@ on late identity or work/map failure. This source metadata has its own bounded m
 the forthcoming report input vector adds a third shared report record per parameter.
 Three focused capture tests cover nested/forward/unused functions, HIR transfer,
 late faults and exact bounds. Formatting and all three checks pass
-(`/tmp/meowy-parameter-shapes-capture.log`). No known failures remain. Next: centralize the
-existing signature payload cost before extending report headers. Unrelated user files remain preserved.
+(`/tmp/meowy-parameter-shapes-capture.log`). No known failures remain. `PARAM_PARTS = 2` now centralizes the existing header/reverse-index report cost.
+Construction, retained/program validation and effect reservation share it; exact-budget
+tests preserve their previous exact boundaries. Formatting, all signature-focused
+tests and the initializer/effect payload test pass
+(`/tmp/meowy-parameter-shapes-accounting.log`). Next: add ordered header input shapes
+and validate them against captured declarations. Unrelated user files remain preserved.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly

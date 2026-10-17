@@ -41,7 +41,7 @@ impl Checker {
         let invalid =
             || Diagnostic::unsupported("proof function-signature identity mismatch", span);
         let index = &reports.signatures;
-        if index.params.len() > MAX_EDGES / 2 {
+        if index.params.len() > MAX_EDGES / PARAM_PARTS {
             return Err(budget());
         }
         self.signature_root(reports, index.functions.len(), span)?;

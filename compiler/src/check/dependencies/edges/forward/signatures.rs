@@ -14,6 +14,8 @@ use crate::{
 mod parameters;
 mod validation;
 
+pub(super) const PARAM_PARTS: usize = 2;
+
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub(crate) struct Index {
     pub(crate) functions: BTreeMap<hir::FunctionId, Signature>,
@@ -60,7 +62,7 @@ impl Checker {
             }
             count = count
                 .checked_add(function.params.len())
-                .filter(|count| *count <= parts.min(MAX_EDGES) / 2)
+                .filter(|count| *count <= parts.min(MAX_EDGES) / PARAM_PARTS)
                 .ok_or_else(budget)?;
         }
         let root = self.signature_root(reports, program.functions.len(), span)?;
