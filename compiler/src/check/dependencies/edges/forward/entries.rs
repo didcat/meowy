@@ -145,7 +145,6 @@ impl Checker {
         (reports.argument_walk, reports.parts) =
             self.argument_walk_report(&reports, span, reports.parts)?;
         reports.parts = self.qualify_call_forests(&reports, span, reports.parts)?;
-        self.program_calls(program, &reports, span, MAX_EDGES)?;
         Ok(reports)
     }
 }

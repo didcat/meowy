@@ -96,3 +96,5 @@ mod tests;
 mod boundaries;
 
 mod program;
+
+mod snapshots;

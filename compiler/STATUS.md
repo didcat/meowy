@@ -5027,7 +5027,18 @@ callee, caller root, arity and declared result against retained qualifiers, incl
 unreached/nested calls. Three index tests pass (`/tmp/meowy-call-bridge-hir.log`);
 all 3265 library tests pass (`/tmp/meowy-call-bridge-hir-library.log`), with formatting
 and diff checks clean. Snapshot association is next. Unrelated `docs/programs/hey/`
-remains excluded.
+remains excluded. HIR indexing committed as `03ec58d7`.
+
+The borrowed snapshot view now validates indexed HIR headers, embedded site/position,
+call guards, prefixes and complete State payload/guard bounds before exposing original
+parameter/PointId/state references. It reuses Facts after entry reports, without rerunning
+borrow analysis or copying states. Missing snapshots remain conservative and graph
+observations remain independent. All three identity/association tests, all 3268 library
+tests and all-target Clippy pass (`/tmp/meowy-call-bridge-view.log`,
+`/tmp/meowy-call-bridge-library.log`, `/tmp/meowy-call-bridge-clippy.log`). Exact combined
+view budgets, stale-view corruption and retained guard/payload boundaries are next. This
+checks association and safe metadata bounds; semantic origin eligibility and mutation
+access classification remain separate.
 
 ### Subsequent snapshot qualification constraints
 

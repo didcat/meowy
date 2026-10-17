@@ -333,8 +333,11 @@ pub(crate) fn check_imports(
             if let Some(model) = &mut docs {
                 model.finish().map_err(|error| vec![error])?;
             }
-            checker
+            let reports = checker
                 .entry_reports(&program, block.span)
+                .map_err(|error| vec![error])?;
+            checker
+                .qualify_borrow_calls(&program, &reports, &facts, block.span)
                 .map_err(|error| vec![error])?;
             Ok((program, docs))
         }
