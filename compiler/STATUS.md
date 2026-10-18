@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-16. Declared parameter descriptors pass the compiler gate.
+Updated: 2026-10-17. Candidate call-origin storage qualification is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5078,6 +5078,30 @@ Baseline `d1910f46` is preserved in `/tmp/meowy-call-access-baseline.json`.
 Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
 ### Next: qualify candidate call-origin storage
+
+Active commit plan (dependency order):
+
+1. Qualify exclusive scalar origins in ordinary caller locals against full current
+   Program types and checked place identities, with focused stale/path/limit tests.
+2. Index borrowed current HIR blocks with bounded traversal so alias backing can be
+   checked against full target types, not only captured shallow layouts.
+3. Qualify emitted-slot alias root/target/view identities and selected-field write
+   permission, with alias/projection regressions.
+4. Combine declared access and qualified origins into bounded mutation-input metadata,
+   preserving guarded alternatives, stopped/missing inputs and call-entry distinctions.
+5. Complete independent boundary coverage, evidence and compiler/strict-pin/preservation/
+   documentation gates; record the next fact-invalidation prerequisite.
+
+Local qualifier complete: place metadata now captures the
+exact scalar referent. Qualification reuses the graph validator, then checks Program local
+count, registered storage, complete reference-free type interiors, each field/count, final
+field write permission and the captured scalar kind. The helper is test-only until the
+bounded storage index is integrated; runtime fact invalidation remains unchanged.
+All four new local qualifier tests and existing place tests pass
+(`/tmp/meowy-call-storage-local.log`, `/tmp/meowy-call-storage-place.log`); formatting
+and staged diff checks pass. No known failures remain. Next: borrowed HIR block index.
+Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
+files plus case/document records). Unrelated `docs/programs/hey/` remains excluded.
 
 1. Start with exclusive scalar inputs and ordinary caller-local origins. Reuse
    `effects/borrows.rs::validate_place_borrow` and checked place metadata, then validate

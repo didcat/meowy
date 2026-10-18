@@ -91,7 +91,7 @@ impl Checker {
         Ok(())
     }
 
-    pub(super) fn validate_place_borrow(
+    pub(in super::super) fn validate_place_borrow(
         &mut self,
         reports: &Reports,
         owner: usize,
