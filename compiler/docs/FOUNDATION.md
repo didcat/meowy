@@ -2131,8 +2131,30 @@ still retain supported nullable domains and bottom for `never`.
 Seed, version, producer and copied-value payloads share one bounded allowance. Cycles,
 stale versions, foreign owners and exhausted work or payload budgets expose no partial
 context. These are initial immutable candidates, not per-program-point storage state.
-Mutable Bind/Write transfers, guarded call invalidation, joins, restart handling,
-arithmetic/guard transfers and proof outcomes remain separate.
+
+A separate mutable-event context now qualifies observed Bind and Write operations using
+the shared storage statement validator. It retains exact owner, local/canonical storage,
+RHS child, statement/site ancestry and ordered edges. Whole-binding write permission is
+required; mutable fields alone do not permit whole-owner replacement. Emitted aliases
+also retain their local permission and canonical root/target/field identity.
+
+Each event borrows its original report and the declared types of its local and canonical
+storage IDs. Ordinary supported scalar storage receives a distinct Bind or Write candidate
+version at its original PointId.
+Its domain is the full declared domain, independent of the RHS value. Candidate versions
+do not establish initialization, current-read values or same-value origins. Missing RHS
+evidence remains unknown; unobserved operations and writes stopped by their RHS add no event.
+
+Alias and opaque events remain recorded without a plain scalar version. An alias-local
+type can differ from its canonical local's type, so both declarations stay available.
+These declarations do not establish the completed backing-field layout needed for an alias
+scalar transfer. Reference cells remain distinct from pointee storage. Call, Path and Indirect mutations
+retain their separate report families; this event map cannot establish mutation absence.
+Events and domains share the existing seed/copy budget, and late identity or budget failures
+expose no partial context. Control/dependency marks, frontend caches and the immutable
+initializer index remain unchanged. Applying these events to graph state, guarded call
+invalidation, joins, restart handling, arithmetic/guard transfers and proof outcomes remain
+separate work.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
