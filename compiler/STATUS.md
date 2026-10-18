@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Mapping call mutation candidates to fact owners is in progress.
+Updated: 2026-10-18. Canonical call mutation roots and transfer inputs pass the full gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: map qualified call mutation candidates to retained scalar fact owners below.
+Next: retain bounded scalar value domains and versioned graph facts using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5119,63 +5119,64 @@ evidence (`/tmp/meowy-call-storage-preservation.log`). Reference behavior and pi
 unchanged. No known failures remain. Baseline `40141b4a` is recorded in
 `/tmp/meowy-call-storage-baseline.json`; user files remain excluded. Nothing was pushed.
 
-### Next: map call candidates to scalar fact owners
+### Canonical call mutation roots and transfer inputs
 
-Active commit plan (dependency order):
+Qualified scalar origins now map to canonical whole-owner roots. Local fields share their
+owner, while emitted views share the validated alias root. Original paths, lexical views,
+argument snapshots and unknown flags remain intact. Source guards merge only within the
+same root; distinct roots retain their guards. Mapping does not read final reference/cell
+maps or declaration snapshots and shares the existing root-capacity and payload limits.
 
-1. Characterize canonical fact roots, alias sharing, refinement forgetting and retained
-   proof-dependency marks with focused source-driven structural tests.
-2. Map qualified candidate origins to bounded, guarded whole-owner roots without consulting
-   final reference/cell maps; retain original sources and explicit unknown evidence.
-3. Associate those roots with qualified Call-operation observations and call-entry guards,
-   preserving stopped/missing states and independent result observations.
-4. Add independent identity, guard, alias and exact-budget boundary coverage, then update
-   evidence and run the compiler, strict-pin, preservation and documentation gates.
+Fresh call transfer inputs are keyed by original caller PointId and retain CallId, borrowed
+calls and independent operation/result observations. They validate all Call reports, including
+orphan rows. Only an observed operation with a complete evaluated prefix admits transfer
+knowledge. Missing observations/snapshots and stopped prefixes remain absent; result-only
+observations cannot create a mutation transfer. Nonreturning calls keep operation inputs.
 
-Investigation: `origin_id` and derived marks use canonical alias roots, while `bools` and
-`tags` use lexical places and `forget` removes the matching alias family. `forget_mutable`
-currently clears ordinary refinement facts for all visible mutable storage at exclusive
-calls. Proof-dependency marks are monotone and must not be cleared by a mutation transfer.
-Neither final `pointees`/`reference_cells` nor declaration facts are call-time snapshots.
-The tracked tree is clean at `a3c7d4d8`; unrelated `docs/programs/hey/` remains excluded.
-Three characterization tests pass: distinct field sources
-sharing a whole owner, lexical alias-family forgetting that preserves dependency marks,
-and the existing shared/exclusive call distinction for visible mutable refinements.
-Validation: `/tmp/meowy-call-roots-characterization.log`; formatting and staged diff checks
-pass. Baseline preservation is recorded in `/tmp/meowy-call-roots-baseline.json` (596 files).
-Characterization is committed as `305d2655`. Guarded canonical root mapping passes all
-38 mutation-focused tests (`/tmp/meowy-call-roots-mapping.log`). Per-argument roots deduplicate qualified fields/alias views and
-merge source guards while preserving original candidates and unknown flags. Roots share
-the existing payload allowance and reference-root capacity; no final origin maps are read.
-Formatting and staged checks pass. Next: qualify Call-operation observations and construct
-guarded transfer inputs while retaining all missing/stopped states.
-Root mapping is committed as `9245a267`. All four Call-operation transfer tests pass
-(`/tmp/meowy-call-roots-transfers.log`). They retain original calls, independent operation/result
-observations, guarded whole-owner roots and an optional unknown-mutation guard. Missing
-operations or complete snapshots leave transfer knowledge absent; unknown inputs retain
-the full call-entry guard. Ordinary refinements and dependency marks remain untouched.
-All 3318 library tests and all-target Clippy pass (`/tmp/meowy-call-roots-library.log`,
-`/tmp/meowy-call-roots-clippy.log`). This includes the explicit unknown fallback when
-argument present/proof guards do not cover call entry. Formatting and staged checks pass.
-Next: independent capacity, stale-report, projection and final-map independence boundaries.
-Transfer integration is committed as `61c1e599`. Six independent boundary groups pass:
-full root capacity, swapped fields/alias views,
-late/orphan reports, final-map independence, empty/nonreturning calls and false entry guards.
-All 49 mutation-focused tests pass (`/tmp/meowy-call-roots-boundaries.log`). Formatting
-and staged checks pass; no known failures remain. Next: update structural evidence and
-run the complete gate, strict-pin audit and preservation checks.
-Actual fact propagation and E225 remain subsequent work.
+Known root guards combine entry, argument presence/proof and source guards. Unknown inputs
+or incomplete argument guard coverage preserve an unknown fallback under the full entry
+guard. `unknown: None` means missing transfer knowledge; `Some(FALSE)` means an inactive
+fallback. Neither establishes callee purity. Original caller snapshots remain borrowed and
+late failures publish no partial maps. Ordinary refinement forgetting and monotone dependency
+marks are unchanged; actual scalar fact invalidation is not enabled.
 
-1. Characterize the retained scalar facts in `check/dependencies.rs`, `references.rs`,
-   `cells.rs` and `functions.rs::call`. Map qualified local/alias candidates to conservative
-   whole-owner invalidation identities without using final dependency maps as call inputs.
-   Keep unknown access, unsupported origins and allocator bounds explicit.
-2. Plan separate mapping, Call-operation transfer and boundary-regression commits. A normal
-   argument does not establish call execution; retain snapshot call-entry guards and stopped
-   prefixes, preserve original argument states, and do not specialize callees or return types.
-3. Validate guarded alternatives, later argument writes, alias projections, unknown fallback
-   and exact work/payload boundaries before enabling fact invalidation. Restart propagation,
-   E225, proof outcomes and complete v0.0.1 qualification remain subsequent work.
+| Commit | Reviewable slice |
+| --- | --- |
+| `305d2655` | Characterize canonical roots and separate refinements from dependency marks |
+| `9245a267` | Map qualified origins to bounded guarded fact roots |
+| `61c1e599` | Associate roots with Call operations and entry guards |
+| `edfeec3c` | Cover capacity, stale reports, projections and final-map independence |
+
+All 14 `make test` groups pass: 3324 library, 923 native and 80 Python tests, both editors,
+runtime/sanitizers, formatting, all-target Clippy, build, metadata and source execution
+(`/tmp/meowy-call-roots-gate.log`; detailed logs in `build/verification-call-roots`). The
+514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release failures.
+Strict mode exits 1 only for the exact pinned names/reasons (`/tmp/meowy-call-roots-strict.log`,
+`/tmp/meowy-call-roots-strict-audit.log`). All four final documentation checks pass
+(`/tmp/meowy-call-roots-docs.log`).
+
+Eighteen new structural tests are linked from types, values, memory and proof. Preservation
+passes for 596 protected files, all case records and 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-call-roots-preservation.log`). Language contracts and pins are unchanged.
+Baseline `a3c7d4d8` is recorded in `/tmp/meowy-call-roots-baseline.json`. No known failures
+remain. User files are excluded; nothing was pushed or published.
+
+### Next: retain bounded scalar domains and versions
+
+1. Characterize `scalar_leaves.rs`, `edges/forward/effects/scalars.rs` and retained read/Bind
+   reports against the abstract-value rules in `docs/reference/stdlib/proof.md`. Scalar
+   reports currently retain kinds, not literal values or version payloads. Do not treat
+   the mutable frontend `bools`/`tags`, final reference maps or declaration facts as historical
+   graph states. Keep existing ordinary call refinement forgetting unchanged.
+2. Plan separate bounded domain representation, literal/declared-domain capture, versioned
+   storage transfer and Call-invalidation commits. Start with the documented integer and
+   boolean domains; preserve null/bottom distinctions and declared call-result domains.
+   Keep unsupported shapes explicit and do not specialize callees.
+3. Apply qualified Call transfers only after versioned scalar states and conservative unknown
+   fallback are validated. Missing transfer knowledge is unknown, never an empty mutation set.
+   Test aliases, guarded joins, historical copies and stopped calls
+   under exact work/payload limits. Restart propagation, E225, proof outcomes and complete
+   v0.0.1 qualification remain subsequent work.
 
 Compiler validation and the requested root Makefile are complete. The root tracker records
 full `make test`, release build and staged installation/execution validation.
@@ -6793,8 +6794,8 @@ function-signature context are qualified. Initializer qualification reuses valid
 retained parameter membership. Bounded call-argument/parameter associations and individual
 argument observations are qualified, including caller-side direct sources for normally
 observed arguments. Retained forests, per-call access and declared parameter descriptors
-are qualified. Candidate storage and per-call mutation inputs are qualified; map their
-conservative scalar fact owners next using the current handoff.
+are qualified. Candidate storage, canonical fact roots and guarded Call-operation transfer
+inputs are qualified. Bounded scalar domains and versioned graph facts are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7471,8 +7472,8 @@ Value selection and broader aggregate provenance remain separate.
    call-parameter associations and individual argument observations are qualified. Reports
    retain caller-side sources for normally observed arguments, and stored source views
    and their forests/per-call access are qualified, including declared parameter descriptors.
-   Candidate call storage and mutation inputs are qualified. Map scalar fact owners next,
-   using the current handoff before integrating invalidation.
+   Candidate call storage, canonical fact roots and guarded Call-operation transfer inputs
+   are qualified. Retain scalar domains and versions before integrating invalidation.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

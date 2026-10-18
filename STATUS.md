@@ -45,22 +45,21 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Exclusive scalar call arguments now have qualified local/emitted-slot mutation candidates.
-Current types, field permissions, canonical aliases and complete backing layouts are checked.
-Borrowed snapshots preserve guarded alternatives, later-argument writes and stopped/missing
-inputs; unsupported storage stays explicitly unknown. The
-[compiler handoff](compiler/STATUS.md#qualified-call-origin-storage) records six validated
-implementation/coverage commits. Scalar fact invalidation remains the next compiler step.
+Call mutation candidates now map to canonical whole-owner fact roots and qualified Call
+operation inputs. They preserve source guards, alias views and borrowed snapshots, with
+explicit unknown fallback for incomplete evidence. Missing/stopped inputs and result-only
+observations remain distinct. The
+[compiler handoff](compiler/STATUS.md#canonical-call-mutation-roots-and-transfer-inputs)
+records four validated implementation/coverage commits. Actual fact invalidation remains
+separate; bounded scalar value domains and versioned graph states are the next prerequisite.
 
-All ten compiler checks pass: 3306 library, 923 native, 62 Python and 495 required
+All 14 `make test` groups pass: 3324 library, 923 native, 80 Python and 495 required
 conformance tests, with 19 unchanged gaps and zero debug/release failures
-(`/tmp/meowy-call-storage-gate.log`). Strict execution matches the exact pins; all four
-final documentation checks pass. The preservation audit retains all 596 protected files,
-case records and 37 reference hashes/gaps/prior evidence. Language contracts are unchanged.
-Proof/release qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved;
-nothing was pushed or published.
-
-The compiler series is complete through `4838534e`. Scalar fact owner mapping is next.
+(`/tmp/meowy-call-roots-gate.log`). Strict execution matches the exact pins, and all four
+final documentation checks pass. Eighteen new structural tests are linked from the owning
+references. Preservation retains all 596 protected files, case records and 37 reference
+hashes/gaps/prior evidence. Language contracts are unchanged; proof/release qualification
+remains incomplete. Unrelated `docs/programs/hey/` is preserved. Nothing was pushed.
 
 ## Build and test commands
 
@@ -70,13 +69,13 @@ and retain detailed logs in `build/verification`. Reporting (`f1911a2e`) preserv
 fail-fast behavior for direct script users and keeps known conformance gaps visible.
 
 All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, runtime/sanitizers,
-3306 library, 923 native and 80 Python tests, plus 495 required conformance cases with
-19 unchanged gaps (`/tmp/meowy-make-test.log`). Strict execution separately matches the
+3324 library, 923 native and 80 Python tests, plus 495 required conformance cases with
+19 unchanged gaps (`/tmp/meowy-call-roots-gate.log`). Strict execution separately matches the
 exact pinned names/reasons; the Makefile's strict plan retains `--strict`.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.
-Release build and staged installation pass (`/tmp/meowy-make-build.log`,
+The initial release/install validation at `a3c7d4d8` passed (`/tmp/meowy-make-build.log`,
 `/tmp/meowy-make-install.log`). The staged executable matches the built binary, has mode
 0755 and runs native meowy programs outside the checkout in debug/release, including a
 prefix containing spaces (`/tmp/meowy-make-install-smoke.log`). The pre-existing

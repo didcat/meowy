@@ -2060,6 +2060,30 @@ later-argument retargeting, stale full layouts and missing-origin cases have str
 tests. No callee is specialized, scalar facts are not yet invalidated, and restart/E225
 propagation and proof outcomes remain separate.
 
+Qualified candidates now also carry guarded whole-owner fact roots. Ordinary locals map
+to their own storage; emitted views map through the canonical alias root. Field paths and
+lexical views remain in the original candidates, even when they share one fact root.
+Repeated roots merge their source guards under the existing root-capacity and payload
+limits. Mapping never consults final reference/cell maps or declaration snapshots.
+
+Call transfer inputs retain the original calls and independently validated operation/result
+observations. A transfer needs an observed Call operation and a complete evaluated argument
+prefix. Its root guards combine call entry, argument presence/proof and source guards.
+Missing operations, stopped prefixes and missing snapshots keep transfer knowledge absent;
+result-only observations never create mutation transfers. Nonreturning calls can retain
+operation inputs without a result observation.
+
+Unknown input storage or argument guards that do not cover call entry retain an unknown
+fallback under the full entry guard. An absent unknown guard means transfer knowledge is
+missing; a false guard is a known inactive fallback. Neither claims purity of the callee.
+All call reports, including orphan rows, are validated before publication. Late identity,
+guard, root-capacity or work/payload failure returns no partial map.
+
+Ordinary `bools`/`tags` refinements still use lexical place keys and their existing forgetting
+rules. Proof-dependency marks remain monotone. These transfer inputs change neither fact
+table; scalar leaf reports still carry kinds rather than value domains or version payloads.
+Bounded scalar domains and versioned graph facts are required before applying invalidation.
+
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region
