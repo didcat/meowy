@@ -5149,6 +5149,15 @@ merge source guards while preserving original candidates and unknown flags. Root
 the existing payload allowance and reference-root capacity; no final origin maps are read.
 Formatting and staged checks pass. Next: qualify Call-operation observations and construct
 guarded transfer inputs while retaining all missing/stopped states.
+Root mapping is committed as `9245a267`. All four Call-operation transfer tests pass
+(`/tmp/meowy-call-roots-transfers.log`). They retain original calls, independent operation/result
+observations, guarded whole-owner roots and an optional unknown-mutation guard. Missing
+operations or complete snapshots leave transfer knowledge absent; unknown inputs retain
+the full call-entry guard. Ordinary refinements and dependency marks remain untouched.
+All 3318 library tests and all-target Clippy pass (`/tmp/meowy-call-roots-library.log`,
+`/tmp/meowy-call-roots-clippy.log`). This includes the explicit unknown fallback when
+argument present/proof guards do not cover call entry. Formatting and staged checks pass.
+Next: independent capacity, stale-report, projection and final-map independence boundaries.
 Actual fact propagation and E225 remain subsequent work.
 
 1. Characterize the retained scalar facts in `check/dependencies.rs`, `references.rs`,

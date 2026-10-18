@@ -140,7 +140,7 @@ impl Checker {
         facts: &Facts,
         span: Span,
     ) -> Result<()> {
-        self.call_mutation_targets(program, reports, facts, span, MAX_EDGES)?;
+        self.call_mutation_transfers(program, reports, facts, span, MAX_EDGES)?;
         Ok(())
     }
 }

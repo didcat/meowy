@@ -4,6 +4,7 @@ use crate::hir::Program;
 mod access;
 mod storage;
 mod targets;
+mod transfers;
 
 pub(in super::super) use access::Access;
 pub(in super::super) type Accesses = BTreeMap<hir::LocalId, Access>;
