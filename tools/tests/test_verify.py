@@ -80,9 +80,42 @@ class VerifyTests(unittest.TestCase):
                     self.assertIn("--strict", result.stdout)
 
     def test_verification_stops_after_failure(self):
-        with patch.object(sys, "argv", ["verify.py"]), patch.object(verify, "run", return_value=False) as run, contextlib.redirect_stdout(io.StringIO()):
+        output = io.StringIO()
+        with patch.object(sys, "argv", ["verify.py"]), patch.object(verify, "run", return_value=False) as run, contextlib.redirect_stdout(output):
             self.assertEqual(1, verify.main())
             self.assertEqual(1, run.call_count)
+        self.assertIn("NOT RUN", output.getvalue())
+        self.assertIn("0 passed; 1 failed; 3 not run.", output.getvalue())
+
+    def test_logs_keep_stdout_stderr_and_failed_exit_visible(self):
+        with tempfile.TemporaryDirectory() as temp:
+            log = Path(temp) / "check.log"
+            check = verify.Check("logged failure", (sys.executable, "-c", "import sys; print('out'); print('err', file=sys.stderr); sys.exit(7)"))
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                self.assertFalse(verify.run(check, log=log))
+            self.assertIn("FAIL logged failure: exit 7", output.getvalue())
+            self.assertIn("\nout\n", log.read_text())
+            self.assertIn("\nerr\n", log.read_text())
+            self.assertIn("Command:", log.read_text())
+
+    def test_complete_run_reports_failures_and_runs_later_checks(self):
+        checks = [verify.Check("first", ("first",)), verify.Check("second", ("second",))]
+        output = io.StringIO()
+        with tempfile.TemporaryDirectory() as temp, patch.object(sys, "argv", ["verify.py", "--keep-going", "--log-dir", temp]), patch.object(verify, "plan", return_value=checks), patch.object(verify, "run", side_effect=[False, True]) as run, contextlib.redirect_stdout(output):
+            self.assertEqual(1, verify.main())
+            self.assertEqual(2, run.call_count)
+            self.assertEqual(Path(temp) / "02-second.log", run.call_args.kwargs["log"])
+        self.assertIn("1 passed; 1 failed; 0 not run.", output.getvalue())
+        self.assertIn("01-first.log", output.getvalue())
+
+    def test_logged_conformance_preserves_known_gap_counts(self):
+        check = verify.Check("compiler conformance execution", (sys.executable, "-c", "print('495 passed; 19 unsupported; 0 failed (debug and release).')"))
+        output = io.StringIO()
+        with tempfile.TemporaryDirectory() as temp, patch.object(sys, "argv", ["verify.py", "--compiler", "--log-dir", temp]), patch.object(verify, "plan", return_value=[check]), contextlib.redirect_stdout(output):
+            self.assertEqual(0, verify.main())
+        self.assertIn("495 passed; 19 unsupported; 0 failed (debug and release).", output.getvalue())
+        self.assertIn("does not qualify the complete v0.0.1 release", output.getvalue())
 
 
 if __name__ == "__main__":

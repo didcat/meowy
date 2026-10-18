@@ -1,9 +1,11 @@
 import argparse
+import contextlib
 import os
 import shlex
 import signal
 import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -48,27 +50,51 @@ def plan(editor=None, compiler=False, strict=False, runtime=False):
     return checks
 
 
-def run(check, root=ROOT, timeout=300):
-    print(f"CHECK {check.name}: {shlex.join(check.args)}", flush=True)
-    try:
-        process = subprocess.Popen(check.args, cwd=root, start_new_session=True)
-    except OSError as error:
-        print(f"FAIL {check.name}: {error}", flush=True)
-        return False
-    try:
-        code = process.wait(timeout=timeout)
-    except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
+def run(check, root=ROOT, timeout=300, log=None):
+    command = shlex.join(check.args)
+    print(f"CHECK {check.name}" if log else f"CHECK {check.name}: {command}", flush=True)
+    with contextlib.ExitStack() as stack:
         try:
-            os.killpg(process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        process.wait()
-        if isinstance(error, KeyboardInterrupt):
-            raise
-        print(f"FAIL {check.name}: exceeded {timeout:g} seconds", flush=True)
-        return False
+            output = stack.enter_context(log.open("w", encoding="utf-8")) if log else None
+            if output:
+                output.write(f"Command: {command}\n")
+                output.flush()
+            process = subprocess.Popen(check.args, cwd=root, start_new_session=True,
+                                       stdout=output, stderr=subprocess.STDOUT if output else None)
+        except OSError as error:
+            print(f"FAIL {check.name}: {error}", flush=True)
+            return False
+        try:
+            code = process.wait(timeout=timeout)
+        except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            process.wait()
+            if isinstance(error, KeyboardInterrupt):
+                raise
+            print(f"FAIL {check.name}: exceeded {timeout:g} seconds", flush=True)
+            return False
     print(f"{'PASS' if code == 0 else 'FAIL'} {check.name}: exit {code}", flush=True)
     return code == 0
+
+
+def summary(checks, results):
+    width = max(len(check.name) for check in checks)
+    print("\nVerification results:")
+    for index, check in enumerate(checks):
+        if index >= len(results):
+            print(f"  {'NOT RUN':7}  {check.name:<{width}}")
+            continue
+        passed, elapsed, log = results[index]
+        print(f"  {'PASS' if passed else 'FAIL':7}  {check.name:<{width}}  {elapsed:6.1f}s")
+        if log and not passed:
+            print(f"           Log: {log}")
+        if log and check.name == "compiler conformance execution" and log.is_file():
+            for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
+                if "unsupported;" in line and line.endswith("failed (debug and release)."):
+                    print(f"           {line}")
 
 
 def main():
@@ -79,6 +105,8 @@ def main():
     parser.add_argument("--strict", action="store_true", help="Require every compiler conformance case; requires --compiler or --all.")
     parser.add_argument("--all", action="store_true", help="Include editor, compiler and native runtime verification.")
     parser.add_argument("--list", action="store_true", help="Print selected commands without running them.")
+    parser.add_argument("--keep-going", action="store_true", help="Run remaining checks after failures and report every result.")
+    parser.add_argument("--log-dir", type=Path, help="Keep detailed output in this directory and show concise progress; relative paths use the repository root.")
     parser.add_argument("--timeout", type=float, default=300, help="Maximum seconds for each command (default: 300).")
     args = parser.parse_args()
     if args.strict and not (args.compiler or args.all):
@@ -104,10 +132,27 @@ def main():
         print("Native cleanup, guarded stacks, contexts, child waits, owned values and explicit scope close are selected; automatic cancellation/scope-exit joins and DWARF unwinding remain unqualified.", flush=True)
     if not editor:
         print("Editor runtimes are not selected; use --editor both to include them.", flush=True)
-    for check in checks:
-        if not run(check, timeout=args.timeout):
+    log_dir = (ROOT / args.log_dir).resolve() if args.log_dir else None
+    if log_dir:
+        try:
+            log_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as error:
+            parser.error(str(error))
+        print(f"Detailed logs: {log_dir}", flush=True)
+    results = []
+    for index, check in enumerate(checks):
+        log = log_dir / f"{index + 1:02d}-{check.name.replace(' ', '-').replace(',', '')}.log" if log_dir else None
+        started = time.monotonic()
+        passed = run(check, timeout=args.timeout, log=log)
+        results.append((passed, time.monotonic() - started, log))
+        if not passed and not args.keep_going:
             print("Verification stopped at the failed check; subsequent checks were not run.")
-            return 1
+            break
+    summary(checks, results)
+    failed = sum(not passed for passed, _, _ in results)
+    if failed:
+        print(f"{len(results) - failed} passed; {failed} failed; {len(checks) - len(results)} not run.")
+        return 1
     print(f"All {len(checks)} selected checks passed. This does not qualify the complete v0.0.1 release.")
     return 0
 

@@ -53,6 +53,13 @@ from the repository root and stop at the first failure. `--timeout SECONDS`
 limits each command (default: 300); timed-out commands and their process group
 are terminated. The runner targets the current Linux development host.
 
+`--keep-going` runs every selected check and still exits unsuccessfully if any fail.
+The final table shows passed, failed and unrun checks with elapsed times.
+`--log-dir build/verification` keeps detailed command output in separate files and
+shows concise progress. Relative log paths use the repository root. Failed checks
+show their log paths; the summary preserves conformance pass/gap/failure counts.
+Use `--all --keep-going --log-dir build/verification` for the complete logged run.
+
 ## Documentation links
 
 ```sh

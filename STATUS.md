@@ -60,8 +60,23 @@ case records and 37 reference hashes/gaps/prior evidence. Language contracts are
 Proof/release qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved;
 nothing was pushed or published.
 
-Next: add the requested root Makefile with complete tests, release build and installation
-under `~/.local`, reusing the existing verification runner.
+The compiler series is complete through `4838534e`. Scalar fact owner mapping is next.
+
+## Build and test commands
+
+Requested workflow is in progress. Dependency-ordered commit plan:
+
+1. Extend `tools/verify.py` with optional complete-run reporting and per-check logs;
+   preserve its default failure behavior and conformance gap reporting. Validate focused
+   tooling regressions, including failed commands and skipped checks.
+2. Add root Makefile targets for complete tests, strict conformance, locked release builds
+   and installation under `~/.local`, plus concise usage documentation. Validate full tests,
+   release build and installation from outside the checkout; preserve the user directory.
+
+Reporting is complete: 35 tooling tests and all four repository checks pass
+(`/tmp/meowy-test-reporting.log`, `/tmp/meowy-test-reporting-gate.log`). Default failure
+behavior is preserved; logged complete runs retain failure status and conformance gaps.
+Next: add the Makefile and validate its release/install targets and complete test run.
 
 ## Host toolchain
 
