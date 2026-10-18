@@ -169,4 +169,4 @@ pub(super) fn invalid(span: Span) -> Diagnostic {
 }
 
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;

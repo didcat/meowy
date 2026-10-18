@@ -5,6 +5,7 @@ use crate::hir;
 mod declarations;
 mod domain;
 mod literals;
+mod sources;
 mod versions;
 
 impl Checker {
@@ -15,7 +16,9 @@ impl Checker {
         span: Span,
     ) -> Result<()> {
         let (_, declared, parts) = self.scalar_seed_context(program, reports, span, MAX_EDGES)?;
-        self.scalar_version_seeds(program, reports, &declared, span, parts)?;
+        let (versions, parts) =
+            self.scalar_version_seeds(program, reports, &declared, span, parts)?;
+        self.scalar_copy_inputs(reports, &versions, span, parts)?;
         Ok(())
     }
 

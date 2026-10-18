@@ -5,7 +5,7 @@ mod receivers;
 mod shared;
 
 impl Checker {
-    pub(super) fn read_effect(
+    pub(in super::super) fn read_effect(
         &mut self,
         reports: &Reports,
         id: PointId,

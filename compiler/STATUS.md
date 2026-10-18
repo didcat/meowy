@@ -5235,7 +5235,11 @@ Parameter values use full declared domains; observed immutable Bind versions bor
 source report and retain unavailable values separately from bottom. Mutable and stopped Bind
 storage is excluded. Three `scalar_versions` tests, formatting and library Clippy pass.
 Insertion accounts for retained declarations, values and borrowed source reports directly.
-Next: qualify direct producers before propagating copies. These are structural snapshots,
+`83538c01` commits initial versions. Three direct-producer tests, formatting and library
+Clippy pass. Groups, unchanged narrowing/ascription and non-projecting Forward wrappers
+retain exact scalar types and checked read/version links. Predicates, conversions, mutable
+reads, calls and expressions stay unavailable. Next: propagate qualified copy dependencies.
+These are structural snapshots,
 not program-point state, initialization proofs, mutation handling or proof outcomes.
 
 Immediate work:
