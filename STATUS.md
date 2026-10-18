@@ -45,26 +45,23 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Declared parameter access now accompanies borrowed call snapshots. Full types distinguish
-reference-free values, shared/exclusive scalar references and opaque inputs. Cached access
-is revalidated before exposure, preserving declared domains, original PointIds, state
-references and stopped/unvisited arguments. The
-[compiler handoff](compiler/STATUS.md#declared-call-access) records `b6020ca3`, `fbc96cf7`,
-`963abce9` and the next storage-qualification step.
+Exclusive scalar call arguments now have qualified local/emitted-slot mutation candidates.
+Current types, field permissions, canonical aliases and complete backing layouts are checked.
+Borrowed snapshots preserve guarded alternatives, later-argument writes and stopped/missing
+inputs; unsupported storage stays explicitly unknown. The
+[compiler handoff](compiler/STATUS.md#qualified-call-origin-storage) records six validated
+implementation/coverage commits. Scalar fact invalidation remains the next compiler step.
 
-All twelve new access tests pass. All ten compiler checks pass: 3285 library, 923 native,
-62 Python and 495 required conformance tests, with 19 unchanged gaps and zero debug/release
-failures (`/tmp/meowy-call-access-gate.log`). The audit preserves all 597 protected files
-and 37 reference hashes/gaps/prior evidence (`/tmp/meowy-call-access-preservation.log`).
-Strict mode reports only the exact pinned names/reasons
-(`/tmp/meowy-call-access-strict-audit.log`); all four documentation checks pass
-(`/tmp/meowy-call-access-docs.log`). Language contracts and pins are unchanged.
-LLVM remains 23.1.3.
+All ten compiler checks pass: 3306 library, 923 native, 62 Python and 495 required
+conformance tests, with 19 unchanged gaps and zero debug/release failures
+(`/tmp/meowy-call-storage-gate.log`). Strict execution matches the exact pins; all four
+final documentation checks pass. The preservation audit retains all 596 protected files,
+case records and 37 reference hashes/gaps/prior evidence. Language contracts are unchanged.
+Proof/release qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved;
+nothing was pushed or published.
 
-Next: qualify candidate caller storage and alias/projection identities before constructing
-conservative mutation targets. Declared access does not establish call purity or authorize
-invalidation. Actual fact invalidation and proof/release qualification remain separate.
-Unrelated `docs/programs/hey/` is preserved. Nothing was pushed or published.
+Next: add the requested root Makefile with complete tests, release build and installation
+under `~/.local`, reusing the existing verification runner.
 
 ## Host toolchain
 

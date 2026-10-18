@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-17. Candidate call-origin storage qualification is in progress.
+Updated: 2026-10-17. Candidate call-origin storage passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: characterize conservative call invalidation inputs using the handoff below.
+Next: map qualified call mutation candidates to retained scalar fact owners below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5077,86 +5077,63 @@ metadata; reference behavior and pins are unchanged.
 Baseline `d1910f46` is preserved in `/tmp/meowy-call-access-baseline.json`.
 Unrelated `docs/programs/hey/` remains excluded; nothing was pushed or published.
 
-### Next: qualify candidate call-origin storage
+### Qualified call-origin storage
 
-Active commit plan (dependency order):
+Exclusive scalar candidates now require captured referent kinds, current Program locals,
+complete reference-free containing types, exact field counts/paths and selected-field write
+permission. Immutable containers may expose mutable fields. Opaque containing types remain
+unknown, preserving accepted scalar borrows in records with allocator fields.
 
-1. Qualify exclusive scalar origins in ordinary caller locals against full current
-   Program types and checked place identities, with focused stale/path/limit tests.
-2. Index borrowed current HIR blocks with bounded traversal so alias backing can be
-   checked against full target types, not only captured shallow layouts.
-3. Qualify emitted-slot alias root/target/view identities and selected-field write
-   permission, with alias/projection regressions.
-4. Combine declared access and qualified origins into bounded mutation-input metadata,
-   preserving guarded alternatives, stopped/missing inputs and call-entry distinctions.
-5. Complete independent boundary coverage, evidence and compiler/strict-pin/preservation/
-   documentation gates; record the next fact-invalidation prerequisite.
+A borrowed HIR block index supplies full alias target types. Canonical root/view/target,
+emission and backing identities are validated separately; discarded backing stays unknown.
+Repeated places share a bounded witness, while guarded alias views remain distinct. Every
+origin lookup revalidates its selected witness. Value-component Slot/Deref paths never
+become storage Field/Element projections; abstract, expired, temporary and indexed sources
+remain unknown, and allocator bounds are never treated as physical loans.
 
-Local qualifier complete: place metadata now captures the
-exact scalar referent. Qualification reuses the graph validator, then checks Program local
-count, registered storage, complete reference-free type interiors, each field/count, final
-field write permission and the captured scalar kind. The helper is test-only until the
-bounded storage index is integrated; runtime fact invalidation remains unchanged.
-All four new local qualifier tests and existing place tests pass
-(`/tmp/meowy-call-storage-local.log`, `/tmp/meowy-call-storage-place.log`); formatting
-and staged diff checks pass (`7084f211`). No known failures remain.
-The borrowed HIR block index is complete. It reuses
-the existing bounded expression walk, checks owner/layout identity and retains complete
-block types by reference, including unreachable blocks. Existing call traversal is preserved.
-All twenty focused HIR tests pass, including three new block-index groups
-(`/tmp/meowy-call-storage-hir.log`). Formatting and staged diff checks pass.
-The block index is committed as `92120dfa`. Emitted-alias qualification is complete:
-canonical root/view descriptors, target owner/emission,
-full backing type and final field permission must agree. Discarded backing stays unknown.
-All seven local/alias qualifier tests pass, including twelve seeded alias corruptions
-(`/tmp/meowy-call-storage-alias.log`); formatting and staged diff checks pass.
-Alias qualification is committed as `38cdd40c`. A bounded storage index and origin
-lookup are complete. Repeated physical places share a
-witness; alias views remain distinct. Every selected witness is requalified before
-exposure, and component paths, indexed/abstract/expired/temporary sources stay unknown.
-All ten storage tests pass (`/tmp/meowy-call-storage-index.log`), including duplicate
-places, exact combined payload/work and stale witnesses. Formatting and staged checks pass.
-The storage index is committed as `ca5c2e6e`. Per-call collection is implemented and
-enabled in the compiler. Output borrows original snapshots and
-origins; call headers, parameter/PointId/access pairs, missing/stopped states and guard
-coverage remain distinct. Index, snapshot, call-row and candidate payload share one limit.
-No scalar facts are invalidated and no callee body is specialized.
-All 3302 library tests and all-target Clippy pass (`/tmp/meowy-call-storage-library.log`,
-`/tmp/meowy-call-storage-clippy.log`). Opaque containing types suppress only candidate
-qualification, preserving accepted scalar borrows in records with allocator fields.
-The regression has a focused case. Integration is committed as `3efadc5b`.
-Four independent boundary groups pass: guarded
-alternatives, later-argument retargeting, missing/component/bound/guard-gap evidence and
-late cross-kind origins. Next: evidence and the complete compiler gate.
-The later-write fixture compares original and later call snapshots. All eight candidate
-collection tests pass (`/tmp/meowy-call-storage-boundaries.log`); formatting and staged
-checks pass. No known failures remain.
-After compiler validation, add the requested root Makefile for complete tests, release
-build and installation under `~/.local`, reusing the repository verification runner.
-Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
-files plus case/document records). Unrelated `docs/programs/hey/` remains excluded.
+Per-call collections borrow original snapshots and origins. They preserve declared access,
+parameter/PointId identities, source guards, missing/stopped states and call-entry/prefix
+information. Qualified candidates coexist with an explicit unknown flag for unsupported
+or incomplete evidence. All indexes, snapshots, rows and candidates share one bounded
+allowance; late failures publish no partial collection. No scalar facts are invalidated.
 
-1. Start with exclusive scalar inputs and ordinary caller-local origins. Reuse
-   `effects/borrows.rs::validate_place_borrow` and checked place metadata, then validate
-   current Program local identity/type, exact field paths/counts and scalar referent kind.
-   The existing place qualifier checks captured graph identities, not current full type
-   layout; do not treat it alone as a complete origin qualifier. Keep source components
-   (including Deref/Slot) distinct from storage Field/Element projections.
-2. Qualify alias target/root/view identities separately before admitting Source::Slot.
-   Respect the selected field's mutation permission even when the containing owned
-   binding is immutable. Preserve guarded alternatives; abstract Input, expired, temporary
-   and unsupported projected origins remain conservative unless independently proved.
-   Allocator bounds are not physical loans. Do not infer storage from Unknown forests,
-   shallow counts, missing origins or final dependency maps.
-3. Combine declared access and qualified candidate origins into bounded mutation-input
-   metadata. Preserve missing/stopped states and full call-entry/completion distinctions;
-   one normally evaluated argument does not establish that the call ran. Add stale-source,
-   projection/alias, exact-budget and late-failure tests with each behavior slice.
-4. Update evidence and run compiler/strict-pin/preservation/docs gates. Actual scalar-fact
-   invalidation, restart propagation, E225 and proof outcomes remain subsequent work.
+| Commit | Reviewable slice |
+| --- | --- |
+| `7084f211` | Capture scalar kinds and qualify current local storage |
+| `92120dfa` | Index complete borrowed HIR block types |
+| `38cdd40c` | Qualify emitted alias roots, views and backing types |
+| `ca5c2e6e` | Index candidate storage and revalidate selected origins |
+| `3efadc5b` | Integrate bounded per-call candidate collections |
+| `a80ed3ae` | Cover guarded, missing and retargeted origins |
 
-Caller specialization and callee-body result analysis remain disallowed. Unknown access
-or unproved storage must not become a no-mutation claim.
+All ten compiler checks pass: 3306 library, 923 native and 62 Python tests, formatting,
+all-target Clippy, build, metadata and source execution (`/tmp/meowy-call-storage-gate.log`).
+The 514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release
+failures. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-call-storage-strict.log`, `/tmp/meowy-call-storage-strict-audit.log`).
+
+All four final documentation checks pass (`/tmp/meowy-call-storage-docs.log`). Structural
+evidence links the 21 new tests from types, values, memory and proof. The preservation
+audit passes for 596 protected files, all case records, 37 reference hashes/gaps and prior
+evidence (`/tmp/meowy-call-storage-preservation.log`). Reference behavior and pins are
+unchanged. No known failures remain. Baseline `40141b4a` is recorded in
+`/tmp/meowy-call-storage-baseline.json`; user files remain excluded. Nothing was pushed.
+
+### Next: map call candidates to scalar fact owners
+
+1. Characterize the retained scalar facts in `check/dependencies.rs`, `references.rs`,
+   `cells.rs` and `functions.rs::call`. Map qualified local/alias candidates to conservative
+   whole-owner invalidation identities without using final dependency maps as call inputs.
+   Keep unknown access, unsupported origins and allocator bounds explicit.
+2. Plan separate mapping, Call-operation transfer and boundary-regression commits. A normal
+   argument does not establish call execution; retain snapshot call-entry guards and stopped
+   prefixes, preserve original argument states, and do not specialize callees or return types.
+3. Validate guarded alternatives, later argument writes, alias projections, unknown fallback
+   and exact work/payload boundaries before enabling fact invalidation. Restart propagation,
+   E225, proof outcomes and complete v0.0.1 qualification remain subsequent work.
+
+Compiler validation is complete. Next complete the requested root Makefile for full tests, release
+build and installation under `~/.local`, reusing `tools/verify.py`.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
@@ -6771,7 +6748,8 @@ function-signature context are qualified. Initializer qualification reuses valid
 retained parameter membership. Bounded call-argument/parameter associations and individual
 argument observations are qualified, including caller-side direct sources for normally
 observed arguments. Retained forests, per-call access and declared parameter descriptors
-are qualified. Next characterize conservative call invalidation inputs using the handoff.
+are qualified. Candidate storage and per-call mutation inputs are qualified; map their
+conservative scalar fact owners next using the current handoff.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7448,7 +7426,8 @@ Value selection and broader aggregate provenance remain separate.
    call-parameter associations and individual argument observations are qualified. Reports
    retain caller-side sources for normally observed arguments, and stored source views
    and their forests/per-call access are qualified, including declared parameter descriptors.
-   Characterize conservative call invalidation inputs next, using the current handoff.
+   Candidate call storage and mutation inputs are qualified. Map scalar fact owners next,
+   using the current handoff before integrating invalidation.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

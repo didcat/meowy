@@ -2034,9 +2034,31 @@ late budget failures expose no partial result and leave source reports unchanged
 Classification never specializes a declared union from a concrete argument. An exclusive
 argument passed to a shared parameter retains the shared contract; stopped or unvisited
 arguments retain their declared access without inventing State or Call observations.
-These are structural descriptors. Semantic origin/storage eligibility, alias projections,
-physical mutation targets, fact invalidation and proof outcomes remain separate. Abstract
-Input sources, allocator bounds and unknown histories remain conservative.
+Candidate scalar storage now reuses checked exclusive-place identities and retained scalar
+referent kinds. Current Program locals, complete reference-free containing types, exact
+field paths/counts and the selected field's write permission must agree. Immutable owned
+containers can expose mutable fields. A bounded borrowed HIR block index supplies complete
+alias target types; canonical root/view/emission identities and full backing types are
+checked before an emitted slot qualifies. Discarded or opaque backing stays unknown.
+
+The storage index shares witnesses for repeated places while preserving distinct alias
+views. Each lookup revalidates its witness and exact source identity. Storage Field paths
+remain separate from value-component Slot/Deref paths. Abstract inputs, expired/temporary
+origins and indexed projections remain unknown; allocator bounds never become physical
+loans. Unknown sources do not imply absence of mutation.
+
+Per-call candidate metadata borrows original snapshots and origins, retaining parameter
+LocalIds, caller PointIds, declared access, guards and stopped/unvisited arguments. Each
+normally evaluated exclusive argument lists qualified origin/witness pairs and an explicit
+unknown flag for absent, unsupported or incomplete guard coverage. Value/shared access
+describes only that argument's storage. A normal argument does not establish that the
+call ran; call-entry guards and evaluated-prefix counts remain independent.
+
+Snapshot, block/storage index, call-row and candidate payload share one bounded allowance.
+Late identity/work/payload failures publish no partial collection. Guarded alternatives,
+later-argument retargeting, stale full layouts and missing-origin cases have structural
+tests. No callee is specialized, scalar facts are not yet invalidated, and restart/E225
+propagation and proof outcomes remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
