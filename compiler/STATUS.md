@@ -5116,7 +5116,18 @@ witness; alias views remain distinct. Every selected witness is requalified befo
 exposure, and component paths, indexed/abstract/expired/temporary sources stay unknown.
 All ten storage tests pass (`/tmp/meowy-call-storage-index.log`), including duplicate
 places, exact combined payload/work and stale witnesses. Formatting and staged checks pass.
-Next: enable these helpers in bounded per-call mutation candidate collection.
+The storage index is committed as `ca5c2e6e`. Per-call collection is implemented and
+enabled in the compiler. Output borrows original snapshots and
+origins; call headers, parameter/PointId/access pairs, missing/stopped states and guard
+coverage remain distinct. Index, snapshot, call-row and candidate payload share one limit.
+No scalar facts are invalidated and no callee body is specialized.
+All 3302 library tests and all-target Clippy pass (`/tmp/meowy-call-storage-library.log`,
+`/tmp/meowy-call-storage-clippy.log`). Opaque containing types suppress only candidate
+qualification, preserving accepted scalar borrows in records with allocator fields.
+The regression has a focused case. No known failures remain. Next: independent guarded,
+later-write and missing-origin boundaries, then evidence and the complete compiler gate.
+After compiler validation, add the requested root Makefile for complete tests, release
+build and installation under `~/.local`, reusing the repository verification runner.
 Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
 files plus case/document records). Unrelated `docs/programs/hey/` remains excluded.
 

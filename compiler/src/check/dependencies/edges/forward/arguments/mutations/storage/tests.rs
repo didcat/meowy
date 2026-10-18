@@ -82,13 +82,16 @@ pub(crate) fn call_storage_rejects_stale_types_paths_permissions_and_identities(
             }
         }
         let before = format!("{reports:?}{:?}", checker.edge_counts());
-        let error = checker
-            .mutation_place(&program, &reports, id, Span::default())
-            .unwrap_err();
-        assert!(
-            error.message.contains("identity"),
-            "fault {fault}: {error:?}"
-        );
+        let result = checker.mutation_place(&program, &reports, id, Span::default());
+        if fault == 10 {
+            assert_eq!(result.unwrap(), None);
+        } else {
+            let error = result.unwrap_err();
+            assert!(
+                error.message.contains("identity"),
+                "fault {fault}: {error:?}"
+            );
+        }
         assert_eq!(before, format!("{reports:?}{:?}", checker.edge_counts()));
     }
 }

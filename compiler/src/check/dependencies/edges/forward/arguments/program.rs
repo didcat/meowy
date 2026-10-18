@@ -2,7 +2,6 @@ use super::*;
 use crate::check::dependencies::Invocation;
 use crate::hir::{Expr, ExprKind, Program};
 
-#[cfg(test)]
 pub(super) mod blocks;
 mod scan;
 

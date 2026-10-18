@@ -68,7 +68,7 @@ impl Checker {
         }
         let mut ty = program.locals.get(op.place.root).ok_or_else(invalid)?;
         if access::classify(ty, &mut self.flow, span)? != Access::Value {
-            return Err(invalid());
+            return Ok(None);
         }
         let mut mutable = self.proofs.mutable.contains(&op.place.root);
         for (&index, &count) in op.place.fields.iter().zip(&op.counts) {

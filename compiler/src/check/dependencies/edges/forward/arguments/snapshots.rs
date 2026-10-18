@@ -140,10 +140,7 @@ impl Checker {
         facts: &Facts,
         span: Span,
     ) -> Result<()> {
-        let (view, _) = self.call_snapshots(program, reports, facts, span, MAX_EDGES)?;
-        for &site in view.calls.keys() {
-            let _ = self.call_mutation_inputs(&view, site, span)?;
-        }
+        self.call_mutation_targets(program, reports, facts, span, MAX_EDGES)?;
         Ok(())
     }
 }
