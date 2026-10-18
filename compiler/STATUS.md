@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Bounded scalar domains and seed capture are in progress.
+Updated: 2026-10-18. Bounded scalar domains and seed capture pass the full gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: retain bounded scalar value domains and versioned graph facts using the handoff below.
+Next: versioned scalar storage and direct copies using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5161,81 +5161,66 @@ passes for 596 protected files, all case records and 37 reference hashes/gaps/pr
 Baseline `a3c7d4d8` is recorded in `/tmp/meowy-call-roots-baseline.json`. No known failures
 remain. User files are excluded; nothing was pushed or published.
 
-### Next: retain bounded scalar domains and versions
+### Bounded scalar domains and seed capture
 
-Active commit plan (dependency order):
+Profile 1 integer domains retain sorted exact sets of at most 16 values or one canonical
+interval. Larger sets form hulls; small intervals enumerate without span overflow. Boolean
+subsets, null and bottom remain distinct. Supported declared boolean/integer/nullable types
+use their full domains; opaque, reference-bearing, aggregate and mixed shapes remain
+unavailable, never bottom. Domain joins preserve canonicalization and null independence.
 
-1. Add bounded canonical integer sets/intervals and joins, with threshold, extreme-value
-   and exact-work tests from profile 1.
-2. Add boolean/null/bottom domains and full supported declared domains. Keep unsupported
-   shapes explicit and validate nullable boundaries without caller specialization.
-3. Capture fixed-size null/boolean/integer literal payloads in scalar leaves and observed
-   reports, preserving stage independence, exact type/width checks and opaque kinds.
-4. Collect bounded literal seeds and declared parameter/result domains through existing
-   report/signature qualifiers; integrate qualification without changing proof outcomes.
-5. Complete boundary coverage, evidence and the full Makefile, strict-pin, preservation
-   and documentation gates. Versioned storage propagation and invalidation follow later.
+Scalar leaves and reports retain fixed-size null/boolean/integer literals with exact
+kind/range checks. Float and text payloads remain opaque. Replayed or stale values reject
+before publication, preserving original PointIds, owners, control and independent operation/
+result observations. Literal seeds borrow their source reports and keep full declared
+domains separate from observed singleton values. Operation-only and missing reports do not
+supply values; unused static metadata and ordinary reads gain no fabricated literal seeds.
 
-Investigation confirms `ScalarLeaf` and `Effect::Scalar` retain kinds and observations only;
-read/Bind reports retain storage/input identities but no historical scalar values. Profile 1
-requires nonempty integer sets of at most 16 values or canonical interval hulls, boolean
-subsets, separate null and bottom, and full declared domains for unknown supported scalars.
-The tracked tree is clean at `608de729`; unrelated `docs/programs/hey/` remains excluded.
-Integer domain construction and joins pass all four focused tests
-(`/tmp/meowy-scalar-domains-integers.log`). Set
-storage is capped at 16 values, oversized sets become hulls, small intervals enumerate,
-and empty inputs remain separate. Construction prepays bounded work before allocation;
-joins reject noncanonical payloads. The module is test-only until seed integration.
-Formatting and staged diff checks pass. Next: boolean/null/bottom and declared domains.
-Integer domains are committed as `116d8079`. Scalar wrappers and declared-domain
-construction pass all nine domain tests (`/tmp/meowy-scalar-domains-values.log`). Null and bottom remain
-distinct; nullable boolean/integer domains preserve an independent null bit. Supported
-integer widths use full declared ranges, and opaque/mixed shapes remain unavailable.
-Formatting and staged checks pass. Next: retain exact supported literals in scalar reports.
-Scalar domains are committed as `34255864`. Literal capture and report payloads are
-pass all 123 scalar-focused tests (`/tmp/meowy-scalar-domains-literals.log`). Null/boolean/integer values remain fixed-size and
-are checked against exact kinds/ranges; floats and text retain opaque payloads. Replay
-and report publication reject changed values, preserving independent operation/results.
-All five literal-payload tests pass after replay-fixture cleanup
-(`/tmp/meowy-scalar-domains-payloads.log`); formatting and staged checks pass.
-Next: collect bounded, stage-qualified literal seeds.
-Literal payloads are committed as `ebe15fb8`. The domain module is now enabled for
-bounded literal seed collection after existing report/signature qualification. Seeds borrow
-their source reports, separate full declared domains from result-only singleton values and
-leave unsupported scalar kinds unavailable. Map, payload and work limits reject atomically.
-All four literal seed tests, 3342 library tests and all-target Clippy pass
-(`/tmp/meowy-scalar-domains-seeds.log`, `/tmp/meowy-scalar-domains-library.log`,
-`/tmp/meowy-scalar-domains-clippy.log`). Unused static metadata bindings produce no runtime
-seeds. Formatting and staged checks pass. Next: full declared parameter/result seeds.
-Literal seed integration is committed as `7d4696e5`. Declared seeds now borrow full
-Program types, retain FunctionId/parameter positions and cover unused frames. Results
-use declared domains independently of literal bodies or actual caller arguments. Combined
-declaration/literal context qualification passes all 17 fact-domain/seed tests
-(`/tmp/meowy-scalar-domains-declarations.log`). All 3346 library tests and all-target Clippy
-pass (`/tmp/meowy-scalar-domains-library.log`, `/tmp/meowy-scalar-domains-clippy.log`).
-Formatting and staged checks pass. Next: join, source-history and cache-independence boundaries.
-Declared seed integration is committed as `8d626f2c`. Four independent boundary groups
-pass: join laws, separate null/hull representation, frontend
-cache independence and retained control/stopped-successor evidence.
-All 21 fact-domain/seed tests pass (`/tmp/meowy-scalar-domains-boundaries.log`); formatting
-and staged checks pass. Next: update documentation/evidence and run the complete gate.
-Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
-Existing mutable frontend fact caches remain unchanged.
+Declared seeds borrow complete Program types after signature qualification. They retain
+FunctionId/LocalId/position identities and include unused frames. Actual caller arguments
+and literal or panicking bodies never specialize parameter/result domains. Declared `never`
+is empty without implying a result observation. All seed rows and domain payloads share a
+bounded allowance; work and identity failures expose no partial context. Frontend caches,
+dependency marks and ordinary refinement forgetting remain unchanged. No versioned storage
+propagation, scalar invalidation or proof outcomes are enabled.
 
-1. Characterize `scalar_leaves.rs`, `edges/forward/effects/scalars.rs` and retained read/Bind
-   reports against the abstract-value rules in `docs/reference/stdlib/proof.md`. Scalar
-   reports currently retain kinds, not literal values or version payloads. Do not treat
-   the mutable frontend `bools`/`tags`, final reference maps or declaration facts as historical
-   graph states. Keep existing ordinary call refinement forgetting unchanged.
-2. Plan separate bounded domain representation, literal/declared-domain capture, versioned
-   storage transfer and Call-invalidation commits. Start with the documented integer and
-   boolean domains; preserve null/bottom distinctions and declared call-result domains.
-   Keep unsupported shapes explicit and do not specialize callees.
-3. Apply qualified Call transfers only after versioned scalar states and conservative unknown
-   fallback are validated. Missing transfer knowledge is unknown, never an empty mutation set.
-   Test aliases, guarded joins, historical copies and stopped calls
-   under exact work/payload limits. Restart propagation, E225, proof outcomes and complete
-   v0.0.1 qualification remain subsequent work.
+| Commit | Reviewable slice |
+| --- | --- |
+| `116d8079` | Canonical bounded integer sets, intervals and joins |
+| `34255864` | Boolean/null/bottom and full declared domains |
+| `ebe15fb8` | Exact supported literal capture and observed payloads |
+| `7d4696e5` | Qualified stage-sensitive literal seeds |
+| `8d626f2c` | Full declared parameter/result seeds and combined budgets |
+| `35d90e7c` | Join laws, cache independence and source/control boundaries |
+
+All 14 `make test` groups pass: 3350 library, 923 native and 80 Python tests, both editors,
+runtime/sanitizers, formatting, all-target Clippy, build, metadata and source execution
+(`/tmp/meowy-scalar-domains-gate.log`; detailed logs in `build/verification-scalar-domains`).
+The 514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release
+failures. Strict mode exits 1 only for the exact pinned names/reasons
+(`/tmp/meowy-scalar-domains-strict.log`, `/tmp/meowy-scalar-domains-strict-audit.log`).
+All four final documentation checks pass (`/tmp/meowy-scalar-domains-docs.log`).
+
+Twenty-six new structural tests are linked from types, values and proof. Preservation
+passes for all 596 protected files, case records and 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-scalar-domains-preservation.log`). Language contracts and pins are unchanged.
+Baseline `608de729` is recorded in `/tmp/meowy-scalar-domains-baseline.json`. No known
+failures remain; unrelated `docs/programs/hey/` is excluded. Nothing was pushed or published.
+
+### Next: versioned scalar storage and direct copies
+
+1. Characterize Bind/read associations in `operations.rs`, `local_reads.rs` and
+   `edges/forward/bindings.rs` against `facts::scalar_seed_context`. Define bounded version
+   and same-value identities from checked owners and producer associations, never domain
+   equality or source spans. Keep unavailable seeds, uninitialized storage and bottom distinct.
+2. Plan separate identity representation and direct scalar Bind/read/copy transfers with
+   focused tests. Start from parameter declared domains and eligible observed literal seeds;
+   preserve control/dependency marks. Nullable conversions, aliases, joins and emissions need
+   their own qualified transfer paths. Do not reconstruct history from mutable frontend caches.
+3. Then integrate assignments and guarded Call mutation transfers, preserving historical copies,
+   full declared call results and conservative unknown fallback. Missing transfer knowledge
+   never means no mutation. Arithmetic/guard transfers, restart headers, E225 and proof outcomes
+   remain subsequent work; validate each boundary before enabling them.
 
 Compiler validation and the requested root Makefile are complete. The root tracker records
 full `make test`, release build and staged installation/execution validation.
@@ -6854,7 +6839,8 @@ retained parameter membership. Bounded call-argument/parameter associations and 
 argument observations are qualified, including caller-side direct sources for normally
 observed arguments. Retained forests, per-call access and declared parameter descriptors
 are qualified. Candidate storage, canonical fact roots and guarded Call-operation transfer
-inputs are qualified. Bounded scalar domains and versioned graph facts are next.
+inputs are qualified. Bounded scalar domains and literal/declared seeds are implemented;
+versioned scalar storage and direct copies are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
@@ -7371,7 +7357,8 @@ Value selection and broader aggregate provenance remain separate.
    across both operation and sequence ledgers. Boundary tests (`cb5a88d`), source
    cases (`37726ee`) and the compiler gate pass; nonscalar comparisons remain opaque.
    Scalar construction/result reports (`3be764d`) now preserve checked scalar kinds,
-   numeric widths and independent observations without copying literal values.
+   numeric widths and independent observations; fixed literal payloads and domain seeds
+   are now retained by the current scalar-domain handoff.
    Boundary regressions (`28ec4c2`), required source cases (`6b1d6c1`) and the compiler
    gate pass. Heap reports (`4800e0d`) retain nominal Allocator identity and independent
    handle/result observations. Boundary regressions (`f8fca7b`), source cases
@@ -7532,7 +7519,8 @@ Value selection and broader aggregate provenance remain separate.
    retain caller-side sources for normally observed arguments, and stored source views
    and their forests/per-call access are qualified, including declared parameter descriptors.
    Candidate call storage, canonical fact roots and guarded Call-operation transfer inputs
-   are qualified. Retain scalar domains and versions before integrating invalidation.
+   are qualified. Bounded scalar domains and literal/declared seeds are implemented; retain
+   versions and propagate storage facts before integrating invalidation.
    Broader consumers and value provenance remain separate.
    Indexed/projected/temporary borrows and reborrows stay separate; no observation
    may grant new loan authority, extend a lifetime or infer a proof outcome.

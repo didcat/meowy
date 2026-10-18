@@ -303,9 +303,9 @@ Required primary folding and static symbols retain their separate paths; runtime
 module value reads inside functions keep their B001 gate. Module alias declarations
 and required scalar inputs inside functions retain their existing behavior.
 Ordinary scalar literals and resolved constants retain exact construction roots,
-scalar kinds and numeric widths. Entry reaches construction and then result
-availability before expected conversion. Signed integer literals keep their direct
-path; groups and unchanged wrappers do not duplicate leaves. Metadata retains no
+scalar kinds, numeric widths and fixed null/boolean/integer payloads. Entry reaches
+construction and then result availability before expected conversion. Signed integer literals
+keep their direct path; groups and unchanged wrappers do not duplicate leaves. Metadata retains no
 text payloads. Core/static aliases follow lexical resolution, and ordinary bindings
 remain storage reads. Required evaluation and shared probe constructors gain no
 runtime leaf stages; formatting text keeps its existing absent source entries.
@@ -1595,8 +1595,9 @@ flags; conflicting metadata and shared work/effect limits publish no partial
 collection. Signed literals retain their direct roots before outer coercion, and
 resolved static constants gain leaf reports at runtime uses. Static alias declarations,
 ordinary storage reads, required evaluation and formatting text retain their separate
-paths. Stopped successors gain no observations. No literal values or text payloads are
-copied, and result observations do not establish singleton domains or proof outcomes.
+paths. Stopped successors gain no observations. Fixed null/boolean/integer values are
+validated against their kinds and ranges; float/text payloads remain opaque. Qualified
+result reports can supply singleton seeds, without establishing reachability or proof outcomes.
 Static heap reports retain the nominal Allocator type, control flags and independent
 handle/result observations. Capture validates completed expression roots, owner/span
 identity, both exact edges and registered operation owners. Duplicate visits merge
@@ -2081,8 +2082,31 @@ guard, root-capacity or work/payload failure returns no partial map.
 
 Ordinary `bools`/`tags` refinements still use lexical place keys and their existing forgetting
 rules. Proof-dependency marks remain monotone. These transfer inputs change neither fact
-table; scalar leaf reports still carry kinds rather than value domains or version payloads.
-Bounded scalar domains and versioned graph facts are required before applying invalidation.
+table. Versioned graph facts are still required before applying invalidation.
+
+The bounded scalar-domain representation now implements the
+[profile 1 abstract values](../../docs/reference/stdlib/proof.md#abstract-values).
+Integer sets retain at most 16 sorted distinct values; larger sets become interval hulls,
+and intervals containing at most 16 integers enumerate. Joins preserve these rules.
+Boolean subsets are nonempty, null has its own bit, and an absent non-null alternative
+is represented separately. Bottom has neither values nor null. Unsupported shapes have
+no domain representation, which is distinct from bottom. Supported unknown scalars use
+their full declared domain, including signedness, width and nullable alternatives.
+
+Literal seeds borrow independently qualified scalar reports. Their declared domain and
+result value stay separate: operation-only observations supply no value, while supported
+result observations supply the captured singleton. Replayed or stale literal payloads reject;
+unused static metadata, ordinary reads and stopped successors gain no invented seeds.
+Control marks remain attached to the original reports.
+
+Parameter and result seeds borrow full Program types after signature qualification,
+preserving FunctionId, LocalId and parameter positions even for unused frames. Actual
+arguments and literal/panicking bodies never specialize these declarations. A declared
+`never` result has the empty domain; this does not establish result availability.
+Literal/declaration maps and domain payloads share one bounded allowance. Constructors
+and joins charge work before allocating bounded values; late failures expose no partial
+context. These are structural inputs only. Version identities, Bind/read/copy propagation,
+arithmetic/guard transfers, storage invalidation and proof outcomes remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

@@ -45,21 +45,21 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Call mutation candidates now map to canonical whole-owner fact roots and qualified Call
-operation inputs. They preserve source guards, alias views and borrowed snapshots, with
-explicit unknown fallback for incomplete evidence. Missing/stopped inputs and result-only
-observations remain distinct. The
-[compiler handoff](compiler/STATUS.md#canonical-call-mutation-roots-and-transfer-inputs)
-records four validated implementation/coverage commits. Actual fact invalidation remains
-separate; bounded scalar value domains and versioned graph states are the next prerequisite.
+Bounded scalar domains and seed capture are implemented. Integer sets/intervals follow
+profile 1 canonicalization; boolean subsets, null and bottom stay distinct. Literal seeds
+preserve exact supported values and observation stages, while parameter/result seeds use
+full declared domains without caller or callee-body specialization. The
+[compiler handoff](compiler/STATUS.md#bounded-scalar-domains-and-seed-capture) records six
+validated implementation/coverage commits. Versioned scalar storage and direct copies are next;
+scalar invalidation and proof outcomes remain gated.
 
-All 14 `make test` groups pass: 3324 library, 923 native, 80 Python and 495 required
+All 14 `make test` groups pass: 3350 library, 923 native, 80 Python and 495 required
 conformance tests, with 19 unchanged gaps and zero debug/release failures
-(`/tmp/meowy-call-roots-gate.log`). Strict execution matches the exact pins, and all four
-final documentation checks pass. Eighteen new structural tests are linked from the owning
-references. Preservation retains all 596 protected files, case records and 37 reference
-hashes/gaps/prior evidence. Language contracts are unchanged; proof/release qualification
-remains incomplete. Unrelated `docs/programs/hey/` is preserved. Nothing was pushed.
+(`/tmp/meowy-scalar-domains-gate.log`). Strict execution matches the exact pins, and all
+four final documentation checks pass. Twenty-six new structural tests are linked from the
+owning references. Preservation retains all 596 protected files, case records and 37
+reference hashes/gaps/prior evidence. Language contracts are unchanged; proof/release
+qualification remains incomplete. Unrelated `docs/programs/hey/` is preserved. Nothing was pushed.
 
 ## Build and test commands
 
@@ -69,8 +69,8 @@ and retain detailed logs in `build/verification`. Reporting (`f1911a2e`) preserv
 fail-fast behavior for direct script users and keeps known conformance gaps visible.
 
 All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, runtime/sanitizers,
-3324 library, 923 native and 80 Python tests, plus 495 required conformance cases with
-19 unchanged gaps (`/tmp/meowy-call-roots-gate.log`). Strict execution separately matches the
+3350 library, 923 native and 80 Python tests, plus 495 required conformance cases with
+19 unchanged gaps (`/tmp/meowy-scalar-domains-gate.log`). Strict execution separately matches the
 exact pinned names/reasons; the Makefile's strict plan retains `--strict`.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
