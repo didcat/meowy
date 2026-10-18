@@ -2,6 +2,7 @@ use super::{effects::Effect, entries::Reports, *};
 use crate::{check::dependencies::OperationKind, hir};
 
 mod storage;
+mod writes;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) struct Binding {

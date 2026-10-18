@@ -5229,9 +5229,11 @@ Dependency-ordered commit plan:
    link structural evidence, run `make test`, strict-pin and preservation audits.
 5. Update the foundation guide and focused handoff with actual validation and graph-state work.
 
-The shared kind-selected validator preserves the Bind filter, diagnostics and checks.
-All seven binding-qualification tests pass before/after extraction; 97 initializer-related
-tests and formatting also pass. Next: direct Write qualification and permission checks.
+`b4d322c5` extracts the shared validator without changing Bind behavior. Seven existing Bind
+and 97 initializer-related tests pass. Direct Write qualification now checks the complete
+statement/RHS links, whole-binding mutation permission and canonical alias owner/root.
+All five new write tests and formatting pass, including missing/stopped RHS, exact work,
+stale metadata and mutation-permission rejection. Next: bounded typed mutable events.
 Baseline `c53a866c` and 598 protected files,
 case records and document inventory are in `/tmp/meowy-scalar-events-baseline.json`.
 

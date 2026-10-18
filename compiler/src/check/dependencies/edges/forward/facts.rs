@@ -16,6 +16,7 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
+        self.validate_writes(reports, span)?;
         self.scalar_copy_context(program, reports, span, MAX_EDGES)?;
         Ok(())
     }
