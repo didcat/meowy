@@ -4,6 +4,7 @@ use domain::Domain;
 use versions::{Origin, Version};
 
 mod cells;
+mod joins;
 pub(super) use cells::{Cell, Data};
 
 #[derive(Debug, PartialEq, Eq)]

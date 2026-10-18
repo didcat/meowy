@@ -5242,8 +5242,11 @@ Dependency-ordered commit plan:
 
 Baseline `54aefc6e`: 588 reference/source/pin/obligation files, cases and reference inventory
 are captured in `/tmp/meowy-scalar-states-baseline.json`. The concurrently edited user
-directory `docs/programs/hey/` is excluded. Three carrier tests, formatting and all-target
-Clippy pass. The carrier remains isolated until entry integration; guarded joins are next.
+directory `docs/programs/hey/` is excluded. `73ef4601` records the bounded carrier and three
+passing tests. Four guarded-join tests now pass: dead paths contribute nothing, live missing
+evidence stays unavailable, partial initialization stays distinct, version/origin agreement
+is independent, and control marks survive live joins. Restriction changes reachability only.
+Formatting passes; entry-state integration is next. Typed join edge cases remain in step 4.
 
 ### Next: scalar state at source CFG ports
 
