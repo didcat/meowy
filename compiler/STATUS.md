@@ -5208,6 +5208,33 @@ hashes/gaps/prior evidence (`/tmp/meowy-scalar-versions-preservation.log`). No l
 contracts or pins changed. Baseline `23e909aa` is recorded in
 `/tmp/meowy-scalar-versions-baseline.json`. Unrelated `docs/programs/hey/` is preserved.
 
+### Active: mutable scalar operations
+
+Direct Bind/Write capture already retains owner, local/canonical storage, RHS PointId,
+control mark and ordered operation edges. Storage reports exist only for observed Operation
+ports, so stopped RHS/later writes have no reports. Current `binding_effect` validates Write
+headers but intentionally returns before statement/site/edge qualification. The immutable
+initializer index excludes mutable locals and must remain separate from mutable history.
+
+Dependency-ordered commit plan:
+
+1. Extract the shared storage qualification with a kind selector, preserving existing Bind
+   behavior, diagnostics and budget checks. Run existing binding/initializer regressions.
+2. Qualify direct Write statements with exact RHS/site/owner/canonical-storage checks and
+   whole-binding mutation permission. Cover missing/stopped RHS and forged metadata.
+3. Collect bounded observed mutable Bind/Write events with borrowed full declared types and
+   distinct candidate version identities. Retain opaque/alias events conservatively without
+   creating scalar values, enabling mutable reads or reconstructing history from caches.
+4. Cover combined budgets, control marks, alias/foreign-owner and unavailable boundaries;
+   link structural evidence, run `make test`, strict-pin and preservation audits.
+5. Update the foundation guide and focused handoff with actual validation and graph-state work.
+
+The shared kind-selected validator preserves the Bind filter, diagnostics and checks.
+All seven binding-qualification tests pass before/after extraction; 97 initializer-related
+tests and formatting also pass. Next: direct Write qualification and permission checks.
+Baseline `c53a866c` and 598 protected files,
+case records and document inventory are in `/tmp/meowy-scalar-events-baseline.json`.
+
 ### Next: mutable scalar operations and graph state
 
 1. Characterize and qualify mutable Bind/Write events in `operations.rs`,
