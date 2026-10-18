@@ -8,10 +8,8 @@ mod domain;
 mod events;
 mod literals;
 mod sources;
-mod versions;
-
-#[cfg(test)]
 mod state;
+mod versions;
 
 impl Checker {
     pub(crate) fn qualify_scalar_facts(
@@ -20,8 +18,26 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
-        self.scalar_event_context(program, reports, span, MAX_EDGES)?;
+        self.scalar_state_context(program, reports, span, MAX_EDGES)?;
         Ok(())
+    }
+
+    pub(self) fn scalar_state_context<'a>(
+        &mut self,
+        program: &'a hir::Program,
+        reports: &'a Reports,
+        span: Span,
+        parts: usize,
+    ) -> Result<(
+        versions::Versions<'a>,
+        events::Events<'a>,
+        state::Entries,
+        usize,
+    )> {
+        let (versions, events, parts) = self.scalar_event_context(program, reports, span, parts)?;
+        let (entries, parts) =
+            self.scalar_entry_states(reports, &versions, &events, span, parts)?;
+        Ok((versions, events, entries, parts))
     }
 
     pub(self) fn scalar_event_context<'a>(

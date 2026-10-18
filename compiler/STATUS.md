@@ -5246,7 +5246,11 @@ directory `docs/programs/hey/` is excluded. `73ef4601` records the bounded carri
 passing tests. Four guarded-join tests now pass: dead paths contribute nothing, live missing
 evidence stays unavailable, partial initialization stays distinct, version/origin agreement
 is independent, and control marks survive live joins. Restriction changes reachability only.
-Formatting passes; entry-state integration is next. Typed join edge cases remain in step 4.
+`5b778dca` commits guarded joins. Entry integration now enables the carrier in production;
+three source-backed tests pass for declared parameters, future Bind/Write exclusion,
+unused/reordered frames, never parameters and alias/opaque boundaries. Seed and published
+state payloads share the allowance without refunding earlier allocations. Formatting and
+all-target Clippy pass. Typed join edge cases and combined-budget/cache tests remain in step 4.
 
 ### Next: scalar state at source CFG ports
 

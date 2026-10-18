@@ -4,8 +4,10 @@ use domain::Domain;
 use versions::{Origin, Version};
 
 mod cells;
+mod entries;
 mod joins;
 pub(super) use cells::{Cell, Data};
+pub(super) use entries::Entries;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(super) struct State {
