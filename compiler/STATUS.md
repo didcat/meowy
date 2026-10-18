@@ -5124,8 +5124,13 @@ No scalar facts are invalidated and no callee body is specialized.
 All 3302 library tests and all-target Clippy pass (`/tmp/meowy-call-storage-library.log`,
 `/tmp/meowy-call-storage-clippy.log`). Opaque containing types suppress only candidate
 qualification, preserving accepted scalar borrows in records with allocator fields.
-The regression has a focused case. No known failures remain. Next: independent guarded,
-later-write and missing-origin boundaries, then evidence and the complete compiler gate.
+The regression has a focused case. Integration is committed as `3efadc5b`.
+Four independent boundary groups pass: guarded
+alternatives, later-argument retargeting, missing/component/bound/guard-gap evidence and
+late cross-kind origins. Next: evidence and the complete compiler gate.
+The later-write fixture compares original and later call snapshots. All eight candidate
+collection tests pass (`/tmp/meowy-call-storage-boundaries.log`); formatting and staged
+checks pass. No known failures remain.
 After compiler validation, add the requested root Makefile for complete tests, release
 build and installation under `~/.local`, reusing the repository verification runner.
 Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
