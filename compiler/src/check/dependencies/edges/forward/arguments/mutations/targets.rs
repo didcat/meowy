@@ -4,6 +4,7 @@ use crate::borrow::{Facts, Origin};
 pub(in super::super) struct Targets<'a> {
     pub(in super::super) unknown: bool,
     pub(in super::super) origins: Vec<(&'a Origin, PointId)>,
+    pub(in super::super) roots: storage::Roots,
 }
 
 pub(in super::super) struct Call<'a> {
@@ -72,6 +73,7 @@ impl Checker {
                 let mut targets = Targets {
                     unknown: true,
                     origins: Vec::new(),
+                    roots: storage::Roots::new(),
                 };
                 if let Some((state, true)) = state {
                     match access {
@@ -105,6 +107,8 @@ impl Checker {
                         }
                     }
                 }
+                (targets.roots, parts) =
+                    self.mutation_fact_roots(reports, call.owner, &targets.origins, span, parts)?;
                 call.inputs.push(((param, point, access, state), targets));
             }
             calls.insert(site, call);

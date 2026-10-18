@@ -4,6 +4,8 @@ use crate::hir::{ReferenceMode, Type};
 
 mod aliases;
 pub(super) mod index;
+mod roots;
+pub(super) use roots::Roots;
 
 impl Checker {
     pub(in super::super) fn mutation_place(

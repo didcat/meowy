@@ -5143,7 +5143,12 @@ sharing a whole owner, lexical alias-family forgetting that preserves dependency
 and the existing shared/exclusive call distinction for visible mutable refinements.
 Validation: `/tmp/meowy-call-roots-characterization.log`; formatting and staged diff checks
 pass. Baseline preservation is recorded in `/tmp/meowy-call-roots-baseline.json` (596 files).
-Next: canonical guarded root mapping alongside the original candidate sources.
+Characterization is committed as `305d2655`. Guarded canonical root mapping passes all
+38 mutation-focused tests (`/tmp/meowy-call-roots-mapping.log`). Per-argument roots deduplicate qualified fields/alias views and
+merge source guards while preserving original candidates and unknown flags. Roots share
+the existing payload allowance and reference-root capacity; no final origin maps are read.
+Formatting and staged checks pass. Next: qualify Call-operation observations and construct
+guarded transfer inputs while retaining all missing/stopped states.
 Actual fact propagation and E225 remain subsequent work.
 
 1. Characterize the retained scalar facts in `check/dependencies.rs`, `references.rs`,
