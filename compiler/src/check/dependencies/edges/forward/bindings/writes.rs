@@ -1,6 +1,7 @@
 use super::*;
 
 impl Checker {
+    #[cfg(test)]
     pub(in super::super) fn validate_writes(
         &mut self,
         reports: &Reports,

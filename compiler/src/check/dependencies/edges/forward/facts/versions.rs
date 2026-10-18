@@ -6,6 +6,7 @@ use domain::Domain;
 pub(super) enum Definition {
     Parameter(usize),
     Bind(PointId),
+    Write(PointId),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

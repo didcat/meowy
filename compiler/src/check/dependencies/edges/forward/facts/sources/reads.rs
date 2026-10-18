@@ -48,6 +48,9 @@ impl Checker {
         if slot.version.owner != owner || slot.version.local != *local {
             return Err(invalid(span));
         }
+        if matches!(slot.version.definition, Definition::Write(_)) {
+            return Ok(None);
+        }
         if let Definition::Bind(statement) = slot.version.definition {
             let input = self.read_initializer_input(reports, point, owner, span)?;
             if !self

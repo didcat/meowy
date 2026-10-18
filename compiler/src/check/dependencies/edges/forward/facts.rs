@@ -5,6 +5,7 @@ use crate::hir;
 mod copies;
 mod declarations;
 mod domain;
+mod events;
 mod literals;
 mod sources;
 mod versions;
@@ -16,9 +17,20 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
-        self.validate_writes(reports, span)?;
-        self.scalar_copy_context(program, reports, span, MAX_EDGES)?;
+        self.scalar_event_context(program, reports, span, MAX_EDGES)?;
         Ok(())
+    }
+
+    pub(self) fn scalar_event_context<'a>(
+        &mut self,
+        program: &'a hir::Program,
+        reports: &'a Reports,
+        span: Span,
+        parts: usize,
+    ) -> Result<(versions::Versions<'a>, events::Events<'a>, usize)> {
+        let (versions, parts) = self.scalar_copy_context(program, reports, span, parts)?;
+        let (events, parts) = self.scalar_storage_events(program, reports, span, parts)?;
+        Ok((versions, events, parts))
     }
 
     pub(self) fn scalar_copy_context<'a>(

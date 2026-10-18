@@ -5232,8 +5232,12 @@ Dependency-ordered commit plan:
 `b4d322c5` extracts the shared validator without changing Bind behavior. Seven existing Bind
 and 97 initializer-related tests pass. Direct Write qualification now checks the complete
 statement/RHS links, whole-binding mutation permission and canonical alias owner/root.
-All five new write tests and formatting pass, including missing/stopped RHS, exact work,
-stale metadata and mutation-permission rejection. Next: bounded typed mutable events.
+All five new write tests, formatting and library Clippy pass, including missing/stopped RHS,
+exact work, stale metadata and permission rejection (`ceecc659`). Typed mutable events now
+borrow the original report and full local/storage types, preserving full declared domains
+and distinct Bind/Write candidate versions. Alias/opaque events retain unavailable versions;
+mutable reads and the immutable initializer index remain unchanged. Three new event tests
+pass. Next: exact combined budgets, missing/foreign metadata and control/cache boundaries.
 Baseline `c53a866c` and 598 protected files,
 case records and document inventory are in `/tmp/meowy-scalar-events-baseline.json`.
 
