@@ -5158,6 +5158,12 @@ All 3318 library tests and all-target Clippy pass (`/tmp/meowy-call-roots-librar
 `/tmp/meowy-call-roots-clippy.log`). This includes the explicit unknown fallback when
 argument present/proof guards do not cover call entry. Formatting and staged checks pass.
 Next: independent capacity, stale-report, projection and final-map independence boundaries.
+Transfer integration is committed as `61c1e599`. Six independent boundary groups pass:
+full root capacity, swapped fields/alias views,
+late/orphan reports, final-map independence, empty/nonreturning calls and false entry guards.
+All 49 mutation-focused tests pass (`/tmp/meowy-call-roots-boundaries.log`). Formatting
+and staged checks pass; no known failures remain. Next: update structural evidence and
+run the complete gate, strict-pin audit and preservation checks.
 Actual fact propagation and E225 remain subsequent work.
 
 1. Characterize the retained scalar facts in `check/dependencies.rs`, `references.rs`,
