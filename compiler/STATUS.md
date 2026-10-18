@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Canonical call mutation roots and transfer inputs pass the full gate.
+Updated: 2026-10-18. Bounded scalar domains and seed capture are in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5162,6 +5162,33 @@ Baseline `a3c7d4d8` is recorded in `/tmp/meowy-call-roots-baseline.json`. No kno
 remain. User files are excluded; nothing was pushed or published.
 
 ### Next: retain bounded scalar domains and versions
+
+Active commit plan (dependency order):
+
+1. Add bounded canonical integer sets/intervals and joins, with threshold, extreme-value
+   and exact-work tests from profile 1.
+2. Add boolean/null/bottom domains and full supported declared domains. Keep unsupported
+   shapes explicit and validate nullable boundaries without caller specialization.
+3. Capture fixed-size null/boolean/integer literal payloads in scalar leaves and observed
+   reports, preserving stage independence, exact type/width checks and opaque kinds.
+4. Collect bounded literal seeds and declared parameter/result domains through existing
+   report/signature qualifiers; integrate qualification without changing proof outcomes.
+5. Complete boundary coverage, evidence and the full Makefile, strict-pin, preservation
+   and documentation gates. Versioned storage propagation and invalidation follow later.
+
+Investigation confirms `ScalarLeaf` and `Effect::Scalar` retain kinds and observations only;
+read/Bind reports retain storage/input identities but no historical scalar values. Profile 1
+requires nonempty integer sets of at most 16 values or canonical interval hulls, boolean
+subsets, separate null and bottom, and full declared domains for unknown supported scalars.
+The tracked tree is clean at `608de729`; unrelated `docs/programs/hey/` remains excluded.
+Integer domain construction and joins pass all four focused tests
+(`/tmp/meowy-scalar-domains-integers.log`). Set
+storage is capped at 16 values, oversized sets become hulls, small intervals enumerate,
+and empty inputs remain separate. Construction prepays bounded work before allocation;
+joins reject noncanonical payloads. The module is test-only until seed integration.
+Formatting and staged diff checks pass. Next: boolean/null/bottom and declared domains.
+Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
+Existing mutable frontend fact caches remain unchanged.
 
 1. Characterize `scalar_leaves.rs`, `edges/forward/effects/scalars.rs` and retained read/Bind
    reports against the abstract-value rules in `docs/reference/stdlib/proof.md`. Scalar
