@@ -64,8 +64,10 @@ make install
 ```
 
 `make test` runs documentation, schemas, Vim/Neovim, runtime/sanitizers, Rust/native,
-Python and debug/release conformance checks. It runs every group, prints a result table
-and stores detailed logs in `build/verification`. Known pinned conformance gaps remain
+Python and debug/release conformance checks. It runs every group, prints a timed table
+with library/native, Python and required conformance counts, and stores detailed logs
+in `build/verification`. Runtime counts appear for debug, release and sanitizer profiles;
+documentation, catalog and schema results also appear. Known pinned conformance gaps remain
 visible; unexpected failures return a failing exit status. `make test-strict` also fails
 on the known gaps, so it currently fails until those language features are implemented.
 

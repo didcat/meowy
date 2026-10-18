@@ -64,30 +64,23 @@ The concurrently edited `docs/programs/hey/` remains untouched and excluded. Not
 
 ## Build and test commands
 
-Current reporting commit plan:
-
-1. Include observed library/native, Python, runtime and contract counts in the timed
-   result table, with regressions for failed, partial and missing output.
-2. Document the expanded summary and record a complete `make test` run.
-
-The table now reads completed harness results from each run's logs, including failures,
-ignored/filtered Rust cases, Python outcomes and the combined Python count. Runtime
-counts distinguish debug, release and sanitized profiles; catalog validation remains
-separate from source conformance. Selected checks and exit behavior are unchanged.
-
-All 18 runner tests and all four default verification groups pass, including 41 tooling
-tests (`build/verification-report-focused`). Full `make test` validation and documentation
-are next; no compiler or conformance expectations changed.
-
 The root Makefile provides `make test`, `make test-strict`, `make build`, `make install`
 and `make help`. Complete tests run every verification group, print a timed result table
-and retain detailed logs in `build/verification`. Reporting (`f1911a2e`) preserves default
-fail-fast behavior for direct script users and keeps known conformance gaps visible.
+and retain detailed logs in `build/verification`. Detailed reporting (`9a6a3e3`) reads
+completed harness results, including library/native outcomes, Python suite counts and
+their total, runtime cases by profile, documentation/catalog/schema counts and required
+conformance pass/gap/failure counts. Failed, ignored and filtered results stay visible;
+missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
+strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, runtime/sanitizers,
-3401 library, 923 native and 80 Python tests, plus 495 required conformance cases with
-19 unchanged gaps (`/tmp/meowy-scalar-states-final-gate.log`). The Makefile's strict plan retains
-`--strict`; strict execution matches the exact pinned names/reasons.
+All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, 3401 library,
+923 native and 86 Python tests (41 tooling, 15 runtime, 30 compiler), plus 495 required
+conformance cases with 19 unchanged gaps and zero debug/release failures. Runtime profiles
+each pass 100 regular cases across nine suites, with additional subprocess probes in the
+detailed logs. Full output: `/tmp/meowy-test-report-gate.log`; individual logs:
+`build/verification-test-report`. All 18 reporting tests pass, including strict failures,
+partial/missing output and dynamic totals. No compiler or conformance expectations changed.
+All four final documentation/tooling checks pass (`/tmp/meowy-test-report-docs.log`).
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.

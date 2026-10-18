@@ -57,7 +57,16 @@ are terminated. The runner targets the current Linux development host.
 The final table shows passed, failed and unrun checks with elapsed times.
 `--log-dir build/verification` keeps detailed command output in separate files and
 shows concise progress. Relative log paths use the repository root. Failed checks
-show their log paths; the summary preserves conformance pass/gap/failure counts.
+show their log paths. The table includes library/native outcomes, each Python suite
+and its combined total, runtime cases by profile, and documentation/catalog/schema
+results. Conformance counts distinguish required passes, unsupported gaps and failures
+in debug/release. Ignored, filtered and failed Rust tests and Python outcome details
+remain visible.
+
+Counts come from completed harness summaries in the current logs. Missing or interrupted
+summaries do not invent counts; the check's exit status still determines its result.
+Runtime case counts cover regular cases, with additional subprocess probe results in
+the detailed log. Direct runs without `--log-dir` still stream the full command output.
 Use `--all --keep-going --log-dir build/verification` for the complete logged run.
 
 ## Documentation links
