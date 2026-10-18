@@ -93,4 +93,6 @@ impl Checker {
 }
 
 #[cfg(test)]
+mod characterization;
+#[cfg(test)]
 mod tests;

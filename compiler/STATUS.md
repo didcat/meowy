@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Candidate call-origin storage passes the compiler gate.
+Updated: 2026-10-18. Mapping call mutation candidates to fact owners is in progress.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5120,6 +5120,31 @@ unchanged. No known failures remain. Baseline `40141b4a` is recorded in
 `/tmp/meowy-call-storage-baseline.json`; user files remain excluded. Nothing was pushed.
 
 ### Next: map call candidates to scalar fact owners
+
+Active commit plan (dependency order):
+
+1. Characterize canonical fact roots, alias sharing, refinement forgetting and retained
+   proof-dependency marks with focused source-driven structural tests.
+2. Map qualified candidate origins to bounded, guarded whole-owner roots without consulting
+   final reference/cell maps; retain original sources and explicit unknown evidence.
+3. Associate those roots with qualified Call-operation observations and call-entry guards,
+   preserving stopped/missing states and independent result observations.
+4. Add independent identity, guard, alias and exact-budget boundary coverage, then update
+   evidence and run the compiler, strict-pin, preservation and documentation gates.
+
+Investigation: `origin_id` and derived marks use canonical alias roots, while `bools` and
+`tags` use lexical places and `forget` removes the matching alias family. `forget_mutable`
+currently clears ordinary refinement facts for all visible mutable storage at exclusive
+calls. Proof-dependency marks are monotone and must not be cleared by a mutation transfer.
+Neither final `pointees`/`reference_cells` nor declaration facts are call-time snapshots.
+The tracked tree is clean at `a3c7d4d8`; unrelated `docs/programs/hey/` remains excluded.
+Three characterization tests pass: distinct field sources
+sharing a whole owner, lexical alias-family forgetting that preserves dependency marks,
+and the existing shared/exclusive call distinction for visible mutable refinements.
+Validation: `/tmp/meowy-call-roots-characterization.log`; formatting and staged diff checks
+pass. Baseline preservation is recorded in `/tmp/meowy-call-roots-baseline.json` (596 files).
+Next: canonical guarded root mapping alongside the original candidate sources.
+Actual fact propagation and E225 remain subsequent work.
 
 1. Characterize the retained scalar facts in `check/dependencies.rs`, `references.rs`,
    `cells.rs` and `functions.rs::call`. Map qualified local/alias candidates to conservative
