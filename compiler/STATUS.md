@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Bounded scalar domains and seed capture pass the full gate.
+Updated: 2026-10-18. Initial scalar versions and immutable copies pass the full gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: versioned scalar storage and direct copies using the handoff below.
+Next: mutable scalar Bind/Write qualification and graph state using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5161,119 +5161,75 @@ passes for 596 protected files, all case records and 37 reference hashes/gaps/pr
 Baseline `a3c7d4d8` is recorded in `/tmp/meowy-call-roots-baseline.json`. No known failures
 remain. User files are excluded; nothing was pushed or published.
 
-### Bounded scalar domains and seed capture
+### Initial scalar versions and immutable copies
 
-Profile 1 integer domains retain sorted exact sets of at most 16 values or one canonical
-interval. Larger sets form hulls; small intervals enumerate without span overflow. Boolean
-subsets, null and bottom remain distinct. Supported declared boolean/integer/nullable types
-use their full domains; opaque, reference-bearing, aggregate and mixed shapes remain
-unavailable, never bottom. Domain joins preserve canonicalization and null independence.
+Profile 1 bounded integer/boolean/null domains and literal/declared seeds now feed an
+initial version context. A version retains owner, LocalId and parameter position or Bind
+PointId. Value origins retain function/parameter or owner/literal identity separately.
+Equal domains never merge origins. Direct copies preserve domain/origin while creating a
+distinct destination storage version; parameter copies keep the full declared domain.
 
-Scalar leaves and reports retain fixed-size null/boolean/integer literals with exact
-kind/range checks. Float and text payloads remain opaque. Replayed or stale values reject
-before publication, preserving original PointIds, owners, control and independent operation/
-result observations. Literal seeds borrow their source reports and keep full declared
-domains separate from observed singleton values. Operation-only and missing reports do not
-supply values; unused static metadata and ordinary reads gain no fabricated literal seeds.
+Observed ordinary immutable Bind records borrow their exact source reports and Program
+types. Supported literals and immutable reads qualify through explicit groups, unchanged
+narrowing/ascription and non-projecting Forward wrappers, with exact scalar kinds. Copy
+chains resolve by producer dependency, independent of LocalId ordering. Control flags
+accumulate; proof-dependency marks and frontend caches remain unchanged.
 
-Declared seeds borrow complete Program types after signature qualification. They retain
-FunctionId/LocalId/position identities and include unused frames. Actual caller arguments
-and literal or panicking bodies never specialize parameter/result domains. Declared `never`
-is empty without implying a result observation. All seed rows and domain payloads share a
-bounded allowance; work and identity failures expose no partial context. Frontend caches,
-dependency marks and ordinary refinement forgetting remain unchanged. No versioned storage
-propagation, scalar invalidation or proof outcomes are enabled.
+Declared domains stay separate from available values. Missing roots/observations and
+unsupported transfers remain unavailable, never bottom or evidence of uninitialized storage.
+Mutable reads, emitted aliases, changed narrowing, nullable conversion, block/emission
+selection, arithmetic and call results have no copy transfer yet. Declared parameter/result
+seeds include nullable/bottom domains without caller/body specialization. There is no
+per-program-point state or actual scalar invalidation; these candidates cannot answer proofs.
+
+All seed, version, producer and copied-value payloads share a bounded allowance. Iterative
+traversal bounds its pending/visited sets. Cycles, stale versions, foreign owners and late
+budget failures expose no partial context or mutate retained reports.
 
 | Commit | Reviewable slice |
 | --- | --- |
-| `116d8079` | Canonical bounded integer sets, intervals and joins |
-| `34255864` | Boolean/null/bottom and full declared domains |
-| `ebe15fb8` | Exact supported literal capture and observed payloads |
-| `7d4696e5` | Qualified stage-sensitive literal seeds |
-| `8d626f2c` | Full declared parameter/result seeds and combined budgets |
-| `35d90e7c` | Join laws, cache independence and source/control boundaries |
+| `8eb28e66` | Bind/read/parameter associations and mutable-history boundaries |
+| `83538c01` | Bounded initial versions and separate parameter value origins |
+| `3ea4afb1` | Checked direct scalar producers and wrapper/read links |
+| `8e7b7346` | Immutable copy propagation, ordering independence and exact budgets |
+| `846d56b4` | Control/cache/missing-evidence/alias boundaries and traceability |
 
-All 14 `make test` groups pass: 3350 library, 923 native and 80 Python tests, both editors,
+All 14 `make test` groups pass: 3368 library, 923 native and 80 Python tests, both editors,
 runtime/sanitizers, formatting, all-target Clippy, build, metadata and source execution
-(`/tmp/meowy-scalar-domains-gate.log`; detailed logs in `build/verification-scalar-domains`).
+(`/tmp/meowy-scalar-versions-gate.log`; detailed logs in `build/verification-scalar-versions`).
 The 514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release
 failures. Strict mode exits 1 only for the exact pinned names/reasons
-(`/tmp/meowy-scalar-domains-strict.log`, `/tmp/meowy-scalar-domains-strict-audit.log`).
-All four final documentation checks pass (`/tmp/meowy-scalar-domains-docs.log`).
+(`/tmp/meowy-scalar-versions-strict.log`, `/tmp/meowy-scalar-versions-strict-audit.log`).
+All four final documentation checks pass (`/tmp/meowy-scalar-versions-docs.log`).
 
-Twenty-six new structural tests are linked from types, values and proof. Preservation
-passes for all 596 protected files, case records and 37 reference hashes/gaps/prior evidence
-(`/tmp/meowy-scalar-domains-preservation.log`). Language contracts and pins are unchanged.
-Baseline `608de729` is recorded in `/tmp/meowy-scalar-domains-baseline.json`. No known
-failures remain; unrelated `docs/programs/hey/` is excluded. Nothing was pushed or published.
+Eighteen new structural tests across five files are linked from types, values and proof.
+Preservation passes for all 596 protected files, exact case records and all 37 reference
+hashes/gaps/prior evidence (`/tmp/meowy-scalar-versions-preservation.log`). No language
+contracts or pins changed. Baseline `23e909aa` is recorded in
+`/tmp/meowy-scalar-versions-baseline.json`. Unrelated `docs/programs/hey/` is preserved.
 
-### Active: versioned scalar storage and direct copies
+### Next: mutable scalar operations and graph state
 
-Bind reports qualify storage, owner and initializer child independently from read reports.
-Ordinary reads have an unchanged-narrowing wrapper; existing immutable initializer links
-can qualify direct copies without source-span or PointId ordering. Mutable/aliased locals,
-changed narrowing and nullable conversions need separate transfer rules. A missing input
-is unavailable evidence, not uninitialized storage or bottom. HIR Bind always has a value.
-The seed pass currently makes no versions or read facts; frontend caches cannot supply them.
+1. Characterize and qualify mutable Bind/Write events in `operations.rs`,
+   `edges/forward/bindings.rs` and `facts/versions.rs`, retaining exact owner/storage/input,
+   declared type and observed operation. The immutable initializer index intentionally omits
+   mutable locals; do not reuse it as mutable history. Record a dependency-ordered commit plan
+   and test direct writes, missing inputs, stopped RHS and alias/canonical-storage boundaries.
+2. Build bounded per-port storage state from qualified source CFG edges, preserving initialized
+   versions and historical copies. Structural `Walk.ports` is reachability traversal, not
+   source execution order; checked read `normal` is not an independent result observation.
+   Assignments create new versions. Apply already-qualified guarded Call mutation inputs with
+   conservative unknown fallback; missing transfer knowledge never establishes no mutation.
+3. Qualify full declared call-result/unsupported-transfer fallback, nullable/alias/emission
+   transfers, joins, restart headers, arithmetic and ordinary guards in separate slices.
+   Preserve E225 dependencies and ordinary errors before enabling any proof outcomes. Never
+   recover historical values from mutable frontend caches or specialize callees from bodies.
 
-Dependency-ordered commit plan:
-
-1. Characterize checked Bind/read/parameter links, missing observations and mutable exclusions.
-2. Add bounded owner-qualified initial storage versions and distinct value origins, preserving
-   full declared parameter seeds and unavailable Bind inputs; include focused identity tests.
-3. Qualify observed scalar producers through groups and unchanged wrappers, with exact scalar
-   types and read/version associations. Keep this prerequisite separate from copy propagation.
-4. Propagate immutable copy chains with separate storage versions, same-value origins, control
-   marks and bounded atomic results. Resolve dependencies without assuming numeric ID order.
-5. Cover stale/missing links, budgets, historical immutable copies and unsupported boundaries;
-   run `make test`, audit strict pins/preservation, then update structural evidence and handoff.
-
-Baseline: `23e909aa`, `/tmp/meowy-scalar-versions-baseline.json`; 596 protected files,
-case records and reference inventory captured. `8eb28e66` records the three passing association
-tests. Initial versions now retain owner/local/definition separately from value origins.
-Parameter values use full declared domains; observed immutable Bind versions borrow their
-source report and retain unavailable values separately from bottom. Mutable and stopped Bind
-storage is excluded. Three `scalar_versions` tests, formatting and library Clippy pass.
-Insertion accounts for retained declarations, values and borrowed source reports directly.
-`83538c01` commits initial versions. Three direct-producer tests, formatting and library
-Clippy pass. Groups, unchanged narrowing/ascription and non-projecting Forward wrappers
-retain exact scalar types and checked read/version links. Predicates, conversions, mutable
-reads, calls and expressions stay unavailable. `3ea4afb1` commits those producer checks.
-Immutable Bind copy propagation now retains domains and origins through qualified reads,
-with separate destination versions. Five new copy tests pass, including reversed local
-IDs, exact combined work/payload budgets, cycles, stale versions and foreign owners; the
-existing proof-dependency copy test also passes. Formatting and library Clippy pass.
-`8e7b7346` commits copy propagation. Four additional boundary tests pass for preserved
-control/dependency marks, frontend-cache independence, missing inputs/observations and
-emitted-alias exclusion. Eighteen new structural tests across five files are linked from
-types, values and proof; all 37 reference hashes/gaps and prior evidence remain unchanged.
-All four default checks pass (`/tmp/meowy-scalar-versions-coverage.log`). Next: `make test`,
-strict-pin/preservation audits and the final handoff.
-These are structural snapshots,
-not program-point state, initialization proofs, mutation handling or proof outcomes.
-
-Immediate work:
-
-1. Characterize Bind/read associations in `operations.rs`, `local_reads.rs` and
-   `edges/forward/bindings.rs` against `facts::scalar_seed_context`. Define bounded version
-   and same-value identities from checked owners and producer associations, never domain
-   equality or source spans. Keep unavailable seeds, uninitialized storage and bottom distinct.
-2. Plan separate identity representation and direct scalar Bind/read/copy transfers with
-   focused tests. Start from parameter declared domains and eligible observed literal seeds;
-   preserve control/dependency marks. Nullable conversions, aliases, joins and emissions need
-   their own qualified transfer paths. Do not reconstruct history from mutable frontend caches.
-3. Then integrate assignments and guarded Call mutation transfers, preserving historical copies,
-   full declared call results and conservative unknown fallback. Missing transfer knowledge
-   never means no mutation. Arithmetic/guard transfers, restart headers, E225 and proof outcomes
-   remain subsequent work; validate each boundary before enabling them.
-
-Compiler validation and the requested root Makefile are complete. The root tracker records
-full `make test`, release build and staged installation/execution validation.
-
-Reference formatting and reference-bearing lists remain separate B001 prerequisites.
-The contextual-list probe still reports exactly
+The requested Makefile is complete; the root tracker records its release build and staged
+installation/execution validation. Reference formatting and reference-bearing lists remain
+separate B001 prerequisites. The contextual-list blocker remains exactly
 `reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`.
-Full v0.0.1 is not qualified.
+Full v0.0.1 is not qualified. Nothing was pushed or published.
 
 ## Documentation conventions and layout
 
@@ -6884,8 +6840,9 @@ retained parameter membership. Bounded call-argument/parameter associations and 
 argument observations are qualified, including caller-side direct sources for normally
 observed arguments. Retained forests, per-call access and declared parameter descriptors
 are qualified. Candidate storage, canonical fact roots and guarded Call-operation transfer
-inputs are qualified. Bounded scalar domains and literal/declared seeds are implemented;
-versioned scalar storage and direct copies are next.
+inputs are qualified. Bounded scalar domains, literal/declared seeds, initial scalar versions
+and immutable direct copies are implemented. Mutable Bind/Write event qualification and
+per-port storage state are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

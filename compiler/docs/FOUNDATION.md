@@ -2105,8 +2105,34 @@ arguments and literal/panicking bodies never specialize these declarations. A de
 `never` result has the empty domain; this does not establish result availability.
 Literal/declaration maps and domain payloads share one bounded allowance. Constructors
 and joins charge work before allocating bounded values; late failures expose no partial
-context. These are structural inputs only. Version identities, Bind/read/copy propagation,
-arithmetic/guard transfers, storage invalidation and proof outcomes remain separate.
+context.
+
+Initial scalar versions retain the checked owner, LocalId and definition: a parameter
+position or an observed ordinary immutable Bind PointId. Same-value origins are separate:
+parameters use function/position identity, and literals use owner/producer PointId. Equal
+domains do not merge origins. Each direct copy keeps the source domain and origin while
+retaining its own destination storage version. Parameters always supply full declared
+domains, including when all visible calls pass the same literal.
+
+Direct integer/boolean/null producers qualify through explicit groups, observed unchanged
+narrowing/ascription and non-projecting Forward wrappers. Immutable reads revalidate their
+canonical storage, owner and initializer or parameter version. Source and destination scalar
+kinds must match exactly. Copy chains resolve by dependency using bounded iterative traversal;
+numeric LocalId order and source spans do not determine value identity or execution order.
+Control flags accumulate through the chain. Ordinary refinements, mutable frontend caches
+and proof-dependency marks are unchanged.
+
+An unavailable copied value remains distinct from its declared domain and from bottom.
+Missing inputs and observations do not prove uninitialized storage. Mutable reads, emitted
+aliases, changed narrowing, nullable conversions, computed expressions, block/emission
+selection and call results remain unavailable to this copy layer. Separate declared seeds
+still retain supported nullable domains and bottom for `never`.
+
+Seed, version, producer and copied-value payloads share one bounded allowance. Cycles,
+stale versions, foreign owners and exhausted work or payload budgets expose no partial
+context. These are initial immutable candidates, not per-program-point storage state.
+Mutable Bind/Write transfers, guarded call invalidation, joins, restart handling,
+arithmetic/guard transfers and proof outcomes remain separate.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
