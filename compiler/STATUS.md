@@ -5187,6 +5187,11 @@ storage is capped at 16 values, oversized sets become hulls, small intervals enu
 and empty inputs remain separate. Construction prepays bounded work before allocation;
 joins reject noncanonical payloads. The module is test-only until seed integration.
 Formatting and staged diff checks pass. Next: boolean/null/bottom and declared domains.
+Integer domains are committed as `116d8079`. Scalar wrappers and declared-domain
+construction pass all nine domain tests (`/tmp/meowy-scalar-domains-values.log`). Null and bottom remain
+distinct; nullable boolean/integer domains preserve an independent null bit. Supported
+integer widths use full declared ranges, and opaque/mixed shapes remain unavailable.
+Formatting and staged checks pass. Next: retain exact supported literals in scalar reports.
 Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
 Existing mutable frontend fact caches remain unchanged.
 
