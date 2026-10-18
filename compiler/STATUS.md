@@ -5105,7 +5105,12 @@ the existing bounded expression walk, checks owner/layout identity and retains c
 block types by reference, including unreachable blocks. Existing call traversal is preserved.
 All twenty focused HIR tests pass, including three new block-index groups
 (`/tmp/meowy-call-storage-hir.log`). Formatting and staged diff checks pass.
-Next: qualify emitted aliases against these borrowed target types.
+The block index is committed as `92120dfa`. Emitted-alias qualification is complete:
+canonical root/view descriptors, target owner/emission,
+full backing type and final field permission must agree. Discarded backing stays unknown.
+All seven local/alias qualifier tests pass, including twelve seeded alias corruptions
+(`/tmp/meowy-call-storage-alias.log`); formatting and staged diff checks pass.
+Next: integrate a bounded storage index, then collect conservative per-call candidates.
 Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
 files plus case/document records). Unrelated `docs/programs/hey/` remains excluded.
 

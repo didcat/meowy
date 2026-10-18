@@ -2,8 +2,37 @@ use super::*;
 use crate::check::dependencies::ScalarKind;
 use crate::hir::{ReferenceMode, Type};
 
+mod aliases;
+
 impl Checker {
     pub(in super::super) fn mutation_place(
+        &mut self,
+        program: &Program,
+        reports: &Reports,
+        id: PointId,
+        span: Span,
+    ) -> Result<Option<ScalarKind>> {
+        if !self.flow.spend(
+            self.place_borrows.len().checked_ilog2().unwrap_or(0) as usize
+                + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
+                + 2,
+        ) {
+            return Err(Diagnostic::unsupported(
+                "proof call-storage budget exhausted",
+                span,
+            ));
+        }
+        let op = self
+            .place_borrows
+            .get(&id)
+            .ok_or_else(|| Diagnostic::unsupported("proof call-storage identity mismatch", span))?;
+        if self.proofs.aliases.contains_key(&op.place.root) {
+            return Ok(None);
+        }
+        self.mutation_scalar(program, reports, id, span)
+    }
+
+    pub(super) fn mutation_scalar(
         &mut self,
         program: &Program,
         reports: &Reports,
@@ -22,7 +51,7 @@ impl Checker {
             return Err(budget());
         }
         let op = self.place_borrows.get(&id).ok_or_else(invalid)?;
-        if op.mode != ReferenceMode::Exclusive || self.proofs.aliases.contains_key(&op.place.root) {
+        if op.mode != ReferenceMode::Exclusive {
             return Ok(None);
         }
         let owner = op.owner;
@@ -32,7 +61,7 @@ impl Checker {
         let op = &self.place_borrows[&id];
         if program.locals.len() != reports.locals
             || !self.proofs.bindings.contains_key(&op.place.root)
-            || op.storage != op.place.root
+            || !self.proofs.bindings.contains_key(&op.storage)
         {
             return Err(invalid());
         }
