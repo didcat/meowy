@@ -102,3 +102,24 @@ pub(crate) fn scalar_entry_states_leave_alias_and_opaque_mutable_storage_unavail
         }
     }
 }
+
+#[test]
+pub(crate) fn scalar_entry_states_merge_nested_bind_ids_without_using_point_order() {
+    let (mut checker, program, reports) =
+        context("outer<int32>:={inner:=1;->inner};outer=2;stable:7");
+    let (_, events, entries, _) = checker
+        .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
+        .unwrap();
+    let binds = events
+        .values()
+        .filter_map(|event| event.version)
+        .filter(|version| matches!(version.definition, Definition::Bind(_)))
+        .collect::<Vec<_>>();
+    assert!(binds.windows(2).any(|pair| pair[0].local > pair[1].local));
+    for version in binds {
+        assert_eq!(
+            entries[&version.owner].1.get(version.local).unwrap().data,
+            Data::Uninitialized
+        );
+    }
+}

@@ -1,10 +1,15 @@
 use super::*;
 use crate::check::dependencies::{OperationKind, edges::forward::effects::Effect};
 use crate::flow::TRUE;
-use std::collections::BTreeSet;
 use versions::Definition;
 
 pub(in super::super) type Entries = BTreeMap<usize, (Port, State)>;
+
+pub(super) struct Seed {
+    pub(super) port: Port,
+    pub(super) cells: Vec<(hir::LocalId, Cell)>,
+    pub(super) parts: usize,
+}
 
 impl Checker {
     pub(in super::super) fn scalar_entry_states(
@@ -25,8 +30,7 @@ impl Checker {
         {
             return Err(budget(span));
         }
-        let mut seeds = Entries::new();
-        let mut seen = BTreeSet::new();
+        let mut seeds = BTreeMap::new();
         for (&owner, (block, _)) in &reports.entries {
             if !self
                 .flow
@@ -40,11 +44,32 @@ impl Checker {
             }
             seeds.insert(
                 owner,
-                (port, State::new(owner, TRUE, &mut self.flow, span)?),
+                Seed {
+                    port,
+                    cells: Vec::new(),
+                    parts: 1,
+                },
             );
             parts -= 1;
         }
+        let mut binds = self
+            .scalar_entry_binds(versions, events, span)?
+            .into_iter()
+            .peekable();
         for (&local, slot) in versions {
+            while binds.peek().is_some_and(|(id, _)| *id < local) {
+                let (_, version) = binds.next().ok_or_else(|| invalid(span))?;
+                self.scalar_entry_cell(
+                    &mut seeds,
+                    version,
+                    Cell {
+                        data: Data::Uninitialized,
+                        control: false,
+                    },
+                    span,
+                    &mut parts,
+                )?;
+            }
             if local != slot.version.local {
                 return Err(invalid(span));
             }
@@ -79,7 +104,6 @@ impl Checker {
             };
             self.scalar_entry_cell(
                 &mut seeds,
-                &mut seen,
                 slot.version,
                 Cell {
                     data,
@@ -89,6 +113,45 @@ impl Checker {
                 &mut parts,
             )?;
         }
+        for (_, version) in binds {
+            self.scalar_entry_cell(
+                &mut seeds,
+                version,
+                Cell {
+                    data: Data::Uninitialized,
+                    control: false,
+                },
+                span,
+                &mut parts,
+            )?;
+        }
+        let mut entries = Entries::new();
+        for (owner, seed) in seeds {
+            if !self
+                .flow
+                .spend(entries.len().checked_ilog2().unwrap_or(0) as usize + 1)
+            {
+                return Err(budget(span));
+            }
+            let value =
+                State::from_sorted(owner, TRUE, seed.cells, &mut self.flow, span, seed.parts)?;
+            let empty = State::new(owner, FALSE, &mut self.flow, span)?;
+            let state = empty.join(&value, &mut self.flow, span, parts)?;
+            parts = parts
+                .checked_sub(state.weight())
+                .ok_or_else(|| budget(span))?;
+            entries.insert(owner, (seed.port, state));
+        }
+        Ok((entries, parts))
+    }
+
+    pub(self) fn scalar_entry_binds(
+        &mut self,
+        versions: &versions::Versions,
+        events: &events::Events,
+        span: Span,
+    ) -> Result<BTreeMap<hir::LocalId, Version>> {
+        let mut binds = BTreeMap::new();
         for (&point, event) in events {
             let Some(version) = event.version else {
                 continue;
@@ -113,62 +176,41 @@ impl Checker {
                 (OperationKind::Bind, Definition::Bind(id)) if id == point => {}
                 _ => return Err(invalid(span)),
             }
-            self.scalar_entry_cell(
-                &mut seeds,
-                &mut seen,
-                version,
-                Cell {
-                    data: Data::Uninitialized,
-                    control: false,
-                },
-                span,
-                &mut parts,
-            )?;
-        }
-        let mut entries = Entries::new();
-        for (owner, (port, seed)) in seeds {
-            if !self
-                .flow
-                .spend(entries.len().checked_ilog2().unwrap_or(0) as usize + 1)
-            {
+            if !self.flow.spend(
+                versions.len().checked_ilog2().unwrap_or(0) as usize
+                    + binds.len().checked_ilog2().unwrap_or(0) as usize
+                    + 3,
+            ) {
                 return Err(budget(span));
             }
-            let empty = State::new(owner, FALSE, &mut self.flow, span)?;
-            let state = empty.join(&seed, &mut self.flow, span, parts)?;
-            parts = parts
-                .checked_sub(state.weight())
-                .ok_or_else(|| budget(span))?;
-            entries.insert(owner, (port, state));
+            if versions.contains_key(&version.local)
+                || binds.insert(version.local, version).is_some()
+            {
+                return Err(invalid(span));
+            }
         }
-        Ok((entries, parts))
+        Ok(binds)
     }
 
     pub(self) fn scalar_entry_cell(
         &mut self,
-        seeds: &mut Entries,
-        seen: &mut BTreeSet<hir::LocalId>,
+        seeds: &mut BTreeMap<usize, Seed>,
         version: Version,
         cell: Cell,
         span: Span,
         parts: &mut usize,
     ) -> Result<()> {
-        if !self.flow.spend(
-            seeds.len().checked_ilog2().unwrap_or(0) as usize
-                + seen.len().checked_ilog2().unwrap_or(0) as usize * 2
-                + 3,
-        ) {
+        if !self
+            .flow
+            .spend(seeds.len().checked_ilog2().unwrap_or(0) as usize + 1)
+        {
             return Err(budget(span));
         }
-        if !seen.insert(version.local) {
-            return Err(invalid(span));
-        }
-        let (_, state) = seeds.get_mut(&version.owner).ok_or_else(|| invalid(span))?;
-        let prior = state.weight();
-        let available = parts.checked_add(prior).ok_or_else(|| budget(span))?;
-        state.put(version.local, &cell, &mut self.flow, span, available)?;
-        *parts = parts
-            .checked_sub(state.weight().saturating_sub(prior))
-            .ok_or_else(|| budget(span))?;
+        let seed = seeds.get_mut(&version.owner).ok_or_else(|| invalid(span))?;
+        let weight = 1 + cell.weight();
+        *parts = parts.checked_sub(weight).ok_or_else(|| budget(span))?;
+        seed.parts = seed.parts.checked_add(weight).ok_or_else(|| budget(span))?;
+        seed.cells.push((version.local, cell));
         Ok(())
     }
 }

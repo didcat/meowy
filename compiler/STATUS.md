@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Scalar entry-state work-budget regression is under repair.
+Updated: 2026-10-18. Sorted scalar entry construction fixes the budget regression; final gate pending.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5267,11 +5267,13 @@ in that group. The scalar prefix consumes 4,179,539 of 4,194,304 work units befo
 construction (`/tmp/meowy-scalar-states-budget-before.log`). Limits and source expectations
 remain unchanged.
 
-Validated copying now checks each input once; FALSE restriction still validates discarded
-cells. A checked sorted-row constructor rejects ordering/duplicate/owner/domain/capacity
-failures before bulk publication. Twelve state tests and all-target Clippy pass. The sorted
-constructor remains isolated until the next slice replaces per-cell entry insertion with
-sorted batches. Then rerun the existing acceptance test and the full gate.
+`d0b3357c` validates state copies once and introduces checked sorted construction.
+Entry seeding now merges the existing immutable/parameter order with a separately qualified
+mutable Bind index. Duplicate/owner/domain/order checks remain, including bottom frames;
+LocalId sorting orders storage keys only, never execution. All 19 state/entry tests and
+all-target Clippy pass. The unchanged 1000-matcher acceptance test now passes
+(`/tmp/meowy-scalar-states-budget-after.log`); limits and fixtures are unchanged. Rerun the
+full gate before release claims; native tests remain unverified on this revision.
 
 ### Next: scalar state at source CFG ports
 

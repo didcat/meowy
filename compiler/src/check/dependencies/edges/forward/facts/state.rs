@@ -113,7 +113,6 @@ impl State {
         })
     }
 
-    #[cfg(test)]
     pub(super) fn from_sorted(
         owner: usize,
         reach: Guard,
