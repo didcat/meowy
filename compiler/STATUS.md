@@ -5192,6 +5192,13 @@ construction pass all nine domain tests (`/tmp/meowy-scalar-domains-values.log`)
 distinct; nullable boolean/integer domains preserve an independent null bit. Supported
 integer widths use full declared ranges, and opaque/mixed shapes remain unavailable.
 Formatting and staged checks pass. Next: retain exact supported literals in scalar reports.
+Scalar domains are committed as `34255864`. Literal capture and report payloads are
+pass all 123 scalar-focused tests (`/tmp/meowy-scalar-domains-literals.log`). Null/boolean/integer values remain fixed-size and
+are checked against exact kinds/ranges; floats and text retain opaque payloads. Replay
+and report publication reject changed values, preserving independent operation/results.
+All five literal-payload tests pass after replay-fixture cleanup
+(`/tmp/meowy-scalar-domains-payloads.log`); formatting and staged checks pass.
+Next: collect bounded, stage-qualified literal seeds.
 Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
 Existing mutable frontend fact caches remain unchanged.
 

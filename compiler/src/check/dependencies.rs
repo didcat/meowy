@@ -319,7 +319,7 @@ mod local_reads;
 pub(crate) use local_reads::LocalRead;
 
 mod scalar_leaves;
-pub(crate) use scalar_leaves::{Kind as ScalarKind, ScalarLeaf};
+pub(crate) use scalar_leaves::{Kind as ScalarKind, Literal as ScalarLiteral, ScalarLeaf};
 
 mod heap_leaves;
 pub(crate) use heap_leaves::HeapLeaf;

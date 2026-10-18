@@ -1,5 +1,5 @@
 use super::*;
-use crate::check::dependencies::ScalarKind;
+use crate::check::dependencies::{ScalarKind, ScalarLiteral};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Kind {
@@ -12,6 +12,7 @@ pub(super) struct Stage {
     pub(super) point: PointId,
     pub(super) owner: usize,
     pub(super) ty: ScalarKind,
+    pub(super) value: Option<ScalarLiteral>,
     pub(super) control: bool,
     pub(super) kind: Kind,
 }
@@ -19,6 +20,7 @@ pub(super) struct Stage {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Observed {
     pub(crate) ty: ScalarKind,
+    pub(crate) value: Option<ScalarLiteral>,
     pub(crate) control: bool,
     pub(crate) operation: bool,
     pub(crate) result: bool,
@@ -50,15 +52,11 @@ impl Checker {
         };
         if !self
             .flow
-            .spend(reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize + 9)
+            .spend(reports.index.operations.len().checked_ilog2().unwrap_or(0) as usize + 11)
         {
             return Err(budget());
         }
-        let valid = match leaf.kind {
-            ScalarKind::Int { bits, .. } => matches!(bits, 8 | 16 | 32 | 64),
-            ScalarKind::Float { bits } => matches!(bits, 32 | 64),
-            ScalarKind::Null | ScalarKind::Bool | ScalarKind::String => true,
-        };
+        let valid = leaf.kind.accepts_literal(leaf.value);
         let point = self.points.get(id).ok_or_else(invalid)?;
         let edges = [
             Edge::new(Port::Entry(id), Port::Operation(id), Route::Next),
@@ -79,6 +77,7 @@ impl Checker {
             point: id,
             owner,
             ty: leaf.kind,
+            value: leaf.value,
             control: leaf.control,
             kind,
         }))
@@ -93,17 +92,32 @@ impl Checker {
     ) -> Result<()> {
         let budget = || Diagnostic::unsupported("proof scalar-effect budget exhausted", span);
         let invalid = || Diagnostic::unsupported("proof scalar-effect identity mismatch", span);
-        if !self
-            .flow
-            .spend(effects.len().checked_ilog2().unwrap_or(0) as usize * 2 + 6)
-        {
+        if !self.flow.spend(
+            effects.len().checked_ilog2().unwrap_or(0) as usize * 2
+                + self.scalar_leaves.len().checked_ilog2().unwrap_or(0) as usize
+                + 10,
+        ) {
             return Err(budget());
+        }
+        if !stage.ty.accepts_literal(stage.value)
+            || !self.scalar_leaves.get(&stage.point).is_some_and(|leaf| {
+                leaf.owner == stage.owner
+                    && leaf.kind == stage.ty
+                    && leaf.value == stage.value
+                    && leaf.control == stage.control
+            })
+        {
+            return Err(invalid());
         }
         if let Some((owner, effect)) = effects.get(&stage.point) {
             let Effect::Scalar(prior) = effect else {
                 return Err(invalid());
             };
-            if *owner != stage.owner || prior.ty != stage.ty || prior.control != stage.control {
+            if *owner != stage.owner
+                || prior.ty != stage.ty
+                || prior.value != stage.value
+                || prior.control != stage.control
+            {
                 return Err(invalid());
             }
         } else if effects.len() >= limit {
@@ -114,6 +128,7 @@ impl Checker {
                 stage.owner,
                 Effect::Scalar(Observed {
                     ty: stage.ty,
+                    value: stage.value,
                     control: stage.control,
                     operation: false,
                     result: false,
@@ -135,3 +150,6 @@ mod tests;
 
 #[cfg(test)]
 mod limits;
+
+#[cfg(test)]
+mod payloads;

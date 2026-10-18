@@ -9,6 +9,9 @@ use crate::{
     hir,
 };
 
+mod literals;
+pub(crate) use literals::Literal;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Kind {
     Null,
@@ -42,6 +45,7 @@ impl Kind {
 pub(crate) struct ScalarLeaf {
     pub(crate) owner: usize,
     pub(crate) kind: Kind,
+    pub(crate) value: Option<Literal>,
     pub(crate) control: bool,
     pub(crate) span: Span,
     pub(crate) edges: [Edge; 2],
@@ -65,7 +69,7 @@ impl Checker {
         let invalid = || Diagnostic::unsupported("proof scalar-leaf identity mismatch", value.span);
         if !self
             .flow
-            .spend(self.scalar_leaves.len().checked_ilog2().unwrap_or(0) as usize * 2 + 4)
+            .spend(self.scalar_leaves.len().checked_ilog2().unwrap_or(0) as usize * 2 + 6)
         {
             return Err(Diagnostic::unsupported(
                 "proof scalar-leaf budget exhausted",
@@ -90,9 +94,14 @@ impl Checker {
             (hir::ExprKind::String(_), hir::Type::String) => Kind::String,
             _ => return Err(invalid()),
         };
+        let literal = Literal::of(value);
+        if !kind.accepts_literal(literal) {
+            return Err(invalid());
+        }
         let leaf = ScalarLeaf {
             owner: self.owner,
             kind,
+            value: literal,
             control: self.control,
             span: value.span,
             edges: [

@@ -18,6 +18,7 @@ pub(crate) fn scalar_effects_preserve_contextual_widths_and_signed_literal_roots
                     0,
                     Effect::Scalar(Observed {
                         ty: ScalarKind::Int { bits, signed },
+                        value: Some(ScalarLiteral::Int(if signed { -1 } else { 1 })),
                         control: false,
                         operation: true,
                         result: true,
