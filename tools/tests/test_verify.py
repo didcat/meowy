@@ -110,12 +110,99 @@ class VerifyTests(unittest.TestCase):
         self.assertIn("01-first.log", output.getvalue())
 
     def test_logged_conformance_preserves_known_gap_counts(self):
-        check = verify.Check("compiler conformance execution", (sys.executable, "-c", "print('495 passed; 19 unsupported; 0 failed (debug and release).')"))
+        for failed, strict in [(0, False), (0, True), (1, False)]:
+            with self.subTest(failed=failed, strict=strict):
+                code = int(bool(failed or strict))
+                result = f"495 passed; 19 unsupported; {failed} failed (debug and release)."
+                check = verify.Check("compiler conformance execution", (sys.executable, "-c", f"print({result!r}); raise SystemExit({code})"))
+                output = io.StringIO()
+                with tempfile.TemporaryDirectory() as temp, patch.object(sys, "argv", ["verify.py", "--compiler", "--log-dir", temp] + (["--strict"] if strict else [])), patch.object(verify, "plan", return_value=[check]), contextlib.redirect_stdout(output):
+                    self.assertEqual(code, verify.main())
+                self.assertIn(f"495 required conformance passed; 19 unsupported; {failed} failed (debug and release).", output.getvalue())
+                if code:
+                    self.assertIn("FAIL", output.getvalue())
+                else:
+                    self.assertIn("does not qualify the complete v0.0.1 release", output.getvalue())
+
+    def test_completed_counts_share_final_summary(self):
+        logs = [(name, f"Ran {count} tests in 0.001s\n\nOK\n") for name, count in zip(verify.PYTHON_CHECKS, (35, 15, 30))]
+        rust = []
+        for target, count in [("unittests src/lib.rs", 3401), ("unittests src/main.rs", 0), ("tests/native.rs", 923)]:
+            rust.extend([f"     Running {target} (target/test)", f"test result: ok. {count} passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"])
+        rust.extend(["   Doc-tests meowy", "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"])
+        logs.append(("Rust and native regression tests", "\n".join(rust)))
+        checks = [verify.Check(name, (sys.executable, "-c", f"print({output!r})")) for name, output in logs]
         output = io.StringIO()
-        with tempfile.TemporaryDirectory() as temp, patch.object(sys, "argv", ["verify.py", "--compiler", "--log-dir", temp]), patch.object(verify, "plan", return_value=[check]), contextlib.redirect_stdout(output):
+        with tempfile.TemporaryDirectory() as temp, patch.object(sys, "argv", ["verify.py", "--compiler", "--log-dir", temp]), patch.object(verify, "plan", return_value=checks), contextlib.redirect_stdout(output):
             self.assertEqual(0, verify.main())
-        self.assertIn("495 passed; 19 unsupported; 0 failed (debug and release).", output.getvalue())
-        self.assertIn("does not qualify the complete v0.0.1 release", output.getvalue())
+        for detail in ("35 Python tests run; OK", "15 Python tests run; OK", "30 Python tests run; OK", "Library: 3,401 passed", "Native: 923 passed", "Binary: 0 passed", "Doc-tests meowy: 0 passed", "Python total: 80 tests run across 3 completed suites."):
+            self.assertIn(detail, output.getvalue())
+
+    def test_python_details_preserve_outcomes_and_require_completion(self):
+        for count, status in [(1, "OK"), (4, "OK (skipped=1, expected failures=1)"), (4, "FAILED (failures=1, errors=1)"), (0, "NO TESTS RAN")]:
+            with self.subTest(status=status):
+                output = f"Ran {count} {'test' if count == 1 else 'tests'} in 0.001s\n\n{status}\n"
+                self.assertEqual([f"{count} Python {'test' if count == 1 else 'tests'} run; {status}"], verify.details("tooling regressions", output))
+        for output in ("", "...\ninterrupted", "Ran 10 tests in 0.001s\n\n", "Ran ten tests in 0.001s\n\nOK\n"):
+            with self.subTest(output=output):
+                self.assertIsNone(verify.python_result(output))
+                self.assertEqual([], verify.details("tooling regressions", output))
+
+    def test_rust_details_preserve_failures_and_incomplete_harnesses(self):
+        output = "\n".join([
+            "test result: ok. 999 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+            "     Running unittests src/lib.rs (target/library)",
+            "test result: FAILED. 5 passed; 1 failed; 2 ignored; 3 measured; 4 filtered out; finished in 0.01s",
+            "     Running tests/extra.rs (target/extra)",
+            "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+            "     Running tests/native.rs (target/native)",
+            "running 100 tests",
+        ])
+        self.assertEqual([
+            "Library: 5 passed; 1 failed; 2 ignored; 3 measured; 4 filtered out",
+            "tests/extra.rs: 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out",
+        ], verify.details("Rust and native regression tests", output))
+
+    def test_runtime_details_count_completed_suites_by_profile(self):
+        output = "\n".join([
+            "PASS pinned Boost.Context source and license checksums",
+            "PASS runtime cleanup: debug; 14 cases and 2 fatal subprocesses",
+            "PASS runtime contexts: debug; 10 cases and fatal resumed cleanup",
+            "PASS runtime cleanup: release; 14 cases and 2 fatal subprocesses",
+            "CHECK runtime cleanup: sanitized",
+            "FAIL runtime prototype: sanitizer failure",
+        ])
+        self.assertEqual([
+            "debug: 24 cases passed across 2 suites",
+            "release: 14 cases passed across 1 suite",
+        ], verify.details("native cleanup, stacks, contexts and scheduling", output))
+
+    def test_contract_details_preserve_counts_and_static_scope(self):
+        cases = [
+            ("local documentation links", "Checked 3622 local links in 112 Markdown files; 0 failures. External links were not fetched."),
+            ("conformance catalog metadata", "Validated 514 fixture records; no meowy source was executed.\nValidated 37 reference coverage records; no language execution implied."),
+            ("artifact schemas and example identities", "Validated 7 schemas, 6 examples, payload identities and rejection cases."),
+        ]
+        for name, output in cases:
+            with self.subTest(name=name):
+                self.assertEqual(output.splitlines(), verify.details(name, f"Command: checker\n{output}\n"))
+        self.assertEqual([], verify.details("unrecognized check", cases[0][1]))
+
+    def test_missing_partial_and_unrun_logs_do_not_invent_counts(self):
+        checks = [verify.Check(name, ()) for name in verify.PYTHON_CHECKS]
+        output = io.StringIO()
+        with tempfile.TemporaryDirectory() as temp, contextlib.redirect_stdout(output):
+            root = Path(temp)
+            partial = root / "partial.log"
+            partial.write_text("Ran 20 tests in 0.001s\n\n")
+            stale = root / "compiler.log"
+            stale.write_text("Ran 100 tests in 0.001s\n\nOK\n")
+            verify.summary(checks, [(False, 0.1, partial), (False, 0.0, root / "missing.log")])
+            verify.summary(checks, [(False, 0.1, None)])
+        self.assertIn("NOT RUN", output.getvalue())
+        self.assertIn("FAIL", output.getvalue())
+        self.assertNotIn("Python total", output.getvalue())
+        self.assertNotIn("Python tests run", output.getvalue())
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 import argparse
 import contextlib
 import os
+import re
 import shlex
 import signal
 import subprocess
@@ -12,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = "x86_64-unknown-linux-gnu"
+PYTHON_CHECKS = ("tooling regressions", "runtime harness regressions", "compiler harness regressions")
 
 
 @dataclass(frozen=True)
@@ -80,8 +82,58 @@ def run(check, root=ROOT, timeout=300, log=None):
     return code == 0
 
 
+def python_result(output):
+    match = re.search(r"^Ran (\d+) tests? in [^\n]+\n\n(OK(?: \([^\n]*\))?|FAILED(?: \([^\n]*\))?|NO TESTS RAN)$", output, re.MULTILINE)
+    return (int(match[1]), match[2]) if match else None
+
+
+def details(name, output):
+    if name in PYTHON_CHECKS:
+        result = python_result(output)
+        if not result:
+            return []
+        count, status = result
+        return [f"{count:,} Python {'test' if count == 1 else 'tests'} run; {status}"]
+    if name == "Rust and native regression tests":
+        rows = []
+        suite = None
+        labels = ("passed", "failed", "ignored", "measured", "filtered out")
+        names = {"unittests src/lib.rs": "Library", "unittests src/main.rs": "Binary", "tests/native.rs": "Native"}
+        for line in output.splitlines():
+            header = re.match(r"\s*Running (.+?) \(", line)
+            if header:
+                suite = names.get(header[1], header[1])
+            elif line.strip().startswith("Doc-tests "):
+                suite = line.strip()
+            result = re.match(r"test result: (?:ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out; finished in ", line)
+            if suite and result:
+                counts = "; ".join(f"{int(count):,} {label}" for count, label in zip(result.groups(), labels))
+                rows.append(f"{suite}: {counts}")
+                suite = None
+        return rows
+    if name == "native cleanup, stacks, contexts and scheduling":
+        profiles = {}
+        for match in re.finditer(r"^PASS .+: (debug|release|sanitized); (\d+) cases\b", output, re.MULTILINE):
+            suites, cases = profiles.get(match[1], (0, 0))
+            profiles[match[1]] = (suites + 1, cases + int(match[2]))
+        return [f"{profile}: {cases:,} cases passed across {suites:,} {'suite' if suites == 1 else 'suites'}" for profile, (suites, cases) in profiles.items()]
+    if name == "compiler conformance execution":
+        match = re.search(r"^(\d+) passed; (\d+) unsupported; (\d+) failed \(debug and release\)\.$", output, re.MULTILINE)
+        if match:
+            passed, unsupported, failed = map(int, match.groups())
+            return [f"{passed:,} required conformance passed; {unsupported:,} unsupported; {failed:,} failed (debug and release)."]
+        return []
+    prefixes = {
+        "local documentation links": ("Checked ",),
+        "conformance catalog metadata": ("Validated ",),
+        "artifact schemas and example identities": ("Validated ",),
+    }
+    return [line for line in output.splitlines() if line.startswith(prefixes.get(name, ()))]
+
+
 def summary(checks, results):
     width = max(len(check.name) for check in checks)
+    python_counts = []
     print("\nVerification results:")
     for index, check in enumerate(checks):
         if index >= len(results):
@@ -91,10 +143,21 @@ def summary(checks, results):
         print(f"  {'PASS' if passed else 'FAIL':7}  {check.name:<{width}}  {elapsed:6.1f}s")
         if log and not passed:
             print(f"           Log: {log}")
-        if log and check.name == "compiler conformance execution" and log.is_file():
-            for line in log.read_text(encoding="utf-8", errors="replace").splitlines():
-                if "unsupported;" in line and line.endswith("failed (debug and release)."):
-                    print(f"           {line}")
+        if log:
+            try:
+                output = log.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            for line in details(check.name, output):
+                print(f"           {line}")
+            if check.name in PYTHON_CHECKS:
+                result = python_result(output)
+                if result:
+                    python_counts.append(result[0])
+    if python_counts:
+        count = sum(python_counts)
+        suites = len(python_counts)
+        print(f"\nPython total: {count:,} {'test' if count == 1 else 'tests'} run across {suites} completed {'suite' if suites == 1 else 'suites'}.")
 
 
 def main():

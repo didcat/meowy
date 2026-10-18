@@ -64,6 +64,21 @@ The concurrently edited `docs/programs/hey/` remains untouched and excluded. Not
 
 ## Build and test commands
 
+Current reporting commit plan:
+
+1. Include observed library/native, Python, runtime and contract counts in the timed
+   result table, with regressions for failed, partial and missing output.
+2. Document the expanded summary and record a complete `make test` run.
+
+The table now reads completed harness results from each run's logs, including failures,
+ignored/filtered Rust cases, Python outcomes and the combined Python count. Runtime
+counts distinguish debug, release and sanitized profiles; catalog validation remains
+separate from source conformance. Selected checks and exit behavior are unchanged.
+
+All 18 runner tests and all four default verification groups pass, including 41 tooling
+tests (`build/verification-report-focused`). Full `make test` validation and documentation
+are next; no compiler or conformance expectations changed.
+
 The root Makefile provides `make test`, `make test-strict`, `make build`, `make install`
 and `make help`. Complete tests run every verification group, print a timed result table
 and retain detailed logs in `build/verification`. Reporting (`f1911a2e`) preserves default
