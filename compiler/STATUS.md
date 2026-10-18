@@ -5110,7 +5110,13 @@ canonical root/view descriptors, target owner/emission,
 full backing type and final field permission must agree. Discarded backing stays unknown.
 All seven local/alias qualifier tests pass, including twelve seeded alias corruptions
 (`/tmp/meowy-call-storage-alias.log`); formatting and staged diff checks pass.
-Next: integrate a bounded storage index, then collect conservative per-call candidates.
+Alias qualification is committed as `38cdd40c`. A bounded storage index and origin
+lookup are complete. Repeated physical places share a
+witness; alias views remain distinct. Every selected witness is requalified before
+exposure, and component paths, indexed/abstract/expired/temporary sources stay unknown.
+All ten storage tests pass (`/tmp/meowy-call-storage-index.log`), including duplicate
+places, exact combined payload/work and stale witnesses. Formatting and staged checks pass.
+Next: enable these helpers in bounded per-call mutation candidate collection.
 Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
 files plus case/document records). Unrelated `docs/programs/hey/` remains excluded.
 

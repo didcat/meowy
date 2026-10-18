@@ -3,6 +3,7 @@ use crate::check::dependencies::ScalarKind;
 use crate::hir::{ReferenceMode, Type};
 
 mod aliases;
+pub(super) mod index;
 
 impl Checker {
     pub(in super::super) fn mutation_place(
