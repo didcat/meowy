@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Sorted scalar entry construction fixes the budget regression; final gate pending.
+Updated: 2026-10-18. Bounded scalar states and declared entry seeding pass the full gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: bounded scalar state at source CFG ports using the handoff below.
+Next: qualify scalar state propagation across source CFG ports using the handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5161,138 +5161,88 @@ passes for 596 protected files, all case records and 37 reference hashes/gaps/pr
 Baseline `a3c7d4d8` is recorded in `/tmp/meowy-call-roots-baseline.json`. No known failures
 remain. User files are excluded; nothing was pushed or published.
 
-### Mutable scalar storage events
+### Bounded scalar states and declared entries
 
-The bounded domain/seed layer and initial immutable copy propagation now feed a separate
-mutable-event context. Immutable copies still preserve domain and same-value origin while
-retaining distinct destination storage versions. Parameter values remain full declared
-domains; mutable reads still have no initializer-based value transfer.
+The qualified immutable versions and mutable Bind/Write events now feed bounded entry
+states. The carrier separates unavailable storage evidence, uninitialized storage, partial
+initialization and initialized storage with unavailable scalar facts. A supported unknown
+value retains its full declared domain. FALSE reachability and an initialized empty domain
+canonicalize to bottom; uninitialized cells do not. Missing cells supply no initialization
+or scalar-value proof.
 
-Bind and Write qualification share the exact captured/report, statement/site, RHS child,
-owner, canonical storage and ordered-edge checks. The Bind filter and diagnostics are
-preserved. Write additionally requires whole-binding mutation permission; mutable fields
-alone do not authorize whole-owner replacement. Aliases retain their local permission and
-canonical root/target/field identity, checked against the owning body.
+Owner/reach fields and storage maps are encapsulated. Updates validate owner/local/origin
+identity and reserve payload before publication. Snapshots own independent cells and domains,
+so replacing one version preserves earlier snapshots and copied values. Guards restrict only
+reachability; they cannot refine domains or authorize proof-derived control by themselves.
 
-Observed mutable Bind/Write events borrow their original reports and full local/storage
-types. Plain supported scalar storage receives distinct `Definition::Bind(PointId)` or
-`Definition::Write(PointId)` candidate versions. Full declared domains remain separate from
-RHS values, which this layer does not compute. A candidate version is not an initialization
-proof or a current-read value. Missing RHS evidence remains unknown; stopped RHS and
-unobserved writes produce no event.
+Joins discard bottom inputs, join domains canonically and retain exact version/value-origin
+metadata independently only when all live inputs agree. Equal domains do not invent identity.
+Missing live evidence remains unavailable; mixed initialization remains partial without a
+usable scalar value. Control flags merge over live inputs. Boolean/null/integer boundaries,
+join laws, guard-node exhaustion and exact work/payload limits have structural regressions.
 
-Alias and opaque events remain present without a plain scalar version. Alias-local and
-canonical-local declarations can legitimately differ and stay separately borrowed; neither
-establishes the completed backing-field layout for alias transfers. Plain nullable storage
-retains its full declared domain. Reference-cell events never become pointee
-writes. Call, Path and Indirect mutations remain separate report families; absence from
-this event map never proves no mutation. Control/dependency marks and frontend caches are
-unchanged. No graph-state mutation or proof outcomes are enabled.
+Every retained entry has its original owner and BlockEntry port, including unused functions.
+Only parameters start initialized, from full declared domains and original parameter identities.
+Future immutable Bind and qualified mutable scalar Bind cells start uninitialized; Write events
+and previously calculated copy values cannot seed entry-time facts. Alias/opaque mutable
+storage remains unavailable. A never parameter makes its entry bottom; a never result or
+panicking body does not. Candidate values and mutable frontend caches cannot specialize entries.
 
-Event rows/domains share the existing copy/seed payload allowance. Exact work/payload limits,
-late orphan/foreign metadata and stale identities reject without exposing partial contexts
-or mutating reports. The immutable initializer index remains unchanged.
+Entry contributions merge into initially bottom states using the same carrier operations.
+Seeds, intermediate allocations and published states share the existing scalar allowance;
+clearing a bottom frame does not refund earlier allocations. Entry seeding merges sorted
+immutable/parameter and mutable Bind declarations, then validates every row before bulk
+publication. Sorting orders storage keys only, never execution. State copies validate once;
+the original 1000-matcher acceptance test passes without changing limits or expectations.
+Late budget, duplicate declaration or foreign/missing frame failures expose no partial
+context and do not mutate retained reports
+or dependency marks. The compiler now qualifies entry states, but does not traverse the CFG
+or apply mutation/value transfers to them. These are structural inputs, not proof answers.
 
 | Commit | Reviewable slice |
 | --- | --- |
-| `b4d322c5` | Share exact storage statement qualification without changing Bind behavior |
-| `ceecc659` | Qualify direct writes and whole-binding mutation permission |
-| `faf375b4` | Retain typed mutable events and distinct candidate versions |
-| `4cc9973d` | Cover bounds, missing evidence, alias types and separate mutation families |
+| `73ef4601` | Bounded state carrier, explicit evidence states and historical snapshots |
+| `5b778dca` | Guard restriction and conservative state joins |
+| `4bdbec1d` | Declared per-owner entry states and production integration |
+| `91f357ec` | Canonical joins, guard/budget/entry boundaries and traceability |
+| `d0b3357c` | Single-pass copy validation and checked sorted-state construction |
+| `683988e1` | Sorted entry batches preserve the 1000-matcher work budget |
 
-All 14 `make test` groups pass: 3382 library, 923 native and 80 Python tests, both editors,
+All 14 `make test` groups pass: 3401 library, 923 native and 80 Python tests, both editors,
 runtime/sanitizers, formatting, all-target Clippy, build, metadata and source execution
-(`/tmp/meowy-scalar-events-gate.log`; details in `build/verification-scalar-events`).
+(`/tmp/meowy-scalar-states-final-gate.log`; details in `build/verification-scalar-states-final`).
 The 514-case catalog has 495 required passes, 19 unchanged gaps and zero debug/release
 failures. Strict mode exits 1 only for the exact pinned names/reasons
-(`/tmp/meowy-scalar-events-strict.log`, `/tmp/meowy-scalar-events-strict-audit.log`).
-All four final documentation checks pass (`/tmp/meowy-scalar-events-docs.log`).
+(`/tmp/meowy-scalar-states-strict.log`, `/tmp/meowy-scalar-states-strict-audit.log`).
+All four final documentation checks pass (`/tmp/meowy-scalar-states-docs.log`). The original
+1000-matcher acceptance regression passes under unchanged limits; no known failures remain.
 
-Three new structural sources are linked from types, values, memory and proof. Preservation
-passes for 588 reference/source/pin/obligation files, exact case records and all 37 reference
-hashes/gaps/prior evidence (`/tmp/meowy-scalar-events-preservation.log`). Contracts and pins
-are unchanged. Baseline `c53a866c` is in `/tmp/meowy-scalar-events-baseline.json`. The user's
-`docs/programs/hey/loop.mwy` and generated debug `loop` changed concurrently; the entire user
-directory remains untouched and excluded from commits.
+Nineteen new structural tests cover the carrier, joins, entry seeding and budget repair.
+Five structural sources are linked from types, values, memory and proof. Preservation passes
+for 588 reference/source/pin/obligation files, exact case records and all 37 reference hashes,
+gaps and prior evidence (`/tmp/meowy-scalar-states-preservation.log`). Contracts and pins are
+unchanged. Baseline `54aefc6e` is in `/tmp/meowy-scalar-states-baseline.json`.
+The concurrently edited `docs/programs/hey/` directory remains untouched and excluded.
 
-### Active: bounded scalar state and guarded joins
+### Next: scalar state propagation at source CFG ports
 
-Existing versions and mutable events are qualified candidates, not entry-time values.
-Entry states must initialize only parameters from their full declared domains; ordinary
-Bind locals begin uninitialized. Missing storage evidence, partial initialization and
-initialized-but-unavailable scalar facts need distinct representation. FALSE reachability
-and initialized empty domains contribute no values to joins. Guards cannot refine domains
-by themselves, and mutable caches cannot reconstruct state.
-
-Dependency-ordered commit plan:
-
-1. Add a bounded owner-qualified state carrier with explicit initialization/evidence states,
-   atomic updates and independent snapshots. Keep this prerequisite isolated until entry
-   integration; validate budget, foreign identity and historical-copy boundaries.
-2. Add guarded restriction and joins using existing Flow/Domain operations. Preserve version
-   and value-origin agreement independently, discard dead inputs, retain control marks and
-   treat missing live evidence conservatively. Cover boolean/null/integer canonical joins.
-3. Integrate qualified per-owner entry states into the scalar context with the existing
-   shared allowance. Seed only declared parameters; retain future Bind locals as uninitialized
-   and leave alias/opaque transfer knowledge conservative. Enable the carrier in production.
-4. Cover combined work/payload bounds, unused/reordered frames, never parameters, missing data
-   and cache independence; link structural evidence and run the full gate and strict audit.
-5. Update the focused handoff and foundation guide with actual validation and remaining CFG
-   transfer, mutation, restart and proof-outcome work.
-
-Baseline `54aefc6e`: 588 reference/source/pin/obligation files, cases and reference inventory
-are captured in `/tmp/meowy-scalar-states-baseline.json`. The concurrently edited user
-directory `docs/programs/hey/` is excluded. `73ef4601` records the bounded carrier and three
-passing tests. Four guarded-join tests now pass: dead paths contribute nothing, live missing
-evidence stays unavailable, partial initialization stays distinct, version/origin agreement
-is independent, and control marks survive live joins. Restriction changes reachability only.
-`5b778dca` commits guarded joins. Entry integration now enables the carrier in production;
-three source-backed tests pass for declared parameters, future Bind/Write exclusion,
-unused/reordered frames, never parameters and alias/opaque boundaries. Seed and published
-state payloads share the allowance without refunding earlier allocations (`4bdbec1d`). Six
-boundary tests now pass for canonical typed joins, join laws, guard-node exhaustion, exact
-combined budgets including never parameters, cache/candidate independence and stale or
-duplicate declarations. State owner/reach fields are encapsulated. Next: register all 16
-structural tests, run the full gate and strict-pin/preservation audits, then update the handoff.
-All-target Clippy and four default checks pass (`/tmp/meowy-scalar-states-coverage.log`).
-Preservation passes for all 588 protected files, cases and 37 reference hashes/gaps/prior
-evidence (`/tmp/meowy-scalar-states-preservation.log`); five structural sources are linked
-from types, values, memory and proof. No language contracts or pins changed.
-
-### Entry-state budget repair
-
-The first full gate passed 13 groups, including unchanged source conformance, but the
-existing 1000-matcher acceptance test exhausted scalar-state work. Native tests did not run
-in that group. The scalar prefix consumes 4,179,539 of 4,194,304 work units before entry
-construction (`/tmp/meowy-scalar-states-budget-before.log`). Limits and source expectations
-remain unchanged.
-
-`d0b3357c` validates state copies once and introduces checked sorted construction.
-Entry seeding now merges the existing immutable/parameter order with a separately qualified
-mutable Bind index. Duplicate/owner/domain/order checks remain, including bottom frames;
-LocalId sorting orders storage keys only, never execution. All 19 state/entry tests and
-all-target Clippy pass. The unchanged 1000-matcher acceptance test now passes
-(`/tmp/meowy-scalar-states-budget-after.log`); limits and fixtures are unchanged. Rerun the
-full gate before release claims; native tests remain unverified on this revision.
-
-### Next: scalar state at source CFG ports
-
-1. Define a bounded state carrier alongside `facts/versions.rs` and `facts/events.rs` for
-   initialized storage versions and historical copied values. Preserve unavailable evidence,
-   uninitialized storage, bottom and full declared unknown domains as distinct states. Plan
-   dependency-ordered slices and test guarded joins: same-value origins survive only when
-   every live incoming path agrees, with bottom contributing no values.
-2. Traverse qualified source CFG edges to apply Bind/Write events and read the current version
-   at each port. `Walk.ports` is reachability traversal, not source execution order; checked
-   read `normal` is not an independent result observation. Preserve earlier immutable copies.
-   Include guarded Call transfers and conservative Path/Indirect/alias fallback before using
-   facts after mutations. Alias scalar transfers additionally need completed backing-field
-   types/layouts. Missing transfer knowledge never establishes no mutation.
+1. Qualify the state-to-port association and a bounded traversal schedule from ForwardIndex
+   edges, preserving owner, route, scope and observation stages. Entry states exist only at
+   BlockEntry; `Walk.ports` is reachability traversal, not execution order. Bind merged/current
+   version identities to qualified CFG sites before relying on them for reads or copies.
+   Record a dependency-ordered commit plan; test diamonds, missing predecessors, stops and
+   owner boundaries without enabling query outcomes.
+2. Apply qualified Bind/Write events and current-version reads in that traversal, preserving
+   historical copies. Qualify guard authority and E225 dependencies before restricting states;
+   checked read `normal` is not an independent result observation. Include guarded Call
+   transfers and conservative Path/Indirect/alias fallback before using facts after mutations.
+   Alias scalar transfers still need completed backing-field types/layouts; a canonical local's
+   declared type is not that layout. Missing transfer knowledge never proves no mutation.
 3. Qualify full declared call-result/unsupported-transfer fallback, nullable/alias/emission
    transfers, restart headers, arithmetic and ordinary guards in separate slices. Restart
-   headers must forget all possibly modified facts without bounded unrolling. Preserve E225
-   dependencies and ordinary errors before enabling any proof outcomes; never recover history
-   from mutable frontend caches or specialize callees from their bodies.
+   headers must forget every possibly modified fact without bounded unrolling. Preserve
+   ordinary errors and complete the remaining profile/E225 obligations before proof evaluation;
+   never reconstruct history from mutable caches or specialize callees from their bodies.
 
 The requested Makefile remains complete; the root tracker records release build and staged
 installation/execution validation. Reference formatting and reference-bearing lists remain
@@ -6911,8 +6861,9 @@ observed arguments. Retained forests, per-call access and declared parameter des
 are qualified. Candidate storage, canonical fact roots and guarded Call-operation transfer
 inputs are qualified. Bounded scalar domains, literal/declared seeds, initial scalar versions
 and immutable direct copies are implemented. Mutable Bind/Write events now retain qualified
-statements, permissions, declared types and candidate versions. Bounded state at source CFG
-ports is next.
+statements, permissions, declared types and candidate versions. Bounded state carriers,
+guarded joins and declared BlockEntry states are implemented. Qualified propagation across
+source CFG ports is next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

@@ -2152,9 +2152,38 @@ scalar transfer. Reference cells remain distinct from pointee storage. Call, Pat
 retain their separate report families; this event map cannot establish mutation absence.
 Events and domains share the existing seed/copy budget, and late identity or budget failures
 expose no partial context. Control/dependency marks, frontend caches and the immutable
-initializer index remain unchanged. Applying these events to graph state, guarded call
-invalidation, joins, restart handling, arithmetic/guard transfers and proof outcomes remain
-separate work.
+initializer index remain unchanged.
+
+The scalar state carrier distinguishes unavailable storage evidence, uninitialized storage,
+partial initialization and initialized storage whose scalar facts may be unavailable. A
+supported unknown value retains its full declared domain. FALSE reachability and initialized
+empty domains canonicalize to bottom; uninitialized or missing cells never do. Bounded
+snapshots own their cells and domains, preserving earlier values when another version changes.
+
+Guard restriction changes reachability only. Joins ignore bottom inputs, use canonical domain
+joins and keep exact version and same-value origin metadata independently when all live inputs
+agree. Equal domains cannot manufacture an origin. Missing live evidence stays unavailable;
+partial initialization has no usable scalar value. Control flags join over live inputs.
+No guard gains authority merely by entering this carrier, and proof-dependency marks remain
+unchanged. Invalid guards, foreign identities or exhausted work/payload limits publish no
+partial state; guard-engine exhaustion cannot be accepted as its fallback TRUE result.
+
+Entry seeding is integrated at each original owner/BlockEntry pair, including unused frames.
+Only parameters start initialized, using their full declared domains and parameter identities.
+Future immutable Bind and qualified mutable scalar Bind cells start uninitialized. Prior copy
+values and Write candidates cannot supply entry-time values; alias/opaque mutable storage
+remains unavailable. Never parameters make the entry bottom, while a never result or panicking
+body does not. Entry seeds and published states share the scalar allowance, including earlier
+allocations cleared by bottom. Candidate values and mutable frontend caches do not specialize
+these states. Entry declarations merge in LocalId order for checked bulk construction;
+that order never substitutes for execution order. Every row remains subject to identity,
+domain, duplicate/order and payload validation, including when an earlier parameter makes
+the frame bottom. State copies validate their inputs once before copying or discarding cells.
+The existing 1000-matcher acceptance case fits the unchanged work limit.
+
+The compiler qualifies these entry states but does not propagate them through the CFG yet.
+Applying Bind/Write and current-read transfers, guarded call invalidation, alias/emission
+handling, restart rules, arithmetic/guard transfers and proof outcomes remain separate work.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

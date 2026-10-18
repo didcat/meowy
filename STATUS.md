@@ -45,22 +45,22 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Mutable Bind/Write events now retain checked ownership, storage/RHS links, mutation
-permission, full declared types and distinct candidate versions. Alias and opaque events
-remain available without inventing scalar values. Immutable copies, mutable-read exclusions
-and dependency marks retain their existing behavior. The
-[compiler handoff](compiler/STATUS.md#mutable-scalar-storage-events) records four validated
-implementation/coverage slices. Bounded storage state at source CFG ports is next; actual
-scalar invalidation and proof outcomes remain gated.
+Bounded scalar states now distinguish unavailable evidence, uninitialized/partial storage,
+initialized values and bottom. Guarded joins retain canonical domains, agreed identities and
+control marks. Qualified entry states seed only declared parameters and preserve historical
+snapshots; future Bind/Write values cannot become entry-time facts. The
+[compiler handoff](compiler/STATUS.md#bounded-scalar-states-and-declared-entries) records six
+implementation/coverage slices. Qualified propagation across source CFG ports is next;
+mutation transfers and proof outcomes remain gated.
 
-All 14 `make test` groups pass: 3382 library, 923 native, 80 Python and 495 required
+All 14 `make test` groups pass: 3401 library, 923 native, 80 Python and 495 required
 conformance tests, with 19 unchanged gaps and zero debug/release failures
-(`/tmp/meowy-scalar-events-gate.log`). Strict execution matches the exact pins, and all
-four final documentation checks pass. Fourteen new structural tests are linked from the
-owning references. Preservation passes for 588 reference/source/pin/obligation files,
-exact case records and 37 reference
-hashes/gaps/prior evidence. The user's `loop.mwy` and generated debug `loop` changed
-concurrently; `docs/programs/hey/` remains untouched and excluded. Nothing was pushed.
+(`/tmp/meowy-scalar-states-final-gate.log`). The original 1000-matcher acceptance case passes
+under unchanged work limits. Strict execution matches the exact pins, and all four final
+documentation checks pass.
+Nineteen new structural tests are linked from the owning references. Preservation passes
+for 588 protected files, exact case records and 37 reference hashes/gaps/prior evidence.
+The concurrently edited `docs/programs/hey/` remains untouched and excluded. Nothing was pushed.
 
 ## Build and test commands
 
@@ -70,8 +70,8 @@ and retain detailed logs in `build/verification`. Reporting (`f1911a2e`) preserv
 fail-fast behavior for direct script users and keeps known conformance gaps visible.
 
 All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, runtime/sanitizers,
-3382 library, 923 native and 80 Python tests, plus 495 required conformance cases with
-19 unchanged gaps (`/tmp/meowy-scalar-events-gate.log`). The Makefile's strict plan retains
+3401 library, 923 native and 80 Python tests, plus 495 required conformance cases with
+19 unchanged gaps (`/tmp/meowy-scalar-states-final-gate.log`). The Makefile's strict plan retains
 `--strict`; strict execution matches the exact pinned names/reasons.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
