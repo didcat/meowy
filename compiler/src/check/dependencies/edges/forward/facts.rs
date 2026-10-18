@@ -5,6 +5,7 @@ use crate::hir;
 mod declarations;
 mod domain;
 mod literals;
+mod versions;
 
 impl Checker {
     pub(crate) fn qualify_scalar_seeds(
@@ -13,7 +14,8 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
-        self.scalar_seed_context(program, reports, span, MAX_EDGES)?;
+        let (_, declared, parts) = self.scalar_seed_context(program, reports, span, MAX_EDGES)?;
+        self.scalar_version_seeds(program, reports, &declared, span, parts)?;
         Ok(())
     }
 

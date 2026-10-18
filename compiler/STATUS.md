@@ -5221,15 +5221,22 @@ Dependency-ordered commit plan:
 1. Characterize checked Bind/read/parameter links, missing observations and mutable exclusions.
 2. Add bounded owner-qualified initial storage versions and distinct value origins, preserving
    full declared parameter seeds and unavailable Bind inputs; include focused identity tests.
-3. Qualify direct scalar producers and immutable copy chains from observed reports, retaining
-   separate storage versions, same-value origins, control marks and bounded atomic results.
-4. Cover stale/missing links, budgets, historical immutable copies and unsupported boundaries;
+3. Qualify observed scalar producers through groups and unchanged wrappers, with exact scalar
+   types and read/version associations. Keep this prerequisite separate from copy propagation.
+4. Propagate immutable copy chains with separate storage versions, same-value origins, control
+   marks and bounded atomic results. Resolve dependencies without assuming numeric ID order.
+5. Cover stale/missing links, budgets, historical immutable copies and unsupported boundaries;
    run `make test`, audit strict pins/preservation, then update structural evidence and handoff.
 
 Baseline: `23e909aa`, `/tmp/meowy-scalar-versions-baseline.json`; 596 protected files,
-case records and reference inventory captured. The three `scalar_copy_sources` tests pass;
-formatting passes. They distinguish parameter sources from Bind/read chains, reject mutable
-history recovery and retain missing/stopped observations. Next: bounded version records.
+case records and reference inventory captured. `8eb28e66` records the three passing association
+tests. Initial versions now retain owner/local/definition separately from value origins.
+Parameter values use full declared domains; observed immutable Bind versions borrow their
+source report and retain unavailable values separately from bottom. Mutable and stopped Bind
+storage is excluded. Three `scalar_versions` tests, formatting and library Clippy pass.
+Insertion accounts for retained declarations, values and borrowed source reports directly.
+Next: qualify direct producers before propagating copies. These are structural snapshots,
+not program-point state, initialization proofs, mutation handling or proof outcomes.
 
 Immediate work:
 
