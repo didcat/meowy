@@ -20,6 +20,19 @@ impl<'a> Scan<'a> {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Option<&'a Expr>, Diagnostic> {
+        while let Some(expr) = self.next_expr(flow, span)? {
+            if matches!(expr.kind, ExprKind::Call { .. }) {
+                return Ok(Some(expr));
+            }
+        }
+        Ok(None)
+    }
+
+    pub(super) fn next_expr(
+        &mut self,
+        flow: &mut Flow,
+        span: Span,
+    ) -> Result<Option<&'a Expr>, Diagnostic> {
         while let Some((item, depth)) = self.pending.pop() {
             if !flow.spend(1) {
                 return Err(Diagnostic::unsupported(
@@ -117,9 +130,7 @@ impl<'a> Scan<'a> {
                         | ExprKind::Local(_)
                         | ExprKind::Borrow(_) => {}
                     }
-                    if matches!(expr.kind, ExprKind::Call { .. }) {
-                        return Ok(Some(expr));
-                    }
+                    return Ok(Some(expr));
                 }
             }
         }

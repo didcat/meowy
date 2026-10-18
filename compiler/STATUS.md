@@ -5099,7 +5099,13 @@ field write permission and the captured scalar kind. The helper is test-only unt
 bounded storage index is integrated; runtime fact invalidation remains unchanged.
 All four new local qualifier tests and existing place tests pass
 (`/tmp/meowy-call-storage-local.log`, `/tmp/meowy-call-storage-place.log`); formatting
-and staged diff checks pass. No known failures remain. Next: borrowed HIR block index.
+and staged diff checks pass (`7084f211`). No known failures remain.
+The borrowed HIR block index is complete. It reuses
+the existing bounded expression walk, checks owner/layout identity and retains complete
+block types by reference, including unreachable blocks. Existing call traversal is preserved.
+All twenty focused HIR tests pass, including three new block-index groups
+(`/tmp/meowy-call-storage-hir.log`). Formatting and staged diff checks pass.
+Next: qualify emitted aliases against these borrowed target types.
 Baseline `40141b4a` is recorded in `/tmp/meowy-call-storage-baseline.json` (596 protected
 files plus case/document records). Unrelated `docs/programs/hey/` remains excluded.
 
