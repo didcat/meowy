@@ -5215,6 +5215,36 @@ are unchanged. Baseline `c53a866c` is in `/tmp/meowy-scalar-events-baseline.json
 `docs/programs/hey/loop.mwy` and generated debug `loop` changed concurrently; the entire user
 directory remains untouched and excluded from commits.
 
+### Active: bounded scalar state and guarded joins
+
+Existing versions and mutable events are qualified candidates, not entry-time values.
+Entry states must initialize only parameters from their full declared domains; ordinary
+Bind locals begin uninitialized. Missing storage evidence, partial initialization and
+initialized-but-unavailable scalar facts need distinct representation. FALSE reachability
+and initialized empty domains contribute no values to joins. Guards cannot refine domains
+by themselves, and mutable caches cannot reconstruct state.
+
+Dependency-ordered commit plan:
+
+1. Add a bounded owner-qualified state carrier with explicit initialization/evidence states,
+   atomic updates and independent snapshots. Keep this prerequisite isolated until entry
+   integration; validate budget, foreign identity and historical-copy boundaries.
+2. Add guarded restriction and joins using existing Flow/Domain operations. Preserve version
+   and value-origin agreement independently, discard dead inputs, retain control marks and
+   treat missing live evidence conservatively. Cover boolean/null/integer canonical joins.
+3. Integrate qualified per-owner entry states into the scalar context with the existing
+   shared allowance. Seed only declared parameters; retain future Bind locals as uninitialized
+   and leave alias/opaque transfer knowledge conservative. Enable the carrier in production.
+4. Cover combined work/payload bounds, unused/reordered frames, never parameters, missing data
+   and cache independence; link structural evidence and run the full gate and strict audit.
+5. Update the focused handoff and foundation guide with actual validation and remaining CFG
+   transfer, mutation, restart and proof-outcome work.
+
+Baseline `54aefc6e`: 588 reference/source/pin/obligation files, cases and reference inventory
+are captured in `/tmp/meowy-scalar-states-baseline.json`. The concurrently edited user
+directory `docs/programs/hey/` is excluded. Three carrier tests, formatting and all-target
+Clippy pass. The carrier remains isolated until entry integration; guarded joins are next.
+
 ### Next: scalar state at source CFG ports
 
 1. Define a bounded state carrier alongside `facts/versions.rs` and `facts/events.rs` for

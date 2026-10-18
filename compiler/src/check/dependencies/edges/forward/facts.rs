@@ -10,6 +10,9 @@ mod literals;
 mod sources;
 mod versions;
 
+#[cfg(test)]
+mod state;
+
 impl Checker {
     pub(crate) fn qualify_scalar_facts(
         &mut self,
