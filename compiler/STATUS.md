@@ -5207,6 +5207,13 @@ All four literal seed tests, 3342 library tests and all-target Clippy pass
 (`/tmp/meowy-scalar-domains-seeds.log`, `/tmp/meowy-scalar-domains-library.log`,
 `/tmp/meowy-scalar-domains-clippy.log`). Unused static metadata bindings produce no runtime
 seeds. Formatting and staged checks pass. Next: full declared parameter/result seeds.
+Literal seed integration is committed as `7d4696e5`. Declared seeds now borrow full
+Program types, retain FunctionId/parameter positions and cover unused frames. Results
+use declared domains independently of literal bodies or actual caller arguments. Combined
+declaration/literal context qualification passes all 17 fact-domain/seed tests
+(`/tmp/meowy-scalar-domains-declarations.log`). All 3346 library tests and all-target Clippy
+pass (`/tmp/meowy-scalar-domains-library.log`, `/tmp/meowy-scalar-domains-clippy.log`).
+Formatting and staged checks pass. Next: join, source-history and cache-independence boundaries.
 Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
 Existing mutable frontend fact caches remain unchanged.
 
