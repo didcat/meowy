@@ -5249,8 +5249,15 @@ is independent, and control marks survive live joins. Restriction changes reacha
 `5b778dca` commits guarded joins. Entry integration now enables the carrier in production;
 three source-backed tests pass for declared parameters, future Bind/Write exclusion,
 unused/reordered frames, never parameters and alias/opaque boundaries. Seed and published
-state payloads share the allowance without refunding earlier allocations. Formatting and
-all-target Clippy pass. Typed join edge cases and combined-budget/cache tests remain in step 4.
+state payloads share the allowance without refunding earlier allocations (`4bdbec1d`). Six
+boundary tests now pass for canonical typed joins, join laws, guard-node exhaustion, exact
+combined budgets including never parameters, cache/candidate independence and stale or
+duplicate declarations. State owner/reach fields are encapsulated. Next: register all 16
+structural tests, run the full gate and strict-pin/preservation audits, then update the handoff.
+All-target Clippy and four default checks pass (`/tmp/meowy-scalar-states-coverage.log`).
+Preservation passes for all 588 protected files, cases and 37 reference hashes/gaps/prior
+evidence (`/tmp/meowy-scalar-states-preservation.log`); five structural sources are linked
+from types, values, memory and proof. No language contracts or pins changed.
 
 ### Next: scalar state at source CFG ports
 

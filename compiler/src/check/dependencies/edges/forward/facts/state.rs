@@ -11,8 +11,8 @@ pub(super) use entries::Entries;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(super) struct State {
-    pub(super) owner: usize,
-    pub(super) reach: Guard,
+    pub(self) owner: usize,
+    pub(self) reach: Guard,
     pub(self) cells: BTreeMap<hir::LocalId, Cell>,
     pub(self) parts: usize,
 }
