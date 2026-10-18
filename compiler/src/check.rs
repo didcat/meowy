@@ -339,6 +339,9 @@ pub(crate) fn check_imports(
             checker
                 .qualify_borrow_calls(&program, &reports, &facts, block.span)
                 .map_err(|error| vec![error])?;
+            checker
+                .qualify_scalar_seeds(&program, &reports, block.span)
+                .map_err(|error| vec![error])?;
             Ok((program, docs))
         }
         Err(error) => Err(vec![if checker.flow.exceeded() {

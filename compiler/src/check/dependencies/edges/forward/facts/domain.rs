@@ -1,5 +1,7 @@
 use super::*;
+use crate::check::dependencies::{ScalarKind, ScalarLiteral};
 use crate::flow::Flow;
+use crate::hir::Type;
 use integers::Integers;
 
 mod declared;
@@ -18,6 +20,28 @@ pub(super) struct Domain {
 }
 
 impl Domain {
+    pub(super) fn scalar(kind: ScalarKind, flow: &mut Flow, span: Span) -> Result<Option<Self>> {
+        let ty = match kind {
+            ScalarKind::Null => Type::Null,
+            ScalarKind::Bool => Type::Bool,
+            ScalarKind::Int { bits, signed } => Type::Int { bits, signed },
+            ScalarKind::Float { bits } => Type::Float { bits },
+            ScalarKind::String => Type::String,
+        };
+        Self::declared(&ty, flow, span)
+    }
+
+    pub(super) fn literal(value: ScalarLiteral, flow: &mut Flow, span: Span) -> Result<Self> {
+        if !flow.spend(1) {
+            return Err(budget(span));
+        }
+        match value {
+            ScalarLiteral::Null => Ok(Self::NULL),
+            ScalarLiteral::Bool(value) => Ok(Self::boolean(value)),
+            ScalarLiteral::Int(value) => Self::integer(value, flow, span),
+        }
+    }
+
     pub(super) const BOTTOM: Self = Self {
         values: None,
         null: false,

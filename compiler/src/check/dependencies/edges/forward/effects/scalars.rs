@@ -27,6 +27,41 @@ pub(crate) struct Observed {
 }
 
 impl Checker {
+    pub(in super::super) fn validate_scalar_report(
+        &mut self,
+        reports: &Reports,
+        point: PointId,
+        owner: usize,
+        observed: &Observed,
+        span: Span,
+    ) -> Result<()> {
+        let invalid = || Diagnostic::unsupported("proof scalar-effect identity mismatch", span);
+        if !self.flow.spend(4) {
+            return Err(Diagnostic::unsupported(
+                "proof scalar-effect budget exhausted",
+                span,
+            ));
+        }
+        if !observed.operation && !observed.result {
+            return Err(invalid());
+        }
+        let port = if observed.result {
+            Port::Normal(point)
+        } else {
+            Port::Operation(point)
+        };
+        let stage = self
+            .scalar_effect_stage(reports, owner, port, span)?
+            .ok_or_else(invalid)?;
+        if stage.ty != observed.ty
+            || stage.value != observed.value
+            || stage.control != observed.control
+        {
+            return Err(invalid());
+        }
+        Ok(())
+    }
+
     pub(super) fn scalar_effect_stage(
         &mut self,
         reports: &Reports,

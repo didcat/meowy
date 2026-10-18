@@ -8,7 +8,6 @@ mod calls;
 mod consumers;
 mod effects;
 mod entries;
-#[cfg(test)]
 mod facts;
 mod initializers;
 mod receivers;

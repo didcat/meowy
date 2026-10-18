@@ -5199,6 +5199,14 @@ and report publication reject changed values, preserving independent operation/r
 All five literal-payload tests pass after replay-fixture cleanup
 (`/tmp/meowy-scalar-domains-payloads.log`); formatting and staged checks pass.
 Next: collect bounded, stage-qualified literal seeds.
+Literal payloads are committed as `ebe15fb8`. The domain module is now enabled for
+bounded literal seed collection after existing report/signature qualification. Seeds borrow
+their source reports, separate full declared domains from result-only singleton values and
+leave unsupported scalar kinds unavailable. Map, payload and work limits reject atomically.
+All four literal seed tests, 3342 library tests and all-target Clippy pass
+(`/tmp/meowy-scalar-domains-seeds.log`, `/tmp/meowy-scalar-domains-library.log`,
+`/tmp/meowy-scalar-domains-clippy.log`). Unused static metadata bindings produce no runtime
+seeds. Formatting and staged checks pass. Next: full declared parameter/result seeds.
 Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
 Existing mutable frontend fact caches remain unchanged.
 
