@@ -36,3 +36,6 @@ impl Checker {
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod associations;

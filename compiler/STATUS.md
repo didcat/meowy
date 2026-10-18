@@ -5207,7 +5207,31 @@ passes for all 596 protected files, case records and 37 reference hashes/gaps/pr
 Baseline `608de729` is recorded in `/tmp/meowy-scalar-domains-baseline.json`. No known
 failures remain; unrelated `docs/programs/hey/` is excluded. Nothing was pushed or published.
 
-### Next: versioned scalar storage and direct copies
+### Active: versioned scalar storage and direct copies
+
+Bind reports qualify storage, owner and initializer child independently from read reports.
+Ordinary reads have an unchanged-narrowing wrapper; existing immutable initializer links
+can qualify direct copies without source-span or PointId ordering. Mutable/aliased locals,
+changed narrowing and nullable conversions need separate transfer rules. A missing input
+is unavailable evidence, not uninitialized storage or bottom. HIR Bind always has a value.
+The seed pass currently makes no versions or read facts; frontend caches cannot supply them.
+
+Dependency-ordered commit plan:
+
+1. Characterize checked Bind/read/parameter links, missing observations and mutable exclusions.
+2. Add bounded owner-qualified initial storage versions and distinct value origins, preserving
+   full declared parameter seeds and unavailable Bind inputs; include focused identity tests.
+3. Qualify direct scalar producers and immutable copy chains from observed reports, retaining
+   separate storage versions, same-value origins, control marks and bounded atomic results.
+4. Cover stale/missing links, budgets, historical immutable copies and unsupported boundaries;
+   run `make test`, audit strict pins/preservation, then update structural evidence and handoff.
+
+Baseline: `23e909aa`, `/tmp/meowy-scalar-versions-baseline.json`; 596 protected files,
+case records and reference inventory captured. The three `scalar_copy_sources` tests pass;
+formatting passes. They distinguish parameter sources from Bind/read chains, reject mutable
+history recovery and retain missing/stopped observations. Next: bounded version records.
+
+Immediate work:
 
 1. Characterize Bind/read associations in `operations.rs`, `local_reads.rs` and
    `edges/forward/bindings.rs` against `facts::scalar_seed_context`. Define bounded version
