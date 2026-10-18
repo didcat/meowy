@@ -87,14 +87,74 @@ impl State {
 
     pub(super) fn snapshot(&self, flow: &mut Flow, span: Span, limit: usize) -> Result<Self> {
         self.validate(flow, span)?;
-        if self.parts > limit.min(MAX_EDGES) || !flow.spend(self.parts) {
+        self.copy(self.reach, flow, span, limit)
+    }
+
+    pub(self) fn copy(
+        &self,
+        reach: Guard,
+        flow: &mut Flow,
+        span: Span,
+        limit: usize,
+    ) -> Result<Self> {
+        let parts = if reach == FALSE { 1 } else { self.parts };
+        if parts > limit.min(MAX_EDGES) || !flow.spend(parts) {
             return Err(budget(span));
         }
         Ok(Self {
             owner: self.owner,
-            reach: self.reach,
-            cells: self.cells.clone(),
-            parts: self.parts,
+            reach,
+            cells: if reach == FALSE {
+                BTreeMap::new()
+            } else {
+                self.cells.clone()
+            },
+            parts,
+        })
+    }
+
+    #[cfg(test)]
+    pub(super) fn from_sorted(
+        owner: usize,
+        reach: Guard,
+        cells: Vec<(hir::LocalId, Cell)>,
+        flow: &mut Flow,
+        span: Span,
+        limit: usize,
+    ) -> Result<Self> {
+        if cells.len() >= MAX_EDGES || !flow.spend(cells.len() + 1) {
+            return Err(budget(span));
+        }
+        if reach >> 1 >= flow.nodes.len() {
+            return Err(invalid(span));
+        }
+        let mut prior = None;
+        let mut parts = 1usize;
+        let mut bottom = reach == FALSE;
+        for (local, cell) in &cells {
+            if prior.is_some_and(|prior| prior >= *local) {
+                return Err(invalid(span));
+            }
+            prior = Some(*local);
+            cell.validate(owner, *local, flow, span)?;
+            bottom |= cell.bottom();
+            parts = parts
+                .checked_add(1 + cell.weight())
+                .filter(|parts| *parts <= limit.min(MAX_EDGES))
+                .ok_or_else(|| budget(span))?;
+        }
+        if parts > limit.min(MAX_EDGES) || !flow.spend(cells.len() + 1) {
+            return Err(budget(span));
+        }
+        Ok(Self {
+            owner,
+            reach: if bottom { FALSE } else { reach },
+            cells: if bottom {
+                BTreeMap::new()
+            } else {
+                cells.into_iter().collect()
+            },
+            parts: if bottom { 1 } else { parts },
         })
     }
 

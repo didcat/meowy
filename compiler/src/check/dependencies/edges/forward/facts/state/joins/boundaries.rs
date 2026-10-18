@@ -156,3 +156,37 @@ pub(crate) fn scalar_state_boundaries_reject_guard_exhaustion_without_accepting_
     assert!(flow.exceeded());
     assert_eq!(format!("{state:?}"), before);
 }
+
+#[test]
+pub(crate) fn scalar_state_boundaries_validate_cells_before_copying_or_discarding_them() {
+    let mut flow = Flow::new();
+    let mut state = frame(&value(0, 1, 7, &mut flow), &mut flow);
+    let Data::Initialized { origin, .. } = &mut state.cells.get_mut(&0).unwrap().data else {
+        panic!()
+    };
+    *origin = Some(Origin::Expression(1, 1));
+    let before = format!("{state:?}");
+    let bottom = State::new(0, FALSE, &mut flow, Span::default()).unwrap();
+    assert!(
+        state
+            .snapshot(&mut flow, Span::default(), MAX_EDGES)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert!(
+        state
+            .restrict(FALSE, &mut flow, Span::default(), MAX_EDGES)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert!(
+        bottom
+            .join(&state, &mut flow, Span::default(), MAX_EDGES)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+    assert_eq!(format!("{state:?}"), before);
+}

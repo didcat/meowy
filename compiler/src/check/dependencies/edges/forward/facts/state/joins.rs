@@ -9,6 +9,9 @@ impl State {
         span: Span,
         limit: usize,
     ) -> Result<Self> {
+        if guard == TRUE {
+            return self.snapshot(flow, span, limit);
+        }
         self.validate(flow, span)?;
         if limit == 0 || !flow.spend(2) {
             return Err(budget(span));
@@ -20,12 +23,7 @@ impl State {
         if flow.exceeded() {
             return Err(budget(span));
         }
-        if reach == FALSE {
-            return Self::new(self.owner, FALSE, flow, span);
-        }
-        let mut state = self.snapshot(flow, span, limit)?;
-        state.reach = reach;
-        Ok(state)
+        self.copy(reach, flow, span, limit)
     }
 
     pub(in super::super) fn join(
@@ -36,7 +34,6 @@ impl State {
         limit: usize,
     ) -> Result<Self> {
         self.validate(flow, span)?;
-        other.validate(flow, span)?;
         if limit == 0 || !flow.spend(3) {
             return Err(budget(span));
         }
@@ -46,8 +43,9 @@ impl State {
         if self.reach == FALSE {
             return other.restrict(TRUE, flow, span, limit);
         }
+        other.validate(flow, span)?;
         if other.reach == FALSE {
-            return self.restrict(TRUE, flow, span, limit);
+            return self.copy(self.reach, flow, span, limit);
         }
         let reach = flow.or(self.reach, other.reach);
         if flow.exceeded() {

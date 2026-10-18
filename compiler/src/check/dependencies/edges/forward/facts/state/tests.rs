@@ -160,3 +160,62 @@ pub(crate) fn scalar_state_updates_bound_payload_and_reject_foreign_identity_ato
         state.snapshot(&mut flow, Span::default(), cost).unwrap()
     );
 }
+
+#[test]
+pub(crate) fn scalar_state_sorted_construction_validates_every_row_and_full_payload() {
+    let mut flow = Flow::new();
+    let cell = Cell {
+        data: Data::Uninitialized,
+        control: false,
+    };
+    let rows = vec![(0, cell.clone()), (1, cell.clone())];
+    let state = State::from_sorted(0, TRUE, rows.clone(), &mut flow, Span::default(), 5).unwrap();
+    assert_eq!(state.weight(), 5);
+    assert!(
+        State::from_sorted(0, TRUE, rows, &mut flow, Span::default(), 4)
+            .unwrap_err()
+            .message
+            .contains("budget")
+    );
+    for keys in [[1, 0], [0, 0]] {
+        let rows = keys
+            .into_iter()
+            .map(|local| (local, cell.clone()))
+            .collect();
+        assert!(
+            State::from_sorted(0, FALSE, rows, &mut flow, Span::default(), 5)
+                .unwrap_err()
+                .message
+                .contains("identity")
+        );
+    }
+    let invalid = value(1, 7, 1, &mut flow);
+    assert!(
+        State::from_sorted(
+            0,
+            TRUE,
+            vec![(0, invalid)],
+            &mut flow,
+            Span::default(),
+            MAX_EDGES
+        )
+        .unwrap_err()
+        .message
+        .contains("identity")
+    );
+    let dead = Cell {
+        data: Data::Initialized {
+            version: None,
+            domain: Some(Domain::BOTTOM),
+            origin: None,
+        },
+        control: false,
+    };
+    let rows = vec![(0, dead), (1, value(0, 7, 1, &mut flow))];
+    assert!(
+        State::from_sorted(0, TRUE, rows, &mut flow, Span::default(), MAX_EDGES)
+            .unwrap_err()
+            .message
+            .contains("identity")
+    );
+}

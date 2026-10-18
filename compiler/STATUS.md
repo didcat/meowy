@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Mutable storage event qualification passes the full gate.
+Updated: 2026-10-18. Scalar entry-state work-budget regression is under repair.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5258,6 +5258,20 @@ All-target Clippy and four default checks pass (`/tmp/meowy-scalar-states-covera
 Preservation passes for all 588 protected files, cases and 37 reference hashes/gaps/prior
 evidence (`/tmp/meowy-scalar-states-preservation.log`); five structural sources are linked
 from types, values, memory and proof. No language contracts or pins changed.
+
+### Entry-state budget repair
+
+The first full gate passed 13 groups, including unchanged source conformance, but the
+existing 1000-matcher acceptance test exhausted scalar-state work. Native tests did not run
+in that group. The scalar prefix consumes 4,179,539 of 4,194,304 work units before entry
+construction (`/tmp/meowy-scalar-states-budget-before.log`). Limits and source expectations
+remain unchanged.
+
+Validated copying now checks each input once; FALSE restriction still validates discarded
+cells. A checked sorted-row constructor rejects ordering/duplicate/owner/domain/capacity
+failures before bulk publication. Twelve state tests and all-target Clippy pass. The sorted
+constructor remains isolated until the next slice replaces per-cell entry insertion with
+sorted batches. Then rerun the existing acceptance test and the full gate.
 
 ### Next: scalar state at source CFG ports
 
