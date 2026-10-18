@@ -123,3 +123,6 @@ pub(super) fn invalid(span: Span) -> Diagnostic {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod boundaries;

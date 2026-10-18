@@ -5243,7 +5243,12 @@ Immutable Bind copy propagation now retains domains and origins through qualifie
 with separate destination versions. Five new copy tests pass, including reversed local
 IDs, exact combined work/payload budgets, cycles, stale versions and foreign owners; the
 existing proof-dependency copy test also passes. Formatting and library Clippy pass.
-Next: cover control/cache independence and unsupported boundaries before the full gate.
+`8e7b7346` commits copy propagation. Four additional boundary tests pass for preserved
+control/dependency marks, frontend-cache independence, missing inputs/observations and
+emitted-alias exclusion. Eighteen new structural tests across five files are linked from
+types, values and proof; all 37 reference hashes/gaps and prior evidence remain unchanged.
+All four default checks pass (`/tmp/meowy-scalar-versions-coverage.log`). Next: `make test`,
+strict-pin/preservation audits and the final handoff.
 These are structural snapshots,
 not program-point state, initialization proofs, mutation handling or proof outcomes.
 
