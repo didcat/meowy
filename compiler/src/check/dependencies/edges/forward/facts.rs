@@ -33,3 +33,6 @@ impl Checker {
         Ok((literals, declared, parts))
     }
 }
+
+#[cfg(test)]
+mod boundaries;

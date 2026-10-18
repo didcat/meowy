@@ -5214,6 +5214,11 @@ declaration/literal context qualification passes all 17 fact-domain/seed tests
 (`/tmp/meowy-scalar-domains-declarations.log`). All 3346 library tests and all-target Clippy
 pass (`/tmp/meowy-scalar-domains-library.log`, `/tmp/meowy-scalar-domains-clippy.log`).
 Formatting and staged checks pass. Next: join, source-history and cache-independence boundaries.
+Declared seed integration is committed as `8d626f2c`. Four independent boundary groups
+pass: join laws, separate null/hull representation, frontend
+cache independence and retained control/stopped-successor evidence.
+All 21 fact-domain/seed tests pass (`/tmp/meowy-scalar-domains-boundaries.log`); formatting
+and staged checks pass. Next: update documentation/evidence and run the complete gate.
 Baseline preservation is `/tmp/meowy-scalar-domains-baseline.json` (596 protected files).
 Existing mutable frontend fact caches remain unchanged.
 
