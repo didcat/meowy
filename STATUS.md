@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-17. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-18. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -64,19 +64,23 @@ The compiler series is complete through `4838534e`. Scalar fact owner mapping is
 
 ## Build and test commands
 
-Requested workflow is in progress. Dependency-ordered commit plan:
+The root Makefile provides `make test`, `make test-strict`, `make build`, `make install`
+and `make help`. Complete tests run every verification group, print a timed result table
+and retain detailed logs in `build/verification`. Reporting (`f1911a2e`) preserves default
+fail-fast behavior for direct script users and keeps known conformance gaps visible.
 
-1. Extend `tools/verify.py` with optional complete-run reporting and per-check logs;
-   preserve its default failure behavior and conformance gap reporting. Validate focused
-   tooling regressions, including failed commands and skipped checks.
-2. Add root Makefile targets for complete tests, strict conformance, locked release builds
-   and installation under `~/.local`, plus concise usage documentation. Validate full tests,
-   release build and installation from outside the checkout; preserve the user directory.
+All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, runtime/sanitizers,
+3306 library, 923 native and 80 Python tests, plus 495 required conformance cases with
+19 unchanged gaps (`/tmp/meowy-make-test.log`). Strict execution separately matches the
+exact pinned names/reasons; the Makefile's strict plan retains `--strict`.
 
-Reporting is complete: 35 tooling tests and all four repository checks pass
-(`/tmp/meowy-test-reporting.log`, `/tmp/meowy-test-reporting-gate.log`). Default failure
-behavior is preserved; logged complete runs retain failure status and conformance gaps.
-Next: add the Makefile and validate its release/install targets and complete test run.
+`make build` produces the locked release compiler. `make install` builds first and defaults
+to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.
+Release build and staged installation pass (`/tmp/meowy-make-build.log`,
+`/tmp/meowy-make-install.log`). The staged executable matches the built binary, has mode
+0755 and runs native meowy programs outside the checkout in debug/release, including a
+prefix containing spaces (`/tmp/meowy-make-install-smoke.log`). The pre-existing
+`~/.local/bin/meowy` is unchanged. No known failures remain; nothing was pushed.
 
 ## Host toolchain
 

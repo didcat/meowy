@@ -52,6 +52,32 @@ ecosystem for the initial supported platform. Full release scope belongs to
 v0.0.1, not a future v1.0.0. The major and minor numbers have retired; the patch
 number handles everything. See [Versioning, allegedly](VERSIONING.md).
 
+## Build, test and install
+
+With the [compiler toolchain](compiler/README.md#build-and-run) and
+[verification dependencies](tools/README.md) installed, run from the repository root:
+
+```sh
+make test
+make build
+make install
+```
+
+`make test` runs documentation, schemas, Vim/Neovim, runtime/sanitizers, Rust/native,
+Python and debug/release conformance checks. It runs every group, prints a result table
+and stores detailed logs in `build/verification`. Known pinned conformance gaps remain
+visible; unexpected failures return a failing exit status. `make test-strict` also fails
+on the known gaps, so it currently fails until those language features are implemented.
+
+`make build` creates `compiler/target/x86_64-unknown-linux-gnu/release/meowy` with locked
+dependencies. `make install` builds first and installs it as `~/.local/bin/meowy`.
+Add `~/.local/bin` to `PATH` if needed. This host compiler still uses the installed
+LLVM/Clang/LLD toolchain; it is not a bundled distribution.
+
+Use `PREFIX=/path` to change the install prefix or `DESTDIR=/path` to stage an installation.
+`make help` lists targets and overrides. For example, `make test VERIFY_ARGS=--list`
+previews the checks, and `make test VERIFY_ARGS='--timeout 600'` changes each check's limit.
+
 ## Documentation
 
 Start with the [guide](docs/guide/README.md), or use the

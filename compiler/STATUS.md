@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-17. Candidate call-origin storage passes the compiler gate.
+Updated: 2026-10-18. Candidate call-origin storage passes the compiler gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5132,8 +5132,8 @@ unchanged. No known failures remain. Baseline `40141b4a` is recorded in
    and exact work/payload boundaries before enabling fact invalidation. Restart propagation,
    E225, proof outcomes and complete v0.0.1 qualification remain subsequent work.
 
-Compiler validation is complete. Next complete the requested root Makefile for full tests, release
-build and installation under `~/.local`, reusing `tools/verify.py`.
+Compiler validation and the requested root Makefile are complete. The root tracker records
+full `make test`, release build and staged installation/execution validation.
 
 Reference formatting and reference-bearing lists remain separate B001 prerequisites.
 The contextual-list probe still reports exactly
