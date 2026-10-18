@@ -5236,8 +5236,16 @@ All five new write tests, formatting and library Clippy pass, including missing/
 exact work, stale metadata and permission rejection (`ceecc659`). Typed mutable events now
 borrow the original report and full local/storage types, preserving full declared domains
 and distinct Bind/Write candidate versions. Alias/opaque events retain unavailable versions;
-mutable reads and the immutable initializer index remain unchanged. Three new event tests
-pass. Next: exact combined budgets, missing/foreign metadata and control/cache boundaries.
+mutable reads and the immutable initializer index remain unchanged (`faf375b4`). Three event
+tests and library Clippy pass. Six additional boundary tests pass for combined budgets,
+missing/stopped operations, control/cache independence, different alias/storage declarations,
+late orphan/foreign metadata and separate Call/Path/Indirect families. All four default
+checks pass (`/tmp/meowy-scalar-events-coverage.log`); 14 structural tests are linked from
+types, values, memory and proof. Preservation passes for 588 reference/source/pin/obligation
+files, exact case records and 37 reference hashes/gaps/prior evidence
+(`/tmp/meowy-scalar-events-preservation.log`). The user's `docs/programs/hey/loop.mwy` and
+generated debug `loop` executable changed concurrently; both remain untouched and excluded.
+Next: full `make test`, strict-pin audit and final documentation.
 Baseline `c53a866c` and 598 protected files,
 case records and document inventory are in `/tmp/meowy-scalar-events-baseline.json`.
 
