@@ -18,6 +18,7 @@ pub(super) struct Version {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Origin {
     Parameter(hir::FunctionId, usize),
+    Expression(usize, PointId),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

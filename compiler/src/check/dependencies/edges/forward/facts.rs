@@ -2,6 +2,7 @@ use super::entries::Reports;
 use super::*;
 use crate::hir;
 
+mod copies;
 mod declarations;
 mod domain;
 mod literals;
@@ -9,17 +10,29 @@ mod sources;
 mod versions;
 
 impl Checker {
-    pub(crate) fn qualify_scalar_seeds(
+    pub(crate) fn qualify_scalar_facts(
         &mut self,
         program: &hir::Program,
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
-        let (_, declared, parts) = self.scalar_seed_context(program, reports, span, MAX_EDGES)?;
+        self.scalar_copy_context(program, reports, span, MAX_EDGES)?;
+        Ok(())
+    }
+
+    pub(self) fn scalar_copy_context<'a>(
+        &mut self,
+        program: &'a hir::Program,
+        reports: &'a Reports,
+        span: Span,
+        parts: usize,
+    ) -> Result<(versions::Versions<'a>, usize)> {
+        let (literals, declared, parts) =
+            self.scalar_seed_context(program, reports, span, parts)?;
         let (versions, parts) =
             self.scalar_version_seeds(program, reports, &declared, span, parts)?;
-        self.scalar_copy_inputs(reports, &versions, span, parts)?;
-        Ok(())
+        let (inputs, parts) = self.scalar_copy_inputs(reports, &versions, span, parts)?;
+        self.scalar_copies(versions, &inputs, &literals, span, parts)
     }
 
     pub(self) fn scalar_seed_context<'a>(

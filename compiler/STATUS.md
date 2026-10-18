@@ -5238,7 +5238,12 @@ Insertion accounts for retained declarations, values and borrowed source reports
 `83538c01` commits initial versions. Three direct-producer tests, formatting and library
 Clippy pass. Groups, unchanged narrowing/ascription and non-projecting Forward wrappers
 retain exact scalar types and checked read/version links. Predicates, conversions, mutable
-reads, calls and expressions stay unavailable. Next: propagate qualified copy dependencies.
+reads, calls and expressions stay unavailable. `3ea4afb1` commits those producer checks.
+Immutable Bind copy propagation now retains domains and origins through qualified reads,
+with separate destination versions. Five new copy tests pass, including reversed local
+IDs, exact combined work/payload budgets, cycles, stale versions and foreign owners; the
+existing proof-dependency copy test also passes. Formatting and library Clippy pass.
+Next: cover control/cache independence and unsupported boundaries before the full gate.
 These are structural snapshots,
 not program-point state, initialization proofs, mutation handling or proof outcomes.
 

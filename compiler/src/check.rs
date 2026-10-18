@@ -340,7 +340,7 @@ pub(crate) fn check_imports(
                 .qualify_borrow_calls(&program, &reports, &facts, block.span)
                 .map_err(|error| vec![error])?;
             checker
-                .qualify_scalar_seeds(&program, &reports, block.span)
+                .qualify_scalar_facts(&program, &reports, block.span)
                 .map_err(|error| vec![error])?;
             Ok((program, docs))
         }
