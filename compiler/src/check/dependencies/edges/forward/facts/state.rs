@@ -18,6 +18,10 @@ pub(super) struct State {
 }
 
 impl State {
+    pub(super) fn owner(&self) -> usize {
+        self.owner
+    }
+
     pub(super) fn new(owner: usize, reach: Guard, flow: &mut Flow, span: Span) -> Result<Self> {
         if !flow.spend(1) {
             return Err(budget(span));

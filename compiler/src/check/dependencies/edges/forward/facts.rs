@@ -7,6 +7,7 @@ mod declarations;
 mod domain;
 mod events;
 mod literals;
+mod ports;
 mod sources;
 mod state;
 mod versions;
@@ -18,7 +19,9 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
-        self.scalar_state_context(program, reports, span, MAX_EDGES)?;
+        let (_, _, entries, parts) =
+            self.scalar_state_context(program, reports, span, MAX_EDGES)?;
+        self.scalar_ports(reports, &entries, span, parts)?;
         Ok(())
     }
 

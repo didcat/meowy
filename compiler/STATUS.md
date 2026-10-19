@@ -5228,11 +5228,11 @@ The concurrently edited `docs/programs/hey/` directory remains untouched and exc
 
 Current dependency-ordered commit plan:
 
-0. Replace ordered-map/set lookups in forward adjacency and reachability membership
-   with bounded hash lookups. Preserve original edge-vector traversal order and prove
-   hash-seed-independent reports/work before committing this prerequisite separately.
-1. Qualify reached ports against original owners/scopes and associate declared entry
-   states with their exact BlockEntry ports, with stopped-path and owner regressions.
+0. Completed (`23d0b994`): bounded hash lookups for adjacency and reachability membership,
+   preserving original edge-vector traversal and hash-seed-independent reports/work.
+1. Completed: qualify reached ports against original owners/scopes and associate declared
+   entry states with exact BlockEntry ports; four focused regressions and formatting pass
+   (`/tmp/meowy-scalar-ports-sites.log`).
 2. Retain bounded predecessor edges, including unreached sources and restart boundaries,
    without treating a missing predecessor as an initialized or bottom scalar state.
 3. Derive an acyclic schedule from those edges, joining predecessors before successors
