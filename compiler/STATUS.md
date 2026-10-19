@@ -5273,7 +5273,7 @@ Baseline `92714122` is recorded in `/tmp/meowy-scalar-ports-baseline.json`; user
 
 Current dependency-ordered commit plan:
 
-1. Add an immutable snapshot arena with distinct seed, before and after views. Share
+1. Completed (`680a2862`): immutable snapshot arena with seed, before and after views. Share
    unchanged states by private handles; distinguish unvisited, unavailable and bottom.
    Validate owner identity and reserve payload before publishing each row.
 2. Join incoming contributions in qualified predecessor order. Preserve missing and
@@ -5293,7 +5293,8 @@ authority is enabled by this carrier work. The seed arena and immutable before/a
 pass three focused tests, the original 1000-matcher acceptance case, formatting and all-target
 Clippy (`/tmp/meowy-scalar-snapshots-arena.log`, `/tmp/meowy-scalar-snapshots-matchers.log`,
 `/tmp/meowy-scalar-snapshots-clippy.log`). Inspection accessors remain test-only until
-transfer consumers need them. Incoming-state joins are next.
+transfer consumers need them. Six arena/join tests, formatting and Clippy pass
+(`/tmp/meowy-scalar-snapshots-focused.log`). Exact join limits and scheduled capture are next.
 
 1. Extend `facts/state` with bounded per-port snapshots and incoming-state contributions
    using `graph`, `schedule` and `definitions`. Preserve the distinction between missing

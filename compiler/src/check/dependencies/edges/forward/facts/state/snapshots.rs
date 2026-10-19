@@ -1,5 +1,7 @@
 use super::*;
 
+mod inputs;
+
 #[cfg(test)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(in super::super) enum View<'a> {
@@ -66,11 +68,7 @@ impl Checker {
             if snapshots.seeds.insert(*port, id).is_some() {
                 return Err(invalid(span));
             }
-            let value = if node.incoming.is_empty() {
-                value
-            } else {
-                Value::Missing
-            };
+            let value = snapshots.incoming(graph, *port, &mut self.flow, span)?;
             snapshots.record(
                 *port,
                 Row {
@@ -119,6 +117,13 @@ impl Snapshots {
             return Err(budget(span));
         }
         let state = state.snapshot(flow, span, self.room())?;
+        self.keep(state, span)
+    }
+
+    pub(self) fn keep(&mut self, state: State, span: Span) -> Result<Value> {
+        if self.states.len() >= MAX_EDGES {
+            return Err(budget(span));
+        }
         self.parts = self
             .parts
             .checked_sub(state.weight())
