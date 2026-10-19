@@ -1,6 +1,6 @@
 use super::*;
 
-pub(self) fn context(source: &str) -> (Checker, Reports, state::Entries, ports::Ports, usize) {
+pub(super) fn context(source: &str) -> (Checker, Reports, state::Entries, ports::Ports, usize) {
     let (mut checker, program, reports) = super::super::versions::tests::context(source);
     let (_, _, entries, parts) = checker
         .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)

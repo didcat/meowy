@@ -109,7 +109,7 @@ impl Checker {
     }
 }
 
-pub(self) fn key(port: Port, site: ports::Site) -> (usize, usize, usize, Port) {
+pub(super) fn key(port: Port, site: ports::Site) -> (usize, usize, usize, Port) {
     (site.owner, site.span.start, site.span.end, port)
 }
 

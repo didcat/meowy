@@ -5236,12 +5236,15 @@ Current dependency-ordered commit plan:
 2. Completed (`9fe799a8`): bounded predecessor edges retain unreached sources and restart boundaries.
    Incoming edges retain source metadata and sort by source location; unreached sources
    have no state. Four graph regressions pass (`/tmp/meowy-scalar-ports-graph.log`).
-3. Completed: each reached port follows its reached forward predecessors, with
+3. Completed (`d6d5d8df`): each reached port follows its reached forward predecessors, with
    source-location tie breaking and retained restart boundaries. Four tests pass,
    including a declared-input diamond where breadth-first order reaches the join too
    early (`/tmp/meowy-scalar-ports-schedule.log`). The 1000-matcher case still passes.
-4. Associate parameter/Bind/Write candidate versions with their qualified definition
-   ports, preserving operation/result stages and historical identity boundaries.
+4. Parameter/Bind/Write versions retain their exact entry or operation ports and
+   independent normal observations. Four regressions and the original 1000-matcher
+   acceptance test pass (`/tmp/meowy-scalar-ports-definitions.log`). The schedule helper
+   visibility correction passes all-target Clippy and formatting
+   (`/tmp/meowy-scalar-ports-clippy.log`); it is kept separate from definition-site changes.
 5. Link structural evidence, document the remaining transfer gap and run the full gate.
 
 Inspection confirms that `Walk.ports` is breadth-first reachability, graph inventory order
