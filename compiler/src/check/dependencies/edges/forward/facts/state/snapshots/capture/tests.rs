@@ -171,7 +171,8 @@ pub(crate) fn scalar_capture_does_not_publish_candidate_bind_or_write_values() {
 
 #[test]
 pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_budget_failures() {
-    let (mut checker, program, reports) = context("flag:false;|flag|{a:1;b:2};x:=3;x=4");
+    let (mut checker, program, reports) =
+        context("flag:false;|flag|{a:1;b:2};x:=3;x=4;f:(n<uint8>){v<uint8>:((n)~<uint8>)}");
     let (versions, events, entries, parts) = checker
         .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
         .unwrap();
@@ -190,6 +191,16 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let (observations, parts) = checker
         .scalar_observations(&reports, &graph, &definitions, Span::default(), parts)
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_read_observations(
+            &program,
+            &reports,
+            &graph,
+            observations,
+            Span::default(),
+            parts,
+        )
+        .unwrap();
     let start = checker.flow.work;
     let expected = checker
         .scalar_snapshots(
@@ -205,6 +216,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let used = parts - expected.room();
     let sources = observations.sources;
     let forwarded = observations.forwarded;
+    let declared = observations.declared;
     for fault in 0..3 {
         let mut order = orders.clone();
         match fault {
@@ -229,6 +241,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
         let observations = observations::Observations {
             sources: sources.clone(),
             forwarded: forwarded.clone(),
+            declared: declared.clone(),
             ..observations::Observations::new(&definitions)
         };
         assert!(
@@ -256,6 +269,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let observations = observations::Observations {
         sources,
         forwarded,
+        declared,
         ..observations::Observations::new(&definitions)
     };
     let before = format!("{reports:?}{entries:?}{definitions:?}");

@@ -5424,8 +5424,11 @@ All limits, validations, value histories and source expectations are unchanged.
 Unchanged ascriptions now qualify operation/result stages independently and preserve
 storage across observed operations. Predicates, changed types and stopped operands stay
 opaque. All 247 focused scalar tests, the 1000-matcher case, formatting and Clippy
-pass (`/tmp/meowy-scalar-wrappers-ascriptions.log`). Final mixed-chain/history checks,
-structural evidence and complete repository validation remain before handoff.
+pass (`/tmp/meowy-scalar-wrappers-ascriptions.log`); ascriptions are committed as
+`b3e969c3`. Mixed-chain/history regressions and full capture budget checks now include
+all wrapper kinds and current parameter reads; all 249 focused scalar tests pass
+(`/tmp/meowy-scalar-wrappers-histories.log`). Structural evidence and complete
+repository validation remain before handoff; no known failures remain.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.
