@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-18. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-19. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -52,6 +52,11 @@ original definition sites and independent normal observations. The
 [compiler handoff](compiler/STATUS.md#qualified-scalar-source-ports-and-schedules) records the
 six implementation/prerequisite commits. Per-port value states and mutation transfers are next;
 proof outcomes remain gated.
+
+Current work adds bounded per-port snapshot histories and incoming-state joins, with
+conservative boundaries for transfers that remain unimplemented. The ordered commit plan
+is in the compiler handoff. Seed snapshots pass focused tests, the 1000-matcher regression,
+formatting and Clippy; incoming-state joins are next.
 
 Seventeen new structural regressions cover identity, diamonds, stopped paths, source order,
 hash-seed independence and exact limits. Focused tests, all-target Clippy, formatting and the

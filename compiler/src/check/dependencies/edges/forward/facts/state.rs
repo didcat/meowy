@@ -6,6 +6,7 @@ use versions::{Origin, Version};
 mod cells;
 mod entries;
 mod joins;
+mod snapshots;
 pub(super) use cells::{Cell, Data};
 pub(super) use entries::Entries;
 

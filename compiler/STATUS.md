@@ -5271,6 +5271,30 @@ Baseline `92714122` is recorded in `/tmp/meowy-scalar-ports-baseline.json`; user
 
 ### Next: scalar value propagation
 
+Current dependency-ordered commit plan:
+
+1. Add an immutable snapshot arena with distinct seed, before and after views. Share
+   unchanged states by private handles; distinguish unvisited, unavailable and bottom.
+   Validate owner identity and reserve payload before publishing each row.
+2. Join incoming contributions in qualified predecessor order. Preserve missing and
+   restart inputs as unavailable, reject unfinished predecessors and retain canonical
+   joins and historical identities without interpreting branch guards.
+3. Capture every scheduled port with conservative transfer boundaries. Only structural
+   entry/normal ports forward an unchanged state; source operations and scope/result
+   boundaries remain unavailable until their transfers are qualified. Preserve definitions
+   as metadata, and test diamonds, empty/never frames, stops and independent owners.
+4. Link structural evidence, refresh the handoff, run `make test` and audit protected
+   references, source cases and capability pins.
+
+Inspection confirms that whole-state copies at every port would multiply payload by the
+number of ports. The snapshot arena will own each changed state once and expose immutable
+views. Entry states remain independent copies; no query result, mutation transfer or guard
+authority is enabled by this carrier work. The seed arena and immutable before/after rows
+pass three focused tests, the original 1000-matcher acceptance case, formatting and all-target
+Clippy (`/tmp/meowy-scalar-snapshots-arena.log`, `/tmp/meowy-scalar-snapshots-matchers.log`,
+`/tmp/meowy-scalar-snapshots-clippy.log`). Inspection accessors remain test-only until
+transfer consumers need them. Incoming-state joins are next.
+
 1. Extend `facts/state` with bounded per-port snapshots and incoming-state contributions
    using `graph`, `schedule` and `definitions`. Preserve the distinction between missing
    predecessor evidence and bottom, keep historical copies independent, and use actual
