@@ -31,7 +31,7 @@ impl Checker {
                 return Err(invalid(span));
             }
             for (position, &port) in order.iter().enumerate() {
-                if !self.flow.spend(3) {
+                if !self.flow.spend(2) {
                     return Err(budget(span));
                 }
                 let node = graph.nodes.get(&port).ok_or_else(|| invalid(span))?;
@@ -46,13 +46,20 @@ impl Checker {
                     Value::Known(id) => snapshots.states[id].reach == FALSE,
                     Value::Missing => false,
                 };
-                let after = if bottom
+                let after = if before == Value::Missing
+                    || bottom
                     || matches!(port, Port::Entry(_) | Port::Normal(_) | Port::BlockEntry(_))
-                    || observations.sources.contains_key(&port)
                 {
                     before
                 } else {
-                    Value::Missing
+                    if !self.flow.spend(1) {
+                        return Err(budget(span));
+                    }
+                    if observations.sources.contains_key(&port) {
+                        before
+                    } else {
+                        Value::Missing
+                    }
                 };
                 snapshots.record(
                     port,
@@ -64,7 +71,9 @@ impl Checker {
                     &mut self.flow,
                     span,
                 )?;
-                snapshots.expression(port, observations, &mut self.flow, span)?;
+                if matches!(port, Port::Normal(_)) {
+                    snapshots.expression(port, observations, &mut self.flow, span)?;
+                }
             }
         }
         if snapshots.rows.len() != graph.nodes.len() {

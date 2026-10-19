@@ -5391,9 +5391,21 @@ Dependency-ordered commit plan:
 The constructor prerequisite (`4eb876ea`) passes all 228 focused scalar tests, formatting and
 all-target Clippy (`/tmp/meowy-scalar-wrappers-construction.log`,
 `/tmp/meowy-scalar-wrappers-clippy.log`). Bounded group result associations are now
-implemented with original producer/site/predecessor validation; all 231 focused scalar
-tests pass (`/tmp/meowy-scalar-wrappers-groups.log`). Actual expression-fact forwarding
-is the next slice.
+implemented (`e9040435`) with original producer/site/predecessor validation; all 231
+focused scalar tests, the original 1000-matcher case and Clippy pass
+(`/tmp/meowy-scalar-wrappers-groups.log`). Group expression-fact forwarding now copies
+observed inner results with shared bounds and preserved storage history. All 234 focused
+scalar tests pass; missing outer-state input still suppresses a known inner value.
+All 234 scalar tests and Clippy pass, but the original 1000-matcher regression
+exhausted the retained work budget during snapshot capture: 3,804,867 units before
+21,009 ports, failure at 4,194,305 against the unchanged 4,194,304 limit. The repair
+dispatches expression capture only at Normal ports and avoids unused operation
+lookups for unavailable/structural states. The same case now passes at 4,167,040
+work units (`/tmp/meowy-scalar-wrappers-work-after.log`). Temporary measurements
+are removed. All 234 focused scalar tests and Clippy pass. Commit the snapshot
+dispatch repair separately from value transport; no limit, identity check or source
+expectation is relaxed.
+Forward coercion qualification follows the transport slice.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.
