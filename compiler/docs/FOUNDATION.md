@@ -2181,9 +2181,33 @@ domain, duplicate/order and payload validation, including when an earlier parame
 the frame bottom. State copies validate their inputs once before copying or discarding cells.
 The existing 1000-matcher acceptance case fits the unchanged work limit.
 
-The compiler qualifies these entry states but does not propagate them through the CFG yet.
-Applying Bind/Write and current-read transfers, guarded call invalidation, alias/emission
-handling, restart rules, arithmetic/guard transfers and proof outcomes remain separate work.
+A bounded source-port graph now associates those entries with original owners, scopes and
+source spans. It retains incoming edges from unreached source ports explicitly; those ports
+have no scalar state and cannot supply initialization or bottom evidence. Edge identities,
+routes and restart boundaries remain attached to the original graph. Predecessors are
+ordered by source location, including their distinct operation and result stages.
+
+The scalar schedule processes a reached port only after its reached forward predecessors.
+Ready-port ties use source locations, independent of reachability-walk order and hash seeds.
+Restart edges remain visible but do not enter the acyclic schedule; header resets are still
+required before transferring facts. Cycles, orphan ports, mismatched frames and exhausted
+work or payload allowances reject without publishing a partial context.
+
+Parameter versions anchor at their declared function entries. Immutable and qualified mutable
+Bind versions and Write versions anchor at their original operation ports; normal observations
+are recorded independently. A result-only port cannot create a definition operation. Candidate
+copy values and frontend caches cannot select a definition site or establish its current value.
+Equal domains still do not invent a merged identity, and earlier entry snapshots are unchanged.
+
+Forward adjacency and visited membership use bounded hash lookups; original edge vectors
+retain traversal order. The explicit scalar schedule selects its own source order. These
+checks share the existing internal work/payload limits, not a completed per-query logical ledger.
+The original 1000-matcher acceptance case still fits those limits.
+
+Scalar states remain seeded only at entries. Per-port snapshots, conservative state joins at
+incomplete boundaries, Bind/Write and current-read transfers, guarded call invalidation,
+alias/emission handling, restart resets, arithmetic/guard transfers and proof outcomes remain
+separate work. Checked read `normal` remains distinct from an observed result stage.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

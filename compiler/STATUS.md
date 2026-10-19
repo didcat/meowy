@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Bounded scalar states and declared entry seeding pass the full gate.
+Updated: 2026-10-18. Scalar source ports, schedules and definition sites pass the full gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: qualify scalar state propagation across source CFG ports using the handoff below.
+Next: implement scalar value propagation using the qualified source-port handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5224,60 +5224,70 @@ gaps and prior evidence (`/tmp/meowy-scalar-states-preservation.log`). Contracts
 unchanged. Baseline `54aefc6e` is in `/tmp/meowy-scalar-states-baseline.json`.
 The concurrently edited `docs/programs/hey/` directory remains untouched and excluded.
 
-### Next: scalar state propagation at source CFG ports
+### Qualified scalar source ports and schedules
 
-Current dependency-ordered commit plan:
+Scalar entry states now bind to original BlockEntry ports, owners, scopes and source spans.
+Reached port metadata preserves operation/result stages, including stopped calls and unused
+frames. Predecessor edges retain original routes and source locations, including unreached
+sources. Those external sources have no state; absence cannot become initialization or bottom.
 
-0. Completed (`23d0b994`): bounded hash lookups for adjacency and reachability membership,
-   preserving original edge-vector traversal and hash-seed-independent reports/work.
-1. Completed (`2c9bcca2`): qualify reached ports against original owners/scopes and associate declared
-   entry states with exact BlockEntry ports; four focused regressions and formatting pass
-   (`/tmp/meowy-scalar-ports-sites.log`).
-2. Completed (`9fe799a8`): bounded predecessor edges retain unreached sources and restart boundaries.
-   Incoming edges retain source metadata and sort by source location; unreached sources
-   have no state. Four graph regressions pass (`/tmp/meowy-scalar-ports-graph.log`).
-3. Completed (`d6d5d8df`): each reached port follows its reached forward predecessors, with
-   source-location tie breaking and retained restart boundaries. Four tests pass,
-   including a declared-input diamond where breadth-first order reaches the join too
-   early (`/tmp/meowy-scalar-ports-schedule.log`). The 1000-matcher case still passes.
-4. Completed: parameter/Bind/Write versions retain exact entry or operation ports and
-   independent normal observations. Four regressions and the original 1000-matcher
-   acceptance test pass (`/tmp/meowy-scalar-ports-definitions.log`). The schedule helper
-   visibility correction (`2a32f41f`) passes all-target Clippy and formatting
-   (`/tmp/meowy-scalar-ports-clippy.log`); it is kept separate from definition-site changes.
-5. Link structural evidence, document the remaining transfer gap and run the full gate.
+A bounded schedule waits for reached forward predecessors and breaks ties by source location.
+Restart edges remain explicit but are excluded from the acyclic order. Cycles, orphan ports,
+foreign owners and late work/payload exhaustion expose no partial context. This is an order
+for future state transfers, not evidence that a structural visit executes at runtime.
 
-Inspection confirms that `Walk.ports` is breadth-first reachability, graph inventory order
-groups edge families, and neither is the required scalar processing order. Existing
-state entries, source points, scope/owner validators and bounded work accounting will be
-reused. This series qualifies the propagation inputs; value/mutation transfers and query
-outcomes remain separate. The first slice now associates entry states and reached ports
-with original owner/scope/span metadata. The adjacency/membership prerequisite reduces
-the 1000-matcher probe from 4,151,523 to 2,766,327 work units before the new 387,418-unit
-port pass. Original edge vectors still determine traversal; independent hash seeds give
-identical reports and charged work. The original acceptance test passes with unchanged
-limits (`/tmp/meowy-scalar-ports-matchers.log`). All 1,321 forward tests pass, including
-four port regressions and one temporary measurement probe
-(`/tmp/meowy-scalar-ports-forward.log`); the temporary probe has been removed.
-Predecessor/schedule and definition-site qualification remain next.
+Parameter versions anchor at declared function entries; Bind/Write versions anchor at their
+original operations with independent normal observations. Exact source records, statement
+identity, owner and scope remain checked. Result-only observations cannot create an operation,
+and candidate values cannot select a definition site. Entry snapshots and dependency marks
+remain unchanged; no current read value or merged version is inferred from these locations.
 
-1. Qualify the state-to-port association and a bounded traversal schedule from ForwardIndex
-   edges, preserving owner, route, scope and observation stages. Entry states exist only at
-   BlockEntry; `Walk.ports` is reachability traversal, not execution order. Bind merged/current
-   version identities to qualified CFG sites before relying on them for reads or copies.
-   Record a dependency-ordered commit plan; test diamonds, missing predecessors, stops and
-   owner boundaries without enabling query outcomes.
-2. Apply qualified Bind/Write events and current-version reads in that traversal, preserving
-   historical copies. Qualify guard authority and E225 dependencies before restricting states;
-   checked read `normal` is not an independent result observation. Include guarded Call
-   transfers and conservative Path/Indirect/alias fallback before using facts after mutations.
-   Alias scalar transfers still need completed backing-field types/layouts; a canonical local's
-   declared type is not that layout. Missing transfer knowledge never proves no mutation.
-3. Qualify full declared call-result/unsupported-transfer fallback, nullable/alias/emission
+| Commit | Reviewable slice |
+| --- | --- |
+| `23d0b994` | Bounded hash lookup for adjacency/membership with unchanged traversal order |
+| `2c9bcca2` | Qualified scalar port metadata and entry associations |
+| `9fe799a8` | Predecessor edges, unreached sources and restart boundaries |
+| `d6d5d8df` | Source-ordered acyclic scheduling after reached predecessors |
+| `2a32f41f` | Explicit helper visibility accepted by Clippy |
+| `c6d769f5` | Parameter/Bind/Write definition sites and independent observations |
+
+Seventeen new structural tests cover these boundaries. All focused tests, all-target Clippy,
+formatting and the original 1000-matcher acceptance case pass. Before adding the port pass,
+the lookup prerequisite reduced that case's measured work from 4,151,523 to 2,766,327 units;
+limits and source expectations are unchanged. No temporary measurement code remains.
+Logs: `/tmp/meowy-scalar-ports-sites.log`, `/tmp/meowy-scalar-ports-graph.log`,
+`/tmp/meowy-scalar-ports-schedule.log`, `/tmp/meowy-scalar-ports-definitions.log`,
+`/tmp/meowy-scalar-ports-matchers.log`, `/tmp/meowy-scalar-ports-clippy.log`.
+All 14 `make test` groups pass: 3418 library, 923 native, 86 Python and 495 required
+conformance tests, both editors, runtime/sanitizers, formatting, lint, build and contracts
+(`/tmp/meowy-scalar-ports-gate.log`; detailed logs in `build/verification-scalar-ports`).
+The 19 known conformance gaps match their exact pinned names/reasons; debug/release have
+zero failures. Preservation passes for 589 protected reference/source/pin/obligation files
+and all 37 reference hashes/gaps/prior evidence (`/tmp/meowy-scalar-ports-preservation.log`).
+Five structural evidence files are linked from types, values, memory and proof; language
+contracts and source cases are unchanged. All four final documentation/tooling checks pass
+(`/tmp/meowy-scalar-ports-docs.log`). No known failures remain.
+Baseline `92714122` is recorded in `/tmp/meowy-scalar-ports-baseline.json`; user files are excluded.
+
+### Next: scalar value propagation
+
+1. Extend `facts/state` with bounded per-port snapshots and incoming-state contributions
+   using `graph`, `schedule` and `definitions`. Preserve the distinction between missing
+   predecessor evidence and bottom, keep historical copies independent, and use actual
+   current state at a qualified port. Test diamonds, stops, empty/never entries and late
+   failures without producing query outcomes.
+2. Apply qualified Bind/Write events and current-version reads in that traversal. Qualify
+   guard authority and E225 dependencies before restricting states; checked read `normal`
+   is not an independent result observation. Include guarded Call transfers and conservative
+   Path/Indirect/alias fallback before using facts after mutations. Alias scalar transfers
+   need completed backing-field types/layouts; a canonical local's declared type is not
+   that layout. Missing transfer knowledge never proves no mutation.
+3. Qualify declared call-result/unsupported-transfer fallback, nullable/alias/emission
    transfers, restart headers, arithmetic and ordinary guards in separate slices. Restart
    headers must forget every possibly modified fact without bounded unrolling. Preserve
-   ordinary errors and complete the remaining profile/E225 obligations before proof evaluation;
-   never reconstruct history from mutable caches or specialize callees from their bodies.
+   ordinary errors and complete the remaining profile/E225 and per-query work obligations
+   before proof evaluation; never reconstruct history from mutable caches or specialize
+   callees from their bodies. Validate each slice, then run `make test` and audit pins.
 
 The requested Makefile remains complete; the root tracker records release build and staged
 installation/execution validation. Reference formatting and reference-bearing lists remain
@@ -6897,8 +6907,8 @@ are qualified. Candidate storage, canonical fact roots and guarded Call-operatio
 inputs are qualified. Bounded scalar domains, literal/declared seeds, initial scalar versions
 and immutable direct copies are implemented. Mutable Bind/Write events now retain qualified
 statements, permissions, declared types and candidate versions. Bounded state carriers,
-guarded joins and declared BlockEntry states are implemented. Qualified propagation across
-source CFG ports is next.
+guarded joins, declared BlockEntry states, source ports, predecessor graphs, acyclic schedules
+and definition-site associations are implemented. Per-port value propagation is next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

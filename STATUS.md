@@ -45,27 +45,24 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Bounded scalar states now distinguish unavailable evidence, uninitialized/partial storage,
-initialized values and bottom. Guarded joins retain canonical domains, agreed identities and
-control marks. Qualified entry states seed only declared parameters and preserve historical
-snapshots; future Bind/Write values cannot become entry-time facts. The
-[compiler handoff](compiler/STATUS.md#bounded-scalar-states-and-declared-entries) records six
-implementation/coverage slices. Qualified propagation across source CFG ports is next;
-mutation transfers and proof outcomes remain gated.
+Scalar entry states now associate with qualified source ports, predecessor edges and a bounded
+schedule that waits for forward predecessors and breaks ties by source location. Unreached
+predecessors and restart boundaries remain explicit. Parameter/Bind/Write versions retain their
+original definition sites and independent normal observations. The
+[compiler handoff](compiler/STATUS.md#qualified-scalar-source-ports-and-schedules) records the
+six implementation/prerequisite commits. Per-port value states and mutation transfers are next;
+proof outcomes remain gated.
 
-Current work qualifies source CFG port identities, predecessor edges, a bounded source-order
-schedule and scalar definition sites. The dependency-ordered commit plan is in the compiler
-handoff. The graph lookup prerequisite saves 1.39 million work units without changing
-traversal order; the original 1000-matcher acceptance case and focused forward tests pass.
-
-All 14 `make test` groups pass: 3401 library, 923 native, 80 Python and 495 required
-conformance tests, with 19 unchanged gaps and zero debug/release failures
-(`/tmp/meowy-scalar-states-final-gate.log`). The original 1000-matcher acceptance case passes
-under unchanged work limits. Strict execution matches the exact pins, and all four final
-documentation checks pass.
-Nineteen new structural tests are linked from the owning references. Preservation passes
-for 588 protected files, exact case records and 37 reference hashes/gaps/prior evidence.
-The concurrently edited `docs/programs/hey/` remains untouched and excluded. Nothing was pushed.
+Seventeen new structural regressions cover identity, diamonds, stopped paths, source order,
+hash-seed independence and exact limits. Focused tests, all-target Clippy, formatting and the
+original 1000-matcher acceptance case pass. The graph lookup prerequisite saves 1.39 million
+work units without changing traversal order or increasing limits. All 14 `make test` groups
+pass: 3418 library, 923 native, 86 Python and 495 required conformance tests, with 19 unchanged
+gaps and zero debug/release failures (`/tmp/meowy-scalar-ports-gate.log`). Preservation passes
+for 589 protected files and all 37 reference hashes/gaps/prior evidence, including exact
+observed pin names/reasons (`/tmp/meowy-scalar-ports-preservation.log`). User-owned
+`docs/programs/hey/` stays excluded. All four final documentation/tooling checks pass
+(`/tmp/meowy-scalar-ports-docs.log`). Nothing was pushed.
 
 ## Build and test commands
 
@@ -78,14 +75,14 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, 3401 library,
+All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, 3418 library,
 923 native and 86 Python tests (41 tooling, 15 runtime, 30 compiler), plus 495 required
 conformance cases with 19 unchanged gaps and zero debug/release failures. Runtime profiles
 each pass 100 regular cases across nine suites, with additional subprocess probes in the
-detailed logs. Full output: `/tmp/meowy-test-report-gate.log`; individual logs:
-`build/verification-test-report`. All 18 reporting tests pass, including strict failures,
+detailed logs. Full output: `/tmp/meowy-scalar-ports-gate.log`; individual logs:
+`build/verification-scalar-ports`. All 18 reporting tests pass, including strict failures,
 partial/missing output and dynamic totals. No compiler or conformance expectations changed.
-All four final documentation/tooling checks pass (`/tmp/meowy-test-report-docs.log`).
+All four final documentation/tooling checks pass (`/tmp/meowy-scalar-ports-docs.log`).
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.
