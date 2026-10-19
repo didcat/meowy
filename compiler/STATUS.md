@@ -5402,10 +5402,10 @@ exhausted the retained work budget during snapshot capture: 3,804,867 units befo
 dispatches expression capture only at Normal ports and avoids unused operation
 lookups for unavailable/structural states. The same case now passes at 4,167,040
 work units (`/tmp/meowy-scalar-wrappers-work-after.log`). Temporary measurements
-are removed. All 234 focused scalar tests and Clippy pass. Commit the snapshot
-dispatch repair separately from value transport; no limit, identity check or source
-expectation is relaxed.
-Forward coercion qualification follows the transport slice.
+are removed. All 234 focused scalar tests and Clippy pass. The snapshot dispatch
+repair is committed as `f0d92d7b`; no limit, identity check or source expectation
+is relaxed. Group value transport is validated and ready to commit. Forward coercion
+qualification is next; no known failures remain.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.

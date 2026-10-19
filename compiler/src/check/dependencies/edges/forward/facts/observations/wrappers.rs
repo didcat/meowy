@@ -5,6 +5,7 @@ use crate::check::dependencies::grouped::MAX_GROUPS;
 pub(in super::super) struct Forward {
     pub(in super::super) owner: usize,
     pub(in super::super) input: PointId,
+    pub(in super::super) control: bool,
 }
 
 impl Checker {
@@ -54,6 +55,7 @@ impl Checker {
                 Forward {
                     owner: group.owner,
                     input,
+                    control: false,
                 },
                 span,
                 &mut parts,

@@ -1,9 +1,10 @@
 use super::super::super::super::effects::Effect;
 use super::*;
 
+mod forwarded;
 mod reads;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Scalar {
     pub(super) domain: Domain,
     pub(super) version: Option<Version>,
@@ -35,12 +36,18 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<()> {
-        if !flow.spend(1) {
+        if !flow.spend(2) {
             return Err(budget(span));
         }
         let Port::Normal(point) = port else {
             return Ok(());
         };
+        if let Some(forward) = observations.forwarded.get(&port) {
+            if observations.sources.contains_key(&port) {
+                return Err(invalid(span));
+            }
+            return self.forward_expression(point, forward, flow, span);
+        }
         let Some(source) = observations.sources.get(&port) else {
             return Ok(());
         };
@@ -98,6 +105,16 @@ impl Snapshots {
             owner: *owner,
             value,
         };
+        self.record_expression(point, fact, flow, span)
+    }
+
+    pub(super) fn record_expression(
+        &mut self,
+        point: PointId,
+        fact: Fact,
+        flow: &mut Flow,
+        span: Span,
+    ) -> Result<()> {
         let weight = fact.weight();
         if self.expressions.len() >= MAX_EDGES || !flow.spend(weight + 2) {
             return Err(budget(span));
