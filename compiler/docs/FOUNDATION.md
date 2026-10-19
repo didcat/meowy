@@ -2204,10 +2204,36 @@ retain traversal order. The explicit scalar schedule selects its own source orde
 checks share the existing internal work/payload limits, not a completed per-query logical ledger.
 The original 1000-matcher acceptance case still fits those limits.
 
-Scalar states remain seeded only at entries. Per-port snapshots, conservative state joins at
-incomplete boundaries, Bind/Write and current-read transfers, guarded call invalidation,
-alias/emission handling, restart resets, arithmetic/guard transfers and proof outcomes remain
-separate work. Checked read `normal` remains distinct from an observed result stage.
+An immutable snapshot arena now retains independent entry copies and before/after views at
+every scheduled port. Unchanged states share private handles; canonical joins allocate a new
+state once. Publishing another port cannot replace an earlier row or mutate its cells/domains.
+Unvisited ports, reached ports with unavailable analysis input, and known bottom remain distinct.
+
+Incoming states use completed predecessor outputs in source order. Every contribution is
+validated, including when an earlier input is unavailable. Unreached predecessors and restart
+edges leave the input unavailable; even a completed restart cannot provide header facts before
+reset qualification. Branch routes alone supply no guard authority. Distinct known states use
+the existing domain, initialization, version/origin and control-mark joins; identical handles
+reuse the same immutable state without manufacturing identity from equal domains.
+
+Capture currently forwards unchanged storage state through structural Entry, Normal and
+BlockEntry ports. Other operations and scope/result boundaries produce unavailable output
+until their transfers are qualified. Known bottom remains bottom without applying a transfer.
+Definition associations check original parameter/Bind/Write sites and independent normal
+observations. Cached candidate values do not initialize a captured binding or specialize a
+callee. Missing analysis input establishes no value, initialization or dependency-independence
+proof. Existing dependency marks and ordinary checking remain unchanged.
+
+Seed copies, joined states and both views of each port share the existing payload/work limits.
+Partial schedules, stale owners/handles and late definition or resource failures expose no
+partial context. Port membership uses hash lookups without choosing traversal order; the
+original 1000-matcher acceptance case still fits unchanged limits. Snapshot inspection stays
+test-only until production value/query consumers are qualified.
+
+These snapshots describe storage state. Expression-result facts, qualified literal/current-read
+and Bind/Write transfers, guarded call invalidation, alias/emission handling, restart resets,
+arithmetic/guard transfers and proof outcomes remain separate work. Checked read `normal`
+remains distinct from an observed result stage; per-query logical charging is still incomplete.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

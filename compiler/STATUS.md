@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-18. Scalar source ports, schedules and definition sites pass the full gate.
+Updated: 2026-10-19. Bounded scalar snapshot transport passes the full gate.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: implement scalar value propagation using the qualified source-port handoff below.
+Next: implement qualified scalar value transfers using the snapshot handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5269,57 +5269,72 @@ contracts and source cases are unchanged. All four final documentation/tooling c
 (`/tmp/meowy-scalar-ports-docs.log`). No known failures remain.
 Baseline `92714122` is recorded in `/tmp/meowy-scalar-ports-baseline.json`; user files are excluded.
 
-### Next: scalar value propagation
+### Bounded scalar snapshot transport
 
-Current dependency-ordered commit plan:
+Each scheduled port now retains immutable before/after storage-state views. Entry copies,
+canonical joined states and private handles live in one bounded arena. Unchanged states are
+shared; recording a later port cannot replace an earlier row or mutate its cells/domains.
+Unvisited ports, unavailable analysis inputs and known bottom remain distinct. Inspection
+accessors stay test-only until production value/query consumers need them.
 
-1. Completed (`680a2862`): immutable snapshot arena with seed, before and after views. Share
-   unchanged states by private handles; distinguish unvisited, unavailable and bottom.
-   Validate owner identity and reserve payload before publishing each row.
-2. Completed (`68c26ab3`): join contributions in qualified predecessor order. Preserve missing and
-   restart inputs as unavailable, reject unfinished predecessors and retain canonical
-   joins and historical identities without interpreting branch guards.
-3. Completed (`ef477820`): qualify exact join work/payload limits, branch-route authority and
-   completed-restart boundaries before scheduled capture. All six join tests pass
-   (`/tmp/meowy-scalar-snapshots-inputs.log`); scheduled capture is next.
-4. Completed: capture every scheduled port with conservative transfer boundaries. Only structural
-   entry/normal ports forward an unchanged state; source operations and scope/result
-   boundaries remain unavailable until their transfers are qualified. Preserve definitions
-   as metadata, and test diamonds, empty/never frames, stops and independent owners.
-   All 13 snapshot tests and 1,346 forward tests pass. Port-membership hash lookup (`d1465268`)
-   preserves exact sites, source order and order-independent work, restoring the
-   original 1000-matcher acceptance case without changing limits. Formatting and all-target
-   Clippy pass (`/tmp/meowy-scalar-snapshots-forward.log`, `/tmp/meowy-scalar-snapshots-clippy.log`).
-5. Link structural evidence, refresh the handoff, run `make test` and audit protected
-   references, source cases and capability pins.
+Incoming contributions read completed predecessor outputs in source order. All identities and
+readiness checks run even after an unavailable input. Missing/external and restart inputs remain
+unavailable; a later restart snapshot cannot establish header facts. Branch routes grant no
+guard authority. Identical handles reuse an immutable state; distinct known states use the
+existing canonical domain/initialization/version/origin/control joins. Equal domains do not
+invent identity. Unavailable input proves neither initialization nor dependency independence.
 
-Inspection confirms that whole-state copies at every port would multiply payload by the
-number of ports. The snapshot arena will own each changed state once and expose immutable
-views. Entry states remain independent copies; no query result, mutation transfer or guard
-authority is enabled by this carrier work. The seed arena and immutable before/after rows
-pass three focused tests, the original 1000-matcher acceptance case, formatting and all-target
-Clippy (`/tmp/meowy-scalar-snapshots-arena.log`, `/tmp/meowy-scalar-snapshots-matchers.log`,
-`/tmp/meowy-scalar-snapshots-clippy.log`). Inspection accessors remain test-only until
-transfer consumers need them. Six arena/join tests, formatting and Clippy pass
-(`/tmp/meowy-scalar-snapshots-focused.log`). Exact join limits and scheduled capture are next.
+Capture forwards unchanged state through structural Entry, Normal and BlockEntry ports. Other
+operations and scope/result boundaries remain unavailable until qualified transfers exist;
+known bottom is preserved without applying a transfer. Parameter domains come from declarations,
+not caller arguments. Bind/Write candidate values cannot initialize snapshots. Original
+definition sites and independent normal observations are checked before publishing the complete
+context. Partial schedules, foreign owners and late resource/definition failures publish nothing.
 
-1. Extend `facts/state` with bounded per-port snapshots and incoming-state contributions
-   using `graph`, `schedule` and `definitions`. Preserve the distinction between missing
-   predecessor evidence and bottom, keep historical copies independent, and use actual
-   current state at a qualified port. Test diamonds, stops, empty/never entries and late
-   failures without producing query outcomes.
-2. Apply qualified Bind/Write events and current-version reads in that traversal. Qualify
-   guard authority and E225 dependencies before restricting states; checked read `normal`
-   is not an independent result observation. Include guarded Call transfers and conservative
-   Path/Indirect/alias fallback before using facts after mutations. Alias scalar transfers
-   need completed backing-field types/layouts; a canonical local's declared type is not
-   that layout. Missing transfer knowledge never proves no mutation.
-3. Qualify declared call-result/unsupported-transfer fallback, nullable/alias/emission
-   transfers, restart headers, arithmetic and ordinary guards in separate slices. Restart
-   headers must forget every possibly modified fact without bounded unrolling. Preserve
-   ordinary errors and complete the remaining profile/E225 and per-query work obligations
-   before proof evaluation; never reconstruct history from mutable caches or specialize
-   callees from their bodies. Validate each slice, then run `make test` and audit pins.
+| Commit | Reviewable slice |
+| --- | --- |
+| `680a2862` | Independent seed snapshots and immutable before/after rows |
+| `68c26ab3` | Completed predecessor contributions and canonical joins |
+| `ef477820` | Exact join limits, branch authority and restart boundaries |
+| `d1465268` | Linear port membership lookup with unchanged processing order |
+| `9cc8c2b7` | Scheduled capture, conservative boundaries and definition associations |
+
+All 13 snapshot tests, the lookup regression and 1,346 forward tests pass. The original
+1000-matcher case passes under unchanged work/payload limits, as do all-target Clippy and
+formatting. No temporary measurement code or relaxed expectations were introduced.
+Focused logs: `/tmp/meowy-scalar-snapshots-arena.log`, `/tmp/meowy-scalar-snapshots-inputs.log`,
+`/tmp/meowy-scalar-snapshots-capture.log`, `/tmp/meowy-scalar-snapshots-forward.log`,
+`/tmp/meowy-scalar-snapshots-matchers.log`, `/tmp/meowy-scalar-snapshots-clippy.log`.
+Four new structural evidence files are linked from types, values, memory and proof; the port
+lookup file was already linked. All 14 `make test` groups pass: 3432 library, 923 native,
+86 Python and 495 required conformance cases, both editors, runtime/sanitizers, formatting,
+lint, build and contracts (`/tmp/meowy-scalar-snapshots-gate.log`; detailed logs in
+`build/verification-scalar-snapshots`). The 19 known gaps match exact pinned names/reasons;
+debug/release have zero failures. Preservation passes for 589 protected files and all 37
+reference hashes/gaps/prior evidence (`/tmp/meowy-scalar-snapshots-preservation.log`).
+All four final documentation/tooling checks pass (`/tmp/meowy-scalar-snapshots-docs.log`).
+No known failures remain. Baseline `b34adab2` is recorded in
+`/tmp/meowy-scalar-snapshots-baseline.json`.
+User-owned `docs/programs/hey/` remains excluded.
+
+### Next: qualified scalar value transfers
+
+1. Add bounded expression-result facts at qualified observation stages, starting with
+   literals and current-state local reads. Reuse `facts/literals`, `definitions` and
+   `state/snapshots`; validate point/owner/type/version identity and preserve actual
+   before/after state. Checked read `normal` is not an independent result observation.
+   Enable snapshot accessors only for the qualified consumer, and test stopped, partial,
+   copied and unavailable inputs without producing query outcomes.
+2. Apply Bind/Write updates and current-version copies without borrowing future candidate
+   values. Qualify guard authority and E225 dependencies before restricting states; include
+   guarded Call transfers and conservative Path/Indirect/alias fallback before using facts
+   after mutations. Alias scalar transfers need completed backing-field layouts; a canonical
+   local's declared type is not that layout. Missing knowledge never proves no mutation.
+3. Qualify scope/result and nullable/alias/emission transfers, declared call-result fallback,
+   restart resets and arithmetic/ordinary guards in separate slices. Restart headers must
+   forget every possibly modified fact without bounded unrolling. Preserve ordinary errors
+   and complete profile/E225 and per-query logical charging before proof outcomes. Validate
+   each slice, run `make test`, and preserve exact source expectations and capability pins.
 
 The requested Makefile remains complete; the root tracker records release build and staged
 installation/execution validation. Reference formatting and reference-bearing lists remain
@@ -6940,7 +6955,8 @@ inputs are qualified. Bounded scalar domains, literal/declared seeds, initial sc
 and immutable direct copies are implemented. Mutable Bind/Write events now retain qualified
 statements, permissions, declared types and candidate versions. Bounded state carriers,
 guarded joins, declared BlockEntry states, source ports, predecessor graphs, acyclic schedules
-and definition-site associations are implemented. Per-port value propagation is next.
+and definition-site associations feed immutable per-port snapshot transport. Qualified
+expression values and mutation transfers are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
