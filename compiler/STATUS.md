@@ -5404,8 +5404,12 @@ lookups for unavailable/structural states. The same case now passes at 4,167,040
 work units (`/tmp/meowy-scalar-wrappers-work-after.log`). Temporary measurements
 are removed. All 234 focused scalar tests and Clippy pass. The snapshot dispatch
 repair is committed as `f0d92d7b`; no limit, identity check or source expectation
-is relaxed. Group value transport is validated and ready to commit. Forward coercion
-qualification is next; no known failures remain.
+is relaxed. Group value transport is committed as `6fce86c3`. Forward coercion
+qualification and typed-RHS value forwarding pass all 238 focused scalar tests
+(`/tmp/meowy-scalar-wrappers-coercions.log`), the 1000-matcher case and Clippy.
+The budget fixture now preserves wrapper associations and compares expression histories.
+Conversions, projections and stopped coercions remain conservative. Unchanged narrowing
+is next; no known failures remain.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.

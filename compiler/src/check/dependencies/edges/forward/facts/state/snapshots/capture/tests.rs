@@ -204,6 +204,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let cost = checker.flow.work - start;
     let used = parts - expected.room();
     let sources = observations.sources;
+    let forwarded = observations.forwarded;
     for fault in 0..3 {
         let mut order = orders.clone();
         match fault {
@@ -227,6 +228,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
         }
         let observations = observations::Observations {
             sources: sources.clone(),
+            forwarded: forwarded.clone(),
             ..observations::Observations::new(&definitions)
         };
         assert!(
@@ -253,6 +255,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     }
     let observations = observations::Observations {
         sources,
+        forwarded,
         ..observations::Observations::new(&definitions)
     };
     let before = format!("{reports:?}{entries:?}{definitions:?}");
@@ -272,6 +275,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             assert_eq!(snapshots.room(), 0);
             assert_eq!(snapshots.rows, expected.rows);
             assert_eq!(snapshots.states, expected.states);
+            assert_eq!(snapshots.expressions, expected.expressions);
         }
         assert_eq!(format!("{reports:?}{entries:?}{definitions:?}"), before);
     }

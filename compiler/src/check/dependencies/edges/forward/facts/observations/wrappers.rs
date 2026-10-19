@@ -61,6 +61,42 @@ impl Checker {
                 &mut parts,
             )?;
         }
+        if reports.effects.len() > MAX_EDGES || !self.flow.spend(reports.effects.len() + 1) {
+            return Err(budget(span));
+        }
+        for (&point, (owner, effect)) in &reports.effects {
+            let (family, input, control) = match effect {
+                Effect::Coercion(op) => {
+                    let input = self.forward_coercion_input(reports, point, *owner, span)?;
+                    if op.op == crate::check::dependencies::CoercionKind::Forward && !op.primary {
+                        if !self.flow.spend(2) {
+                            return Err(budget(span));
+                        }
+                        if op.result != graph.nodes.contains_key(&Port::Normal(point))
+                            || graph.nodes.contains_key(&Port::Operation(point))
+                        {
+                            return Err(invalid(span));
+                        }
+                    }
+                    (Family::Coercion, input, op.control)
+                }
+                _ => continue,
+            };
+            if let Some(input) = input {
+                self.insert_scalar_forward(
+                    graph,
+                    &mut observations,
+                    (family, Port::Normal(point)),
+                    Forward {
+                        owner: *owner,
+                        input,
+                        control,
+                    },
+                    span,
+                    &mut parts,
+                )?;
+            }
+        }
         Ok((observations, parts))
     }
 
@@ -106,3 +142,6 @@ impl Checker {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod coercions;
