@@ -5419,8 +5419,9 @@ retaining ordered roots; version insertion reuses one BTree entry. The new views
 the existing payload allowance. Candidate/entry preparation drops by 54,932 work units;
 the 1000-matcher case and all 243 focused scalar tests now pass. Temporary measurements
 are removed; all 243 focused scalar tests, the stress case, formatting and Clippy pass.
-The optimization is ready for its separate commit. All limits, validations, value
-histories and source expectations are unchanged; narrowing is ready immediately after it.
+The lookup optimization is committed separately. All limits, validations, value
+histories and source expectations are unchanged. Unchanged narrowing passes the same
+checks and is ready to commit. Unchanged ascription operation/result handling is next.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.

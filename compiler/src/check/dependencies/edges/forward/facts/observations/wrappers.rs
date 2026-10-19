@@ -80,6 +80,20 @@ impl Checker {
                     }
                     (Family::Coercion, input, op.control)
                 }
+                Effect::Narrowing(op) => {
+                    let input = self.unchanged_narrowing_input(reports, point, *owner, span)?;
+                    if !op.changed {
+                        if !self.flow.spend(2) {
+                            return Err(budget(span));
+                        }
+                        if op.result != graph.nodes.contains_key(&Port::Normal(point))
+                            || graph.nodes.contains_key(&Port::Operation(point))
+                        {
+                            return Err(invalid(span));
+                        }
+                    }
+                    (Family::Narrowing, input, op.control)
+                }
                 _ => continue,
             };
             if let Some(input) = input {
@@ -145,3 +159,6 @@ mod tests;
 
 #[cfg(test)]
 mod coercions;
+
+#[cfg(test)]
+mod narrowing;

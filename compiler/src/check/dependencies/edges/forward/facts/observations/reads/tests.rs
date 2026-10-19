@@ -33,9 +33,7 @@ pub(crate) fn scalar_read_observations_require_actual_results_and_share_declared
         .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
         .unwrap();
     graph.nodes.remove(&Port::Normal(points[0]));
-    let (observed, parts) = checker
-        .scalar_observations(&reports, &graph, &definitions, Span::default(), MAX_EDGES)
-        .unwrap();
+    let (observed, parts) = (Observations::new(&definitions), MAX_EDGES);
     let (observed, _) = checker
         .scalar_read_observations(&program, &reports, &graph, observed, Span::default(), parts)
         .unwrap();
@@ -142,9 +140,7 @@ pub(crate) fn scalar_read_observations_reject_stale_reports_definitions_and_port
                 .site
                 .owner += 1;
         }
-        let (observed, parts) = checker
-            .scalar_observations(&reports, &graph, &definitions, Span::default(), MAX_EDGES)
-            .unwrap();
+        let (observed, parts) = (Observations::new(&definitions), MAX_EDGES);
         let before = format!("{reports:?}{definitions:?}{graph:?}");
         assert!(
             checker
