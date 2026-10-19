@@ -56,7 +56,8 @@ proof outcomes remain gated.
 Current work adds bounded per-port snapshot histories and incoming-state joins, with
 conservative boundaries for transfers that remain unimplemented. The ordered commit plan
 is in the compiler handoff. Seed snapshots pass focused tests, the 1000-matcher regression,
-formatting and Clippy; incoming-state joins are next.
+formatting and Clippy. All 13 snapshot tests, 1,346 forward tests and the original
+1000-matcher case pass; port lookup is now linear without changing processing order.
 
 Seventeen new structural regressions cover identity, diamonds, stopped paths, source order,
 hash-seed independence and exact limits. Focused tests, all-target Clippy, formatting and the

@@ -7,7 +7,7 @@ pub(super) struct Site {
     pub(super) span: Span,
 }
 
-pub(super) type Ports = BTreeMap<Port, Site>;
+pub(super) type Ports = HashMap<Port, Site>;
 
 impl Checker {
     pub(super) fn scalar_ports(
@@ -43,10 +43,7 @@ impl Checker {
                 return Err(invalid(span));
             }
             for &port in &walk.ports {
-                if !self
-                    .flow
-                    .spend(ports.len().checked_ilog2().unwrap_or(0) as usize + 1)
-                {
+                if !self.flow.spend(1) {
                     return Err(budget(span));
                 }
                 parts = parts.checked_sub(1).ok_or_else(|| budget(span))?;

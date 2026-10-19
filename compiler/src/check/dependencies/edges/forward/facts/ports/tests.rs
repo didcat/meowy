@@ -2,6 +2,33 @@ use super::super::versions::tests::context;
 use super::*;
 
 #[test]
+pub(crate) fn scalar_ports_keep_linear_lookup_work_and_order_independent_membership() {
+    let source = (0..64)
+        .map(|index| format!("n{index}:{index};"))
+        .collect::<String>();
+    let (mut checker, program, mut reports) = context(&source);
+    let (_, _, entries, parts) = checker
+        .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
+        .unwrap();
+    let mut expected = None;
+    for _ in 0..4 {
+        reports.entries.get_mut(&0).unwrap().1.ports.reverse();
+        let start = checker.flow.work;
+        let (ports, left) = checker
+            .scalar_ports(&reports, &entries, Span::default(), parts)
+            .unwrap();
+        let work = checker.flow.work - start;
+        assert!(work <= ports.len() * 10 + 10);
+        let actual = (ports, left, work);
+        if let Some(expected) = &expected {
+            assert_eq!(&actual, expected);
+        } else {
+            expected = Some(actual);
+        }
+    }
+}
+
+#[test]
 pub(crate) fn scalar_ports_retain_owner_scope_source_and_independent_entries() {
     let (mut checker, program, reports) = context(
         "flag:false;'out{'inner{|flag|'out->n:1;'inner.leave()}};unused:(n<int32>){copy:n}",
