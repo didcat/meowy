@@ -32,6 +32,8 @@ impl Checker {
             self.scalar_definitions(reports, &versions, &events, &graph, span, parts)?;
         let (observations, parts) =
             self.scalar_observations(reports, &graph, &definitions, span, parts)?;
+        let (observations, parts) =
+            self.scalar_read_observations(program, reports, &graph, observations, span, parts)?;
         self.scalar_snapshots(&graph, &orders, &entries, &observations, span, parts)?;
         Ok(())
     }

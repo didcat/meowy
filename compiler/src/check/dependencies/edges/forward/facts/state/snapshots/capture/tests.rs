@@ -21,6 +21,16 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
     let (observations, parts) = checker
         .scalar_observations(&reports, &graph, &definitions, Span::default(), parts)
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_read_observations(
+            &program,
+            &reports,
+            &graph,
+            observations,
+            Span::default(),
+            parts,
+        )
+        .unwrap();
     let snapshots = checker
         .scalar_snapshots(
             &graph,
@@ -49,7 +59,7 @@ pub(crate) fn scalar_capture_preserves_storage_across_literal_stages() {
 }
 
 #[test]
-pub(crate) fn scalar_capture_retains_parameter_inputs_and_stops_at_unqualified_operations() {
+pub(crate) fn scalar_capture_preserves_parameter_reads_and_stops_at_unqualified_operations() {
     let (mut checker, program, reports, snapshots) = capture(
         "d:@\"debug\";f:(n<int32>){n};stop<never>:(){d.panic(\"stop\")};f(7);stop();late:9",
     );
@@ -75,7 +85,10 @@ pub(crate) fn scalar_capture_retains_parameter_inputs_and_stops_at_unqualified_o
         Domain::declared(&program.locals[local], &mut checker.flow, Span::default()).unwrap()
     );
     assert_eq!(version.unwrap().definition, Definition::Parameter(0));
-    assert_eq!(snapshots.after(Port::Operation(point)), Some(View::Missing));
+    assert_eq!(
+        snapshots.after(Port::Operation(point)),
+        Some(View::Known(before))
+    );
     let stop = checker
         .invocations
         .values()
@@ -215,6 +228,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
         let observations = observations::Observations {
             definitions: &definitions,
             sources: sources.clone(),
+            declared: HashMap::new(),
         };
         assert!(
             checker
@@ -241,6 +255,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let observations = observations::Observations {
         definitions: &definitions,
         sources,
+        declared: HashMap::new(),
     };
     let before = format!("{reports:?}{entries:?}{definitions:?}");
     for (room, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {

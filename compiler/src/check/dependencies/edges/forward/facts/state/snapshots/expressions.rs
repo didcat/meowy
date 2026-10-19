@@ -45,8 +45,10 @@ impl Snapshots {
         if !flow.spend(3) {
             return Err(budget(span));
         }
-        let (owner, Effect::Scalar(observed)) = *source else {
-            return Err(invalid(span));
+        let (owner, observed) = match *source {
+            (owner, Effect::Scalar(observed)) => (owner, observed),
+            (_, Effect::Read { .. }) => return Ok(()),
+            _ => return Err(invalid(span)),
         };
         let row = self.rows.get(&port).ok_or_else(|| invalid(span))?;
         if row.owner != *owner || row.before != row.after || !observed.result {

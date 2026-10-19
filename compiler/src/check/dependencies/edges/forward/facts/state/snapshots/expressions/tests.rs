@@ -60,6 +60,7 @@ pub(crate) fn scalar_expression_records_require_result_stages_and_preserve_input
     let owner = *owner;
     let observations = observations::Observations {
         definitions: &definitions,
+        declared: HashMap::new(),
         sources: [
             (Port::Operation(point), &reports.effects[&point]),
             (Port::Normal(point), &reports.effects[&point]),

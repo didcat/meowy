@@ -1,10 +1,13 @@
 use super::super::effects::Effect;
 use super::*;
 
+mod reads;
+
 #[derive(Debug)]
 pub(super) struct Observations<'a, 'd> {
     pub(super) definitions: &'d definitions::Definitions,
     pub(super) sources: HashMap<Port, &'a (usize, Effect)>,
+    pub(super) declared: HashMap<hir::LocalId, domain::Domain>,
 }
 
 impl Checker {
@@ -23,6 +26,7 @@ impl Checker {
         let mut observations = Observations {
             definitions,
             sources: HashMap::new(),
+            declared: HashMap::new(),
         };
         for (&point, source) in &reports.effects {
             let (owner, Effect::Scalar(observed)) = source else {
