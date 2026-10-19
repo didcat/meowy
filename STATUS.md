@@ -53,6 +53,11 @@ snapshots; future Bind/Write values cannot become entry-time facts. The
 implementation/coverage slices. Qualified propagation across source CFG ports is next;
 mutation transfers and proof outcomes remain gated.
 
+Current work qualifies source CFG port identities, predecessor edges, a bounded source-order
+schedule and scalar definition sites. The dependency-ordered commit plan is in the compiler
+handoff. The graph lookup prerequisite saves 1.39 million work units without changing
+traversal order; the original 1000-matcher acceptance case and focused forward tests pass.
+
 All 14 `make test` groups pass: 3401 library, 923 native, 80 Python and 495 required
 conformance tests, with 19 unchanged gaps and zero debug/release failures
 (`/tmp/meowy-scalar-states-final-gate.log`). The original 1000-matcher acceptance case passes

@@ -69,3 +69,40 @@ pub(crate) fn structural_walk_reports_missing_sources_including_an_unknown_seed(
     assert!(walk.forward.is_empty());
     assert!(walk.backedges.is_empty());
 }
+
+#[test]
+pub(crate) fn structural_walk_keeps_order_and_linear_work_independent_of_hash_seeds() {
+    let edges = (0..512)
+        .flat_map(|id| {
+            [
+                Edge::new(Port::Entry(id), Port::Entry(id + 1), Route::Next),
+                Edge::new(Port::Entry(id), Port::Normal(id), Route::False),
+                Edge::new(Port::Normal(id), Port::Entry(id + 1), Route::Join),
+                Edge::new(Port::Normal(id), Port::BlockEntry(id), Route::Backedge),
+            ]
+        })
+        .collect::<Vec<_>>();
+    let mut expected = None;
+    for _ in 0..8 {
+        let mut flow = crate::flow::Flow::new();
+        let graph = ForwardIndex::build(
+            edges.iter().map(|edge| (Family::Branch, *edge)).collect(),
+            &mut flow,
+            Span::default(),
+        )
+        .unwrap();
+        let walk = graph
+            .walk(Port::Entry(0), &mut flow, Span::default())
+            .unwrap();
+        assert_eq!(walk.ports.len(), 1025);
+        assert_eq!(walk.forward.len(), 1536);
+        assert_eq!(walk.backedges.len(), 512);
+        assert!(flow.work <= edges.len() * 8 + 4);
+        let actual = (walk, flow.work);
+        if let Some(expected) = &expected {
+            assert_eq!(&actual, expected);
+        } else {
+            expected = Some(actual);
+        }
+    }
+}

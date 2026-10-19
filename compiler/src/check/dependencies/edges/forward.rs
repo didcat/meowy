@@ -1,5 +1,5 @@
 use super::{inventory::Family, *};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 mod arguments;
 mod bindings;
@@ -24,7 +24,7 @@ pub(crate) struct Links {
 #[derive(Debug)]
 pub(crate) struct ForwardIndex {
     pub(crate) edges: Vec<(Family, Edge)>,
-    pub(crate) outgoing: BTreeMap<Port, Links>,
+    pub(crate) outgoing: HashMap<Port, Links>,
     pub(crate) operations: BTreeMap<PointId, usize>,
 }
 
@@ -40,11 +40,11 @@ impl ForwardIndex {
         }
         let mut index = Self {
             edges,
-            outgoing: BTreeMap::new(),
+            outgoing: HashMap::new(),
             operations: BTreeMap::new(),
         };
         for (position, (_, edge)) in index.edges.iter().enumerate() {
-            if !flow.spend(index.outgoing.len().checked_ilog2().unwrap_or(0) as usize * 2 + 3) {
+            if !flow.spend(3) {
                 return Err(budget());
             }
             let links = index.outgoing.entry(edge.from).or_default();

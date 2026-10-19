@@ -5226,6 +5226,35 @@ The concurrently edited `docs/programs/hey/` directory remains untouched and exc
 
 ### Next: scalar state propagation at source CFG ports
 
+Current dependency-ordered commit plan:
+
+0. Replace ordered-map/set lookups in forward adjacency and reachability membership
+   with bounded hash lookups. Preserve original edge-vector traversal order and prove
+   hash-seed-independent reports/work before committing this prerequisite separately.
+1. Qualify reached ports against original owners/scopes and associate declared entry
+   states with their exact BlockEntry ports, with stopped-path and owner regressions.
+2. Retain bounded predecessor edges, including unreached sources and restart boundaries,
+   without treating a missing predecessor as an initialized or bottom scalar state.
+3. Derive an acyclic schedule from those edges, joining predecessors before successors
+   and breaking ready-port ties by source location; test diamonds, cycles and budgets.
+4. Associate parameter/Bind/Write candidate versions with their qualified definition
+   ports, preserving operation/result stages and historical identity boundaries.
+5. Link structural evidence, document the remaining transfer gap and run the full gate.
+
+Inspection confirms that `Walk.ports` is breadth-first reachability, graph inventory order
+groups edge families, and neither is the required scalar processing order. Existing
+state entries, source points, scope/owner validators and bounded work accounting will be
+reused. This series qualifies the propagation inputs; value/mutation transfers and query
+outcomes remain separate. The first slice now associates entry states and reached ports
+with original owner/scope/span metadata. The adjacency/membership prerequisite reduces
+the 1000-matcher probe from 4,151,523 to 2,766,327 work units before the new 387,418-unit
+port pass. Original edge vectors still determine traversal; independent hash seeds give
+identical reports and charged work. The original acceptance test passes with unchanged
+limits (`/tmp/meowy-scalar-ports-matchers.log`). All 1,321 forward tests pass, including
+four port regressions and one temporary measurement probe
+(`/tmp/meowy-scalar-ports-forward.log`); the temporary probe has been removed.
+Predecessor/schedule and definition-site qualification remain next.
+
 1. Qualify the state-to-port association and a bounded traversal schedule from ForwardIndex
    edges, preserving owner, route, scope and observation stages. Entry states exist only at
    BlockEntry; `Walk.ports` is reachability traversal, not execution order. Bind merged/current

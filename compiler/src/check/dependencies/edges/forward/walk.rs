@@ -1,5 +1,5 @@
 use super::*;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub(crate) struct Walk {
@@ -38,7 +38,7 @@ impl ForwardIndex {
             return Err(budget());
         }
         let limit = self.edges.len() + 1;
-        let mut seen = BTreeSet::from([start]);
+        let mut seen = HashSet::from([start]);
         let mut walk = Walk {
             ports: vec![start],
             ..Walk::default()
@@ -46,7 +46,7 @@ impl ForwardIndex {
         let mut cursor = 0;
         while cursor < walk.ports.len() {
             let port = walk.ports[cursor];
-            if !flow.spend(self.outgoing.len().checked_ilog2().unwrap_or(0) as usize + 2) {
+            if !flow.spend(2) {
                 return Err(budget());
             }
             cursor += 1;
@@ -60,7 +60,7 @@ impl ForwardIndex {
             for &position in links.forward.iter().chain(&links.backedges) {
                 if walk.forward.len() + walk.backedges.len() >= self.edges.len()
                     || walk.len() >= items
-                    || !flow.spend(seen.len().checked_ilog2().unwrap_or(0) as usize * 2 + 3)
+                    || !flow.spend(3)
                 {
                     return Err(budget());
                 }
