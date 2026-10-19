@@ -59,7 +59,12 @@ impl Checker {
         Ok((ports, parts))
     }
 
-    pub(self) fn scalar_port_site(&mut self, port: Port, owner: usize, span: Span) -> Result<Site> {
+    pub(super) fn scalar_port_site(
+        &mut self,
+        port: Port,
+        owner: usize,
+        span: Span,
+    ) -> Result<Site> {
         if self.port_owner(port, span)? != owner {
             return Err(invalid(span));
         }

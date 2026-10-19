@@ -5230,11 +5230,12 @@ Current dependency-ordered commit plan:
 
 0. Completed (`23d0b994`): bounded hash lookups for adjacency and reachability membership,
    preserving original edge-vector traversal and hash-seed-independent reports/work.
-1. Completed: qualify reached ports against original owners/scopes and associate declared
+1. Completed (`2c9bcca2`): qualify reached ports against original owners/scopes and associate declared
    entry states with exact BlockEntry ports; four focused regressions and formatting pass
    (`/tmp/meowy-scalar-ports-sites.log`).
-2. Retain bounded predecessor edges, including unreached sources and restart boundaries,
-   without treating a missing predecessor as an initialized or bottom scalar state.
+2. Completed: bounded predecessor edges retain unreached sources and restart boundaries.
+   Incoming edges retain source metadata and sort by source location; unreached sources
+   have no state. Four graph regressions pass (`/tmp/meowy-scalar-ports-graph.log`).
 3. Derive an acyclic schedule from those edges, joining predecessors before successors
    and breaking ready-port ties by source location; test diamonds, cycles and budgets.
 4. Associate parameter/Bind/Write candidate versions with their qualified definition
