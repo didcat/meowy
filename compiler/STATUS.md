@@ -5388,9 +5388,12 @@ Dependency-ordered commit plan:
    update structural evidence and guides, run `make test`, strict conformance and
    the preservation audit, then refresh both handoffs.
 
-The constructor prerequisite passes all 228 focused scalar tests, formatting and
+The constructor prerequisite (`4eb876ea`) passes all 228 focused scalar tests, formatting and
 all-target Clippy (`/tmp/meowy-scalar-wrappers-construction.log`,
-`/tmp/meowy-scalar-wrappers-clippy.log`). No behavior or limits changed.
+`/tmp/meowy-scalar-wrappers-clippy.log`). Bounded group result associations are now
+implemented with original producer/site/predecessor validation; all 231 focused scalar
+tests pass (`/tmp/meowy-scalar-wrappers-groups.log`). Actual expression-fact forwarding
+is the next slice.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.

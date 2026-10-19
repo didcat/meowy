@@ -2,12 +2,15 @@ use super::super::effects::Effect;
 use super::*;
 
 mod reads;
+mod wrappers;
+pub(super) use wrappers::Forward;
 
 #[derive(Debug)]
 pub(super) struct Observations<'a, 'd> {
     pub(super) definitions: &'d definitions::Definitions,
     pub(super) sources: HashMap<Port, &'a (usize, Effect)>,
     pub(super) declared: HashMap<hir::LocalId, domain::Domain>,
+    pub(super) forwarded: HashMap<Port, Forward>,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -16,6 +19,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             definitions,
             sources: HashMap::new(),
             declared: HashMap::new(),
+            forwarded: HashMap::new(),
         }
     }
 }
@@ -59,7 +63,7 @@ impl Checker {
                 }
             }
         }
-        Ok((observations, parts))
+        self.scalar_wrapper_observations(reports, graph, observations, span, parts)
     }
 }
 
