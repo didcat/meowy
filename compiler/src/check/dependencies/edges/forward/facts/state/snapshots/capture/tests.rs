@@ -18,17 +18,34 @@ pub(super) fn capture(source: &str) -> (Checker, hir::Program, Reports, Snapshot
     let (definitions, parts) = checker
         .scalar_definitions(&reports, &versions, &events, &graph, Span::default(), parts)
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_observations(&reports, &graph, &definitions, Span::default(), parts)
+        .unwrap();
     let snapshots = checker
         .scalar_snapshots(
             &graph,
             &orders,
             &entries,
-            &definitions,
+            &observations,
             Span::default(),
             parts,
         )
         .unwrap();
     (checker, program, reports, snapshots)
+}
+
+#[test]
+pub(crate) fn scalar_capture_preserves_storage_across_literal_stages() {
+    let (checker, _, reports, snapshots) = capture("7;false;null;1.5;\"cat\"");
+    let entry = snapshots
+        .seed(Port::BlockEntry(reports.entries[&0].0))
+        .unwrap();
+    for point in checker.scalar_leaves.keys() {
+        for port in [Port::Operation(*point), Port::Normal(*point)] {
+            assert_eq!(snapshots.before(port), Some(View::Known(entry)));
+            assert_eq!(snapshots.after(port), Some(View::Known(entry)));
+        }
+    }
 }
 
 #[test]
@@ -157,19 +174,23 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let (mut definitions, parts) = checker
         .scalar_definitions(&reports, &versions, &events, &graph, Span::default(), parts)
         .unwrap();
+    let (observations, parts) = checker
+        .scalar_observations(&reports, &graph, &definitions, Span::default(), parts)
+        .unwrap();
     let start = checker.flow.work;
     let expected = checker
         .scalar_snapshots(
             &graph,
             &orders,
             &entries,
-            &definitions,
+            &observations,
             Span::default(),
             parts,
         )
         .unwrap();
     let cost = checker.flow.work - start;
     let used = parts - expected.room();
+    let sources = observations.sources;
     for fault in 0..3 {
         let mut order = orders.clone();
         match fault {
@@ -191,13 +212,17 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             }
             _ => unreachable!(),
         }
+        let observations = observations::Observations {
+            definitions: &definitions,
+            sources: sources.clone(),
+        };
         assert!(
             checker
                 .scalar_snapshots(
                     &graph,
                     &order,
                     &entries,
-                    &definitions,
+                    &observations,
                     Span::default(),
                     parts
                 )
@@ -213,6 +238,10 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
                 .owner -= 1;
         }
     }
+    let observations = observations::Observations {
+        definitions: &definitions,
+        sources,
+    };
     let before = format!("{reports:?}{entries:?}{definitions:?}");
     for (room, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {
         checker.flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
@@ -221,7 +250,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             &graph,
             &orders,
             &entries,
-            &definitions,
+            &observations,
             Span::default(),
             room,
         );

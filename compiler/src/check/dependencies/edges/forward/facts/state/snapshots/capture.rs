@@ -7,7 +7,7 @@ impl Checker {
         graph: &graph::Graph<'_>,
         orders: &schedule::Orders,
         entries: &Entries,
-        definitions: &definitions::Definitions,
+        observations: &observations::Observations<'_, '_>,
         span: Span,
         parts: usize,
     ) -> Result<Snapshots> {
@@ -31,7 +31,7 @@ impl Checker {
                 return Err(invalid(span));
             }
             for (position, &port) in order.iter().enumerate() {
-                if !self.flow.spend(2) {
+                if !self.flow.spend(3) {
                     return Err(budget(span));
                 }
                 let node = graph.nodes.get(&port).ok_or_else(|| invalid(span))?;
@@ -48,6 +48,7 @@ impl Checker {
                 };
                 let after = if bottom
                     || matches!(port, Port::Entry(_) | Port::Normal(_) | Port::BlockEntry(_))
+                    || observations.sources.contains_key(&port)
                 {
                     before
                 } else {
@@ -68,7 +69,7 @@ impl Checker {
         if snapshots.rows.len() != graph.nodes.len() {
             return Err(invalid(span));
         }
-        snapshots.definition_rows(definitions, &mut self.flow, span)?;
+        snapshots.definition_rows(observations.definitions, &mut self.flow, span)?;
         Ok(snapshots)
     }
 }

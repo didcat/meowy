@@ -9,6 +9,7 @@ mod domain;
 mod events;
 mod graph;
 mod literals;
+mod observations;
 mod ports;
 mod schedule;
 mod sources;
@@ -29,7 +30,9 @@ impl Checker {
         let (orders, parts) = self.scalar_schedule(&graph, &entries, span, parts)?;
         let (definitions, parts) =
             self.scalar_definitions(reports, &versions, &events, &graph, span, parts)?;
-        self.scalar_snapshots(&graph, &orders, &entries, &definitions, span, parts)?;
+        let (observations, parts) =
+            self.scalar_observations(reports, &graph, &definitions, span, parts)?;
+        self.scalar_snapshots(&graph, &orders, &entries, &observations, span, parts)?;
         Ok(())
     }
 

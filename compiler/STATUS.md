@@ -5319,6 +5319,35 @@ User-owned `docs/programs/hey/` remains excluded.
 
 ### Next: qualified scalar value transfers
 
+Current slice: bounded literal and current-state read observations. The existing
+snapshot capture stops at every operation, and checked read `normal` is producer
+metadata rather than an observed Result port. Reuse scalar report validation,
+declared types, definition locations and immutable snapshot handles; never recover
+current reads from cached initializer candidates.
+
+Dependency-ordered commit plan:
+
+1. Qualify literal observation ports and preserve their unchanged storage snapshots,
+   with operation/result, stopped-prefix and identity regressions.
+2. Capture bounded expression facts for literal results using the shared snapshot
+   allowance; cover independent observations and atomic resource failures.
+3. Qualify current-state local reads against declared types and definition versions,
+   retaining unavailable/partial/bottom distinctions, controls and historical copies.
+4. Integrate structural evidence and documentation, run the full `make test` gate,
+   audit unchanged reference/source expectations and pins, and refresh both handoffs.
+
+Literal port qualification and unchanged snapshot transport are complete. All 215
+focused scalar tests, the original 1000-matcher case, formatting and all-target
+Clippy pass (`/tmp/meowy-scalar-values-observations.log`,
+`/tmp/meowy-scalar-values-matchers.log`, `/tmp/meowy-scalar-values-clippy.log`).
+Independent-stage tests use explicitly partial observation graphs; ordinary graph
+construction still rejects inconsistent reachability. No known failures remain.
+Next implement bounded literal result facts, then current-state reads. Baseline
+`24f7274c` and 589 protected-file hashes are in
+`/tmp/meowy-scalar-values-baseline.json`. User-owned `docs/programs/hey/` remains
+untracked and excluded. Bind/Write updates, mutation invalidation and scope/result
+forwarding remain the following milestone.
+
 1. Add bounded expression-result facts at qualified observation stages, starting with
    literals and current-state local reads. Reuse `facts/literals`, `definitions` and
    `state/snapshots`; validate point/owner/type/version identity and preserve actual
