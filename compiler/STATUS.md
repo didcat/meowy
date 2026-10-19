@@ -5276,14 +5276,17 @@ Current dependency-ordered commit plan:
 1. Completed (`680a2862`): immutable snapshot arena with seed, before and after views. Share
    unchanged states by private handles; distinguish unvisited, unavailable and bottom.
    Validate owner identity and reserve payload before publishing each row.
-2. Join incoming contributions in qualified predecessor order. Preserve missing and
+2. Completed (`68c26ab3`): join contributions in qualified predecessor order. Preserve missing and
    restart inputs as unavailable, reject unfinished predecessors and retain canonical
    joins and historical identities without interpreting branch guards.
-3. Capture every scheduled port with conservative transfer boundaries. Only structural
+3. Independently qualify exact join work/payload limits, branch-route authority and
+   completed-restart boundaries before scheduled capture. All six join tests pass
+   (`/tmp/meowy-scalar-snapshots-inputs.log`); scheduled capture is next.
+4. Capture every scheduled port with conservative transfer boundaries. Only structural
    entry/normal ports forward an unchanged state; source operations and scope/result
    boundaries remain unavailable until their transfers are qualified. Preserve definitions
    as metadata, and test diamonds, empty/never frames, stops and independent owners.
-4. Link structural evidence, refresh the handoff, run `make test` and audit protected
+5. Link structural evidence, refresh the handoff, run `make test` and audit protected
    references, source cases and capability pins.
 
 Inspection confirms that whole-state copies at every port would multiply payload by the
