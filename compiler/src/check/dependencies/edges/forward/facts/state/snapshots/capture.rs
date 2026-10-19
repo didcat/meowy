@@ -64,6 +64,7 @@ impl Checker {
                     &mut self.flow,
                     span,
                 )?;
+                snapshots.expression(port, observations, &mut self.flow, span)?;
             }
         }
         if snapshots.rows.len() != graph.nodes.len() {
@@ -135,4 +136,4 @@ impl Snapshots {
 }
 
 #[cfg(test)]
-mod tests;
+pub(super) mod tests;

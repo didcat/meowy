@@ -1,7 +1,7 @@
 use super::super::super::super::versions::tests::context;
 use super::*;
 
-pub(super) fn capture(source: &str) -> (Checker, hir::Program, Reports, Snapshots) {
+pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports, Snapshots) {
     let (mut checker, program, reports) = context(source);
     let (versions, events, entries, parts) = checker
         .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)

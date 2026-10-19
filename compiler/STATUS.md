@@ -5342,7 +5342,12 @@ Clippy pass (`/tmp/meowy-scalar-values-observations.log`,
 `/tmp/meowy-scalar-values-matchers.log`, `/tmp/meowy-scalar-values-clippy.log`).
 Independent-stage tests use explicitly partial observation graphs; ordinary graph
 construction still rejects inconsistent reachability. No known failures remain.
-Next implement bounded literal result facts, then current-state reads. Baseline
+Literal observation transport is committed as `1bbd4ec6`. Bounded literal result
+records pass all 218 focused scalar tests (`/tmp/meowy-scalar-values-literals.log`).
+They share the snapshot allowance, preserve independent before/after states and
+distinguish unavailable input from bottom; operation-only stages create no result
+record. Current-state reads will be split into declaration/stage qualification and
+snapshot-value capture, each with focused regressions, before final integration. Baseline
 `24f7274c` and 589 protected-file hashes are in
 `/tmp/meowy-scalar-values-baseline.json`. User-owned `docs/programs/hey/` remains
 untracked and excluded. Bind/Write updates, mutation invalidation and scope/result
