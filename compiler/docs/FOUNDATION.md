@@ -2217,9 +2217,9 @@ the existing domain, initialization, version/origin and control-mark joins; iden
 reuse the same immutable state without manufacturing identity from equal domains.
 
 Capture forwards unchanged storage state through structural Entry, Normal and BlockEntry
-ports, qualified scalar literals and ordinary scalar reads. Other operations and scope/result
-boundaries produce unavailable output until their transfers are qualified. Known bottom
-remains bottom without applying a transfer.
+ports, qualified scalar literals, ordinary scalar reads and unchanged ascription operations.
+Other operations and scope/result boundaries produce unavailable output until their
+transfers are qualified. Known bottom remains bottom without applying a transfer.
 Definition associations check original parameter/Bind/Write sites and independent normal
 observations. Cached candidate values do not initialize a captured binding or specialize a
 callee. Missing analysis input establishes no value, initialization or dependency-independence
@@ -2245,12 +2245,33 @@ values never replace missing current-state evidence. Missing, uninitialized, par
 unavailable cells supply no value; bottom stays distinct. Equal domains cannot create identity,
 and copied result records remain unchanged after a later state changes.
 
-Expression records, declared domains and snapshot rows share the bounded allowance. Exact
-payload/work exhaustion, stale versions, wrong types, missing rows and duplicate publication
-reject without changing prior records. These are structural analysis facts; no proof query
-executes. Bind/Write updates, transparent-wrapper and scope/result transfers, guarded call
-invalidation, alias/emission handling, restart resets, arithmetic/guards and proof outcomes
-remain separate work. Per-query logical charging is still incomplete.
+Transparent groups, non-projecting Forward coercions, unchanged narrowing and unchanged
+ascriptions now forward observed inner expression facts to their original outer PointIds.
+Existing producer qualifiers validate exact owners, scopes, spans, kinds and inputs;
+the reached graph must retain the expected predecessor edge and independent stages.
+Groups, Forward coercions and unchanged narrowing have no operation stage. Ascription
+operation/result observations remain independent, and a result cannot invent an operation.
+
+Forwarding preserves the current storage snapshot and copies the domain, optional version,
+same-value origin and accumulated control marks. It creates no new version or equality
+identity. Missing inner facts or unavailable outer state remain unavailable, including
+result-only paths with a missing operation predecessor. Earlier copied facts retain their
+own domains and controls. Predicates, changed types, primary projections, conversions,
+stopped operands and unsupported sources gain no scalar transfer. Calls and storage
+updates still stop current-state propagation; earlier facts remain historical.
+
+Expression records, wrapper associations, declared domains and snapshot rows share the
+bounded allowance. Exact payload/work exhaustion, stale versions, wrong types, missing
+rows and duplicate publication reject without changing prior records. These are structural
+analysis facts; no proof query executes. Bind/Write updates, scope/result transfers,
+guarded call invalidation, alias/emission handling, restart resets, arithmetic/guards and
+proof outcomes remain separate work. Per-query logical charging is still incomplete.
+
+Snapshot capture dispatches expression handling only at result ports and avoids unused
+operation lookups for unavailable or structural states. Candidate-copy lookup uses bounded
+hash views and membership sets while preserving ordered roots and version/value validation.
+Version insertion reuses one BTree entry. These changes preserve the 1000-matcher regression
+under the original work and payload limits; hash order never selects processing order.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

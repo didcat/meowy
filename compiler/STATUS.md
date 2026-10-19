@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-19. Scalar literal/current-read facts pass compiler and runtime verification.
+Updated: 2026-10-19. Transparent scalar wrapper transfers pass all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5367,88 +5367,78 @@ Baseline `24f7274c` and 589 protected-file hashes are in
 `/tmp/meowy-scalar-values-baseline.json`. No known failures remain.
 User-owned `docs/programs/hey/` is untouched and excluded. Nothing was pushed.
 
+### Transparent scalar wrapper transfers
+
+Observed groups, non-projecting Forward coercions, unchanged narrowing and unchanged
+ascriptions now forward scalar facts to their original outer expression PointIds.
+Producer qualifiers and exact predecessor edges preserve owner, scope, span, input and
+stage identity. Ascription operations preserve storage independently of result observation;
+result-only evidence cannot create an operation. Other transparent wrappers have no
+operation stage.
+
+Forwarded facts copy domains, optional storage versions, same-value origins and accumulated
+control marks while retaining actual before/after storage history. Missing inner facts or
+unavailable outer state remain unavailable. Copies keep their own domains and controls;
+known bottom remains distinct. Parameters retain full declared domains. Predicates, changed
+types, conversions, primary projections and stopped operands gain no value transfer.
+Calls, Bind/Write and scope/result boundaries remain conservative; cached initializers never
+reconstruct a current value. Proof outcomes remain gated.
+
+| Commit | Reviewable slice |
+| --- | --- |
+| `4eb876ea` | Centralize observation construction without behavior changes |
+| `e9040435` | Qualify explicit-group result associations and predecessor identity |
+| `f0d92d7b` | Dispatch snapshot work only at relevant stages |
+| `6fce86c3` | Forward group values with shared budgets and independent histories |
+| `ea320c20` | Forward unchanged coercions to typed binding inputs |
+| `8734d211` | Index candidate-copy lookup while retaining deterministic root order |
+| `daee7ed1` | Forward current facts through unchanged narrowing |
+| `b3e969c3` | Preserve independent ascription operation/result stages |
+| `11c3b0d6` | Cover mixed chains, historical copies and complete capture limits |
+
+All 249 focused scalar tests pass, including 21 new structural regressions. The original
+1000-matcher acceptance case, formatting and all-target Clippy pass under unchanged limits.
+Snapshot dispatch avoids unused per-port work. Bounded candidate lookup views and one-entry
+version insertion reduce candidate/entry preparation by 54,932 work units without changing
+values, source order, cycle/identity checks or limits. No temporary measurements remain.
+Focused logs: `/tmp/meowy-scalar-wrappers-groups.log`,
+`/tmp/meowy-scalar-wrappers-values.log`, `/tmp/meowy-scalar-wrappers-coercions.log`,
+`/tmp/meowy-scalar-wrappers-narrowing.log`, `/tmp/meowy-scalar-wrappers-ascriptions.log`,
+`/tmp/meowy-scalar-wrappers-histories.log`, `/tmp/meowy-scalar-wrappers-matchers.log`,
+`/tmp/meowy-scalar-wrappers-clippy.log`. Measurement evidence is retained in
+`/tmp/meowy-scalar-wrappers-index-work.log`.
+
+Nine new structural test sources are linked from types, values, memory and proof;
+coverage regeneration passes. All 14 `make test` groups pass: 3470 library, 923 native,
+86 Python and 495 required conformance cases, with 19 unchanged gaps and zero
+failures in debug/release (`/tmp/meowy-scalar-wrappers-gate.log`; details in
+`build/verification-scalar-wrappers`). Runtime debug, release and sanitized profiles
+pass all 100 regular cases across nine suites plus subprocess probes. The complete
+gate ran outside sandbox ptrace supervision with sanitizers enabled. Strict conformance
+exits 1 only for the exact 19 pinned names/reasons (`/tmp/meowy-scalar-wrappers-strict.log`).
+Preservation passes for all 589 protected files, 37 reference hashes/gaps and prior
+evidence (`/tmp/meowy-scalar-wrappers-preservation.log`). Baseline `b0dfc33e` and
+589 protected-file hashes are in `/tmp/meowy-scalar-wrappers-baseline.json`.
+All four final documentation/tooling checks pass (`/tmp/meowy-scalar-wrappers-docs.log`).
+User-owned `docs/programs/hey/` is untouched and excluded. Nothing was pushed.
+
 ### Next: scalar Bind/Write transfers
 
-Current slice: transparent scalar expression wrappers. Existing group, Forward
-coercion and unchanged narrowing/ascription qualifiers already validate original
-inputs; reuse them with the reached graph and scheduled expression facts. Groups,
-Forward coercions and unchanged narrowing have no operation stage. Ascriptions
-retain independent operation/result observations. Missing inner facts must remain
-unavailable, and wrapper forwarding must preserve before/after storage history.
-
-Dependency-ordered commit plan:
-
-1. Centralize empty observation construction as a behavior-preserving prerequisite,
-   then add bounded explicit-group result associations and focused identity/stage tests.
-2. Forward observed group result facts with shared payload/work bounds, immutable
-   histories and independent version/origin/control metadata.
-3. Qualify and integrate Forward coercions, unchanged narrowing and unchanged
-   ascriptions in separate reviewable slices with their focused regressions.
-4. Cover mixed chains, stopped/unsupported inputs and exact resource boundaries;
-   update structural evidence and guides, run `make test`, strict conformance and
-   the preservation audit, then refresh both handoffs.
-
-The constructor prerequisite (`4eb876ea`) passes all 228 focused scalar tests, formatting and
-all-target Clippy (`/tmp/meowy-scalar-wrappers-construction.log`,
-`/tmp/meowy-scalar-wrappers-clippy.log`). Bounded group result associations are now
-implemented (`e9040435`) with original producer/site/predecessor validation; all 231
-focused scalar tests, the original 1000-matcher case and Clippy pass
-(`/tmp/meowy-scalar-wrappers-groups.log`). Group expression-fact forwarding now copies
-observed inner results with shared bounds and preserved storage history. All 234 focused
-scalar tests pass; missing outer-state input still suppresses a known inner value.
-All 234 scalar tests and Clippy pass, but the original 1000-matcher regression
-exhausted the retained work budget during snapshot capture: 3,804,867 units before
-21,009 ports, failure at 4,194,305 against the unchanged 4,194,304 limit. The repair
-dispatches expression capture only at Normal ports and avoids unused operation
-lookups for unavailable/structural states. The same case now passes at 4,167,040
-work units (`/tmp/meowy-scalar-wrappers-work-after.log`). Temporary measurements
-are removed. All 234 focused scalar tests and Clippy pass. The snapshot dispatch
-repair is committed as `f0d92d7b`; no limit, identity check or source expectation
-is relaxed. Group value transport is committed as `6fce86c3`. Forward coercion
-qualification and typed-RHS value forwarding pass all 238 focused scalar tests
-(`/tmp/meowy-scalar-wrappers-coercions.log`), the 1000-matcher case and Clippy.
-The budget fixture now preserves wrapper associations and compares expression histories.
-Conversions, projections and stopped coercions remain conservative (`ea320c20`).
-Unchanged narrowing is implemented with exact stage/control checks and parameter-version
-forwarding through typed/grouped inputs. Two read-only stage fixtures now start from
-empty observations so their deliberately partial graphs do not first enter wrapper
-qualification. The 1000-matcher case again exceeds the work limit after narrowing
-integration. Phase measurements identify 592,092 units in candidate/entry preparation.
-Bounded hash views now serve copy-input/literal lookup and visited membership while
-retaining ordered roots; version insertion reuses one BTree entry. The new views share
-the existing payload allowance. Candidate/entry preparation drops by 54,932 work units;
-the 1000-matcher case and all 243 focused scalar tests now pass. Temporary measurements
-are removed; all 243 focused scalar tests, the stress case, formatting and Clippy pass.
-The lookup optimization (`8734d211`) and narrowing (`daee7ed1`) are committed separately.
-All limits, validations, value histories and source expectations are unchanged.
-Unchanged ascriptions now qualify operation/result stages independently and preserve
-storage across observed operations. Predicates, changed types and stopped operands stay
-opaque. All 247 focused scalar tests, the 1000-matcher case, formatting and Clippy
-pass (`/tmp/meowy-scalar-wrappers-ascriptions.log`); ascriptions are committed as
-`b3e969c3`. Mixed-chain/history regressions and full capture budget checks now include
-all wrapper kinds and current parameter reads; all 249 focused scalar tests pass
-(`/tmp/meowy-scalar-wrappers-histories.log`). Structural evidence and complete
-repository validation remain before handoff; no known failures remain.
-Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
-`/tmp/meowy-scalar-wrappers-baseline.json`.
-User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.
-
-1. Qualify transparent group/Forward/unchanged narrowing/ascription transfers in
-   `facts/observations` and `facts/state/snapshots`, reusing existing source identities.
-   Connect observed inner facts to original outer RHS PointIds without treating an
-   unobserved stage as a result. Cover stopped stages, changed types and exact limits.
-2. Apply Bind/Write updates in `facts/state/snapshots/capture.rs` using qualified
-   `definitions` and expression facts at original RHS PointIds. Cached copy candidates
-   cannot supply missing current values.
+1. Apply Bind/Write updates in `facts/state/snapshots/capture.rs` using qualified
+   `definitions` and expression facts at original RHS PointIds. The transparent wrapper
+   prerequisite is complete. Cached copy candidates cannot supply missing current values.
+   Update `definition_rows` alongside these transfers: it currently permits only
+   unavailable or unchanged-bottom Bind/Write outputs.
    Preserve before/after history, distinct destination versions, source origins,
    controls and unavailable/partial states. Include stopped RHS, immutable/mutable
-   copies, same-value writes, stale identities and exact budget regressions.
-3. Qualify guard authority and E225 dependencies before restricting states. Integrate
+   copies, same-value writes, stale identities and exact budget regressions. Validate
+   focused checks and the original 1000-matcher case before each commit.
+2. Qualify guard authority and E225 dependencies before restricting states. Integrate
    guarded Call transfers and conservative Path/Indirect/alias fallback before using
    facts after mutations. Alias scalar transfers need completed backing-field layouts;
    a canonical local's declared type is not that layout. Missing knowledge never proves
    no mutation. Keep unsupported operations unavailable until their transfers qualify.
-4. Qualify scope/result and nullable/alias/emission transfers, declared call-result
+3. Qualify scope/result and nullable/alias/emission transfers, declared call-result
    fallback, restart resets and arithmetic/ordinary guards in separate slices. Restart
    headers must forget every possibly modified fact without bounded unrolling. Preserve
    ordinary errors and complete profile/E225 and per-query logical charging before
