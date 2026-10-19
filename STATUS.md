@@ -45,23 +45,25 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Scalar analysis now captures immutable before/after storage-state snapshots across the
-qualified source schedule. Predecessor joins preserve missing-versus-bottom distinctions,
-historical identities and control marks. Unchanged states share arena handles; unqualified
-operations and restart/scope boundaries remain conservative. Declared parameters retain
-their full domains, and cached Bind/Write values cannot initialize snapshots.
+Scalar analysis now captures bounded literal and current-read expression facts at
+independently observed result ports. Qualified operations preserve immutable storage
+snapshots; reads validate current cells, declared domains and completed definition
+versions. Missing/partial inputs and bottom remain distinct. Cached initializer values
+cannot supply current-read facts, and parameter domains remain unspecialized.
 
-The [compiler handoff](compiler/STATUS.md#bounded-scalar-snapshot-transport) records five
-implementation/coverage commits. Fourteen new structural regressions, all 1,346 forward tests,
-the original 1000-matcher case, formatting and Clippy pass. Port membership lookup is linear
-without changing source processing order or limits. All 14 `make test` groups pass: 3432
-library, 923 native, 86 Python and 495 required conformance cases, with 19 unchanged gaps
-and zero debug/release failures (`/tmp/meowy-scalar-snapshots-gate.log`). Preservation
-passes for 589 protected files and all 37 reference hashes/gaps/prior evidence, including
-exact observed pin names/reasons (`/tmp/meowy-scalar-snapshots-preservation.log`). Qualified
-expression values and Bind/Write/read transfers are next; proof outcomes remain gated.
-User-owned `docs/programs/hey/` remains excluded. All four final documentation/tooling
-checks pass (`/tmp/meowy-scalar-snapshots-docs.log`). Nothing was pushed.
+The [compiler handoff](compiler/STATUS.md#qualified-scalar-expression-observations)
+records five implementation/coverage commits. Seventeen new structural regressions,
+all 228 focused scalar tests, the original 1000-matcher case, formatting and Clippy pass.
+Validation passes: 3449 library, 923 native, 86 Python and 495 required conformance
+cases, with 19 unchanged gaps and zero debug/release failures. `make test` passed 13
+of 14 groups; the runtime sanitizer group passed separately outside the sandbox after
+its ptrace restriction (`/tmp/meowy-scalar-values-gate.log`,
+`/tmp/meowy-scalar-values-runtime.log`). Strict mode reports only the exact 19 pins
+(`/tmp/meowy-scalar-values-strict.log`). Preservation passes for all 589 protected
+files, 37 reference hashes/gaps and prior evidence. All four final documentation/tooling
+checks pass (`/tmp/meowy-scalar-values-docs.log`). Transparent-wrapper and Bind/Write
+transfers are next; mutation invalidation, restart resets and proof outcomes remain
+separate. User-owned `docs/programs/hey/` remains excluded. Nothing was pushed.
 
 ## Build and test commands
 
@@ -74,14 +76,16 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: documentation/schemas, Vim/Neovim, 3432 library,
-923 native and 86 Python tests (41 tooling, 15 runtime, 30 compiler), plus 495 required
-conformance cases with 19 unchanged gaps and zero debug/release failures. Runtime profiles
-each pass 100 regular cases across nine suites, with additional subprocess probes in the
-detailed logs. Full output: `/tmp/meowy-scalar-snapshots-gate.log`; individual logs:
-`build/verification-scalar-snapshots`. All 18 reporting tests pass, including strict failures,
-partial/missing output and dynamic totals. No compiler or conformance expectations changed.
-All four final documentation/tooling checks pass (`/tmp/meowy-scalar-snapshots-docs.log`).
+Current verification passes 3449 library, 923 native and 86 Python tests (41 tooling,
+15 runtime, 30 compiler), plus 495 required conformance cases with 19 unchanged gaps
+and zero debug/release failures. Both editors and all documentation/schema checks pass.
+`make test` completes 13 groups successfully; the runtime sanitizer group encounters
+sandbox ptrace supervision and passes separately outside the sandbox. Runtime debug,
+release and sanitized profiles each pass 100 regular cases across nine suites, plus
+subprocess probes. Logs: `/tmp/meowy-scalar-values-gate.log`,
+`/tmp/meowy-scalar-values-runtime.log`; individual gate logs:
+`build/verification-scalar-values`. All 18 reporting tests pass within the tooling suite.
+No source-conformance expectations changed.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
 to `~/.local/bin/meowy`; PREFIX/DESTDIR overrides support other prefixes and staging.

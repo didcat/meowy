@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-19. Bounded scalar snapshot transport passes the full gate.
+Updated: 2026-10-19. Scalar literal/current-read facts pass compiler and runtime verification.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -58,7 +58,7 @@ hashes were reviewed; the other 34 document records, prior evidence, all 19 pins
 the proof-obligation map are preserved (`/tmp/meowy-digit-names-preservation.log`).
 No known failures remain. Nothing was pushed or published.
 
-Next: implement qualified scalar value transfers using the snapshot handoff below.
+Next: implement scalar Bind/Write transfers using the expression-fact handoff below.
 Proof evaluation and full v0.0.1 release qualification remain incomplete.
 
 ### Completed numeric member lookup
@@ -5317,72 +5317,83 @@ No known failures remain. Baseline `b34adab2` is recorded in
 `/tmp/meowy-scalar-snapshots-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded.
 
-### Next: qualified scalar value transfers
+### Qualified scalar expression observations
 
-Current slice: bounded literal and current-state read observations. The existing
-snapshot capture stops at every operation, and checked read `normal` is producer
-metadata rather than an observed Result port. Reuse scalar report validation,
-declared types, definition locations and immutable snapshot handles; never recover
-current reads from cached initializer candidates.
+Literal and ordinary scalar read operations now preserve unchanged storage snapshots.
+Independently observed Normal ports retain bounded expression facts with owner, domain,
+optional storage version, optional same-value origin and control marks. Literal stages
+match the original producer and reached graph; checked read `normal` alone cannot
+establish a result observation.
 
-Dependency-ordered commit plan:
+Supported literals retain singleton domains and distinct producer origins. Reads use
+current cells and completed definition versions, validate declared domains and copy
+control/value metadata. Parameter values remain their full declared domains regardless
+of caller arguments. Missing, uninitialized, partial and unavailable inputs supply no
+value; bottom remains distinct. Cached initializer candidates never reconstruct current
+state. Copies retain historical values, and equal domains do not invent identity.
 
-1. Qualify literal observation ports and preserve their unchanged storage snapshots,
-   with operation/result, stopped-prefix and identity regressions.
-2. Capture bounded expression facts for literal results using the shared snapshot
-   allowance; cover independent observations and atomic resource failures.
-3. Qualify current-state local reads against declared types and definition versions,
-   retaining unavailable/partial/bottom distinctions, controls and historical copies.
-4. Integrate structural evidence and documentation, run the full `make test` gate,
-   audit unchanged reference/source expectations and pins, and refresh both handoffs.
+Alias, reference, receiver, temporary and opaque reads remain conservative. Other
+operations and scope/result boundaries still yield unavailable storage output. This is
+structural analysis only: Bind/Write updates, call invalidation, restart resets and
+proof outcomes remain unimplemented. No source contract or capability pin changed.
 
-Literal port qualification and unchanged snapshot transport are complete. All 215
-focused scalar tests, the original 1000-matcher case, formatting and all-target
-Clippy pass (`/tmp/meowy-scalar-values-observations.log`,
-`/tmp/meowy-scalar-values-matchers.log`, `/tmp/meowy-scalar-values-clippy.log`).
-Independent-stage tests use explicitly partial observation graphs; ordinary graph
-construction still rejects inconsistent reachability. No known failures remain.
-Literal observation transport is committed as `1bbd4ec6`. Bounded literal result
-records (`b44c6653`) pass all 218 focused scalar tests (`/tmp/meowy-scalar-values-literals.log`).
-They share the snapshot allowance, preserve independent before/after states and
-distinguish unavailable input from bottom; operation-only stages create no result
-record. Read declaration/stage qualification (`2c546b5a`) passes all 222 focused
-scalar tests (`/tmp/meowy-scalar-values-read-stages.log`). Supported ordinary scalar reads preserve storage, reuse bounded declared
-domains and require actual graph result observations independently of checked
-`normal`; aliases, references and opaque types stay conservative. Snapshot read-value
-capture (`7a6359a5`) passes all 225 focused scalar tests
-(`/tmp/meowy-scalar-values-reads.log`). It validates current cells,
-completed definition versions and declared domains, retaining independent origins,
-control marks and copied histories. Missing/partial cells supply no value.
-Additional read-result publication-limit, malformed-record and missing-versus-bottom
-regressions pass; all 228 focused scalar tests are green
-(`/tmp/meowy-scalar-values-boundaries.log`). Next run the final gate and document
-structural evidence. Baseline
-`24f7274c` and 589 protected-file hashes are in
-`/tmp/meowy-scalar-values-baseline.json`. User-owned `docs/programs/hey/` remains
-untracked and excluded. Bind/Write updates, mutation invalidation and scope/result
-forwarding remain the following milestone.
+| Commit | Reviewable slice |
+| --- | --- |
+| `1bbd4ec6` | Qualify literal observation ports and preserve storage snapshots |
+| `b44c6653` | Capture bounded literal result facts and independent value origins |
+| `2c546b5a` | Qualify scalar read stages and shared declared storage domains |
+| `7a6359a5` | Capture current read values with version/type/control validation |
+| `f2ab89d3` | Cover publication limits, malformed observations and missing/bottom boundaries |
 
-1. Add bounded expression-result facts at qualified observation stages, starting with
-   literals and current-state local reads. Reuse `facts/literals`, `definitions` and
-   `state/snapshots`; validate point/owner/type/version identity and preserve actual
-   before/after state. Checked read `normal` is not an independent result observation.
-   Enable snapshot accessors only for the qualified consumer, and test stopped, partial,
-   copied and unavailable inputs without producing query outcomes.
-2. Apply Bind/Write updates and current-version copies without borrowing future candidate
-   values. Qualify guard authority and E225 dependencies before restricting states; include
-   guarded Call transfers and conservative Path/Indirect/alias fallback before using facts
-   after mutations. Alias scalar transfers need completed backing-field layouts; a canonical
-   local's declared type is not that layout. Missing knowledge never proves no mutation.
-3. Qualify scope/result and nullable/alias/emission transfers, declared call-result fallback,
-   restart resets and arithmetic/ordinary guards in separate slices. Restart headers must
-   forget every possibly modified fact without bounded unrolling. Preserve ordinary errors
-   and complete profile/E225 and per-query logical charging before proof outcomes. Validate
-   each slice, run `make test`, and preserve exact source expectations and capability pins.
+Seventeen new structural regressions and all 228 focused scalar tests pass. The original
+1000-matcher case, formatting and all-target Clippy pass under unchanged limits.
+Focused logs: `/tmp/meowy-scalar-values-observations.log`,
+`/tmp/meowy-scalar-values-literals.log`, `/tmp/meowy-scalar-values-read-stages.log`,
+`/tmp/meowy-scalar-values-reads.log`, `/tmp/meowy-scalar-values-boundaries.log`,
+`/tmp/meowy-scalar-values-matchers.log`, `/tmp/meowy-scalar-values-clippy.log`.
+Five new structural evidence files are linked from types, values, memory and proof;
+coverage regeneration passes. `make test` completes 13 groups successfully: 3449
+library, 923 native, 86 Python and 495 required conformance cases, with 19 unchanged
+gaps and zero debug/release failures (`/tmp/meowy-scalar-values-gate.log`). The runtime
+sanitizer group hit the known sandbox ptrace/LeakSanitizer restriction; its unrestricted
+rerun passes all debug/release/ASan/UBSan/LSan suites
+(`/tmp/meowy-scalar-values-runtime.log`). All 14 groups are therefore validated, with
+the runtime group verified separately. Strict conformance exits 1 only for the exact
+19 pinned names/reasons (`/tmp/meowy-scalar-values-strict.log`).
+Preservation passes for all 589 protected files, 37 reference hashes/gaps and
+prior evidence (`/tmp/meowy-scalar-values-preservation.log`).
+All four final documentation/tooling checks pass (`/tmp/meowy-scalar-values-docs.log`).
+Baseline `24f7274c` and 589 protected-file hashes are in
+`/tmp/meowy-scalar-values-baseline.json`. No known failures remain.
+User-owned `docs/programs/hey/` is untouched and excluded. Nothing was pushed.
 
-The requested Makefile remains complete; the root tracker records release build and staged
-installation/execution validation. Reference formatting and reference-bearing lists remain
-separate B001 prerequisites. The contextual-list blocker remains exactly
+### Next: scalar Bind/Write transfers
+
+1. Qualify transparent group/Forward/unchanged narrowing/ascription transfers in
+   `facts/observations` and `facts/state/snapshots`, reusing existing source identities.
+   Connect observed inner facts to original outer RHS PointIds without treating an
+   unobserved stage as a result. Cover stopped stages, changed types and exact limits.
+2. Apply Bind/Write updates in `facts/state/snapshots/capture.rs` using qualified
+   `definitions` and expression facts at original RHS PointIds. Cached copy candidates
+   cannot supply missing current values.
+   Preserve before/after history, distinct destination versions, source origins,
+   controls and unavailable/partial states. Include stopped RHS, immutable/mutable
+   copies, same-value writes, stale identities and exact budget regressions.
+3. Qualify guard authority and E225 dependencies before restricting states. Integrate
+   guarded Call transfers and conservative Path/Indirect/alias fallback before using
+   facts after mutations. Alias scalar transfers need completed backing-field layouts;
+   a canonical local's declared type is not that layout. Missing knowledge never proves
+   no mutation. Keep unsupported operations unavailable until their transfers qualify.
+4. Qualify scope/result and nullable/alias/emission transfers, declared call-result
+   fallback, restart resets and arithmetic/ordinary guards in separate slices. Restart
+   headers must forget every possibly modified fact without bounded unrolling. Preserve
+   ordinary errors and complete profile/E225 and per-query logical charging before
+   proof outcomes. Validate each slice, run `make test`, and preserve exact source
+   expectations and capability pins.
+
+The Makefile is complete; the root tracker records release build and staged installation
+validation. Reference formatting and reference-bearing lists remain separate B001
+prerequisites. The contextual-list blocker remains exactly
 `reference-bearing or uninhabited list elements is not supported by this bootstrap compiler`.
 Full v0.0.1 is not qualified. Nothing was pushed or published.
 

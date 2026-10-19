@@ -2216,9 +2216,10 @@ reset qualification. Branch routes alone supply no guard authority. Distinct kno
 the existing domain, initialization, version/origin and control-mark joins; identical handles
 reuse the same immutable state without manufacturing identity from equal domains.
 
-Capture currently forwards unchanged storage state through structural Entry, Normal and
-BlockEntry ports. Other operations and scope/result boundaries produce unavailable output
-until their transfers are qualified. Known bottom remains bottom without applying a transfer.
+Capture forwards unchanged storage state through structural Entry, Normal and BlockEntry
+ports, qualified scalar literals and ordinary scalar reads. Other operations and scope/result
+boundaries produce unavailable output until their transfers are qualified. Known bottom
+remains bottom without applying a transfer.
 Definition associations check original parameter/Bind/Write sites and independent normal
 observations. Cached candidate values do not initialize a captured binding or specialize a
 callee. Missing analysis input establishes no value, initialization or dependency-independence
@@ -2230,10 +2231,26 @@ partial context. Port membership uses hash lookups without choosing traversal or
 original 1000-matcher acceptance case still fits unchanged limits. Snapshot inspection stays
 test-only until production value/query consumers are qualified.
 
-These snapshots describe storage state. Expression-result facts, qualified literal/current-read
-and Bind/Write transfers, guarded call invalidation, alias/emission handling, restart resets,
-arithmetic/guard transfers and proof outcomes remain separate work. Checked read `normal`
-remains distinct from an observed result stage; per-query logical charging is still incomplete.
+Bounded expression records now capture literal and current-read values at independently
+observed Normal ports. Literal operation/result flags must match the reached graph and original
+owner, scope, span, type and payload. Ordinary reads revalidate canonical storage, declarations
+and actual result ports; checked read `normal` alone creates no result observation. Alias,
+reference, receiver, temporary and opaque reads remain conservative.
+
+Supported literals retain singleton domains and distinct producer origins. Reads borrow the
+current before-state, validate its cell and completed definition version, check the domain
+against the declared type and copy its domain, optional version/origin and control marks.
+Parameters retain full declared domains regardless of call arguments. Candidate initializer
+values never replace missing current-state evidence. Missing, uninitialized, partial and
+unavailable cells supply no value; bottom stays distinct. Equal domains cannot create identity,
+and copied result records remain unchanged after a later state changes.
+
+Expression records, declared domains and snapshot rows share the bounded allowance. Exact
+payload/work exhaustion, stale versions, wrong types, missing rows and duplicate publication
+reject without changing prior records. These are structural analysis facts; no proof query
+executes. Bind/Write updates, transparent-wrapper and scope/result transfers, guarded call
+invalidation, alias/emission handling, restart resets, arithmetic/guards and proof outcomes
+remain separate work. Per-query logical charging is still incomplete.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
