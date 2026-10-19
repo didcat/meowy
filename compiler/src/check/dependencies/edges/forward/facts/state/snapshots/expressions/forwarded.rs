@@ -68,3 +68,6 @@ mod coercions;
 
 #[cfg(test)]
 mod narrowing;
+
+#[cfg(test)]
+mod ascriptions;

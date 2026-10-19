@@ -94,6 +94,40 @@ impl Checker {
                     }
                     (Family::Narrowing, input, op.control)
                 }
+                Effect::Typed(op) => {
+                    let input = self.unchanged_ascription_input(reports, point, *owner, span)?;
+                    if op.op != crate::check::dependencies::TypedKind::Ascription
+                        || op.changed
+                        || !op.normal
+                    {
+                        continue;
+                    }
+                    if !self.flow.spend(2) {
+                        return Err(budget(span));
+                    }
+                    if op.operation != graph.nodes.contains_key(&Port::Operation(point))
+                        || op.result != graph.nodes.contains_key(&Port::Normal(point))
+                    {
+                        return Err(invalid(span));
+                    }
+                    if op.operation {
+                        self.typed_effect_stage(reports, *owner, Port::Operation(point), span)?
+                            .ok_or_else(|| invalid(span))?;
+                        self.insert_scalar_forward(
+                            graph,
+                            &mut observations,
+                            (Family::Typed, Port::Operation(point)),
+                            Forward {
+                                owner: *owner,
+                                input: op.input,
+                                control: op.control,
+                            },
+                            span,
+                            &mut parts,
+                        )?;
+                    }
+                    (Family::Typed, input, op.control)
+                }
                 _ => continue,
             };
             if let Some(input) = input {
@@ -126,7 +160,10 @@ impl Checker {
         if !self.flow.spend(7) {
             return Err(budget(span));
         }
-        let from = Port::Normal(forward.input);
+        let from = match stage {
+            (Family::Typed, Port::Normal(point)) => Port::Operation(point),
+            _ => Port::Normal(forward.input),
+        };
         let edge = (stage.0, Edge::new(from, stage.1, Route::Next));
         let node = graph.nodes.get(&stage.1).ok_or_else(|| invalid(span))?;
         let [input] = node.incoming.as_slice() else {
@@ -162,3 +199,6 @@ mod coercions;
 
 #[cfg(test)]
 mod narrowing;
+
+#[cfg(test)]
+mod ascriptions;

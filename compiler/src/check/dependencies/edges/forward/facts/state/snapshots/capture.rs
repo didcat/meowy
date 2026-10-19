@@ -58,7 +58,14 @@ impl Checker {
                     if observations.sources.contains_key(&port) {
                         before
                     } else {
-                        Value::Missing
+                        if !self.flow.spend(1) {
+                            return Err(budget(span));
+                        }
+                        if observations.forwarded.contains_key(&port) {
+                            before
+                        } else {
+                            Value::Missing
+                        }
                     }
                 };
                 snapshots.record(

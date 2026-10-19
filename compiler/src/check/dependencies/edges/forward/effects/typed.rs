@@ -8,7 +8,7 @@ pub(super) enum Kind {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(super) struct Stage {
+pub(in super::super) struct Stage {
     pub(super) point: PointId,
     pub(super) owner: usize,
     pub(super) input: PointId,
@@ -76,7 +76,7 @@ impl Checker {
         Ok(Some(input))
     }
 
-    pub(super) fn typed_effect_stage(
+    pub(in super::super) fn typed_effect_stage(
         &mut self,
         reports: &Reports,
         owner: usize,

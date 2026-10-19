@@ -5419,9 +5419,13 @@ retaining ordered roots; version insertion reuses one BTree entry. The new views
 the existing payload allowance. Candidate/entry preparation drops by 54,932 work units;
 the 1000-matcher case and all 243 focused scalar tests now pass. Temporary measurements
 are removed; all 243 focused scalar tests, the stress case, formatting and Clippy pass.
-The lookup optimization is committed separately. All limits, validations, value
-histories and source expectations are unchanged. Unchanged narrowing passes the same
-checks and is ready to commit. Unchanged ascription operation/result handling is next.
+The lookup optimization (`8734d211`) and narrowing (`daee7ed1`) are committed separately.
+All limits, validations, value histories and source expectations are unchanged.
+Unchanged ascriptions now qualify operation/result stages independently and preserve
+storage across observed operations. Predicates, changed types and stopped operands stay
+opaque. All 247 focused scalar tests, the 1000-matcher case, formatting and Clippy
+pass (`/tmp/meowy-scalar-wrappers-ascriptions.log`). Final mixed-chain/history checks,
+structural evidence and complete repository validation remain before handoff.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.
