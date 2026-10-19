@@ -1,7 +1,7 @@
 use super::*;
 use literals::Literals;
 use sources::{Inputs, Producer};
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 use versions::{Definition, Origin, Value, Versions};
 
 impl Checker {
@@ -14,24 +14,34 @@ impl Checker {
         parts: usize,
     ) -> Result<(Versions<'a>, usize)> {
         if versions.len() > MAX_EDGES
+            || literals.len() > MAX_EDGES
             || inputs.len() > versions.len()
-            || !self.flow.spend(inputs.len() + 1)
+            || !self
+                .flow
+                .spend((inputs.len() + literals.len()) * 2 + inputs.len() + 1)
         {
             return Err(budget(span));
         }
-        let mut parts = parts.min(MAX_EDGES);
-        let mut done = BTreeSet::new();
-        for &root in inputs.keys() {
+        let mut parts = parts
+            .min(MAX_EDGES)
+            .checked_sub(inputs.len() + literals.len())
+            .ok_or_else(|| budget(span))?;
+        let roots = inputs.keys();
+        let inputs = inputs
+            .iter()
+            .map(|(&id, input)| (id, input))
+            .collect::<HashMap<_, _>>();
+        let literals = literals
+            .iter()
+            .map(|(&id, seed)| (id, seed))
+            .collect::<HashMap<_, _>>();
+        let mut done = HashSet::new();
+        for &root in roots {
             let mut pending = Vec::new();
-            let mut seen = BTreeSet::new();
+            let mut seen = HashSet::new();
             let mut local = root;
             loop {
-                if !self.flow.spend(
-                    done.len().checked_ilog2().unwrap_or(0) as usize
-                        + seen.len().checked_ilog2().unwrap_or(0) as usize
-                        + inputs.len().checked_ilog2().unwrap_or(0) as usize
-                        + 4,
-                ) {
+                if !self.flow.spend(4) {
                     return Err(budget(span));
                 }
                 if done.contains(&local) {
@@ -54,17 +64,23 @@ impl Checker {
                 local = from.local;
             }
             while let Some(local) = pending.pop() {
-                if !self.flow.spend(
-                    inputs.len().checked_ilog2().unwrap_or(0) as usize
-                        + versions.len().checked_ilog2().unwrap_or(0) as usize * 3
-                        + literals.len().checked_ilog2().unwrap_or(0) as usize
-                        + done.len().checked_ilog2().unwrap_or(0) as usize
-                        + 8,
-                ) {
+                if !self.flow.spend(1) {
+                    return Err(budget(span));
+                }
+                let input = inputs.get(&local);
+                let lookups = match input.map(|input| input.producer) {
+                    Some(Producer::Read(..)) => 3,
+                    Some(Producer::Literal(_)) => 2,
+                    None => 1,
+                };
+                if !self
+                    .flow
+                    .spend(versions.len().checked_ilog2().unwrap_or(0) as usize * lookups + 8)
+                {
                     return Err(budget(span));
                 }
                 let target = versions.get(&local).ok_or_else(|| invalid(span))?;
-                if let Some(input) = inputs.get(&local) {
+                if let Some(input) = input {
                     if !matches!(target.version.definition, Definition::Bind(_))
                         || target.value.is_some()
                     {

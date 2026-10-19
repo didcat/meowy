@@ -2,6 +2,37 @@ use super::super::versions::tests::context;
 use super::*;
 
 #[test]
+pub(crate) fn scalar_copy_lookup_indexes_preserve_ordered_values_and_deterministic_work() {
+    let source = format!(
+        "{}tail:n63;copy:tail",
+        (0..64)
+            .map(|index| format!("n{index}:{index};"))
+            .collect::<String>()
+    );
+    let (mut checker, program, reports) = context(&source);
+    let mut expected = None;
+    for _ in 0..4 {
+        let start = checker.flow.work;
+        let (versions, left) = checker
+            .scalar_copy_context(&program, &reports, Span::default(), MAX_EDGES)
+            .unwrap();
+        let cost = checker.flow.work - start;
+        let values = versions
+            .into_iter()
+            .map(|(local, slot)| (local, (slot.version, slot.value)))
+            .collect::<BTreeMap<_, _>>();
+        assert_eq!(values[&63].1, values[&64].1);
+        assert_eq!(values[&64].1, values[&65].1);
+        let actual = (values, left, cost);
+        if let Some(expected) = &expected {
+            assert_eq!(&actual, expected);
+        } else {
+            expected = Some(actual);
+        }
+    }
+}
+
+#[test]
 pub(crate) fn scalar_copies_preserve_origins_without_merging_equal_literals_or_storage_versions() {
     let (mut checker, program, reports) =
         context("a:7;same:7;copy:((a));again:copy~<int32>;yes:true;flag:yes;none:null;empty:none");

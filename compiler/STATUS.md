@@ -5408,8 +5408,19 @@ is relaxed. Group value transport is committed as `6fce86c3`. Forward coercion
 qualification and typed-RHS value forwarding pass all 238 focused scalar tests
 (`/tmp/meowy-scalar-wrappers-coercions.log`), the 1000-matcher case and Clippy.
 The budget fixture now preserves wrapper associations and compares expression histories.
-Conversions, projections and stopped coercions remain conservative. Unchanged narrowing
-is next; no known failures remain.
+Conversions, projections and stopped coercions remain conservative (`ea320c20`).
+Unchanged narrowing is implemented with exact stage/control checks and parameter-version
+forwarding through typed/grouped inputs. Two read-only stage fixtures now start from
+empty observations so their deliberately partial graphs do not first enter wrapper
+qualification. The 1000-matcher case again exceeds the work limit after narrowing
+integration. Phase measurements identify 592,092 units in candidate/entry preparation.
+Bounded hash views now serve copy-input/literal lookup and visited membership while
+retaining ordered roots; version insertion reuses one BTree entry. The new views share
+the existing payload allowance. Candidate/entry preparation drops by 54,932 work units;
+the 1000-matcher case and all 243 focused scalar tests now pass. Temporary measurements
+are removed; all 243 focused scalar tests, the stress case, formatting and Clippy pass.
+The optimization is ready for its separate commit. All limits, validations, value
+histories and source expectations are unchanged; narrowing is ready immediately after it.
 Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
 `/tmp/meowy-scalar-wrappers-baseline.json`.
 User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.

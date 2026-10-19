@@ -149,15 +149,16 @@ impl Checker {
             + slot.value.as_ref().map_or(0, |value| value.domain.weight());
         if !self
             .flow
-            .spend(versions.len().checked_ilog2().unwrap_or(0) as usize * 2 + weight)
+            .spend(versions.len().checked_ilog2().unwrap_or(0) as usize + weight)
         {
             return Err(budget(span));
         }
-        if versions.contains_key(&slot.version.local) {
+        let std::collections::btree_map::Entry::Vacant(entry) = versions.entry(slot.version.local)
+        else {
             return Err(invalid(span));
-        }
+        };
         *parts = parts.checked_sub(weight).ok_or_else(|| budget(span))?;
-        versions.insert(slot.version.local, slot);
+        entry.insert(slot);
         Ok(())
     }
 }
