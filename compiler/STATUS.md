@@ -5369,6 +5369,32 @@ User-owned `docs/programs/hey/` is untouched and excluded. Nothing was pushed.
 
 ### Next: scalar Bind/Write transfers
 
+Current slice: transparent scalar expression wrappers. Existing group, Forward
+coercion and unchanged narrowing/ascription qualifiers already validate original
+inputs; reuse them with the reached graph and scheduled expression facts. Groups,
+Forward coercions and unchanged narrowing have no operation stage. Ascriptions
+retain independent operation/result observations. Missing inner facts must remain
+unavailable, and wrapper forwarding must preserve before/after storage history.
+
+Dependency-ordered commit plan:
+
+1. Centralize empty observation construction as a behavior-preserving prerequisite,
+   then add bounded explicit-group result associations and focused identity/stage tests.
+2. Forward observed group result facts with shared payload/work bounds, immutable
+   histories and independent version/origin/control metadata.
+3. Qualify and integrate Forward coercions, unchanged narrowing and unchanged
+   ascriptions in separate reviewable slices with their focused regressions.
+4. Cover mixed chains, stopped/unsupported inputs and exact resource boundaries;
+   update structural evidence and guides, run `make test`, strict conformance and
+   the preservation audit, then refresh both handoffs.
+
+The constructor prerequisite passes all 228 focused scalar tests, formatting and
+all-target Clippy (`/tmp/meowy-scalar-wrappers-construction.log`,
+`/tmp/meowy-scalar-wrappers-clippy.log`). No behavior or limits changed.
+Baseline `b0dfc33e` and 589 protected-file hashes are recorded in
+`/tmp/meowy-scalar-wrappers-baseline.json`.
+User-owned `docs/programs/hey/` remains excluded. Bind/Write updates follow this slice.
+
 1. Qualify transparent group/Forward/unchanged narrowing/ascription transfers in
    `facts/observations` and `facts/state/snapshots`, reusing existing source identities.
    Connect observed inner facts to original outer RHS PointIds without treating an

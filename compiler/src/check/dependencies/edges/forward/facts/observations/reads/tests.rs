@@ -169,11 +169,7 @@ pub(crate) fn scalar_read_observations_bound_shared_payload_and_exact_work() {
     let (graph, _) = checker
         .scalar_graph(&reports, ports, Span::default(), MAX_EDGES)
         .unwrap();
-    let make = || Observations {
-        definitions: &definitions,
-        sources: HashMap::new(),
-        declared: HashMap::new(),
-    };
+    let make = || Observations::new(&definitions);
     let start = checker.flow.work;
     let (expected, left) = checker
         .scalar_read_observations(

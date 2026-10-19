@@ -226,9 +226,8 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             _ => unreachable!(),
         }
         let observations = observations::Observations {
-            definitions: &definitions,
             sources: sources.clone(),
-            declared: HashMap::new(),
+            ..observations::Observations::new(&definitions)
         };
         assert!(
             checker
@@ -253,9 +252,8 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
         }
     }
     let observations = observations::Observations {
-        definitions: &definitions,
         sources,
-        declared: HashMap::new(),
+        ..observations::Observations::new(&definitions)
     };
     let before = format!("{reports:?}{entries:?}{definitions:?}");
     for (room, extra, pass) in [(used - 1, 0, false), (used, 1, false), (used, 0, true)] {

@@ -79,8 +79,6 @@ pub(crate) fn scalar_expression_reads_preserve_copies_controls_and_missing_cell_
     let seed = snapshots.seed(entry).unwrap();
     let definitions = definitions(seed, local, entry);
     let observations = observations::Observations {
-        definitions: &definitions,
-        sources: HashMap::new(),
         declared: [(
             local,
             Domain::declared(&program.locals[local], &mut checker.flow, Span::default())
@@ -89,6 +87,7 @@ pub(crate) fn scalar_expression_reads_preserve_copies_controls_and_missing_cell_
         )]
         .into_iter()
         .collect(),
+        ..observations::Observations::new(&definitions)
     };
     let mut state = seed
         .snapshot(&mut checker.flow, Span::default(), MAX_EDGES)
@@ -187,8 +186,6 @@ pub(crate) fn scalar_expression_reads_reject_foreign_future_and_out_of_type_valu
     let seed = snapshots.seed(entry).unwrap();
     let definitions = definitions(seed, local, entry);
     let observations = observations::Observations {
-        definitions: &definitions,
-        sources: HashMap::new(),
         declared: [(
             local,
             Domain::declared(&program.locals[local], &mut checker.flow, Span::default())
@@ -197,6 +194,7 @@ pub(crate) fn scalar_expression_reads_reject_foreign_future_and_out_of_type_valu
         )]
         .into_iter()
         .collect(),
+        ..observations::Observations::new(&definitions)
     };
     for fault in 0..7 {
         let mut state = seed

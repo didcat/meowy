@@ -10,6 +10,16 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) declared: HashMap<hir::LocalId, domain::Domain>,
 }
 
+impl<'a, 'd> Observations<'a, 'd> {
+    pub(super) fn new(definitions: &'d definitions::Definitions) -> Self {
+        Self {
+            definitions,
+            sources: HashMap::new(),
+            declared: HashMap::new(),
+        }
+    }
+}
+
 impl Checker {
     pub(super) fn scalar_observations<'a, 'd>(
         &mut self,
@@ -23,11 +33,7 @@ impl Checker {
             return Err(budget(span));
         }
         let mut parts = parts.min(MAX_EDGES);
-        let mut observations = Observations {
-            definitions,
-            sources: HashMap::new(),
-            declared: HashMap::new(),
-        };
+        let mut observations = Observations::new(definitions);
         for (&point, source) in &reports.effects {
             let (owner, Effect::Scalar(observed)) = source else {
                 continue;

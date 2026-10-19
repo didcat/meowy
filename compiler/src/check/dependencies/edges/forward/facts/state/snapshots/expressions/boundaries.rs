@@ -39,13 +39,13 @@ pub(crate) fn scalar_read_results_bound_publication_without_changing_existing_hi
     let (mut checker, reports, mut snapshots, definitions, point, local) = context();
     let expected = snapshots.expressions.remove(&point).unwrap();
     let observations = observations::Observations {
-        definitions: &definitions,
         sources: [(Port::Normal(point), &reports.effects[&point])]
             .into_iter()
             .collect(),
         declared: [(local, expected.value.as_ref().unwrap().domain.clone())]
             .into_iter()
             .collect(),
+        ..observations::Observations::new(&definitions)
     };
     snapshots.parts = MAX_EDGES;
     let start = checker.flow.work;
@@ -128,13 +128,13 @@ pub(crate) fn scalar_read_results_reject_missing_stale_and_duplicate_records_ato
             _ => {}
         }
         let observations = observations::Observations {
-            definitions: &definitions,
             sources: [(port, &reports.effects[&point])].into_iter().collect(),
             declared: if fault == 6 {
                 HashMap::new()
             } else {
                 [(local, declared)].into_iter().collect()
             },
+            ..observations::Observations::new(&definitions)
         };
         let before = format!("{snapshots:?}");
         assert!(
@@ -152,13 +152,13 @@ pub(crate) fn scalar_read_results_keep_missing_observations_inputs_and_bottom_di
     let (mut checker, reports, mut snapshots, definitions, point, local) = context();
     let expected = snapshots.expressions.remove(&point).unwrap();
     let mut observations = observations::Observations {
-        definitions: &definitions,
         sources: [(Port::Operation(point), &reports.effects[&point])]
             .into_iter()
             .collect(),
         declared: [(local, expected.value.as_ref().unwrap().domain.clone())]
             .into_iter()
             .collect(),
+        ..observations::Observations::new(&definitions)
     };
     for port in [Port::Operation(point), Port::Normal(point)] {
         snapshots
