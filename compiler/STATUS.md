@@ -5282,12 +5282,12 @@ Current dependency-ordered commit plan:
 3. Completed (`ef477820`): qualify exact join work/payload limits, branch-route authority and
    completed-restart boundaries before scheduled capture. All six join tests pass
    (`/tmp/meowy-scalar-snapshots-inputs.log`); scheduled capture is next.
-4. Capture every scheduled port with conservative transfer boundaries. Only structural
+4. Completed: capture every scheduled port with conservative transfer boundaries. Only structural
    entry/normal ports forward an unchanged state; source operations and scope/result
    boundaries remain unavailable until their transfers are qualified. Preserve definitions
    as metadata, and test diamonds, empty/never frames, stops and independent owners.
-   All 13 snapshot tests and 1,346 forward tests pass. The isolated port-membership hash
-   lookup preserves exact sites, source order and order-independent work, restoring the
+   All 13 snapshot tests and 1,346 forward tests pass. Port-membership hash lookup (`d1465268`)
+   preserves exact sites, source order and order-independent work, restoring the
    original 1000-matcher acceptance case without changing limits. Formatting and all-target
    Clippy pass (`/tmp/meowy-scalar-snapshots-forward.log`, `/tmp/meowy-scalar-snapshots-clippy.log`).
 5. Link structural evidence, refresh the handoff, run `make test` and audit protected

@@ -1,5 +1,6 @@
 use super::*;
 
+mod capture;
 mod inputs;
 
 #[cfg(test)]

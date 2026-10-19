@@ -26,10 +26,10 @@ impl Checker {
             self.scalar_state_context(program, reports, span, MAX_EDGES)?;
         let (ports, parts) = self.scalar_ports(reports, &entries, span, parts)?;
         let (graph, parts) = self.scalar_graph(reports, ports, span, parts)?;
-        let (_, parts) = self.scalar_schedule(&graph, &entries, span, parts)?;
-        let (_, parts) =
+        let (orders, parts) = self.scalar_schedule(&graph, &entries, span, parts)?;
+        let (definitions, parts) =
             self.scalar_definitions(reports, &versions, &events, &graph, span, parts)?;
-        self.scalar_entry_snapshots(&graph, &entries, span, parts)?;
+        self.scalar_snapshots(&graph, &orders, &entries, &definitions, span, parts)?;
         Ok(())
     }
 
