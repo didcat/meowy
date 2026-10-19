@@ -9,6 +9,7 @@ mod events;
 mod graph;
 mod literals;
 mod ports;
+mod schedule;
 mod sources;
 mod state;
 mod versions;
@@ -23,7 +24,8 @@ impl Checker {
         let (_, _, entries, parts) =
             self.scalar_state_context(program, reports, span, MAX_EDGES)?;
         let (ports, parts) = self.scalar_ports(reports, &entries, span, parts)?;
-        self.scalar_graph(reports, ports, span, parts)?;
+        let (graph, parts) = self.scalar_graph(reports, ports, span, parts)?;
+        self.scalar_schedule(&graph, &entries, span, parts)?;
         Ok(())
     }
 

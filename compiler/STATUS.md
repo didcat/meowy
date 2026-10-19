@@ -5233,11 +5233,13 @@ Current dependency-ordered commit plan:
 1. Completed (`2c9bcca2`): qualify reached ports against original owners/scopes and associate declared
    entry states with exact BlockEntry ports; four focused regressions and formatting pass
    (`/tmp/meowy-scalar-ports-sites.log`).
-2. Completed: bounded predecessor edges retain unreached sources and restart boundaries.
+2. Completed (`9fe799a8`): bounded predecessor edges retain unreached sources and restart boundaries.
    Incoming edges retain source metadata and sort by source location; unreached sources
    have no state. Four graph regressions pass (`/tmp/meowy-scalar-ports-graph.log`).
-3. Derive an acyclic schedule from those edges, joining predecessors before successors
-   and breaking ready-port ties by source location; test diamonds, cycles and budgets.
+3. Completed: each reached port follows its reached forward predecessors, with
+   source-location tie breaking and retained restart boundaries. Four tests pass,
+   including a declared-input diamond where breadth-first order reaches the join too
+   early (`/tmp/meowy-scalar-ports-schedule.log`). The 1000-matcher case still passes.
 4. Associate parameter/Bind/Write candidate versions with their qualified definition
    ports, preserving operation/result stages and historical identity boundaries.
 5. Link structural evidence, document the remaining transfer gap and run the full gate.
