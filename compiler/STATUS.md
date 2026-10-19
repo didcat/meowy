@@ -5240,10 +5240,10 @@ Current dependency-ordered commit plan:
    source-location tie breaking and retained restart boundaries. Four tests pass,
    including a declared-input diamond where breadth-first order reaches the join too
    early (`/tmp/meowy-scalar-ports-schedule.log`). The 1000-matcher case still passes.
-4. Parameter/Bind/Write versions retain their exact entry or operation ports and
+4. Completed: parameter/Bind/Write versions retain exact entry or operation ports and
    independent normal observations. Four regressions and the original 1000-matcher
    acceptance test pass (`/tmp/meowy-scalar-ports-definitions.log`). The schedule helper
-   visibility correction passes all-target Clippy and formatting
+   visibility correction (`2a32f41f`) passes all-target Clippy and formatting
    (`/tmp/meowy-scalar-ports-clippy.log`); it is kept separate from definition-site changes.
 5. Link structural evidence, document the remaining transfer gap and run the full gate.
 

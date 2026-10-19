@@ -4,6 +4,7 @@ use crate::hir;
 
 mod copies;
 mod declarations;
+mod definitions;
 mod domain;
 mod events;
 mod graph;
@@ -21,11 +22,12 @@ impl Checker {
         reports: &Reports,
         span: Span,
     ) -> Result<()> {
-        let (_, _, entries, parts) =
+        let (versions, events, entries, parts) =
             self.scalar_state_context(program, reports, span, MAX_EDGES)?;
         let (ports, parts) = self.scalar_ports(reports, &entries, span, parts)?;
         let (graph, parts) = self.scalar_graph(reports, ports, span, parts)?;
-        self.scalar_schedule(&graph, &entries, span, parts)?;
+        let (_, parts) = self.scalar_schedule(&graph, &entries, span, parts)?;
+        self.scalar_definitions(reports, &versions, &events, &graph, span, parts)?;
         Ok(())
     }
 
