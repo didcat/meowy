@@ -1,6 +1,8 @@
 use super::super::super::super::effects::Effect;
 use super::*;
 
+mod reads;
+
 #[derive(Debug, PartialEq, Eq)]
 pub(super) struct Scalar {
     pub(super) domain: Domain,
@@ -45,13 +47,16 @@ impl Snapshots {
         if !flow.spend(3) {
             return Err(budget(span));
         }
-        let (owner, observed) = match *source {
-            (owner, Effect::Scalar(observed)) => (owner, observed),
-            (_, Effect::Read { .. }) => return Ok(()),
+        let (owner, effect) = *source;
+        let (normal, control) = match effect {
+            Effect::Scalar(observed) => (observed.result, observed.control),
+            Effect::Read {
+                normal, control, ..
+            } => (*normal, *control),
             _ => return Err(invalid(span)),
         };
         let row = self.rows.get(&port).ok_or_else(|| invalid(span))?;
-        if row.owner != *owner || row.before != row.after || !observed.result {
+        if row.owner != *owner || row.before != row.after || !normal {
             return Err(invalid(span));
         }
         let value = match row.before {
@@ -66,20 +71,26 @@ impl Snapshots {
                         domain: Domain::BOTTOM,
                         version: None,
                         origin: None,
-                        control: observed.control,
+                        control,
                     })
                 } else {
-                    observed
-                        .value
-                        .map(|value| {
-                            Ok(Scalar {
-                                domain: Domain::literal(value, flow, span)?,
-                                version: None,
-                                origin: Some(Origin::Expression(*owner, point)),
-                                control: observed.control,
+                    match effect {
+                        Effect::Scalar(observed) => observed
+                            .value
+                            .map(|value| {
+                                Ok(Scalar {
+                                    domain: Domain::literal(value, flow, span)?,
+                                    version: None,
+                                    origin: Some(Origin::Expression(*owner, point)),
+                                    control,
+                                })
                             })
-                        })
-                        .transpose()?
+                            .transpose()?,
+                        Effect::Read { local, storage, .. } if local == storage => {
+                            self.read(state, *local, control, observations, flow, span)?
+                        }
+                        _ => return Err(invalid(span)),
+                    }
                 }
             }
         };

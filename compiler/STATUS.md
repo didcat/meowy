@@ -5346,11 +5346,15 @@ Literal observation transport is committed as `1bbd4ec6`. Bounded literal result
 records (`b44c6653`) pass all 218 focused scalar tests (`/tmp/meowy-scalar-values-literals.log`).
 They share the snapshot allowance, preserve independent before/after states and
 distinguish unavailable input from bottom; operation-only stages create no result
-record. Read declaration/stage qualification passes all 222 focused scalar tests
-(`/tmp/meowy-scalar-values-read-stages.log`). Supported ordinary scalar reads preserve storage, reuse bounded declared
+record. Read declaration/stage qualification (`2c546b5a`) passes all 222 focused
+scalar tests (`/tmp/meowy-scalar-values-read-stages.log`). Supported ordinary scalar reads preserve storage, reuse bounded declared
 domains and require actual graph result observations independently of checked
-`normal`; aliases, references and opaque types stay conservative. Snapshot-value
-capture follows as a separate slice with current-version/history regressions. Baseline
+`normal`; aliases, references and opaque types stay conservative. Snapshot read-value
+capture passes all 225 focused scalar tests (`/tmp/meowy-scalar-values-reads.log`). It validates current cells,
+completed definition versions and declared domains, retaining independent origins,
+control marks and copied histories. Missing/partial cells supply no value. Next
+cover read-result publication limits and malformed/absent observations, then run
+the final gate and document structural evidence. Baseline
 `24f7274c` and 589 protected-file hashes are in
 `/tmp/meowy-scalar-values-baseline.json`. User-owned `docs/programs/hey/` remains
 untracked and excluded. Bind/Write updates, mutation invalidation and scope/result
