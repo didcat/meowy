@@ -5603,6 +5603,16 @@ All 213 scalar-fact tests pass with the four generic fixtures using unsupported 
 (`/tmp/meowy-call-invalidation-fallback-fixtures.log`). These test-only updates preserve
 unknown-state coverage before enabling calls. The small cell reset will remain with the
 scheduled call consumer and its regressions; no separate public state API is needed.
+The generic fixture update is committed as `0f7b68e9`. Two call-capture regressions first
+reproduced missing state (`/tmp/meowy-call-invalidation-before.log`). The consumer now
+resets selected initialized cells to declared domains, removes version/origin identity,
+preserves initialization/control and older snapshots, and keeps unknown targets Missing.
+The two new positive capture regressions pass. One old narrowing expectation still
+assumed empty calls erase state and now checks the preserved value/version/control.
+Path/Indirect/alias fallback cases are included. All 216 scalar-fact tests and the
+unchanged 1000-matcher regression pass (`/tmp/meowy-call-invalidation-capture.log`,
+`/tmp/meowy-call-invalidation-matchers.log`). No call-result values are inferred.
+Additional initialization, control, history and exact-budget boundary checks follow.
 
 Call results, scope/results, broader references/aliases, restarts, arithmetic and proof
 outcomes remain separate. Signature access is not callee purity, and no callee body or

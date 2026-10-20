@@ -1,6 +1,7 @@
 use super::*;
 
 mod branches;
+mod calls;
 mod capture;
 mod expressions;
 mod guards;

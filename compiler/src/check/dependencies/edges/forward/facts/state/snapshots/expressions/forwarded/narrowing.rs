@@ -32,8 +32,11 @@ pub(crate) fn scalar_narrowing_values_carry_parameter_versions_through_groups_an
             .local,
         program.functions[0].params[0]
     );
-    let (checker, _, _, snapshots) = capture("g:(){};g();x:=1;((x))");
+    let (mut checker, _, _, snapshots) = capture("g:(){};g();x:=1;((x))");
+    let expected = Domain::integer(1, &mut checker.flow, Span::default()).unwrap();
     for point in checker.narrowings.keys().chain(checker.group_inputs.keys()) {
-        assert!(snapshots.expressions[point].value.is_none());
+        let value = snapshots.expressions[point].value.as_ref().unwrap();
+        assert_eq!(value.domain, expected);
+        assert!(value.version.is_some() && !value.control);
     }
 }

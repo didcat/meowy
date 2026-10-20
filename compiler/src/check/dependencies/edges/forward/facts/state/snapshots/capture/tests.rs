@@ -104,7 +104,7 @@ pub(crate) fn scalar_capture_preserves_storage_across_literal_stages() {
 }
 
 #[test]
-pub(crate) fn scalar_capture_preserves_parameter_reads_and_stops_at_unqualified_operations() {
+pub(crate) fn scalar_capture_preserves_parameter_reads_and_nonreturning_call_boundaries() {
     let (mut checker, program, reports, snapshots) = capture(
         "d:@\"debug\";f:(n<int32>){n};stop<never>:(){d.panic(\"stop\")};f(7);stop();late:9",
     );
@@ -139,10 +139,10 @@ pub(crate) fn scalar_capture_preserves_parameter_reads_and_stops_at_unqualified_
         .values()
         .find(|call| call.owner == 0 && call.function == program.functions[1].id)
         .unwrap();
-    assert_eq!(
+    assert!(matches!(
         snapshots.after(Port::Operation(stop.point)),
-        Some(View::Missing)
-    );
+        Some(View::Known(_))
+    ));
     assert_eq!(snapshots.before(Port::Normal(stop.point)), None);
     assert_eq!(
         snapshots.before(Port::Operation(

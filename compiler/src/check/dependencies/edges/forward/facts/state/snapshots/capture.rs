@@ -64,15 +64,34 @@ impl Checker {
                         if observations.forwarded.contains_key(&port) {
                             before
                         } else if let Port::Operation(point) = port {
-                            snapshots
-                                .storage(
-                                    point,
+                            if !self.flow.spend(
+                                observations.calls.map_or(0, |calls| {
+                                    calls.len().checked_ilog2().unwrap_or(0) as usize
+                                }) + 1,
+                            ) {
+                                return Err(budget(span));
+                            }
+                            if let Some(call) =
+                                observations.calls.and_then(|calls| calls.get(&point))
+                            {
+                                snapshots.call(
                                     before,
+                                    call,
                                     observations.definitions,
                                     &mut self.flow,
                                     span,
                                 )?
-                                .unwrap_or(Value::Missing)
+                            } else {
+                                snapshots
+                                    .storage(
+                                        point,
+                                        before,
+                                        observations.definitions,
+                                        &mut self.flow,
+                                        span,
+                                    )?
+                                    .unwrap_or(Value::Missing)
+                            }
                         } else {
                             Value::Missing
                         }
