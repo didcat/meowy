@@ -1,6 +1,8 @@
 use super::*;
 use guards::Authority;
 
+mod booleans;
+
 impl Snapshots {
     pub(super) fn branch(
         &mut self,
@@ -62,7 +64,11 @@ impl Snapshots {
             }
         };
         if allowed {
-            return Ok(before);
+            return if fact.authority == Authority::Boolean(3) {
+                self.boolean(fact.input.source.input, id, arm == 0, flow, span)
+            } else {
+                Ok(before)
+            };
         }
         let state = state.restrict(FALSE, flow, span, self.room())?;
         self.keep(state, span)

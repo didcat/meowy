@@ -5588,7 +5588,16 @@ The fallback passes all six branch tests, 180 scalar-fact tests and the original
 `/tmp/meowy-scalar-branches-facts.log`, `/tmp/meowy-scalar-branches-matchers.log`).
 Its new source regression confirms later writes cannot restore facts under incomplete
 guard evidence. The boolean-refinement files remain temporarily unwired for this commit;
-wire and revalidate them next.
+wire and revalidate them next. Fallback commit: `b3240e3f`.
+
+Live boolean refinement is wired again. It requires the original expression/state,
+current local/version/domain/origin and clean control to agree; it changes only that
+cell's boolean domain. Historical states and storage versions remain unchanged. Joined
+versions without a unique identity stay conservative. All 185 scalar-fact tests, the
+five live-version tests, the original 1000-matcher case, formatting and all-target Clippy
+pass (`/tmp/meowy-scalar-branches-facts.log`, `/tmp/meowy-scalar-branches-booleans.log`,
+`/tmp/meowy-scalar-branches-matchers.log`, `/tmp/meowy-scalar-branches-clippy.log`).
+Next: link structural evidence and run full repository/strict/preservation gates.
 
 1. Complete per-port proof-control propagation and guarded state restriction before
    consuming authority in `facts/state/joins.rs` or `snapshots/inputs.rs`. Guard records
