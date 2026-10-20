@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Boolean places after version merges pass all 14 verification groups.
+Updated: 2026-10-20. Short-circuit result facts pass all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5487,100 +5487,65 @@ Git retains the earlier milestone.
 
 ### Boolean places after version merges
 
-Qualified scalar reads now retain their original local independently of optional storage
-versions and value origins. Transparent groups, unchanged narrowing/ascriptions and
-non-projecting Forward wrappers preserve that association. Copies read their own local;
-shared value origins and equal domains cannot select storage. Literals and bottom gain
-no local association. Read publication and forwarding charge the retained identity.
+Qualified reads retain their original local independently of optional versions and value
+origins. Transparent wrappers preserve it; copies read their own destination. Boolean
+restriction refines merged cells only when the original history, local, optional version,
+domain, origin and control agree. Missing identities remain absent. The logical-result
+extension below preserves these boundaries; Git retains the earlier milestone.
 
-Boolean restriction uses that local after a join removes a unique version. The original
-before-state, owner, current cell, optional version, domain, origin and clean control must
-agree. Both edges refine the correct cell while keeping absent versions/origins absent.
-Earlier snapshots and copies remain unchanged, and later equal-looking cells cannot reuse
-an old read. Missing local evidence stays conservative; stale evidence rejects atomically.
-Existing read qualification keeps aliases, fields, receivers and temporary storage gated.
+### Short-circuit boolean result facts
+
+Qualified And/Or observations retain the original condition and right-operand regions,
+exact region/join edges, owners and independent normal observations. Match points remain
+separate. Scheduled result capture combines boolean domains from the bypass and selected
+RHS facts; nested results feed guards and Bind/Write transfers. Computed results gain a
+fresh expression origin and no local/version association. Copies retain result identity
+while historical reads and states stay immutable.
+
+Source and enclosing control marks survive into later guards. Unknown live facts or
+control remain unavailable. Skipped unsupported expressions add no values, but stopped
+or unobserved predecessors still make the join unavailable, including beside a known
+bypass. Bottom gains no origin. No frontend cache, final map or callee body supplies facts.
+This is structural scalar analysis; proof outcomes and release qualification remain gated.
 
 | Commit | Reviewable slice |
 | --- | --- |
-| `b9e75663` | Retain qualified read locals through merges and transparent wrappers |
-| `cd22cfe2` | Refine merged boolean cells without inventing versions or value identity |
+| `22c4dd8a` | Qualify original logical operands and branch/region joins |
+| `007542b9` | Capture short-circuit domains with fresh result identity |
+| `34df1dce` | Verify control, unavailable/stopped inputs, histories and exact budgets |
 
-All nine new structural tests, 194 scalar-fact tests, the original 1000-matcher case,
-formatting and all-target Clippy pass. Four new consumer regressions first reproduced
-the gap; stale-history rejection was already correct. Tests cover independent equal
-cells, copies, both short-circuit operators, wrappers, missing/invalid local evidence,
-partial cells, foreign owners and exact work/payload limits. No limits or package
-dependencies changed.
+All 13 new structural tests and 207 scalar-fact tests pass. Four result regressions first
+reproduced the gap. The original 1000-matcher case, formatting and all-target Clippy pass;
+no resource limit or dependency changed. Unsupported-guard coverage now uses unary and
+equality expressions, preserving the unavailable-evidence boundary. Exact capture-budget
+coverage includes logical observations and result payloads.
 
-Focused logs: `/tmp/meowy-scalar-places-capture.log`,
-`/tmp/meowy-scalar-places-before.log`, `/tmp/meowy-scalar-places-merged.log`,
-`/tmp/meowy-scalar-places-facts.log`, `/tmp/meowy-scalar-places-matchers.log`,
-`/tmp/meowy-scalar-places-clippy.log`. Two new test files are linked as structural
-evidence; coverage regeneration passes. The audit preserves 589 protected tracked
-files and all 37 reference hashes/gaps/prior evidence
-(`/tmp/meowy-scalar-places-preservation.log`). Baseline `932b0318` and separate original
-user-file hashes are retained in `/tmp/meowy-scalar-places-baseline.json`.
+Focused logs: `/tmp/meowy-scalar-logical-inputs.log`,
+`/tmp/meowy-scalar-logical-before.log`, `/tmp/meowy-scalar-logical-results.log`,
+`/tmp/meowy-scalar-logical-boundaries.log`, `/tmp/meowy-scalar-logical-facts.log`,
+`/tmp/meowy-scalar-logical-matchers-results.log`, `/tmp/meowy-scalar-logical-clippy.log`.
+Three test files are linked as structural evidence for the existing contracts. Reference
+hashes, source expectations, coverage gaps and capability pins remain unchanged.
+The audit preserves 589 protected tracked files and all 37 reference hashes/gaps/prior
+evidence (`/tmp/meowy-scalar-logical-preservation.log`). Baseline `e91ab087` and separate
+user-file hashes are in `/tmp/meowy-scalar-logical-baseline.json`.
 User-owned `docs/programs/hey/` stays excluded from edits and commits.
-All 14 `make test` groups pass: 3540 library, 923 native, 86 Python and 495 required
+
+All 14 `make test` groups pass: 3553 library, 923 native, 86 Python and 495 required
 conformance cases, with 19 unchanged gaps and zero debug/release failures. Runtime
 debug/release/sanitized profiles each pass 100 regular cases across nine suites plus
 subprocess probes, outside sandbox ptrace supervision. Summary:
-`/tmp/meowy-scalar-places-gate.log`; details: `build/verification-scalar-places`.
+`/tmp/meowy-scalar-logical-gate.log`; details: `build/verification-scalar-logical`.
 Strict mode exits 1 only for the exact 19 pinned names/reasons
-(`/tmp/meowy-scalar-places-strict.log`); the preservation audit confirms them.
+(`/tmp/meowy-scalar-logical-strict.log`); the preservation audit confirms them.
 All four final documentation/tooling checks pass
-(`/tmp/meowy-scalar-places-docs.log`). No known failures remain. No reference contract,
-source expectation or capability pin changed. Logical result facts, call invalidation
-and proof outcomes remain gated. Nothing was pushed.
+(`/tmp/meowy-scalar-logical-docs.log`). No known failures remain. Nothing was pushed.
 
-### Short-circuit result work plan
-
-The next slice uses qualified branch/region edges and scheduled operand facts; no
-frontend constant cache or callee body supplies values. The tracked tree was clean at
-`e91ab087`; user-owned `docs/programs/hey/` remains excluded. Preservation baseline:
-`/tmp/meowy-scalar-logical-baseline.json`.
-
-Dependency-ordered commits:
-1. Qualify logical-result operand/edge observations, distinguishing And/Or from Match,
-   with stopped-input, identity and exact-budget regressions.
-2. Capture computed boolean domains from scheduled paths, with fresh result origins,
-   no local/version association, control propagation and historical-state regressions.
-3. Add any independently useful boundary scenarios, then link structural evidence and
-   update the handoff after focused checks, the original 1000-matcher regression,
-   formatting, Clippy, all 14 gate groups and strict-gap/preservation audits.
-
-Operand qualification is implemented with original region/branch edges, owner/site
-checks and independent normal observations. Four focused tests pass, including stopped
-operands, stale links and exact work/payload limits
-(`/tmp/meowy-scalar-logical-inputs.log`). It records no result values yet. Condition
-authority remains captured before successors; unreached inputs remain unavailable.
-All 198 scalar-fact tests and the unchanged 1000-matcher regression pass
-(`/tmp/meowy-scalar-logical-facts-inputs.log`,
-`/tmp/meowy-scalar-logical-matchers-inputs.log`); committed as `22c4dd8a`.
-Four result regressions reproduced missing logical values before implementation
-(`/tmp/meowy-scalar-logical-before.log`). Scheduled result capture is now implemented;
-all 202 scalar-fact tests pass, including truth tables, nested guards, copies and
-historical states (`/tmp/meowy-scalar-logical-results.log`). Unsupported-guard
-coverage now uses unary/equality expressions; logical guards are the behavior added here.
-The original 1000-matcher case passes unchanged
-(`/tmp/meowy-scalar-logical-matchers-results.log`). Boundary/control/atomic-budget
-qualification passes. Result capture is committed as `007542b9`. All five new
-boundary tests pass: stopped/unknown operands, bottom, each independent control
-source, stale histories/shapes, duplicate publication and exact work/payload limits
-(`/tmp/meowy-scalar-logical-boundaries.log`). The capture budget fixture includes
-a logical result. All 207 scalar-fact tests, formatting and all-target Clippy pass
-(`/tmp/meowy-scalar-logical-facts.log`, `/tmp/meowy-scalar-logical-clippy.log`).
-The preservation audit passes; evidence links and the full repository gate are next.
-
-1. Add short-circuit boolean result facts in `state/snapshots/expressions` using scheduled
-   operand/edge observations. Preserve source/control marks, independent matcher rules,
-   stopped operands and historical states. Computed results must not inherit a local
-   association or same-value identity merely because their domains match an operand.
-2. Qualify Call guard authority before integrating `arguments/mutations/transfers.rs`
+1. Qualify Call guard authority before integrating `arguments/mutations/transfers.rs`
    with snapshot capture. Missing knowledge never proves no mutation. Conservative
    Path/Indirect/alias fallback must precede using post-mutation facts; aliases need
    completed backing layouts.
-3. Keep scope/result transfers, nullable/alias/emission facts, restart resets, arithmetic
+2. Keep scope/result transfers, nullable/alias/emission facts, restart resets, arithmetic
    and wider guards as separate slices. Complete transitive query/E225 qualification
    and per-query logical charging before proof outcomes. Preserve source expectations,
    capability pins and the original 1000-matcher case; run the full gate across each series.
@@ -7166,8 +7131,8 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
-Resume the ordered actions in [Boolean places after version merges](#boolean-places-after-version-merges):
-logical boolean result facts precede guarded call invalidation.
+Resume the ordered actions in [Short-circuit boolean result facts](#short-circuit-boolean-result-facts):
+qualify Call guard authority before integrating guarded call invalidation.
 The broader unfinished contracts below remain gated.
 
 Explicit ascriptions, uniform type predicates and the four bit functions are
@@ -7211,7 +7176,8 @@ guarded joins, declared BlockEntry states, source ports, predecessor graphs, acy
 and definition-site associations feed immutable per-port snapshot transport. Scalar
 expression values, Bind/Write transfers and condition-authority metadata are complete.
 Scheduled boolean edge restriction supports qualified current locals, including merged
-versions. Logical result facts and qualified call mutation transfers are next.
+versions. Short-circuit boolean result facts now feed guards and storage transfers.
+Qualified call mutation transfers are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:

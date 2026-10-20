@@ -2340,13 +2340,27 @@ without captured control leave observed successors unavailable. Later writes can
 independent facts. Unreached predecessors and restart edges remain unavailable even beside
 a known dead alternative. Missing knowledge never becomes bottom or establishes no mutation.
 
+Short-circuit `&&`/`||` results now use qualified operand regions and scheduled normal
+facts. The admitted left values select the bypass constant and the right operand's
+true-edge/false-edge values. Nested logical results feed later guards and Bind/Write
+transfers without changing independent matcher semantics. Each nonempty computed result
+has a fresh expression origin and no local/version association, even when its domain
+matches an operand. Direct copies retain that result origin and their own storage.
+
+Missing live operand facts or control evidence remain unavailable. Skipped unsupported
+expressions contribute no values; stopped/unobserved predecessors remain unavailable
+under the current graph boundary, even beside a known bypass. Bottom has no origin.
+Both operand control marks and enclosing captured control survive into later guards.
+Operand/result owners, normal histories and boolean shapes are checked before atomic
+publication; earlier reads and copied snapshots remain unchanged.
+
 Capture, qualification and authority publication share existing work/payload limits.
 Late identity, invalid boolean shape, duplicate publication and exact-budget failures
 expose no partial result. Block statement duplicate checks use bounded hash membership
 without changing source order. Structural regressions cover these internal transfers;
-logical boolean result facts, wider guards, broader place qualification, guarded
-call invalidation and executable proof queries remain separate. Complete transitive
-query/E225 qualification and per-query logical charging are still unfinished.
+wider guards, broader place qualification, guarded call invalidation and executable
+proof queries remain separate. Complete transitive query/E225 qualification and
+per-query logical charging are still unfinished.
 Isolated list probes box their private checkers to keep recursive temporary stack use
 small as capture metadata grows; existing probe limits and diagnostics are unchanged.
 
