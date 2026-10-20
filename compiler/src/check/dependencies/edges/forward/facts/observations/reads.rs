@@ -33,17 +33,11 @@ impl Checker {
                 return Err(invalid(span));
             }
             if !self.flow.spend(
-                observations
-                    .definitions
-                    .declarations
-                    .len()
-                    .checked_ilog2()
-                    .unwrap_or(0) as usize
-                    + self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
+                self.proofs.aliases.len().checked_ilog2().unwrap_or(0) as usize
                     + self.proofs.fields.len().checked_ilog2().unwrap_or(0) as usize
                     + self.proofs.receivers.len().checked_ilog2().unwrap_or(0) as usize
                     + self.proofs.temporaries.len().checked_ilog2().unwrap_or(0) as usize
-                    + 6,
+                    + 7,
             ) {
                 return Err(budget(span));
             }

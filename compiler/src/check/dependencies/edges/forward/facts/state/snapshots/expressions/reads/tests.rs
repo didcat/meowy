@@ -67,7 +67,6 @@ pub(super) fn definitions(
         )]
         .into_iter()
         .collect(),
-        writes: BTreeMap::new(),
         ..definitions::Definitions::default()
     }
 }

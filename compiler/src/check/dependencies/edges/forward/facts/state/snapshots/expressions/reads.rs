@@ -35,7 +35,7 @@ impl Snapshots {
                 Definition::Write(point) => (&observations.definitions.writes, point),
                 _ => (&observations.definitions.declarations, local),
             };
-            if !flow.spend(map.len().checked_ilog2().unwrap_or(0) as usize + 3) {
+            if !flow.spend(3) {
                 return Err(budget(span));
             }
             let location = map.get(&key).ok_or_else(|| invalid(span))?;

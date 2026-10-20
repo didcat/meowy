@@ -19,7 +19,7 @@ impl Snapshots {
         let Definition::Bind(site) = storage.version.definition else {
             return Ok(None);
         };
-        if !flow.spend(definitions.declarations.len().checked_ilog2().unwrap_or(0) as usize + 3) {
+        if !flow.spend(3) {
             return Err(budget(span));
         }
         let location = definitions

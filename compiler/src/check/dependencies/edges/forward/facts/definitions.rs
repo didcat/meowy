@@ -14,8 +14,8 @@ pub(super) struct Location {
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub(super) struct Definitions {
-    pub(super) declarations: BTreeMap<hir::LocalId, Location>,
-    pub(super) writes: BTreeMap<PointId, Location>,
+    pub(super) declarations: HashMap<hir::LocalId, Location>,
+    pub(super) writes: HashMap<PointId, Location>,
     pub(super) storage: HashMap<PointId, Storage>,
 }
 
@@ -180,10 +180,7 @@ impl Checker {
             Definition::Write(point) => (&mut definitions.writes, point),
             _ => (&mut definitions.declarations, location.version.local),
         };
-        if !self
-            .flow
-            .spend(map.len().checked_ilog2().unwrap_or(0) as usize + 2)
-        {
+        if !self.flow.spend(2) {
             return Err(budget(span));
         }
         *parts = parts

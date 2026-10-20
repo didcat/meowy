@@ -5500,7 +5500,12 @@ differential containment and exact-limit checks (`/tmp/meowy-scalar-storage-cont
 The 21,009-port stress capture still exceeds work. Bounded hash definition lookups and
 avoiding discarded-cell payload comparisons are the next measured optimization before
 committing Bind integration. Temporary measurements are removed. Limits and source
-expectations are unchanged.
+expectations are unchanged. Definition lookup tables now use bounded hashes; ordered
+source construction and the independent execution schedule still choose processing
+order. All 267 focused scalar tests, formatting and Clippy pass, including duplicate,
+stale-identity and exact-resource cases (`/tmp/meowy-scalar-storage-definition-lookups.log`).
+The stress case still exhausts work; shape-aware cell comparisons are next before the
+Bind capture commit.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.
