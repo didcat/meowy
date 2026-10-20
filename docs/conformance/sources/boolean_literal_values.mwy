@@ -1,0 +1,22 @@
+debug : @"debug"
+literal : @"core".literal
+true : "shadowed"
+false : 7
+
+debug.print(@"core".literal(true))
+debug.print(literal(false))
+<T> : {
+    flag : literal(true) && !literal(false)
+    -> flag<>
+}
+value <T> : literal(false)
+debug.print(value)
+values <boolean[2]><int32[2]> : [literal(true), literal(false)]
+| values <boolean[2]> | {
+    debug.print(values[1])
+    debug.print(values[2])
+}
+{
+    literal <int32> : (value <int32>) { -> value }
+    debug.print(literal(false))
+}

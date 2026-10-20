@@ -31,6 +31,7 @@ numeric members such as `core.1`. Unbound undotted numbers and decimals with
 unbound numeric roots already construct intrinsic values; no prelude declarations
 are needed. With `10` bound, `core.literal(10.4)` bypasses member lookup and still
 constructs the decimal. Dotted spellings cannot be declaration names.
+The same intrinsic also accepts [boolean spellings](#intrinsic-boolean-literals).
 
 ```meowy
 core : @"core"
@@ -42,8 +43,8 @@ minimum <int8> : literal(-128)
 hex <uint16> : literal(0xff)
 ```
 
-The single argument must be a valid integer or floating-point token, optionally
-preceded directly by unary `-`; intervening whitespace and comments are allowed.
+For numeric construction, the argument must be a valid integer or floating-point token,
+optionally preceded directly by unary `-`; intervening whitespace and comments are allowed.
 The operand is syntax: it is neither looked up nor evaluated as an expression.
 `literal(name)`, `literal(1 + 2)` and `literal((1))` are invalid (`E207`). Missing
 or extra arguments are `E212`. A digit-leading name that is not a valid numeric token,
@@ -63,6 +64,34 @@ lexical resolution selects the callable: shadowing `core` or an alias affects
 that lookup, and an unrelated function named `literal` keeps ordinary arguments.
 Numeric bindings created from its result have fixed types like other bindings.
 See [numeric names](../syntax.md#numeric-names-and-intrinsic-literals).
+
+## Intrinsic boolean literals
+
+`core.literal(true)` and `core.literal(false)` construct the intrinsic boolean values,
+even when those names have local bindings of another type. Their result is `boolean`.
+The argument is syntax; it is not looked up or evaluated. Ordinary uses of `true` and
+`false` remain shadowable, and `core.true` and `core.false` expose the same intrinsic values.
+
+```meowy
+literal : @"core".literal
+true : "shadowed"
+false : 7
+
+@"debug".print(literal(true))
+@"debug".print(literal(false))
+```
+
+These print `true` and `false`. The boolean operand must be the exact, unparenthesized
+spelling `true` or `false`. Other names, grouping, negation and expressions such as
+`literal(flag)`, `literal((true))`, `literal(-true)` and `literal(!false)` are invalid
+(`E207`). Missing or extra arguments are `E212`.
+
+Immutable aliases retain this behavior. Callable lookup remains ordinary, so an unrelated
+function named `literal` evaluates its arguments normally. Boolean escapes participate in
+ordinary type checking, required evaluation and contextual list inference. Required
+evaluation charges ordinary boolean-literal work, including short-circuit skipping, without
+reading a shadowing binding. There is no runtime call or allocation. The intrinsic does
+not convert booleans to numbers or make boolean values valid list capacities.
 
 ## Output and text
 

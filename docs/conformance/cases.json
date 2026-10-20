@@ -5448,6 +5448,36 @@
         "code": "E212"
       },
       "reference": "../reference/types.md#functions-and-generics"
+    },
+    {
+      "id": "boolean_literal_values",
+      "phase": "run",
+      "source": "sources/boolean_literal_values.mwy",
+      "expected": {
+        "accepted": true,
+        "stdout": "true\nfalse\nfalse\ntrue\nfalse\n7\n"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-boolean-literals"
+    },
+    {
+      "id": "boolean_literal_expression",
+      "phase": "check",
+      "source": "sources/boolean_literal_expression.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-boolean-literals"
+    },
+    {
+      "id": "boolean_literal_negative",
+      "phase": "check",
+      "source": "sources/boolean_literal_negative.mwy",
+      "expected": {
+        "accepted": false,
+        "code": "E207"
+      },
+      "reference": "../reference/stdlib/core.md#intrinsic-boolean-literals"
     }
   ]
 }

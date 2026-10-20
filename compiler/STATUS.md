@@ -7193,6 +7193,14 @@ All 9 literal tests, 196 required-evaluation tests and 22 list-probe tests pass.
 numeric and boolean native cases pass in debug/release (`/tmp/meowy-boolean-literal-native.log`);
 focused logs are `/tmp/meowy-boolean-literal-{literals,required,lists}.log`. The contract/source-fixture slice will be
 kept separate from cross-reference propagation and the editor/final handoff slice.
+Implementation is committed as `1bbc1a18`. The core contract now documents boolean syntax
+under a separate anchor, preserving numeric anchors. Three required source cases cover
+values/contexts and syntax rejection. Core evidence and remaining gaps were reviewed before
+its hash update. Proof obligations are unchanged: no proof contract or outcome changed.
+All three new required cases pass in debug/release (`/tmp/meowy-boolean-literal-cases.log`).
+Catalog validation and all four documentation/tooling checks pass
+(`/tmp/meowy-boolean-literal-catalog.log`, `/tmp/meowy-boolean-literal-contract-docs.log`).
+Coverage regeneration passes; existing case records and proof obligations are preserved.
 
 ## Next steps
 
