@@ -2,6 +2,8 @@ use super::*;
 use crate::hir::Program;
 
 mod access;
+mod scalars;
+pub(in super::super) use scalars::Mutation;
 mod storage;
 mod targets;
 mod transfers;

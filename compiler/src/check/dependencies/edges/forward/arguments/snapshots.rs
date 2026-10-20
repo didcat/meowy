@@ -139,9 +139,9 @@ impl Checker {
         reports: &Reports,
         facts: &Facts,
         span: Span,
-    ) -> Result<()> {
-        self.call_mutation_transfers(program, reports, facts, span, MAX_EDGES)?;
-        Ok(())
+    ) -> Result<super::Mutations> {
+        self.scalar_call_mutations(program, reports, facts, span, MAX_EDGES)
+            .map(|(mutations, _)| mutations)
     }
 }
 

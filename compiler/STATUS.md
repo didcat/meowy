@@ -5582,7 +5582,17 @@ Direct-borrow qualification and capture pass all four new regressions, all 211 s
 tests and the unchanged 1000-matcher case (`/tmp/meowy-call-invalidation-borrow-facts.log`,
 `/tmp/meowy-call-invalidation-borrow-matchers.log`). The exclusion fixture uses supported
 field-borrow syntax. No reference value facts or wider place eligibility were added.
-Conservative call input projection is next.
+Direct-borrow support is committed as `78408a24`. Call projection initially kept direct
+arguments unknown because expected-type checking wraps them in Forward coercions. It now
+reuses the existing bounded group/coercion/narrowing/ascription qualifiers to establish
+the exact direct source, without following reference cells or inspecting callee bodies.
+All four projection tests pass (`/tmp/meowy-call-invalidation-inputs.log`), including
+false guards, unknown target fallback, independent stages and exact work/payload bounds.
+All 141 argument tests pass, including grouped direct borrows
+(`/tmp/meowy-call-invalidation-arguments.log`). Qualification now returns the owned
+projection for downstream capture, without applying mutations yet. Integration is split
+into graph-observation association, the cell invalidation primitive and scheduled call
+application so each review isolates one responsibility.
 
 Call results, scope/results, broader references/aliases, restarts, arithmetic and proof
 outcomes remain separate. Signature access is not callee purity, and no callee body or

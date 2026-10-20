@@ -100,3 +100,5 @@ mod program;
 mod snapshots;
 
 mod mutations;
+pub(super) use mutations::Mutation;
+pub(crate) type Mutations = BTreeMap<PointId, Mutation>;
