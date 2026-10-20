@@ -5530,6 +5530,36 @@ All four final handoff documentation/tooling checks pass
 (`/tmp/meowy-scalar-guards-docs.log`). No known failures remain.
 No reference contract, source expectation or capability pin changed. Nothing was pushed.
 
+### Scheduled scalar guard transfers
+
+Current investigation: guard records are produced after the schedule, and predecessor
+joins ignore them. Short-circuit RHS checking also omits the left operand's proof-control
+mark from ordinary operation/query/exit captures. Close that control gap before allowing
+branch facts to affect scalar state.
+
+Dependency-ordered commit plan:
+
+1. Propagate captured left-operand control through short-circuit RHS checking and restore
+   it on success/error. Cover query E225, writes, nested conditions and scoped exits.
+2. Capture qualified guard authority at its scheduled Normal port, preserving source
+   snapshots and exact budget/identity checks. Keep this move behavior-preserving.
+3. Apply ordinary boolean edge availability to predecessor inputs. Unknown/dependent
+   conditions retain both successors; missing/unreached inputs and restart edges stay
+   unavailable. Test joins, stopped paths, both operators and historical conditions.
+4. Restrict qualified current boolean versions on each live edge without changing storage
+   versions or earlier snapshots. Leave unsupported places and merged versions conservative.
+5. Link structural evidence, update the handoff and run the full gate, strict conformance,
+   preservation audit and original 1000-matcher case. Optimize measured redundant work in
+   a separate prerequisite slice if needed; do not raise existing limits.
+
+Proof outcomes, general per-port/query E225 completion, scope/result transfers, guarded
+call invalidation and alias/path fallback remain separate. The RHS control fix passes all
+five new tests, five guard-ancestry tests and the original 1000-matcher case, with unchanged
+ordinary errors and restored control after success/error. Three regressions first reproduced
+the missing write/query/exit marks. Logs: `/tmp/meowy-scalar-branches-control-before.log`,
+`/tmp/meowy-scalar-branches-control.log`, `/tmp/meowy-scalar-branches-ancestry.log`,
+`/tmp/meowy-scalar-branches-matchers.log`. Formatting passes. Next: scheduled guard capture.
+
 1. Complete per-port proof-control propagation and guarded state restriction before
    consuming authority in `facts/state/joins.rs` or `snapshots/inputs.rs`. Guard records
    currently inspect finished immutable histories; move their use into the validated

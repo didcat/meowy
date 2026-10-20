@@ -29,7 +29,8 @@ pub(crate) fn scalar_guard_controls_follow_short_circuit_availability_across_nes
         .iter()
         .position(|point| point.kind == PointKind::Or)
         .unwrap();
-    assert!(!checker.branch_inputs[&inner].control);
+    assert!(checker.branch_inputs[&inner].control);
+    checker.branch_inputs.get_mut(&inner).unwrap().control = false;
     assert_eq!(control(&mut checker, inner).unwrap(), Some(true));
     let function = *checker
         .branch_inputs

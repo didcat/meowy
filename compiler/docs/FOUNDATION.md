@@ -2308,7 +2308,8 @@ branch edges and rechecks completed condition, arm and input points, exact regio
 edges and independently observed predecessor/successor links.
 
 Enclosing Then/Else regions contribute retained proof-control dependencies, including
-short-circuit right operands whose frontend control flag is not propagated. Parent
+short-circuit right operands. RHS checking inherits captured left-operand control for
+values, writes, queries and scoped exits, restoring the outer flag on success/error. Parent
 chains remain within one owner and use strictly decreasing PointIds; malformed or cyclic
 ancestry rejects. Missing parent captures remain unknown, while a known dependency stays
 dependent. A condition does not inherit the decision that it is computing.

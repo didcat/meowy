@@ -335,9 +335,13 @@ impl Checker {
             } else {
                 PointKind::Else
             };
-            let (id, (root, value)) = self.with_point_id(kind, right.span, |checker| {
+            let control = self.control;
+            self.control |= dependent;
+            let result = self.with_point_id(kind, right.span, |checker| {
                 checker.expression_point(right, right_context.as_ref())
-            })?;
+            });
+            self.control = control;
+            let (id, (root, value)) = result?;
             (Some(id), Some(root), value)
         } else if equality && matches!(right_context, Some(Type::Record { .. })) {
             let record = right_context.expect("record context");

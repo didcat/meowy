@@ -1,5 +1,7 @@
 use crate::check::{Checker, Constant, Value};
 
+mod short_circuit;
+
 pub(crate) fn checker() -> Checker {
     let mut checker = Checker::new();
     checker.derived.insert(0);
