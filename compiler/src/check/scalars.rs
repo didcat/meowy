@@ -305,6 +305,8 @@ impl Checker {
             let (root, value) = self.binary_operand_point(left, context.as_ref(), equality)?;
             (None, Some(root), value)
         };
+        let dependent = boolean && (self.control || self.derived_expr(&left));
+        let normal = left.ty != Type::Never;
         let skipped = if boolean {
             let guard = self.guard(&left);
             let guard = if op == "||" {
@@ -374,6 +376,13 @@ impl Checker {
             self.region_edges(test, input.expect("condition root"), span)?;
             self.region_edges(arm, content.expect("operand root"), span)?;
             self.branch_edges(*point, test, then, otherwise, span)?;
+            self.branch_input(
+                *point,
+                input.expect("condition root"),
+                normal,
+                dependent,
+                span,
+            )?;
         } else if !boolean && let Some(point) = self.point {
             if self.required {
                 self.sequence(

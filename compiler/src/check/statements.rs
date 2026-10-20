@@ -362,6 +362,7 @@ impl Checker {
                                     condition.span,
                                 ));
                             }
+                            let dependent = checker.control || checker.derived_expr(&condition);
                             let guard = checker.guard(&condition);
                             let absent = checker.flow.not(guard);
                             let skipped = checker.flow.and(checker.reach, absent);
@@ -385,6 +386,7 @@ impl Checker {
                             checker.region_edges(test, input, condition.span)?;
                             checker.region_edges(taken, content, body.span)?;
                             checker.branch_edges(point, test, taken, skipped, condition.span)?;
+                            checker.branch_input(point, input, true, dependent, condition.span)?;
                             Ok(hir::Stmt::If {
                                 point: Some(point),
                                 condition,

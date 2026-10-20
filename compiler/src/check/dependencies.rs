@@ -306,6 +306,9 @@ pub(crate) use edges::{BindingIdentity, Edge};
 mod grouped;
 pub(crate) use grouped::Group;
 
+mod branches;
+pub(crate) use branches::Branch;
+
 mod sequences;
 pub(crate) use sequences::{Sequence, Source as SequenceSource};
 

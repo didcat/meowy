@@ -5506,6 +5506,12 @@ hash membership removes 72,072 ordered-lookup work units from its repeated block
 without changing traversal or existing limits. Profiling is removed; measurement:
 `/tmp/meowy-scalar-guards-profile.log`. Formatting passes. Next: qualify graph inputs.
 
+The lookup prerequisite is committed as `7afd23df`. Condition capture is complete:
+matcher and short-circuit rows retain original input/owner, normal-shape status and
+the dependency mark computed before the body. A bounded hash map stores identities;
+later qualification follows ordered branch edges. Required evaluation adds no rows.
+Source errors, cycles, stale identities and exact work/map limits reject atomically.
+
 1. Qualify guard authority and E225 dependencies before restricting states in
    `facts/state/joins.rs`. Integrate guarded Call inputs from
    `arguments/mutations/transfers.rs` into `facts/state/snapshots/capture.rs` only after
