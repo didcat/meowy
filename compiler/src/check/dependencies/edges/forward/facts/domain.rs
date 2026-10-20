@@ -112,6 +112,24 @@ impl Domain {
             null: self.null || other.null,
         })
     }
+
+    pub(super) fn fits(&self, other: &Self, flow: &mut Flow, span: Span) -> Result<bool> {
+        if !flow.spend(self.weight() + other.weight() + 1) {
+            return Err(budget(span));
+        }
+        if !self.valid() || !other.valid() {
+            return Err(invalid(span));
+        }
+        if self.null && !other.null {
+            return Ok(false);
+        }
+        match (&self.values, &other.values) {
+            (None, _) => Ok(true),
+            (Some(Values::Bool(left)), Some(Values::Bool(right))) => Ok(left & right == *left),
+            (Some(Values::Int(left)), Some(Values::Int(right))) => left.fits(right, flow, span),
+            _ => Ok(false),
+        }
+    }
 }
 
 pub(super) fn budget(span: Span) -> Diagnostic {

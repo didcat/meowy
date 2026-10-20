@@ -59,7 +59,7 @@ impl Snapshots {
         let Some(domain) = domain else {
             return Ok(None);
         };
-        if domain.join(declared, flow, span)? != *declared {
+        if !domain.fits(declared, flow, span)? {
             return Err(invalid(span));
         }
         let weight =

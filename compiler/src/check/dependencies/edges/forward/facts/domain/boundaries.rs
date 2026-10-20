@@ -1,6 +1,78 @@
 use super::*;
 
 #[test]
+pub(crate) fn scalar_domain_containment_agrees_with_canonical_joins() {
+    let mut flow = Flow::default();
+    let span = Span::default();
+    let values = [
+        Domain::BOTTOM,
+        Domain::NULL,
+        Domain::boolean(false),
+        Domain::boolean(true),
+        Domain {
+            values: Some(Values::Bool(3)),
+            null: true,
+        },
+        Domain::integer(i128::MIN, &mut flow, span).unwrap(),
+        Domain::integer(7, &mut flow, span).unwrap(),
+        Domain {
+            values: Some(Values::Int(Integers::Set(vec![1, 7, 100]))),
+            null: false,
+        },
+        Domain {
+            values: Some(Values::Int(Integers::Interval(0, 100))),
+            null: false,
+        },
+        Domain {
+            values: Some(Values::Int(Integers::Interval(i128::MIN, i128::MAX))),
+            null: true,
+        },
+    ];
+    for left in &values {
+        for right in &values {
+            let expected = left
+                .join(right, &mut flow, span)
+                .is_ok_and(|value| value == *right);
+            let start = flow.work;
+            assert_eq!(left.fits(right, &mut flow, span).unwrap(), expected);
+            let cost = flow.work - start;
+            for extra in [0, 1] {
+                let mut limited = Flow {
+                    work: crate::flow::MAX_PROOF_WORK - cost + extra,
+                    ..Flow::default()
+                };
+                let result = left.fits(right, &mut limited, span);
+                assert_eq!(result.is_ok(), extra == 0);
+                if let Ok(found) = result {
+                    assert_eq!(found, expected);
+                }
+            }
+        }
+    }
+    for invalid in [
+        Domain {
+            values: Some(Values::Bool(0)),
+            null: false,
+        },
+        Domain {
+            values: Some(Values::Int(Integers::Set(vec![]))),
+            null: false,
+        },
+        Domain {
+            values: Some(Values::Int(Integers::Set(vec![2, 1]))),
+            null: false,
+        },
+        Domain {
+            values: Some(Values::Int(Integers::Interval(0, 1))),
+            null: false,
+        },
+    ] {
+        assert!(invalid.fits(&Domain::NULL, &mut flow, span).is_err());
+        assert!(Domain::BOTTOM.fits(&invalid, &mut flow, span).is_err());
+    }
+}
+
+#[test]
 pub(crate) fn scalar_domain_joins_preserve_order_independence_null_and_bottom() {
     let mut flow = Flow::default();
     let span = Span::default();

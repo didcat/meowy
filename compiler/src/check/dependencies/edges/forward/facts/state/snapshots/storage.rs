@@ -63,7 +63,7 @@ impl Snapshots {
         }
         let value = fact.and_then(|fact| fact.value.as_ref());
         let domain = value.map_or(&storage.declared, |value| &value.domain);
-        if domain.join(&storage.declared, flow, span)? != storage.declared {
+        if !domain.fits(&storage.declared, flow, span)? {
             return Err(invalid(span));
         }
         if domain.weight() > self.room() || !flow.spend(domain.weight() + 2) {

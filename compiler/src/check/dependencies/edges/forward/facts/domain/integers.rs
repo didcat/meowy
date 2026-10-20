@@ -110,6 +110,26 @@ impl Integers {
         let (low, high) = other.bounds();
         Ok(Self::interval(left.min(low), right.max(high), flow, span)?.expect("nonempty hull"))
     }
+
+    pub(super) fn fits(&self, other: &Self, flow: &mut Flow, span: Span) -> Result<bool> {
+        if !flow.spend(4) {
+            return Err(budget(span));
+        }
+        match (self, other) {
+            (_, Self::Interval(low, high)) => {
+                let (first, last) = self.bounds();
+                Ok(first >= *low && last <= *high)
+            }
+            (Self::Set(left), Self::Set(right)) => {
+                if !flow.spend(left.len() * (right.len().checked_ilog2().unwrap_or(0) as usize + 1))
+                {
+                    return Err(budget(span));
+                }
+                Ok(left.iter().all(|value| right.binary_search(value).is_ok()))
+            }
+            _ => Ok(false),
+        }
+    }
 }
 
 #[cfg(test)]

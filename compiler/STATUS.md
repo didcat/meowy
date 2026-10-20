@@ -5492,8 +5492,15 @@ removed. Wrapper prerequisites are committed as `67f87cd2`. Integer singleton
 construction now skips duplicate sorting, and intervals charge element work only when
 materializing a small finite set. All 265 focused scalar tests, formatting and Clippy
 pass, including exact empty/extreme/singleton/full-interval work boundaries
-(`/tmp/meowy-scalar-storage-domain-work.log`). Production Bind/Write transfers remain disabled;
-limits and source expectations are unchanged.
+(`/tmp/meowy-scalar-storage-domain-work.log`), committed as `9e30c879`. Bind capture is
+restored; all 266 focused scalar tests, formatting and Clippy pass. The 1000-matcher
+case still exhausts work. Read/transfer domain checks now use bounded containment
+without building throwaway joins. All 267 focused scalar tests and Clippy pass, including
+differential containment and exact-limit checks (`/tmp/meowy-scalar-storage-containment.log`).
+The 21,009-port stress capture still exceeds work. Bounded hash definition lookups and
+avoiding discarded-cell payload comparisons are the next measured optimization before
+committing Bind integration. Temporary measurements are removed. Limits and source
+expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.
