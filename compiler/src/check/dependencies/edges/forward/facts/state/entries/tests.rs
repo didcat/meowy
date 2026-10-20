@@ -39,7 +39,15 @@ pub(crate) fn scalar_entry_states_seed_declared_parameters_without_future_bind_o
             Data::Uninitialized
         );
     }
-    assert!(versions[&0].value.is_some());
+    assert!(versions[&0].value.is_none());
+    let (candidates, parts) = checker
+        .scalar_copy_context(&program, &reports, Span::default(), MAX_EDGES)
+        .unwrap();
+    assert!(candidates[&0].value.is_some());
+    let (candidate_entries, _) = checker
+        .scalar_entry_states(&reports, &candidates, &events, Span::default(), parts)
+        .unwrap();
+    assert_eq!(entries, candidate_entries);
     assert_eq!(entries[&0].1.get(0).unwrap().data, Data::Uninitialized);
 }
 

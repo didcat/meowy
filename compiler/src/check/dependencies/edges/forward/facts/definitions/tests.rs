@@ -120,8 +120,11 @@ pub(crate) fn scalar_definitions_reject_foreign_missing_and_mismatched_version_s
 #[test]
 pub(crate) fn scalar_definitions_ignore_candidate_values_and_bound_shared_allowances() {
     let (mut checker, program, reports) = context("a:7;copy:a;x:=1;x=2");
-    let (mut versions, events, entries, parts) = checker
-        .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
+    let (mut versions, events, parts) = checker
+        .scalar_event_context(&program, &reports, Span::default(), MAX_EDGES)
+        .unwrap();
+    let (entries, parts) = checker
+        .scalar_entry_states(&reports, &versions, &events, Span::default(), parts)
         .unwrap();
     let (ports, parts) = checker
         .scalar_ports(&reports, &entries, Span::default(), parts)

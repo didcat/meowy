@@ -2,16 +2,19 @@ use super::entries::Reports;
 use super::*;
 use crate::hir;
 
+#[cfg(test)]
 mod copies;
 mod declarations;
 mod definitions;
 mod domain;
 mod events;
 mod graph;
+#[cfg(test)]
 mod literals;
 mod observations;
 mod ports;
 mod schedule;
+#[cfg(test)]
 mod sources;
 mod state;
 mod versions;
@@ -50,12 +53,16 @@ impl Checker {
         state::Entries,
         usize,
     )> {
-        let (versions, events, parts) = self.scalar_event_context(program, reports, span, parts)?;
+        let (declared, parts) = self.scalar_declared_seeds(program, reports, span, parts)?;
+        let (versions, parts) =
+            self.scalar_version_seeds(program, reports, &declared, span, parts)?;
+        let (events, parts) = self.scalar_storage_events(program, reports, span, parts)?;
         let (entries, parts) =
             self.scalar_entry_states(reports, &versions, &events, span, parts)?;
         Ok((versions, events, entries, parts))
     }
 
+    #[cfg(test)]
     pub(self) fn scalar_event_context<'a>(
         &mut self,
         program: &'a hir::Program,
@@ -68,6 +75,7 @@ impl Checker {
         Ok((versions, events, parts))
     }
 
+    #[cfg(test)]
     pub(self) fn scalar_copy_context<'a>(
         &mut self,
         program: &'a hir::Program,
@@ -83,6 +91,7 @@ impl Checker {
         self.scalar_copies(versions, &inputs, &literals, span, parts)
     }
 
+    #[cfg(test)]
     pub(self) fn scalar_seed_context<'a>(
         &mut self,
         program: &'a hir::Program,

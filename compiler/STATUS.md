@@ -5462,7 +5462,17 @@ allocated paths versus logical cell contents. External arena imports reserve the
 reachable tree. All 258 focused scalar tests, the original 1000-matcher case, formatting
 and Clippy pass (`/tmp/meowy-scalar-storage-sharing.log`). A 1000-update/branch-join
 regression retains histories within one quarter of the unchanged payload allowance.
-Qualified Bind/Write associations are next; production storage updates remain disabled.
+State sharing is committed as `9465146d`. Bind/Write definitions now retain qualified
+RHS, declared domain and control metadata alongside their distinct versions. Missing
+domains/inputs and opaque or alias storage do not gain transfers. All 260 focused
+scalar tests and Clippy pass, but the added qualification exceeds the existing
+1000-matcher work allowance. Entry preparation now skips unused initializer-candidate
+evaluation and retains that analysis as a test reference; the entry regression compares
+both routes. The stress case passes; two now-test-only imports and the explicit
+candidate-value fixture are adjusted to preserve their original coverage. All 260 focused
+scalar tests, the stress case, formatting and Clippy now pass. Commit declaration-only
+entry preparation separately from the qualified storage metadata.
+Production storage updates remain disabled; limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.
