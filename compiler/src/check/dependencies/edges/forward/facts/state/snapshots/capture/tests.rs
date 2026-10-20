@@ -219,7 +219,7 @@ pub(crate) fn scalar_capture_initializes_bindings_and_copies_with_distinct_stora
 #[test]
 pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_budget_failures() {
     let (mut checker, program, reports) =
-        context("flag:false;|flag|{a:1;b:2};x:=3;x=4;f:(n<uint8>){v<uint8>:((n)~<uint8>)}");
+        context("flag:true&&false;|flag|{a:1;b:2};x:=3;x=4;f:(n<uint8>){v<uint8>:((n)~<uint8>)}");
     let (versions, events, entries, parts) = checker
         .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
         .unwrap();
@@ -265,6 +265,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
     let forwarded = observations.forwarded;
     let declared = observations.declared;
     let guards = observations.guards;
+    let logical = observations.logical;
     for fault in 0..4 {
         let mut order = orders.clone();
         match fault {
@@ -292,6 +293,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
             forwarded: forwarded.clone(),
             declared: declared.clone(),
             guards: guards.clone(),
+            logical: logical.clone(),
             ..observations::Observations::new(&definitions)
         };
         if fault == 3 {
@@ -325,6 +327,7 @@ pub(crate) fn scalar_capture_rejects_partial_schedules_and_late_definition_or_bu
         forwarded,
         declared,
         guards,
+        logical,
         ..observations::Observations::new(&definitions)
     };
     let before = format!("{reports:?}{entries:?}{definitions:?}");

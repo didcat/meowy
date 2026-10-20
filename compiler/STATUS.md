@@ -5564,7 +5564,13 @@ historical states (`/tmp/meowy-scalar-logical-results.log`). Unsupported-guard
 coverage now uses unary/equality expressions; logical guards are the behavior added here.
 The original 1000-matcher case passes unchanged
 (`/tmp/meowy-scalar-logical-matchers-results.log`). Boundary/control/atomic-budget
-qualification follows before the complete repository gate.
+qualification passes. Result capture is committed as `007542b9`. All five new
+boundary tests pass: stopped/unknown operands, bottom, each independent control
+source, stale histories/shapes, duplicate publication and exact work/payload limits
+(`/tmp/meowy-scalar-logical-boundaries.log`). The capture budget fixture includes
+a logical result. All 207 scalar-fact tests, formatting and all-target Clippy pass
+(`/tmp/meowy-scalar-logical-facts.log`, `/tmp/meowy-scalar-logical-clippy.log`).
+The preservation audit passes; evidence links and the full repository gate are next.
 
 1. Add short-circuit boolean result facts in `state/snapshots/expressions` using scheduled
    operand/edge observations. Preserve source/control marks, independent matcher rules,
