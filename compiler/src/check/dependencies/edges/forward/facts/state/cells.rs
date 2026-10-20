@@ -61,6 +61,7 @@ impl Cell {
                 || origin.is_some_and(|origin| match origin {
                     Origin::Parameter(function, _) => function.checked_add(1) != Some(owner),
                     Origin::Expression(source, _) => source != owner,
+                    Origin::Version(version) => version.owner != owner,
                 }))
         {
             return Err(invalid(span));

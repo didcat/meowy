@@ -67,6 +67,84 @@ pub(crate) fn scalar_state_sharing_bounds_a_thousand_updates_and_branch_joins() 
 use crate::flow::TRUE;
 use versions::Definition;
 
+#[test]
+pub(crate) fn scalar_version_origins_preserve_copy_identity_across_equal_value_replacements() {
+    let mut flow = Flow::new();
+    let mut state = State::new(0, TRUE, &mut flow, Span::default()).unwrap();
+    let version = Version {
+        owner: 0,
+        local: 0,
+        definition: Definition::Write(1),
+    };
+    let mut cell = Cell {
+        data: Data::Initialized {
+            version: Some(version),
+            domain: Some(Domain::boolean(true)),
+            origin: Some(Origin::of_version(version, Span::default()).unwrap()),
+        },
+        control: false,
+    };
+    state
+        .put(0, &cell, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    let Data::Initialized { version, .. } = &mut cell.data else {
+        panic!()
+    };
+    *version = Some(Version {
+        owner: 0,
+        local: 1,
+        definition: Definition::Bind(2),
+    });
+    state
+        .put(1, &cell, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    let version = Version {
+        owner: 0,
+        local: 0,
+        definition: Definition::Write(3),
+    };
+    let replacement = Cell {
+        data: Data::Initialized {
+            version: Some(version),
+            domain: Some(Domain::boolean(true)),
+            origin: Some(Origin::of_version(version, Span::default()).unwrap()),
+        },
+        control: false,
+    };
+    state
+        .put(0, &replacement, &mut flow, Span::default(), MAX_EDGES)
+        .unwrap();
+    assert_eq!(state.get(1), Some(&cell));
+    assert_ne!(state.get(0), state.get(1));
+    let foreign = Cell {
+        data: Data::Initialized {
+            version: None,
+            domain: Some(Domain::boolean(true)),
+            origin: Some(Origin::Version(Version {
+                owner: 1,
+                ..version
+            })),
+        },
+        control: false,
+    };
+    assert!(
+        state
+            .put(0, &foreign, &mut flow, Span::default(), MAX_EDGES)
+            .is_err()
+    );
+    assert!(
+        Origin::of_version(
+            Version {
+                owner: 0,
+                local: 0,
+                definition: Definition::Parameter(0)
+            },
+            Span::default()
+        )
+        .is_err()
+    );
+}
+
 pub(super) fn value(local: usize, point: PointId, n: i128, flow: &mut Flow) -> Cell {
     Cell {
         data: Data::Initialized {

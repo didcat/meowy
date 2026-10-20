@@ -20,6 +20,19 @@ pub(super) struct Version {
 pub(super) enum Origin {
     Parameter(hir::FunctionId, usize),
     Expression(usize, PointId),
+    Version(Version),
+}
+
+impl Origin {
+    pub(super) fn of_version(version: Version, span: Span) -> Result<Self> {
+        Ok(match version.definition {
+            Definition::Parameter(position) => Self::Parameter(
+                version.owner.checked_sub(1).ok_or_else(|| invalid(span))?,
+                position,
+            ),
+            Definition::Bind(_) | Definition::Write(_) => Self::Version(version),
+        })
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -60,17 +73,19 @@ impl Checker {
         }
         for (&local, (function, position, seed)) in &declared.params {
             let domain = seed.domain.clone();
+            let version = Version {
+                owner: function.checked_add(1).ok_or_else(|| invalid(span))?,
+                local,
+                definition: Definition::Parameter(*position),
+            };
+            let origin = Origin::of_version(version, span)?;
             let slot = Slot {
-                version: Version {
-                    owner: function.checked_add(1).ok_or_else(|| invalid(span))?,
-                    local,
-                    definition: Definition::Parameter(*position),
-                },
+                version,
                 ty: program.locals.get(local).ok_or_else(|| invalid(span))?,
                 declared: domain.clone(),
                 value: domain.map(|domain| Value {
                     domain,
-                    origin: Origin::Parameter(*function, *position),
+                    origin,
                     control: false,
                 }),
                 source: None,
