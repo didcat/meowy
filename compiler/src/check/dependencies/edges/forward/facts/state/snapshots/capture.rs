@@ -149,8 +149,7 @@ impl Snapshots {
                             if !flow.spend(after.cells.depth() + 2) {
                                 return Err(budget(span));
                             }
-                            if !matches!(location.version.definition, Definition::Bind(_))
-                                || row.before == Value::Missing
+                            if row.before == Value::Missing
                                 || definitions
                                     .storage
                                     .get(&point)

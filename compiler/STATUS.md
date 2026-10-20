@@ -5466,7 +5466,13 @@ formatting and Clippy pass (`/tmp/meowy-scalar-storage-cell-work.log`,
 `/tmp/meowy-scalar-storage-bind-matchers.log`, `/tmp/meowy-scalar-storage-clippy.log`).
 The stress regression exposed redundant domain construction/lookup/comparison work;
 those paths are now bounded by the work performed. All temporary measurements are removed.
-Next enable Write replacement, add history/boundary regressions and run the final full gate.
+Bind activation is committed as `33fc0aed`. Write replacement is now connected to the
+same qualified transfer, including fresh versions for equal values and self-copies.
+New capture regressions cover historical copies, branch joins and missing state after
+unsupported calls/path writes. All 271 focused scalar tests, the original 1000-matcher
+case, formatting and Clippy pass (`/tmp/meowy-scalar-storage-writes.log`,
+`/tmp/meowy-scalar-storage-write-matchers.log`). Shared-budget and stopped/unknown-input
+boundaries precede the final full gate.
 Limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`

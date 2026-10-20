@@ -3,7 +3,7 @@ use super::*;
 
 #[test]
 pub(crate) fn scalar_wrapper_histories_survive_unqualified_calls_and_storage_updates() {
-    for middle in ["g()", "x:=1;x=2"] {
+    for middle in ["g()", "r:={->n:=1};r.n=2"] {
         let source = format!("g:(){{}};f:(n<uint8>){{((n)~<uint8>);{middle};((n)~<uint8>)}}");
         let (checker, program, _, snapshots) = capture(&source);
         let function = program

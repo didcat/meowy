@@ -16,16 +16,17 @@ impl Snapshots {
         let Some(storage) = definitions.storage.get(&point) else {
             return Ok(None);
         };
-        let Definition::Bind(site) = storage.version.definition else {
-            return Ok(None);
+        let (site, map, key, binding) = match storage.version.definition {
+            Definition::Bind(site) => {
+                (site, &definitions.declarations, storage.version.local, true)
+            }
+            Definition::Write(site) => (site, &definitions.writes, site, false),
+            Definition::Parameter(_) => return Ok(None),
         };
         if !flow.spend(3) {
             return Err(budget(span));
         }
-        let location = definitions
-            .declarations
-            .get(&storage.version.local)
-            .ok_or_else(|| invalid(span))?;
+        let location = map.get(&key).ok_or_else(|| invalid(span))?;
         if site != point
             || location.port != Port::Operation(point)
             || location.version != storage.version
@@ -48,7 +49,7 @@ impl Snapshots {
         let Some(old) = state.get(storage.version.local) else {
             return Ok(Some(Value::Missing));
         };
-        if old.data != Data::Uninitialized {
+        if binding && old.data != Data::Uninitialized {
             return Ok(Some(Value::Missing));
         }
         let Some(source) = self.rows.get(&Port::Normal(storage.input)) else {
@@ -94,3 +95,6 @@ impl Snapshots {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod writes;
