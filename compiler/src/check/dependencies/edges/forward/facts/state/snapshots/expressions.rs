@@ -2,6 +2,7 @@ use super::super::super::super::effects::Effect;
 use super::*;
 
 mod forwarded;
+mod logical;
 mod reads;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -38,12 +39,20 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<()> {
-        if !flow.spend(2) {
+        if !flow.spend(3) {
             return Err(budget(span));
         }
         let Port::Normal(point) = port else {
             return Ok(());
         };
+        if let Some(logical) = observations.logical.get(&port) {
+            if observations.forwarded.contains_key(&port)
+                || observations.sources.contains_key(&port)
+            {
+                return Err(invalid(span));
+            }
+            return self.logical_expression(point, logical, flow, span);
+        }
         if let Some(forward) = observations.forwarded.get(&port) {
             if observations.sources.contains_key(&port) {
                 return Err(invalid(span));

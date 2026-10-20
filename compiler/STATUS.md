@@ -5556,7 +5556,15 @@ operands, stale links and exact work/payload limits
 authority remains captured before successors; unreached inputs remain unavailable.
 All 198 scalar-fact tests and the unchanged 1000-matcher regression pass
 (`/tmp/meowy-scalar-logical-facts-inputs.log`,
-`/tmp/meowy-scalar-logical-matchers-inputs.log`). Result capture is next.
+`/tmp/meowy-scalar-logical-matchers-inputs.log`); committed as `22c4dd8a`.
+Four result regressions reproduced missing logical values before implementation
+(`/tmp/meowy-scalar-logical-before.log`). Scheduled result capture is now implemented;
+all 202 scalar-fact tests pass, including truth tables, nested guards, copies and
+historical states (`/tmp/meowy-scalar-logical-results.log`). Unsupported-guard
+coverage now uses unary/equality expressions; logical guards are the behavior added here.
+The original 1000-matcher case passes unchanged
+(`/tmp/meowy-scalar-logical-matchers-results.log`). Boundary/control/atomic-budget
+qualification follows before the complete repository gate.
 
 1. Add short-circuit boolean result facts in `state/snapshots/expressions` using scheduled
    operand/edge observations. Preserve source/control marks, independent matcher rules,

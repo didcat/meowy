@@ -112,8 +112,8 @@ pub(crate) fn scalar_branches_keep_unknown_dependencies_and_unreached_predecesso
 #[test]
 pub(crate) fn scalar_branches_do_not_restore_facts_under_incomplete_guard_evidence() {
     for source in [
-        "x:=0;flag:=false;|(flag||true)|x=1;after:x",
-        "x:=0;flag:true||false;|flag|x=1;after:x",
+        "x:=0;flag:=false;|(!flag)|x=1;after:x",
+        "x:=0;flag:1==1;|flag|x=1;after:x",
     ] {
         let (checker, _, _, snapshots) = capture(source);
         let read = *checker.local_reads.keys().next_back().unwrap();
