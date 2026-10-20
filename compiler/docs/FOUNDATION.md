@@ -2300,6 +2300,35 @@ charge only the elements materialized. Cell equality stops at differing initiali
 control tags, and joins traverse domains only when both inputs are initialized. These
 paths preserve the 1000-matcher regression under the original work and payload limits.
 
+Matcher and short-circuit conditions now retain their original input PointId, owner,
+normal-shape status and dependency mark captured before checking the body. Repeated
+source spans do not merge identities. Required evaluation adds no capture rows.
+The bounded source map uses hash membership; qualification follows the existing ordered
+branch edges and rechecks completed condition, arm and input points, exact region/branch
+edges and independently observed predecessor/successor links.
+
+Enclosing Then/Else regions contribute retained proof-control dependencies, including
+short-circuit right operands whose frontend control flag is not propagated. Parent
+chains remain within one owner and use strictly decreasing PointIds; malformed or cyclic
+ancestry rejects. Missing parent captures remain unknown, while a known dependency stays
+dependent. A condition does not inherit the decision that it is computing.
+
+Scalar guard records use the immutable state and independently observed expression fact
+at that original condition. They distinguish ordinary boolean subsets, proof dependency,
+unavailable evidence and bottom. Current mutable reads and earlier copies retain their
+own historical values. Parameter conditions keep both declared boolean possibilities;
+call bodies, final dependency maps and span-keyed frontend guards supply no facts.
+Missing values, operations or parent evidence cannot establish guard authority.
+
+Capture, qualification and authority publication share existing work/payload limits.
+Late identity, invalid boolean shape, duplicate publication and exact-budget failures
+expose no partial result. Block statement duplicate checks use bounded hash membership
+without changing source order. Structural regressions cover these boundaries, but the
+records do not yet restrict states, invalidate calls or execute proof queries. Complete
+transitive query/E225 qualification and per-query logical charging remain separate.
+Isolated list probes box their private checkers to keep recursive temporary stack use
+small as capture metadata grows; existing probe limits and diagnostics are unchanged.
+
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group
 can place primary extraction at an inner coercion, with outer Forward or shared-region

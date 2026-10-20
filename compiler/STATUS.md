@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-20. Scalar guard qualification is in progress after validated Bind/Write transfers.
+Updated: 2026-10-20. Scalar guard authority metadata passes all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5497,6 +5497,7 @@ Complete transitive query/E225 qualification and proof outcomes remain unimpleme
 | `999b41c6` | Qualify condition sources and exact graph identities |
 | `92499645` | Qualify enclosing branch dependencies and missing evidence |
 | `6bed5372` | Record guard authority from immutable condition snapshots |
+| `510ac1cb` | Box isolated scalar probe checkers to reduce recursive stack use |
 
 All six capture tests, 14 guard tests, 174 scalar fact tests, the original 1000-matcher
 case, formatting and all-target Clippy pass. Twenty new structural regressions cover
@@ -5513,15 +5514,20 @@ Four new structural evidence files are linked from the owning references; covera
 regeneration passes. The preservation audit passes all 599 protected files (including
 user-owned `docs/programs/hey/`), all 37 reference hashes/gaps and prior evidence
 (`/tmp/meowy-scalar-guards-preservation.log`). Baseline `05ce40f9` is recorded in
-`/tmp/meowy-scalar-guards-baseline.json`. The first full gate passed 13 groups, including
-495 required conformance cases with 19 unchanged gaps; its Rust group aborted in the
-existing deep scalar-list probe. `list_context::Scalar` now boxes its private Checker,
-reducing recursive temporary stack use. All five pure-list tests, including the original
-failing probe, and all-target Clippy pass with unchanged stack/work/node limits
+`/tmp/meowy-scalar-guards-baseline.json`. `list_context::Scalar` boxes its private
+Checker to preserve the existing deep scalar-list probe without raising stack/work/node
+limits. All five pure-list tests and all-target Clippy pass
 (`/tmp/meowy-scalar-guards-probes.log`, `/tmp/meowy-scalar-guards-probes-clippy.log`).
-This stack-use correction is a separate validated slice. Final full-gate rerun and
-strict conformance are pending; initial evidence is in
-`/tmp/meowy-scalar-guards-first-gate.log` and `/tmp/meowy-scalar-guards-first-rust.log`.
+
+All 14 `make test` groups pass: 3515 library, 923 native, 86 Python and 495 required
+conformance cases, with 19 unchanged gaps and zero failures in debug/release.
+Runtime debug/release/sanitized profiles each pass 100 regular cases across nine suites
+plus subprocess probes, outside sandbox ptrace supervision. Summary:
+`/tmp/meowy-scalar-guards-gate.log`; details: `build/verification-scalar-guards`.
+Strict mode exits 1 only for the exact 19 pinned names/reasons
+(`/tmp/meowy-scalar-guards-strict.log`); the preservation audit confirms those results.
+All four final handoff documentation/tooling checks pass
+(`/tmp/meowy-scalar-guards-docs.log`). No known failures remain.
 No reference contract, source expectation or capability pin changed. Nothing was pushed.
 
 1. Complete per-port proof-control propagation and guarded state restriction before
@@ -7123,6 +7129,10 @@ LLVM/Clang/LLD/LLVM ar 22.1.8; the current host toolchain is recorded above.
 
 ## Next steps
 
+Resume the ordered actions in [Scalar guard qualification](#scalar-guard-qualification):
+per-port dependency propagation and guarded state restriction come before call
+invalidation. The broader unfinished contracts below remain gated.
+
 Explicit ascriptions, uniform type predicates and the four bit functions are
 complete; their remaining bootstrap limits are documented above. Bounded type
 subtraction retains its documented limits. Never operand contexts are repaired
@@ -7161,8 +7171,9 @@ inputs are qualified. Bounded scalar domains, literal/declared seeds, initial sc
 and immutable direct copies are implemented. Mutable Bind/Write events now retain qualified
 statements, permissions, declared types and candidate versions. Bounded state carriers,
 guarded joins, declared BlockEntry states, source ports, predecessor graphs, acyclic schedules
-and definition-site associations feed immutable per-port snapshot transport. Qualified
-expression values and mutation transfers are next.
+and definition-site associations feed immutable per-port snapshot transport. Scalar
+expression values, Bind/Write transfers and condition-authority metadata are complete.
+Guarded state restriction and qualified call mutation transfers are next.
 Value selection and broader aggregate provenance remain separate.
 
 1. Extend `check/dependencies.rs`, alias/storage tracking and function checking:
