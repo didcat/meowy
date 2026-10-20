@@ -5568,6 +5568,16 @@ case and formatting pass (`/tmp/meowy-scalar-branches-schedule.log`,
 `/tmp/meowy-scalar-branches-matchers.log`). This move changes no states; boolean edge
 availability is next.
 
+Scheduled capture is committed as `be387f6e`. Constant boolean edges now produce bottom
+only from known ordinary authority and the original condition state; unknown/dependent
+guards retain both successors. Five new edge tests pass. The broader fact suite exposed
+one obsolete join fixture using `|true|`; it now uses a declared boolean parameter to
+preserve genuine two-path join coverage. All 179 scalar-fact tests, the original
+1000-matcher case and formatting pass (`/tmp/meowy-scalar-branches-edges.log`,
+`/tmp/meowy-scalar-branches-facts.log`, `/tmp/meowy-scalar-branches-matchers.log`).
+Unreached predecessors remain unavailable even when another arm is known dead.
+Next: restrict the current qualified boolean version on live edges.
+
 1. Complete per-port proof-control propagation and guarded state restriction before
    consuming authority in `facts/state/joins.rs` or `snapshots/inputs.rs`. Guard records
    currently inspect finished immutable histories; move their use into the validated

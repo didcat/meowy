@@ -62,6 +62,12 @@ impl Snapshots {
                     {
                         return Err(invalid(span));
                     }
+                    if node.incoming.len() == 1
+                        && seed.is_none()
+                        && matches!(edge.route, Route::True | Route::False)
+                    {
+                        return self.branch(edge, row.after, flow, span);
+                    }
                     same &= first.is_none_or(|first| first == id);
                     first.get_or_insert(id);
                 }

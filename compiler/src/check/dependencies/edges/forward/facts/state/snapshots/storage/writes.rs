@@ -81,8 +81,9 @@ pub(crate) fn scalar_write_capture_replaces_versions_and_preserves_copied_histor
 }
 
 #[test]
-pub(crate) fn scalar_write_capture_replaces_joined_values_without_inventing_guard_authority() {
-    let (mut checker, _, _, snapshots) = capture("x:=1;|true|x=2;before:x;x=3;x;before");
+pub(crate) fn scalar_write_capture_replaces_joined_values_across_conditional_writes() {
+    let (mut checker, program, _, snapshots) =
+        capture("f:(flag<boolean>){x:=1;|flag|x=2;before:x;x=3;x;before}");
     let first = Domain::integer(1, &mut checker.flow, Span::default()).unwrap();
     let second = Domain::integer(2, &mut checker.flow, Span::default()).unwrap();
     let joined = first
@@ -91,8 +92,9 @@ pub(crate) fn scalar_write_capture_replaces_joined_values_without_inventing_guar
     let last = Domain::integer(3, &mut checker.flow, Span::default()).unwrap();
     let values = checker
         .local_reads
-        .keys()
-        .map(|point| snapshots.expressions[point].value.as_ref().unwrap())
+        .iter()
+        .filter(|(_, read)| read.local != program.functions[0].params[0])
+        .map(|(point, _)| snapshots.expressions[point].value.as_ref().unwrap())
         .collect::<Vec<_>>();
     assert_eq!(values.len(), 3);
     assert_eq!(values[0].domain, joined);
