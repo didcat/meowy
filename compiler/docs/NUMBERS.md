@@ -68,10 +68,31 @@ literal : @"core".literal
 ```
 
 `doubled` is `4`; `original` is the intrinsic `1` with a contextual `uint8` type.
-The escape accepts one numeric token, optionally directly negated. Expressions,
-groups and identifier operands are `E207`; wrong arity is `E212`. Original lexical,
+The numeric escape accepts one numeric token, optionally directly negated. Expressions,
+groups and other name operands are `E207`; wrong arity is `E212`. Original lexical,
 range and operator diagnostics remain in force. Callable lookup is ordinary:
 aliases preserve the intrinsic, and unrelated values named `literal` do not.
+
+## Boolean escape
+
+The same intrinsic accepts the exact spellings `true` and `false`, even when local
+bindings shadow those names:
+
+```meowy
+literal : @"core".literal
+true : "shadowed"
+false : 7
+
+enabled <boolean> : literal(true)
+disabled <boolean> : literal(false)
+```
+
+The operands are syntax and are not read as variables. Required evaluation and contextual
+list inference retain the boolean type and ordinary literal work. `literal(!false)`,
+`literal(-true)` and `literal((true))` are `E207`; unrelated functions named `literal`
+continue to evaluate ordinary arguments. See the
+[boolean contract](../../docs/reference/stdlib/core.md#intrinsic-boolean-literals) and
+[required source case](../../docs/conformance/sources/boolean_literal_values.mwy).
 
 ## Integration
 

@@ -28,6 +28,7 @@ and required numeric reads use lexical lookup. `10.4` selects a member when `10`
 is bound and otherwise remains a decimal. Failed member access never falls back
 to a literal. `@"core".literal(number)` bypasses this lookup while preserving
 literal typing; numeric bindings retain fixed types.
+The same intrinsic accepts `true` and `false` without looking up shadowing bindings.
 Read [STATUS.md](STATUS.md) for gaps, validation evidence, and the next work,
 and [AGENTS.md](AGENTS.md) before changing the implementation.
 

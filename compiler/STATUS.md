@@ -7201,6 +7201,13 @@ All three new required cases pass in debug/release (`/tmp/meowy-boolean-literal-
 Catalog validation and all four documentation/tooling checks pass
 (`/tmp/meowy-boolean-literal-catalog.log`, `/tmp/meowy-boolean-literal-contract-docs.log`).
 Coverage regeneration passes; existing case records and proof obligations are preserved.
+The syntax and required-evaluation references and compiler guides now describe the same
+boolean escape. Their existing evidence and remaining gaps were reviewed before hash
+updates. All four documentation/tooling checks pass
+(`/tmp/meowy-boolean-literal-guide-docs.log`). The audit preserves 585 protected files,
+all 514 existing case records and 34 unchanged reference records; only the three reviewed
+literal-related contracts changed (`/tmp/meowy-boolean-literal-preservation.log`).
+The core contract/source slice is `cde3e0e8`. Editor fixtures and final qualification follow.
 
 ## Next steps
 

@@ -110,10 +110,12 @@ also support ordinary named members, as in `10.name`. Parentheses remain ordinar
 grouping: `(10).4` is valid but not required for a bound root. Fields still need
 `->` to be exposed outside their block.
 
-[`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) accepts one
+The numeric form of [`core.literal(number)`](stdlib/core.md#intrinsic-numeric-literals) accepts one
 numeric token, optionally directly negated, including through an alias of the
 intrinsic. Use `core.literal(-128)` for an intrinsic signed literal. Grouping or
 member syntax inside the argument is not a numeric token.
+The same intrinsic accepts the exact [boolean spellings](stdlib/core.md#intrinsic-boolean-literals)
+`true` and `false`, bypassing their local bindings without making them keywords.
 
 ## Literals, values, and comments
 
