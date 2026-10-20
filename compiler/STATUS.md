@@ -1,6 +1,6 @@
 # Compiler handoff and work tracker
 
-Updated: 2026-10-19. Transparent scalar wrapper transfers pass all 14 verification groups.
+Updated: 2026-10-20. Scalar Bind/Write transfers pass all 14 verification groups.
 Proof evaluation remains unimplemented. Full v0.0.1 is incomplete.
 [../STATUS.md](../STATUS.md) tracks the project; [../COMPILER.md](../COMPILER.md)
 records the plan. Keep this handoff current; Git holds history. Do not recreate STEP logs.
@@ -5422,83 +5422,66 @@ evidence (`/tmp/meowy-scalar-wrappers-preservation.log`). Baseline `b0dfc33e` an
 All four final documentation/tooling checks pass (`/tmp/meowy-scalar-wrappers-docs.log`).
 User-owned `docs/programs/hey/` is untouched and excluded. Nothing was pushed.
 
-### Next: scalar Bind/Write transfers
+### Scalar binding and assignment transfers
 
-Current slice: ordinary scalar Bind/Write transfers. Full-map snapshot copies would
-retain every cell again at each write; updates and branch joins need bounded immutable
-cell sharing before production integration. Preserve all declared-entry, missing/bottom,
-version/origin, control and exact-resource boundaries. Unsupported mutation/scope effects
-remain unavailable, and cached initializer candidates cannot supply current values.
+Ordinary scalar Bind and Write transfers now consume independently observed RHS facts
+at their original PointIds. Binding initializes an uninitialized cell; assignment creates
+a fresh destination version even for equal values and self-copies. Copies retain source
+origins, domains and controls. Unknown RHS values in known storage use full declared
+domains and conservative controls; missing states/cells cannot be revived by cached
+candidates. Stopped RHS operations publish no write. Known bottom and unavailable
+predecessors remain distinct. Definition rows validate each new destination version.
 
-Dependency-ordered commit plan:
+Immutable balanced cell trees retain before/after histories through path-copy updates and
+shared-subtree joins. Logical contents and new allocations have separate bounded accounting;
+external imports reserve their full reachable trees. Closed roots validate cheaply, while
+test-only mutable fixtures retain full corruption checks. Production entry preparation
+uses declarations directly; legacy initializer-candidate analysis remains a test reference.
 
-1. Add bounded immutable cell-tree construction, lookup and persistent updates, with
-   focused ownership/history and exact work/payload tests.
-2. Add joins that reuse unchanged subtrees, then integrate shared cells into State and
-   the snapshot arena without changing existing facts or source expectations.
-3. Retain qualified Bind/Write RHS/type/control associations at definition sites.
-4. Apply Bind initialization and then Write replacement in separate slices, preserving
-   historical expressions and fresh storage versions; update `definition_rows` with them.
-5. Cover copies, stopped/unknown inputs, joins, stale identities and shared budgets;
-   run the 1000-matcher case, full `make test`, strict conformance and preservation
-   audit, then update structural evidence and both handoffs.
+Implementation commits:
 
-Immutable cell trees, path-copy updates and shared-subtree joins now preserve historical
-states without retaining each full map again. Allocation accounting charges new nodes
-and full external imports separately. Closed roots validate cheaply; test-only mutation
-fixtures retain full corruption checks. Declared entry seeding no longer computes unused
-initializer candidates; that analysis remains a test reference. Qualified storage inputs
-retain original versions, RHS points, declared domains and controls.
+- Tree construction `1c2e53c1`, persistent updates `33a8cc07`, shared joins `b15951f8`,
+  closed validation `459a13d8`, State integration `9465146d`.
+- Declaration-only entries `42b37dac`, qualified storage inputs `1a3d55b2`, version
+  origins `480225f0`, Bind transfer `7f658206`, wrapper boundaries `67f87cd2`.
+- Bounded constructors `9e30c879`, allocation-free containment `71c04697`, definition
+  lookups `87690865`, shape-aware cell work `1a6f7203`.
+- Bind capture `33fc0aed`, Write replacement `377baa57`, boundary coverage `1de42891`.
 
-Prerequisite commits: tree construction `1c2e53c1`, updates `33a8cc07`, joins `b15951f8`,
-validation `459a13d8`, State sharing `9465146d`, entry seeding `42b37dac`, storage inputs
-`1a3d55b2`, version origins `480225f0`, Bind transfer `7f658206` and wrapper boundaries
-`67f87cd2`. Domain constructors `9e30c879`, allocation-free containment `71c04697`,
-definition lookups `87690865` and shape-aware cell work `1a6f7203` retain the original
-limits, canonical values and identity checks. Source construction and snapshot scheduling
-still determine order; hash iteration does not choose transfers.
+All 274 focused scalar tests, the original 1000-matcher case, formatting and all-target
+Clippy pass. Logs: `/tmp/meowy-scalar-storage-boundaries.log`,
+`/tmp/meowy-scalar-storage-write-matchers.log`, `/tmp/meowy-scalar-storage-clippy.log`.
+The stress case fits unchanged work/payload limits after removing unused candidate
+analysis, redundant domain construction and discarded-cell comparisons. Hash lookups do
+not choose processing order. No temporary measurements remain.
 
-Bind capture is now enabled. Literal/parameter/current-copy inputs initialize fresh
-storage versions while preserving value origins, controls and earlier snapshots. Missing
-state cannot use cached candidates; unsupported calls/effects remain unavailable. Entry
-seeds stay uninitialized. All 268 focused scalar tests, the original 1000-matcher case,
-formatting and Clippy pass (`/tmp/meowy-scalar-storage-cell-work.log`,
-`/tmp/meowy-scalar-storage-bind-matchers.log`, `/tmp/meowy-scalar-storage-clippy.log`).
-The stress regression exposed redundant domain construction/lookup/comparison work;
-those paths are now bounded by the work performed. All temporary measurements are removed.
-Bind activation is committed as `33fc0aed`. Write replacement is now connected to the
-same qualified transfer, including fresh versions for equal values and self-copies.
-New capture regressions cover historical copies, branch joins and missing state after
-unsupported calls/path writes. All 271 focused scalar tests, the original 1000-matcher
-case, formatting and Clippy pass (`/tmp/meowy-scalar-storage-writes.log`,
-`/tmp/meowy-scalar-storage-write-matchers.log`). Shared-budget and stopped/unknown-input
-boundaries precede the final full gate. Write replacement is committed as `377baa57`.
-Coverage now exercises exact Bind/Write allocation and work bounds, unknown values
-versus incomplete/missing cells, inherited RHS/operation controls, stopped RHS and
-bottom frames. All 274 focused scalar tests pass (`/tmp/meowy-scalar-storage-boundaries.log`).
-Unreachable-predecessor rows stay missing; known bottom states remain unchanged.
-Formatting and Clippy pass. Update structural evidence, then run the complete gate,
-strict conformance and preservation audit before the final handoff.
-Limits and source expectations are unchanged.
-Baseline `d28285c5` and 589 protected-file
-hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
-is unchanged and excluded. No source contract or capability pin is being changed.
+Nine new structural test sources are linked from types, values, memory and proof; coverage
+regeneration passes (`/tmp/meowy-scalar-storage-coverage.log`). All 14 `make test` groups
+pass: 3495 library, 923 native, 86 Python and 495 required conformance cases, with 19
+unchanged gaps and zero debug/release failures (`/tmp/meowy-scalar-storage-gate.log`;
+details in `build/verification-scalar-storage`). Runtime debug/release/sanitized profiles
+each pass 100 regular cases across nine suites plus subprocess probes. The full gate ran
+outside sandbox ptrace supervision with sanitizers enabled. Preservation passes for all
+589 protected files, 37 reference hashes/gaps and prior evidence
+(`/tmp/meowy-scalar-storage-preservation.log`). Strict mode exits 1 only for the exact
+19 pinned names/reasons (`/tmp/meowy-scalar-storage-strict.log`;
+`/tmp/meowy-scalar-storage-strict-audit.log`). All four final documentation/tooling
+checks pass (`/tmp/meowy-scalar-storage-docs.log`). No reference contract, source
+expectation or capability pin changed.
+Baseline `d28285c5` and all 589 protected-file hashes
+are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/` is
+untouched and excluded. Nothing was pushed.
 
-1. Apply Bind/Write updates in `facts/state/snapshots/capture.rs` using qualified
-   `definitions` and expression facts at original RHS PointIds. The transparent wrapper
-   prerequisite is complete. Cached copy candidates cannot supply missing current values.
-   Update `definition_rows` alongside these transfers: it currently permits only
-   unavailable or unchanged-bottom Bind/Write outputs.
-   Preserve before/after history, distinct destination versions, source origins,
-   controls and unavailable/partial states. Include stopped RHS, immutable/mutable
-   copies, same-value writes, stale identities and exact budget regressions. Validate
-   focused checks and the original 1000-matcher case before each commit.
-2. Qualify guard authority and E225 dependencies before restricting states. Integrate
-   guarded Call transfers and conservative Path/Indirect/alias fallback before using
-   facts after mutations. Alias scalar transfers need completed backing-field layouts;
+1. Qualify guard authority and E225 dependencies before restricting states in
+   `facts/state/joins.rs`. Integrate guarded Call inputs from
+   `arguments/mutations/transfers.rs` into `facts/state/snapshots/capture.rs` only after
+   that authority is established. Cover conditional/unknown inputs, stopped calls,
+   dependency cycles and exact budgets; retain the 1000-matcher case and full gate.
+   Conservative Path/Indirect/alias fallback must precede using facts after mutations.
+   Alias scalar transfers need completed backing-field layouts;
    a canonical local's declared type is not that layout. Missing knowledge never proves
    no mutation. Keep unsupported operations unavailable until their transfers qualify.
-3. Qualify scope/result and nullable/alias/emission transfers, declared call-result
+2. Qualify scope/result and nullable/alias/emission transfers, declared call-result
    fallback, restart resets and arithmetic/ordinary guards in separate slices. Restart
    headers must forget every possibly modified fact without bounded unrolling. Preserve
    ordinary errors and complete profile/E225 and per-query logical charging before

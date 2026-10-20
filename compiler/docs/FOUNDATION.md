@@ -2093,9 +2093,10 @@ is represented separately. Bottom has neither values nor null. Unsupported shape
 no domain representation, which is distinct from bottom. Supported unknown scalars use
 their full declared domain, including signedness, width and nullable alternatives.
 
-Literal seeds borrow independently qualified scalar reports. Their declared domain and
-result value stay separate: operation-only observations supply no value, while supported
-result observations supply the captured singleton. Replayed or stale literal payloads reject;
+The test-only literal seed analysis borrows independently qualified scalar reports.
+Its declared domain and result value stay separate: operation-only observations supply
+no value, while supported result observations supply the captured singleton.
+Replayed or stale literal payloads reject;
 unused static metadata, ordinary reads and stopped successors gain no invented seeds.
 Control marks remain attached to the original reports.
 
@@ -2114,6 +2115,8 @@ domains do not merge origins. Each direct copy keeps the source domain and origi
 retaining its own destination storage version. Parameters always supply full declared
 domains, including when all visible calls pass the same literal.
 
+The legacy initializer-copy analysis is retained for regression comparison; production
+entry preparation uses declarations directly and leaves current values to snapshot capture.
 Direct integer/boolean/null producers qualify through explicit groups, observed unchanged
 narrowing/ascription and non-projecting Forward wrappers. Immutable reads revalidate their
 canonical storage, owner and initializer or parameter version. Source and destination scalar
@@ -2158,7 +2161,10 @@ The scalar state carrier distinguishes unavailable storage evidence, uninitializ
 partial initialization and initialized storage whose scalar facts may be unavailable. A
 supported unknown value retains its full declared domain. FALSE reachability and initialized
 empty domains canonicalize to bottom; uninitialized or missing cells never do. Bounded
-snapshots own their cells and domains, preserving earlier values when another version changes.
+snapshots share immutable balanced cell trees, preserving earlier values when another
+version changes. Updates copy only the changed path; joins reuse identical subtrees.
+Logical cell size and newly allocated nodes have separate bounded accounting. External
+imports reserve their full reachable tree; sharing cannot hide unaccounted storage.
 
 Guard restriction changes reachability only. Joins ignore bottom inputs, use canonical domain
 joins and keep exact version and same-value origin metadata independently when all live inputs
@@ -2175,10 +2181,11 @@ values and Write candidates cannot supply entry-time values; alias/opaque mutabl
 remains unavailable. Never parameters make the entry bottom, while a never result or panicking
 body does not. Entry seeds and published states share the scalar allowance, including earlier
 allocations cleared by bottom. Candidate values and mutable frontend caches do not specialize
-these states. Entry declarations merge in LocalId order for checked bulk construction;
+these states. Entry declarations build the cell tree directly in LocalId order;
 that order never substitutes for execution order. Every row remains subject to identity,
 domain, duplicate/order and payload validation, including when an earlier parameter makes
-the frame bottom. State copies validate their inputs once before copying or discarding cells.
+the frame bottom. Shared snapshots validate closed roots before copying or discarding cells;
+test-only mutable fixtures retain full cell and cache validation.
 The existing 1000-matcher acceptance case fits the unchanged work limit.
 
 A bounded source-port graph now associates those entries with original owners, scopes and
@@ -2204,9 +2211,10 @@ retain traversal order. The explicit scalar schedule selects its own source orde
 checks share the existing internal work/payload limits, not a completed per-query logical ledger.
 The original 1000-matcher acceptance case still fits those limits.
 
-An immutable snapshot arena now retains independent entry copies and before/after views at
-every scheduled port. Unchanged states share private handles; canonical joins allocate a new
-state once. Publishing another port cannot replace an earlier row or mutate its cells/domains.
+An immutable snapshot arena now retains entry snapshots and before/after views at every
+scheduled port. Unchanged states share private handles; changed states and canonical joins
+allocate new headers and changed tree paths. Publishing another port cannot replace an
+earlier row or mutate its cells/domains.
 Unvisited ports, reached ports with unavailable analysis input, and known bottom remain distinct.
 
 Incoming states use completed predecessor outputs in source order. Every contribution is
@@ -2218,6 +2226,8 @@ reuse the same immutable state without manufacturing identity from equal domains
 
 Capture forwards unchanged storage state through structural Entry, Normal and BlockEntry
 ports, qualified scalar literals, ordinary scalar reads and unchanged ascription operations.
+Qualified ordinary scalar Bind and Write operations now replace their destination cells
+using independently observed RHS facts and their original declared domains.
 Other operations and scope/result boundaries produce unavailable output until their
 transfers are qualified. Known bottom remains bottom without applying a transfer.
 Definition associations check original parameter/Bind/Write sites and independent normal
@@ -2225,7 +2235,8 @@ observations. Cached candidate values do not initialize a captured binding or sp
 callee. Missing analysis input establishes no value, initialization or dependency-independence
 proof. Existing dependency marks and ordinary checking remain unchanged.
 
-Seed copies, joined states and both views of each port share the existing payload/work limits.
+Seed imports, newly allocated tree paths, joined states and both views of each port share
+the existing payload/work limits. Historical shared nodes retain their original charge.
 Partial schedules, stale owners/handles and late definition or resource failures expose no
 partial context. Port membership uses hash lookups without choosing traversal order; the
 original 1000-matcher acceptance case still fits unchanged limits. Snapshot inspection stays
@@ -2258,20 +2269,36 @@ identity. Missing inner facts or unavailable outer state remain unavailable, inc
 result-only paths with a missing operation predecessor. Earlier copied facts retain their
 own domains and controls. Predicates, changed types, primary projections, conversions,
 stopped operands and unsupported sources gain no scalar transfer. Calls and storage
-updates still stop current-state propagation; earlier facts remain historical.
+updates through aliases, paths or indirect storage still stop current-state propagation;
+earlier facts remain historical.
+
+Bind transfers initialize qualified uninitialized cells. Write transfers replace existing
+cells even when prior initialization or value facts are incomplete; a missing state or
+missing destination cell remains unavailable. Every transfer creates its own destination
+version, including equal-value replacement and self-assignment. Direct copies preserve
+their source domain and same-value origin. When a value has no retained origin, a known
+source version anchors that identity; otherwise the new destination version does.
+
+Unknown RHS values in known storage use the full declared domain and conservative control
+marks. Prior cell, operation and RHS controls accumulate. Stopped RHS expressions create
+no write, and known bottom stays unchanged. Definition rows validate the newly initialized
+destination version independently of the operation's normal observation. Before/after
+snapshots and expression records preserve earlier copied values across writes and joins.
 
 Expression records, wrapper associations, declared domains and snapshot rows share the
 bounded allowance. Exact payload/work exhaustion, stale versions, wrong types, missing
 rows and duplicate publication reject without changing prior records. These are structural
-analysis facts; no proof query executes. Bind/Write updates, scope/result transfers,
+analysis facts; no proof query executes. Scope/result transfers,
 guarded call invalidation, alias/emission handling, restart resets, arithmetic/guards and
 proof outcomes remain separate work. Per-query logical charging is still incomplete.
 
 Snapshot capture dispatches expression handling only at result ports and avoids unused
-operation lookups for unavailable or structural states. Candidate-copy lookup uses bounded
-hash views and membership sets while preserving ordered roots and version/value validation.
-Version insertion reuses one BTree entry. These changes preserve the 1000-matcher regression
-under the original work and payload limits; hash order never selects processing order.
+operation lookups for unavailable or structural states. Definition associations use bounded
+hash lookups while source construction and scheduling retain their original order. Domain
+containment checks avoid allocating joined values; singleton and interval construction
+charge only the elements materialized. Cell equality stops at differing initialization or
+control tags, and joins traverse domains only when both inputs are initialized. These
+paths preserve the 1000-matcher regression under the original work and payload limits.
 
 Direct-call argument sources reuse the existing expected-expression boundaries and
 coercion qualifiers. Invocation arguments keep their original outer PointIds. A group

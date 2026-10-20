@@ -1,6 +1,6 @@
 # meowy project status
 
-Updated: 2026-10-19. This is the current project handoff; Git retains prior work.
+Updated: 2026-10-20. This is the current project handoff; Git retains prior work.
 [COMPILER.md](COMPILER.md) holds the implementation plan and
 [compiler/STATUS.md](compiler/STATUS.md) the detailed compiler handoff.
 Do not recreate STEP logs. The full documented v0.0.1 release remains incomplete.
@@ -45,24 +45,27 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Scalar facts now pass through observed groups, non-projecting Forward coercions,
-unchanged narrowing and unchanged ascriptions. Exact source identities and independent
-operation/result stages preserve storage snapshots, versions, origins and control marks.
-Missing facts remain unavailable; earlier copies retain their historical values.
+Scalar Bind/Write transfers now initialize or replace current values in execution order.
+Every destination receives a fresh storage version; copies retain value origins and earlier
+histories. Immutable shared cell trees keep snapshots and joins within the original limits.
+Missing storage, unknown values, incomplete initialization and bottom remain distinct.
+Unsupported calls, paths, aliases and scope/result effects still leave state unavailable.
 
-The [compiler handoff](compiler/STATUS.md#transparent-scalar-wrapper-transfers) records
-nine implementation/coverage commits. All 249 focused scalar tests pass, including
-21 new structural regressions. The original 1000-matcher case, formatting and Clippy
-pass under unchanged limits after eliminating redundant traversal and lookup work.
-All 14 `make test` groups pass: 3470 library, 923 native, 86 Python and 495 required
-conformance cases, with 19 unchanged gaps and zero debug/release failures. Runtime
-sanitizers pass outside the sandbox (`/tmp/meowy-scalar-wrappers-gate.log`; details
-in `build/verification-scalar-wrappers`). Preservation passes for all 589 protected
-files, 37 reference hashes/gaps and prior evidence. Strict mode reports only the exact
-19 pins (`/tmp/meowy-scalar-wrappers-strict.log`).
-All four final documentation/tooling checks pass (`/tmp/meowy-scalar-wrappers-docs.log`).
-Bind/Write transfers are next; mutation invalidation, restart resets and proof outcomes
-remain separate. User-owned `docs/programs/hey/` remains excluded. Nothing was pushed.
+The [compiler handoff](compiler/STATUS.md#scalar-binding-and-assignment-transfers) records
+17 implementation/coverage commits. All 274 focused scalar tests, the original 1000-matcher
+case, formatting and Clippy pass. All 14 `make test` groups pass: 3495 library, 923 native,
+86 Python and 495 required conformance cases, with 19 unchanged gaps and zero failures
+in debug/release. Runtime debug/release/sanitized profiles pass outside sandbox ptrace
+supervision (`/tmp/meowy-scalar-storage-gate.log`; details in
+`build/verification-scalar-storage`). The preservation audit passes for all 589 protected
+files, 37 reference hashes/gaps and prior evidence. Nine new test sources are linked as
+structural evidence. Strict mode exits 1 only for the exact 19 pinned names/reasons
+(`/tmp/meowy-scalar-storage-strict.log`). All four final documentation/tooling checks
+pass (`/tmp/meowy-scalar-storage-docs.log`).
+
+Guard authority/E225 qualification and guarded call invalidation are next. Alias layouts,
+scope/result transfers, restart resets and proof outcomes remain separate. User-owned
+`docs/programs/hey/` remains excluded. Nothing was pushed.
 
 ## Build and test commands
 
@@ -75,13 +78,13 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: 3470 library, 923 native and 86 Python tests (41 tooling,
+All 14 `make test` groups pass: 3495 library, 923 native and 86 Python tests (41 tooling,
 15 runtime, 30 compiler), plus 495 required conformance cases with 19 unchanged gaps
 and zero debug/release failures. Both editors, all documentation/schema checks and
 runtime debug/release/sanitized profiles pass. Each runtime profile runs 100 regular
 cases across nine suites, plus subprocess probes. The gate ran outside sandbox ptrace
-supervision with sanitizers enabled. Summary: `/tmp/meowy-scalar-wrappers-gate.log`;
-individual logs: `build/verification-scalar-wrappers`. All 18 reporting tests pass
+supervision with sanitizers enabled. Summary: `/tmp/meowy-scalar-storage-gate.log`;
+individual logs: `build/verification-scalar-storage`. All 18 reporting tests pass
 within the tooling suite. No source-conformance expectations changed.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
