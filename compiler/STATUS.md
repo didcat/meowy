@@ -5569,6 +5569,17 @@ All 207 scalar-fact tests and the unchanged 1000-matcher case pass
 control alone cannot authorize argument/origin guards; their independent qualification
 must not be inferred from an unchanged invocation control flag.
 
+The shared helper is committed as `72be3664`. Call-entry authority now has explicit
+Unknown/Dependent/Independent states, retained separately from raw target/fallback guards.
+Only an observed operation with complete snapshot and transfer knowledge can establish
+entry authority. All four focused tests pass (`/tmp/meowy-call-guards-authority.log`):
+independent operation/result observations, missing/stopped snapshots, seeded false
+entry under dependent control, short-circuit ancestry and function isolation.
+The fixture preserves symbolic proof-dependent conditions and explicitly seeds false
+entry evidence; it does not invent borrow snapshots for statically skipped calls.
+No argument/origin guard inherits the entry classification. All 132 argument tests pass
+(`/tmp/meowy-call-guards-arguments.log`); boundary/budget regressions follow separately.
+
 Scalar invalidation integration is the next dependent slice after this authority
 boundary. It must include conservative Path/Indirect/alias fallback before post-call
 facts can be used. Existing call transfer qualification and scalar capture are separate;

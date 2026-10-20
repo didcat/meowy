@@ -3,12 +3,16 @@ use crate::borrow::Facts;
 use crate::check::dependencies::edges::forward::effects::Effect;
 use crate::flow::{FALSE, Guard};
 
+mod guards;
+pub(in super::super) use guards::Authority;
+
 pub(in super::super) struct Transfer<'a> {
     pub(in super::super) site: hir::CallId,
     pub(in super::super) call: targets::Call<'a>,
     pub(in super::super) observed: Option<(bool, bool)>,
     pub(in super::super) roots: storage::Roots,
     pub(in super::super) unknown: Option<Guard>,
+    pub(in super::super) entry: Authority,
 }
 
 pub(in super::super) type Transfers<'a> = BTreeMap<PointId, Transfer<'a>>;
@@ -31,7 +35,7 @@ impl Checker {
         self.validate_mutation_reports(reports, span)?;
         let mut transfers = Transfers::new();
         for (site, call) in calls {
-            parts = parts.checked_sub(1).ok_or_else(budget)?;
+            parts = parts.checked_sub(2).ok_or_else(budget)?;
             if !self.flow.spend(
                 self.invocations.len().checked_ilog2().unwrap_or(0) as usize
                     + reports.effects.len().checked_ilog2().unwrap_or(0) as usize
@@ -46,6 +50,7 @@ impl Checker {
                 observed: None,
                 roots: storage::Roots::new(),
                 unknown: None,
+                entry: Authority::Unknown,
             };
             let point = self.invocations[&transfer.site].point;
             transfer.observed = match reports.effects.get(&point) {
@@ -94,6 +99,7 @@ impl Checker {
                     }
                 }
             }
+            transfer.entry = self.call_entry_authority(point, &transfer, span)?;
             if transfers.insert(point, transfer).is_some() {
                 return Err(invalid());
             }
