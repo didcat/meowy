@@ -45,26 +45,27 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Call transfers now retain qualified entry-control authority: Independent, Dependent or
-Unknown. Original invocation and borrowed snapshots determine it; missing observations,
-stopped inputs and incomplete ancestry remain conservative. Entry independence does not
-establish mutation-target independence or callee purity. Scalar invalidation is next.
+Scheduled calls now invalidate qualified direct scalar mutation targets. Borrow stages
+preserve storage, affected cells reset to declared domains without current value/version
+identity, and initialization/control marks and historical copies are preserved. Unaffected
+locals survive value/shared calls. Unknown targets and unsupported writes remain unavailable.
+No callee body supplies facts or purity claims.
 
-The [compiler handoff](compiler/STATUS.md#call-entry-guard-authority) records three
-implementation/test commits. All nine new structural tests, 137 argument tests, 207
-scalar-fact tests, the original 1000-matcher case, formatting and Clippy pass. Two new
-test files are linked as structural evidence. Coverage regeneration and preservation of
-589 protected tracked files and all 37 reference hashes/gaps pass. All 14 `make test`
-groups pass: 3562 library, 923 native, 86 Python and 495 required conformance cases,
-with 19 unchanged gaps and zero failures. Runtime debug/release/sanitized checks pass
-(`/tmp/meowy-call-guards-gate.log`; details in `build/verification-call-guards`).
+The [compiler handoff](compiler/STATUS.md#scheduled-scalar-call-invalidation) records six
+implementation/test commits. All 18 new structural tests, 221 scalar-fact tests, 141 argument
+tests, the original 1000-matcher case, formatting and Clippy pass. Five new test files are
+linked as structural evidence. Coverage regeneration and preservation of 589 protected
+tracked files and all 37 reference hashes/gaps pass. All 14 `make test` groups pass:
+3580 library, 923 native, 86 Python and 495 required conformance cases, with 19 unchanged
+gaps and zero failures. Runtime debug/release/sanitized checks pass
+(`/tmp/meowy-call-invalidation-gate.log`; details in `build/verification-call-invalidation`).
 Strict mode exits 1 only for the exact 19 pinned names/reasons
-(`/tmp/meowy-call-guards-strict.log`). All four final handoff checks pass
-(`/tmp/meowy-call-guards-docs.log`). No known failures remain.
+(`/tmp/meowy-call-invalidation-strict.log`). All four final handoff checks pass
+(`/tmp/meowy-call-invalidation-docs.log`). No known failures remain.
 
-Call invalidation must retain conservative argument/origin guards and Path/Indirect/alias
-fallback before post-call facts are used. Wider transfers, restart resets and proof outcomes
-remain separate. User-owned `docs/programs/hey/` stays excluded. Nothing was pushed.
+Call-result dependency qualification and full declared result domains are next. Broader
+places, scope/results, restarts and proof outcomes remain separate. User-owned
+`docs/programs/hey/` stays excluded. Nothing was pushed.
 
 ## Build and test commands
 
@@ -77,13 +78,13 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: 3562 library, 923 native and 86 Python tests (41 tooling,
+All 14 `make test` groups pass: 3580 library, 923 native and 86 Python tests (41 tooling,
 15 runtime, 30 compiler), plus 495 required conformance cases with 19 unchanged gaps
 and zero debug/release failures. Both editors, all documentation/schema checks and
 runtime debug/release/sanitized profiles pass. Each runtime profile runs 100 regular
 cases across nine suites, plus subprocess probes. The gate ran outside sandbox ptrace
-supervision with sanitizers enabled. Summary: `/tmp/meowy-call-guards-gate.log`;
-individual logs: `build/verification-call-guards`. All 18 reporting tests pass
+supervision with sanitizers enabled. Summary: `/tmp/meowy-call-invalidation-gate.log`;
+individual logs: `build/verification-call-invalidation`. All 18 reporting tests pass
 within the tooling suite. No source-conformance expectations changed.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
@@ -1084,7 +1085,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-Resume the ordered [compiler handoff](compiler/STATUS.md#call-entry-guard-authority)
+Resume the ordered [compiler handoff](compiler/STATUS.md#scheduled-scalar-call-invalidation)
 before the broader proof milestones below.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes

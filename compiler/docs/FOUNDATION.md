@@ -2058,8 +2058,8 @@ call ran; call-entry guards and evaluated-prefix counts remain independent.
 Snapshot, block/storage index, call-row and candidate payload share one bounded allowance.
 Late identity/work/payload failures publish no partial collection. Guarded alternatives,
 later-argument retargeting, stale full layouts and missing-origin cases have structural
-tests. No callee is specialized, scalar facts are not yet invalidated, and restart/E225
-propagation and proof outcomes remain separate.
+tests. No callee is specialized. The scheduled scalar consumer below applies qualified
+direct-call invalidation; restart/E225 propagation and proof outcomes remain separate.
 
 Qualified candidates now also carry guarded whole-owner fact roots. Ordinary locals map
 to their own storage; emitted views map through the canonical alias root. Field paths and
@@ -2096,8 +2096,33 @@ failures stay bounded and atomic. These are structural records, not executable p
 
 Ordinary `bools`/`tags` refinements still use lexical place keys and their existing forgetting
 rules. Proof-dependency marks remain monotone. These transfer inputs change neither fact
-table. Scalar snapshot integration and conservative overlap fallback remain required
-before applying invalidation.
+table. A separate scalar consumer now applies invalidation to immutable graph snapshots.
+
+Direct scalar borrow addresses, acquisition and normal stages preserve scalar storage after
+exact source/owner/type/edge qualification. They produce no scalar reference value facts.
+Fields, emitted aliases, receivers, temporaries and other reference operations keep their
+existing conservative boundaries.
+
+The call projection retains every candidate root regardless of raw entry, argument or
+origin guards. Exact exclusive targets require a direct scalar borrow, optionally reached
+through already-qualified transparent groups/coercions/narrowing/ascriptions. Reference
+variables, fields/aliases, unknown access and incomplete captures retain an unknown fallback.
+An observed operation is required; result-only and stopped calls create no mutation input.
+
+At the scheduled Call operation, the qualified input row must match the current state.
+Known targets reset initialized cells to their declared domains and discard current
+version/origin identity. Uninitialized, partial and unavailable cells keep their status;
+control marks accumulate. Unaffected cells and old copied values remain unchanged. Signature
+value/shared inputs introduce no caller mutation targets; this does not establish purity.
+Even an empty callee body supplies no fact about whether an exclusive target changed.
+
+Missing state, unknown targets or unsupported target metadata remain unavailable, and no
+later call/write restores that state. Path, indirect and alias writes retain this fallback
+before post-mutation facts are used; more precise alias support needs complete backing
+layouts. Nonreturning calls can record operation state without inventing a normal result.
+Conditional paths join conservatively. Late identity, shape and budget failures discard the
+private candidate snapshot and publish no partial update. Call-result value facts remain
+separate from these mutation effects.
 
 The bounded scalar-domain representation now implements the
 [profile 1 abstract values](../../docs/reference/stdlib/proof.md#abstract-values).
@@ -2303,9 +2328,9 @@ snapshots and expression records preserve earlier copied values across writes an
 Expression records, wrapper associations, declared domains and snapshot rows share the
 bounded allowance. Exact payload/work exhaustion, stale versions, wrong types, missing
 rows and duplicate publication reject without changing prior records. These are structural
-analysis facts; no proof query executes. Scope/result transfers,
-guarded call invalidation, alias/emission handling, restart resets, arithmetic/guards and
-proof outcomes remain separate work. Per-query logical charging is still incomplete.
+analysis facts; no proof query executes. Call-result values, scope/result transfers,
+broader alias/emission handling, restart resets, arithmetic/guards and proof outcomes
+remain separate work. Per-query logical charging is still incomplete.
 
 Snapshot capture dispatches expression handling only at result ports and avoids unused
 operation lookups for unavailable or structural states. Definition associations use bounded
@@ -2373,7 +2398,7 @@ Capture, qualification and authority publication share existing work/payload lim
 Late identity, invalid boolean shape, duplicate publication and exact-budget failures
 expose no partial result. Block statement duplicate checks use bounded hash membership
 without changing source order. Structural regressions cover these internal transfers;
-wider guards, broader place qualification, guarded call invalidation and executable
+wider guards, broader place qualification, call-result values and executable
 proof queries remain separate. Complete transitive query/E225 qualification and
 per-query logical charging are still unfinished.
 Isolated list probes box their private checkers to keep recursive temporary stack use
