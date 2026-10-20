@@ -67,7 +67,7 @@ impl Checker {
         aggregate: bool,
     ) -> Result<Option<Scalar>> {
         let mut scalar = Scalar {
-            checker: Self::new(),
+            checker: Box::new(Self::new()),
             nodes: 0,
             bytes: 0,
             unknown: false,

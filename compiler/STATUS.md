@@ -5474,85 +5474,73 @@ untouched and excluded. Nothing was pushed.
 
 ### Scalar guard qualification
 
-Current investigation: scalar snapshots join structural branch inputs without applying
-guards. The frontend's span-keyed guards and final dependency maps cannot establish
-historical scalar authority. Capture condition input identities and data/control marks
-before checking branch bodies, then use independently observed current scalar facts.
-Proof-derived or unavailable conditions must retain both successors.
+Condition authority metadata is complete. Matcher and short-circuit captures retain
+original input/owner, normal-shape status and dependency marks from before the body.
+Qualification rechecks complete source points, exact branch/region edges and observed
+predecessor/successor identities. Required evaluation adds no capture rows.
 
-Dependency-ordered commit plan:
+Enclosing Then/Else regions supply retained control dependencies, including nested
+short-circuit operands. Same-owner parent chains strictly decrease PointIds; malformed
+or cyclic ancestry rejects. Missing parent captures stay unknown. A condition cannot
+inherit the later decision that it computes, and function owners remain independent.
 
-0. Use bounded hash membership for duplicate block statements. Profiling identified
-   repeated ordered membership work in block qualification; statement/edge order remains
-   the original sequence order. Validate block corruption/budget tests and the stress case.
-1. Retain bounded condition-input identities and dependency marks for matcher and
-   short-circuit branches, with capture-time, stopped-input and identity/budget tests.
-2. Qualify those inputs against completed source points and exact graph edges; missing
-   observations stay conservative and malformed/cyclic associations reject.
-3. Record per-condition scalar authority from current snapshots, retaining proof/control
-   dependency, unknown and bottom as distinct cases. Test historical reads, both boolean
-   outcomes, stopped paths and exact publication/work limits.
-4. Link structural evidence, update the foundation/handoff, and run the full compiler
-   gate, the original 1000-matcher case, strict conformance and preservation checks.
+Immutable condition snapshots distinguish ordinary boolean subsets, proof dependency,
+unavailable evidence and bottom. Reads and copies retain their historical values;
+parameters keep full declared domains. No final frontend map, callee body or span-keyed
+guard supplies authority. These records do not yet restrict states or invalidate calls.
+Complete transitive query/E225 qualification and proof outcomes remain unimplemented.
 
-This series establishes authority metadata only. State restriction, guarded call
-invalidation, transitive query/E225 completion and proof outcomes remain separate.
-No new language capability or reference expectation is planned. User-owned
-`docs/programs/hey/` remains untracked and excluded. All six capture tests, 16 block
-qualification/corruption tests and the original 1000-matcher test pass. Logs:
-`/tmp/meowy-scalar-guards-capture.log`, `/tmp/meowy-scalar-guards-blocks.log`,
-`/tmp/meowy-scalar-guards-matchers.log`. The stress case exposed insufficient headroom;
-hash membership removes 72,072 ordered-lookup work units from its repeated block checks
-without changing traversal or existing limits. Profiling is removed; measurement:
-`/tmp/meowy-scalar-guards-profile.log`. Formatting passes. Next: qualify graph inputs.
+| Commit | Reviewable slice |
+| --- | --- |
+| `7afd23df` | Use hash membership for block statement validation |
+| `2b11c76b` | Retain original condition inputs and dependency marks |
+| `999b41c6` | Qualify condition sources and exact graph identities |
+| `92499645` | Qualify enclosing branch dependencies and missing evidence |
+| `6bed5372` | Record guard authority from immutable condition snapshots |
 
-The lookup prerequisite is committed as `7afd23df`. Condition capture is complete:
-matcher and short-circuit rows retain original input/owner, normal-shape status and
-the dependency mark computed before the body. A bounded hash map stores identities;
-later qualification follows ordered branch edges. Required evaluation adds no rows.
-Source errors, cycles, stale identities and exact work/map limits reject atomically.
+All six capture tests, 14 guard tests, 174 scalar fact tests, the original 1000-matcher
+case, formatting and all-target Clippy pass. Twenty new structural regressions cover
+source identity, historical copies, ordinary/unknown/dependent/bottom states, stopped
+inputs, parent cycles and exact map/work/payload limits. The complete-capture budget
+fixture retains and compares guard records. The block lookup prerequisite removes
+72,072 ordered-membership work units from the stress case without changing sequence
+order, identity checks or limits. Temporary profiling is removed.
 
-Capture commit: `2b11c76b`. Guard-input qualification now validates completed
-condition/arm/source identities, exact branch and region edges, independent owners
-and observed predecessor/successor links. Missing observations produce no authority;
-stopped conditions retain no normal input. All four qualifier tests and the original
-1000-matcher test pass (`/tmp/meowy-scalar-guards-inputs.log`,
-`/tmp/meowy-scalar-guards-matchers.log`). Before snapshot authority, qualify enclosing
-branch dependencies too: frontend short-circuit RHS checking does not propagate
-`Checker.control`, so a nested ordinary condition must inspect retained parent branches.
-Graph qualification is committed as `999b41c6`. The dependency prerequisite walks
-completed same-owner parent chains with strictly decreasing PointIds, combining retained
-marks only at Then/Else regions. Missing parent captures stay unknown; a known dependency
-remains dependent. Conditions do not inherit the decision that they compute. All nine
-guard tests (five new dependency cases), formatting and the original 1000-matcher test
-pass (`/tmp/meowy-scalar-guards-controls.log`, `/tmp/meowy-scalar-guards-matchers.log`).
-Next: record authority from the qualified original condition snapshots.
+Focused logs: `/tmp/meowy-scalar-guards-capture.log`,
+`/tmp/meowy-scalar-guards-authority.log`, `/tmp/meowy-scalar-guards-facts.log`,
+`/tmp/meowy-scalar-guards-matchers.log`, `/tmp/meowy-scalar-guards-clippy.log`.
+Four new structural evidence files are linked from the owning references; coverage
+regeneration passes. The preservation audit passes all 599 protected files (including
+user-owned `docs/programs/hey/`), all 37 reference hashes/gaps and prior evidence
+(`/tmp/meowy-scalar-guards-preservation.log`). Baseline `05ce40f9` is recorded in
+`/tmp/meowy-scalar-guards-baseline.json`. The first full gate passed 13 groups, including
+495 required conformance cases with 19 unchanged gaps; its Rust group aborted in the
+existing deep scalar-list probe. `list_context::Scalar` now boxes its private Checker,
+reducing recursive temporary stack use. All five pure-list tests, including the original
+failing probe, and all-target Clippy pass with unchanged stack/work/node limits
+(`/tmp/meowy-scalar-guards-probes.log`, `/tmp/meowy-scalar-guards-probes-clippy.log`).
+This stack-use correction is a separate validated slice. Final full-gate rerun and
+strict conformance are pending; initial evidence is in
+`/tmp/meowy-scalar-guards-first-gate.log` and `/tmp/meowy-scalar-guards-first-rust.log`.
+No reference contract, source expectation or capability pin changed. Nothing was pushed.
 
-Dependency commit: `92499645`. Snapshot guard records now distinguish ordinary boolean
-subsets, proof dependency, unavailable evidence and bottom using the original Normal
-input and unchanged storage history. Fourteen focused guard tests and the stress case
-pass. The existing complete-capture budget fixture now retains and compares the new
-guard map. All 174 scalar fact tests, all-target Clippy and formatting pass
-(`/tmp/meowy-scalar-guards-facts.log`, `/tmp/meowy-scalar-guards-clippy.log`).
-The preliminary preservation audit passes all 599 protected files and 37 reference
-hashes/gaps/prior evidence. No state restriction is enabled. Next: link evidence,
-document the qualification boundary and run the complete repository gate.
-
-1. Qualify guard authority and E225 dependencies before restricting states in
-   `facts/state/joins.rs`. Integrate guarded Call inputs from
-   `arguments/mutations/transfers.rs` into `facts/state/snapshots/capture.rs` only after
-   that authority is established. Cover conditional/unknown inputs, stopped calls,
-   dependency cycles and exact budgets; retain the 1000-matcher case and full gate.
-   Conservative Path/Indirect/alias fallback must precede using facts after mutations.
-   Alias scalar transfers need completed backing-field layouts;
-   a canonical local's declared type is not that layout. Missing knowledge never proves
-   no mutation. Keep unsupported operations unavailable until their transfers qualify.
-2. Qualify scope/result and nullable/alias/emission transfers, declared call-result
+1. Complete per-port proof-control propagation and guarded state restriction before
+   consuming authority in `facts/state/joins.rs` or `snapshots/inputs.rs`. Guard records
+   currently inspect finished immutable histories; move their use into the validated
+   schedule only with source-version and continuation dependencies preserved. Unknown
+   and proof-dependent conditions must retain both successors. Cover nested conditions,
+   short-circuit exits, dependency cycles and exact budgets; retain the 1000-matcher case.
+2. Integrate guarded Call inputs from `arguments/mutations/transfers.rs` into
+   `facts/state/snapshots/capture.rs` after qualifying their guard authority. Missing
+   knowledge never proves no mutation. Conservative Path/Indirect/alias fallback must
+   precede using facts after mutations; alias scalar transfers need completed backing
+   layouts, not a canonical local's declared type. Cover unknown/conditional inputs and
+   stopped calls, then run the full gate with unchanged source expectations and pins.
+3. Qualify scope/result and nullable/alias/emission transfers, declared call-result
    fallback, restart resets and arithmetic/ordinary guards in separate slices. Restart
    headers must forget every possibly modified fact without bounded unrolling. Preserve
    ordinary errors and complete profile/E225 and per-query logical charging before
-   proof outcomes. Validate each slice, run `make test`, and preserve exact source
-   expectations and capability pins.
+   proof outcomes. Validate each slice and run `make test` across the series.
 
 The Makefile is complete; the root tracker records release build and staged installation
 validation. Reference formatting and reference-bearing lists remain separate B001

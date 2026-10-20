@@ -5,7 +5,7 @@ pub(crate) const MAX_CONTEXTS: usize = 256;
 pub(crate) const MAX_SCALAR_NODES: usize = 4096;
 
 pub(crate) struct Scalar {
-    pub(crate) checker: Checker,
+    pub(crate) checker: Box<Checker>,
     pub(crate) nodes: usize,
     pub(crate) bytes: usize,
     pub(crate) unknown: bool,
