@@ -3,6 +3,12 @@ use super::*;
 
 pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports, Snapshots) {
     let (mut checker, program, reports) = context(source);
+    checker.proofs.conditions = std::mem::take(&mut checker.guards);
+    checker.proofs.tags = std::mem::take(&mut checker.tags);
+    let facts = crate::borrow::check(&program, &mut checker.flow, &checker.proofs).unwrap();
+    let calls = checker
+        .qualify_borrow_calls(&program, &reports, &facts, Span::default())
+        .unwrap();
     let (versions, events, entries, parts) = checker
         .scalar_state_context(&program, &reports, Span::default(), MAX_EDGES)
         .unwrap();
@@ -36,6 +42,16 @@ pub(in super::super) fn capture(source: &str) -> (Checker, hir::Program, Reports
             &program,
             &reports,
             &graph,
+            observations,
+            Span::default(),
+            parts,
+        )
+        .unwrap();
+    let (observations, parts) = checker
+        .scalar_call_observations(
+            &reports,
+            &graph,
+            &calls,
             observations,
             Span::default(),
             parts,

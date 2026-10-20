@@ -337,11 +337,11 @@ pub(crate) fn check_imports(
             let reports = checker
                 .entry_reports(&program, block.span)
                 .map_err(|error| vec![error])?;
-            checker
+            let calls = checker
                 .qualify_borrow_calls(&program, &reports, &facts, block.span)
                 .map_err(|error| vec![error])?;
             checker
-                .qualify_scalar_facts(&program, &reports, block.span)
+                .qualify_scalar_facts(&program, &reports, &calls, block.span)
                 .map_err(|error| vec![error])?;
             Ok((program, docs))
         }

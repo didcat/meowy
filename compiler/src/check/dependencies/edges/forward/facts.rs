@@ -25,6 +25,7 @@ impl Checker {
         &mut self,
         program: &hir::Program,
         reports: &Reports,
+        calls: &super::arguments::Mutations,
         span: Span,
     ) -> Result<()> {
         let (versions, events, entries, parts) =
@@ -40,6 +41,8 @@ impl Checker {
             self.scalar_read_observations(program, reports, &graph, observations, span, parts)?;
         let (observations, parts) =
             self.scalar_borrow_observations(program, reports, &graph, observations, span, parts)?;
+        let (observations, parts) =
+            self.scalar_call_observations(reports, &graph, calls, observations, span, parts)?;
         self.scalar_snapshots(&graph, &orders, &entries, &observations, span, parts)?;
         Ok(())
     }

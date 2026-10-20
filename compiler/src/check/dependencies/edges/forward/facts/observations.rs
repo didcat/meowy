@@ -2,6 +2,7 @@ use super::super::effects::Effect;
 use super::*;
 
 mod borrows;
+mod calls;
 mod logical;
 mod reads;
 mod wrappers;
@@ -16,6 +17,7 @@ pub(super) struct Observations<'a, 'd> {
     pub(super) forwarded: HashMap<Port, Forward>,
     pub(super) guards: guards::Inputs,
     pub(super) logical: HashMap<Port, Logical>,
+    pub(super) calls: Option<&'d super::super::arguments::Mutations>,
 }
 
 impl<'a, 'd> Observations<'a, 'd> {
@@ -27,6 +29,7 @@ impl<'a, 'd> Observations<'a, 'd> {
             forwarded: HashMap::new(),
             guards: guards::Inputs::new(),
             logical: HashMap::new(),
+            calls: None,
         }
     }
 }

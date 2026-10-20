@@ -5592,7 +5592,12 @@ All 141 argument tests pass, including grouped direct borrows
 (`/tmp/meowy-call-invalidation-arguments.log`). Qualification now returns the owned
 projection for downstream capture, without applying mutations yet. Integration is split
 into graph-observation association, the cell invalidation primitive and scheduled call
-application so each review isolates one responsibility.
+application so each review isolates one responsibility. Projection is committed as
+`75de22d7`. Original call input edges are now associated with observed operations,
+with borrowed metadata and exact identity/work/payload checks. All 213 scalar-fact tests
+pass (`/tmp/meowy-call-invalidation-call-observations.log`). Generic unavailable-state
+fixtures still use calls as placeholders; they will use unsupported arithmetic before
+call application is enabled, keeping that boundary independently covered.
 
 Call results, scope/results, broader references/aliases, restarts, arithmetic and proof
 outcomes remain separate. Signature access is not callee purity, and no callee body or
