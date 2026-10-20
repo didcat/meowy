@@ -11,6 +11,12 @@ pub(in super::super) enum Integers {
 
 impl Integers {
     pub(super) fn set(values: &[i128], flow: &mut Flow, span: Span) -> Result<Option<Self>> {
+        if values.len() <= 1 {
+            if !flow.spend(values.len() + 1) {
+                return Err(budget(span));
+            }
+            return Ok(values.first().map(|value| Self::Set(vec![*value])));
+        }
         if !flow.spend(values.len().saturating_mul(LIMIT + 4).saturating_add(1)) {
             return Err(budget(span));
         }
@@ -38,13 +44,16 @@ impl Integers {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Option<Self>> {
-        if !flow.spend(LIMIT + 1) {
+        if !flow.spend(1) {
             return Err(budget(span));
         }
         if low > high {
             return Ok(None);
         }
         if let Some(width) = high.checked_sub(low).filter(|width| *width < LIMIT as i128) {
+            if !flow.spend(width as usize + 1) {
+                return Err(budget(span));
+            }
             return Ok(Some(Self::Set(
                 (0..=width).map(|offset| low + offset).collect(),
             )));

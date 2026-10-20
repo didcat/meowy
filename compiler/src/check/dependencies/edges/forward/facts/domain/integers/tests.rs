@@ -1,6 +1,49 @@
 use super::*;
 
 #[test]
+pub(crate) fn scalar_integer_constructors_bound_actual_singleton_and_interval_work() {
+    for (low, high) in [
+        (1, 0),
+        (i128::MIN, i128::MIN),
+        (i128::MAX, i128::MAX),
+        (-8, 7),
+        (-8, 8),
+        (i128::MIN, i128::MAX),
+    ] {
+        let mut flow = Flow::default();
+        let span = Span::default();
+        let expected = Integers::interval(low, high, &mut flow, span).unwrap();
+        let cost = flow.work;
+        assert!(cost <= LIMIT + 1);
+        for extra in [0, 1] {
+            flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
+            flow.full = false;
+            let result = Integers::interval(low, high, &mut flow, span);
+            assert_eq!(result.is_ok(), extra == 0);
+            if let Ok(value) = result {
+                assert_eq!(value, expected);
+            }
+        }
+    }
+    for values in [vec![], vec![i128::MIN], vec![i128::MAX]] {
+        let mut flow = Flow::default();
+        let span = Span::default();
+        let expected = Integers::set(&values, &mut flow, span).unwrap();
+        let cost = flow.work;
+        assert!(cost <= 2);
+        for extra in [0, 1] {
+            flow.work = crate::flow::MAX_PROOF_WORK - cost + extra;
+            flow.full = false;
+            let result = Integers::set(&values, &mut flow, span);
+            assert_eq!(result.is_ok(), extra == 0);
+            if let Ok(value) = result {
+                assert_eq!(value, expected);
+            }
+        }
+    }
+}
+
+#[test]
 pub(crate) fn scalar_integer_domains_canonicalize_sets_intervals_and_empty_values() {
     let mut flow = Flow::default();
     let span = Span::default();
