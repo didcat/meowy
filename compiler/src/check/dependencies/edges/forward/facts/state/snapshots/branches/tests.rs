@@ -74,22 +74,25 @@ pub(crate) fn scalar_branches_route_short_circuits_without_mutating_condition_hi
 
 #[test]
 pub(crate) fn scalar_branches_keep_unknown_dependencies_and_unreached_predecessors_conservative() {
-    for authority in [
-        Authority::Unknown,
-        Authority::Dependent,
-        Authority::Boolean(3),
-    ] {
+    for authority in [Authority::Unknown, Authority::Dependent] {
         let (mut checker, mut snapshots, edge, before) = setup();
         let Port::Normal(point) = edge.from else {
             panic!()
         };
         snapshots.guards.get_mut(&point).unwrap().authority = authority;
+        if authority == Authority::Dependent {
+            snapshots.guards.get_mut(&point).unwrap().input.control = Some(true);
+        }
         let room = snapshots.room();
         assert_eq!(
             snapshots
                 .branch(edge, before, &mut checker.flow, Span::default())
                 .unwrap(),
-            before
+            if authority == Authority::Dependent {
+                before
+            } else {
+                Value::Missing
+            }
         );
         assert_eq!(snapshots.room(), room);
         snapshots.guards.clear();
@@ -97,13 +100,36 @@ pub(crate) fn scalar_branches_keep_unknown_dependencies_and_unreached_predecesso
             snapshots
                 .branch(edge, before, &mut checker.flow, Span::default())
                 .unwrap(),
-            before
+            Value::Missing
         );
     }
     let (checker, _, _, snapshots) =
         capture("d:@\"debug\";stop<never>:(){d.panic(\"stop\")};x:=0;|false|stop();after:x");
     let read = *checker.local_reads.keys().next().unwrap();
     assert!(snapshots.expressions[&read].value.is_none());
+}
+
+#[test]
+pub(crate) fn scalar_branches_do_not_restore_facts_under_incomplete_guard_evidence() {
+    for source in [
+        "x:=0;flag:=false;|(flag||true)|x=1;after:x",
+        "x:=0;flag:true||false;|flag|x=1;after:x",
+    ] {
+        let (checker, _, _, snapshots) = capture(source);
+        let read = *checker.local_reads.keys().next_back().unwrap();
+        assert!(snapshots.expressions[&read].value.is_none());
+    }
+    let (mut checker, mut snapshots, edge, before) = setup();
+    let Port::Normal(point) = edge.from else {
+        panic!()
+    };
+    snapshots.guards.get_mut(&point).unwrap().authority = Authority::Dependent;
+    assert_eq!(
+        snapshots
+            .branch(edge, before, &mut checker.flow, Span::default())
+            .unwrap(),
+        Value::Missing
+    );
 }
 
 #[test]

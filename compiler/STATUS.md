@@ -5578,6 +5578,18 @@ preserve genuine two-path join coverage. All 179 scalar-fact tests, the original
 Unreached predecessors remain unavailable even when another arm is known dead.
 Next: restrict the current qualified boolean version on live edges.
 
+Constant-edge transfer is committed as `26c3db54`. Live-version refinement passes its
+five focused tests, but review identified a prerequisite: incomplete guard evidence can
+leave an RHS write falsely independent. Before committing refinement, make missing guard
+records, unknown authority and uncaptured scalar dependency leave both successor states
+unavailable. Captured proof control still retains both states and marks body operations.
+The fallback passes all six branch tests, 180 scalar-fact tests and the original
+1000-matcher case (`/tmp/meowy-scalar-branches-fallback.log`,
+`/tmp/meowy-scalar-branches-facts.log`, `/tmp/meowy-scalar-branches-matchers.log`).
+Its new source regression confirms later writes cannot restore facts under incomplete
+guard evidence. The boolean-refinement files remain temporarily unwired for this commit;
+wire and revalidate them next.
+
 1. Complete per-port proof-control propagation and guarded state restriction before
    consuming authority in `facts/state/joins.rs` or `snapshots/inputs.rs`. Guard records
    currently inspect finished immutable histories; move their use into the validated

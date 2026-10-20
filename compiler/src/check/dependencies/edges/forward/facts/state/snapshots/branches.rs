@@ -16,7 +16,7 @@ impl Snapshots {
             return Ok(before);
         };
         let Some(fact) = self.guards.get(&point).copied() else {
-            return Ok(before);
+            return Ok(Value::Missing);
         };
         let (arm, bit) = match edge.route {
             Route::True => (0, 2),
@@ -38,8 +38,18 @@ impl Snapshots {
         if state.owner() != row.owner {
             return Err(invalid(span));
         }
+        if state.reach == FALSE {
+            return Ok(before);
+        }
         let allowed = match fact.authority {
-            Authority::Unknown | Authority::Dependent => return Ok(before),
+            Authority::Unknown => return Ok(Value::Missing),
+            Authority::Dependent => {
+                return Ok(if fact.input.control == Some(true) {
+                    before
+                } else {
+                    Value::Missing
+                });
+            }
             Authority::Bottom => false,
             Authority::Boolean(values) => {
                 if !(1..=3).contains(&values)
@@ -51,7 +61,7 @@ impl Snapshots {
                 values & bit != 0
             }
         };
-        if allowed || state.reach == FALSE {
+        if allowed {
             return Ok(before);
         }
         let state = state.restrict(FALSE, flow, span, self.room())?;
