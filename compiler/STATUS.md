@@ -5446,7 +5446,10 @@ Dependency-ordered commit plan:
 Immutable cell-tree construction, ordered lookup and constant-size shared snapshots
 are implemented as an isolated test-only prerequisite. Both focused construction/identity/
 resource tests, formatting and all-target Clippy pass (`/tmp/meowy-scalar-storage-tree.log`,
-`/tmp/meowy-scalar-storage-clippy.log`). Persistent updates and joins precede integration.
+`/tmp/meowy-scalar-storage-clippy.log`); construction is committed as `1c2e53c1`.
+Persistent updates now copy only the changed path and preserve version identity even for
+equal domains. All four tree construction/update tests pass
+(`/tmp/meowy-scalar-storage-tree-updates.log`); Clippy is running. Joins precede integration.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.

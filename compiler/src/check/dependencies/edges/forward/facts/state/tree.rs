@@ -1,9 +1,11 @@
 use super::*;
 use std::sync::Arc;
 
+mod updates;
+
 #[derive(Clone, Debug)]
 pub(super) struct Tree {
-    pub(super) owner: usize,
+    pub(self) owner: usize,
     pub(self) root: Option<Arc<Node>>,
 }
 
@@ -27,6 +29,10 @@ pub(super) struct Iter<'a> {
 }
 
 impl Tree {
+    pub(super) fn owner(&self) -> usize {
+        self.owner
+    }
+
     pub(super) fn new(owner: usize) -> Self {
         Self { owner, root: None }
     }
