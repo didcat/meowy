@@ -5475,7 +5475,11 @@ entry preparation is committed as `42b37dac`; storage metadata is committed as `
 Version-backed value origins now distinguish unknown-value assignments while preserving
 identity through direct copies. Parameter origins remain unchanged. All 261 focused
 scalar tests, formatting and Clippy pass (`/tmp/meowy-scalar-storage-origins.log`).
-Bind initialization is next.
+Version origins are committed as `480225f0`. The isolated Bind transfer now consumes
+qualified RHS facts, creates a fresh storage version and retains unknown value/control
+fallback separately from missing state. All three focused transfer/history/limit tests,
+formatting and Clippy pass (`/tmp/meowy-scalar-storage-bind-transfer.log`) before
+enabling it in the scheduled capture.
 Production storage updates remain disabled; limits and source expectations are unchanged.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
