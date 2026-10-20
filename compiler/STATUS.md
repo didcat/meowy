@@ -5612,7 +5612,13 @@ assumed empty calls erase state and now checks the preserved value/version/contr
 Path/Indirect/alias fallback cases are included. All 216 scalar-fact tests and the
 unchanged 1000-matcher regression pass (`/tmp/meowy-call-invalidation-capture.log`,
 `/tmp/meowy-call-invalidation-matchers.log`). No call-result values are inferred.
-Additional initialization, control, history and exact-budget boundary checks follow.
+Scheduled invalidation is committed as `fc4132ca`. Five additional boundary tests pass
+for initialization/control preservation, unknown or stale inputs, exact allocation/work,
+conditional joins and stopped arguments (`/tmp/meowy-call-invalidation-boundaries.log`).
+The indirect fallback fixture uses a direct borrow expression. All 221 scalar-fact tests
+and all-target Clippy pass (`/tmp/meowy-call-invalidation-facts.log`,
+`/tmp/meowy-call-invalidation-clippy.log`). Formatting and the preservation audit pass.
+Evidence links and the full gate are next.
 
 Call results, scope/results, broader references/aliases, restarts, arithmetic and proof
 outcomes remain separate. Signature access is not callee purity, and no callee body or
