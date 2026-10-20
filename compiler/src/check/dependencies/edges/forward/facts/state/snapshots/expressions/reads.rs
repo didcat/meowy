@@ -11,7 +11,7 @@ impl Snapshots {
         flow: &mut Flow,
         span: Span,
     ) -> Result<Option<Scalar>> {
-        if !flow.spend(state.cells.len().checked_ilog2().unwrap_or(0) as usize + 3) {
+        if !flow.spend(state.cells.depth() + 3) {
             return Err(budget(span));
         }
         let declared = observations
@@ -47,7 +47,7 @@ impl Snapshots {
                 return Err(invalid(span));
             };
             let defined = self.states.get(id).ok_or_else(|| invalid(span))?;
-            if !flow.spend(defined.cells.len().checked_ilog2().unwrap_or(0) as usize + 1) {
+            if !flow.spend(defined.cells.depth() + 1) {
                 return Err(budget(span));
             }
             if !matches!(defined.get(local).map(|cell| &cell.data),

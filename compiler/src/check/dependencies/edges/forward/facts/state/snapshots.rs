@@ -120,7 +120,8 @@ impl Snapshots {
         if self.states.len() >= MAX_EDGES || !flow.spend(1) {
             return Err(budget(span));
         }
-        let state = state.snapshot(flow, span, self.room())?;
+        let mut state = state.snapshot(flow, span, self.room())?;
+        state.used = state.weight() + state.cells.len().saturating_sub(1);
         self.keep(state, span)
     }
 
@@ -130,7 +131,7 @@ impl Snapshots {
         }
         self.parts = self
             .parts
-            .checked_sub(state.weight())
+            .checked_sub(state.allocation())
             .ok_or_else(|| budget(span))?;
         let id = self.states.len();
         self.states.push(state);

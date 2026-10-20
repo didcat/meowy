@@ -7,17 +7,17 @@ mod cells;
 mod entries;
 mod joins;
 mod snapshots;
-#[cfg(test)]
 mod tree;
 pub(super) use cells::{Cell, Data};
 pub(super) use entries::Entries;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub(super) struct State {
     pub(self) owner: usize,
     pub(self) reach: Guard,
-    pub(self) cells: BTreeMap<hir::LocalId, Cell>,
+    pub(self) cells: tree::Tree,
     pub(self) parts: usize,
+    pub(self) used: usize,
 }
 
 impl State {
@@ -25,6 +25,7 @@ impl State {
         self.owner
     }
 
+    #[cfg(test)]
     pub(super) fn new(owner: usize, reach: Guard, flow: &mut Flow, span: Span) -> Result<Self> {
         if !flow.spend(1) {
             return Err(budget(span));
@@ -35,8 +36,9 @@ impl State {
         Ok(Self {
             owner,
             reach,
-            cells: BTreeMap::new(),
+            cells: tree::Tree::new(owner),
             parts: 1,
+            used: 1,
         })
     }
 
@@ -48,6 +50,11 @@ impl State {
         self.parts
     }
 
+    pub(super) fn allocation(&self) -> usize {
+        self.used
+    }
+
+    #[cfg(test)]
     pub(super) fn put(
         &mut self,
         local: hir::LocalId,
@@ -56,39 +63,24 @@ impl State {
         span: Span,
         limit: usize,
     ) -> Result<()> {
-        let limit = limit.min(MAX_EDGES);
-        if !flow.spend(self.cells.len().checked_ilog2().unwrap_or(0) as usize * 2 + 3)
-            || limit == 0
-            || self.parts > MAX_EDGES
-        {
-            return Err(budget(span));
-        }
-        if self.reach >> 1 >= flow.nodes.len() {
-            return Err(invalid(span));
-        }
-        cell.validate(self.owner, local, flow, span)?;
-        if self.reach == FALSE {
-            return Ok(());
-        }
-        if cell.bottom() {
-            self.reach = FALSE;
-            self.cells.clear();
-            self.parts = 1;
-            return Ok(());
-        }
-        let prior = self.cells.get(&local).map_or(0, |cell| 1 + cell.weight());
-        let parts = self
-            .parts
-            .checked_sub(prior)
-            .ok_or_else(|| invalid(span))?
-            .checked_add(1 + cell.weight())
-            .filter(|parts| *parts <= limit)
+        self.validate(flow, span)?;
+        let room = limit
+            .min(MAX_EDGES)
+            .checked_sub(self.used)
             .ok_or_else(|| budget(span))?;
-        if !flow.spend(cell.weight()) {
-            return Err(budget(span));
+        if self.reach == FALSE || cell.bottom() {
+            cell.validate(self.owner, local, flow, span)?;
+            if cell.bottom() {
+                self.reach = FALSE;
+                self.cells = tree::Tree::new(self.owner);
+                self.parts = 1;
+            }
+            return Ok(());
         }
-        self.cells.insert(local, cell.clone());
-        self.parts = parts;
+        let (cells, used) = self.cells.updated(local, cell, flow, span, room)?;
+        self.parts = 1 + cells.weight();
+        self.cells = cells;
+        self.used += used;
         Ok(())
     }
 
@@ -104,19 +96,19 @@ impl State {
         span: Span,
         limit: usize,
     ) -> Result<Self> {
-        let parts = if reach == FALSE { 1 } else { self.parts };
-        if parts > limit.min(MAX_EDGES) || !flow.spend(parts) {
+        if limit == 0 || !flow.spend(1) {
             return Err(budget(span));
         }
         Ok(Self {
             owner: self.owner,
             reach,
             cells: if reach == FALSE {
-                BTreeMap::new()
+                tree::Tree::new(self.owner)
             } else {
                 self.cells.clone()
             },
-            parts,
+            parts: if reach == FALSE { 1 } else { self.parts },
+            used: 1,
         })
     }
 
@@ -128,66 +120,58 @@ impl State {
         span: Span,
         limit: usize,
     ) -> Result<Self> {
-        if cells.len() >= MAX_EDGES || !flow.spend(cells.len() + 1) {
+        if !flow.spend(1) {
             return Err(budget(span));
         }
         if reach >> 1 >= flow.nodes.len() {
             return Err(invalid(span));
         }
-        let mut prior = None;
-        let mut parts = 1usize;
-        let mut bottom = reach == FALSE;
-        for (local, cell) in &cells {
-            if prior.is_some_and(|prior| prior >= *local) {
-                return Err(invalid(span));
-            }
-            prior = Some(*local);
-            cell.validate(owner, *local, flow, span)?;
-            bottom |= cell.bottom();
-            parts = parts
-                .checked_add(1 + cell.weight())
-                .filter(|parts| *parts <= limit.min(MAX_EDGES))
-                .ok_or_else(|| budget(span))?;
-        }
-        if parts > limit.min(MAX_EDGES) || !flow.spend(cells.len() + 1) {
-            return Err(budget(span));
-        }
+        let room = limit
+            .min(MAX_EDGES)
+            .checked_sub(1)
+            .ok_or_else(|| budget(span))?;
+        let (cells, used) = tree::Tree::from_sorted(owner, cells, flow, span, room)?;
+        let bottom = reach == FALSE || cells.bottom();
         Ok(Self {
             owner,
             reach: if bottom { FALSE } else { reach },
+            parts: if bottom { 1 } else { 1 + cells.weight() },
             cells: if bottom {
-                BTreeMap::new()
+                tree::Tree::new(owner)
             } else {
-                cells.into_iter().collect()
+                cells
             },
-            parts: if bottom { 1 } else { parts },
+            used: used + 1,
         })
     }
 
     pub(self) fn validate(&self, flow: &mut Flow, span: Span) -> Result<()> {
-        if self.cells.len() >= MAX_EDGES || !flow.spend(self.cells.len() + 1) {
+        if !flow.spend(2) || self.used == 0 || self.used > MAX_EDGES {
             return Err(budget(span));
         }
-        if self.reach >> 1 >= flow.nodes.len() || (self.reach == FALSE && !self.cells.is_empty()) {
-            return Err(invalid(span));
-        }
-        let mut parts = 1usize;
-        for (&local, cell) in &self.cells {
-            cell.validate(self.owner, local, flow, span)?;
-            if cell.bottom() {
-                return Err(invalid(span));
-            }
-            parts = parts
-                .checked_add(1 + cell.weight())
-                .filter(|parts| *parts <= MAX_EDGES)
-                .ok_or_else(|| budget(span))?;
-        }
-        if parts != self.parts {
+        self.cells.validate(flow, span)?;
+        if self.reach >> 1 >= flow.nodes.len()
+            || self.cells.owner() != self.owner
+            || self.parts != 1 + self.cells.weight()
+            || self.cells.bottom()
+            || self.reach == FALSE && !self.cells.is_empty()
+        {
             return Err(invalid(span));
         }
         Ok(())
     }
 }
+
+impl PartialEq for State {
+    fn eq(&self, other: &Self) -> bool {
+        self.owner == other.owner
+            && self.reach == other.reach
+            && self.parts == other.parts
+            && self.cells == other.cells
+    }
+}
+
+impl Eq for State {}
 
 pub(super) fn budget(span: Span) -> Diagnostic {
     Diagnostic::unsupported("proof scalar-state budget exhausted", span)

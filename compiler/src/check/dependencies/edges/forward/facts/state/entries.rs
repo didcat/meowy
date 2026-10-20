@@ -8,7 +8,6 @@ pub(in super::super) type Entries = BTreeMap<usize, (Port, State)>;
 pub(super) struct Seed {
     pub(super) port: Port,
     pub(super) cells: Vec<(hir::LocalId, Cell)>,
-    pub(super) parts: usize,
 }
 
 impl Checker {
@@ -47,7 +46,6 @@ impl Checker {
                 Seed {
                     port,
                     cells: Vec::new(),
-                    parts: 1,
                 },
             );
             parts -= 1;
@@ -133,12 +131,9 @@ impl Checker {
             {
                 return Err(budget(span));
             }
-            let value =
-                State::from_sorted(owner, TRUE, seed.cells, &mut self.flow, span, seed.parts)?;
-            let empty = State::new(owner, FALSE, &mut self.flow, span)?;
-            let state = empty.join(&value, &mut self.flow, span, parts)?;
+            let state = State::from_sorted(owner, TRUE, seed.cells, &mut self.flow, span, parts)?;
             parts = parts
-                .checked_sub(state.weight())
+                .checked_sub(state.allocation())
                 .ok_or_else(|| budget(span))?;
             entries.insert(owner, (seed.port, state));
         }
@@ -209,7 +204,6 @@ impl Checker {
         let seed = seeds.get_mut(&version.owner).ok_or_else(|| invalid(span))?;
         let weight = 1 + cell.weight();
         *parts = parts.checked_sub(weight).ok_or_else(|| budget(span))?;
-        seed.parts = seed.parts.checked_add(weight).ok_or_else(|| budget(span))?;
         seed.cells.push((version.local, cell));
         Ok(())
     }

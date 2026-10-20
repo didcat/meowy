@@ -5456,7 +5456,13 @@ pass (`/tmp/meowy-scalar-storage-tree-joins.log`), formatting and Clippy; joins 
 committed as `b15951f8`. Closed tree validation and isolated mutable test fixtures now
 support existing corruption regressions without exposing mutable production cells.
 All eight tree tests, formatting and Clippy pass
-(`/tmp/meowy-scalar-storage-tree-validation.log`). State and arena integration are next.
+(`/tmp/meowy-scalar-storage-tree-validation.log`); validation is committed as `459a13d8`.
+State and arena integration now share immutable cells and account separately for newly
+allocated paths versus logical cell contents. External arena imports reserve the full
+reachable tree. All 258 focused scalar tests, the original 1000-matcher case, formatting
+and Clippy pass (`/tmp/meowy-scalar-storage-sharing.log`). A 1000-update/branch-join
+regression retains histories within one quarter of the unchanged payload allowance.
+Qualified Bind/Write associations are next; production storage updates remain disabled.
 Baseline `d28285c5` and 589 protected-file
 hashes are in `/tmp/meowy-scalar-storage-baseline.json`. User-owned `docs/programs/hey/`
 is unchanged and excluded. No source contract or capability pin is being changed.

@@ -51,23 +51,23 @@ impl State {
         if flow.exceeded() {
             return Err(budget(span));
         }
-        let mut state = Self::new(self.owner, reach, flow, span)?;
-        for &local in self.cells.keys().chain(other.cells.keys()) {
-            if !flow.spend(
-                self.cells.len().checked_ilog2().unwrap_or(0) as usize
-                    + other.cells.len().checked_ilog2().unwrap_or(0) as usize
-                    + state.cells.len().checked_ilog2().unwrap_or(0) as usize
-                    + 4,
-            ) {
-                return Err(budget(span));
-            }
-            if state.cells.contains_key(&local) {
-                continue;
-            }
-            let cell = Cell::join(self.get(local), other.get(local), flow, span)?;
-            state.put(local, &cell, flow, span, limit)?;
-        }
-        Ok(state)
+        let room = limit
+            .min(MAX_EDGES)
+            .checked_sub(1)
+            .ok_or_else(|| budget(span))?;
+        let (cells, used) = self.cells.joined(&other.cells, flow, span, room)?;
+        let bottom = reach == FALSE || cells.bottom();
+        Ok(Self {
+            owner: self.owner,
+            reach: if bottom { FALSE } else { reach },
+            parts: if bottom { 1 } else { 1 + cells.weight() },
+            cells: if bottom {
+                tree::Tree::new(self.owner)
+            } else {
+                cells
+            },
+            used: used + 1,
+        })
     }
 }
 

@@ -4,6 +4,7 @@ use std::sync::Arc;
 #[cfg(test)]
 mod fixtures;
 mod joins;
+#[cfg(test)]
 mod updates;
 mod validation;
 
@@ -82,6 +83,7 @@ impl Tree {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn keys(&self) -> impl Iterator<Item = &hir::LocalId> {
         self.into_iter().map(|(key, _)| key)
     }

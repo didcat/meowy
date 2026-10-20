@@ -1,4 +1,69 @@
 use super::*;
+
+#[test]
+pub(crate) fn scalar_state_sharing_bounds_a_thousand_updates_and_branch_joins() {
+    let mut flow = Flow::new();
+    let cells = (0..1000)
+        .map(|local| {
+            (
+                local,
+                Cell {
+                    data: Data::Uninitialized,
+                    control: false,
+                },
+            )
+        })
+        .collect();
+    let mut state =
+        State::from_sorted(0, TRUE, cells, &mut flow, Span::default(), MAX_EDGES).unwrap();
+    let mut used = state.allocation();
+    let mut history = Vec::new();
+    for local in 0..1000 {
+        let mut next = state
+            .snapshot(&mut flow, Span::default(), MAX_EDGES - used)
+            .unwrap();
+        next.put(
+            local,
+            &Cell {
+                data: Data::Initialized {
+                    version: Some(Version {
+                        owner: 0,
+                        local,
+                        definition: Definition::Bind(local),
+                    }),
+                    domain: Some(Domain::boolean(true)),
+                    origin: Some(Origin::Expression(0, local)),
+                },
+                control: false,
+            },
+            &mut flow,
+            Span::default(),
+            MAX_EDGES - used,
+        )
+        .unwrap();
+        used += next.allocation();
+        let joined = state
+            .join(&next, &mut flow, Span::default(), MAX_EDGES - used)
+            .unwrap();
+        used += joined.allocation();
+        history.push(next);
+        state = joined;
+    }
+    assert!(used < MAX_EDGES / 4);
+    assert_eq!(state.get(0).unwrap().data, Data::Partial);
+    assert!(matches!(
+        history[0].get(0).unwrap().data,
+        Data::Initialized { .. }
+    ));
+    assert_eq!(history[0].get(999).unwrap().data, Data::Uninitialized);
+    assert_eq!(
+        state
+            .snapshot(&mut flow, Span::default(), 1)
+            .unwrap()
+            .allocation(),
+        1
+    );
+}
 use crate::flow::TRUE;
 use versions::Definition;
 
@@ -150,14 +215,14 @@ pub(crate) fn scalar_state_updates_bound_payload_and_reject_foreign_identity_ato
     assert_eq!(state.weight(), cost);
     assert!(
         state
-            .snapshot(&mut flow, Span::default(), cost - 1)
+            .snapshot(&mut flow, Span::default(), 0)
             .unwrap_err()
             .message
             .contains("budget")
     );
     assert_eq!(
         state,
-        state.snapshot(&mut flow, Span::default(), cost).unwrap()
+        state.snapshot(&mut flow, Span::default(), 1).unwrap()
     );
 }
 
@@ -169,10 +234,11 @@ pub(crate) fn scalar_state_sorted_construction_validates_every_row_and_full_payl
         control: false,
     };
     let rows = vec![(0, cell.clone()), (1, cell.clone())];
-    let state = State::from_sorted(0, TRUE, rows.clone(), &mut flow, Span::default(), 5).unwrap();
+    let state = State::from_sorted(0, TRUE, rows.clone(), &mut flow, Span::default(), 6).unwrap();
     assert_eq!(state.weight(), 5);
+    assert_eq!(state.allocation(), 6);
     assert!(
-        State::from_sorted(0, TRUE, rows, &mut flow, Span::default(), 4)
+        State::from_sorted(0, TRUE, rows, &mut flow, Span::default(), 5)
             .unwrap_err()
             .message
             .contains("budget")
