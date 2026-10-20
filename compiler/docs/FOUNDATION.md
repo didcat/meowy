@@ -2317,15 +2317,22 @@ dependent. A condition does not inherit the decision that it is computing.
 Scalar guard records capture the immutable state and independently observed expression
 fact at the scheduled Normal condition port, before either successor runs. Qualified
 inputs retain the original true/false arm identities. Ordinary singleton booleans make
-the impossible edge bottom. Full boolean domains restrict the current matching storage
-version on each live edge, preserving its version/origin and all earlier snapshots.
+the impossible edge bottom. Full boolean domains restrict the qualified current local
+on each live edge, preserving its optional version/origin and all earlier snapshots.
 Joins combine the resulting domains; later assignments replace versions normally.
 
 Restriction requires exact agreement between the condition's observed expression, current
-state, local, version, domain, origin and clean control. Groups and unchanged ascriptions
-retain that agreement. Parameter entries always keep their full declared domains, and
-copies keep their own histories. Merged versions without a unique identity remain
-conservative. Call bodies, final dependency maps and frontend guard caches supply no facts.
+state, local, optional version, domain, origin and clean control. Qualified reads retain
+their original local independently of value identity, including after joins discard a
+unique version. Groups and unchanged ascriptions preserve that association. Missing local
+evidence remains conservative; literals and bottom gain no association. Copies read their
+own destination local, even when they share an earlier value origin.
+
+Parameter entries keep full declared domains. Refinement preserves absent versions and
+origins after a merge; equal cell contents cannot establish storage identity or reuse a
+read from a different state. Aliases, fields, receivers and temporary storage retain their
+existing qualification boundaries. Call bodies, final dependency maps and frontend guard
+caches supply no facts. Retained local identities share the expression/copy payload budget.
 
 Captured proof control retains both successor states and marks RHS operations and
 continuations. Missing guard records, unavailable condition facts or scalar dependency
@@ -2337,7 +2344,7 @@ Capture, qualification and authority publication share existing work/payload lim
 Late identity, invalid boolean shape, duplicate publication and exact-budget failures
 expose no partial result. Block statement duplicate checks use bounded hash membership
 without changing source order. Structural regressions cover these internal transfers;
-logical boolean result facts, wider guards, merged-version place qualification, guarded
+logical boolean result facts, wider guards, broader place qualification, guarded
 call invalidation and executable proof queries remain separate. Complete transitive
 query/E225 qualification and per-query logical charging are still unfinished.
 Isolated list probes box their private checkers to keep recursive temporary stack use

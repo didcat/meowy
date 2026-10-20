@@ -45,27 +45,26 @@ incomplete.
 
 ## Current compiler and coverage handoff
 
-Qualified boolean guards now restrict scalar snapshots in execution order. Impossible
-ordinary edges become bottom; live edges narrow matching current boolean versions while
-preserving earlier copies. Short-circuit RHS operations, queries and scoped exits retain
-proof-control marks. Incomplete guard evidence keeps successors unavailable.
+Boolean guards now refine qualified current locals after version merges. Read facts
+retain storage identity separately from versions and value origins, and transparent
+wrappers preserve it. Refinement keeps absent versions/origins absent and preserves
+historical snapshots and copies. Missing local evidence remains conservative.
 
-The [compiler handoff](compiler/STATUS.md#scheduled-scalar-guard-transfers) records five
-implementation commits. All 185 scalar-fact tests, five control-propagation tests, the
-original 1000-matcher case, formatting and Clippy pass. Three new structural evidence
-files are linked; coverage regeneration and preservation of 589 protected tracked files
-and all 37 reference hashes/gaps pass. All 14 `make test` groups pass: 3531 library,
+The [compiler handoff](compiler/STATUS.md#boolean-places-after-version-merges) records
+two implementation commits. All nine new structural tests, 194 scalar-fact tests,
+the original 1000-matcher case, formatting and Clippy pass. Two new evidence files
+are linked; coverage regeneration and preservation of 589 protected tracked files
+and all 37 reference hashes/gaps pass. All 14 `make test` groups pass: 3540 library,
 923 native, 86 Python and 495 required conformance cases, with 19 unchanged gaps and
-zero failures. Runtime debug/release/sanitized profiles pass
-(`/tmp/meowy-scalar-branches-gate.log`; details in `build/verification-scalar-branches`).
+zero failures. Runtime debug/release/sanitized checks pass
+(`/tmp/meowy-scalar-places-gate.log`; details in `build/verification-scalar-places`).
 Strict mode exits 1 only for the exact 19 pinned names/reasons
-(`/tmp/meowy-scalar-branches-strict.log`). All four final handoff checks pass
-(`/tmp/meowy-scalar-branches-docs.log`). No known failures remain.
+(`/tmp/meowy-scalar-places-strict.log`). All four final handoff checks pass
+(`/tmp/meowy-scalar-places-docs.log`). No known failures remain.
 
-Merged boolean places and logical result facts are next, followed by qualified call
-invalidation with conservative alias/path fallback. Scope/result transfers, restart resets
-and proof outcomes remain separate. The untracked `docs/programs/hey/` directory remains
-excluded, including the user's changes to `test.mwy` and its build output during this run.
+Logical boolean result facts are next, followed by qualified call invalidation with
+conservative alias/path fallback. Broader places, scope/result transfers, restart resets
+and proof outcomes remain separate. User-owned `docs/programs/hey/` stays excluded.
 Nothing was pushed.
 
 ## Build and test commands
@@ -79,13 +78,13 @@ conformance pass/gap/failure counts. Failed, ignored and filtered results stay v
 missing or interrupted summaries do not invent counts. Default streaming, fail-fast and
 strict exit behavior remain unchanged. Reporting and documentation slices are complete.
 
-All 14 `make test` groups pass: 3531 library, 923 native and 86 Python tests (41 tooling,
+All 14 `make test` groups pass: 3540 library, 923 native and 86 Python tests (41 tooling,
 15 runtime, 30 compiler), plus 495 required conformance cases with 19 unchanged gaps
 and zero debug/release failures. Both editors, all documentation/schema checks and
 runtime debug/release/sanitized profiles pass. Each runtime profile runs 100 regular
 cases across nine suites, plus subprocess probes. The gate ran outside sandbox ptrace
-supervision with sanitizers enabled. Summary: `/tmp/meowy-scalar-branches-gate.log`;
-individual logs: `build/verification-scalar-branches`. All 18 reporting tests pass
+supervision with sanitizers enabled. Summary: `/tmp/meowy-scalar-places-gate.log`;
+individual logs: `build/verification-scalar-places`. All 18 reporting tests pass
 within the tooling suite. No source-conformance expectations changed.
 
 `make build` produces the locked release compiler. `make install` builds first and defaults
@@ -1086,7 +1085,7 @@ execution was not part of this documentation edit.
 
 ## Next steps
 
-Resume the ordered [scalar guard handoff](compiler/STATUS.md#scheduled-scalar-guard-transfers)
+Resume the ordered [compiler handoff](compiler/STATUS.md#boolean-places-after-version-merges)
 before the broader proof milestones below.
 
 1. Add transitive proof data/control dependency tracking before enabling outcomes
