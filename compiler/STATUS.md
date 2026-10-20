@@ -5578,7 +5578,12 @@ entry under dependent control, short-circuit ancestry and function isolation.
 The fixture preserves symbolic proof-dependent conditions and explicitly seeds false
 entry evidence; it does not invent borrow snapshots for statically skipped calls.
 No argument/origin guard inherits the entry classification. All 132 argument tests pass
-(`/tmp/meowy-call-guards-arguments.log`); boundary/budget regressions follow separately.
+(`/tmp/meowy-call-guards-arguments.log`); committed as `c63d4177`. Five new boundary
+tests pass for independent entry with unknown mutations, stopped/unvisited calls,
+stale ancestry, final-map independence and exact work/payload publication
+(`/tmp/meowy-call-guards-boundaries.log`). All 137 argument tests and all-target Clippy
+pass (`/tmp/meowy-call-guards-arguments-final.log`, `/tmp/meowy-call-guards-clippy.log`).
+The preservation audit passes. Evidence links and the full gate are next.
 
 Scalar invalidation integration is the next dependent slice after this authority
 boundary. It must include conservative Path/Indirect/alias fallback before post-call
