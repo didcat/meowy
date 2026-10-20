@@ -7,6 +7,7 @@ mod reads;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(super) struct Scalar {
     pub(super) domain: Domain,
+    pub(super) local: Option<hir::LocalId>,
     pub(super) version: Option<Version>,
     pub(super) origin: Option<Origin>,
     pub(super) control: bool,
@@ -22,6 +23,7 @@ impl Fact {
     pub(super) fn weight(&self) -> usize {
         1 + self.value.as_ref().map_or(0, |value| {
             value.domain.weight()
+                + usize::from(value.local.is_some())
                 + usize::from(value.version.is_some())
                 + usize::from(value.origin.is_some())
         })
@@ -76,6 +78,7 @@ impl Snapshots {
                 if state.reach == FALSE {
                     Some(Scalar {
                         domain: Domain::BOTTOM,
+                        local: None,
                         version: None,
                         origin: None,
                         control,
@@ -87,6 +90,7 @@ impl Snapshots {
                             .map(|value| {
                                 Ok(Scalar {
                                     domain: Domain::literal(value, flow, span)?,
+                                    local: None,
                                     version: None,
                                     origin: Some(Origin::Expression(*owner, point)),
                                     control,
@@ -134,3 +138,6 @@ mod tests;
 
 #[cfg(test)]
 mod boundaries;
+
+#[cfg(test)]
+mod places;

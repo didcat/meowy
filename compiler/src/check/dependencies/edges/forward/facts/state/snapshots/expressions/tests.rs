@@ -17,6 +17,7 @@ pub(crate) fn scalar_expression_literals_keep_values_owners_and_distinct_origins
             );
             assert_eq!(value.origin, Some(Origin::Expression(leaf.owner, point)));
             assert_eq!(value.version, None);
+            assert_eq!(value.local, None);
             assert_eq!(value.control, leaf.control);
             if leaf.value == Some(ScalarLiteral::Int(7)) {
                 equal.push(value);
@@ -41,6 +42,7 @@ pub(crate) fn scalar_expression_literals_keep_unavailable_and_bottom_separate() 
                 let value = snapshots.expressions[&point].value.as_ref().unwrap();
                 assert_eq!(value.domain, Domain::BOTTOM);
                 assert_eq!(value.origin, None);
+                assert_eq!(value.local, None);
             }
             _ => {}
         }

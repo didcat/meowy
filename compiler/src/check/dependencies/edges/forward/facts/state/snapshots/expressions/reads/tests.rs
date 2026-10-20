@@ -9,6 +9,7 @@ pub(crate) fn scalar_expression_reads_use_declared_parameter_values_and_original
         let fact = &snapshots.expressions[&point];
         let value = fact.value.as_ref().unwrap();
         assert_eq!(fact.owner, read.owner);
+        assert_eq!(value.local, Some(read.local));
         assert_eq!(
             Some(&value.domain),
             Domain::declared(
@@ -129,6 +130,8 @@ pub(crate) fn scalar_expression_reads_preserve_copies_controls_and_missing_cell_
         .unwrap()
         .unwrap();
     assert!(first.control && later.control);
+    assert_eq!(first.local, Some(local));
+    assert_eq!(later.local, Some(local));
     assert_ne!(first.domain, later.domain);
     assert_eq!(first.origin, later.origin);
     assert!(first.version.is_some());

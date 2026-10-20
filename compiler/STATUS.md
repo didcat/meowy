@@ -5536,6 +5536,35 @@ All four final documentation/tooling checks pass
 (`/tmp/meowy-scalar-branches-docs.log`). No known failures remain. No reference
 contract, source expectation or capability pin changed. Nothing was pushed.
 
+### Boolean places after version merges
+
+Current investigation: qualified reads retain values and optional versions, but lose
+the read's local identity when a join removes a unique version. Existing read qualification
+already excludes aliases, fields, receivers and temporary storage. Reuse that boundary;
+do not infer storage from equal domains or value origins.
+
+Dependency-ordered commit plan:
+
+1. Retain the original local in qualified scalar read facts and transparent copies.
+   Literals and bottom gain no local association. Charge the retained identity and cover
+   joined reads, copied locals, wrappers, unsupported sources and exact publication budgets.
+2. Use that association for boolean restriction with optional versions. Require the
+   original before-state and matching current cell/domain/origin/control; preserve absent
+   versions and origins. Cover both arms, conditional writes, old copies, separate equal
+   cells, missing evidence, stale histories and exact budgets.
+3. Link structural evidence, update the handoff, and run the full repository gate,
+   strict conformance, preservation audit and original 1000-matcher case.
+
+Logical boolean result facts, call invalidation, alias/path fallback and proof outcomes
+remain separate. Qualified read facts now retain their original local independently of
+optional versions and value origins. Transparent wrappers preserve that association;
+literals and bottom gain none. Read publication and forwarding charge the added identity.
+All four new place tests, 189 scalar-fact tests, the original 1000-matcher case and
+formatting pass (`/tmp/meowy-scalar-places-capture.log`, `/tmp/meowy-scalar-places-facts.log`,
+`/tmp/meowy-scalar-places-matchers.log`). Refinement behavior is unchanged so far.
+Next: consume the retained local for merged-version boolean cells. User-owned
+`docs/programs/hey/` stays excluded.
+
 1. Qualify stable boolean places after version merges in `facts/observations/reads.rs`
    and `state/snapshots/branches/booleans.rs`. Retain exact current-read storage through
    transparent wrappers without inventing a version or inferring identity from equal

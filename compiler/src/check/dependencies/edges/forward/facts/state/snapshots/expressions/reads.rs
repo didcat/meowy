@@ -63,12 +63,13 @@ impl Snapshots {
             return Err(invalid(span));
         }
         let weight =
-            1 + domain.weight() + usize::from(version.is_some()) + usize::from(origin.is_some());
+            2 + domain.weight() + usize::from(version.is_some()) + usize::from(origin.is_some());
         if weight > self.parts || !flow.spend(weight) {
             return Err(budget(span));
         }
         Ok(Some(Scalar {
             domain: domain.clone(),
+            local: Some(local),
             version: *version,
             origin: *origin,
             control: control || cell.control,
